@@ -126,11 +126,15 @@ type HermesEngineSourceType =
   | 'download_prebuilt_nightly_tarball'
 */
 
-const HermesEngineSourceTypes = {
-    LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
-    DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
-    DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
-  } /*:: as const */;
+const HermesEngineSourceTypes /*:{
+  +DOWNLOAD_PREBUILD_TARBALL: "download_prebuild_tarball",
+  +DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: "download_prebuilt_nightly_tarball",
+  +LOCAL_PREBUILT_TARBALL: "local_prebuilt_tarball"
+} */ = {
+  LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
+  DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
+  DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
+};
 
 /**
  * Checks if the Hermes artifacts are already downloaded and up to date with the specified version.
@@ -149,7 +153,7 @@ function checkExistingVersion(
     'Library',
     'Frameworks',
     'universal',
-    'hermes.xcframework',
+    'hermesvm.xcframework',
   );
 
   if (fs.existsSync(versionFilePath) && fs.existsSync(hermesXCFramework)) {
@@ -183,7 +187,10 @@ function getTarballUrl(
   version /*: string */,
   buildType /*: BuildFlavor */,
 ) /*: string */ {
-  const mavenRepoUrl = 'https://repo1.maven.org/maven2';
+  // You can use the `ENTERPRISE_REPOSITORY` ariable to customise the base url from which artifacts will be downloaded.
+  // The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
+  const mavenRepoUrl =
+    process.env.ENTERPRISE_REPOSITORY ?? 'https://repo1.maven.org/maven2';
   const namespace = 'com/facebook/react';
   return `${mavenRepoUrl}/${namespace}/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-ios-${buildType.toLowerCase()}.tar.gz`;
 }

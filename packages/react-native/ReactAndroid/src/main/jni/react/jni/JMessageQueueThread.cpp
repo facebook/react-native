@@ -68,7 +68,7 @@ void JMessageQueueThread::runOnQueueSync(std::function<void()>&& runnable) {
       JavaMessageQueueThread::javaClassStatic()->getMethod<jboolean()>(
           "isOnThread");
 
-  if (jIsOnThread(m_jobj)) {
+  if (jIsOnThread(m_jobj) != 0u) {
     wrapRunnable(std::move(runnable))();
   } else {
     std::mutex signalMutex;

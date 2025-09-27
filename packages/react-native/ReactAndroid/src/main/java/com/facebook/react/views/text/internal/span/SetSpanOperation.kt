@@ -16,7 +16,7 @@ import kotlin.math.max
 internal class SetSpanOperation(
     private val start: Int,
     private val end: Int,
-    @JvmField val what: ReactSpan
+    @JvmField val what: ReactSpan,
 ) {
   /**
    * @param builder Spannable string builder

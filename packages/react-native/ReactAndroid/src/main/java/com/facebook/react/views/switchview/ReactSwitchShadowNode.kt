@@ -12,15 +12,20 @@ import com.facebook.react.common.annotations.LegacyArchitectureShadowNodeWithCxx
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
-import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.yoga.YogaMeasureFunction
 import com.facebook.yoga.YogaMeasureMode
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
 
+@Suppress("DEPRECATION")
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 @LegacyArchitectureShadowNodeWithCxxImpl
-internal class ReactSwitchShadowNode : LayoutShadowNode(), YogaMeasureFunction {
+internal class ReactSwitchShadowNode :
+    com.facebook.react.uimanager.LayoutShadowNode(), YogaMeasureFunction {
   private var width = 0
   private var height = 0
   private var measured = false
@@ -38,7 +43,7 @@ internal class ReactSwitchShadowNode : LayoutShadowNode(), YogaMeasureFunction {
       width: Float,
       widthMode: YogaMeasureMode,
       height: Float,
-      heightMode: YogaMeasureMode
+      heightMode: YogaMeasureMode,
   ): Long {
     if (!measured) {
       // Create a switch with the default config and measure it; since we don't (currently)
@@ -59,7 +64,9 @@ internal class ReactSwitchShadowNode : LayoutShadowNode(), YogaMeasureFunction {
   companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ReactSwitchShadowNode", LegacyArchitectureLogLevel.ERROR)
+          "ReactSwitchShadowNode",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

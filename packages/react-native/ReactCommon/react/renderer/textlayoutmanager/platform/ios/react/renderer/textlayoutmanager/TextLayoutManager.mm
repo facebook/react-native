@@ -14,7 +14,7 @@
 
 namespace facebook::react {
 
-TextLayoutManager::TextLayoutManager(const ContextContainer::Shared &contextContainer)
+TextLayoutManager::TextLayoutManager(const std::shared_ptr<const ContextContainer> & /*contextContainer*/)
 {
   nativeTextLayoutManager_ = wrapManagedObject([RCTTextLayoutManager new]);
 }
@@ -39,23 +39,27 @@ TextMeasurement TextLayoutManager::measure(
     case AttributedStringBox::Mode::Value: {
       auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(attributedStringBox.getValue());
 
-      measurement = textMeasureCache_.get({attributedString, paragraphAttributes, layoutConstraints}, [&]() {
-        auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-        if (telemetry) {
-          telemetry->willMeasureText();
-        }
+      measurement = textMeasureCache_.get(
+          {.attributedString = attributedString,
+           .paragraphAttributes = paragraphAttributes,
+           .layoutConstraints = layoutConstraints},
+          [&]() {
+            auto telemetry = TransactionTelemetry::threadLocalTelemetry();
+            if (telemetry) {
+              telemetry->willMeasureText();
+            }
 
-        auto measurement = [textLayoutManager measureAttributedString:attributedString
-                                                  paragraphAttributes:paragraphAttributes
-                                                        layoutContext:layoutContext
-                                                    layoutConstraints:layoutConstraints];
+            auto measurement = [textLayoutManager measureAttributedString:attributedString
+                                                      paragraphAttributes:paragraphAttributes
+                                                            layoutContext:layoutContext
+                                                        layoutConstraints:layoutConstraints];
 
-        if (telemetry) {
-          telemetry->didMeasureText();
-        }
+            if (telemetry) {
+              telemetry->didMeasureText();
+            }
 
-        return measurement;
-      });
+            return measurement;
+          });
       break;
     }
 
@@ -64,7 +68,7 @@ TextMeasurement TextLayoutManager::measure(
           (NSAttributedString *)unwrapManagedObject(attributedStringBox.getOpaquePointer());
 
       auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-      if (telemetry) {
+      if (telemetry != nullptr) {
         telemetry->willMeasureText();
       }
 
@@ -73,7 +77,7 @@ TextMeasurement TextLayoutManager::measure(
                                                    layoutContext:layoutContext
                                                layoutConstraints:layoutConstraints];
 
-      if (telemetry) {
+      if (telemetry != nullptr) {
         telemetry->didMeasureText();
       }
 
@@ -96,12 +100,13 @@ LinesMeasurements TextLayoutManager::measureLines(
 
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
 
-  auto measurement = lineMeasureCache_.get({attributedString, paragraphAttributes, size}, [&]() {
-    auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
-                                                  paragraphAttributes:paragraphAttributes
-                                                                 size:{size.width, size.height}];
-    return measurement;
-  });
+  auto measurement = lineMeasureCache_.get(
+      {.attributedString = attributedString, .paragraphAttributes = paragraphAttributes, .size = size}, [&]() {
+        auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
+                                                      paragraphAttributes:paragraphAttributes
+                                                                     size:{size.width, size.height}];
+        return measurement;
+      });
 
   return measurement;
 }

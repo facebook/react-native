@@ -68,6 +68,9 @@ struct NativePerformanceEntry {
   std::optional<HighResTimeStamp> responseStart;
   std::optional<HighResTimeStamp> responseEnd;
   std::optional<int> responseStatus;
+  std::optional<std::string> contentType;
+  std::optional<int> encodedBodySize;
+  std::optional<int> decodedBodySize;
 };
 
 template <>
@@ -88,23 +91,25 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // https://www.w3.org/TR/hr-time-3/#now-method
   HighResTimeStamp now(jsi::Runtime& rt);
 
+  // https://www.w3.org/TR/hr-time-3/#timeorigin-attribute
+  HighResDuration timeOrigin(jsi::Runtime& rt);
+
 #pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
 
-  // https://w3c.github.io/user-timing/#mark-method
-  HighResTimeStamp markWithResult(
+  void reportMark(
       jsi::Runtime& rt,
-      std::string name,
-      std::optional<HighResTimeStamp> startTime);
+      const std::string& name,
+      HighResTimeStamp time,
+      jsi::Value entry);
 
-  // https://w3c.github.io/user-timing/#measure-method
-  std::tuple<HighResTimeStamp, HighResDuration> measureWithResult(
+  void reportMeasure(
       jsi::Runtime& rt,
-      std::string name,
+      const std::string& name,
       HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
-      std::optional<HighResDuration> duration,
-      std::optional<std::string> startMark,
-      std::optional<std::string> endMark);
+      HighResDuration duration,
+      jsi::Value entry);
+
+  std::optional<double> getMarkTime(jsi::Runtime& rt, const std::string& name);
 
   // https://w3c.github.io/user-timing/#clearmarks-method
   void clearMarks(
@@ -129,7 +134,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
   std::vector<NativePerformanceEntry> getEntriesByName(
       jsi::Runtime& rt,
-      std::string entryName,
+      const std::string& entryName,
       std::optional<PerformanceEntryType> entryType = std::nullopt);
 
 #pragma mark - Performance Observer (https://w3c.github.io/performance-timeline/#the-performanceobserver-interface)
@@ -184,6 +189,10 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // tracking.
   std::unordered_map<std::string, double> getReactNativeStartupTiming(
       jsi::Runtime& rt);
+
+#pragma mark - Testing
+
+  void clearEventCountsForTesting(jsi::Runtime& rt);
 };
 
 } // namespace facebook::react

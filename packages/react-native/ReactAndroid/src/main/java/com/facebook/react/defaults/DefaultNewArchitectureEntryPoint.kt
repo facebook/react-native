@@ -33,12 +33,54 @@ public object DefaultNewArchitectureEntryPoint {
 
   public var releaseLevel: ReleaseLevel = ReleaseLevel.STABLE
 
+  /**
+   * Loads the React Native New Architecture entry point with the default configuration.
+   *
+   * This will load the app with TurboModules, Fabric and Bridgeless by default.
+   */
   @JvmStatic
-  @JvmOverloads
+  public fun load() {
+    load(turboModulesEnabled = true, fabricEnabled = true, bridgelessEnabled = true)
+  }
+
+  @JvmStatic
+  @Deprecated(
+      message =
+          "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
+              "Please use load() instead when loading the New Architecture.",
+      replaceWith = ReplaceWith("load()"),
+  )
+  public fun load(
+      turboModulesEnabled: Boolean = true,
+  ) {
+    load(turboModulesEnabled, fabricEnabled = true, bridgelessEnabled = true)
+  }
+
+  @JvmStatic
+  @Deprecated(
+      message =
+          "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
+              "Please use load() instead when loading the New Architecture.",
+      replaceWith = ReplaceWith("load()"),
+  )
   public fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
-      bridgelessEnabled: Boolean = true
+  ) {
+    load(turboModulesEnabled, fabricEnabled, bridgelessEnabled = true)
+  }
+
+  @JvmStatic
+  @Deprecated(
+      message =
+          "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
+              "Please use load() instead when loading the New Architecture.",
+      replaceWith = ReplaceWith("load()"),
+  )
+  public fun load(
+      turboModulesEnabled: Boolean = true,
+      fabricEnabled: Boolean = true,
+      bridgelessEnabled: Boolean = true,
   ) {
     val (isValid, errorMessage) =
         isConfigurationValid(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
@@ -49,15 +91,14 @@ public object DefaultNewArchitectureEntryPoint {
     when (releaseLevel) {
       ReleaseLevel.EXPERIMENTAL -> {
         ReactNativeFeatureFlags.override(
-            ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android())
+            ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android()
+        )
       }
       ReleaseLevel.CANARY -> {
         ReactNativeFeatureFlags.override(ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android())
       }
       ReleaseLevel.STABLE -> {
-        ReactNativeFeatureFlags.override(
-            ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android(
-                fabricEnabled, bridgelessEnabled, turboModulesEnabled))
+        ReactNativeFeatureFlags.override(ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android())
       }
     }
 
@@ -70,13 +111,23 @@ public object DefaultNewArchitectureEntryPoint {
   }
 
   @JvmStatic
-  public fun loadWithFeatureFlags(featureFlags: ReactNativeFeatureFlagsProvider) {
+  internal fun loadWithFeatureFlags(featureFlags: ReactNativeFeatureFlagsProvider) {
     ReactNativeFeatureFlags.override(featureFlags)
 
     privateFabricEnabled = featureFlags.enableFabricRenderer()
     privateTurboModulesEnabled = featureFlags.useTurboModules()
     privateConcurrentReactEnabled = featureFlags.enableFabricRenderer()
     privateBridgelessEnabled = featureFlags.enableBridgelessArchitecture()
+
+    val (isValid, errorMessage) =
+        isConfigurationValid(
+            privateTurboModulesEnabled,
+            privateFabricEnabled,
+            privateBridgelessEnabled,
+        )
+    if (!isValid) {
+      error(errorMessage)
+    }
 
     DefaultSoLoader.maybeLoadSoLibrary()
   }
@@ -109,15 +160,15 @@ public object DefaultNewArchitectureEntryPoint {
   public fun isConfigurationValid(
       turboModulesEnabled: Boolean,
       fabricEnabled: Boolean,
-      bridgelessEnabled: Boolean
+      bridgelessEnabled: Boolean,
   ): Pair<Boolean, String> =
-      when {
-        fabricEnabled && !turboModulesEnabled ->
-            false to
-                "fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
-        bridgelessEnabled && (!turboModulesEnabled || !fabricEnabled) ->
-            false to
-                "bridgelessEnabled=true requires (turboModulesEnabled=true AND fabricEnabled=true) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
-        else -> true to ""
+      if (!turboModulesEnabled || !fabricEnabled || !bridgelessEnabled) {
+        false to
+            "You cannot load React Native with the New Architecture disabled. " +
+                "Please use DefaultNewArchitectureEntryPoint.load() instead of " +
+                "DefaultNewArchitectureEntryPoint.load(turboModulesEnabled=$turboModulesEnabled, " +
+                "fabricEnabled=$fabricEnabled, bridgelessEnabled=$bridgelessEnabled)"
+      } else {
+        true to ""
       }
 }

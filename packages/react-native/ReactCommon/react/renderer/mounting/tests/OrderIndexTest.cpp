@@ -9,8 +9,6 @@
 
 #include <gtest/gtest.h>
 
-#include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
@@ -24,22 +22,7 @@
 
 namespace facebook::react {
 
-class OrderIndexTestFeatureFlags : public ReactNativeFeatureFlagsDefaults {
- public:
-  explicit OrderIndexTestFeatureFlags(
-      bool enableFixForParentTagDuringReparenting)
-      : enableFixForParentTagDuringReparenting_(
-            enableFixForParentTagDuringReparenting) {}
-
-  bool enableFixForParentTagDuringReparenting() override {
-    return enableFixForParentTagDuringReparenting_;
-  }
-
- private:
-  bool enableFixForParentTagDuringReparenting_;
-};
-
-class OrderIndexTest : public testing::TestWithParam<bool> {
+class OrderIndexTest : public ::testing::Test {
  protected:
   std::unique_ptr<ComponentBuilder> builder_;
   std::shared_ptr<RootShadowNode> rootShadowNode_;
@@ -52,10 +35,6 @@ class OrderIndexTest : public testing::TestWithParam<bool> {
   StubViewTree currentStubViewTree_;
 
   void SetUp() override {
-    ReactNativeFeatureFlags::dangerouslyReset();
-    ReactNativeFeatureFlags::override(
-        std::make_unique<OrderIndexTestFeatureFlags>(GetParam()));
-
     builder_ = std::make_unique<ComponentBuilder>(simpleComponentBuilder());
 
     auto element = Element<RootShadowNode>()
@@ -97,10 +76,6 @@ class OrderIndexTest : public testing::TestWithParam<bool> {
         buildStubViewTreeWithoutUsingDifferentiator(*currentRootShadowNode_);
   }
 
-  void TearDown() override {
-    ReactNativeFeatureFlags::dangerouslyReset();
-  }
-
   void mutateViewShadowNodeProps_(
       const std::shared_ptr<ViewShadowNode>& node,
       std::function<void(ViewProps& props)> callback) {
@@ -127,7 +102,7 @@ class OrderIndexTest : public testing::TestWithParam<bool> {
   }
 };
 
-TEST_P(OrderIndexTest, defaultOrderIsDocumentOrder) {
+TEST_F(OrderIndexTest, defaultOrderIsDocumentOrder) {
   testViewTree_([this](const StubViewTree& viewTree) {
     EXPECT_EQ(viewTree.size(), 5);
     EXPECT_EQ(viewTree.getRootStubView().children.size(), 4);
@@ -139,7 +114,7 @@ TEST_P(OrderIndexTest, defaultOrderIsDocumentOrder) {
   });
 }
 
-TEST_P(OrderIndexTest, basicZIndex) {
+TEST_F(OrderIndexTest, basicZIndex) {
   mutateViewShadowNodeProps_(
       nodeA_, [](ViewProps& props) { props.zIndex = 5; });
   mutateViewShadowNodeProps_(
@@ -160,7 +135,7 @@ TEST_P(OrderIndexTest, basicZIndex) {
   });
 }
 
-TEST_P(OrderIndexTest, negativeZIndex) {
+TEST_F(OrderIndexTest, negativeZIndex) {
   mutateViewShadowNodeProps_(
       nodeA_, [](ViewProps& props) { props.zIndex = 5; });
   mutateViewShadowNodeProps_(
@@ -181,7 +156,7 @@ TEST_P(OrderIndexTest, negativeZIndex) {
   });
 }
 
-TEST_P(OrderIndexTest, zeroZIndex) {
+TEST_F(OrderIndexTest, zeroZIndex) {
   mutateViewShadowNodeProps_(
       nodeC_, [](ViewProps& props) { props.zIndex = 0; });
   mutateViewShadowNodeProps_(
@@ -198,7 +173,7 @@ TEST_P(OrderIndexTest, zeroZIndex) {
   });
 }
 
-TEST_P(OrderIndexTest, staticBehindNonStatic) {
+TEST_F(OrderIndexTest, staticBehindNonStatic) {
   mutateViewShadowNodeProps_(nodeB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
     yogaStyle.setPositionType(yoga::PositionType::Static);
@@ -221,7 +196,7 @@ TEST_P(OrderIndexTest, staticBehindNonStatic) {
   });
 }
 
-TEST_P(OrderIndexTest, zIndexStaticBehindNonStatic) {
+TEST_F(OrderIndexTest, zIndexStaticBehindNonStatic) {
   mutateViewShadowNodeProps_(
       nodeB_, [](ViewProps& props) { props.zIndex = 5; });
   mutateViewShadowNodeProps_(
@@ -243,7 +218,7 @@ TEST_P(OrderIndexTest, zIndexStaticBehindNonStatic) {
   });
 }
 
-TEST_P(OrderIndexTest, staticDoesNotGetZIndex) {
+TEST_F(OrderIndexTest, staticDoesNotGetZIndex) {
   mutateViewShadowNodeProps_(nodeB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
     yogaStyle.setPositionType(yoga::PositionType::Static);
@@ -267,10 +242,5 @@ TEST_P(OrderIndexTest, staticDoesNotGetZIndex) {
     EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, nodeC_->getTag());
   });
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    enableFixForParentTagDuringReparenting,
-    OrderIndexTest,
-    testing::Values(false, true));
 
 } // namespace facebook::react

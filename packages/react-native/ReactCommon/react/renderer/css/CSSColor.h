@@ -29,7 +29,7 @@ struct CSSColor {
   constexpr bool operator==(const CSSColor& rhs) const = default;
 
   static constexpr CSSColor black() {
-    return {0, 0, 0, 255};
+    return {.r = 0, .g = 0, .b = 0, .a = 255};
   }
 };
 

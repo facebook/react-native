@@ -8,12 +8,11 @@
  * @format
  */
 
+import type {HostInstance} from '../..';
 import type {RootTag} from '../Types/RootTagTypes';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {ImageSource} from './ImageSource';
-import typeof ImageViewNativeComponent from './ImageViewNativeComponent';
-import typeof TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
 import * as React from 'react';
 
@@ -67,17 +66,14 @@ type ImageComponentStaticsAndroid = $ReadOnly<{
 }>;
 
 export type AbstractImageAndroid = component(
-  ref?: React.RefSetter<
-    | React.ElementRef<TextInlineImageNativeComponent>
-    | React.ElementRef<ImageViewNativeComponent>,
-  >,
+  ref?: React.RefSetter<HostInstance>,
   ...props: ImagePropsType
 );
 
 export type ImageAndroid = AbstractImageAndroid & ImageComponentStaticsAndroid;
 
 export type AbstractImageIOS = component(
-  ref?: React.RefSetter<React.ElementRef<ImageViewNativeComponent>>,
+  ref?: React.RefSetter<HostInstance>,
   ...props: ImagePropsType
 );
 

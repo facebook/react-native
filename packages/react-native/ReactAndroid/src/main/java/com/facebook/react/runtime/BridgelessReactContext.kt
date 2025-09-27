@@ -21,7 +21,6 @@ import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UIManager
-import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
@@ -65,27 +64,34 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   override fun getFabricUIManager(): UIManager? = reactHost.uiManager
 
   @OptIn(FrameworkAPI::class)
+  @Deprecated(
+      "This method is deprecated in the New Architecture. You should not be invoking directly as we're going to remove it in the future."
+  )
   override fun getCatalystInstance(): CatalystInstance {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       throw UnsupportedOperationException(
-          "CatalystInstance is not supported when Bridgeless mode is enabled.")
+          "CatalystInstance is not supported when Bridgeless mode is enabled."
+      )
     }
     Log.w(
         TAG,
         "[WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of" +
-            " the new architecture is not encouraged usage.")
+            " the new architecture is not encouraged usage.",
+    )
     return BridgelessCatalystInstance(reactHost)
   }
 
   @Deprecated(
-      "This API has been deprecated due to naming consideration, please use hasActiveReactInstance() instead")
+      "This API has been deprecated due to naming consideration, please use hasActiveReactInstance() instead"
+  )
   override fun hasActiveCatalystInstance(): Boolean = hasActiveReactInstance()
 
   @Deprecated("DO NOT USE, this method will be removed in the near future.")
   override fun isBridgeless(): Boolean = true
 
   @Deprecated(
-      "This API has been deprecated due to naming consideration, please use hasReactInstance() instead")
+      "This API has been deprecated due to naming consideration, please use hasReactInstance() instead"
+  )
   override fun hasCatalystInstance(): Boolean = false
 
   override fun hasActiveReactInstance(): Boolean = reactHost.isInstanceInitialized
@@ -103,13 +109,15 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
 
   private class BridgelessJSModuleInvocationHandler(
       private val reactHost: ReactHostImpl,
-      private val jsModuleInterface: Class<out JavaScriptModule>
+      private val jsModuleInterface: Class<out JavaScriptModule>,
   ) : InvocationHandler {
-    override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any? {
-      val jsArgs: NativeArray =
-          if (args != null) Arguments.fromJavaArgs(args) else WritableNativeArray()
+    override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
+      val jsArgs: NativeArray = Arguments.fromJavaArgs(args)
       reactHost.callFunctionOnModule(
-          JavaScriptModuleRegistry.getJSModuleName(jsModuleInterface), method.name, jsArgs)
+          JavaScriptModuleRegistry.getJSModuleName(jsModuleInterface),
+          method.name,
+          jsArgs,
+      )
       return null
     }
   }
@@ -124,7 +132,8 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
         Proxy.newProxyInstance(
             jsInterface.classLoader,
             arrayOf<Class<*>>(jsInterface),
-            BridgelessJSModuleInvocationHandler(reactHost, jsInterface)) as JavaScriptModule
+            BridgelessJSModuleInvocationHandler(reactHost, jsInterface),
+        ) as JavaScriptModule
     @Suppress("UNCHECKED_CAST")
     return interfaceProxy as? T
   }
@@ -132,7 +141,10 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   /** Shortcut RCTDeviceEventEmitter.emit since it's frequently used */
   override fun emitDeviceEvent(eventName: String, args: Any?) {
     reactHost.callFunctionOnModule(
-        "RCTDeviceEventEmitter", "emit", Arguments.fromJavaArgs(arrayOf(eventName, args)))
+        "RCTDeviceEventEmitter",
+        "emit",
+        Arguments.fromJavaArgs(arrayOf(eventName, args)),
+    )
   }
 
   override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =

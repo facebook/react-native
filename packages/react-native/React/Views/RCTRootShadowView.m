@@ -7,6 +7,8 @@
 
 #import "RCTRootShadowView.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import "RCTI18nUtil.h"
 #import "RCTShadowView+Layout.h"
 
@@ -39,3 +41,13 @@
 }
 
 @end
+
+#else // RCT_REMOVE_LEGACY_ARCH
+
+@implementation RCTRootShadowView
+- (void)layoutWithAffectedShadowViews:(NSPointerArray *)affectedShadowViews
+{
+}
+@end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

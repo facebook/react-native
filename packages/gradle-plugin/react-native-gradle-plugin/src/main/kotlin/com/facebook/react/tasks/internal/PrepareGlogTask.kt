@@ -60,8 +60,11 @@ abstract class PrepareGlogTask : DefaultTask() {
                         "ac_cv___attribute___noinline" to "__attribute__ ((noinline))",
                         "ac_cv___attribute___noreturn" to "__attribute__ ((noreturn))",
                         "ac_cv___attribute___printf_4_5" to
-                            "__attribute__((__format__ (__printf__, 4, 5)))")),
-            ReplaceTokens::class.java)
+                            "__attribute__((__format__ (__printf__, 4, 5)))",
+                    )
+            ),
+            ReplaceTokens::class.java,
+        )
         matchedFile.path = (matchedFile.name.removeSuffix(".in"))
       }
       action.into(outputDir)
@@ -74,7 +77,8 @@ abstract class PrepareGlogTask : DefaultTask() {
           "logging.h",
           "raw_logging.h",
           "vlog_is_on.h",
-          "**/src/glog/log_severity.h")
+          "**/src/glog/log_severity.h",
+      )
       action.eachFile { file -> file.path = file.name }
       action.includeEmptyDirs = false
       action.into(exportedDir)

@@ -37,7 +37,6 @@
 #include <react/nativemodule/mutationobserver/NativeMutationObserver.h>
 #include <react/nativemodule/webperformance/NativePerformance.h>
 #include <react/renderer/animated/AnimatedModule.h>
-#include <react/renderer/animated/AnimatedMountingOverrideDelegate.h>
 #include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
@@ -79,7 +78,7 @@ ReactHost::ReactHost(
     std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate,
     std::shared_ptr<NativeAnimatedNodesManagerProvider>
         animatedNodesManagerProvider,
-    ReactInstance::BindingsInstallFunc bindingsInstallFunc) noexcept
+    ReactInstance::BindingsInstallFunc bindingsInstallFunc)
     : reactInstanceConfig_(std::move(reactInstanceConfig)) {
   auto componentRegistryFactory =
       mountingManager->getComponentRegistryFactory();
@@ -107,14 +106,12 @@ ReactHost::ReactHost(
   if (!reactInstanceData_->contextContainer
            ->find<HttpClientFactory>(HttpClientFactoryKey)
            .has_value()) {
-    reactInstanceData_->contextContainer->insert(
-        HttpClientFactoryKey, getHttpClientFactory());
+    throw std::runtime_error("No HttpClientFactory provided");
   }
   if (!reactInstanceData_->contextContainer
            ->find<WebSocketClientFactory>(WebSocketClientFactoryKey)
            .has_value()) {
-    reactInstanceData_->contextContainer->insert(
-        WebSocketClientFactoryKey, getWebSocketClientFactory());
+    throw std::runtime_error("No WebSocketClientFactory provided");
   }
   createReactInstance();
 }
@@ -138,50 +135,63 @@ void ReactHost::createReactInstance() {
       reactInstanceData_->contextContainer->at<WebSocketClientFactory>(
           WebSocketClientFactoryKey);
 
+  auto devToolsHttpClientFactory =
+      reactInstanceData_->contextContainer
+          ->find<HttpClientFactory>(DevToolsHttpClientFactoryKey)
+          .value_or(httpClientFactory);
+
+  auto devToolsWebSocketClientFactory =
+      reactInstanceData_->contextContainer
+          ->find<WebSocketClientFactory>(DevToolsWebSocketClientFactoryKey)
+          .value_or(webSocketClientFactory);
+
   // Create devServerHelper
-  if (reactInstanceConfig_.enableDebugging) {
-    if (!devServerHelper_) {
-      devServerHelper_ = std::make_shared<DevServerHelper>(
-          reactInstanceConfig_.appId,
-          reactInstanceConfig_.deviceName,
-          httpClientFactory,
-          [this](
-              const std::string& moduleName,
-              const std::string& methodName,
-              folly::dynamic&& args) {
-            reactInstance_->callFunctionOnModule(
-                moduleName, methodName, std::move(args));
-          });
-    }
-    if (!inspector_) {
-      inspector_ = std::make_shared<Inspector>(
-          reactInstanceConfig_.appId,
-          reactInstanceConfig_.deviceName,
-          webSocketClientFactory,
-          httpClientFactory);
-      inspector_->ensureHostTarget(
-          [this]() { reloadReactInstance(); },
-          [weakDevUIDelegate = std::weak_ptr<IDevUIDelegate>(
-               reactInstanceData_->devUIDelegate)](
-              bool showDebuggerOverlay,
-              std::function<void()>&& resumeDebuggerFn) {
-            if (auto debugUIDelegate = weakDevUIDelegate.lock()) {
-              if (showDebuggerOverlay) {
-                debugUIDelegate->showDebuggerOverlay(
-                    std::move(resumeDebuggerFn));
-              } else {
-                debugUIDelegate->hideDebuggerOverlay();
-              }
+  if (!devServerHelper_ &&
+      (reactInstanceConfig_.enableInspector ||
+       reactInstanceConfig_.enableDevMode)) {
+    devServerHelper_ = std::make_shared<DevServerHelper>(
+        reactInstanceConfig_.appId,
+        reactInstanceConfig_.deviceName,
+        reactInstanceConfig_.devServerHost,
+        reactInstanceConfig_.devServerPort,
+        devToolsHttpClientFactory,
+        [this](
+            const std::string& moduleName,
+            const std::string& methodName,
+            folly::dynamic&& args) {
+          reactInstance_->callFunctionOnModule(
+              moduleName, methodName, std::move(args));
+        });
+  }
+
+  if (!inspector_ && reactInstanceConfig_.enableInspector) {
+    inspector_ = std::make_shared<Inspector>(
+        reactInstanceConfig_.appId,
+        reactInstanceConfig_.deviceName,
+        devToolsWebSocketClientFactory,
+        devToolsHttpClientFactory);
+    inspector_->ensureHostTarget(
+        [this]() { reloadReactInstance(); },
+        [weakDevUIDelegate =
+             std::weak_ptr<IDevUIDelegate>(reactInstanceData_->devUIDelegate)](
+            bool showDebuggerOverlay,
+            std::function<void()>&& resumeDebuggerFn) {
+          if (auto debugUIDelegate = weakDevUIDelegate.lock()) {
+            if (showDebuggerOverlay) {
+              debugUIDelegate->showDebuggerOverlay(std::move(resumeDebuggerFn));
+            } else {
+              debugUIDelegate->hideDebuggerOverlay();
             }
-          });
-    }
-    if (!packagerConnection_) {
-      packagerConnection_ = std::make_unique<PackagerConnection>(
-          webSocketClientFactory,
-          devServerHelper_->getPackagerConnectionUrl(),
-          [this]() { reloadReactInstance(); },
-          []() {});
-    }
+          }
+        });
+  }
+
+  if (!packagerConnection_ && reactInstanceConfig_.enableDevMode) {
+    packagerConnection_ = std::make_unique<PackagerConnection>(
+        devToolsWebSocketClientFactory,
+        devServerHelper_->getPackagerConnectionUrl(),
+        [this]() { reloadReactInstance(); },
+        []() {});
   }
 
   // Create the React Instance
@@ -194,7 +204,7 @@ void ReactHost::createReactInstance() {
       reactInstanceData_->messageQueueThread,
       /* allocInOldGenBeforeTTI */ false);
 
-  if (reactInstanceConfig_.enableDebugging) {
+  if (reactInstanceConfig_.enableInspector) {
     react_native_assert(
         inspector_ != nullptr && "Inspector is not initialized");
   }
@@ -240,6 +250,10 @@ void ReactHost::createReactInstance() {
   auto jsInvoker = std::make_shared<RuntimeSchedulerCallInvoker>(
       reactInstance_->getRuntimeScheduler());
 
+  if (inspector_ != nullptr) {
+    inspector_->connectDebugger(devServerHelper_->getInspectorUrl());
+  }
+
   auto liveReloadCallback = [this]() { reloadReactInstance(); };
   reactInstance_->initializeRuntime(
       {
@@ -258,7 +272,8 @@ void ReactHost::createReactInstance() {
            reactInstanceData_->turboModuleManagerDelegates,
        jsInvoker = std::move(jsInvoker),
        logBoxSurfaceDelegate = reactInstanceData_->logBoxSurfaceDelegate,
-       devServerHelper = devServerHelper_,
+       devServerHelper =
+           reactInstanceConfig_.enableDevMode ? devServerHelper_ : nullptr,
        animatedNodesManagerProvider =
            reactInstanceData_->animatedNodesManagerProvider,
        onJsError = reactInstanceData_->onJsError,
@@ -415,9 +430,9 @@ void ReactHost::reloadReactInstance() {
 
 bool ReactHost::loadScript(
     const std::string& bundlePath,
-    const std::string& sourcePath) {
+    const std::string& sourcePath) noexcept {
   bool isLoaded = false;
-  if (devServerHelper_) {
+  if (reactInstanceConfig_.enableDevMode && devServerHelper_) {
     devServerHelper_->setSourcePath(sourcePath);
     isLoaded = loadScriptFromDevServer();
   }
@@ -426,6 +441,12 @@ bool ReactHost::loadScript(
     isLoaded = loadScriptFromBundlePath(bundlePath);
   }
   return isLoaded;
+}
+
+void ReactHost::openDebugger() {
+  if (inspector_ != nullptr && devServerHelper_ != nullptr) {
+    devServerHelper_->openDebugger();
+  }
 }
 
 bool ReactHost::loadScriptFromDevServer() {
@@ -451,12 +472,9 @@ bool ReactHost::loadScriptFromDevServer() {
     auto script = std::make_unique<JSBigStdString>(response);
     reactInstance_->loadScript(
         std::move(script), devServerHelper_->getBundleUrl());
-    if (inspector_ != nullptr) {
-      inspector_->connectDebugger(devServerHelper_->getInspectorUrl());
-    }
     devServerHelper_->setupHMRClient();
     return true;
-  } catch (const std::exception& /*e*/) {
+  } catch (...) {
     devServerHelper_->setSourcePath("");
     LOG(WARNING)
         << "Unable to download JS bundle from Metro, falling back to prebuilt JS bundle. "
@@ -473,7 +491,7 @@ bool ReactHost::loadScriptFromBundlePath(const std::string& bundlePath) {
     reactInstance_->loadScript(std::move(script), bundlePath);
     LOG(INFO) << "Loaded JS bundle from bundle path: " << bundlePath;
     return true;
-  } catch (const std::exception& /*e*/) {
+  } catch (...) {
     LOG(WARNING) << "Unable to read bundle from bundle path" << bundlePath;
     return false;
   }
@@ -484,7 +502,7 @@ void ReactHost::startSurface(
     const std::string& moduleName,
     const folly::dynamic& initialProps,
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) {
+    const LayoutContext& layoutContext) noexcept {
   surfaceManager_->startSurface(
       surfaceId, moduleName, initialProps, layoutConstraints, layoutContext);
 }
@@ -492,16 +510,16 @@ void ReactHost::startSurface(
 void ReactHost::setSurfaceConstraints(
     SurfaceId surfaceId,
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) {
+    const LayoutContext& layoutContext) noexcept {
   surfaceManager_->constraintSurfaceLayout(
       surfaceId, layoutConstraints, layoutContext);
 }
 
-void ReactHost::stopSurface(SurfaceId surfaceId) {
+void ReactHost::stopSurface(SurfaceId surfaceId) noexcept {
   surfaceManager_->stopSurface(surfaceId);
 }
 
-void ReactHost::stopAllSurfaces() {
+void ReactHost::stopAllSurfaces() noexcept {
   surfaceManager_->stopAllSurfaces();
 }
 
@@ -515,12 +533,14 @@ std::unordered_set<SurfaceId> ReactHost::getRunningSurfaces() const noexcept {
 
 void ReactHost::runOnScheduler(
     std::function<void(Scheduler& scheduler)>&& task) const {
-  task(*scheduler_);
+  if (!isReloadingReactInstance_) {
+    task(*scheduler_);
+  }
 }
 
 void ReactHost::runOnRuntimeScheduler(
     std::function<void(jsi::Runtime& runtime)>&& task,
-    SchedulerPriority priority) const {
+    SchedulerPriority priority) const noexcept {
   if (!isReloadingReactInstance_) {
     reactInstance_->getRuntimeScheduler()->scheduleTask(
         priority, std::move(task));

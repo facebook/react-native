@@ -50,12 +50,6 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JReactHostInspectorTarget::javaobject>
           jReactHostInspectorTarget);
 
-  /*
-   * Instantiates and returns an instance of `JSTimerExecutor`.
-   */
-  static jni::global_ref<JJSTimerExecutor::javaobject> createJSTimerExecutor(
-      jni::alias_ref<jhybridobject> /* unused */);
-
   static void registerNatives();
 
   void loadJSBundleFromAssets(

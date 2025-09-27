@@ -58,7 +58,7 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
         onMessage(
             JsonParsed(AllOf(AtJsonPtr("/method", "Debugger.scriptParsed")))))
         .Times(AnyNumber())
-        .WillRepeatedly(Invoke<>([this](std::string message) {
+        .WillRepeatedly(Invoke<>([this](const std::string& message) {
           auto params = folly::parseJson(message);
           // Store the script ID and URL for later use.
           scriptUrlsById_.emplace(
@@ -114,7 +114,8 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
    * paramsMatcher, only if the Runtime domain is currently disabled ( = the
    * call will be buffered and reported later upon enabling the domain).
    */
-  void expectConsoleApiCallBuffered(Matcher<folly::dynamic> paramsMatcher) {
+  void expectConsoleApiCallBuffered(
+      const Matcher<folly::dynamic>& paramsMatcher) {
     if (!runtimeEnabled_) {
       expectedConsoleApiCalls_.emplace_back(paramsMatcher);
     }
@@ -136,7 +137,7 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
   }
 
  private:
-  std::optional<std::string> getScriptUrlById(std::string scriptId) {
+  std::optional<std::string> getScriptUrlById(const std::string& scriptId) {
     auto it = scriptUrlsById_.find(scriptId);
     if (it == scriptUrlsById_.end()) {
       return std::nullopt;

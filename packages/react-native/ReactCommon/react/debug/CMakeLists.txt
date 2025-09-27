@@ -21,6 +21,6 @@ endif()
 
 target_compile_reactnative_options(react_debug PRIVATE)
 target_compile_options(react_debug PRIVATE -Wpedantic)
-if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
+if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug AND NOT REACT_NATIVE_DEBUG_OPTIMIZED)
         target_compile_options(react_debug PUBLIC -DNDEBUG)
 endif()

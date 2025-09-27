@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<cf19390911979c415bb5e95c5270fba6>>
+ * @generated SignedSource<<2052b0cfbc269d04d75129750756e930>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -7194,12 +7194,10 @@ function appendAllChildrenToContainer(
 function updateHostContainer(current, workInProgress) {
   if (doesRequireClone(current, workInProgress)) {
     current = workInProgress.stateNode;
-    var container = current.containerInfo,
-      newChildSet = createChildNodeSet();
+    var newChildSet = createChildNodeSet();
     appendAllChildrenToContainer(newChildSet, workInProgress, !1, !1);
     current.pendingChildren = newChildSet;
     workInProgress.flags |= 4;
-    completeRoot(container.containerTag, newChildSet);
   }
 }
 function scheduleRetryEffect(workInProgress, retryQueue) {
@@ -8083,6 +8081,18 @@ function commitHostMount(finishedWork) {
     captureCommitPhaseError(finishedWork, finishedWork.return, error);
   }
 }
+function commitHostPortalContainerChildren(
+  portal,
+  finishedWork,
+  pendingChildren
+) {
+  portal = portal.containerInfo;
+  try {
+    completeRoot(portal.containerTag, pendingChildren);
+  } catch (error) {
+    captureCommitPhaseError(finishedWork, finishedWork.return, error);
+  }
+}
 var offscreenSubtreeIsHidden = !1,
   offscreenSubtreeWasHidden = !1,
   PossiblyWeakSet = "function" === typeof WeakSet ? WeakSet : Set,
@@ -8363,7 +8373,11 @@ function commitDeletionEffectsOnFiber(
     case 18:
       break;
     case 4:
-      createChildNodeSet();
+      commitHostPortalContainerChildren(
+        deletedFiber.stateNode,
+        deletedFiber,
+        createChildNodeSet()
+      );
       recursivelyTraverseDeletionEffects(
         finishedRoot,
         nearestMountedAncestor,
@@ -8538,14 +8552,29 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
       commitReconciliationEffects(finishedWork);
       break;
     case 3:
-      flags = pushNestedEffectDurations();
+      current = pushNestedEffectDurations();
       recursivelyTraverseMutationEffects(root, finishedWork);
       commitReconciliationEffects(finishedWork);
-      root.effectDuration += popNestedEffectDurations(flags);
+      if (flags & 4) {
+        flags = root.containerInfo;
+        var pendingChildren = root.pendingChildren;
+        try {
+          completeRoot(flags.containerTag, pendingChildren);
+        } catch (error) {
+          captureCommitPhaseError(finishedWork, finishedWork.return, error);
+        }
+      }
+      root.effectDuration += popNestedEffectDurations(current);
       break;
     case 4:
       recursivelyTraverseMutationEffects(root, finishedWork);
       commitReconciliationEffects(finishedWork);
+      flags & 4 &&
+        commitHostPortalContainerChildren(
+          finishedWork.stateNode,
+          finishedWork,
+          finishedWork.stateNode.pendingChildren
+        );
       break;
     case 12:
       flags = pushNestedEffectDurations();
@@ -8569,12 +8598,13 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
           attachSuspenseRetryListeners(finishedWork, root)));
       break;
     case 22:
-      var isHidden = null !== finishedWork.memoizedState,
-        wasHidden = null !== current && null !== current.memoizedState;
+      pendingChildren = null !== finishedWork.memoizedState;
+      var wasHidden = null !== current && null !== current.memoizedState;
       if (finishedWork.mode & 1) {
         var prevOffscreenSubtreeIsHidden = offscreenSubtreeIsHidden,
           prevOffscreenSubtreeWasHidden = offscreenSubtreeWasHidden;
-        offscreenSubtreeIsHidden = prevOffscreenSubtreeIsHidden || isHidden;
+        offscreenSubtreeIsHidden =
+          prevOffscreenSubtreeIsHidden || pendingChildren;
         offscreenSubtreeWasHidden = prevOffscreenSubtreeWasHidden || wasHidden;
         recursivelyTraverseMutationEffects(root, finishedWork);
         offscreenSubtreeWasHidden = prevOffscreenSubtreeWasHidden;
@@ -8583,10 +8613,10 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
       commitReconciliationEffects(finishedWork);
       flags & 8192 &&
         ((root = finishedWork.stateNode),
-        (root._visibility = isHidden
+        (root._visibility = pendingChildren
           ? root._visibility & -2
           : root._visibility | 1),
-        isHidden &&
+        pendingChildren &&
           (null === current ||
             wasHidden ||
             offscreenSubtreeIsHidden ||
@@ -11055,16 +11085,16 @@ batchedUpdatesImpl = function (fn, a) {
   }
 };
 var roots = new Map(),
-  internals$jscomp$inline_1299 = {
+  internals$jscomp$inline_1296 = {
     bundleType: 0,
-    version: "19.1.0",
+    version: "19.1.1",
     rendererPackageName: "react-native-renderer",
     currentDispatcherRef: ReactSharedInternals,
-    reconcilerVersion: "19.1.0"
+    reconcilerVersion: "19.1.1"
   };
 null !== extraDevToolsConfig &&
-  (internals$jscomp$inline_1299.rendererConfig = extraDevToolsConfig);
-internals$jscomp$inline_1299.getLaneLabelMap = function () {
+  (internals$jscomp$inline_1296.rendererConfig = extraDevToolsConfig);
+internals$jscomp$inline_1296.getLaneLabelMap = function () {
   for (
     var map = new Map(), lane = 1, index$152 = 0;
     31 > index$152;
@@ -11076,20 +11106,20 @@ internals$jscomp$inline_1299.getLaneLabelMap = function () {
   }
   return map;
 };
-internals$jscomp$inline_1299.injectProfilingHooks = function (profilingHooks) {
+internals$jscomp$inline_1296.injectProfilingHooks = function (profilingHooks) {
   injectedProfilingHooks = profilingHooks;
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1578 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1574 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1578.isDisabled &&
-    hook$jscomp$inline_1578.supportsFiber
+    !hook$jscomp$inline_1574.isDisabled &&
+    hook$jscomp$inline_1574.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1578.inject(
-        internals$jscomp$inline_1299
+      (rendererID = hook$jscomp$inline_1574.inject(
+        internals$jscomp$inline_1296
       )),
-        (injectedHook = hook$jscomp$inline_1578);
+        (injectedHook = hook$jscomp$inline_1574);
     } catch (err) {}
 }
 exports.createPortal = function (children, containerTag) {

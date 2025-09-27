@@ -1,0 +1,23 @@
+name: diff-js-api-breaking-changes
+description: Check for breaking changes in the public React Native JS API
+runs:
+  using: composite
+  steps:
+    - name: Fetch snapshot from PR head
+      shell: bash
+      env:
+        SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-breaking-changes
+      run: |
+        mkdir $SCRATCH_DIR
+        git fetch --depth=1 origin ${{ github.event.pull_request.head.sha }}
+        git show ${{ github.event.pull_request.head.sha }}:packages/react-native/ReactNativeApi.d.ts > $SCRATCH_DIR/ReactNativeApi-after.d.ts \
+          || echo "" > $SCRATCH_DIR/ReactNativeApi.d.ts
+    - name: Run breaking change detection
+      shell: bash
+      env:
+        SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-breaking-changes
+      run: |
+        node ./scripts/js-api/diff-api-snapshot \
+        ${{ github.workspace }}/packages/react-native/ReactNativeApi.d.ts  \
+        $SCRATCH_DIR/ReactNativeApi-after.d.ts \
+        > $SCRATCH_DIR/output.json

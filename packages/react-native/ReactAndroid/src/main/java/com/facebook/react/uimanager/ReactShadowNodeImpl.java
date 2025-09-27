@@ -16,10 +16,12 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConfig;
+import com.facebook.yoga.YogaConfigFactory;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaErrata;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaGutter;
 import com.facebook.yoga.YogaJustify;
@@ -58,12 +60,16 @@ import java.util.Arrays;
  */
 @ReactPropertyHolder
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
   private static final YogaConfig sYogaConfig;
 
   static {
-    sYogaConfig = ReactYogaConfigProvider.INSTANCE.getYogaConfig();
+    sYogaConfig = YogaConfigFactory.create();
+    sYogaConfig.setPointScaleFactor(0f);
+    sYogaConfig.setErrata(YogaErrata.ALL);
   }
 
   static {
@@ -100,8 +106,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   public ReactShadowNodeImpl() {
     mDefaultPadding = new Spacing(0f);
     if (!isVirtual()) {
-      YogaNode node = YogaNodePool.get().acquire();
-      mYogaNode = node == null ? YogaNodeFactory.create(sYogaConfig) : node;
+      mYogaNode = YogaNodeFactory.create(sYogaConfig);
       mYogaNode.setData(this);
       Arrays.fill(mPadding, YogaConstants.UNDEFINED);
     } else {
@@ -1095,7 +1100,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   public void dispose() {
     if (mYogaNode != null) {
       mYogaNode.reset();
-      YogaNodePool.get().release(mYogaNode);
     }
   }
 

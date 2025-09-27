@@ -31,7 +31,7 @@
 
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
-  RCTEnableTurboModule(turboModuleEnabled);
+  RCTEnableTurboModule(YES);
 
 #if DEBUG
   // Disable idle timer in dev builds to avoid putting application in background and complicating
@@ -43,21 +43,18 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 UIView *
 RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
 {
-  if (fabricEnabled) {
-    id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
-                                                                   moduleName:moduleName
-                                                            initialProperties:initialProperties];
-    UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
-    [surface start];
-    return rootView;
-  }
-  return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
+                                                                 moduleName:moduleName
+                                                          initialProperties:initialProperties];
+  UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+  [surface start];
+  return rootView;
 }
 
 NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(id<RCTDependencyProvider> dependencyProvider)
 {
   // For oss, insert core main queue setup modules here
-  return dependencyProvider ? dependencyProvider.unstableModulesRequiringMainQueueSetup : @[];
+  return (dependencyProvider != nullptr) ? dependencyProvider.unstableModulesRequiringMainQueueSetup : @[];
 }
 
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDependencyProvider> dependencyProvider)
@@ -68,11 +65,11 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDe
         NSArray<NSString *> *classNames = @[];
 
         if (protocol == @protocol(RCTImageURLLoader)) {
-          classNames = dependencyProvider ? dependencyProvider.imageURLLoaderClassNames : @[];
+          classNames = (dependencyProvider != nullptr) ? dependencyProvider.imageURLLoaderClassNames : @[];
         } else if (protocol == @protocol(RCTImageDataDecoder)) {
-          classNames = dependencyProvider ? dependencyProvider.imageDataDecoderClassNames : @[];
+          classNames = (dependencyProvider != nullptr) ? dependencyProvider.imageDataDecoderClassNames : @[];
         } else if (protocol == @protocol(RCTURLRequestHandler)) {
-          classNames = dependencyProvider ? dependencyProvider.URLRequestHandlerClassNames : @[];
+          classNames = (dependencyProvider != nullptr) ? dependencyProvider.URLRequestHandlerClassNames : @[];
         }
 
         NSMutableArray *modules = [NSMutableArray new];

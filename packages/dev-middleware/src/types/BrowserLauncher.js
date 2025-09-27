@@ -8,6 +8,10 @@
  * @format
  */
 
+import type {DebuggerShellPreparationResult} from '@react-native/debugger-shell';
+
+export type {DebuggerShellPreparationResult};
+
 /**
  * An interface for integrators to provide a custom implementation for
  * opening URLs in a web browser.
@@ -42,5 +46,21 @@ export interface BrowserLauncher {
    * the host of dev-middleware. Implementations are responsible for rewriting
    * this as necessary where the server is remote.
    */
-  unstable_showFuseboxShell?: (url: string, windowKey: string) => Promise<void>;
+  +unstable_showFuseboxShell?: (
+    url: string,
+    windowKey: string,
+  ) => Promise<void>;
+
+  /**
+   * Attempt to prepare the debugger shell for use and returns a coded result
+   * that can be used to advise the user on how to proceed in case of failure.
+   *
+   * This function MAY be called multiple times or not at all. Implementers
+   * SHOULD use the opportunity to prefetch and cache any expensive resources (e.g
+   * platform-specific binaries needed in order to show the Fusebox shell). After a
+   * successful call, subsequent calls SHOULD complete quickly. The implementation
+   * SHOULD NOT return a rejecting promise in any case, and instead SHOULD report
+   * errors via the returned result object.
+   */
+  +unstable_prepareFuseboxShell?: () => Promise<DebuggerShellPreparationResult>;
 }

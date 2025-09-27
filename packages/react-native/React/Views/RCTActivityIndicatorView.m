@@ -7,6 +7,8 @@
 
 #import "RCTActivityIndicatorView.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 @implementation RCTActivityIndicatorView {
 }
 
@@ -20,3 +22,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

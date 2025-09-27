@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {useMemo, useRef, useState} from 'react';
 import {PanResponder, StyleSheet, View} from 'react-native';
@@ -88,4 +90,4 @@ exports.examples = [
       return <PanResponderExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

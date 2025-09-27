@@ -126,6 +126,8 @@ static void calculateShadowViewMutations(
     const CullingContext& oldCullingContext = {},
     const CullingContext& newCullingContext = {});
 
+namespace {
+
 struct OrderedMutationInstructionContainer {
   ShadowViewMutation::List createMutations{};
   ShadowViewMutation::List deleteMutations{};
@@ -135,6 +137,8 @@ struct OrderedMutationInstructionContainer {
   ShadowViewMutation::List downwardMutations{};
   ShadowViewMutation::List destructiveDownwardMutations{};
 };
+
+} // namespace
 
 static void updateMatchedPairSubtrees(
     ViewNodePairScope& scope,
@@ -712,11 +716,7 @@ static void calculateShadowViewMutationsFlattener(
           if (childReparentMode == ReparentMode::Flatten) {
             // Unflatten parent, flatten child
             react_native_assert(reparentMode == ReparentMode::Unflatten);
-            auto fixedParentTagForUpdate =
-                ReactNativeFeatureFlags::
-                    enableFixForParentTagDuringReparenting()
-                ? newTreeNodePair.shadowView.tag
-                : parentTag;
+            auto fixedParentTagForUpdate = newTreeNodePair.shadowView.tag;
             // Flatten old tree into new list
             // At the end of this loop we still want to know which of these
             // children are visited, so we reuse the `newRemainingPairs` map.
@@ -736,11 +736,7 @@ static void calculateShadowViewMutationsFlattener(
             // Flatten parent, unflatten child
             react_native_assert(reparentMode == ReparentMode::Flatten);
             // Unflatten old list into new tree
-            auto fixedParentTagForUpdate =
-                ReactNativeFeatureFlags::
-                    enableFixForParentTagDuringReparenting()
-                ? parentTagForUpdate
-                : oldTreeNodePair.shadowView.tag;
+            auto fixedParentTagForUpdate = parentTagForUpdate;
             calculateShadowViewMutationsFlattener(
                 scope,
                 /* reparentMode */ ReparentMode::Unflatten,
@@ -938,20 +934,20 @@ static void calculateShadowViewMutations(
               oldChildPair.shadowView, newChildPair.shadowView, parentTag));
     }
 
+    auto adjustedOldCullingContext =
+        oldCullingContext.adjustCullingContextIfNeeded(oldChildPair);
+    auto adjustedNewCullingContext =
+        newCullingContext.adjustCullingContextIfNeeded(newChildPair);
+
     // Recursively update tree if ShadowNode pointers are not equal
     if (!oldChildPair.flattened &&
         (oldChildPair.shadowNode != newChildPair.shadowNode ||
-         oldCullingContext != newCullingContext)) {
-      auto oldCullingContextCopy =
-          oldCullingContext.adjustCullingContextIfNeeded(oldChildPair);
-      auto newCullingContextCopy =
-          newCullingContext.adjustCullingContextIfNeeded(newChildPair);
-
+         adjustedOldCullingContext != adjustedNewCullingContext)) {
       ViewNodePairScope innerScope{};
       auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-          oldChildPair, innerScope, false, oldCullingContextCopy);
+          oldChildPair, innerScope, false, adjustedOldCullingContext);
       auto newGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-          newChildPair, innerScope, false, newCullingContextCopy);
+          newChildPair, innerScope, false, adjustedNewCullingContext);
 
       const size_t newGrandChildPairsSize = newGrandChildPairs.size();
 
@@ -963,8 +959,8 @@ static void calculateShadowViewMutations(
           oldChildPair.shadowView.tag,
           std::move(oldGrandChildPairs),
           std::move(newGrandChildPairs),
-          oldCullingContextCopy,
-          newCullingContextCopy);
+          adjustedOldCullingContext,
+          adjustedNewCullingContext);
     }
   }
 

@@ -41,9 +41,9 @@ let startNativeAnimationNextId = 1;
 // Once an animation has been stopped or finished its course, it will
 // not be reused.
 export default class Animation {
-  #nativeID: ?number;
-  #onEnd: ?EndCallback;
-  #useNativeDriver: boolean;
+  _nativeID: ?number;
+  _onEnd: ?EndCallback;
+  _useNativeDriver: boolean;
 
   __active: boolean;
   __isInteraction: boolean;
@@ -52,10 +52,10 @@ export default class Animation {
   __debugID: ?string;
 
   constructor(config: AnimationConfig) {
-    this.#useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
+    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
 
     this.__active = false;
-    this.__isInteraction = config.isInteraction ?? !this.#useNativeDriver;
+    this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
     this.__isLooping = config.isLooping;
     this.__iterations = config.iterations ?? 1;
     if (__DEV__) {
@@ -70,7 +70,7 @@ export default class Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
   ): void {
-    if (!this.#useNativeDriver && animatedValue.__isNative === true) {
+    if (!this._useNativeDriver && animatedValue.__isNative === true) {
       throw new Error(
         'Attempting to run JS driven animation on animated node ' +
           'that has been moved to "native" earlier by starting an ' +
@@ -78,13 +78,13 @@ export default class Animation {
       );
     }
 
-    this.#onEnd = onEnd;
+    this._onEnd = onEnd;
     this.__active = true;
   }
 
   stop(): void {
-    if (this.#nativeID != null) {
-      const nativeID = this.#nativeID;
+    if (this._nativeID != null) {
+      const nativeID = this._nativeID;
       const identifier = `${nativeID}:stopAnimation`;
       try {
         // This is only required when singleOpBatching is used, as otherwise
@@ -123,7 +123,7 @@ export default class Animation {
   }
 
   __startAnimationIfNative(animatedValue: AnimatedValue): boolean {
-    if (!this.#useNativeDriver) {
+    if (!this._useNativeDriver) {
       return false;
     }
 
@@ -135,9 +135,9 @@ export default class Animation {
     try {
       const config = this.__getNativeAnimationConfig();
       animatedValue.__makeNative(config.platformConfig);
-      this.#nativeID = NativeAnimatedHelper.generateNewAnimationId();
+      this._nativeID = NativeAnimatedHelper.generateNewAnimationId();
       NativeAnimatedHelper.API.startAnimatingNode(
-        this.#nativeID,
+        this._nativeID,
         animatedValue.__getNativeTag(),
         config,
         result => {
@@ -150,12 +150,11 @@ export default class Animation {
           if (value != null) {
             animatedValue.__onAnimatedValueUpdateReceived(value, offset);
 
-            if (
-              !(
-                ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
-                ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()
-              )
-            ) {
+            const isJsSyncRemoved =
+              ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
+              !ReactNativeFeatureFlags.disableFabricCommitInCXXAnimated() &&
+              ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync();
+            if (!isJsSyncRemoved) {
               if (this.__isLooping === true) {
                 return;
               }
@@ -185,9 +184,9 @@ export default class Animation {
    * callback will never be called more than once.
    */
   __notifyAnimationEnd(result: EndResult): void {
-    const callback = this.#onEnd;
+    const callback = this._onEnd;
     if (callback != null) {
-      this.#onEnd = null;
+      this._onEnd = null;
       callback(result);
     }
   }

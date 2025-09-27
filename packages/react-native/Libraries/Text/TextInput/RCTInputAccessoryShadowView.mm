@@ -7,6 +7,8 @@
 
 #import <React/RCTInputAccessoryShadowView.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/RCTUtils.h>
 
 @implementation RCTInputAccessoryShadowView
@@ -18,3 +20,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

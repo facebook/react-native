@@ -7,6 +7,8 @@
 
 #include "JReactSoftExceptionLogger.h"
 
+#include <utility>
+
 using namespace facebook::react;
 
 void JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
@@ -17,5 +19,6 @@ void JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
           ->getStaticMethod<void(std::string tag, std::string message)>(
               "logNoThrowSoftExceptionWithMessage");
 
-  return logNoThrowSoftExceptionWithMessage(javaClassStatic(), tag, message);
+  return logNoThrowSoftExceptionWithMessage(
+      javaClassStatic(), std::move(tag), std::move(message));
 }

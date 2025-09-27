@@ -17,9 +17,11 @@ using namespace facebook::react::jsinspector_modern;
 
 namespace facebook::react {
 JReactHostInspectorTarget::JReactHostInspectorTarget(
+    alias_ref<JReactHostInspectorTarget::javaobject> jobj,
     alias_ref<JReactHostImpl> reactHostImpl,
     alias_ref<JExecutor::javaobject> executor)
-    : javaReactHostImpl_(make_global(makeJWeakReference(reactHostImpl))),
+    : jobj_(make_global(jobj)),
+      javaReactHostImpl_(make_global(makeJWeakReference(reactHostImpl))),
       inspectorExecutor_([javaExecutor =
                               // Use a SafeReleaseJniRef because this lambda may
                               // be copied to arbitrary threads.
@@ -62,10 +64,10 @@ JReactHostInspectorTarget::~JReactHostInspectorTarget() {
 
 local_ref<JReactHostInspectorTarget::jhybriddata>
 JReactHostInspectorTarget::initHybrid(
-    alias_ref<JReactHostInspectorTarget::jhybridobject> self,
+    alias_ref<JReactHostInspectorTarget::jhybridobject> jobj,
     jni::alias_ref<JReactHostImpl> reactHostImpl,
     jni::alias_ref<JExecutor::javaobject> javaExecutor) {
-  return makeCxxInstance(reactHostImpl, javaExecutor);
+  return makeCxxInstance(jobj, reactHostImpl, javaExecutor);
 }
 
 void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
@@ -76,15 +78,6 @@ void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
         "java/lang/IllegalStateException",
         "Cannot send command while the Fusebox backend is not enabled");
   }
-}
-
-void JReactHostInspectorTarget::registerNatives() {
-  registerHybrid({
-      makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
-      makeNativeMethod(
-          "sendDebuggerResumeCommand",
-          JReactHostInspectorTarget::sendDebuggerResumeCommand),
-  });
 }
 
 jsinspector_modern::HostTargetMetadata
@@ -114,7 +107,7 @@ JReactHostInspectorTarget::getMetadata() {
   return metadata;
 }
 
-void JReactHostInspectorTarget::onReload(const PageReloadRequest& request) {
+void JReactHostInspectorTarget::onReload(const PageReloadRequest& /*request*/) {
   if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
     javaReactHostImplStrong->reload("CDP Page.reload");
   }
@@ -143,4 +136,78 @@ void JReactHostInspectorTarget::loadNetworkResource(
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
   return inspectorTarget_ ? inspectorTarget_.get() : nullptr;
 }
+
+bool JReactHostInspectorTarget::startBackgroundTrace() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->startTracing(tracing::Mode::Background);
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot start Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+tracing::TraceRecordingState JReactHostInspectorTarget::stopTracing() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->stopTracing();
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot stop Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+jboolean JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace() {
+  auto capturedTrace = inspectorTarget_->stopTracing();
+  if (inspectorTarget_->hasActiveSessionWithFuseboxClient()) {
+    inspectorTarget_->emitTraceRecordingForFirstFuseboxClient(
+        std::move(capturedTrace));
+    return jboolean(true);
+  }
+
+  stashTraceRecordingState(std::move(capturedTrace));
+  return jboolean(false);
+}
+
+void JReactHostInspectorTarget::stopAndDiscardBackgroundTrace() {
+  inspectorTarget_->stopTracing();
+}
+
+void JReactHostInspectorTarget::stashTraceRecordingState(
+    tracing::TraceRecordingState&& state) {
+  stashedTraceRecordingState_ = std::move(state);
+}
+
+std::optional<tracing::TraceRecordingState> JReactHostInspectorTarget::
+    unstable_getTraceRecordingThatWillBeEmittedOnInitialization() {
+  auto state = std::move(stashedTraceRecordingState_);
+  stashedTraceRecordingState_.reset();
+  return state;
+}
+
+void JReactHostInspectorTarget::registerNatives() {
+  registerHybrid({
+      makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          JReactHostInspectorTarget::sendDebuggerResumeCommand),
+      makeNativeMethod(
+          "startBackgroundTrace",
+          JReactHostInspectorTarget::startBackgroundTrace),
+      makeNativeMethod(
+          "stopAndMaybeEmitBackgroundTrace",
+          JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace),
+      makeNativeMethod(
+          "stopAndDiscardBackgroundTrace",
+          JReactHostInspectorTarget::stopAndDiscardBackgroundTrace),
+      makeNativeMethod(
+          "tracingStateAsInt", JReactHostInspectorTarget::tracingState),
+  });
+}
+
+jint JReactHostInspectorTarget::tracingState() {
+  auto state = inspectorTarget_->tracingState();
+  return static_cast<jint>(state);
+}
+
 } // namespace facebook::react

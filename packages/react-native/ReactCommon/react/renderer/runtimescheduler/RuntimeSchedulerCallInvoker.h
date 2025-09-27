@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/CallInvoker.h>
+#include <memory>
 
 namespace facebook::react {
 

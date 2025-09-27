@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {Pressable, StyleSheet, ToastAndroid} from 'react-native';
@@ -166,4 +168,4 @@ exports.examples = [
       return <ToastWithYOffset />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

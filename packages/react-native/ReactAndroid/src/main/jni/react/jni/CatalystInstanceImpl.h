@@ -21,7 +21,7 @@
 #include "ModuleRegistryBuilder.h"
 #include "ReactInstanceManagerInspectorTarget.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 
@@ -29,12 +29,16 @@ class Instance;
 class JavaScriptExecutorHolder;
 class NativeArray;
 
-struct JInstanceCallback : public jni::JavaClass<JInstanceCallback> {
+struct [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JInstanceCallback
+    : public jni::JavaClass<JInstanceCallback> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/CatalystInstanceImpl$InstanceCallback;";
 };
 
-class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] CatalystInstanceImpl
+    : public jni::HybridClass<CatalystInstanceImpl> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
@@ -57,7 +61,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       // This executor is actually a factory holder.
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
-      jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
+      jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
       jni::alias_ref<
           jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
           javaModules,

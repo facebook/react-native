@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager
 
 import android.view.View
@@ -82,7 +84,8 @@ class ReactPropConstantsTest {
 
     @ReactPropGroup(
         names = ["customBoxedIntGroupPropFirst", "customBoxedIntGroupPropSecond"],
-        customType = "color")
+        customType = "color",
+    )
     fun customIntGroupProp(v: View?, index: Int, value: Int?) = Unit
   }
 
@@ -120,7 +123,8 @@ class ReactPropConstantsTest {
                 "customIntProp" to "date",
                 "customBoxedIntGroupPropFirst" to "color",
                 "customBoxedIntGroupPropSecond" to "color",
-            ))
+            )
+        )
   }
 
   companion object {

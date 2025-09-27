@@ -13,7 +13,7 @@ namespace facebook::react {
 TurboModuleMethodValueKind getTurboModuleMethodValueKind(
     jsi::Runtime& rt,
     const jsi::Value* value) {
-  if (!value || value->isUndefined() || value->isNull()) {
+  if ((value == nullptr) || value->isUndefined() || value->isNull()) {
     return VoidKind;
   } else if (value->isBool()) {
     return BooleanKind;
@@ -41,8 +41,9 @@ TurboModule::TurboModule(
 
 void TurboModule::emitDeviceEvent(
     const std::string& eventName,
-    ArgFactory argFactory) {
-  jsInvoker_->invokeAsync([eventName, argFactory](jsi::Runtime& rt) {
+    ArgFactory&& argFactory) {
+  jsInvoker_->invokeAsync([eventName, argFactory = std::move(argFactory)](
+                              jsi::Runtime& rt) {
     jsi::Value emitter = rt.global().getProperty(rt, "__rctDeviceEventEmitter");
     if (!emitter.isUndefined()) {
       jsi::Object emitterObject = emitter.asObject(rt);

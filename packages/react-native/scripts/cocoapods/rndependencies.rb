@@ -166,7 +166,12 @@ class ReactNativeDependenciesUtils
     end
 
     def self.release_tarball_url(version, build_type)
-        maven_repo_url = "https://repo1.maven.org/maven2"
+        ## You can use the `ENTERPRISE_REPOSITORY` ariable to customise the base url from which artifacts will be downloaded.
+        ## The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
+        maven_repo_url =
+            ENV['ENTERPRISE_REPOSITORY'] != nil && ENV['ENTERPRISE_REPOSITORY'] != "" ?
+            ENV['ENTERPRISE_REPOSITORY'] :
+            "https://repo1.maven.org/maven2"
         group = "com/facebook/react"
         # Sample url from Maven:
         # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.79.0-rc.0/react-native-artifacts-0.79.0-rc.0-reactnative-dependencies-debug.tar.gz

@@ -99,8 +99,8 @@ runs:
         mkdir -p ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
         cp ${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Debug.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
         cp ${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Release.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
-        cp ${{ inputs.hermes-ws-dir }}/dSYM/Debug/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-debug.tar.gz
-        cp ${{ inputs.hermes-ws-dir }}/dSYM/Release/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-release.tar.gz
+        cp ${{ inputs.hermes-ws-dir }}/dSYM/Debug/hermesvm.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-debug.tar.gz
+        cp ${{ inputs.hermes-ws-dir }}/dSYM/Release/hermesvm.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-release.tar.gz
     - name: Download ReactNativeDependencies
       uses: actions/download-artifact@v4
       with:
@@ -116,12 +116,12 @@ runs:
     - name: Print Artifacts Directory
       shell: bash
       run: ls -lR ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
-    - name: Setup node.js
-      uses: ./.github/actions/setup-node
     - name: Setup gradle
       uses: ./.github/actions/setup-gradle
       with:
         cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
     - name: Install dependencies
       uses: ./.github/actions/yarn-install
     - name: Build packages
@@ -129,7 +129,7 @@ runs:
       run: yarn build
     - name: Build types
       shell: bash
-      run: yarn build-types
+      run: yarn build-types --skip-snapshot
     # Continue with publish steps
     - name: Set npm credentials
       if: ${{ inputs.release-type == 'release' ||

@@ -9,11 +9,12 @@ package com.facebook.react
 
 import android.view.KeyEvent
 import android.view.View
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 
 /** Responsible for dispatching events specific for hardware inputs. */
-internal class ReactAndroidHWInputDeviceHelper(private val reactRootView: ReactRootView) {
+internal class ReactAndroidHWInputDeviceHelper {
   /**
    * We keep a reference to the last focused view id so that we can send it as a target for key
    * events and be able to send a blur event when focus changes.
@@ -21,36 +22,43 @@ internal class ReactAndroidHWInputDeviceHelper(private val reactRootView: ReactR
   private var lastFocusedViewId = View.NO_ID
 
   /** Called from [ReactRootView]. This is the main place the key events are handled. */
-  fun handleKeyEvent(ev: KeyEvent) {
+  fun handleKeyEvent(ev: KeyEvent, context: ReactContext) {
     val eventKeyCode = ev.keyCode
     val eventKeyAction = ev.action
-    if ((eventKeyAction == KeyEvent.ACTION_UP || eventKeyAction == KeyEvent.ACTION_DOWN) &&
-        KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)) {
-      dispatchEvent(KEY_EVENTS_ACTIONS[eventKeyCode], lastFocusedViewId, eventKeyAction)
+    if (
+        (eventKeyAction == KeyEvent.ACTION_UP || eventKeyAction == KeyEvent.ACTION_DOWN) &&
+            KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)
+    ) {
+      dispatchEvent(context, KEY_EVENTS_ACTIONS[eventKeyCode], lastFocusedViewId, eventKeyAction)
     }
   }
 
   /** Called from [ReactRootView] when focused view changes. */
-  fun onFocusChanged(newFocusedView: View) {
+  fun onFocusChanged(newFocusedView: View, context: ReactContext) {
     if (lastFocusedViewId == newFocusedView.id) {
       return
     }
     if (lastFocusedViewId != View.NO_ID) {
-      dispatchEvent("blur", lastFocusedViewId)
+      dispatchEvent(context, "blur", lastFocusedViewId)
     }
     lastFocusedViewId = newFocusedView.id
-    dispatchEvent("focus", newFocusedView.id)
+    dispatchEvent(context, "focus", newFocusedView.id)
   }
 
   /** Called from [ReactRootView] when the whole view hierarchy looses focus. */
-  fun clearFocus() {
+  fun clearFocus(context: ReactContext) {
     if (lastFocusedViewId != View.NO_ID) {
-      dispatchEvent("blur", lastFocusedViewId)
+      dispatchEvent(context, "blur", lastFocusedViewId)
     }
     lastFocusedViewId = View.NO_ID
   }
 
-  private fun dispatchEvent(eventType: String?, targetViewId: Int, eventKeyAction: Int = -1) {
+  private fun dispatchEvent(
+      context: ReactContext,
+      eventType: String?,
+      targetViewId: Int,
+      eventKeyAction: Int = -1,
+  ) {
     val event: WritableMap =
         WritableNativeMap().apply {
           putString("eventType", eventType)
@@ -59,7 +67,7 @@ internal class ReactAndroidHWInputDeviceHelper(private val reactRootView: ReactR
             putInt("tag", targetViewId)
           }
         }
-    reactRootView.sendEvent("onHWKeyEvent", event)
+    context.emitDeviceEvent("onHWKeyEvent", event)
   }
 
   private companion object {
@@ -83,6 +91,9 @@ internal class ReactAndroidHWInputDeviceHelper(private val reactRootView: ReactR
             KeyEvent.KEYCODE_DPAD_DOWN to "down",
             KeyEvent.KEYCODE_DPAD_LEFT to "left",
             KeyEvent.KEYCODE_INFO to "info",
-            KeyEvent.KEYCODE_MENU to "menu")
+            KeyEvent.KEYCODE_MENU to "menu",
+            KeyEvent.KEYCODE_CHANNEL_UP to "channelUp",
+            KeyEvent.KEYCODE_CHANNEL_DOWN to "channelDown",
+        )
   }
 }

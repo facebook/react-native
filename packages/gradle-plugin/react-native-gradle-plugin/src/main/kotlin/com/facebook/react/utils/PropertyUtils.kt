@@ -14,9 +14,17 @@ object PropertyUtils {
   const val NEW_ARCH_ENABLED = "newArchEnabled"
   const val SCOPED_NEW_ARCH_ENABLED = "react.newArchEnabled"
 
-  /** Public property that toggles the New Architecture */
+  /** Public property that toggles Hermes */
   const val HERMES_ENABLED = "hermesEnabled"
   const val SCOPED_HERMES_ENABLED = "react.hermesEnabled"
+
+  /** Public property that toggles Hermes V1 */
+  const val HERMES_V1_ENABLED = "hermesV1Enabled"
+  const val SCOPED_HERMES_V1_ENABLED = "react.hermesV1Enabled"
+
+  /** Public property that toggles edge-to-edge */
+  const val EDGE_TO_EDGE_ENABLED = "edgeToEdgeEnabled"
+  const val SCOPED_EDGE_TO_EDGE_ENABLED = "react.edgeToEdgeEnabled"
 
   /** Public property that excludes jsctooling from core */
   const val USE_THIRD_PARTY_JSC = "useThirdPartyJSC"
@@ -29,6 +37,12 @@ object PropertyUtils {
   /** Public property that allows to control whether the JitPack repository is included or not */
   const val INCLUDE_JITPACK_REPOSITORY = "includeJitpackRepository"
   const val SCOPED_INCLUDE_JITPACK_REPOSITORY = "react.includeJitpackRepository"
+
+  /**
+   * Public property that allows to configure an enterprise repository proxy as exclusive repository
+   */
+  const val EXCLUSIVE_ENTEPRISE_REPOSITORY = "exclusiveEnterpriseRepository"
+  const val SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY = "react.exclusiveEnterpriseRepository"
 
   /** By default we include JitPack to avoid breaking user builds */
   internal const val INCLUDE_JITPACK_REPOSITORY_DEFAULT = true
@@ -58,9 +72,17 @@ object PropertyUtils {
   const val INTERNAL_USE_HERMES_NIGHTLY = "react.internal.useHermesNightly"
 
   /** Internal property used to override the publishing group for the React Native artifacts. */
-  const val INTERNAL_PUBLISHING_GROUP = "react.internal.publishingGroup"
-  const val DEFAULT_INTERNAL_PUBLISHING_GROUP = "com.facebook.react"
+  const val INTERNAL_REACT_PUBLISHING_GROUP = "react.internal.publishingGroup"
+  const val INTERNAL_HERMES_PUBLISHING_GROUP = "react.internal.hermesPublishingGroup"
+  const val DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP = "com.facebook.react"
+  const val DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP = "com.facebook.hermes"
 
   /** Internal property used to control the version name of React Native */
   const val INTERNAL_VERSION_NAME = "VERSION_NAME"
+
+  /**
+   * Internal property, shared with iOS, used to control the version name of Hermes Engine. This is
+   * stored in sdks/hermes-engine/version.properties
+   */
+  const val INTERNAL_HERMES_V1_VERSION_NAME = "HERMES_V1_VERSION_NAME"
 }

@@ -7,6 +7,8 @@
 
 #import "RCTModalHostViewController.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import "RCTLog.h"
 #import "RCTModalHostView.h"
 
@@ -68,3 +70,5 @@
 #endif // RCT_DEV
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

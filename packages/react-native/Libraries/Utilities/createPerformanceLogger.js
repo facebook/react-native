@@ -35,6 +35,8 @@ class PerformanceLogger implements IPerformanceLogger {
     endExtras?: Extras,
   ) {
     if (this._closed) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: addTimespan - has closed ignoring: ',
@@ -44,6 +46,8 @@ class PerformanceLogger implements IPerformanceLogger {
       return;
     }
     if (this._timespans[key]) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: Attempting to add a timespan that already exists ',
@@ -79,6 +83,8 @@ class PerformanceLogger implements IPerformanceLogger {
     this._timespans = {};
     this._extras = {};
     this._points = {};
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     if (PRINT_TO_CONSOLE) {
       console.log('PerformanceLogger.js', 'clear');
     }
@@ -92,6 +98,8 @@ class PerformanceLogger implements IPerformanceLogger {
     }
     this._extras = {};
     this._points = {};
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     if (PRINT_TO_CONSOLE) {
       console.log('PerformanceLogger.js', 'clearCompleted');
     }
@@ -130,6 +138,8 @@ class PerformanceLogger implements IPerformanceLogger {
   }
 
   logEverything() {
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     if (PRINT_TO_CONSOLE) {
       // log timespans
       for (const key in this._timespans) {
@@ -156,6 +166,8 @@ class PerformanceLogger implements IPerformanceLogger {
     extras?: Extras,
   ) {
     if (this._closed) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: markPoint - has closed ignoring: ',
@@ -165,6 +177,8 @@ class PerformanceLogger implements IPerformanceLogger {
       return;
     }
     if (this._points[key] != null) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: Attempting to mark a point that has been already logged ',
@@ -187,6 +201,8 @@ class PerformanceLogger implements IPerformanceLogger {
 
   setExtra(key: string, value: ExtraValue) {
     if (this._closed) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log('PerformanceLogger: setExtra - has closed ignoring: ', key);
       }
@@ -194,6 +210,8 @@ class PerformanceLogger implements IPerformanceLogger {
     }
 
     if (this._extras.hasOwnProperty(key)) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: Attempting to set an extra that already exists ',
@@ -211,6 +229,8 @@ class PerformanceLogger implements IPerformanceLogger {
     extras?: Extras,
   ) {
     if (this._closed) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: startTimespan - has closed ignoring: ',
@@ -221,6 +241,8 @@ class PerformanceLogger implements IPerformanceLogger {
     }
 
     if (this._timespans[key]) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: Attempting to start a timespan that already exists ',
@@ -234,6 +256,8 @@ class PerformanceLogger implements IPerformanceLogger {
       startTime: timestamp,
       startExtras: extras,
     };
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     if (PRINT_TO_CONSOLE) {
       console.log('PerformanceLogger.js', 'start: ' + key);
     }
@@ -245,6 +269,8 @@ class PerformanceLogger implements IPerformanceLogger {
     extras?: Extras,
   ) {
     if (this._closed) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: stopTimespan - has closed ignoring: ',
@@ -256,6 +282,8 @@ class PerformanceLogger implements IPerformanceLogger {
 
     const timespan = this._timespans[key];
     if (!timespan || timespan.startTime == null) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: Attempting to end a timespan that has not started ',
@@ -265,6 +293,8 @@ class PerformanceLogger implements IPerformanceLogger {
       return;
     }
     if (timespan.endTime != null) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (PRINT_TO_CONSOLE && __DEV__) {
         console.log(
           'PerformanceLogger: Attempting to end a timespan that has already ended ',
@@ -277,6 +307,8 @@ class PerformanceLogger implements IPerformanceLogger {
     timespan.endExtras = extras;
     timespan.endTime = timestamp;
     timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     if (PRINT_TO_CONSOLE) {
       console.log('PerformanceLogger.js', 'end: ' + key);
     }

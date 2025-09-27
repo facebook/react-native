@@ -11,7 +11,6 @@
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
-import NativeReactNativeFeatureFlags from '../../src/private/featureflags/specs/NativeReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
 
@@ -180,9 +179,6 @@ const validAttributesForNonEventProps = {
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
   transformOrigin: true,
-  experimental_backgroundImage: {
-    process: require('../StyleSheet/processBackgroundImage').default,
-  },
   experimental_backgroundSize: {
     process: require('../StyleSheet/processBackgroundSize').default,
   },
@@ -192,20 +188,15 @@ const validAttributesForNonEventProps = {
   experimental_backgroundRepeat: {
     process: require('../StyleSheet/processBackgroundRepeat').default,
   },
-  boxShadow:
-    NativeReactNativeFeatureFlags != null &&
-    ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? (true as const)
-      : {
-          process: require('../StyleSheet/processBoxShadow').default,
-        },
-  filter:
-    NativeReactNativeFeatureFlags != null &&
-    ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? (true as const)
-      : {
-          process: require('../StyleSheet/processFilter').default,
-        },
+  experimental_backgroundImage: {
+    process: require('../StyleSheet/processBackgroundImage').default,
+  },
+  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? (true as const)
+    : {process: require('../StyleSheet/processBoxShadow').default},
+  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? (true as const)
+    : {process: require('../StyleSheet/processFilter').default},
   mixBlendMode: true,
   isolation: true,
   opacity: true,

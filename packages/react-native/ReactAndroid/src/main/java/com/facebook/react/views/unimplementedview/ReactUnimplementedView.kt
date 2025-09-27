@@ -20,7 +20,7 @@ internal class ReactUnimplementedView(context: Context) : LinearLayout(context) 
 
   init {
     textView.layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
-    textView.setGravity(Gravity.CENTER)
+    textView.gravity = Gravity.CENTER
     textView.setTextColor(Color.WHITE)
     textView.text = ""
 

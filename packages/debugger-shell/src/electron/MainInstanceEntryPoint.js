@@ -8,10 +8,15 @@
  * @format
  */
 
-// $FlowFixMe[unclear-type] We have no Flow types for the Electron API.
-const {BrowserWindow, app, shell, ipcMain} = require('electron') as any;
+import SettingsStore from './SettingsStore.js';
+
+const path = require('path');
 const util = require('util');
 
+// $FlowFixMe[unclear-type] We have no Flow types for the Electron API.
+const {BrowserWindow, Menu, app, shell, ipcMain} = require('electron') as any;
+
+const appSettings = new SettingsStore();
 const windowMetadata = new WeakMap<
   typeof BrowserWindow,
   $ReadOnly<{
@@ -35,7 +40,7 @@ function handleLaunchArgs(argv: string[]) {
   });
 
   // Find an existing window for this app and launch configuration.
-  const existingWindow = BrowserWindow.getAllWindows().find(window => {
+  let frontendWindow = BrowserWindow.getAllWindows().find(window => {
     const metadata = windowMetadata.get(window);
     if (!metadata) {
       return false;
@@ -43,32 +48,32 @@ function handleLaunchArgs(argv: string[]) {
     return metadata.windowKey === windowKey;
   });
 
-  if (existingWindow) {
+  if (frontendWindow) {
     // If the window is already visible, flash it.
-    if (existingWindow.isVisible()) {
-      existingWindow.flashFrame(true);
+    if (frontendWindow.isVisible()) {
+      frontendWindow.flashFrame(true);
       setTimeout(() => {
-        existingWindow.flashFrame(false);
+        frontendWindow.flashFrame(false);
       }, 1000);
     }
-    if (process.platform === 'darwin') {
-      app.focus({
-        steal: true,
-      });
-    }
-    existingWindow.focus();
-    return;
+  } else {
+    frontendWindow = new BrowserWindow({
+      ...(getSavedWindowPosition(windowKey) ?? {
+        width: 1200,
+        height: 600,
+      }),
+      webPreferences: {
+        partition: 'persist:react-native-devtools',
+        preload: require.resolve('./preload.js'),
+      },
+      // Icon for Linux
+      icon: path.join(__dirname, 'resources', 'icon.png'),
+    });
+    // Auto-hide the Windows/Linux menu bar
+    frontendWindow.setMenuBarVisibility(false);
+    // Observe and update saved window position
+    setupWindowResizeListeners(frontendWindow, windowKey);
   }
-
-  // Create the browser window.
-  const frontendWindow = new BrowserWindow({
-    width: 1200,
-    height: 600,
-    webPreferences: {
-      partition: 'persist:react-native-devtools',
-      preload: require.resolve('./preload.js'),
-    },
-  });
 
   // Open links in the default browser instead of in new Electron windows.
   frontendWindow.webContents.setWindowOpenHandler(({url}) => {
@@ -76,6 +81,9 @@ function handleLaunchArgs(argv: string[]) {
     return {action: 'deny'};
   });
 
+  // TODO: If the window contains a live, working frontend instance with a valid connection to the backend,
+  // we should avoid this reload and instead send the frontend a message to handle the launch arguments
+  // dynamically (e.g. update the launch ID for telemetry purposes, handle deeplinking to a specific CDT panel, etc).
   frontendWindow.loadURL(frontendUrl);
 
   windowMetadata.set(frontendWindow, {
@@ -87,10 +95,71 @@ function handleLaunchArgs(argv: string[]) {
       steal: true,
     });
   }
+  frontendWindow.focus();
+}
+
+function configureAppMenu() {
+  const template = [
+    ...(process.platform === 'darwin' ? [{role: 'appMenu'}] : []),
+    {role: 'fileMenu'},
+    {role: 'editMenu'},
+    {role: 'viewMenu'},
+    {role: 'windowMenu'},
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'React Native Website',
+          click: () => shell.openExternal('https://reactnative.dev'),
+        },
+        {
+          label: 'Release Notes',
+          click: () =>
+            shell.openExternal(
+              'https://github.com/facebook/react-native/releases',
+            ),
+        },
+      ],
+    },
+  ];
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
+function getSavedWindowPosition(
+  windowKey: string,
+): ?{width: number, height: number, x?: number, y?: number} {
+  return appSettings.get('windowArrangements', {})[windowKey];
+}
+
+function saveWindowPosition(
+  windowKey: string,
+  position: {x: number, y: number, width: number, height: number},
+) {
+  const windowArrangements = appSettings.get('windowArrangements', {});
+  windowArrangements[windowKey] = position;
+  appSettings.set('windowArrangements', windowArrangements);
+}
+
+function setupWindowResizeListeners(
+  browserWindow: typeof BrowserWindow,
+  windowKey: string,
+) {
+  const savePosition = () => {
+    if (!browserWindow.isDestroyed()) {
+      const [x, y] = browserWindow.getPosition();
+      const [width, height] = browserWindow.getSize();
+      saveWindowPosition(windowKey, {x, y, width, height});
+    }
+  };
+  browserWindow.on('moved', savePosition);
+  browserWindow.on('resized', savePosition);
+  browserWindow.on('closed', savePosition);
 }
 
 app.whenReady().then(() => {
-  handleLaunchArgs(process.argv.slice(2));
+  handleLaunchArgs(process.argv.slice(app.isPackaged ? 1 : 2));
+  configureAppMenu();
 
   app.on(
     'second-instance',

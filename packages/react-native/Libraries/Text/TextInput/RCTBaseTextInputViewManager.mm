@@ -7,6 +7,8 @@
 
 #import <React/RCTBaseTextInputViewManager.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFont.h>
@@ -139,7 +141,7 @@ RCT_EXPORT_METHOD(setTextAndSelection
     RCTExecuteOnUIManagerQueue(^{
       RCTBaseTextInputShadowView *shadowView =
           (RCTBaseTextInputShadowView *)[self.bridge.uiManager shadowViewForReactTag:viewTag];
-      if (value) {
+      if (value != nullptr) {
         [shadowView setText:value];
       }
       [self.bridge.uiManager setNeedsLayout];
@@ -178,3 +180,5 @@ RCT_EXPORT_METHOD(setTextAndSelection
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

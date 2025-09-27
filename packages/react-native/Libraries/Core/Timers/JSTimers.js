@@ -6,6 +6,7 @@
  *
  * @flow
  * @format
+ * @deprecated
  */
 
 import NativeTiming from './NativeTiming';
@@ -473,12 +474,14 @@ let ExportedJSTimers: {
 
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
-  // $FlowFixMe[prop-missing] : we can assume timers are generally available
+  // $FlowFixMe[incompatible-type] : we can assume timers are generally available
   ExportedJSTimers = ({
     callReactNativeMicrotasks: JSTimers.callReactNativeMicrotasks,
     queueReactNativeMicrotask: JSTimers.queueReactNativeMicrotask,
+    // $FlowFixMe[incompatible-variance]
   }: typeof JSTimers);
 } else {
+  // $FlowFixMe[incompatible-variance]
   ExportedJSTimers = JSTimers;
 }
 

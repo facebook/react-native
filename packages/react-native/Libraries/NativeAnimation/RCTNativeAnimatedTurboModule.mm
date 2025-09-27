@@ -51,9 +51,7 @@ RCT_EXPORT_MODULE();
 {
   // _surfacePresenter set in setSurfacePresenter:
   _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:nil surfacePresenter:_surfacePresenter];
-  if (!facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
-    [_surfacePresenter addObserver:self];
-  }
+  [_surfacePresenter addObserver:self];
   [[self.moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
 }
 
@@ -62,9 +60,7 @@ RCT_EXPORT_MODULE();
   [super invalidate];
   [_nodesManager stopAnimationLoop];
   [[self.moduleRegistry moduleForName:"EventDispatcher"] removeDispatchObserver:self];
-  if (!facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
-    [_surfacePresenter removeObserver:self];
-  }
+  [_surfacePresenter removeObserver:self];
 }
 
 /*
@@ -80,11 +76,7 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(startOperationBatch) {}
 
-RCT_EXPORT_METHOD(finishOperationBatch)
-{
-  // This method is only called from JS when animatedShouldSignalBatch is enabled.
-  [self flushOperationQueues];
-}
+RCT_EXPORT_METHOD(finishOperationBatch) {}
 
 RCT_EXPORT_METHOD(createAnimatedNode : (double)tag config : (NSDictionary<NSString *, id> *)config)
 {
@@ -259,39 +251,27 @@ RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArg
 
 - (void)queueFlushedOperationBlock:(AnimatedOperation)operation
 {
-  if (facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+  dispatch_async(RCTGetUIManagerQueue(), ^{
     [self addOperationBlock:operation];
-  } else {
-    dispatch_async(RCTGetUIManagerQueue(), ^{
-      [self addOperationBlock:operation];
-      // In Bridge, flushing of native animations is done from RCTCxxBridge batchDidComplete().
-      // Since RCTCxxBridge doesn't exist in Bridgeless, and components are not remounted in Fabric for native
-      // animations, flush here for changes in Animated.Value for Animated.event.
-      [self flushOperationQueues];
-    });
-  }
+    // In Bridge, flushing of native animations is done from RCTCxxBridge batchDidComplete().
+    // Since RCTCxxBridge doesn't exist in Bridgeless, and components are not remounted in Fabric for native
+    // animations, flush here for changes in Animated.Value for Animated.event.
+    [self flushOperationQueues];
+  });
 }
 
 - (void)queueOperationBlock:(AnimatedOperation)operation
 {
-  if (facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+  dispatch_async(RCTGetUIManagerQueue(), ^{
     [self addOperationBlock:operation];
-  } else {
-    dispatch_async(RCTGetUIManagerQueue(), ^{
-      [self addOperationBlock:operation];
-    });
-  }
+  });
 }
 
 - (void)queuePreOperationBlock:(AnimatedOperation)operation
 {
-  if (facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+  dispatch_async(RCTGetUIManagerQueue(), ^{
     [self addPreOperationBlock:operation];
-  } else {
-    dispatch_async(RCTGetUIManagerQueue(), ^{
-      [self addPreOperationBlock:operation];
-    });
-  }
+  });
 }
 
 - (void)addOperationBlock:(AnimatedOperation)operation

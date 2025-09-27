@@ -51,7 +51,7 @@ using namespace facebook::react;
   std::mutex _schedulerAccessMutex;
   std::mutex _schedulerLifeCycleMutex;
   RCTScheduler *_Nullable _scheduler; // Thread-safe. Pointer is protected by `_schedulerAccessMutex`.
-  ContextContainer::Shared _contextContainer; // Protected by `_schedulerLifeCycleMutex`.
+  std::shared_ptr<const ContextContainer> _contextContainer; // Protected by `_schedulerLifeCycleMutex`.
   RuntimeExecutor _runtimeExecutor; // Protected by `_schedulerLifeCycleMutex`.
   std::optional<RuntimeExecutor> _bridgelessBindingsExecutor; // Only used for installing bindings.
 
@@ -59,7 +59,7 @@ using namespace facebook::react;
   std::vector<__weak id<RCTSurfacePresenterObserver>> _observers; // Protected by `_observerListMutex`.
 }
 
-- (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
+- (instancetype)initWithContextContainer:(std::shared_ptr<const ContextContainer>)contextContainer
                          runtimeExecutor:(RuntimeExecutor)runtimeExecutor
               bridgelessBindingsExecutor:(std::optional<RuntimeExecutor>)bridgelessBindingsExecutor
 {
@@ -96,7 +96,7 @@ using namespace facebook::react;
   return _scheduler;
 }
 
-- (ContextContainer::Shared)contextContainer
+- (std::shared_ptr<const ContextContainer>)contextContainer
 {
   std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
   return _contextContainer;
@@ -231,12 +231,14 @@ using namespace facebook::react;
 
 - (RCTScheduler *)_createScheduler
 {
-  auto componentRegistryFactory =
-      [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
-          const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {
-        return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
-            createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
-      };
+  auto componentRegistryFactory = [factory =
+                                       wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
+                                      const EventDispatcher::Weak &eventDispatcher,
+                                      const std::shared_ptr<const ContextContainer> &contextContainer) {
+    return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
+        createComponentDescriptorRegistryWithParameters:{.eventDispatcher = eventDispatcher,
+                                                         .contextContainer = contextContainer}];
+  };
 
   auto runtimeExecutor = _runtimeExecutor;
 
@@ -244,7 +246,7 @@ using namespace facebook::react;
   toolbox.contextContainer = _contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
 
-  auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
+  auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>(RuntimeSchedulerKey);
   auto runtimeScheduler = weakRuntimeScheduler.has_value() ? weakRuntimeScheduler.value().lock() : nullptr;
   if (runtimeScheduler) {
     runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {

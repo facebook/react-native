@@ -8,10 +8,13 @@
 #pragma once
 
 #include <functional>
-#include <limits>
 
 #include <react/renderer/graphics/ColorComponents.h>
 #include <react/renderer/graphics/HostPlatformColor.h>
+
+#ifdef RN_SERIALIZABLE_STATE
+#include <folly/dynamic.h>
+#endif
 
 namespace facebook::react {
 
@@ -57,15 +60,21 @@ bool isColorMeaningful(const SharedColor& color) noexcept;
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
 
-uint8_t alphaFromColor(SharedColor color);
-uint8_t redFromColor(SharedColor color);
-uint8_t greenFromColor(SharedColor color);
-uint8_t blueFromColor(SharedColor color);
+uint8_t alphaFromColor(SharedColor color) noexcept;
+uint8_t redFromColor(SharedColor color) noexcept;
+uint8_t greenFromColor(SharedColor color) noexcept;
+uint8_t blueFromColor(SharedColor color) noexcept;
 SharedColor colorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 SharedColor clearColor();
 SharedColor blackColor();
 SharedColor whiteColor();
+
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const SharedColor& sharedColor) {
+  return *sharedColor;
+}
+#endif
 
 } // namespace facebook::react
 

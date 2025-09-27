@@ -55,7 +55,7 @@ public interface ReactHost {
   /** To be called when the host activity is resumed. */
   public fun onHostResume(
       activity: Activity?,
-      defaultBackButtonImpl: DefaultHardwareBackBtnHandler?
+      defaultBackButtonImpl: DefaultHardwareBackBtnHandler?,
   )
 
   /** To be called when the host activity is resumed. */
@@ -83,7 +83,7 @@ public interface ReactHost {
   public fun createSurface(
       context: Context,
       moduleName: String,
-      initialProps: Bundle?
+      initialProps: Bundle?,
   ): ReactSurface
 
   /**
@@ -147,7 +147,7 @@ public interface ReactHost {
   public fun destroy(
       reason: String,
       ex: Exception?,
-      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit = {}
+      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit = {},
   ): TaskInterface<Void>
 
   /**

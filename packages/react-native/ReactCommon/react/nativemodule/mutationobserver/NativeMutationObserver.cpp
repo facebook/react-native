@@ -35,7 +35,7 @@ NativeMutationObserver::NativeMutationObserver(
 
 void NativeMutationObserver::observe(
     jsi::Runtime& runtime,
-    NativeMutationObserverObserveOptions options) {
+    const NativeMutationObserverObserveOptions& options) {
   auto mutationObserverId = options.mutationObserverId;
   auto subtree = options.subtree;
   auto shadowNode = options.targetShadowNode;
@@ -46,7 +46,7 @@ void NativeMutationObserver::observe(
 }
 
 void NativeMutationObserver::unobserveAll(
-    jsi::Runtime& runtime,
+    jsi::Runtime& /*runtime*/,
     MutationObserverId mutationObserverId) {
   mutationObserverManager_.unobserveAll(mutationObserverId);
 }
@@ -98,7 +98,7 @@ jsi::Value NativeMutationObserver::getPublicInstanceFromShadowNode(
 
 std::vector<jsi::Value>
 NativeMutationObserver::getPublicInstancesFromShadowNodes(
-    const std::vector<ShadowNode::Shared>& shadowNodes) const {
+    const std::vector<std::shared_ptr<const ShadowNode>>& shadowNodes) const {
   std::vector<jsi::Value> publicInstances;
   publicInstances.reserve(shadowNodes.size());
 

@@ -147,8 +147,8 @@ class LayoutableShadowNode : public ShadowNode {
    * Returns the ShadowNode that is rendered at the Point received as a
    * parameter.
    */
-  static ShadowNode::Shared findNodeAtPoint(
-      const ShadowNode::Shared& node,
+  static std::shared_ptr<const ShadowNode> findNodeAtPoint(
+      const std::shared_ptr<const ShadowNode>& node,
       Point point);
 
   /*

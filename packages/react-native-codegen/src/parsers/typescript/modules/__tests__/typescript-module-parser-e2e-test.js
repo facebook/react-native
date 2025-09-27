@@ -192,10 +192,10 @@ describe('TypeScript Module Parser', () => {
         nullable && optional
           ? 'a nullable and optional'
           : nullable
-          ? 'a nullable'
-          : optional
-          ? 'an optional'
-          : 'a required';
+            ? 'a nullable'
+            : optional
+              ? 'an optional'
+              : 'a required';
 
       function annotateArg(paramName: string, paramType: string) {
         if (nullable && optional) {
@@ -243,10 +243,10 @@ describe('TypeScript Module Parser', () => {
         (nullable && optional
           ? 'Nullable and Optional'
           : nullable
-          ? 'Nullable'
-          : optional
-          ? 'Optional'
-          : 'Required') + ' Parameter',
+            ? 'Nullable'
+            : optional
+              ? 'Optional'
+              : 'Required') + ' Parameter',
         () => {
           it(`should not parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Function'`, () => {
             expect(() => parseParamType('arg', 'Function')).toThrow(
@@ -473,10 +473,10 @@ describe('TypeScript Module Parser', () => {
               isPropNullable && isPropOptional
                 ? 'a nullable and optional'
                 : isPropNullable
-                ? 'a nullable'
-                : isPropOptional
-                ? 'an optional'
-                : 'a required';
+                  ? 'a nullable'
+                  : isPropOptional
+                    ? 'an optional'
+                    : 'a required';
 
             function annotateProp(propName: string, propType: string) {
               if (isPropNullable && isPropOptional) {
@@ -541,10 +541,10 @@ describe('TypeScript Module Parser', () => {
               (isPropNullable && isPropOptional
                 ? 'Nullable and Optional'
                 : isPropNullable
-                ? 'Nullable'
-                : isPropOptional
-                ? 'Optional'
-                : 'Required') + ' Property',
+                  ? 'Nullable'
+                  : isPropOptional
+                    ? 'Optional'
+                    : 'Required') + ' Property',
               () => {
                 describe('Props with Primitive Types', () => {
                   PRIMITIVES.forEach(([FLOW_TYPE, PARSED_TYPE_NAME]) => {
@@ -1007,10 +1007,10 @@ describe('TypeScript Module Parser', () => {
                 nullable && optional
                   ? 'a nullable and optional'
                   : nullable
-                  ? 'a nullable'
-                  : optional
-                  ? 'an optional'
-                  : 'a required';
+                    ? 'a nullable'
+                    : optional
+                      ? 'an optional'
+                      : 'a required';
 
               function annotateProp(propName: string, propType: string) {
                 if (nullable && optional) {
@@ -1076,10 +1076,10 @@ describe('TypeScript Module Parser', () => {
                 (nullable && optional
                   ? 'Nullable and Optional'
                   : nullable
-                  ? 'Nullable'
-                  : optional
-                  ? 'Optional'
-                  : 'Required') + ' Property',
+                    ? 'Nullable'
+                    : optional
+                      ? 'Optional'
+                      : 'Required') + ' Property',
                 () => {
                   /**
                    * TODO: Fill out props in promise

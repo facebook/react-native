@@ -10,10 +10,10 @@
 
 'use strict';
 
-/*:: import type {ProjectInfo} from '../utils/monorepo'; */
+/*:: import type {ProjectInfo} from '../shared/monorepoUtils'; */
 
-const {PRIVATE_DIR, REPO_ROOT} = require('../consts');
-const {getPackages} = require('../utils/monorepo');
+const {PRIVATE_DIR, REPO_ROOT} = require('../shared/consts');
+const {getPackages} = require('../shared/monorepoUtils');
 const {retry} = require('./utils/retry');
 const {
   VERDACCIO_SERVER_URL,
@@ -41,7 +41,7 @@ const config = {
 async function main() {
   const {
     values: {help, ...options},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 

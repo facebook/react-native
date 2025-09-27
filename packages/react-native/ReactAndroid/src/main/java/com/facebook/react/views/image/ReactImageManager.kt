@@ -36,7 +36,7 @@ public class ReactImageManager
 public constructor(
     private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>? = null,
     private val globalImageLoadListener: GlobalImageLoadListener? = null,
-    private val callerContextFactory: ReactCallerContextFactory? = null
+    private val callerContextFactory: ReactCallerContextFactory? = null,
 ) : SimpleViewManager<ReactImageView>() {
 
   // This is kept for backward compatibility but should eventually be removed together with
@@ -53,10 +53,12 @@ public constructor(
       replaceWith =
           ReplaceWith(
               expression =
-                  "ReactImageManager(draweeControllerBuilder, globalImageLoadListener, callerContextFactory)"))
+                  "ReactImageManager(draweeControllerBuilder, globalImageLoadListener, callerContextFactory)"
+          ),
+  )
   public constructor(
       draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>?,
-      callerContext: Any?
+      callerContext: Any?,
   ) : this(draweeControllerBuilder, null, null) {
     this.callerContext = callerContext
   }
@@ -71,11 +73,13 @@ public constructor(
       replaceWith =
           ReplaceWith(
               expression =
-                  "ReactImageManager(draweeControllerBuilder, globalImageLoadListener, callerContextFactory)"))
+                  "ReactImageManager(draweeControllerBuilder, globalImageLoadListener, callerContextFactory)"
+          ),
+  )
   public constructor(
       draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>?,
       globalImageLoadListener: GlobalImageLoadListener?,
-      callerContext: Any?
+      callerContext: Any?,
   ) : this(draweeControllerBuilder, globalImageLoadListener, null) {
     this.callerContext = callerContext
   }
@@ -88,7 +92,8 @@ public constructor(
         context,
         draweeControllerBuilder ?: Fresco.newDraweeControllerBuilder(),
         globalImageLoadListener,
-        callerContext)
+        callerContext,
+    )
   }
 
   public override fun getName(): String = REACT_CLASS
@@ -120,7 +125,10 @@ public constructor(
     if (callerContextFactory != null) {
       view.updateCallerContext(
           callerContextFactory.getOrCreateCallerContext(
-              (view.context as ThemedReactContext).moduleName, analyticTag))
+              (view.context as ThemedReactContext).moduleName,
+              analyticTag,
+          )
+      )
     }
   }
 
@@ -161,8 +169,10 @@ public constructor(
               ViewProps.BORDER_TOP_LEFT_RADIUS,
               ViewProps.BORDER_TOP_RIGHT_RADIUS,
               ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-              ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+          ],
+      defaultFloat = Float.NaN,
+  )
   public fun setBorderRadius(view: ReactImageView, index: Int, borderRadius: Float) {
     val radius =
         if (borderRadius.isNaN()) null
@@ -178,17 +188,7 @@ public constructor(
 
   @ReactProp(name = ViewProps.RESIZE_METHOD)
   public fun setResizeMethod(view: ReactImageView, resizeMethod: String?) {
-    when (resizeMethod) {
-      null,
-      "auto" -> view.setResizeMethod(ImageResizeMethod.AUTO)
-      "resize" -> view.setResizeMethod(ImageResizeMethod.RESIZE)
-      "scale" -> view.setResizeMethod(ImageResizeMethod.SCALE)
-      "none" -> view.setResizeMethod(ImageResizeMethod.NONE)
-      else -> {
-        view.setResizeMethod(ImageResizeMethod.AUTO)
-        FLog.w(ReactConstants.TAG, "Invalid resize method: '$resizeMethod'")
-      }
-    }
+    view.setResizeMethod(ImageResizeMethod.parse(resizeMethod))
   }
 
   @ReactProp(name = "resizeMultiplier")
@@ -234,7 +234,8 @@ public constructor(
       (super.getExportedCustomDirectEventTypeConstants() ?: mutableMapOf<String, Any>()).apply {
         put(
             eventNameForType(ImageLoadEvent.ON_LOAD_START),
-            mapOf(REGISTRATION_NAME to ON_LOAD_START))
+            mapOf(REGISTRATION_NAME to ON_LOAD_START),
+        )
         put(eventNameForType(ImageLoadEvent.ON_PROGRESS), mapOf(REGISTRATION_NAME to ON_PROGRESS))
         put(eventNameForType(ImageLoadEvent.ON_LOAD), mapOf(REGISTRATION_NAME to ON_LOAD))
         put(eventNameForType(ImageLoadEvent.ON_ERROR), mapOf(REGISTRATION_NAME to ON_ERROR))

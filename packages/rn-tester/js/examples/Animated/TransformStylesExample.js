@@ -82,6 +82,7 @@ function AnimatedTransformStyleExample(): React.Node {
   const [properties, setProperties] = useState(transformProperties);
   const [useNativeDriver, setUseNativeDriver] = useState(false);
   const onToggle = (property: string) =>
+    // $FlowFixMe[incompatible-type]
     setProperties({
       ...properties,
       [property]: {
@@ -126,7 +127,7 @@ function AnimatedTransformStyleExample(): React.Node {
       <AnimatedView
         key={`animated-view-use-${useNativeDriver ? 'native' : 'js'}-driver`}
         useNativeDriver={useNativeDriver}
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         properties={Object.keys(properties).filter(
           property => properties[property].selected,
         )}

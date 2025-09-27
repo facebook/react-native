@@ -25,7 +25,7 @@ using namespace facebook::jsi;
 
 namespace facebook::react {
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
@@ -58,7 +58,7 @@ namespace {
 
 // basename_r isn't in all iOS SDKs, so use this simple version instead.
 std::string simpleBasename(const std::string& path) {
-  size_t pos = path.rfind("/");
+  size_t pos = path.rfind('/');
   return (pos != std::string::npos) ? path.substr(pos) : path;
 }
 
@@ -523,7 +523,7 @@ Value JSIExecutor::globalEvalWithSourceUrl(const Value* args, size_t count) {
       std::make_unique<StringBuffer>(std::move(code)), url);
 }
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 
 JSIExecutor::JSIExecutor(
     std::shared_ptr<jsi::Runtime> runtime,
@@ -570,7 +570,7 @@ void JSIExecutor::handleMemoryPressure(int pressureLevel) {}
 
 void JSIExecutor::flush() {}
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 void bindNativeLogger(Runtime& runtime, Logger logger) {
   runtime.global().setProperty(

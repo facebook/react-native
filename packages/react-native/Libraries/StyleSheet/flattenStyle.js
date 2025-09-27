@@ -31,7 +31,7 @@ function flattenStyle<
   }
 
   if (!Array.isArray(style)) {
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     return style;
   }
 
@@ -49,7 +49,7 @@ function flattenStyle<
       }
     }
   }
-  // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   return result;
 }
 

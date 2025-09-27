@@ -12,7 +12,23 @@
 #endif
 
 #ifdef WITH_PERFETTO
+
+// clang-format off
+// Windows.h macro fail, 'interface' clashes with a function in perfetto.h
+#ifdef interface
+#pragma push_macro("interface")
+#undef interface
+#define __RCT_INTERFACE_PUSHED
+#endif
+
 #include <perfetto.h>
+
+#ifdef __RCT_INTERFACE_PUSHED
+#undef __RCT_INTERFACE_PUSHED
+#pragma pop_macro("interface")
+#endif
+// clang-format on
+
 #include <reactperflogger/ReactPerfettoCategories.h>
 #endif
 
@@ -54,8 +70,8 @@ struct TraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit TraceSection(
-      const __unused char* name,
-      __unused ConvertsToStringPiece&&... args) {
+      [[maybe_unused]] const char* name,
+      [[maybe_unused]] ConvertsToStringPiece&&... args) {
     TRACE_EVENT_BEGIN("react-native", perfetto::DynamicString{name}, args...);
   }
 
@@ -82,8 +98,8 @@ struct DummyTraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit DummyTraceSection(
-      const __unused char* name,
-      __unused ConvertsToStringPiece&&... args) {}
+      [[maybe_unused]] const char* name,
+      [[maybe_unused]] ConvertsToStringPiece&&... args) {}
 };
 using TraceSectionUnwrapped = DummyTraceSection;
 #endif

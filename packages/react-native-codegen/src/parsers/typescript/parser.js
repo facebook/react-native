@@ -108,8 +108,8 @@ class TypeScriptParser implements Parser {
   }
 
   remapUnionTypeAnnotationMemberNames(
-    membersTypes: $FlowFixMe[],
-  ): UnionTypeAnnotationMemberType[] {
+    membersTypes: Array<$FlowFixMe>,
+  ): Array<UnionTypeAnnotationMemberType> {
     const remapLiteral = (item: $FlowFixMe) => {
       return item.literal
         ? item.literal.type
@@ -118,14 +118,14 @@ class TypeScriptParser implements Parser {
         : 'ObjectTypeAnnotation';
     };
 
-    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return [...new Set(membersTypes.map(remapLiteral))];
   }
 
   getStringLiteralUnionTypeAnnotationStringLiterals(
-    membersTypes: $FlowFixMe[],
-  ): string[] {
+    membersTypes: Array<$FlowFixMe>,
+  ): Array<string> {
     return membersTypes.map((item: $FlowFixMe) => item.literal.value);
   }
 
@@ -233,8 +233,8 @@ class TypeScriptParser implements Parser {
       enumMembersType === 'StringTypeAnnotation'
         ? 'StringLiteral'
         : enumMembersType === 'NumberTypeAnnotation'
-        ? 'NumericLiteral'
-        : null;
+          ? 'NumericLiteral'
+          : null;
 
     typeAnnotation.members.forEach(member => {
       const isNegative =
@@ -263,19 +263,19 @@ class TypeScriptParser implements Parser {
               value: -1 * member.initializer?.argument?.value,
             }
           : typeof member.initializer?.value === 'number'
-          ? {
-              type: 'NumberLiteralTypeAnnotation',
-              value: member.initializer?.value,
-            }
-          : typeof member.initializer?.value === 'string'
-          ? {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.initializer?.value,
-            }
-          : {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.id.name,
-            };
+            ? {
+                type: 'NumberLiteralTypeAnnotation',
+                value: member.initializer?.value,
+              }
+            : typeof member.initializer?.value === 'string'
+              ? {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: member.initializer?.value,
+                }
+              : {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: member.id.name,
+                };
 
       return {
         name: member.id.name,

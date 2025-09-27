@@ -350,13 +350,17 @@ function setDefaultValue(
       common.default = ((defaultValue ? defaultValue : 0): number);
       break;
     case 'FloatTypeAnnotation':
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       common.default = ((defaultValue === null
         ? null
         : defaultValue
-        ? defaultValue
-        : 0): number | null);
+          ? defaultValue
+          : 0): number | null);
       break;
     case 'BooleanTypeAnnotation':
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       common.default = defaultValue === null ? null : !!defaultValue;
       break;
     case 'StringTypeAnnotation':

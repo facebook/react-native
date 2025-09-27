@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files         = "react/renderer/components/image/**/*.{m,mm,cpp,h}"
+  s.source_files         = podspec_sources("react/renderer/components/image/**/*.{m,mm,cpp,h}", "react/renderer/components/image/**/*.h")
   s.exclude_files        = "react/renderer/components/image/tests"
   s.header_dir           = "react/renderer/components/image"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
@@ -50,10 +50,7 @@ Pod::Spec.new do |s|
                             "HEADER_SEARCH_PATHS" => header_search_path.join(" ")
                           }
 
-  if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
-    s.module_name             = 'React_FabricImage'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: './', module_name: "React_FabricImage")
 
   s.dependency "React-jsiexecutor", version
   s.dependency "RCTRequired", version
@@ -78,4 +75,5 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

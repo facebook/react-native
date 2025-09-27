@@ -4,18 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  */
 
-import Performance from '../../src/private/webapis/performance/Performance';
+import setUpPerformanceModern from '../../src/private/setup/setUpPerformanceModern';
 import NativePerformance from '../../src/private/webapis/performance/specs/NativePerformance';
 
 // In case if the native implementation of the Performance API is available, use it,
 // otherwise fall back to the legacy/default one, which only defines 'Performance.now()'
 if (NativePerformance) {
-  // $FlowExpectedError[cannot-write]
-  global.performance = new Performance();
+  setUpPerformanceModern();
 } else {
   if (!global.performance) {
     // $FlowExpectedError[cannot-write]

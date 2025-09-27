@@ -24,7 +24,7 @@ import okio.ByteString
 public class ReconnectingWebSocket(
     private val url: String,
     private var messageCallback: MessageCallback?,
-    private val connectionCallback: ConnectionCallback?
+    private val connectionCallback: ConnectionCallback?,
 ) : WebSocketListener() {
 
   public interface MessageCallback {
@@ -50,7 +50,7 @@ public class ReconnectingWebSocket(
   private var suppressConnectionErrors = false
   private var webSocket: WebSocket? = null
 
-  public fun connect(): Unit {
+  public fun connect() {
     check(!closed) { "Can't connect closed client" }
 
     val request = Request.Builder().url(url).build()
@@ -76,7 +76,7 @@ public class ReconnectingWebSocket(
     handler.postDelayed({ delayedReconnect() }, RECONNECT_DELAY_MS)
   }
 
-  public fun closeQuietly(): Unit {
+  public fun closeQuietly() {
     closed = true
     closeWebSocketQuietly()
     messageCallback = null
@@ -138,13 +138,13 @@ public class ReconnectingWebSocket(
 
   @Synchronized
   @Throws(IOException::class)
-  public fun sendMessage(message: String): Unit {
+  public fun sendMessage(message: String) {
     webSocket?.send(message) ?: throw ClosedChannelException()
   }
 
   @Synchronized
   @Throws(IOException::class)
-  public fun sendMessage(message: ByteString): Unit {
+  public fun sendMessage(message: ByteString) {
     webSocket?.send(message) ?: throw ClosedChannelException()
   }
 

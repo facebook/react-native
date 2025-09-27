@@ -35,25 +35,29 @@ class BorderRadiusStyleTest {
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_TOP_LEFT_RADIUS,
                     BorderRadiusProp.BORDER_TOP_START_RADIUS,
-                    BorderRadiusProp.BORDER_START_START_RADIUS),
+                    BorderRadiusProp.BORDER_START_START_RADIUS,
+                ),
             ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_RIGHT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS,
                     BorderRadiusProp.BORDER_TOP_END_RADIUS,
-                    BorderRadiusProp.BORDER_END_START_RADIUS),
+                    BorderRadiusProp.BORDER_END_START_RADIUS,
+                ),
             ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_LEFT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_START_RADIUS,
-                    BorderRadiusProp.BORDER_START_END_RADIUS),
+                    BorderRadiusProp.BORDER_START_END_RADIUS,
+                ),
             ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_RIGHT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_END_RADIUS,
-                    BorderRadiusProp.BORDER_END_END_RADIUS),
+                    BorderRadiusProp.BORDER_END_END_RADIUS,
+                ),
         )
 
     propertyOrderMap.forEach { order ->
@@ -84,25 +88,29 @@ class BorderRadiusStyleTest {
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS,
                     BorderRadiusProp.BORDER_TOP_END_RADIUS,
-                    BorderRadiusProp.BORDER_END_START_RADIUS),
+                    BorderRadiusProp.BORDER_END_START_RADIUS,
+                ),
             ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_RIGHT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_TOP_LEFT_RADIUS,
                     BorderRadiusProp.BORDER_TOP_START_RADIUS,
-                    BorderRadiusProp.BORDER_START_START_RADIUS),
+                    BorderRadiusProp.BORDER_START_START_RADIUS,
+                ),
             ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_LEFT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_END_RADIUS,
-                    BorderRadiusProp.BORDER_END_END_RADIUS),
+                    BorderRadiusProp.BORDER_END_END_RADIUS,
+                ),
             ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_RIGHT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_START_RADIUS,
-                    BorderRadiusProp.BORDER_START_END_RADIUS),
+                    BorderRadiusProp.BORDER_START_END_RADIUS,
+                ),
         )
 
     propertyOrderMap.forEach { order ->
@@ -128,25 +136,29 @@ class BorderRadiusStyleTest {
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_TOP_LEFT_RADIUS,
                     BorderRadiusProp.BORDER_TOP_END_RADIUS,
-                    BorderRadiusProp.BORDER_END_START_RADIUS),
+                    BorderRadiusProp.BORDER_END_START_RADIUS,
+                ),
             ComputedBorderRadiusProp.COMPUTED_BORDER_TOP_RIGHT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS,
                     BorderRadiusProp.BORDER_TOP_START_RADIUS,
-                    BorderRadiusProp.BORDER_START_START_RADIUS),
+                    BorderRadiusProp.BORDER_START_START_RADIUS,
+                ),
             ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_LEFT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_START_RADIUS,
-                    BorderRadiusProp.BORDER_END_END_RADIUS),
+                    BorderRadiusProp.BORDER_END_END_RADIUS,
+                ),
             ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_RIGHT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_END_RADIUS,
-                    BorderRadiusProp.BORDER_START_END_RADIUS),
+                    BorderRadiusProp.BORDER_START_END_RADIUS,
+                ),
         )
 
     propertyOrderMap.forEach { order ->
@@ -186,7 +198,9 @@ class BorderRadiusStyleTest {
   private fun setContextLeftAndRightSwap(context: Context, leftAndRightSwap: Boolean) {
     val sharedPrefs =
         context.getSharedPreferences(
-            "com.facebook.react.modules.i18nmanager.I18nUtil", Context.MODE_PRIVATE)
+            "com.facebook.react.modules.i18nmanager.I18nUtil",
+            Context.MODE_PRIVATE,
+        )
     val editor = sharedPrefs.edit()
     editor.putBoolean("RCTI18nUtil_makeRTLFlipLeftAndRightStyles", leftAndRightSwap)
     editor.apply()

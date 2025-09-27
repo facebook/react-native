@@ -18,6 +18,7 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.SystemClock.currentTimeMillis
 import com.facebook.react.common.SystemClock.nanoTime
 import com.facebook.react.common.SystemClock.uptimeMillis
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.jstasks.HeadlessJsTaskContext
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener
@@ -38,13 +39,13 @@ public open class JavaTimerManager(
     private val reactApplicationContext: ReactApplicationContext,
     private val javaScriptTimerExecutor: JavaScriptTimerExecutor,
     private val reactChoreographer: ReactChoreographer,
-    private val devSupportManager: DevSupportManager
+    private val devSupportManager: DevSupportManager,
 ) : LifecycleEventListener, HeadlessJsTaskEventListener {
   private class Timer(
       val timerId: Int,
       var targetTime: Long,
       val interval: Int,
-      val repeat: Boolean
+      val repeat: Boolean,
   )
 
   private val timerGuard = Any()
@@ -110,6 +111,7 @@ public open class JavaTimerManager(
     clearChoreographerIdleCallback()
   }
 
+  @LegacyArchitecture
   private fun maybeSetChoreographerIdleCallback() {
     synchronized(idleCallbackGuard) {
       if (sendIdleEvents) {
@@ -118,6 +120,7 @@ public open class JavaTimerManager(
     }
   }
 
+  @LegacyArchitecture
   private fun maybeIdleCallback() {
     if (isPaused.get() && !isRunningTasks.get()) {
       clearFrameCallback()
@@ -127,7 +130,9 @@ public open class JavaTimerManager(
   private fun setChoreographerCallback() {
     if (!frameCallbackPosted) {
       reactChoreographer.postFrameCallback(
-          ReactChoreographer.CallbackType.TIMERS_EVENTS, timerFrameCallback)
+          ReactChoreographer.CallbackType.TIMERS_EVENTS,
+          timerFrameCallback,
+      )
       frameCallbackPosted = true
     }
   }
@@ -136,23 +141,31 @@ public open class JavaTimerManager(
     val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
     if (frameCallbackPosted && isPaused.get() && !headlessJsTaskContext.hasActiveTasks()) {
       reactChoreographer.removeFrameCallback(
-          ReactChoreographer.CallbackType.TIMERS_EVENTS, timerFrameCallback)
+          ReactChoreographer.CallbackType.TIMERS_EVENTS,
+          timerFrameCallback,
+      )
       frameCallbackPosted = false
     }
   }
 
+  @LegacyArchitecture
   private fun setChoreographerIdleCallback() {
     if (!frameIdleCallbackPosted) {
       reactChoreographer.postFrameCallback(
-          ReactChoreographer.CallbackType.IDLE_EVENT, idleFrameCallback)
+          ReactChoreographer.CallbackType.IDLE_EVENT,
+          idleFrameCallback,
+      )
       frameIdleCallbackPosted = true
     }
   }
 
+  @LegacyArchitecture
   private fun clearChoreographerIdleCallback() {
     if (frameIdleCallbackPosted) {
       reactChoreographer.removeFrameCallback(
-          ReactChoreographer.CallbackType.IDLE_EVENT, idleFrameCallback)
+          ReactChoreographer.CallbackType.IDLE_EVENT,
+          idleFrameCallback,
+      )
       frameIdleCallbackPosted = false
     }
   }
@@ -188,7 +201,7 @@ public open class JavaTimerManager(
       timerId: Int,
       duration: Int,
       jsSchedulingTime: Double,
-      repeat: Boolean
+      repeat: Boolean,
   ) {
     val deviceTime = currentTimeMillis()
     val remoteTime = jsSchedulingTime.toLong()
@@ -201,7 +214,8 @@ public open class JavaTimerManager(
       if (driftTime > 60000) {
         javaScriptTimerExecutor.emitTimeDriftWarning(
             "Debugger and device times have drifted by more than 60s. Please correct this by " +
-                "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.")
+                "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine."
+        )
       }
     }
 
@@ -226,6 +240,7 @@ public open class JavaTimerManager(
   }
 
   @DoNotStrip
+  @LegacyArchitecture
   public open fun setSendIdleEvents(sendIdleEvents: Boolean) {
     synchronized(idleCallbackGuard) { this.sendIdleEvents = sendIdleEvents }
     UiThreadUtil.runOnUiThread {
@@ -295,8 +310,8 @@ public open class JavaTimerManager(
           }
         }
       }
-      timersToCall?.let {
-        javaScriptTimerExecutor.callTimers(it)
+      timersToCall?.let { timers ->
+        javaScriptTimerExecutor.callTimers(timers)
         timersToCall = null
       }
       reactChoreographer.postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, this)
@@ -319,6 +334,7 @@ public open class JavaTimerManager(
     }
   }
 
+  @LegacyArchitecture
   private inner class IdleCallbackRunnable(private val frameStartTime: Long) : Runnable {
     @Volatile private var isCancelled = false
 

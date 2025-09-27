@@ -54,7 +54,7 @@ PlatformRunLoopObserver::PlatformRunLoopObserver(
   mainRunLoopObserver_ = CFRunLoopObserverCreateWithHandler(
       NULL /* allocator */,
       toCFRunLoopActivity(activities_) /* activities */,
-      true /* repeats */,
+      1u /* repeats */,
       0 /* order */,
       ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
         auto strongOwner = owner.lock();

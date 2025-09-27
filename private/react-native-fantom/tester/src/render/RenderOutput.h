@@ -15,22 +15,30 @@
 namespace facebook::react {
 class RenderOutput {
  public:
-  static std::string render(
+  std::string render(
       const StubViewTree& tree,
       const RenderFormatOptions& options);
 
+  void markMutated(SurfaceId surfaceId) {
+    treesMutated_.insert(surfaceId);
+  }
+
  private:
-  static folly::dynamic renderView(
+  folly::dynamic renderView(
       const StubView& view,
       const RenderFormatOptions& options);
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-  static folly::dynamic renderProps(
-      const SharedDebugStringConvertibleList& propsList);
+  folly::dynamic renderProps(const SharedDebugStringConvertibleList& propsList);
 #endif
 
-  static folly::dynamic renderAttributedString(
+  folly::dynamic renderAttributedString(
       const Tag& selfTag,
       const AttributedString& string);
+
+  std::unordered_map<Tag, folly::dynamic> renderedViews_{};
+
+  // If true, the next call to render() will re-render the entire tree.
+  std::unordered_set<SurfaceId> treesMutated_{};
 };
 } // namespace facebook::react

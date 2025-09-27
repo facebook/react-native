@@ -14,9 +14,9 @@ import type {RootTag} from '../../../../../Libraries/ReactNative/RootTag';
 import type {ViewConfig} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type HTMLCollection from '../oldstylecollections/HTMLCollection';
 import type {ReactNativeDocumentInstanceHandle} from './internals/ReactNativeDocumentInstanceHandle';
-import type ReadOnlyElement from './ReadOnlyElement';
 
 import {createHTMLCollection} from '../oldstylecollections/HTMLCollection';
+import {getPublicInstanceFromInstanceHandle} from './internals/NodeInternals';
 import {
   createReactNativeDocumentElementInstanceHandle,
   setNativeElementReferenceForReactNativeDocumentElementInstanceHandle,
@@ -24,10 +24,12 @@ import {
 } from './internals/ReactNativeDocumentElementInstanceHandle';
 import {createReactNativeDocumentInstanceHandle} from './internals/ReactNativeDocumentInstanceHandle';
 import ReactNativeElement from './ReactNativeElement';
+import ReadOnlyElement from './ReadOnlyElement';
 import ReadOnlyNode from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
 
 export default class ReactNativeDocument extends ReadOnlyNode {
+  _rootTag: RootTag;
   _documentElement: ReactNativeElement;
 
   constructor(
@@ -35,6 +37,7 @@ export default class ReactNativeDocument extends ReadOnlyNode {
     instanceHandle: ReactNativeDocumentInstanceHandle,
   ) {
     super(instanceHandle, null);
+    this._rootTag = rootTag;
     this._documentElement = createDocumentElement(rootTag, this);
   }
 
@@ -71,9 +74,26 @@ export default class ReactNativeDocument extends ReadOnlyNode {
     return null;
   }
 
-  // $FlowExpectedError[incompatible-extend] This is defined as returning string in Node, but it's actually null in Document.
+  // $FlowExpectedError[incompatible-type] This is defined as returning string in Node, but it's actually null in Document.
   get textContent(): null {
     return null;
+  }
+
+  getElementById(id: string): ReadOnlyElement | null {
+    const elementByIdInstanceHandle = NativeDOM.getElementById(
+      this._rootTag,
+      id,
+    );
+
+    if (elementByIdInstanceHandle == null) {
+      return null;
+    }
+
+    const elementById = getPublicInstanceFromInstanceHandle(
+      elementByIdInstanceHandle,
+    );
+
+    return elementById instanceof ReadOnlyElement ? elementById : null;
   }
 }
 

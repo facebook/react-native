@@ -52,7 +52,6 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.internal.LegacyArchitectureShadowNodeLogger;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -88,6 +87,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @ReactModule(name = UIManagerModule.NAME)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   static {
@@ -115,7 +116,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final ViewManagerRegistry mViewManagerRegistry;
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
-  private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
   private final CopyOnWriteArrayList<UIManagerListener> mUIManagerListeners =
       new CopyOnWriteArrayList<>();
 
@@ -219,7 +219,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
     reactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
-    YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }
 
@@ -248,7 +247,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .arg("Lazy", true)
         .flush();
     try {
-      return UIManagerModuleConstantsHelper.createConstants(viewManagerResolver);
+      return UIManagerModuleConstantsHelper.internal_createConstants(viewManagerResolver);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
@@ -264,7 +263,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .arg("Lazy", false)
         .flush();
     try {
-      return UIManagerModuleConstantsHelper.createConstants(
+      return UIManagerModuleConstantsHelper.internal_createConstants(
           viewManagers, customBubblingEvents, customDirectEvents);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
@@ -291,7 +290,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .flush();
     try {
       Map<String, Object> viewManagerConstants =
-          UIManagerModuleConstantsHelper.createConstantsForViewManager(
+          UIManagerModuleConstantsHelper.internal_createConstantsForViewManager(
               viewManager, null, null, null, customDirectEvents);
       if (viewManagerConstants != null) {
         return Arguments.makeNativeMap(viewManagerConstants);
@@ -685,9 +684,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "onBatchCompleteUI")
         .arg("BatchId", batchId)
         .flush();
-    for (UIManagerModuleListener listener : mListeners) {
-      listener.willDispatchViewUpdates(this);
-    }
     for (UIManagerListener listener : mUIManagerListeners) {
       listener.willDispatchViewUpdates(this);
     }
@@ -755,16 +751,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.prependUIBlock(block);
   }
 
-  @Deprecated
-  public void addUIManagerListener(UIManagerModuleListener listener) {
-    mListeners.add(listener);
-  }
-
-  @Deprecated
-  public void removeUIManagerListener(UIManagerModuleListener listener) {
-    mListeners.remove(listener);
-  }
-
   public void addUIManagerEventListener(UIManagerListener listener) {
     mUIManagerListeners.add(listener);
   }
@@ -828,11 +814,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private static class MemoryTrimCallback implements ComponentCallbacks2 {
 
     @Override
-    public void onTrimMemory(int level) {
-      if (level >= TRIM_MEMORY_MODERATE) {
-        YogaNodePool.get().clear();
-      }
-    }
+    public void onTrimMemory(int level) {}
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {}

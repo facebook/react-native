@@ -71,9 +71,9 @@ export default function useAndroidRippleForView(
       return {
         viewProps:
           foreground === true
-            ? // $FlowFixMe[incompatible-return]
+            ? // $FlowFixMe[incompatible-type]
               {nativeForegroundAndroid: nativeRippleValue}
-            : // $FlowFixMe[incompatible-return]
+            : // $FlowFixMe[incompatible-type]
               {nativeBackgroundAndroid: nativeRippleValue},
         onPressIn(event: GestureResponderEvent): void {
           const view = viewRef.current;

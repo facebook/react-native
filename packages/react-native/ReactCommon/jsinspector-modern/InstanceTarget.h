@@ -15,14 +15,15 @@
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/RuntimeAgent.h>
+#include <jsinspector-modern/tracing/TraceRecordingState.h>
 
-#include <list>
 #include <memory>
-#include <optional>
 
 namespace facebook::react::jsinspector_modern {
 
 class InstanceAgent;
+class InstanceTracingAgent;
+class HostTargetTraceRecording;
 
 /**
  * Receives events from an InstanceTarget. This is a shared interface that
@@ -67,8 +68,20 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
   ~InstanceTarget();
 
   std::shared_ptr<InstanceAgent> createAgent(
-      FrontendChannel channel,
+      const FrontendChannel& channel,
       SessionState& sessionState);
+
+  /**
+   * Creates a new InstanceTracingAgent.
+   * This Agent is not owned by the InstanceTarget. The Agent will be destroyed
+   * either before the InstanceTarget is destroyed, as part of the
+   * InstanceTarget unregistration in HostTarget, or at the end of the tracing
+   * session.
+   *
+   * \param state A reference to the state of the active trace recording.
+   */
+  std::shared_ptr<InstanceTracingAgent> createTracingAgent(
+      tracing::TraceRecordingState& state);
 
   /**
    * Registers a JS runtime with this InstanceTarget. \returns a reference to
@@ -105,6 +118,13 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
   std::shared_ptr<RuntimeTarget> currentRuntime_{nullptr};
   WeakList<InstanceAgent> agents_;
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
+
+  /**
+   * This TracingAgent is owned by the HostTracingAgent, both are bound to
+   * the lifetime of their corresponding targets and the lifetime of the tracing
+   * session - HostTargetTraceRecording.
+   */
+  std::weak_ptr<InstanceTracingAgent> tracingAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern

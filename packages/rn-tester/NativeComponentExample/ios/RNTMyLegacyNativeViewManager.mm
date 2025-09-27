@@ -68,7 +68,7 @@ RCT_EXPORT_METHOD(removeOverlays : (nonnull NSNumber *)reactTag)
 + (UIView *)getViewByTag:(NSDictionary<NSNumber *, UIView *> *)viewRegistry reactTag:(nonnull NSNumber *)reactTag
 {
   UIView *view = viewRegistry[reactTag];
-  if (!view || ![view isKindOfClass:[RNTLegacyView class]]) {
+  if ((view == nullptr) || ![view isKindOfClass:[RNTLegacyView class]]) {
     RCTLogError(@"Cannot find RNTLegacyView with tag #%@", reactTag);
     return NULL;
   }

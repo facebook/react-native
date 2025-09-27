@@ -42,10 +42,14 @@ const ErrorUtils = {
     return _globalHandler;
   },
   reportError(error: mixed): void {
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     _globalHandler && _globalHandler(error, false);
   },
   reportFatalError(error: mixed): void {
     // NOTE: This has an untyped call site in Metro.
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     _globalHandler && _globalHandler(error, true);
   },
   applyWithGuard<TArgs: $ReadOnlyArray<mixed>, TOut>(
@@ -59,7 +63,7 @@ const ErrorUtils = {
   ): ?TOut {
     try {
       _inGuard++;
-      /* $FlowFixMe[incompatible-call] : TODO T48204745 (1) apply(context,
+      /* $FlowFixMe[incompatible-type] : TODO T48204745 (1) apply(context,
        * null) is fine. (2) array -> rest array should work */
       /* $FlowFixMe[incompatible-type] : TODO T48204745 (1) apply(context,
        * null) is fine. (2) array -> rest array should work */
@@ -77,7 +81,7 @@ const ErrorUtils = {
     args?: ?TArgs,
   ): ?TOut {
     if (ErrorUtils.inGuard()) {
-      /* $FlowFixMe[incompatible-call] : TODO T48204745 (1) apply(context,
+      /* $FlowFixMe[incompatible-type] : TODO T48204745 (1) apply(context,
        * null) is fine. (2) array -> rest array should work */
       /* $FlowFixMe[incompatible-type] : TODO T48204745 (1) apply(context,
        * null) is fine. (2) array -> rest array should work */

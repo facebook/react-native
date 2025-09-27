@@ -34,7 +34,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 @implementation RCTCxxInspectorWebSocketAdapter
 - (instancetype)initWithURL:(const std::string &)url delegate:(std::weak_ptr<IWebSocketDelegate>)delegate
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _delegate = delegate;
     _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:NSStringFromUTF8StringView(url)]];
     _webSocket.delegate = self;
@@ -49,7 +49,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
   NSString *messageStr = NSStringFromUTF8StringView(message);
   dispatch_async(dispatch_get_main_queue(), ^{
     RCTCxxInspectorWebSocketAdapter *strongSelf = weakSelf;
-    if (strongSelf) {
+    if (strongSelf != nullptr) {
       [strongSelf->_webSocket sendString:messageStr error:NULL];
     }
   });

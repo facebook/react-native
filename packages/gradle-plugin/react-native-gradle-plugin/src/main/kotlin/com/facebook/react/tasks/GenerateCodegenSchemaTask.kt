@@ -69,6 +69,7 @@ abstract class GenerateCodegenSchemaTask : Exec() {
             "NativeSampleTurboModule",
             generatedSchemaFile.get().asFile.cliPath(workingDir),
             jsRootDir.asFile.get().cliPath(workingDir),
-        ))
+        )
+    )
   }
 }

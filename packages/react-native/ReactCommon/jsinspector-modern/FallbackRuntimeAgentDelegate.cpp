@@ -9,6 +9,7 @@
 
 #include <chrono>
 #include <string>
+#include <utility>
 
 using namespace std::chrono;
 using namespace std::literals::string_view_literals;
@@ -26,7 +27,8 @@ FallbackRuntimeAgentDelegate::FallbackRuntimeAgentDelegate(
     FrontendChannel frontendChannel,
     const SessionState& sessionState,
     std::string engineDescription)
-    : frontendChannel_(frontendChannel), engineDescription_(engineDescription) {
+    : frontendChannel_(std::move(frontendChannel)),
+      engineDescription_(std::move(engineDescription)) {
   if (sessionState.isLogDomainEnabled) {
     sendFallbackRuntimeWarning();
   }

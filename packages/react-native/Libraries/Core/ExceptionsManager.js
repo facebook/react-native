@@ -105,7 +105,7 @@ function reportException(
     // we feed back into console.error, to make sure any methods that are
     // monkey patched on top of console.error are called when coming from
     // handleException
-    console.error(data.message);
+    console.error(e);
   }
 
   if (__DEV__) {
@@ -169,7 +169,7 @@ function handleException(e: mixed, isFatal: boolean) {
       inExceptionHandler = true;
       /* $FlowFixMe[class-object-subtyping] added when improving typing for this
        * parameters */
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       reportException(error, isFatal, reportToConsole);
     } finally {
       inExceptionHandler = false;
@@ -242,6 +242,8 @@ function reactConsoleErrorHandler(...args) {
     if (__DEV__) {
       // If we're not reporting to the console in reportException,
       // we need to report it as a console.error here.
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (!reportToConsole) {
         require('../LogBox/LogBox').default.addConsoleLog('error', ...args);
       }
@@ -257,7 +259,7 @@ function reactConsoleErrorHandler(...args) {
     reportException(
       /* $FlowFixMe[class-object-subtyping] added when improving typing for this
        * parameters */
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       error,
       isFatal,
       reportToConsole,

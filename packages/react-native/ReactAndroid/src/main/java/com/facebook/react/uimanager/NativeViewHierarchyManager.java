@@ -68,6 +68,8 @@ import javax.annotation.concurrent.NotThreadSafe;
  */
 @NotThreadSafe
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class NativeViewHierarchyManager {
 
   static {
@@ -704,14 +706,14 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View v = mTagsToViews.get(tag);
     if (v == null) {
-      throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
+      throw new IllegalViewOperationException("No native view for " + tag + " currently exists");
     }
 
     View rootView = (View) RootViewUtil.getRootView(v);
     // It is possible that the RootView can't be found because this view is no longer on the screen
     // and has been removed by clipping
     if (rootView == null) {
-      throw new NoSuchNativeViewException("Native view " + tag + " is no longer on screen");
+      throw new IllegalViewOperationException("Native view " + tag + " is no longer on screen");
     }
     computeBoundingBox(rootView, outputBuffer);
     int rootX = outputBuffer[0];
@@ -771,7 +773,7 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View v = mTagsToViews.get(tag);
     if (v == null) {
-      throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
+      throw new IllegalViewOperationException("No native view for " + tag + " currently exists");
     }
 
     v.getLocationOnScreen(outputBuffer);

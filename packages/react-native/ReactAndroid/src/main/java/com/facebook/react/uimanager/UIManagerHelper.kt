@@ -49,7 +49,7 @@ public object UIManagerHelper {
   private fun getUIManager(
       context: ReactContext,
       @UIManagerType uiManagerType: Int,
-      returnNullIfCatalystIsInactive: Boolean
+      returnNullIfCatalystIsInactive: Boolean,
   ): UIManager? {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE || context.isBridgeless()) {
       val uiManager = context.getFabricUIManager()
@@ -57,7 +57,9 @@ public object UIManagerHelper {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             ReactNoCrashSoftException(
-                "Cannot get UIManager because the instance hasn't been initialized yet."))
+                "Cannot get UIManager because the instance hasn't been initialized yet."
+            ),
+        )
         return null
       }
       return uiManager
@@ -70,12 +72,16 @@ public object UIManagerHelper {
     //
     // To detect a potential regression we add the following assertion ERROR
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "UIManagerHelper.getUIManager(context, uiManagerType)", LegacyArchitectureLogLevel.ERROR)
+        "UIManagerHelper.getUIManager(context, uiManagerType)",
+        LegacyArchitectureLogLevel.ERROR,
+    )
     if (!context.hasCatalystInstance()) {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           ReactNoCrashSoftException(
-              "Cannot get UIManager because the context doesn't contain a CatalystInstance."))
+              "Cannot get UIManager because the context doesn't contain a CatalystInstance."
+          ),
+      )
       return null
     }
     // TODO T60461551: add tests to verify emission of events when the ReactContext is being turn
@@ -85,7 +91,9 @@ public object UIManagerHelper {
           TAG,
           ReactNoCrashSoftException(
               "Cannot get UIManager because the context doesn't contain an active" +
-                  " CatalystInstance."))
+                  " CatalystInstance."
+          ),
+      )
       if (returnNullIfCatalystIsInactive) {
         return null
       }
@@ -97,7 +105,9 @@ public object UIManagerHelper {
     } catch (_: IllegalArgumentException) {
       // TODO T67518514 Clean this up once we migrate everything over to bridgeless mode
       ReactSoftExceptionLogger.logSoftException(
-          TAG, ReactNoCrashSoftException("Cannot get UIManager for UIManagerType: $uiManagerType"))
+          TAG,
+          ReactNoCrashSoftException("Cannot get UIManager for UIManagerType: $uiManagerType"),
+      )
       return catalystInstance.getNativeModule<UIManagerModule>(UIManagerModule::class.java)
     }
   }
@@ -108,7 +118,9 @@ public object UIManagerHelper {
     val eventDispatcher = getEventDispatcher(context, getUIManagerType(reactTag))
     if (eventDispatcher == null) {
       ReactSoftExceptionLogger.logSoftException(
-          TAG, IllegalStateException("Cannot get EventDispatcher for reactTag $reactTag"))
+          TAG,
+          IllegalStateException("Cannot get EventDispatcher for reactTag $reactTag"),
+      )
     }
     return eventDispatcher
   }
@@ -120,7 +132,7 @@ public object UIManagerHelper {
   @JvmStatic
   public fun getEventDispatcher(
       context: ReactContext,
-      @UIManagerType uiManagerType: Int
+      @UIManagerType uiManagerType: Int,
   ): EventDispatcher? {
     // TODO T67518514 Clean this up once we migrate everything over to bridgeless mode
     var localContext = context
@@ -134,7 +146,8 @@ public object UIManagerHelper {
     if (uiManager == null) {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
-          ReactNoCrashSoftException("Unable to find UIManager for UIManagerType $uiManagerType"))
+          ReactNoCrashSoftException("Unable to find UIManager for UIManagerType $uiManagerType"),
+      )
       return null
     }
     val eventDispatcher = uiManager.eventDispatcher
@@ -143,7 +156,9 @@ public object UIManagerHelper {
     @Suppress("SENSELESS_COMPARISON")
     if (eventDispatcher == null) {
       ReactSoftExceptionLogger.logSoftException(
-          TAG, IllegalStateException("Cannot get EventDispatcher for UIManagerType $uiManagerType"))
+          TAG,
+          IllegalStateException("Cannot get EventDispatcher for UIManagerType $uiManagerType"),
+      )
     }
     return eventDispatcher
   }
@@ -200,7 +215,9 @@ public object UIManagerHelper {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           IllegalStateException(
-              "Fabric View [$reactTag] does not have SurfaceId associated with it"))
+              "Fabric View [$reactTag] does not have SurfaceId associated with it"
+          ),
+      )
     }
     return surfaceId
   }
@@ -225,8 +242,8 @@ public object UIManagerHelper {
         PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText).toFloat())
     padding[PADDING_END_INDEX] =
         PixelUtil.toDIPFromPixel(ViewCompat.getPaddingEnd(editText).toFloat())
-    padding[PADDING_TOP_INDEX] = PixelUtil.toDIPFromPixel(editText.getPaddingTop().toFloat())
-    padding[PADDING_BOTTOM_INDEX] = PixelUtil.toDIPFromPixel(editText.getPaddingBottom().toFloat())
+    padding[PADDING_TOP_INDEX] = PixelUtil.toDIPFromPixel(editText.paddingTop.toFloat())
+    padding[PADDING_BOTTOM_INDEX] = PixelUtil.toDIPFromPixel(editText.paddingBottom.toFloat())
     return padding
   }
 }

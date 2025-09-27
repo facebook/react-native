@@ -31,12 +31,13 @@ public annotation class ReactModule(
      */
     @get:Deprecated(
         """This property is unused and it's planning to be removed in a future version of
-        React Native. Please refrain from using it.""")
+        React Native. Please refrain from using it."""
+    )
     public val hasConstants: Boolean = true,
     /**
      * Indicates if a module is a C++ module or a Java Module
      *
      * @return
      */
-    public val isCxxModule: Boolean = false
+    public val isCxxModule: Boolean = false,
 )

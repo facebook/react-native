@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {execSync} = require('child_process');
+const {spawnSync} = require('child_process');
 const fs = require('fs');
 const yargs = require('yargs');
 
@@ -66,7 +66,28 @@ function replaceRNDepsConfiguration(
   fs.mkdirSync(finalLocation, {recursive: true});
 
   console.log('Extracting the tarball', tarballURLPath);
-  execSync(`tar -xf ${tarballURLPath} -C ${finalLocation}`);
+  spawnSync('tar', ['-xf', tarballURLPath, '-C', finalLocation], {
+    stdio: 'inherit',
+  });
+
+  // Now we need to remove the extra third-party folder as we do in the podspec's prepare-script
+  // We need to take the ReactNativeDependencies.xcframework folder and move it up one level
+  // from ${finalLocation}/packages/react-native/third-party/ to ${finalLocation}/packages/react-native/
+  console.log('Resolving ReactNativeDependencies.xcframework folder structure');
+  const thirdPartyPath = `${finalLocation}/packages/react-native/third-party`;
+  const sourcePath = `${thirdPartyPath}/ReactNativeDependencies.xcframework`;
+  const destinationPath = `${finalLocation}/packages/react-native/ReactNativeDependencies.xcframework`;
+  if (fs.existsSync(sourcePath)) {
+    fs.renameSync(sourcePath, destinationPath);
+  } else {
+    throw new Error(
+      `Expected ReactNativeDependencies.xcframework to be at ${sourcePath}, but it was not found.`,
+    );
+  }
+
+  if (fs.existsSync(thirdPartyPath)) {
+    fs.rmSync(thirdPartyPath, {force: true, recursive: true});
+  }
 }
 
 function updateLastBuildConfiguration(configuration /*: string */) {

@@ -33,7 +33,7 @@ private const val TAG = "FabricEventDispatcher"
  */
 internal class FabricEventDispatcher(
     private val reactContext: ReactApplicationContext,
-    fabricEventEmitter: RCTModernEventEmitter
+    fabricEventEmitter: RCTModernEventEmitter,
 ) : EventDispatcher, LifecycleEventListener {
   // TODO: Remove EventEmitterImpl indirection when new Fabric is fully rolled out
   private val eventEmitter = EventEmitterImpl(reactContext)
@@ -76,7 +76,8 @@ internal class FabricEventDispatcher(
   private fun dispatchSynchronous(event: Event<*>) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT,
-        "FabricEventDispatcher.dispatchSynchronous('" + event.getEventName() + "')")
+        "FabricEventDispatcher.dispatchSynchronous('" + event.getEventName() + "')",
+    )
     try {
       val fabricUIManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
       @OptIn(UnstableReactNativeAPI::class)
@@ -88,12 +89,15 @@ internal class FabricEventDispatcher(
             event.canCoalesce(),
             event.internal_getEventData(),
             event.internal_getEventCategory(),
-            true)
+            true,
+        )
       } else {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             IllegalStateException(
-                "Fabric UIManager expected to implement SynchronousEventReceiver."))
+                "Fabric UIManager expected to implement SynchronousEventReceiver."
+            ),
+        )
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT)
@@ -218,7 +222,7 @@ internal class FabricEventDispatcher(
       }
 
       // We should only hit this slow path when we receive events while the host activity is paused.
-      if (reactContext.isOnUiQueueThread()) {
+      if (reactContext.isOnUiQueueThread) {
         maybeDispatchBatchedEvents()
       } else {
         reactContext.runOnUiQueueThread { maybeDispatchBatchedEvents() }

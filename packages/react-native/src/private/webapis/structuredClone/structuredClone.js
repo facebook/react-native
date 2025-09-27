@@ -61,7 +61,7 @@ function structuredCloneInternal<T>(value: T): T {
 
   // Handles circular references.
   if (memory.has(value)) {
-    // $FlowExpectedError[incompatible-return] we know memory.get(value) is T
+    // $FlowExpectedError[incompatible-type] we know memory.get(value) is T
     return memory.get(value);
   }
 
@@ -74,12 +74,12 @@ function structuredCloneInternal<T>(value: T): T {
       result[key] = structuredCloneInternal(value[key]);
     }
 
-    // $FlowExpectedError[incompatible-return] we know result is T
+    // $FlowExpectedError[incompatible-type] we know result is T
     return result;
   }
 
   // Simple object fast path
-  // $FlowIssue[prop-missing] Why doesn't Flow know about Object.prototype?
+  // $FlowFixMe[prop-missing] Why doesn't Flow know about Object.prototype?
   if (Object.getPrototypeOf(value) === ObjectPrototype) {
     const result = {};
     memory.set(value, result);
@@ -89,7 +89,7 @@ function structuredCloneInternal<T>(value: T): T {
       result[key] = structuredCloneInternal(value[key]);
     }
 
-    // $FlowExpectedError[incompatible-return] we know result is T
+    // $FlowExpectedError[incompatible-type] we know result is T
     return result;
   }
 
@@ -99,7 +99,7 @@ function structuredCloneInternal<T>(value: T): T {
     if (value instanceof Cls) {
       const result = new Cls(value);
       memory.set(value, result);
-      // $FlowExpectedError[incompatible-return] we know result is T
+      // $FlowExpectedError[incompatible-type] we know result is T
       return result;
     }
   }
@@ -115,7 +115,7 @@ function structuredCloneInternal<T>(value: T): T {
       );
     }
 
-    // $FlowExpectedError[incompatible-return] we know result is T
+    // $FlowExpectedError[incompatible-type] we know result is T
     return result;
   }
 
@@ -127,7 +127,7 @@ function structuredCloneInternal<T>(value: T): T {
       result.add(structuredCloneInternal(innerValue));
     }
 
-    // $FlowExpectedError[incompatible-return] we know result is T
+    // $FlowExpectedError[incompatible-type] we know result is T
     return result;
   }
 
@@ -135,7 +135,7 @@ function structuredCloneInternal<T>(value: T): T {
     const result = new RegExp(value.source, value.flags);
     memory.set(value, result);
 
-    // $FlowExpectedError[incompatible-return] we know result is T
+    // $FlowExpectedError[incompatible-type] we know result is T
     return result;
   }
 
@@ -162,7 +162,7 @@ function structuredCloneInternal<T>(value: T): T {
 
     result.stack = value.stack;
 
-    // $FlowExpectedError[incompatible-return] we know result is T
+    // $FlowExpectedError[incompatible-type] we know result is T
     return result;
   }
 
@@ -185,7 +185,7 @@ function structuredCloneInternal<T>(value: T): T {
     result[key] = structuredCloneInternal(value[key]);
   }
 
-  // $FlowExpectedError[incompatible-return] we know result is T
+  // $FlowExpectedError[incompatible-type] we know result is T
   return result;
 }
 

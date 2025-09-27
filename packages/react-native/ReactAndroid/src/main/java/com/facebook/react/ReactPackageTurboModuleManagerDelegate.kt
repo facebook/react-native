@@ -32,7 +32,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
   protected constructor(
       reactApplicationContext: ReactApplicationContext,
-      packages: List<ReactPackage>
+      packages: List<ReactPackage>,
   ) : super() {
     initialize(reactApplicationContext, packages)
   }
@@ -40,14 +40,14 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
   protected constructor(
       reactApplicationContext: ReactApplicationContext,
       packages: List<ReactPackage>,
-      hybridData: HybridData
+      hybridData: HybridData,
   ) : super(hybridData) {
     initialize(reactApplicationContext, packages)
   }
 
   private fun initialize(
       reactApplicationContext: ReactApplicationContext,
-      packages: List<ReactPackage>
+      packages: List<ReactPackage>,
   ) {
     val applicationContext: ReactApplicationContext = reactApplicationContext
     for (reactPackage in packages) {
@@ -83,6 +83,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
       if (shouldSupportLegacyPackages()) {
         // TODO(T145105887): Output warnings that ReactPackage was used
+        @Suppress("DEPRECATION")
         val nativeModules = reactPackage.createNativeModules(reactApplicationContext)
 
         val moduleMap: MutableMap<String, NativeModule> = mutableMapOf()
@@ -94,6 +95,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
           val moduleName = reactModule?.name ?: module.name
 
+          @Suppress("DEPRECATION")
           val moduleInfo: ReactModuleInfo =
               if (reactModule != null)
                   ReactModuleInfo(
@@ -102,7 +104,8 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       reactModule.canOverrideExistingModule,
                       true,
                       reactModule.isCxxModule,
-                      ReactModuleInfo.classIsTurboModule(moduleClass))
+                      ReactModuleInfo.classIsTurboModule(moduleClass),
+                  )
               else
                   ReactModuleInfo(
                       moduleName,
@@ -110,7 +113,8 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       module.canOverrideExistingModule(),
                       true,
                       CxxModuleWrapper::class.java.isAssignableFrom(moduleClass),
-                      ReactModuleInfo.classIsTurboModule(moduleClass))
+                      ReactModuleInfo.classIsTurboModule(moduleClass),
+                  )
 
           reactModuleInfoMap[moduleName] = moduleInfo
           moduleMap[moduleName] = module
@@ -131,8 +135,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
     for (moduleProvider in moduleProviders) {
       val moduleInfo: ReactModuleInfo? = packageModuleInfos[moduleProvider]?.get(moduleName)
-      if (moduleInfo?.isTurboModule == true &&
-          (resolvedModule == null || moduleInfo.canOverrideExistingModule)) {
+      if (
+          moduleInfo?.isTurboModule == true &&
+              (resolvedModule == null || moduleInfo.canOverrideExistingModule)
+      ) {
         val module = moduleProvider.getModule(moduleName)
         if (module != null) {
           resolvedModule = module
@@ -178,8 +184,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
     for (moduleProvider in moduleProviders) {
       val moduleInfo: ReactModuleInfo? = packageModuleInfos[moduleProvider]?.get(moduleName)
-      if (moduleInfo?.isTurboModule == false &&
-          (resolvedModule == null || moduleInfo.canOverrideExistingModule)) {
+      if (
+          moduleInfo?.isTurboModule == false &&
+              (resolvedModule == null || moduleInfo.canOverrideExistingModule)
+      ) {
         val module = moduleProvider.getModule(moduleName)
         if (module != null) {
           resolvedModule = module
@@ -224,7 +232,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
     protected abstract fun build(
         context: ReactApplicationContext,
-        packages: List<ReactPackage>
+        packages: List<ReactPackage>,
     ): ReactPackageTurboModuleManagerDelegate
 
     public fun build(): ReactPackageTurboModuleManagerDelegate {

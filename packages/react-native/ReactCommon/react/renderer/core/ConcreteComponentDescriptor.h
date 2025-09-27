@@ -88,8 +88,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   void appendChild(
-      const ShadowNode::Shared& parentShadowNode,
-      const ShadowNode::Shared& childShadowNode) const override {
+      const std::shared_ptr<const ShadowNode>& parentShadowNode,
+      const std::shared_ptr<const ShadowNode>& childShadowNode) const override {
     auto& concreteParentShadowNode =
         static_cast<const ShadowNodeT&>(*parentShadowNode);
     const_cast<ShadowNodeT&>(concreteParentShadowNode)

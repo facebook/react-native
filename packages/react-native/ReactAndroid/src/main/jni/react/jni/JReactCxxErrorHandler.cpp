@@ -7,6 +7,8 @@
 
 #include "JReactCxxErrorHandler.h"
 
+#include <utility>
+
 using namespace facebook::react;
 
 void JReactCxxErrorHandler::handleError(std::string message) {
@@ -14,5 +16,5 @@ void JReactCxxErrorHandler::handleError(std::string message) {
       javaClassStatic()->getStaticMethod<void(std::string message)>(
           "handleError");
 
-  return handleError(javaClassStatic(), message);
+  return handleError(javaClassStatic(), std::move(message));
 }

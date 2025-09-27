@@ -25,7 +25,8 @@ const {
   setHermesTag,
   shouldUsePrebuiltHermesC,
 } = require('../hermes-utils');
-const MemoryFs = require('metro-memory-fs');
+// $FlowFixMe[untyped-import] (OSS) memfs
+const {memfs} = require('memfs');
 const os = require('os');
 
 const hermesTag =
@@ -122,24 +123,27 @@ function populateMockFilesystemWithHermesBuildArtifacts() {
     SDKS_DIR,
     'hermes/destroot/Library/Frameworks',
   );
-  fs.mkdirSync(path.join(frameworksDir, 'macosx/hermes.framework'), {
+  fs.mkdirSync(path.join(frameworksDir, 'macosx/hermesvm.framework'), {
     recursive: true,
   });
-  fs.mkdirSync(path.join(frameworksDir, 'universal/hermes.xcframework'), {
+  fs.mkdirSync(path.join(frameworksDir, 'universal/hermesvm.xcframework'), {
     recursive: true,
   });
 
   const dsymsDirs = [
     'macosx',
-    'universal/hermes.xcframework/ios-arm64/dSYMs',
-    'universal/hermes.xcframework/ios-arm64_x86_64-simulator/dSYMs',
-    'universal/hermes.xcframework/ios-arm64_x86_64-maccatalyst/dSYMs',
+    'universal/hermesvm.xcframework/ios-arm64/dSYMs',
+    'universal/hermesvm.xcframework/ios-arm64_x86_64-simulator/dSYMs',
+    'universal/hermesvm.xcframework/ios-arm64_x86_64-maccatalyst/dSYMs',
   ];
 
   for (const dsymsDir of dsymsDirs) {
-    fs.mkdirSync(path.join(frameworksDir, dsymsDir, 'hermes.framework.dSYM'), {
-      recursive: true,
-    });
+    fs.mkdirSync(
+      path.join(frameworksDir, dsymsDir, 'hermesvm.framework.dSYM'),
+      {
+        recursive: true,
+      },
+    );
   }
 }
 
@@ -147,16 +151,8 @@ describe('hermes-utils', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    jest.mock(
-      'fs',
-      () =>
-        new MemoryFs({
-          platform: process.platform === 'win32' ? 'win32' : 'posix',
-        }),
-    );
+    jest.mock('fs', () => memfs().fs);
     fs = require('fs');
-    // $FlowFixMe[prop-missing]
-    fs.reset();
 
     populateMockFilesystemWithHermesBuildScripts();
 
@@ -361,7 +357,7 @@ describe('hermes-utils', () => {
         configureMakeForPrebuiltHermesC();
         expect(
           fs.existsSync(
-            path.join(SDKS_DIR, 'hermesc/osx-bin/ImportHermesc.cmake'),
+            path.join(SDKS_DIR, 'hermesc/osx-bin/ImportHostCompilers.cmake'),
           ),
         ).toBe(true);
       });

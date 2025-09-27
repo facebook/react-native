@@ -7,8 +7,7 @@
 
 #include "BridgeNativeModulePerfLogger.h"
 
-namespace facebook::react {
-namespace BridgeNativeModulePerfLogger {
+namespace facebook::react::BridgeNativeModulePerfLogger {
 
 std::unique_ptr<NativeModulePerfLogger> g_perfLogger = nullptr;
 
@@ -325,5 +324,4 @@ void asyncMethodCallExecutionFail(
   }
 }
 
-} // namespace BridgeNativeModulePerfLogger
-} // namespace facebook::react
+} // namespace facebook::react::BridgeNativeModulePerfLogger

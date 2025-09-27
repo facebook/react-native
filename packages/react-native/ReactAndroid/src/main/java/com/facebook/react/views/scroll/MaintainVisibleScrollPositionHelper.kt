@@ -31,7 +31,7 @@ import java.lang.ref.WeakReference
 @OptIn(UnstableReactNativeAPI::class)
 internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     private val scrollView: ScrollViewT,
-    private val horizontal: Boolean
+    private val horizontal: Boolean,
 ) : UIManagerListener where ScrollViewT : HasSmoothScroll?, ScrollViewT : ViewGroup? {
 
   var config: Config? = null
@@ -47,7 +47,9 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
         checkNotNull(
             UIManagerHelper.getUIManager(
                 checkNotNull(scrollView?.context as ReactContext?),
-                getUIManagerType(scrollView?.id ?: 0)))
+                getUIManagerType(scrollView?.id ?: 0),
+            )
+        )
 
   class Config
   internal constructor(val minIndexForVisible: Int, val autoScrollToTopThreshold: Int?) {

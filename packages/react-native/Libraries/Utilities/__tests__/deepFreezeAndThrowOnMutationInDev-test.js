@@ -14,26 +14,26 @@ const deepFreezeAndThrowOnMutationInDev =
 describe('deepFreezeAndThrowOnMutationInDev', () => {
   it('should be a noop on non-object values', () => {
     __DEV__ = true;
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev('')).not.toThrow();
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev(null)).not.toThrow();
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev(false)).not.toThrow();
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev(5)).not.toThrow();
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev()).not.toThrow();
     __DEV__ = false;
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev('')).not.toThrow();
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev(null)).not.toThrow();
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev(false)).not.toThrow();
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev(5)).not.toThrow();
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev()).not.toThrow();
   });
 
@@ -42,7 +42,7 @@ describe('deepFreezeAndThrowOnMutationInDev', () => {
     const o = Object.create(null);
     // $FlowExpectedError[prop-missing]
     o.key = 'Value';
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => deepFreezeAndThrowOnMutationInDev(o)).not.toThrow();
   });
 

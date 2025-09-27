@@ -70,7 +70,7 @@ static inline facebook::react::SharedEventEmitter RCTUnwrapEventEmitter(NSData *
 
   auto weakPtr = dynamic_cast<std::weak_ptr<const facebook::react::EventEmitter> *>(
       (std::weak_ptr<const facebook::react::EventEmitter> *)data.bytes);
-  if (weakPtr) {
+  if (weakPtr != nullptr) {
     return weakPtr->lock();
   }
 

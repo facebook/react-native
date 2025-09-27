@@ -207,20 +207,20 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
     // Position the new color stops
     if (leftDist > rightDist) {
       for (int y = 0; y < 7; ++y) {
-        ProcessedColorStop newStop{SharedColor(), offsetLeft + leftDist * ((7.0f + y) / 13.0f)};
+        ProcessedColorStop newStop{.color = SharedColor(), .position = offsetLeft + leftDist * ((7.0f + y) / 13.0f)};
         newStops.push_back(newStop);
       }
-      ProcessedColorStop stop1{SharedColor(), offset + rightDist * (1.0f / 3.0f)};
-      ProcessedColorStop stop2{SharedColor(), offset + rightDist * (2.0f / 3.0f)};
+      ProcessedColorStop stop1{.color = SharedColor(), .position = offset + rightDist * (1.0f / 3.0f)};
+      ProcessedColorStop stop2{.color = SharedColor(), .position = offset + rightDist * (2.0f / 3.0f)};
       newStops.push_back(stop1);
       newStops.push_back(stop2);
     } else {
-      ProcessedColorStop stop1{SharedColor(), offsetLeft + leftDist * (1.0f / 3.0f)};
-      ProcessedColorStop stop2{SharedColor(), offsetLeft + leftDist * (2.0f / 3.0f)};
+      ProcessedColorStop stop1{.color = SharedColor(), .position = offsetLeft + leftDist * (1.0f / 3.0f)};
+      ProcessedColorStop stop2{.color = SharedColor(), .position = offsetLeft + leftDist * (2.0f / 3.0f)};
       newStops.push_back(stop1);
       newStops.push_back(stop2);
       for (int y = 0; y < 7; ++y) {
-        ProcessedColorStop newStop{SharedColor(), offset + rightDist * (y / 13.0f)};
+        ProcessedColorStop newStop{.color = SharedColor(), .position = offset + rightDist * (y / 13.0f)};
         newStops.push_back(newStop);
       }
     }
@@ -297,7 +297,7 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
     // largest specified position of any color stop or transition hint before it.
     if (newPosition.has_value()) {
       newPosition = std::max(newPosition.value(), maxPositionSoFar.value());
-      fixedColorStops[i] = ProcessedColorStop{colorStop.color, newPosition};
+      fixedColorStops[i] = ProcessedColorStop{.color = colorStop.color, .position = newPosition};
       maxPositionSoFar = newPosition;
     } else {
       hasNullPositions = true;
@@ -320,8 +320,8 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
           if (startPosition.has_value()) {
             auto increment = (endPosition.value() - startPosition.value()) / (unpositionedStops + 1);
             for (size_t j = 1; j <= unpositionedStops; j++) {
-              fixedColorStops[lastDefinedIndex + j] =
-                  ProcessedColorStop{colorStops[lastDefinedIndex + j].color, startPosition.value() + increment * j};
+              fixedColorStops[lastDefinedIndex + j] = ProcessedColorStop{
+                  .color = colorStops[lastDefinedIndex + j].color, .position = startPosition.value() + increment * j};
             }
           }
         }
@@ -373,5 +373,39 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
   }
 
   return {startPoint, endPoint};
+}
++ (void)getColors:(NSMutableArray<id> *)colors
+      andLocations:(NSMutableArray<NSNumber *> *)locations
+    fromColorStops:(const std::vector<facebook::react::ProcessedColorStop> &)colorStops
+{
+  // iOS's CAGradientLayer interpolates colors in a way that can cause unexpected results.
+  // For example, a gradient from a color to `transparent` (which is transparent black) will
+  // fade the color's RGB components to black, creating a "muddy" or dark appearance.
+  // To fix this, we detect when a color stop is transparent black and replace it with
+  // a transparent version of the *previous* color stop. This creates a smooth fade-out effect
+  // by only interpolating the alpha channel, matching web and Android behavior.
+  UIColor *lastColor = nil;
+  for (const auto &colorStop : colorStops) {
+    UIColor *currentColor = RCTUIColorFromSharedColor(colorStop.color);
+
+    CGFloat red = 0.0;
+    CGFloat green = 0.0;
+    CGFloat blue = 0.0;
+    CGFloat alpha = 0.0;
+    [currentColor getRed:&red green:&green blue:&blue alpha:&alpha];
+
+    BOOL isTransparentBlack = alpha == 0.0 && red == 0.0 && green == 0.0 && blue == 0.0;
+
+    if (isTransparentBlack && (lastColor != nullptr)) {
+      [colors addObject:(id)[lastColor colorWithAlphaComponent:0.0].CGColor];
+    } else {
+      [colors addObject:(id)currentColor.CGColor];
+    }
+
+    if (!isTransparentBlack) {
+      lastColor = currentColor;
+    }
+    [locations addObject:@(std::max(std::min(colorStop.position.value(), 1.0), 0.0))];
+  }
 }
 @end

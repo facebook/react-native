@@ -9,9 +9,7 @@
 #include <memory>
 #include "NativeModulePerfLogger.h"
 
-namespace facebook::react {
-
-namespace BridgeNativeModulePerfLogger {
+namespace facebook::react::BridgeNativeModulePerfLogger {
 void enableLogging(std::unique_ptr<NativeModulePerfLogger>&& logger);
 void disableLogging();
 
@@ -106,6 +104,4 @@ void asyncMethodCallExecutionFail(
     const char* methodName,
     int32_t id);
 
-} // namespace BridgeNativeModulePerfLogger
-
-} // namespace facebook::react
+} // namespace facebook::react::BridgeNativeModulePerfLogger

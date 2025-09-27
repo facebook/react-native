@@ -67,6 +67,7 @@ class ReactInstanceIntegrationTest
   UniquePtrFactory<MockRemoteConnection> mockRemoteConnections_;
   std::unique_ptr<ILocalConnection> clientToVM_;
   folly::QueuedImmediateExecutor immediateExecutor_;
+  MockHostTargetDelegate hostTargetDelegate_;
 };
 
 } // namespace facebook::react::jsinspector_modern

@@ -38,7 +38,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptorRegistry(
       ComponentDescriptorParameters parameters,
       const ComponentDescriptorProviderRegistry& providerRegistry,
-      ContextContainer::Shared contextContainer);
+      std::shared_ptr<const ContextContainer> contextContainer);
 
   /*
    * This is broken. Please do not use.
@@ -71,7 +71,8 @@ class ComponentDescriptorRegistry {
    * To be used by `ComponentDescriptorProviderRegistry` only.
    * Thread safe.
    */
-  void add(ComponentDescriptorProvider componentDescriptorProvider) const;
+  void add(
+      const ComponentDescriptorProvider& componentDescriptorProvider) const;
 
   mutable std::shared_mutex mutex_;
   mutable std::unordered_map<ComponentHandle, SharedComponentDescriptor>
@@ -81,7 +82,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
   const ComponentDescriptorProviderRegistry& providerRegistry_;
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 };
 
 } // namespace facebook::react

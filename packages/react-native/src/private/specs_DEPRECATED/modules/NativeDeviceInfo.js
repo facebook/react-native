@@ -36,6 +36,7 @@ export type DimensionsPayload = {
 
 export type DeviceInfoConstants = {
   +Dimensions: DimensionsPayload,
+  +isEdgeToEdge?: boolean,
   +isIPhoneX_deprecated?: boolean,
 };
 

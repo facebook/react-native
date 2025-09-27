@@ -14,6 +14,8 @@
 #include <hermes/hermes.h>
 #include <jsinspector-modern/ReactCdp.h>
 
+#include <utility>
+
 using namespace facebook::hermes;
 
 namespace facebook::react::jsinspector_modern {
@@ -25,7 +27,7 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
     explicit HermesStateWrapper(HermesState state) : state_(std::move(state)) {}
 
     static HermesState unwrapDestructively(ExportedState* wrapper) {
-      if (!wrapper) {
+      if (wrapper == nullptr) {
         return {};
       }
       if (auto* typedWrapper = dynamic_cast<HermesStateWrapper*>(wrapper)) {
@@ -58,7 +60,7 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
               runtimeExecutor(
                   [&runtime, fn = std::move(fn)](auto&) { fn(runtime); });
             },
-            frontendChannel,
+            std::move(frontendChannel),
             HermesStateWrapper::unwrapDestructively(
                 previouslyExportedState.get()))) {
     if (sessionState.isRuntimeDomainEnabled) {

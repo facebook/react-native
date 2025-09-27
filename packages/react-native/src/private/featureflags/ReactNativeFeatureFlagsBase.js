@@ -18,12 +18,16 @@ import NativeReactNativeFeatureFlags from './specs/NativeReactNativeFeatureFlags
 const accessedFeatureFlags: Set<string> = new Set();
 let overrides: ?ReactNativeFeatureFlagsJsOnlyOverrides;
 
+// This is a list of functions to clear the cached value for each feature flag
+// getter. This is only used in development.
+const clearCachedValuesFns: Array<() => void> = [];
+
 export type Getter<T> = () => T;
 
-// This defines the types for the overrides object, whose methods also receive
-// the default value as a parameter.
+// This defines the types for the overrides object, whose methods can return
+// null or undefined to fallback to the default value.
 export type OverridesFor<T> = Partial<{
-  [key in keyof T]: (ReturnType<T[key]>) => ReturnType<T[key]>,
+  [key in keyof T]: Getter<?ReturnType<T[key]>>,
 }>;
 
 function createGetter<T: boolean | number | string>(
@@ -32,6 +36,12 @@ function createGetter<T: boolean | number | string>(
   defaultValue: T,
 ): Getter<T> {
   let cachedValue: ?T;
+
+  if (__DEV__) {
+    clearCachedValuesFns.push(() => {
+      cachedValue = undefined;
+    });
+  }
 
   return () => {
     if (cachedValue == null) {
@@ -51,7 +61,7 @@ export function createJavaScriptFlagGetter<
     configName,
     () => {
       accessedFeatureFlags.add(configName);
-      return overrides?.[configName]?.(defaultValue);
+      return overrides?.[configName]?.();
     },
     defaultValue,
   );
@@ -113,5 +123,14 @@ function maybeLogUnavailableNativeModuleError(configName: string): void {
     console.error(
       `Could not access feature flag '${configName}' because native module method was not available`,
     );
+  }
+}
+
+export function dangerouslyResetForTesting(): void {
+  if (__DEV__) {
+    overrides = null;
+    accessedFeatureFlags.clear();
+    reportedConfigNames.clear();
+    clearCachedValuesFns.forEach(fn => fn());
   }
 }

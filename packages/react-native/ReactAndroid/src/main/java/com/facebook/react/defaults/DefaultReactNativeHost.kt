@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.defaults
 
 import android.app.Application
@@ -40,7 +42,9 @@ protected constructor(
       if (isNewArchEnabled) {
         DefaultTurboModuleManagerDelegate.Builder()
       } else {
-        null
+        error(
+            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`."
+        )
       }
 
   override fun getUIManagerProvider(): UIManagerProvider? =
@@ -57,17 +61,21 @@ protected constructor(
                           reactInstanceManager.createViewManager(viewManagerName)
 
                       override fun getViewManagerNames() = reactInstanceManager.viewManagerNames
-                    })
+                    }
+                )
               } else {
                 ViewManagerRegistry(
-                    reactInstanceManager.getOrCreateViewManagers(reactApplicationContext))
+                    reactInstanceManager.getOrCreateViewManagers(reactApplicationContext)
+                )
               }
 
           FabricUIManagerProviderImpl(componentFactory, viewManagerRegistry)
               .createUIManager(reactApplicationContext)
         }
       } else {
-        null
+        error(
+            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`."
+        )
       }
 
   override fun clear() {
@@ -84,7 +92,7 @@ protected constructor(
    * If false, the app will not attempt to load the New Architecture modules.
    */
   protected open val isNewArchEnabled: Boolean
-    get() = false
+    get() = true
 
   /**
    * Returns whether the user wants to use Hermes.
@@ -94,7 +102,8 @@ protected constructor(
    */
   @Deprecated(
       "Setting isHermesEnabled inside `ReactNativeHost` is deprecated and this field will be ignored. If this field is set to true, you can safely remove it. If this field is set to false, please follow the setup on https://github.com/react-native-community/javascriptcore to continue using JSC",
-      ReplaceWith(""))
+      ReplaceWith(""),
+  )
   protected open val isHermesEnabled: Boolean
     get() = true
 
@@ -106,14 +115,14 @@ protected constructor(
   @UnstableReactNativeAPI
   internal fun toReactHost(
       context: Context,
-      jsRuntimeFactory: JSRuntimeFactory? = null
+      jsRuntimeFactory: JSRuntimeFactory? = null,
   ): ReactHost {
     val concreteJSRuntimeFactory = jsRuntimeFactory ?: HermesInstance()
     return DefaultReactHost.getDefaultReactHost(
         context,
         packages,
         jsMainModuleName,
-        bundleAssetName ?: "index",
+        bundleAssetName ?: "index.android.bundle",
         jsBundleFile,
         concreteJSRuntimeFactory,
         useDeveloperSupport,

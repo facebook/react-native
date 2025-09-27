@@ -35,7 +35,6 @@ import java.util.HashMap
 import java.util.UUID
 import okhttp3.MediaType
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import okio.ByteString
 
 @ReactModule(name = NativeBlobModuleSpec.NAME)
@@ -72,7 +71,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           return !isRemote && responseType == "blob"
         }
 
-        override fun fetch(uri: Uri): WritableMap {
+        override fun fetch(uri: Uri): Pair<WritableMap, ByteArray> {
           val data = getBytesFromUri(uri)
 
           val blob = Arguments.createMap()
@@ -85,7 +84,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           blob.putString("name", getNameFromUri(uri))
           blob.putDouble("lastModified", getLastModifiedFromUri(uri))
 
-          return blob
+          return blob to data
         }
       }
 
@@ -107,7 +106,8 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           val blob = checkNotNull(map.getMap("blob"))
           val bytes =
               checkNotNull(
-                  resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size")))
+                  resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"))
+              )
 
           return RequestBody.create(MediaType.parse(type), bytes)
         }
@@ -119,8 +119,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           return responseType == "blob"
         }
 
-        override fun toResponseData(body: ResponseBody): WritableMap {
-          val data = body.bytes()
+        override fun toResponseData(data: ByteArray): WritableMap {
           val blob = Arguments.createMap()
           blob.putString("blobId", store(data))
           blob.putInt("offset", 0)
@@ -134,8 +133,8 @@ public class BlobModule(reactContext: ReactApplicationContext) :
   }
 
   public override fun getTypedExportedConstants(): Map<String, Any> {
-    val resources = getReactApplicationContext().resources
-    val packageName = getReactApplicationContext().packageName
+    val resources = reactApplicationContext.resources
+    val packageName = reactApplicationContext.packageName
     val resourceId = resources.getIdentifier("blob_provider_authority", "string", packageName)
     if (resourceId == 0) {
       return mapOf()
@@ -298,7 +297,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  public override fun createFromParts(parts: ReadableArray, blobId: String): Unit {
+  public override fun createFromParts(parts: ReadableArray, blobId: String) {
     var totalBlobSize = 0
     val partList = ArrayList<ByteArray>(parts.size())
 

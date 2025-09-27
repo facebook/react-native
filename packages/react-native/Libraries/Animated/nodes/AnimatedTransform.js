@@ -47,7 +47,7 @@ function flatAnimatedNodes(
 export default class AnimatedTransform extends AnimatedWithChildren {
   // NOTE: For potentially historical reasons, some operations only operate on
   // the first level of AnimatedNode instances. This optimizes that bevavior.
-  #nodes: $ReadOnlyArray<AnimatedNode>;
+  _nodes: $ReadOnlyArray<AnimatedNode>;
 
   _transforms: $ReadOnlyArray<Transform<>>;
 
@@ -74,12 +74,12 @@ export default class AnimatedTransform extends AnimatedWithChildren {
     config?: ?AnimatedNodeConfig,
   ) {
     super(config);
-    this.#nodes = nodes;
+    this._nodes = nodes;
     this._transforms = transforms;
   }
 
   __makeNative(platformConfig: ?PlatformConfig) {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__makeNative(platformConfig);
@@ -112,7 +112,7 @@ export default class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __attach(): void {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__addChild(this);
@@ -121,7 +121,7 @@ export default class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __detach(): void {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__removeChild(this);
@@ -148,7 +148,7 @@ export default class AnimatedTransform extends AnimatedWithChildren {
           transformsConfig.push({
             type: 'static',
             property: key,
-            /* $FlowFixMe[incompatible-call] - `value` can be an array or an
+            /* $FlowFixMe[incompatible-type] - `value` can be an array or an
                object. This is not currently handled by `transformDataType`.
                Migrating to `TransformObject` might solve this. */
             value: NativeAnimatedHelper.transformDataType(value),

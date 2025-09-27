@@ -179,8 +179,9 @@ jobs:
       - name: Compress and Rename dSYM
         if: steps.restore-xcframework.outputs.cache-hit != 'true'
         run: |
-          tar -cz -f packages/react-native/third-party/Symbols/ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz \
-            packages/react-native/third-party/Symbols/ReactNativeDependencies.framework.dSYM
+          cd packages/react-native/third-party/Symbols/
+          tar -cz -f ../ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz .
+          mv ../ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz ./ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
       - name: Upload XCFramework Artifact
         uses: actions/upload-artifact@v4
         with:

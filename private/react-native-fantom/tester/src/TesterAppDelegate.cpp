@@ -7,10 +7,18 @@
 
 #include "TesterAppDelegate.h"
 
+#include "NativeFantom.h"
+#include "platform/TesterTurboModuleManagerDelegate.h"
+#include "stubs/StubClock.h"
+#include "stubs/StubHttpClient.h"
+#include "stubs/StubQueue.h"
+#include "stubs/StubWebSocketClient.h"
+
 #include <folly/dynamic.h>
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <logger/react_native_log.h>
+#include <react/io/ImageLoaderModule.h>
 #include <react/logging/DefaultOnJsErrorHandler.h>
 #include <react/nativemodule/cputime/NativeCPUTime.h>
 #include <react/nativemodule/fantomtestspecificmethods/NativeFantomTestSpecificMethods.h>
@@ -24,10 +32,6 @@
 #include <react/utils/RunLoopObserverManager.h>
 #include <iostream>
 #include <vector>
-
-#include "NativeFantom.h"
-#include "stubs/StubClock.h"
-#include "stubs/StubQueue.h"
 
 namespace facebook::react {
 
@@ -74,6 +78,13 @@ TesterAppDelegate::TesterAppDelegate(
         queue_ = queue;
         return queue;
       }));
+  contextContainer->insert(HttpClientFactoryKey, getStubHttpClientFactory());
+  contextContainer->insert(
+      WebSocketClientFactoryKey, getStubWebSocketClientFactory());
+  contextContainer->insert(
+      DevToolsHttpClientFactoryKey, getHttpClientFactory());
+  contextContainer->insert(
+      DevToolsWebSocketClientFactoryKey, getWebSocketClientFactory());
 
   runLoopObserverManager_ = std::make_shared<RunLoopObserverManager>();
 
@@ -87,10 +98,14 @@ TesterAppDelegate::TesterAppDelegate(
           return std::make_shared<NativeCPUTime>(jsInvoker);
         } else if (name == NativeFantomTestSpecificMethods::kModuleName) {
           return std::make_shared<NativeFantomTestSpecificMethods>(jsInvoker);
+        } else if (name == ImageLoaderModule::kModuleName) {
+          return std::make_shared<ImageLoaderModule>(
+              jsInvoker, mountingManager_->getImageLoader());
         } else {
           return nullptr;
         }
-      }};
+      },
+      TesterTurboModuleManagerDelegate::getTurboModuleManagerDelegate()};
 
   g_setNativeAnimatedNowTimestampFunction(StubClock::now);
 
@@ -143,6 +158,10 @@ void TesterAppDelegate::loadScript(
                   .asFunction(*runtimePtr);
 
   func.call(*runtimePtr);
+}
+
+void TesterAppDelegate::openDebugger() const {
+  reactHost_->openDebugger();
 }
 
 void TesterAppDelegate::startSurface(

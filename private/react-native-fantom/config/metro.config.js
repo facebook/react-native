@@ -34,7 +34,10 @@ const config /*: InputConfigT */ = {
   },
   resolver: {
     blockList: /\/RendererProxy\.fb\.js$/, // Disable dependency injection for the renderer
-    sourceExts: ['fb.js', ...rnTesterConfig.resolver.sourceExts],
+    sourceExts:
+      JS_DIR != null
+        ? ['fb.js', ...rnTesterConfig.resolver.sourceExts]
+        : rnTesterConfig.resolver.sourceExts,
     nodeModulesPaths:
       JS_DIR != null ? [path.join(JS_DIR, 'public', 'node_modules')] : [],
     hasteImplModulePath: path.resolve(__dirname, 'hasteImpl.js'),
