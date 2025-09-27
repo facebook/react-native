@@ -779,6 +779,43 @@ type RadialGradientValue = {
 
 export type BackgroundImageValue = LinearGradientValue | RadialGradientValue;
 
+export type BackgroundSizeValue =
+  | {
+      x: string | number,
+      y: string | number,
+    }
+  | 'cover'
+  | 'contain';
+
+export type BackgroundRepeatKeyword =
+  | 'repeat'
+  | 'space'
+  | 'round'
+  | 'no-repeat';
+
+export type BackgroundPositionValue =
+  | {
+      top: number | string,
+      left: number | string,
+    }
+  | {
+      top: number | string,
+      right: number | string,
+    }
+  | {
+      bottom: number | string,
+      left: number | string,
+    }
+  | {
+      bottom: number | string,
+      right: number | string,
+    };
+
+export type BackgroundRepeatValue = {
+  x: BackgroundRepeatKeyword,
+  y: BackgroundRepeatKeyword,
+};
+
 export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
@@ -853,6 +890,13 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   filter?: $ReadOnlyArray<FilterFunction> | string,
   mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<BackgroundImageValue> | string,
+  experimental_backgroundSize?: $ReadOnlyArray<BackgroundSizeValue> | string,
+  experimental_backgroundPosition?:
+    | $ReadOnlyArray<BackgroundPositionValue>
+    | string,
+  experimental_backgroundRepeat?:
+    | $ReadOnlyArray<BackgroundRepeatValue>
+    | string,
   isolation?: 'auto' | 'isolate',
 }>;
 

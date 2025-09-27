@@ -330,6 +330,11 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/RadialGradient/RadialGradientExample'),
   },
   {
+    key: 'BackgroundImageExample',
+    category: 'UI',
+    module: require('../examples/BackgroundImage/BackgroundImageExample'),
+  },
+  {
     key: 'MixBlendModeExample',
     category: 'UI',
     module: require('../examples/MixBlendMode/MixBlendModeExample'),
