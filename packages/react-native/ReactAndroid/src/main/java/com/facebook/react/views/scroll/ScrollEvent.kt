@@ -30,6 +30,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
   private var scrollViewHeight = 0
   private var scrollEventType: ScrollEventType? = null
   private var timestamp: Long = 0
+  private var responderIgnoreScroll: Boolean = true
 
   override fun onDispose() {
     try {
@@ -53,6 +54,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
       contentHeight: Int,
       scrollViewWidth: Int,
       scrollViewHeight: Int,
+      responderIgnoreScroll: Boolean,
   ) {
     val timestampMs = SystemClock.uptimeMillis()
     super.init(surfaceId, viewTag, timestampMs)
@@ -67,6 +69,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     this.scrollViewWidth = scrollViewWidth
     this.scrollViewHeight = scrollViewHeight
     this.timestamp = timestampMs
+    this.responderIgnoreScroll = responderIgnoreScroll
   }
 
   override fun getEventName(): String =
@@ -110,7 +113,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     event.putMap("velocity", velocity)
     event.putInt("target", viewTag)
     event.putDouble("timestamp", timestamp.toDouble())
-    event.putBoolean("responderIgnoreScroll", true)
+    event.putBoolean("responderIgnoreScroll", responderIgnoreScroll)
     return event
   }
 
@@ -131,6 +134,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
         contentHeight: Int,
         scrollViewWidth: Int,
         scrollViewHeight: Int,
+        responderIgnoreScroll: Boolean,
     ): ScrollEvent =
         (EVENTS_POOL.acquire() ?: ScrollEvent()).apply {
           init(
@@ -145,13 +149,14 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
               contentHeight,
               scrollViewWidth,
               scrollViewHeight,
+              responderIgnoreScroll,
           )
         }
 
     @Deprecated(
         "Use the obtain version that explicitly takes surfaceId as an argument",
         ReplaceWith(
-            "obtain(surfaceId, viewTag, scrollEventType, scrollX, scrollY, xVelocity, yVelocity, contentWidth, contentHeight, scrollViewWidth, scrollViewHeight)"
+            "obtain(surfaceId, viewTag, scrollEventType, scrollX, scrollY, xVelocity, yVelocity, contentWidth, contentHeight, scrollViewWidth, scrollViewHeight, responderIgnoreScroll)"
         ),
     )
     @JvmStatic
@@ -166,6 +171,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
         contentHeight: Int,
         scrollViewWidth: Int,
         scrollViewHeight: Int,
+        responderIgnoreScroll: Boolean,
     ): ScrollEvent =
         obtain(
             ViewUtil.NO_SURFACE_ID,
@@ -179,6 +185,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
             contentHeight,
             scrollViewWidth,
             scrollViewHeight,
+            responderIgnoreScroll,
         )
   }
 }

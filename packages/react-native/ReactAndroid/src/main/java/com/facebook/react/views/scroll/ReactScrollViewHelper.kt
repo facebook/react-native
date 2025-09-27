@@ -148,6 +148,11 @@ public object ReactScrollViewHelper {
               contentView.height,
               scrollView.width,
               scrollView.height,
+              if (scrollView is ReactScrollView)
+                  (scrollView as ReactScrollView).responderIgnoreScroll
+              else if (scrollView is ReactHorizontalScrollView)
+                  (scrollView as ReactHorizontalScrollView).responderIgnoreScroll
+              else true,
           )
       )
       if (scrollEventType == ScrollEventType.SCROLL) {

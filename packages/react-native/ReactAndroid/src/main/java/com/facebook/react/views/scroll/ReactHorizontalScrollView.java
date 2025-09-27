@@ -133,6 +133,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
   private int mFadingEdgeLengthStart = 0;
   private int mFadingEdgeLengthEnd = 0;
+  private boolean mResponderIgnoreScroll = true;
 
   public ReactHorizontalScrollView(Context context) {
     this(context, null);
@@ -196,6 +197,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mMaintainVisibleContentPositionHelper = null;
     mFadingEdgeLengthStart = 0;
     mFadingEdgeLengthEnd = 0;
+    mResponderIgnoreScroll = true;
   }
 
   /* package */ void recycleView() {
@@ -710,7 +712,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   protected void handleInterceptedTouchEvent(MotionEvent ev) {
-    NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    if (mResponderIgnoreScroll) {
+      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    }
     ReactScrollViewHelper.emitScrollBeginDragEvent(this);
     mDragging = true;
     enableFpsListener();
@@ -778,7 +782,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(this, velocityX, velocityY);
-      NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      if (mResponderIgnoreScroll) {
+        NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      }
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
@@ -1721,5 +1727,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public long getLastScrollDispatchTime() {
     return mLastScrollDispatchTime;
+  }
+
+  public void setResponderIgnoreScroll(boolean responderIgnoreScroll) {
+    mResponderIgnoreScroll = responderIgnoreScroll;
+  }
+
+  public boolean getResponderIgnoreScroll() {
+    return mResponderIgnoreScroll;
   }
 }
