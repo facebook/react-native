@@ -1047,7 +1047,11 @@ void JSCRuntime::setPropertyValue(
 }
 
 bool JSCRuntime::isArray(const jsi::Object& obj) const {
-  return JSValueIsArray(ctx_, objectRef(obj));
+  auto constRt = const_cast<JSCRuntime*>(this);
+  auto isArrayFn = constRt->global()
+                       .getPropertyAsObject(*constRt, "Array")
+                       .getPropertyAsFunction(*constRt, "isArray");
+  return isArrayFn.call(*constRt, obj).asBool();
 }
 
 bool JSCRuntime::isArrayBuffer(const jsi::Object& obj) const {
