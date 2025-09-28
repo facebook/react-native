@@ -6,6 +6,7 @@
  */
 
 #import "RCTBackgroundImageUtils.h"
+#include <react/utils/FloatComparison.h>
 
 using namespace facebook::react;
 
@@ -25,10 +26,10 @@ using namespace facebook::react;
     return [CALayer layer];
   }
 
-  CGFloat gradientFrameX = positioningArea.origin.x;
-  CGFloat gradientFrameY = positioningArea.origin.y;
-  CGFloat availableWidth = positioningArea.size.width - itemSize.width;
-  CGFloat availableHeight = positioningArea.size.height - itemSize.height;
+  auto gradientFrameX = positioningArea.origin.x;
+  auto gradientFrameY = positioningArea.origin.y;
+  auto availableWidth = positioningArea.size.width - itemSize.width;
+  auto availableHeight = positioningArea.size.height - itemSize.height;
 
   if (backgroundPosition.top.has_value()) {
     gradientFrameY = backgroundPosition.top->resolve(availableHeight) + gradientFrameY;
@@ -42,10 +43,10 @@ using namespace facebook::react;
     gradientFrameX = (availableWidth - backgroundPosition.right->resolve(availableWidth)) + gradientFrameX;
   }
 
-  CALayer *tiledLayer = itemLayer;
+  auto *tiledLayer = itemLayer;
   CAReplicatorLayer *replicatorX = nil;
-  CGFloat finalX = gradientFrameX;
-  CGFloat finalW = itemSize.width;
+  auto finalX = gradientFrameX;
+  auto finalW = itemSize.width;
 
   if (backgroundRepeat.x != BackgroundRepeatStyle::NoRepeat) {
     replicatorX = [CAReplicatorLayer layer];
@@ -54,32 +55,46 @@ using namespace facebook::react;
   }
 
   if (backgroundRepeat.x == BackgroundRepeatStyle::Space) {
-    if (itemSize.width <= 0) {
+    if (itemSize.width < 0 || floatEquality(itemSize.width, 0.0)) {
       replicatorX.instanceCount = 1;
     } else {
-      float instanceCount = floor(positioningArea.size.width / itemSize.width);
-      if (instanceCount > 1) {
-        gradientFrameX = positioningArea.origin.x;
-        float spacing = (positioningArea.size.width - instanceCount * itemSize.width) / (instanceCount - 1);
+      // The image is repeated as much as possible
+      // without clipping. The first and last images are pinned to either side of
+      // the element, and whitespace is distributed evenly between the images.
+      // The background-position property is ignored unless only one image can be displayed without
+      // clipping.
+      auto widthOfEdgePinnedImages = itemSize.width * 2;
+      auto availableWidthForCenterImages = paintingArea.size.width - widthOfEdgePinnedImages;
+      if (availableWidthForCenterImages > 0 || floatEquality(availableWidthForCenterImages, 0.0)) {
+        // Use pixel aligned values to avoid floating point precision issues
+        auto alignedAvailableWidth = [RCTBackgroundImageUtils pixelAlign:availableWidthForCenterImages];
+        auto alignedItemWidth = [RCTBackgroundImageUtils pixelAlign:itemSize.width];
+        auto centerImagesCount = floor(alignedAvailableWidth / alignedItemWidth);
+        auto centerImagesWidth = centerImagesCount * itemSize.width;
+        auto totalFreeSpace = availableWidthForCenterImages - centerImagesWidth;
+        auto totalInstances = centerImagesCount + 2;
+        auto spacing = totalFreeSpace / (totalInstances - 1);
         replicatorX.instanceTransform = CATransform3DMakeTranslation(itemSize.width + spacing, 0, 0);
-        float tilesBeforeX = ceil(gradientFrameX / (itemSize.width + spacing));
-        float tilesAfterX = 1 + ceil((paintingArea.size.width - (gradientFrameX + itemSize.width)) / (itemSize.width + spacing));
-        float totalInstances = tilesBeforeX + tilesAfterX;
         replicatorX.instanceCount = totalInstances;
-        finalX -= (tilesBeforeX * (itemSize.width + spacing));
-        finalW = totalInstances * (itemSize.width + spacing * (totalInstances - 1));
-      } else {
+        finalX = paintingArea.origin.x;
+        finalW = paintingArea.size.width;
+      }
+      // Only one image can fit in the space
+      else {
         replicatorX.instanceCount = 1;
       }
     }
   } else if (backgroundRepeat.x == BackgroundRepeatStyle::Repeat || backgroundRepeat.x == BackgroundRepeatStyle::Round) {
-    if (itemSize.width <= 0) {
+    if (itemSize.width < 0 || floatEquality(itemSize.width, 0.0)) {
       replicatorX.instanceCount = 1;
     } else {
       replicatorX.instanceTransform = CATransform3DMakeTranslation(itemSize.width, 0, 0);
-      float tilesBeforeX = ceil(gradientFrameX / itemSize.width);
-      float tilesAfterX = ceil((paintingArea.size.width - gradientFrameX) / itemSize.width);
-      float totalInstances = tilesBeforeX + tilesAfterX;
+      auto alignedGradientFrameX = [RCTBackgroundImageUtils pixelAlign:gradientFrameX];
+      auto alignedItemWidth = [RCTBackgroundImageUtils pixelAlign:itemSize.width];
+      auto alignedPaintingWidth = [RCTBackgroundImageUtils pixelAlign:paintingArea.size.width];
+      auto tilesBeforeX = ceil(alignedGradientFrameX / alignedItemWidth);
+      auto tilesAfterX = ceil((alignedPaintingWidth - alignedGradientFrameX) / alignedItemWidth);
+      auto totalInstances = tilesBeforeX + tilesAfterX;
       replicatorX.instanceCount = totalInstances;
       finalX = gradientFrameX - (tilesBeforeX * itemSize.width);
       finalW = totalInstances * itemSize.width;
@@ -87,8 +102,8 @@ using namespace facebook::react;
   }
 
   CAReplicatorLayer *replicatorY = nil;
-  CGFloat finalY = gradientFrameY;
-  CGFloat finalH = itemSize.height;
+  auto finalY = gradientFrameY;
+  auto finalH = itemSize.height;
 
   if (backgroundRepeat.y != BackgroundRepeatStyle::NoRepeat) {
     replicatorY = [CAReplicatorLayer layer];
@@ -97,32 +112,39 @@ using namespace facebook::react;
   }
 
   if (backgroundRepeat.y == BackgroundRepeatStyle::Space) {
-    if (itemSize.height <= 0) {
+    if (itemSize.height < 0 || floatEquality(itemSize.height, 0.0)) {
       replicatorY.instanceCount = 1;
     } else {
-      float instanceCount = floor(positioningArea.size.height / itemSize.height);
-      if (instanceCount > 1) {
-        gradientFrameY = positioningArea.origin.y;
-        float spacing = (positioningArea.size.height - instanceCount * itemSize.height) / (instanceCount - 1);
+      auto heightOfEdgePinnedImages = itemSize.height * 2;
+      auto availableHeightForCenterImages = paintingArea.size.height - heightOfEdgePinnedImages;
+      if (availableHeightForCenterImages > 0 || floatEquality(availableHeightForCenterImages, 0.0)) {
+        // Use pixel aligned values to avoid floating point precision issues
+        auto alignedAvailableHeight = [RCTBackgroundImageUtils pixelAlign:availableHeightForCenterImages];
+        auto alignedItemHeight = [RCTBackgroundImageUtils pixelAlign:itemSize.height];
+        auto centerImagesCount = floor(alignedAvailableHeight / alignedItemHeight);
+        auto centerImagesHeight = centerImagesCount * itemSize.height;
+        auto totalFreeSpace = availableHeightForCenterImages - centerImagesHeight;
+        auto totalInstances = centerImagesCount + 2;
+        auto spacing = totalFreeSpace / (totalInstances - 1);
         replicatorY.instanceTransform = CATransform3DMakeTranslation(0, itemSize.height + spacing, 0);
-        float tilesBeforeY = ceil(gradientFrameY / (itemSize.height + spacing));
-        float tilesAfterY = 1 + ceil((paintingArea.size.height - (gradientFrameY + itemSize.height)) / (itemSize.height + spacing));
-        float totalInstances = tilesBeforeY + tilesAfterY;
         replicatorY.instanceCount = totalInstances;
-        finalY -= (tilesBeforeY * (itemSize.height + spacing));
-        finalH = totalInstances * (itemSize.height + spacing * (totalInstances - 1));
+        finalY = paintingArea.origin.y;
+        finalH = paintingArea.size.height;
       } else {
         replicatorY.instanceCount = 1;
       }
     }
   } else if (backgroundRepeat.y == BackgroundRepeatStyle::Repeat || backgroundRepeat.y == BackgroundRepeatStyle::Round) {
-    if (itemSize.height <= 0) {
+    if (itemSize.height < 0 || floatEquality(itemSize.height, 0.0)) {
       replicatorY.instanceCount = 1;
     } else {
       replicatorY.instanceTransform = CATransform3DMakeTranslation(0, itemSize.height, 0);
-      float tilesBeforeY = ceil(gradientFrameY / itemSize.height);
-      float tilesAfterY = ceil((paintingArea.size.height - gradientFrameY) / itemSize.height);
-      float instanceCount = tilesBeforeY + tilesAfterY;
+      auto alignedGradientFrameY = [RCTBackgroundImageUtils pixelAlign:gradientFrameY];
+      auto alignedItemHeight = [RCTBackgroundImageUtils pixelAlign:itemSize.height];
+      auto alignedPaintingHeight = [RCTBackgroundImageUtils pixelAlign:paintingArea.size.height];
+      auto tilesBeforeY = ceil(alignedGradientFrameY / alignedItemHeight);
+      auto tilesAfterY = ceil((alignedPaintingHeight - alignedGradientFrameY) / alignedItemHeight);
+      auto instanceCount = tilesBeforeY + tilesAfterY;
       replicatorY.instanceCount = instanceCount;
       finalY = gradientFrameY - (tilesBeforeY * itemSize.height);
       finalH = instanceCount * itemSize.height;
@@ -171,8 +193,11 @@ using namespace facebook::react;
 
   if (backgroundRepeat.x == BackgroundRepeatStyle::Round) {
     if (itemFinalSize.width > 0 && positioningAreaSize.width > 0) {
-      if (fmod(positioningAreaSize.width, itemFinalSize.width) != 0) {
-        float divisor = round(positioningAreaSize.width / itemFinalSize.width);
+      auto remainder = fmod(positioningAreaSize.width, itemFinalSize.width);
+      if (!floatEquality(remainder, 0.0)) {
+        auto alignedPositioningWidth = [RCTBackgroundImageUtils pixelAlign:positioningAreaSize.width];
+        auto alignedItemFinalWidth = [RCTBackgroundImageUtils pixelAlign:itemFinalSize.width];
+        auto divisor = round(alignedPositioningWidth / alignedItemFinalWidth);
         if (divisor > 0) {
           itemFinalSize.width = positioningAreaSize.width / divisor;
         }
@@ -182,8 +207,11 @@ using namespace facebook::react;
 
   if (backgroundRepeat.y == BackgroundRepeatStyle::Round) {
     if (itemFinalSize.height > 0 && positioningAreaSize.height > 0) {
-      if (fmod(positioningAreaSize.height, itemFinalSize.height) != 0) {
-        float divisor = round(positioningAreaSize.height / itemFinalSize.height);
+      auto remainder = fmod(positioningAreaSize.height, itemFinalSize.height);
+      if (!floatEquality(remainder, 0.0)) {
+        auto alignedPositioningHeight = [RCTBackgroundImageUtils pixelAlign:positioningAreaSize.height];
+        auto alignedItemFinalHeight = [RCTBackgroundImageUtils pixelAlign:itemFinalSize.height];
+        auto divisor = round(alignedPositioningHeight / alignedItemFinalHeight);
         if (divisor > 0) {
           itemFinalSize.height = positioningAreaSize.height / divisor;
         }
@@ -192,6 +220,10 @@ using namespace facebook::react;
   }
 
   return itemFinalSize;
+}
+
++ (CGFloat)pixelAlign:(CGFloat)value {
+  return round(value * [UIScreen mainScreen].scale) / [UIScreen mainScreen].scale;
 }
 
 @end
