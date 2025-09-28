@@ -380,10 +380,10 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                   moduleProvider:(RCTBridgeModuleListProvider)block
                    launchOptions:(NSDictionary *)launchOptions
 {
-  // Only enabld this assertion in OSS
-#if COCOAPODS
-  [RCTBridge throwIfOnLegacyArch];
-#endif
+  // Only enable this assertion in OSS
+//#if COCOAPODS
+//  [RCTBridge throwIfOnLegacyArch];
+//#endif
 
   if (self = [super init]) {
     RCTEnforceNewArchitectureValidation(RCTNotAllowedInBridgeless, self, nil);
