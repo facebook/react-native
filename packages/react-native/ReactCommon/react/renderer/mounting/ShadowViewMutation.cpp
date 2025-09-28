@@ -120,26 +120,26 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
     DebugStringConvertibleOptions options) {
   return {
       mutation.oldChildShadowView.componentHandle != 0
-          ? DebugStringConvertibleObject{"oldChild",
-                                         getDebugDescription(
+          ? DebugStringConvertibleObject{.name="oldChild",
+                                         .value=getDebugDescription(
                                              mutation.oldChildShadowView,
                                              options)}
           : DebugStringConvertibleObject{},
       mutation.newChildShadowView.componentHandle != 0
-          ? DebugStringConvertibleObject{"newChild",
-                                         getDebugDescription(
+          ? DebugStringConvertibleObject{.name="newChild",
+                                         .value=getDebugDescription(
                                              mutation.newChildShadowView,
                                              options)}
           : DebugStringConvertibleObject{},
       mutation.parentTag != -1
-          ? DebugStringConvertibleObject{"parent",
-                                         getDebugDescription(
+          ? DebugStringConvertibleObject{.name="parent",
+                                         .value=getDebugDescription(
                                              mutation.parentTag,
                                              options)}
           : DebugStringConvertibleObject{},
       mutation.index != -1
-          ? DebugStringConvertibleObject{"index",
-                                         getDebugDescription(
+          ? DebugStringConvertibleObject{.name="index",
+                                         .value=getDebugDescription(
                                              mutation.index, options)}
           : DebugStringConvertibleObject{},
   };

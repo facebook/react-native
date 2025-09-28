@@ -31,7 +31,7 @@ struct ShadowViewNodePair final {
    * Whether this ShadowNode should create a corresponding native view.
    */
   bool isConcreteView{true};
-  Point contextOrigin{0, 0};
+  Point contextOrigin{.x = 0, .y = 0};
 
   size_t mountIndex{0};
 

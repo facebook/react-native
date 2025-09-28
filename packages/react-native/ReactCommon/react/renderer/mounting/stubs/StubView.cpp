@@ -75,12 +75,15 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
     const StubView& stubView,
     DebugStringConvertibleOptions options) {
   return {
-      {"surfaceId", getDebugDescription(stubView.surfaceId, options)},
-      {"tag", getDebugDescription(stubView.tag, options)},
-      {"props", getDebugDescription(stubView.props, options)},
-      {"eventEmitter", getDebugDescription(stubView.eventEmitter, options)},
-      {"layoutMetrics", getDebugDescription(stubView.layoutMetrics, options)},
-      {"state", getDebugDescription(stubView.state, options)},
+      {.name = "surfaceId",
+       .value = getDebugDescription(stubView.surfaceId, options)},
+      {.name = "tag", .value = getDebugDescription(stubView.tag, options)},
+      {.name = "props", .value = getDebugDescription(stubView.props, options)},
+      {.name = "eventEmitter",
+       .value = getDebugDescription(stubView.eventEmitter, options)},
+      {.name = "layoutMetrics",
+       .value = getDebugDescription(stubView.layoutMetrics, options)},
+      {.name = "state", .value = getDebugDescription(stubView.state, options)},
   };
 }
 
