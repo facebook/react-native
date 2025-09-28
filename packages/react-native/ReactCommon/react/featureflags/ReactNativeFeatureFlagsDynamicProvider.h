@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<edcc579f1ecfd47b8fc480bc1e4e7988>>
+ * @generated SignedSource<<00b4d80631374e0714c8aa9f65060220>>
  */
 
 /**
@@ -700,6 +700,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModules();
+  }
+
+  double viewCullingOutsetRatio() override {
+    auto value = values_["viewCullingOutsetRatio"];
+    if (!value.isNull()) {
+      return value.getDouble();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::viewCullingOutsetRatio();
   }
 
   double virtualViewHysteresisRatio() override {
