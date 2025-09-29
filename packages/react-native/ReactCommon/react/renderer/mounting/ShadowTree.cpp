@@ -69,13 +69,14 @@ static std::shared_ptr<ShadowNode> progressState(const ShadowNode& shadowNode) {
   }
 
   return shadowNode.clone({
-      ShadowNodeFragment::propsPlaceholder(),
-      areChildrenChanged
+      .props = ShadowNodeFragment::propsPlaceholder(),
+      .children = areChildrenChanged
           ? std::make_shared<
                 const std::vector<std::shared_ptr<const ShadowNode>>>(
                 std::move(newChildren))
           : ShadowNodeFragment::childrenPlaceholder(),
-      isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
+      .state =
+          isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
   });
 }
 
@@ -158,13 +159,14 @@ static std::shared_ptr<ShadowNode> progressState(
   }
 
   return shadowNode.clone({
-      ShadowNodeFragment::propsPlaceholder(),
-      areChildrenChanged
+      .props = ShadowNodeFragment::propsPlaceholder(),
+      .children = areChildrenChanged
           ? std::make_shared<
                 const std::vector<std::shared_ptr<const ShadowNode>>>(
                 std::move(newChildren))
           : ShadowNodeFragment::childrenPlaceholder(),
-      isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
+      .state =
+          isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
   });
 }
 
@@ -177,7 +179,9 @@ ShadowTree::ShadowTree(
     : surfaceId_(surfaceId), delegate_(delegate) {
   static RootComponentDescriptor globalRootComponentDescriptor(
       ComponentDescriptorParameters{
-          EventDispatcher::Shared{}, nullptr, nullptr});
+          .eventDispatcher = EventDispatcher::Shared{},
+          .contextContainer = nullptr,
+          .flavor = nullptr});
 
   const auto props = std::make_shared<const RootProps>(
       PropsParserContext{surfaceId, contextContainer},
@@ -186,17 +190,19 @@ ShadowTree::ShadowTree(
       layoutContext);
 
   auto family = globalRootComponentDescriptor.createFamily(
-      {surfaceId, surfaceId, nullptr});
+      {.tag = surfaceId, .surfaceId = surfaceId, .instanceHandle = nullptr});
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
       globalRootComponentDescriptor.createShadowNode(
           ShadowNodeFragment{
-              /* .props = */ props,
+              /* .props = */ .props = props,
           },
           family));
 
   currentRevision_ = ShadowTreeRevision{
-      rootShadowNode, INITIAL_REVISION, TransactionTelemetry{}};
+      .rootShadowNode = rootShadowNode,
+      .number = INITIAL_REVISION,
+      .telemetry = TransactionTelemetry{}};
 
   mountingCoordinator_ =
       std::make_shared<const MountingCoordinator>(currentRevision_);
@@ -354,7 +360,9 @@ CommitStatus ShadowTree::tryCommit(
     newRootShadowNode->sealRecursive();
 
     newRevision = ShadowTreeRevision{
-        std::move(newRootShadowNode), newRevisionNumber, telemetry};
+        .rootShadowNode = std::move(newRootShadowNode),
+        .number = newRevisionNumber,
+        .telemetry = telemetry};
 
     currentRevision_ = newRevision;
   }
@@ -387,8 +395,9 @@ void ShadowTree::commitEmptyTree() const {
         return std::make_shared<RootShadowNode>(
             oldRootShadowNode,
             ShadowNodeFragment{
-                /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+                /* .props = */ .props = ShadowNodeFragment::propsPlaceholder(),
+                /* .children = */ .children =
+                    ShadowNode::emptySharedShadowNodeSharedList(),
             });
       },
       {/* default commit options */});
