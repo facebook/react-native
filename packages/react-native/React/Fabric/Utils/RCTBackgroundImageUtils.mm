@@ -66,10 +66,10 @@ using namespace facebook::react;
       auto widthOfEdgePinnedImages = itemSize.width * 2;
       auto availableWidthForCenterImages = paintingArea.size.width - widthOfEdgePinnedImages;
       if (availableWidthForCenterImages > 0 || floatEquality(availableWidthForCenterImages, 0.0)) {
-        // Use pixel aligned values to avoid floating point precision issues
-        auto alignedAvailableWidth = [RCTBackgroundImageUtils pixelAlign:availableWidthForCenterImages];
-        auto alignedItemWidth = [RCTBackgroundImageUtils pixelAlign:itemSize.width];
-        auto centerImagesCount = floor(alignedAvailableWidth / alignedItemWidth);
+        // Use rounded values to avoid floating point precision issues
+        auto roundedAvailableWidth = round(availableWidthForCenterImages);
+        auto roundedItemWidth = round(itemSize.width);
+        auto centerImagesCount = floor(roundedAvailableWidth / roundedItemWidth);
         auto centerImagesWidth = centerImagesCount * itemSize.width;
         auto totalFreeSpace = availableWidthForCenterImages - centerImagesWidth;
         auto totalInstances = centerImagesCount + 2;
@@ -89,11 +89,11 @@ using namespace facebook::react;
       replicatorX.instanceCount = 1;
     } else {
       replicatorX.instanceTransform = CATransform3DMakeTranslation(itemSize.width, 0, 0);
-      auto alignedGradientFrameX = [RCTBackgroundImageUtils pixelAlign:gradientFrameX];
-      auto alignedItemWidth = [RCTBackgroundImageUtils pixelAlign:itemSize.width];
-      auto alignedPaintingWidth = [RCTBackgroundImageUtils pixelAlign:paintingArea.size.width];
-      auto tilesBeforeX = ceil(alignedGradientFrameX / alignedItemWidth);
-      auto tilesAfterX = ceil((alignedPaintingWidth - alignedGradientFrameX) / alignedItemWidth);
+      auto roundedGradientFrameX = round(gradientFrameX);
+      auto roundedItemWidth = round(itemSize.width);
+      auto roundedPaintingWidth = round(paintingArea.size.width);
+      auto tilesBeforeX = ceil(roundedGradientFrameX / roundedItemWidth);
+      auto tilesAfterX = ceil((roundedPaintingWidth - roundedGradientFrameX) / roundedItemWidth);
       auto totalInstances = tilesBeforeX + tilesAfterX;
       replicatorX.instanceCount = totalInstances;
       finalX = gradientFrameX - (tilesBeforeX * itemSize.width);
@@ -118,10 +118,10 @@ using namespace facebook::react;
       auto heightOfEdgePinnedImages = itemSize.height * 2;
       auto availableHeightForCenterImages = paintingArea.size.height - heightOfEdgePinnedImages;
       if (availableHeightForCenterImages > 0 || floatEquality(availableHeightForCenterImages, 0.0)) {
-        // Use pixel aligned values to avoid floating point precision issues
-        auto alignedAvailableHeight = [RCTBackgroundImageUtils pixelAlign:availableHeightForCenterImages];
-        auto alignedItemHeight = [RCTBackgroundImageUtils pixelAlign:itemSize.height];
-        auto centerImagesCount = floor(alignedAvailableHeight / alignedItemHeight);
+        // Use pixel rounded values to avoid floating point precision issues
+        auto roundedAvailableHeight = round(availableHeightForCenterImages);
+        auto roundedItemHeight = round(itemSize.height);
+        auto centerImagesCount = floor(roundedAvailableHeight / roundedItemHeight);
         auto centerImagesHeight = centerImagesCount * itemSize.height;
         auto totalFreeSpace = availableHeightForCenterImages - centerImagesHeight;
         auto totalInstances = centerImagesCount + 2;
@@ -139,11 +139,11 @@ using namespace facebook::react;
       replicatorY.instanceCount = 1;
     } else {
       replicatorY.instanceTransform = CATransform3DMakeTranslation(0, itemSize.height, 0);
-      auto alignedGradientFrameY = [RCTBackgroundImageUtils pixelAlign:gradientFrameY];
-      auto alignedItemHeight = [RCTBackgroundImageUtils pixelAlign:itemSize.height];
-      auto alignedPaintingHeight = [RCTBackgroundImageUtils pixelAlign:paintingArea.size.height];
-      auto tilesBeforeY = ceil(alignedGradientFrameY / alignedItemHeight);
-      auto tilesAfterY = ceil((alignedPaintingHeight - alignedGradientFrameY) / alignedItemHeight);
+      auto roundedGradientFrameY = round(gradientFrameY);
+      auto roundedItemHeight = round(itemSize.height);
+      auto roundedPaintingHeight = round(paintingArea.size.height);
+      auto tilesBeforeY = ceil(roundedGradientFrameY / roundedItemHeight);
+      auto tilesAfterY = ceil((roundedPaintingHeight - roundedGradientFrameY) / roundedItemHeight);
       auto instanceCount = tilesBeforeY + tilesAfterY;
       replicatorY.instanceCount = instanceCount;
       finalY = gradientFrameY - (tilesBeforeY * itemSize.height);
@@ -195,9 +195,9 @@ using namespace facebook::react;
     if (itemFinalSize.width > 0 && positioningAreaSize.width > 0) {
       auto remainder = fmod(positioningAreaSize.width, itemFinalSize.width);
       if (!floatEquality(remainder, 0.0)) {
-        auto alignedPositioningWidth = [RCTBackgroundImageUtils pixelAlign:positioningAreaSize.width];
-        auto alignedItemFinalWidth = [RCTBackgroundImageUtils pixelAlign:itemFinalSize.width];
-        auto divisor = round(alignedPositioningWidth / alignedItemFinalWidth);
+        auto roundedPositioningWidth = round(positioningAreaSize.width);
+        auto roundedItemFinalWidth = round(itemFinalSize.width);
+        auto divisor = round(roundedPositioningWidth / roundedItemFinalWidth);
         if (divisor > 0) {
           itemFinalSize.width = positioningAreaSize.width / divisor;
         }
@@ -209,9 +209,9 @@ using namespace facebook::react;
     if (itemFinalSize.height > 0 && positioningAreaSize.height > 0) {
       auto remainder = fmod(positioningAreaSize.height, itemFinalSize.height);
       if (!floatEquality(remainder, 0.0)) {
-        auto alignedPositioningHeight = [RCTBackgroundImageUtils pixelAlign:positioningAreaSize.height];
-        auto alignedItemFinalHeight = [RCTBackgroundImageUtils pixelAlign:itemFinalSize.height];
-        auto divisor = round(alignedPositioningHeight / alignedItemFinalHeight);
+        auto roundedPositioningHeight = round(positioningAreaSize.height);
+        auto roundedItemFinalHeight = round(itemFinalSize.height);
+        auto divisor = round(roundedPositioningHeight / roundedItemFinalHeight);
         if (divisor > 0) {
           itemFinalSize.height = positioningAreaSize.height / divisor;
         }
@@ -220,10 +220,6 @@ using namespace facebook::react;
   }
 
   return itemFinalSize;
-}
-
-+ (CGFloat)pixelAlign:(CGFloat)value {
-  return round(value * [UIScreen mainScreen].scale) / [UIScreen mainScreen].scale;
 }
 
 @end
