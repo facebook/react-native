@@ -10,17 +10,17 @@
 
 @implementation RCTCallableJSModules {
   RCTBridgelessJSModuleMethodInvoker _bridgelessJSModuleMethodInvoker;
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   __weak RCTBridge *_bridge;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
 }
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 - (void)setBridgelessJSModuleMethodInvoker:(RCTBridgelessJSModuleMethodInvoker)bridgelessJSModuleMethodInvoker
 {
@@ -37,13 +37,13 @@
             withArgs:(NSArray *)args
           onComplete:(dispatch_block_t)onComplete
 {
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   RCTBridge *bridge = _bridge;
   if (bridge) {
     [bridge enqueueJSCall:moduleName method:methodName args:args completion:onComplete];
     return;
   }
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
   if (_bridgelessJSModuleMethodInvoker) {
     _bridgelessJSModuleMethodInvoker(moduleName, methodName, args, onComplete);

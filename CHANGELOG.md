@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.81.4
+
+### Fixed
+
+#### iOS specific
+
+- Fix regression that skips artifacts code generation ([f6f5ea0b2e](https://github.com/facebook/react-native/commit/f6f5ea0b2eed894725d8f6e8bd045c99c3182026) by [@kitten](https://github.com/kitten))
+- Reapplied "Use autolinking-generated react-native-config output in second step of cocoapods linking that generates artifacts and generated source" ([bb73315a3f](https://github.com/facebook/react-native/commit/bb73315a3fd8cd203c4ddb3ffa10bfec307c7e92) by [@kitten](https://github.com/kitten))
+
+## v0.82.0-rc.4
+
+### Fixed
+
+- **Hermes V1:** Fixed coordinates for Hermes V1 artifacts ([674fb77d93](https://github.com/facebook/react-native/commit/674fb77d93dfe67a5fe90449dc71b195b1851e13) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### iOS specific
+
+- **Switch:** Fix Switch layout to work with iOS26 ([91d427fe52](https://github.com/facebook/react-native/commit/91d427fe52a307f9aa8579912ef956d61808dad2) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.82.0-rc.3
 
 ### Added

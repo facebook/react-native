@@ -97,14 +97,16 @@ describe('VirtualizedSectionList', () => {
           ListEmptyComponent={() => <empty />}
           ListFooterComponent={() => <footer />}
           ListHeaderComponent={() => <header />}
-          sections={[
-            {
-              title: 's1',
-              data: new Array<void>(5)
-                .fill()
-                .map((_, ii) => ({id: String(ii)})) as Array<{id: string}>,
-            },
-          ]}
+          sections={
+            [
+              {
+                title: 's1',
+                data: new Array<void>(5)
+                  .fill()
+                  .map((_, ii) => ({id: String(ii)})) as Array<{id: string}>,
+              },
+            ] as Array<SectionBase<{id: string}>>
+          }
           getItem={(data, key) => data[key]}
           getItemCount={data => data.length}
           getItemLayout={({index}) => ({
@@ -165,21 +167,25 @@ describe('VirtualizedSectionList', () => {
       component = ReactTestRenderer.create(
         <VirtualizedSectionList
           // $FlowFixMe[incompatible-type]
-          sections={[
-            {title: 'outer', data: [{key: 'outer0'}, {key: 'outer1'}]},
-          ]}
+          sections={
+            [
+              {title: 'outer', data: [{key: 'outer0'}, {key: 'outer1'}]},
+            ] as Array<SectionBase<{key: string}>>
+          }
           renderItem={outerInfo => (
             <VirtualizedSectionList
-              sections={[
-                // $FlowFixMe[incompatible-type]
-                {
-                  title: 'inner',
-                  data: [
-                    {key: outerInfo.item.key + ':inner0'},
-                    {key: outerInfo.item.key + ':inner1'},
-                  ],
-                },
-              ]}
+              sections={
+                [
+                  // $FlowFixMe[incompatible-type]
+                  {
+                    title: 'inner',
+                    data: [
+                      {key: outerInfo.item.key + ':inner0'},
+                      {key: outerInfo.item.key + ':inner1'},
+                    ],
+                  },
+                ] as Array<SectionBase<{key: string}>>
+              }
               horizontal={outerInfo.item.key === 'outer1'}
               renderItem={innerInfo => {
                 return <item title={innerInfo.item.key} />;
@@ -206,18 +212,20 @@ describe('VirtualizedSectionList', () => {
       await ReactTestRenderer.act(() => {
         component = ReactTestRenderer.create(
           <VirtualizedSectionList
-            sections={[
-              // $FlowFixMe[incompatible-type]
-              {
-                title: 's1',
-                data: [{key: 'i1.1'}, {key: 'i1.2'}, {key: 'i1.3'}],
-              },
-              // $FlowFixMe[incompatible-type]
-              {
-                title: 's2',
-                data: [{key: 'i2.1'}, {key: 'i2.2'}, {key: 'i2.3'}],
-              },
-            ]}
+            sections={
+              [
+                // $FlowFixMe[incompatible-type]
+                {
+                  title: 's1',
+                  data: [{key: 'i1.1'}, {key: 'i1.2'}, {key: 'i1.3'}],
+                },
+                // $FlowFixMe[incompatible-type]
+                {
+                  title: 's2',
+                  data: [{key: 'i2.1'}, {key: 'i2.2'}, {key: 'i2.3'}],
+                },
+              ] as Array<SectionBase<{key: string}>>
+            }
             renderItem={({item}) => <item value={item.key} />}
             getItem={(data, key) => data[key]}
             getItemCount={data => data.length}

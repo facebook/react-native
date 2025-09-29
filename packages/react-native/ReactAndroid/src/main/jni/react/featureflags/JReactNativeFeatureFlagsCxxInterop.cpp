@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de817bc06ae5ef584db08d6a094c9d03>>
+ * @generated SignedSource<<7a0a26494846d6b4881bea01beabb9d6>>
  */
 
 /**
@@ -186,6 +186,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableImagePrefetchingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImagePrefetchingAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableImagePrefetchingJNIBatchingAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImagePrefetchingJNIBatchingAndroid");
     return method(javaProvider_);
   }
 
@@ -471,6 +477,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  double viewCullingOutsetRatio() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("viewCullingOutsetRatio");
+    return method(javaProvider_);
+  }
+
   double virtualViewHysteresisRatio() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("virtualViewHysteresisRatio");
@@ -610,6 +622,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
 bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingJNIBatchingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingOnUiThreadAndroid(
@@ -847,6 +864,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useTurboModules(
   return ReactNativeFeatureFlags::useTurboModules();
 }
 
+double JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::viewCullingOutsetRatio();
+}
+
 double JReactNativeFeatureFlagsCxxInterop::virtualViewHysteresisRatio(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::virtualViewHysteresisRatio();
@@ -963,6 +985,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableImagePrefetchingAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid),
+      makeNativeMethod(
+        "enableImagePrefetchingJNIBatchingAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingJNIBatchingAndroid),
       makeNativeMethod(
         "enableImagePrefetchingOnUiThreadAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingOnUiThreadAndroid),
@@ -1104,6 +1129,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useTurboModules",
         JReactNativeFeatureFlagsCxxInterop::useTurboModules),
+      makeNativeMethod(
+        "viewCullingOutsetRatio",
+        JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio),
       makeNativeMethod(
         "virtualViewHysteresisRatio",
         JReactNativeFeatureFlagsCxxInterop::virtualViewHysteresisRatio),

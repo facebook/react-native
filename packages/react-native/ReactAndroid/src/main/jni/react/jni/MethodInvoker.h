@@ -13,7 +13,7 @@
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 

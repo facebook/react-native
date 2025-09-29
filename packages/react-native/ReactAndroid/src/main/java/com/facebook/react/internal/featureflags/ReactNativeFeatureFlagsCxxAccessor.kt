@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e7581ab264bca8b059723bd7bd788790>>
+ * @generated SignedSource<<e7cfc5135c7b3c731324297e92e41e3f>>
  */
 
 /**
@@ -45,6 +45,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
+  private var enableImagePrefetchingJNIBatchingAndroidCache: Boolean? = null
   private var enableImagePrefetchingOnUiThreadAndroidCache: Boolean? = null
   private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableImperativeFocusCache: Boolean? = null
@@ -92,6 +93,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useShadowNodeStateOnCloneCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
+  private var viewCullingOutsetRatioCache: Double? = null
   private var virtualViewHysteresisRatioCache: Double? = null
   private var virtualViewPrerenderRatioCache: Double? = null
 
@@ -316,6 +318,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableImagePrefetchingAndroid()
       enableImagePrefetchingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean {
+    var cached = enableImagePrefetchingJNIBatchingAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableImagePrefetchingJNIBatchingAndroid()
+      enableImagePrefetchingJNIBatchingAndroidCache = cached
     }
     return cached
   }
@@ -739,6 +750,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useTurboModules()
       useTurboModulesCache = cached
+    }
+    return cached
+  }
+
+  override fun viewCullingOutsetRatio(): Double {
+    var cached = viewCullingOutsetRatioCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.viewCullingOutsetRatio()
+      viewCullingOutsetRatioCache = cached
     }
     return cached
   }

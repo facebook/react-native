@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53981e017d681009b240ad6b5d09d4d8>>
+ * @generated SignedSource<<ae0e9dbf8605126b358f776226e68130>>
  */
 
 /**
@@ -57,6 +57,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
+  bool enableImagePrefetchingJNIBatchingAndroid();
   bool enableImagePrefetchingOnUiThreadAndroid();
   bool enableImmediateUpdateModeForContentOffsetChanges();
   bool enableImperativeFocus();
@@ -104,6 +105,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useShadowNodeStateOnClone();
   bool useTurboModuleInterop();
   bool useTurboModules();
+  double viewCullingOutsetRatio();
   double virtualViewHysteresisRatio();
   double virtualViewPrerenderRatio();
 
@@ -117,7 +119,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 74> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 76> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -144,6 +146,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
+  std::atomic<std::optional<bool>> enableImagePrefetchingJNIBatchingAndroid_;
   std::atomic<std::optional<bool>> enableImagePrefetchingOnUiThreadAndroid_;
   std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
   std::atomic<std::optional<bool>> enableImperativeFocus_;
@@ -191,6 +194,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
+  std::atomic<std::optional<double>> viewCullingOutsetRatio_;
   std::atomic<std::optional<double>> virtualViewHysteresisRatio_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;
 };

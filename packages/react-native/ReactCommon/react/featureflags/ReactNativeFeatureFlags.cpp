@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<50f81f60d4c2d2e08fde98f4a2d841ea>>
+ * @generated SignedSource<<f01f3d1a08880a7fa9d3490e6bd9c61a>>
  */
 
 /**
@@ -124,6 +124,10 @@ bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
 
 bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
   return getAccessor().enableImagePrefetchingAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid() {
+  return getAccessor().enableImagePrefetchingJNIBatchingAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid() {
@@ -312,6 +316,10 @@ bool ReactNativeFeatureFlags::useTurboModuleInterop() {
 
 bool ReactNativeFeatureFlags::useTurboModules() {
   return getAccessor().useTurboModules();
+}
+
+double ReactNativeFeatureFlags::viewCullingOutsetRatio() {
+  return getAccessor().viewCullingOutsetRatio();
 }
 
 double ReactNativeFeatureFlags::virtualViewHysteresisRatio() {

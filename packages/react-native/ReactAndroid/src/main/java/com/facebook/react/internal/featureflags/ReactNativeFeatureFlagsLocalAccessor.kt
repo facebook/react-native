@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<962c60d1761b0a1f4945b44767aa7b02>>
+ * @generated SignedSource<<9e6e04ca37edd1ad9265b74e251ff4de>>
  */
 
 /**
@@ -49,6 +49,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
+  private var enableImagePrefetchingJNIBatchingAndroidCache: Boolean? = null
   private var enableImagePrefetchingOnUiThreadAndroidCache: Boolean? = null
   private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableImperativeFocusCache: Boolean? = null
@@ -96,6 +97,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useShadowNodeStateOnCloneCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
+  private var viewCullingOutsetRatioCache: Double? = null
   private var virtualViewHysteresisRatioCache: Double? = null
   private var virtualViewPrerenderRatioCache: Double? = null
 
@@ -345,6 +347,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableImagePrefetchingAndroid()
       accessedFeatureFlags.add("enableImagePrefetchingAndroid")
       enableImagePrefetchingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean {
+    var cached = enableImagePrefetchingJNIBatchingAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableImagePrefetchingJNIBatchingAndroid()
+      accessedFeatureFlags.add("enableImagePrefetchingJNIBatchingAndroid")
+      enableImagePrefetchingJNIBatchingAndroidCache = cached
     }
     return cached
   }
@@ -815,6 +827,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useTurboModules()
       accessedFeatureFlags.add("useTurboModules")
       useTurboModulesCache = cached
+    }
+    return cached
+  }
+
+  override fun viewCullingOutsetRatio(): Double {
+    var cached = viewCullingOutsetRatioCache
+    if (cached == null) {
+      cached = currentProvider.viewCullingOutsetRatio()
+      accessedFeatureFlags.add("viewCullingOutsetRatio")
+      viewCullingOutsetRatioCache = cached
     }
     return cached
   }

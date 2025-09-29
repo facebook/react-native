@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae105f2906573a4f8955c086d3441389>>
+ * @generated SignedSource<<39140c882a6faa0403d3a59806c6bea5>>
  */
 
 /**
@@ -85,6 +85,8 @@ class NativeReactNativeFeatureFlags
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
+
+  bool enableImagePrefetchingJNIBatchingAndroid(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
 
@@ -179,6 +181,8 @@ class NativeReactNativeFeatureFlags
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 
   bool useTurboModules(jsi::Runtime& runtime);
+
+  double viewCullingOutsetRatio(jsi::Runtime& runtime);
 
   double virtualViewHysteresisRatio(jsi::Runtime& runtime);
 

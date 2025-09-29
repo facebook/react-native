@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4fa15189361a6c92bdd44bafc9356167>>
+ * @generated SignedSource<<9f7eb1bb5e24fd8ee87accf60209cce3>>
  */
 
 /**
@@ -72,6 +72,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
+
+  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = false
 
   override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
 
@@ -166,6 +168,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useTurboModuleInterop(): Boolean = false
 
   override fun useTurboModules(): Boolean = false
+
+  override fun viewCullingOutsetRatio(): Double = 0.0
 
   override fun virtualViewHysteresisRatio(): Double = 0.0
 

@@ -314,6 +314,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableImagePrefetchingJNIBatchingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-19',
+        description:
+          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableImagePrefetchingOnUiThreadAndroid: {
       defaultValue: false,
       metadata: {
@@ -813,6 +824,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
+    },
+    viewCullingOutsetRatio: {
+      defaultValue: 0,
+      metadata: {
+        dateAdded: '2025-09-18',
+        description:
+          'Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.',
+        expectedReleaseValue: 0,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     virtualViewHysteresisRatio: {
       defaultValue: 0,

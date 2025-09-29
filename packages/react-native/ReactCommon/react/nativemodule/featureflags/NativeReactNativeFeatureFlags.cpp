@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c97db1f02897c99b61643cac10067c6d>>
+ * @generated SignedSource<<27c7bc7a528da06ffe2bcea48211f6bd>>
  */
 
 /**
@@ -167,6 +167,11 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
 bool NativeReactNativeFeatureFlags::enableImagePrefetchingAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid(
@@ -402,6 +407,11 @@ bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
 bool NativeReactNativeFeatureFlags::useTurboModules(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModules();
+}
+
+double NativeReactNativeFeatureFlags::viewCullingOutsetRatio(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::viewCullingOutsetRatio();
 }
 
 double NativeReactNativeFeatureFlags::virtualViewHysteresisRatio(

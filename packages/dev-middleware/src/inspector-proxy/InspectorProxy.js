@@ -75,9 +75,6 @@ export interface InspectorProxyQueries {
  * Main Inspector Proxy class that connects JavaScript VM inside Android/iOS apps and JS debugger.
  */
 export default class InspectorProxy implements InspectorProxyQueries {
-  // Root of the project used for relative to absolute source path conversion.
-  #projectRoot: string;
-
   // The base URL to the dev server from the dev-middleware host.
   #serverBaseUrl: URL;
 
@@ -101,7 +98,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
   #eventLoopPerfTracker: EventLoopPerfTracker;
 
   constructor(
-    projectRoot: string,
     serverBaseUrl: string,
     eventReporter: ?EventReporter,
     experiments: Experiments,
@@ -109,7 +105,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
     customMessageHandler: ?CreateCustomMessageHandlerFn,
     trackEventLoopPerf?: boolean = false,
   ) {
-    this.#projectRoot = projectRoot;
     this.#serverBaseUrl = new URL(serverBaseUrl);
     this.#devices = new Map();
     this.#eventReporter = eventReporter;
@@ -355,7 +350,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
           name: deviceName,
           app: appName,
           socket,
-          projectRoot: this.#projectRoot,
           eventReporter: this.#eventReporter,
           createMessageMiddleware: this.#customMessageHandler,
           deviceRelativeBaseUrl,
@@ -371,12 +365,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
         }
 
         this.#devices.set(deviceId, newDevice);
-
-        this.#logger?.info(
-          "Connection established to app='%s' on device='%s'.",
-          appName,
-          deviceName,
-        );
 
         debug(
           "Got new device connection: name='%s', app=%s, device=%s, via=%s",
@@ -450,7 +438,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         );
 
         socket.on('close', (code: number, reason: string) => {
-          this.#logger?.info(
+          debug(
             "Connection closed to device='%s' for app='%s' with code='%s' and reason='%s'.",
             deviceName,
             appName,
@@ -526,7 +514,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           throw new Error(INTERNAL_ERROR_MESSAGES.UNREGISTERED_DEVICE);
         }
 
-        this.#logger?.info(
+        debug(
           "Connection established to DevTools for app='%s' on device='%s'.",
           device.getApp() || 'unknown',
           device.getName() || 'unknown',
@@ -594,7 +582,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         });
 
         socket.on('close', (code: number, reason: string) => {
-          this.#logger?.info(
+          debug(
             "Connection closed to DevTools for app='%s' on device='%s' with code='%s' and reason='%s'.",
             device.getApp() || 'unknown',
             device.getName() || 'unknown',

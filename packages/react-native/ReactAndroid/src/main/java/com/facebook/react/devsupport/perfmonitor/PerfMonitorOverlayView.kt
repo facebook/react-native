@@ -55,11 +55,11 @@ internal class PerfMonitorOverlayView(
 
     if (state == TracingState.ENABLEDINBACKGROUNDMODE) {
       (statusIndicator.background as GradientDrawable).setColor(Color.RED)
-      statusLabel.text = "Background Profiling Active"
+      statusLabel.text = "Profiling Active"
       tooltipLabel.text = "Press ☰ to open"
     } else {
       (statusIndicator.background as GradientDrawable).setColor(Color.GRAY)
-      statusLabel.text = "Background Profiling Stopped"
+      statusLabel.text = "Profiling Stopped"
       tooltipLabel.text = "Press ☰ to restart"
     }
     dialog.show()
@@ -164,7 +164,7 @@ internal class PerfMonitorOverlayView(
             shape = GradientDrawable.RECTANGLE
             setColor(Color.BLACK)
             cornerRadius = dpToPx(14.5f)
-            alpha = (0.8 * 255).toInt()
+            alpha = (0.4 * 255).toInt()
             setStroke(dpToPx(1f).toInt(), COLOR_OVERLAY_BORDER)
           }
       showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
