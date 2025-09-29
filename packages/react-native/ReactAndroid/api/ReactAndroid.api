@@ -3806,6 +3806,7 @@ public abstract interface class com/facebook/react/uimanager/ReactPointerEventsV
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactRoot {
+	public static final field Companion Lcom/facebook/react/uimanager/ReactRoot$Companion;
 	public static final field STATE_STARTED I
 	public static final field STATE_STOPPED I
 	public abstract fun getAppProperties ()Landroid/os/Bundle;
@@ -3821,6 +3822,11 @@ public abstract interface class com/facebook/react/uimanager/ReactRoot {
 	public abstract fun runApplication ()V
 	public abstract fun setRootViewTag (I)V
 	public abstract fun setShouldLogContentAppeared (Z)V
+}
+
+public final class com/facebook/react/uimanager/ReactRoot$Companion {
+	public static final field STATE_STARTED I
+	public static final field STATE_STOPPED I
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
