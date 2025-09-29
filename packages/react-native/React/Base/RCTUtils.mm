@@ -635,6 +635,24 @@ UIWindow *__nullable RCTKeyWindow(void)
   return nil;
 }
 
+BOOL RCTIsSceneDelegateApp(void)
+{
+  if (@available(iOS 13.0, *)) {
+    NSDictionary *sceneManifest = [[NSBundle mainBundle] infoDictionary][@"UIApplicationSceneManifest"];
+    
+    if (sceneManifest) {
+        NSDictionary *sceneConfigurations = sceneManifest[@"UIApplicationSceneConfigurations"];
+        if (sceneConfigurations && sceneConfigurations.count > 0) {
+            return YES;
+        }
+    }
+
+    return NO;
+  }
+
+  return NO;
+}
+
 UIStatusBarManager *__nullable RCTUIStatusBarManager(void)
 {
   return RCTKeyWindow().windowScene.statusBarManager;
@@ -706,7 +724,7 @@ NSURL *RCTDataURL(NSString *mimeType, NSData *data)
                                                [data base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0]]];
 }
 
-BOOL RCTIsGzippedData(NSData *__nullable); // exposed for unit testing purposes
+extern "C" BOOL RCTIsGzippedData(NSData *__nullable); // exposed for unit testing purposes
 BOOL RCTIsGzippedData(NSData *__nullable data)
 {
   UInt8 *bytes = (UInt8 *)data.bytes;
