@@ -11,6 +11,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
+import android.util.SizeF
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 
@@ -43,6 +44,6 @@ public class BackgroundImageLayer() {
     }
   }
 
-  public fun getShader(bounds: RectF): Shader =
-      gradient.getShader(bounds.width(), bounds.height())
+  public fun getShader(width: Float, height: Float): Shader =
+      gradient.getShader(width, height)
 }

@@ -24,6 +24,7 @@ import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.drawable.BackgroundDrawable
+import com.facebook.react.uimanager.drawable.BackgroundImageDrawable
 import com.facebook.react.uimanager.drawable.BorderDrawable
 import com.facebook.react.uimanager.drawable.CompositeBackgroundDrawable
 import com.facebook.react.uimanager.drawable.InsetBoxShadowDrawable
@@ -68,7 +69,7 @@ public object BackgroundStyleApplicator {
       view: View,
       backgroundImageLayers: List<BackgroundImageLayer>?,
   ): Unit {
-    ensureBackgroundDrawable(view).backgroundImageLayers = backgroundImageLayers
+    ensureBackgroundImageDrawable(view).backgroundImageLayers = backgroundImageLayers
   }
 
   @JvmStatic
@@ -76,9 +77,7 @@ public object BackgroundStyleApplicator {
     view: View,
     backgroundSizes: List<BackgroundSize>?
   ): Unit {
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      ensureBackgroundDrawable(view).backgroundSize = backgroundSizes
-    }
+    ensureBackgroundImageDrawable(view).backgroundSize = backgroundSizes
   }
 
   @JvmStatic
@@ -86,9 +85,7 @@ public object BackgroundStyleApplicator {
     view: View,
     backgroundPositions: List<BackgroundPosition>?
   ): Unit {
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      ensureBackgroundDrawable(view).backgroundPosition = backgroundPositions
-    }
+    ensureBackgroundImageDrawable(view).backgroundPosition = backgroundPositions
   }
 
   @JvmStatic
@@ -96,9 +93,7 @@ public object BackgroundStyleApplicator {
     view: View,
     backgroundRepeats: List<BackgroundRepeat>?
   ): Unit {
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      ensureBackgroundDrawable(view).backgroundRepeat = backgroundRepeats
-    }
+    ensureBackgroundImageDrawable(view).backgroundRepeat = backgroundRepeats
   }
 
   @JvmStatic
@@ -115,9 +110,11 @@ public object BackgroundStyleApplicator {
 
     ensureBorderDrawable(view).setBorderWidth(edge.toSpacingType(), width?.dpToPx() ?: Float.NaN)
     composite.background?.borderInsets = composite.borderInsets
+    composite.backgroundImage?.borderInsets = composite.borderInsets
     composite.border?.borderInsets = composite.borderInsets
 
     composite.background?.invalidateSelf()
+    composite.backgroundImage?.invalidateSelf()
     composite.border?.invalidateSelf()
 
     composite.borderInsets = composite.borderInsets ?: BorderInsets()
@@ -166,9 +163,11 @@ public object BackgroundStyleApplicator {
       ensureBackgroundDrawable(view)
     }
     compositeBackgroundDrawable.background?.borderRadius = compositeBackgroundDrawable.borderRadius
+    compositeBackgroundDrawable.backgroundImage?.borderRadius = compositeBackgroundDrawable.borderRadius
     compositeBackgroundDrawable.border?.borderRadius = compositeBackgroundDrawable.borderRadius
 
     compositeBackgroundDrawable.background?.invalidateSelf()
+    compositeBackgroundDrawable.backgroundImage?.invalidateSelf()
     compositeBackgroundDrawable.border?.invalidateSelf()
 
     if (Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
@@ -414,6 +413,27 @@ public object BackgroundStyleApplicator {
   private fun getBackground(view: View): BackgroundDrawable? =
       getCompositeBackgroundDrawable(view)?.background
 
+  private fun ensureBackgroundImageDrawable(view: View): BackgroundImageDrawable {
+    val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
+    var backgroundImage = compositeBackgroundDrawable.backgroundImage
+
+    return if (backgroundImage != null) {
+      backgroundImage
+    } else {
+      backgroundImage =
+          BackgroundImageDrawable(
+              view.context,
+              compositeBackgroundDrawable.borderRadius,
+              compositeBackgroundDrawable.borderInsets,
+          )
+      view.background = compositeBackgroundDrawable.withNewBackgroundImage(backgroundImage)
+      backgroundImage
+    }
+  }
+    
+  private fun getBackgroundImage(view: View): BackgroundImageDrawable? =
+          getCompositeBackgroundDrawable(view)?.backgroundImage
+    
   private fun getBorder(view: View): BorderDrawable? = getCompositeBackgroundDrawable(view)?.border
 
   private fun ensureBorderDrawable(view: View): BorderDrawable {
