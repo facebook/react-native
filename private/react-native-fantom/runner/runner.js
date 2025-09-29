@@ -24,6 +24,7 @@ import type {
 
 import {printBenchmarkResultsRanking} from './benchmarkUtils';
 import {createBundle, createSourceMap} from './bundling';
+import {shouldCollectCoverage} from './coverageUtils';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import {run as runHermesCompiler} from './executables/hermesc';
@@ -343,7 +344,11 @@ module.exports = async function runTest(
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
       customTransformOptions: {
-        collectCoverage: globalConfig.collectCoverage,
+        collectCoverage: shouldCollectCoverage(
+          testPath,
+          testContents,
+          globalConfig,
+        ),
       },
     };
 

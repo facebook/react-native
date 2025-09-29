@@ -85,6 +85,7 @@ const VALID_FANTOM_PRAGMAS = [
   'fantom_flags',
   'fantom_hermes_variant',
   'fantom_react_fb_flags',
+  'fantom_disable_coverage',
 ];
 
 export function getOverrides(

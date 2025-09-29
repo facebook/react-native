@@ -15,7 +15,7 @@
 
 namespace facebook::react {
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 struct [[deprecated(
     "This API will be removed along with the legacy architecture.")]] MethodDescriptor {
   std::string name;
@@ -25,11 +25,11 @@ struct [[deprecated(
   MethodDescriptor(std::string n, std::string t)
       : name(std::move(n)), type(std::move(t)) {}
 };
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 using MethodCallResult = std::optional<folly::dynamic>;
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 class [[deprecated(
     "This API will be removed along with the legacy architecture.")]] NativeModule {
  public:
@@ -44,6 +44,6 @@ class [[deprecated(
       unsigned int reactMethodId,
       folly::dynamic&& args) = 0;
 };
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 } // namespace facebook::react

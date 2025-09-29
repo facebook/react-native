@@ -147,12 +147,10 @@ constructor(private val config: MainPackageConfig? = null) :
           FrescoBasedReactTextInlineImageViewManager(),
           ReactImageManager(),
           ReactModalHostManager(),
-          com.facebook.react.views.text.ReactRawTextManager(),
           ReactTextInputManager(),
           if (ReactNativeFeatureFlags.enablePreparedTextLayout()) PreparedLayoutTextViewManager()
           else ReactTextViewManager(),
           ReactViewManager(),
-          com.facebook.react.views.text.ReactVirtualTextViewManager(),
           ReactUnimplementedViewManager(),
       )
 
@@ -184,8 +182,6 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactImageManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactImageManager() },
           ReactModalHostManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactModalHostManager() },
-          com.facebook.react.views.text.ReactRawTextManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { com.facebook.react.views.text.ReactRawTextManager() },
           ReactTextInputManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactTextInputManager() },
           ReactTextViewManager.REACT_CLASS to
@@ -195,10 +191,6 @@ constructor(private val config: MainPackageConfig? = null) :
                 else ReactTextViewManager()
               },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
-          com.facebook.react.views.text.ReactVirtualTextViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec {
-                com.facebook.react.views.text.ReactVirtualTextViewManager()
-              },
           ReactUnimplementedViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() },
       )

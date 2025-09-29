@@ -32,7 +32,7 @@ std::unique_ptr<IWebSocket> RCTCxxInspectorPackagerConnectionDelegate::connectWe
     std::weak_ptr<IWebSocketDelegate> delegate)
 {
   auto *adapter = [[RCTCxxInspectorWebSocketAdapter alloc] initWithURL:url delegate:delegate];
-  if (!adapter) {
+  if (adapter == nullptr) {
     return nullptr;
   }
   return std::make_unique<WebSocket>(adapter);

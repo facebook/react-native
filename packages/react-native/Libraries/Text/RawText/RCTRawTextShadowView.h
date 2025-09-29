@@ -7,7 +7,7 @@
 
 #import <React/RCTShadowView.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,4 +20,4 @@ __attribute__((deprecated("This API will be removed along with the legacy archit
 
 NS_ASSUME_NONNULL_END
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

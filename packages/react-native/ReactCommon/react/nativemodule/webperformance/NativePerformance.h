@@ -68,6 +68,9 @@ struct NativePerformanceEntry {
   std::optional<HighResTimeStamp> responseStart;
   std::optional<HighResTimeStamp> responseEnd;
   std::optional<int> responseStatus;
+  std::optional<std::string> contentType;
+  std::optional<int> encodedBodySize;
+  std::optional<int> decodedBodySize;
 };
 
 template <>
@@ -87,6 +90,9 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 
   // https://www.w3.org/TR/hr-time-3/#now-method
   HighResTimeStamp now(jsi::Runtime& rt);
+
+  // https://www.w3.org/TR/hr-time-3/#timeorigin-attribute
+  HighResDuration timeOrigin(jsi::Runtime& rt);
 
 #pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
 

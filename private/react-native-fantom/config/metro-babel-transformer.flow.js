@@ -32,12 +32,12 @@ const transform: BabelTransformer['transform'] = (
               require.resolve('babel-plugin-istanbul'),
               {
                 include: [
-                  'packages/react-native/Libraries/**/*.js',
-                  'packages/react-native/src/**/*.js',
-                  'packages/virtualized-lists/**/*.js',
+                  '**/packages/react-native/Libraries/**/*.js',
+                  '**/packages/react-native/src/**/*.js',
+                  '**/packages/virtualized-lists/**/*.js',
                 ],
                 exclude: [
-                  'packages/react-native/Libraries/Renderer/**',
+                  '**/packages/react-native/Libraries/Renderer/**',
                   '**/__tests__/**',
                 ],
               },

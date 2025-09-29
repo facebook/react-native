@@ -7,7 +7,7 @@
 
 #import <React/RCTRawTextViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTRawTextShadowView.h>
 
@@ -29,4 +29,4 @@ RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

@@ -24,8 +24,6 @@ import path from 'path';
 import serveStaticMiddleware from 'serve-static';
 
 type Options = $ReadOnly<{
-  projectRoot: string,
-
   /**
    * The base URL to the dev server, as reachable from the machine on which
    * dev-middleware is hosted. Typically `http://localhost:${metroPort}`.
@@ -78,7 +76,6 @@ type DevMiddlewareAPI = $ReadOnly<{
 }>;
 
 export default function createDevMiddleware({
-  projectRoot,
   serverBaseUrl,
   logger,
   // $FlowFixMe[incompatible-type]
@@ -96,7 +93,6 @@ export default function createDevMiddleware({
   );
 
   const inspectorProxy = new InspectorProxy(
-    projectRoot,
     serverBaseUrl,
     eventReporter,
     experiments,

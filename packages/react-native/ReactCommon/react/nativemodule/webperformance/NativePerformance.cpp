@@ -75,6 +75,9 @@ NativePerformanceEntry toNativePerformanceEntry(const PerformanceEntry& entry) {
     nativeEntry.responseStart = resourceEntry.responseStart;
     nativeEntry.responseEnd = resourceEntry.responseEnd;
     nativeEntry.responseStatus = resourceEntry.responseStatus;
+    nativeEntry.contentType = resourceEntry.contentType;
+    nativeEntry.encodedBodySize = resourceEntry.encodedBodySize;
+    nativeEntry.decodedBodySize = resourceEntry.decodedBodySize;
   }
 
   return nativeEntry;
@@ -131,7 +134,16 @@ NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
 HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
+  // This is not spec-compliant, as this is the duration from system boot to
+  // now, instead of from app startup to now.
+  // This should be carefully changed eventually.
   return HighResTimeStamp::now();
+}
+
+HighResDuration NativePerformance::timeOrigin(jsi::Runtime& /*rt*/) {
+  // This is not spec-compliant, as this is an approximation from Unix epoch to
+  // system boot, instead of a precise duration from Unix epoch to app startup.
+  return HighResTimeStamp::unsafeOriginFromUnixTimeStamp();
 }
 
 void NativePerformance::reportMark(
@@ -272,15 +284,6 @@ NativePerformance::getReactNativeStartupTiming(jsi::Runtime& /*rt*/) {
   if (!std::isnan(startupLogger.getRunJSBundleStartTime())) {
     result["executeJavaScriptBundleEntryPointStart"] =
         startupLogger.getRunJSBundleStartTime();
-  }
-
-  if (!std::isnan(startupLogger.getRunJSBundleEndTime())) {
-    result["executeJavaScriptBundleEntryPointEnd"] =
-        startupLogger.getRunJSBundleEndTime();
-  }
-
-  if (!std::isnan(startupLogger.getInitReactRuntimeEndTime())) {
-    result["initializeRuntimeEnd"] = startupLogger.getInitReactRuntimeEndTime();
   }
 
   if (!std::isnan(startupLogger.getAppStartupEndTime())) {

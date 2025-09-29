@@ -51,7 +51,7 @@ internal class MountingManager(
   private val rootViewManager = RootViewManager()
 
   internal fun interface MountItemExecutor {
-    @UiThread @ThreadConfined(ThreadConfined.UI) fun executeItems(items: Queue<MountItem?>?)
+    @UiThread @ThreadConfined(ThreadConfined.UI) fun executeItems(items: Queue<MountItem>)
   }
 
   /**
@@ -265,13 +265,23 @@ internal class MountingManager(
   }
 
   @UiThread
-  fun updateProps(reactTag: Int, props: ReadableMap?) {
+  fun storeSynchronousMountPropsOverride(reactTag: Int, props: ReadableMap?) {
     assertOnUiThread()
     if (props == null) {
       return
     }
 
-    getSurfaceManagerForViewEnforced(reactTag).updateProps(reactTag, props)
+    getSurfaceManagerForViewEnforced(reactTag).storeSynchronousMountPropsOverride(reactTag, props)
+  }
+
+  @UiThread
+  fun updatePropsSynchronously(reactTag: Int, props: ReadableMap?) {
+    assertOnUiThread()
+    if (props == null) {
+      return
+    }
+
+    getSurfaceManagerForViewEnforced(reactTag).updatePropsSynchronously(reactTag, props)
   }
 
   /**

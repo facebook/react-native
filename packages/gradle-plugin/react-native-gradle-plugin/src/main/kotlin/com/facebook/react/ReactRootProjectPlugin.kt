@@ -67,18 +67,18 @@ class ReactRootProjectPlugin : Plugin<Project> {
     ) {
       project.logger.error(
           """
-      ********************************************************************************
+          ********************************************************************************
 
-      WARNING: Setting `newArchEnabled=false` in your `gradle.properties` file is not
-      supported anymore since React Native 0.82.
-      
-      You can remove the line from your `gradle.properties` file.
-      
-      The application will run with the New Architecture enabled by default.
+          WARNING: Setting `newArchEnabled=false` in your `gradle.properties` file is not
+          supported anymore since React Native 0.82.
 
-      ********************************************************************************
+          You can remove the line from your `gradle.properties` file.
 
-      """
+          The application will run with the New Architecture enabled by default.
+
+          ********************************************************************************
+
+          """
               .trimIndent()
       )
     }

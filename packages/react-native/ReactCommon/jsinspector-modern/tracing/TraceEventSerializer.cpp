@@ -26,6 +26,9 @@ namespace facebook::react::jsinspector_modern::tracing {
   result["ph"] = std::string(1, event.ph);
   result["ts"] = highResTimeStampToTracingClockTimeStamp(event.ts);
   result["pid"] = event.pid;
+  if (event.s.has_value()) {
+    result["s"] = std::string(1, event.s.value());
+  }
   result["tid"] = event.tid;
   result["args"] = std::move(event.args);
   if (event.dur.has_value()) {

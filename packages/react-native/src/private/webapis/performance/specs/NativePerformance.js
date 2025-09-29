@@ -37,6 +37,9 @@ export type RawPerformanceEntry = {
   responseStart?: number,
   responseEnd?: number,
   responseStatus?: number,
+  contentType?: string,
+  encodedBodySize?: number,
+  decodedBodySize?: number,
 };
 
 export opaque type OpaqueNativeObserverHandle = mixed;
@@ -54,6 +57,8 @@ export type PerformanceObserverInit = {
 
 export interface Spec extends TurboModule {
   +now: () => number;
+  +timeOrigin?: () => number;
+
   +reportMark: (name: string, startTime: number, entry: mixed) => void;
   +reportMeasure: (
     name: string,

@@ -6,6 +6,7 @@
  *
  * @flow strict
  * @format
+ * @deprecated
  */
 
 import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';

@@ -20,8 +20,13 @@ end
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
-# TODO: T231755000 use the Hermes V1 version instead of React Native version
+# TODO: T231755000 read hermes version from version.properties when consuming hermes
 version = package['version']
+
+if ENV['RCT_HERMES_V1_ENABLED'] == "1"
+  versionProperties = Hash[*File.read("version.properties").split(/[=\n]+/)]
+  version = versionProperties['HERMES_V1_VERSION_NAME']
+end
 
 source_type = hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
@@ -75,7 +80,7 @@ Pod::Spec.new do |spec|
       )
 
       spec.user_target_xcconfig = {
-        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/osx-bin/hermesc"
+        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/hermesc/osx-bin/hermesc"
       }
     end
 

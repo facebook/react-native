@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "NetworkTypes.h"
-
 #include <folly/dynamic.h>
 
 #include <string>
@@ -18,20 +16,16 @@
 
 namespace facebook::react::jsinspector_modern::cdp::network {
 
+using Headers = std::map<std::string, std::string>;
+
 /**
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Request
  */
 struct Request {
   std::string url;
   std::string method;
-  std::optional<Headers> headers;
+  Headers headers;
   std::optional<std::string> postData;
-
-  /**
-   * Convenience function to construct a `Request` from the generic
-   * `RequestInfo` input object.
-   */
-  static Request fromInputParams(const RequestInfo& requestInfo);
 
   folly::dynamic toDynamic() const;
 };
@@ -43,7 +37,7 @@ struct Response {
   std::string url;
   uint16_t status;
   std::string statusText;
-  std::optional<Headers> headers;
+  Headers headers;
   std::string mimeType;
   int encodedDataLength;
 
@@ -52,7 +46,9 @@ struct Response {
    * `ResponseInfo` input object.
    */
   static Response fromInputParams(
-      const ResponseInfo& responseInfo,
+      const std::string& url,
+      uint16_t status,
+      const Headers& headers,
       int encodedDataLength);
 
   folly::dynamic toDynamic() const;

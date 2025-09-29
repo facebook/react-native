@@ -98,13 +98,7 @@ public object DefaultNewArchitectureEntryPoint {
         ReactNativeFeatureFlags.override(ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android())
       }
       ReleaseLevel.STABLE -> {
-        ReactNativeFeatureFlags.override(
-            ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android(
-                fabricEnabled,
-                bridgelessEnabled,
-                turboModulesEnabled,
-            )
-        )
+        ReactNativeFeatureFlags.override(ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android())
       }
     }
 
@@ -124,6 +118,16 @@ public object DefaultNewArchitectureEntryPoint {
     privateTurboModulesEnabled = featureFlags.useTurboModules()
     privateConcurrentReactEnabled = featureFlags.enableFabricRenderer()
     privateBridgelessEnabled = featureFlags.enableBridgelessArchitecture()
+
+    val (isValid, errorMessage) =
+        isConfigurationValid(
+            privateTurboModulesEnabled,
+            privateFabricEnabled,
+            privateBridgelessEnabled,
+        )
+    if (!isValid) {
+      error(errorMessage)
+    }
 
     DefaultSoLoader.maybeLoadSoLibrary()
   }
@@ -158,13 +162,13 @@ public object DefaultNewArchitectureEntryPoint {
       fabricEnabled: Boolean,
       bridgelessEnabled: Boolean,
   ): Pair<Boolean, String> =
-      when {
-        fabricEnabled && !turboModulesEnabled ->
-            false to
-                "fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
-        bridgelessEnabled && (!turboModulesEnabled || !fabricEnabled) ->
-            false to
-                "bridgelessEnabled=true requires (turboModulesEnabled=true AND fabricEnabled=true) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
-        else -> true to ""
+      if (!turboModulesEnabled || !fabricEnabled || !bridgelessEnabled) {
+        false to
+            "You cannot load React Native with the New Architecture disabled. " +
+                "Please use DefaultNewArchitectureEntryPoint.load() instead of " +
+                "DefaultNewArchitectureEntryPoint.load(turboModulesEnabled=$turboModulesEnabled, " +
+                "fabricEnabled=$fabricEnabled, bridgelessEnabled=$bridgelessEnabled)"
+      } else {
+        true to ""
       }
 }

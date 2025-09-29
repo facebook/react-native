@@ -212,7 +212,8 @@ BOOL RCTUpscalingRequired(
   sourceSize.height *= scale;
 
   // Calculate aspect ratios if needed (don't bother if resizeMode == stretch)
-  CGFloat aspect = 0.0, targetAspect = 0.0;
+  CGFloat aspect = 0.0;
+  CGFloat targetAspect = 0.0;
   if (resizeMode != RCTResizeModeStretch) {
     aspect = sourceSize.width / sourceSize.height;
     targetAspect = destSize.width / destSize.height;

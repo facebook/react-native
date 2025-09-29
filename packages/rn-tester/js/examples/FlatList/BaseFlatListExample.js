@@ -68,7 +68,7 @@ type Props = $ReadOnly<{
 }>;
 
 const BaseFlatListExample: component(
-  ref: React.RefSetter<FlatList<string>>,
+  ref?: React.RefSetter<FlatList<string>>,
   ...props: Props
 ) = ({ref, ...props}: {ref: React.RefSetter<FlatList<string>>, ...Props}) => {
   return (
@@ -111,41 +111,23 @@ const ITEM_MARGIN = 8;
 export const ITEM_HEIGHT: number = ITEM_INNER_HEIGHT + ITEM_MARGIN * 2;
 
 const styles = StyleSheet.create({
+  container: {flex: 1},
+  header: {
+    backgroundColor: 'white',
+    fontSize: 32,
+  },
   item: {
     backgroundColor: 'pink',
-    paddingHorizontal: 20,
     height: ITEM_INNER_HEIGHT,
-    marginVertical: ITEM_MARGIN,
     justifyContent: 'center',
+    marginVertical: ITEM_MARGIN,
+    paddingHorizontal: 20,
   },
-  header: {
-    fontSize: 32,
-    backgroundColor: 'white',
+  list: {
+    flex: 1,
   },
-  title: {
-    fontSize: 24,
-  },
-  titleContainer: {
-    position: 'absolute',
-    top: 45,
-    left: 0,
-    right: 0,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'gray',
-    zIndex: 1,
-  },
-  titleText: {
-    fontSize: 24,
-    lineHeight: 44,
-    fontWeight: 'bold',
-  },
-  testContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#f2f2f7ff',
-    height: 40,
+  offScreen: {
+    height: 1000,
   },
   output: {
     fontSize: 12,
@@ -156,11 +138,29 @@ const styles = StyleSheet.create({
   separatorText: {
     fontSize: 10,
   },
-  list: {
-    flex: 1,
+  testContainer: {
+    alignItems: 'center',
+    backgroundColor: '#f2f2f7ff',
+    flexDirection: 'row',
+    height: 40,
+    justifyContent: 'space-between',
   },
-  container: {flex: 1},
-  offScreen: {
-    height: 1000,
+  title: {
+    fontSize: 24,
+  },
+  titleContainer: {
+    alignItems: 'center',
+    backgroundColor: 'gray',
+    justifyContent: 'flex-end',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 45,
+    zIndex: 1,
+  },
+  titleText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    lineHeight: 44,
   },
 });
