@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   text: {
-    color: 'white',
+    color: 'black',
     fontWeight: 'bold',
     textShadowColor: 'black',
     textShadowRadius: 2,
@@ -360,7 +360,6 @@ exports.examples = [
               style={{
                 experimental_backgroundImage:
                   'linear-gradient(45deg, #667eea, #764ba2)',
-                experimental_backgroundSize: 'cover',
                 borderRadius: 20,
               }}
               testID="background-image-borders-1"
@@ -372,7 +371,6 @@ exports.examples = [
               style={{
                 experimental_backgroundImage:
                   'radial-gradient(circle, #f093fb, #f5576c)',
-                experimental_backgroundSize: 'cover',
                 borderWidth: 10,
                 borderColor: 'red',
               }}
@@ -385,7 +383,6 @@ exports.examples = [
               style={{
                 experimental_backgroundImage:
                   'radial-gradient(circle, #f093fb, #f5576c)',
-                experimental_backgroundSize: 'cover',
                 borderTopLeftRadius: 10,
                 borderTopRightRadius: 20,
                 borderBottomLeftRadius: 30,
@@ -400,7 +397,6 @@ exports.examples = [
               style={{
                 experimental_backgroundImage:
                   'radial-gradient(circle, #f093fb, #f5576c)',
-                experimental_backgroundSize: 'cover',
                 borderTopWidth: 10,
                 borderTopColor: 'red',
                 borderBottomWidth: 20,
@@ -410,6 +406,30 @@ exports.examples = [
             />
           </View>
         </View>
+      );
+    },
+  },
+  {
+    title: 'Complex Striped Pattern',
+    name: 'striped-pattern',
+    render() {
+      return (
+        <BackgroundImageBox
+          style={{
+            width: 200,
+            height: 200,
+            experimental_backgroundImage:
+              'linear-gradient(45deg, #ff6b6b 25%, transparent 25%, transparent 75%, #4ecdc4 75%)',
+            experimental_backgroundRepeat: 'space',
+            experimental_backgroundSize: '33.33px 66.67px',
+            experimental_backgroundPosition: '16.5px 8.25px',
+            backgroundColor: 'white',
+            borderWidth: 2,
+            borderColor: 'purple',
+          }}
+          testID="background-image-striped-pattern">
+          <Text style={styles.text}>Striped</Text>
+        </BackgroundImageBox>
       );
     },
   },
