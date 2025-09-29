@@ -8,10 +8,7 @@
 package com.facebook.react.uimanager.style
 
 import android.content.Context
-import android.graphics.Rect
-import android.graphics.RectF
 import android.graphics.Shader
-import android.util.SizeF
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 

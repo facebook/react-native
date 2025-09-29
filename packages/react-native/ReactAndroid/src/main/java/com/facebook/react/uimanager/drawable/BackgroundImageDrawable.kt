@@ -128,7 +128,7 @@ internal class BackgroundImageDrawable(
     }
 
 
-    // 1. Clip the canvas to match the rounded border path
+    // 1. Clip the canvas to match the rounded border path and truncate repeating tiles
     backgroundImageClipPath?.let { canvas.clipPath(it) }
 
     backgroundImageLayers?.let { layers ->
@@ -315,8 +315,6 @@ internal class BackgroundImageDrawable(
     var finalWidth = imageWidth
     var finalHeight = imageHeight
 
-    // Cover and contain styles have no effect for gradients.
-    // So we only check for length percentage
     if (backgroundSize is BackgroundSize.LengthPercentageAuto) {
       val w = backgroundSize.lengthPercentage.x
       val h = backgroundSize.lengthPercentage.y
@@ -361,14 +359,14 @@ internal class BackgroundImageDrawable(
       when {
         position?.left != null -> positionToPixels(position.left, availableSpaceX)
         position?.right != null -> availableSpaceX - positionToPixels(position.right, availableSpaceX)
-        else -> 0.0f // left = 0
+        else -> 0.0f
       } + backgroundPositioningArea.left
 
     val translateY =
       when {
         position?.top != null -> positionToPixels(position.top, availableSpaceY)
         position?.bottom != null -> availableSpaceY - positionToPixels(position.bottom, availableSpaceY)
-        else -> 0.0f // top = 0
+        else -> 0.0f
       } + backgroundPositioningArea.top
 
     return translateX to translateY
