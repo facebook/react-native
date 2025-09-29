@@ -70,8 +70,8 @@ JSModulesUnbundle::Module RAMBundleRegistry::getModule(
   }
 
   return {
-      "seg-" + std::to_string(bundleId) + '_' + module.name,
-      std::move(module.code),
+      .name = "seg-" + std::to_string(bundleId) + '_' + module.name,
+      .code = std::move(module.code),
   };
 }
 
