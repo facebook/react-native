@@ -26,7 +26,9 @@ internal class LogBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
 
   override fun createContentView(appKey: String) {
     Assertions.assertCondition(
-        appKey == "LogBox", "This surface manager can only create LogBox React application")
+        appKey == "LogBox",
+        "This surface manager can only create LogBox React application",
+    )
     reactRootView = devSupportManager.createRootView("LogBox")
     if (reactRootView == null) {
       e("Unable to launch logbox because react was unable to create the root view")
@@ -50,7 +52,8 @@ internal class LogBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
     if (context == null || context.isFinishing) {
       e(
           "Unable to launch logbox because react activity " +
-              "is not available, here is the error that logbox would've displayed: ")
+              "is not available, here is the error that logbox would've displayed: "
+      )
       return
     }
     dialog = LogBoxDialog(context, reactRootView)

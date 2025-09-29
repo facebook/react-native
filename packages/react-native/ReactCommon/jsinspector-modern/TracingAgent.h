@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include "HostTarget.h"
 #include "InspectorInterfaces.h"
-#include "InstanceAgent.h"
 
 #include <jsinspector-modern/cdp/CdpJson.h>
 #include <jsinspector-modern/tracing/Timing.h>
@@ -24,9 +24,17 @@ class TracingAgent {
   /**
    * \param frontendChannel A channel used to send responses to the
    * frontend.
+   * \param sessionState The state of the session that created this agent.
+   * \param hostTargetController An interface to the HostTarget that this agent
+   * is attached to. The caller is responsible for ensuring that the
+   * HostTargetDelegate and underlying HostTarget both outlive the agent.
    */
-  explicit TracingAgent(FrontendChannel frontendChannel)
-      : frontendChannel_(std::move(frontendChannel)) {}
+  TracingAgent(
+      FrontendChannel frontendChannel,
+      SessionState& sessionState,
+      HostTargetController& hostTargetController);
+
+  ~TracingAgent();
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -36,11 +44,10 @@ class TracingAgent {
   bool handleRequest(const cdp::PreparsedRequest& req);
 
   /**
-   * Replace the current InstanceAgent with the given one.
-   * \param agent The new InstanceAgent. May be null to signify that there is
-   * currently no active instance.
+   * Emits the Trace Recording that was stashed externally by the HostTarget.
    */
-  void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
+  void emitExternalTraceRecording(
+      tracing::TraceRecordingState traceRecording) const;
 
  private:
   /**
@@ -48,18 +55,15 @@ class TracingAgent {
    */
   FrontendChannel frontendChannel_;
 
-  /**
-   * Current InstanceAgent. May be null to signify that there is
-   * currently no active instance.
-   */
-  std::shared_ptr<InstanceAgent> instanceAgent_;
+  SessionState& sessionState_;
+
+  HostTargetController& hostTargetController_;
 
   /**
-   * Timestamp of when we started tracing of an Instance, will be used as a
-   * a start of JavaScript samples recording and as a time origin for the events
-   * in this trace.
+   * Emits the captured Trace Recording state in a series of
+   * Tracing.dataCollected events, followed by a Tracing.tracingComplete event.
    */
-  HighResTimeStamp instanceTracingStartTimestamp_;
+  void emitTraceRecording(tracing::TraceRecordingState traceRecording) const;
 };
 
 } // namespace facebook::react::jsinspector_modern

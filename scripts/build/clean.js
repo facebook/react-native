@@ -8,7 +8,7 @@
  * @format
  */
 
-require('../babel-register').registerForScript();
+require('../shared/babelRegister').registerForScript();
 
 const {BUILD_DIR, PACKAGES_DIR} = require('./build');
 const {buildConfig} = require('./config');
@@ -25,7 +25,7 @@ const config = {
 function clean() {
   const {
     values: {help},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 

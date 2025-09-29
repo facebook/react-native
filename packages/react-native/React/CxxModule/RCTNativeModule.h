@@ -8,11 +8,13 @@
 #import <React/RCTModuleData.h>
 #import <cxxreact/NativeModule.h>
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 
-class RCTNativeModule : public NativeModule {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] RCTNativeModule
+    : public NativeModule {
  public:
   RCTNativeModule(RCTBridge* bridge, RCTModuleData* moduleData);
 
@@ -33,4 +35,4 @@ class RCTNativeModule : public NativeModule {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

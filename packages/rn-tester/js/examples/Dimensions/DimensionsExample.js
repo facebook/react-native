@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React, {useEffect, useState} from 'react';
 import {Dimensions, useWindowDimensions} from 'react-native';
@@ -60,4 +62,4 @@ exports.examples = [
       return <DimensionsSubscription dim="screen" />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

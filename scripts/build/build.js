@@ -8,9 +8,9 @@
  * @format
  */
 
-require('../babel-register').registerForScript();
+require('../shared/babelRegister').registerForScript();
 
-const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
+const {PACKAGES_DIR, REPO_ROOT} = require('../shared/consts');
 const {
   buildConfig,
   getBabelConfig,
@@ -44,7 +44,7 @@ async function build() {
   const {
     positionals: packageNames,
     values: {validate, help},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
@@ -187,9 +187,9 @@ async function buildFile(
   const prettierConfig = {parser: 'babel'};
 
   // Transform source file using Babel
-  const transformed = prettier.format(
+  const transformed = await prettier.format(
     (await babel.transformFileAsync(file, getBabelConfig(packageName))).code,
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     prettierConfig,
   );
@@ -458,7 +458,7 @@ function validateTypeScriptDefs(packageName /*: string */) {
           '\n',
         );
         console.log(
-          // $FlowIssue[incompatible-use] Type refined above
+          // $FlowFixMe[incompatible-use] Type refined above
           `${diagnostic.file.fileName} (${line + 1},${
             character + 1
           }): ${message}`,

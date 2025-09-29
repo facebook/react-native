@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const XHRExampleAbortController = require('./XHRExampleAbortController');
 const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
 const XHRExampleDownload = require('./XHRExampleDownload');
@@ -60,4 +62,4 @@ exports.examples = [
       return <XHRExampleAbortController />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

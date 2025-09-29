@@ -22,17 +22,19 @@ type TComponentType = React.ComponentType<{...}>;
  */
 export default function mockComponent<
   TComponentModule: Modulish<TComponentType>,
+  TIsESModule: boolean,
 >(
   moduleName: string,
   instanceMethods: ?interface {},
-  isESModule: boolean,
-): typeof isESModule extends true
-  ? ModuleDefault<TComponentModule & typeof instanceMethods>
+  isESModule: TIsESModule,
+): TIsESModule extends true
+  ? // $FlowFixMe[incompatible-use]
+    ModuleDefault<TComponentModule & typeof instanceMethods>
   : TComponentModule & typeof instanceMethods {
   const RealComponent: TComponentType = isESModule
-    ? // $FlowIgnore[prop-missing]
+    ? // $FlowFixMe[prop-missing]
       jest.requireActual<TComponentModule>(moduleName).default
-    : // $FlowIgnore[incompatible-type]
+    : // $FlowFixMe[incompatible-type]
       jest.requireActual<TComponentModule>(moduleName);
 
   const SuperClass: typeof React.Component<
@@ -50,7 +52,7 @@ export default function mockComponent<
     (RealComponent.render == null
       ? 'Unknown'
       : // $FlowFixMe[incompatible-use]
-        RealComponent.render.displayName ?? RealComponent.render.name);
+        (RealComponent.render.displayName ?? RealComponent.render.name));
 
   const nameWithoutPrefix = name.replace(/^(RCT|RK)/, '');
 
@@ -58,7 +60,7 @@ export default function mockComponent<
     static displayName: ?string = 'Component';
 
     render(): React.Node {
-      // $FlowIgnore[prop-missing]
+      // $FlowFixMe[prop-missing]
       const props = {...RealComponent.defaultProps};
 
       if (this.props) {
@@ -74,8 +76,8 @@ export default function mockComponent<
         });
       }
 
-      // $FlowIgnore[not-a-function]
-      // $FlowIgnore[prop-missing]
+      // $FlowFixMe[not-a-function]
+      // $FlowFixMe[prop-missing]
       return createElement(nameWithoutPrefix, props, this.props.children);
     }
   };
@@ -89,16 +91,16 @@ export default function mockComponent<
 
   Component.displayName = nameWithoutPrefix;
 
-  // $FlowIgnore[not-an-object]
+  // $FlowFixMe[not-an-object]
   Object.keys(RealComponent).forEach(classStatic => {
     Component[classStatic] = RealComponent[classStatic];
   });
 
   if (instanceMethods != null) {
-    // $FlowIgnore[unsafe-object-assign]
+    // $FlowFixMe[unsafe-object-assign]
     Object.assign(Component.prototype, instanceMethods);
   }
 
-  // $FlowIgnore[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   return Component;
 }

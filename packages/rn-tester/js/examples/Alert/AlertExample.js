@@ -261,7 +261,7 @@ const PromptOptions = () => {
 
       <Pressable
         style={styles.wrapper}
-        /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */
         onPress={() => Alert.prompt('Type a value', null, customButtons)}>
         <View style={styles.button}>
@@ -308,7 +308,7 @@ const PromptOptions = () => {
           Alert.prompt(
             'Type a value',
             null,
-            /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+            /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
              * https://fburl.com/workplace/6291gfvu */
             customButtons,
             'login-password',
@@ -457,7 +457,7 @@ export default ({
   documentationURL: 'https://reactnative.dev/docs/alert',
   description:
     'Alerts display a concise and informative message and prompt the user to make a decision.',
-  /* $FlowFixMe[incompatible-cast] Natural Inference rollout. See
+  /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
    * https://fburl.com/workplace/6291gfvu */
   examples,
 }: RNTesterModule);

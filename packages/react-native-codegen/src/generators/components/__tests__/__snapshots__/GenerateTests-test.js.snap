@@ -23,15 +23,15 @@ Map {
 using namespace facebook::react;
 
 TEST(ArrayPropsNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ArrayPropsNativeComponentProps>();
-  auto const &sourceProps = ArrayPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  ArrayPropsNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ArrayPropsNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -58,15 +58,15 @@ Map {
 using namespace facebook::react;
 
 TEST(ArrayPropsNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ArrayPropsNativeComponentProps>();
-  auto const &sourceProps = ArrayPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  ArrayPropsNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ArrayPropsNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -93,28 +93,28 @@ Map {
 using namespace facebook::react;
 
 TEST(BooleanPropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<BooleanPropNativeComponentProps>();
-  auto const &sourceProps = BooleanPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  BooleanPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   BooleanPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(BooleanPropNativeComponentProps_disabled, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<BooleanPropNativeComponentProps>();
-  auto const &sourceProps = BooleanPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
+  BooleanPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"disabled\\", false));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   BooleanPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -141,28 +141,28 @@ Map {
 using namespace facebook::react;
 
 TEST(ColorPropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ColorPropNativeComponentProps>();
-  auto const &sourceProps = ColorPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  ColorPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ColorPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(ColorPropNativeComponentProps_tintColor, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ColorPropNativeComponentProps>();
-  auto const &sourceProps = ColorPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"tintColor\\", 1));
+  ColorPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"tintColor\\", 1));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ColorPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -189,15 +189,15 @@ Map {
 using namespace facebook::react;
 
 TEST(CommandNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<CommandNativeComponentProps>();
-  auto const &sourceProps = CommandNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  CommandNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   CommandNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -224,28 +224,28 @@ Map {
 using namespace facebook::react;
 
 TEST(CommandNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<CommandNativeComponentProps>();
-  auto const &sourceProps = CommandNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  CommandNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   CommandNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(CommandNativeComponentProps_accessibilityHint, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<CommandNativeComponentProps>();
-  auto const &sourceProps = CommandNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
+  CommandNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   CommandNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -273,15 +273,15 @@ Map {
 using namespace facebook::react;
 
 TEST(DimensionPropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<DimensionPropNativeComponentProps>();
-  auto const &sourceProps = DimensionPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  DimensionPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   DimensionPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -308,15 +308,15 @@ Map {
 using namespace facebook::react;
 
 TEST(DoublePropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<DoublePropNativeComponentProps>();
-  auto const &sourceProps = DoublePropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  DoublePropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   DoublePropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -343,28 +343,28 @@ Map {
 using namespace facebook::react;
 
 TEST(EventsNestedObjectNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<EventsNestedObjectNativeComponentProps>();
-  auto const &sourceProps = EventsNestedObjectNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  EventsNestedObjectNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   EventsNestedObjectNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(EventsNestedObjectNativeComponentProps_disabled, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<EventsNestedObjectNativeComponentProps>();
-  auto const &sourceProps = EventsNestedObjectNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
+  EventsNestedObjectNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"disabled\\", false));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   EventsNestedObjectNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -391,28 +391,28 @@ Map {
 using namespace facebook::react;
 
 TEST(EventsNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<EventsNativeComponentProps>();
-  auto const &sourceProps = EventsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  EventsNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   EventsNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(EventsNativeComponentProps_disabled, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<EventsNativeComponentProps>();
-  auto const &sourceProps = EventsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
+  EventsNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"disabled\\", false));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   EventsNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -439,15 +439,15 @@ Map {
 using namespace facebook::react;
 
 TEST(InterfaceOnlyComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<InterfaceOnlyComponentProps>();
-  auto const &sourceProps = InterfaceOnlyComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  InterfaceOnlyComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   InterfaceOnlyComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -474,15 +474,15 @@ Map {
 using namespace facebook::react;
 
 TEST(ExcludedAndroidComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ExcludedAndroidComponentProps>();
-  auto const &sourceProps = ExcludedAndroidComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  ExcludedAndroidComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ExcludedAndroidComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -509,15 +509,15 @@ Map {
 using namespace facebook::react;
 
 TEST(ExcludedAndroidIosComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ExcludedAndroidIosComponentProps>();
-  auto const &sourceProps = ExcludedAndroidIosComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  ExcludedAndroidIosComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ExcludedAndroidIosComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -544,41 +544,41 @@ Map {
 using namespace facebook::react;
 
 TEST(ExcludedIosComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ExcludedIosComponentProps>();
-  auto const &sourceProps = ExcludedIosComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  ExcludedIosComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ExcludedIosComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(MultiFileIncludedNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiFileIncludedNativeComponentProps>();
-  auto const &sourceProps = MultiFileIncludedNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  MultiFileIncludedNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiFileIncludedNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(MultiFileIncludedNativeComponentProps_disabled, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiFileIncludedNativeComponentProps>();
-  auto const &sourceProps = MultiFileIncludedNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  MultiFileIncludedNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"disabled\\", true));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiFileIncludedNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -605,93 +605,93 @@ Map {
 using namespace facebook::react;
 
 TEST(FloatPropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<FloatPropNativeComponentProps>();
-  auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  FloatPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   FloatPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(FloatPropNativeComponentProps_blurRadius, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<FloatPropNativeComponentProps>();
-  auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius\\", 0));
+  FloatPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"blurRadius\\", 0));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   FloatPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(FloatPropNativeComponentProps_blurRadius2, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<FloatPropNativeComponentProps>();
-  auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius2\\", 0.001));
+  FloatPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"blurRadius2\\", 0.001));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   FloatPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(FloatPropNativeComponentProps_blurRadius3, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<FloatPropNativeComponentProps>();
-  auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius3\\", 2.1));
+  FloatPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"blurRadius3\\", 2.1));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   FloatPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(FloatPropNativeComponentProps_blurRadius4, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<FloatPropNativeComponentProps>();
-  auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius4\\", 0));
+  FloatPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"blurRadius4\\", 0));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   FloatPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(FloatPropNativeComponentProps_blurRadius5, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<FloatPropNativeComponentProps>();
-  auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius5\\", 1));
+  FloatPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"blurRadius5\\", 1));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   FloatPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(FloatPropNativeComponentProps_blurRadius6, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<FloatPropNativeComponentProps>();
-  auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius6\\", 0));
+  FloatPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"blurRadius6\\", 0));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   FloatPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -719,28 +719,28 @@ Map {
 using namespace facebook::react;
 
 TEST(ImagePropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ImagePropNativeComponentProps>();
-  auto const &sourceProps = ImagePropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  ImagePropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ImagePropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(ImagePropNativeComponentProps_thumbImage, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ImagePropNativeComponentProps>();
-  auto const &sourceProps = ImagePropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"thumbImage\\", folly::dynamic::object(\\"url\\", \\"testurl\\")));
+  ImagePropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"thumbImage\\", folly::dynamic::object(\\"url\\", \\"testurl\\")));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ImagePropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -767,15 +767,15 @@ Map {
 using namespace facebook::react;
 
 TEST(InsetsPropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<InsetsPropNativeComponentProps>();
-  auto const &sourceProps = InsetsPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  InsetsPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   InsetsPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -802,15 +802,15 @@ Map {
 using namespace facebook::react;
 
 TEST(Int32EnumPropsNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<Int32EnumPropsNativeComponentProps>();
-  auto const &sourceProps = Int32EnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  Int32EnumPropsNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   Int32EnumPropsNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -837,15 +837,15 @@ Map {
 using namespace facebook::react;
 
 TEST(IntegerPropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<IntegerPropNativeComponentProps>();
-  auto const &sourceProps = IntegerPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  IntegerPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   IntegerPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -872,28 +872,28 @@ Map {
 using namespace facebook::react;
 
 TEST(InterfaceOnlyComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<InterfaceOnlyComponentProps>();
-  auto const &sourceProps = InterfaceOnlyComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  InterfaceOnlyComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   InterfaceOnlyComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(InterfaceOnlyComponentProps_accessibilityHint, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<InterfaceOnlyComponentProps>();
-  auto const &sourceProps = InterfaceOnlyComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
+  InterfaceOnlyComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   InterfaceOnlyComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -921,15 +921,15 @@ Map {
 using namespace facebook::react;
 
 TEST(MixedPropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MixedPropNativeComponentProps>();
-  auto const &sourceProps = MixedPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  MixedPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MixedPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -957,67 +957,67 @@ Map {
 using namespace facebook::react;
 
 TEST(ImageColorPropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ImageColorPropNativeComponentProps>();
-  auto const &sourceProps = ImageColorPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  ImageColorPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ImageColorPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(ImageColorPropNativeComponentProps_thumbImage, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ImageColorPropNativeComponentProps>();
-  auto const &sourceProps = ImageColorPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"thumbImage\\", folly::dynamic::object(\\"url\\", \\"testurl\\")));
+  ImageColorPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"thumbImage\\", folly::dynamic::object(\\"url\\", \\"testurl\\")));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ImageColorPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(ImageColorPropNativeComponentProps_color, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ImageColorPropNativeComponentProps>();
-  auto const &sourceProps = ImageColorPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"color\\", 1));
+  ImageColorPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"color\\", 1));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ImageColorPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(ImageColorPropNativeComponentProps_thumbTintColor, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ImageColorPropNativeComponentProps>();
-  auto const &sourceProps = ImageColorPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"thumbTintColor\\", 1));
+  ImageColorPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"thumbTintColor\\", 1));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ImageColorPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(ImageColorPropNativeComponentProps_point, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ImageColorPropNativeComponentProps>();
-  auto const &sourceProps = ImageColorPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"point\\", folly::dynamic::object(\\"x\\", 1)(\\"y\\", 1)));
+  ImageColorPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"point\\", folly::dynamic::object(\\"x\\", 1)(\\"y\\", 1)));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ImageColorPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -1044,15 +1044,15 @@ Map {
 using namespace facebook::react;
 
 TEST(NoPropsNoEventsComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<NoPropsNoEventsComponentProps>();
-  auto const &sourceProps = NoPropsNoEventsComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  NoPropsNoEventsComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   NoPropsNoEventsComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -1080,15 +1080,15 @@ Map {
 using namespace facebook::react;
 
 TEST(ObjectPropsProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<ObjectPropsProps>();
-  auto const &sourceProps = ObjectPropsProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  ObjectPropsProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ObjectPropsProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -1115,28 +1115,28 @@ Map {
 using namespace facebook::react;
 
 TEST(PointPropNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<PointPropNativeComponentProps>();
-  auto const &sourceProps = PointPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  PointPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   PointPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(PointPropNativeComponentProps_startPoint, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<PointPropNativeComponentProps>();
-  auto const &sourceProps = PointPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"startPoint\\", folly::dynamic::object(\\"x\\", 1)(\\"y\\", 1)));
+  PointPropNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"startPoint\\", folly::dynamic::object(\\"x\\", 1)(\\"y\\", 1)));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   PointPropNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -1163,54 +1163,54 @@ Map {
 using namespace facebook::react;
 
 TEST(StringEnumPropsNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<StringEnumPropsNativeComponentProps>();
-  auto const &sourceProps = StringEnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  StringEnumPropsNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   StringEnumPropsNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(StringEnumPropsNativeComponentProps_alignment_Top, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<StringEnumPropsNativeComponentProps>();
-  auto const &sourceProps = StringEnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"top\\"));
+  StringEnumPropsNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"alignment\\", \\"top\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   StringEnumPropsNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(StringEnumPropsNativeComponentProps_alignment_Center, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<StringEnumPropsNativeComponentProps>();
-  auto const &sourceProps = StringEnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"center\\"));
+  StringEnumPropsNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"alignment\\", \\"center\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   StringEnumPropsNativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(StringEnumPropsNativeComponentProps_alignment_BottomRight, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<StringEnumPropsNativeComponentProps>();
-  auto const &sourceProps = StringEnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"bottom-right\\"));
+  StringEnumPropsNativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"alignment\\", \\"bottom-right\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   StringEnumPropsNativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -1237,41 +1237,41 @@ Map {
 using namespace facebook::react;
 
 TEST(StringPropComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<StringPropComponentProps>();
-  auto const &sourceProps = StringPropComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  StringPropComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   StringPropComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(StringPropComponentProps_accessibilityHint, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<StringPropComponentProps>();
-  auto const &sourceProps = StringPropComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
+  StringPropComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   StringPropComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(StringPropComponentProps_accessibilityRole, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<StringPropComponentProps>();
-  auto const &sourceProps = StringPropComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityRole\\", \\"foo\\"));
+  StringPropComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"accessibilityRole\\", \\"foo\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   StringPropComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -1298,54 +1298,54 @@ Map {
 using namespace facebook::react;
 
 TEST(MultiFile1NativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiFile1NativeComponentProps>();
-  auto const &sourceProps = MultiFile1NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  MultiFile1NativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiFile1NativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(MultiFile1NativeComponentProps_disabled, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiFile1NativeComponentProps>();
-  auto const &sourceProps = MultiFile1NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
+  MultiFile1NativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"disabled\\", false));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiFile1NativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(MultiFile2NativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiFile2NativeComponentProps>();
-  auto const &sourceProps = MultiFile2NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  MultiFile2NativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiFile2NativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(MultiFile2NativeComponentProps_disabled, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiFile2NativeComponentProps>();
-  auto const &sourceProps = MultiFile2NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  MultiFile2NativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"disabled\\", true));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiFile2NativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }
@@ -1372,54 +1372,54 @@ Map {
 using namespace facebook::react;
 
 TEST(MultiComponent1NativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiComponent1NativeComponentProps>();
-  auto const &sourceProps = MultiComponent1NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  MultiComponent1NativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiComponent1NativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(MultiComponent1NativeComponentProps_disabled, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiComponent1NativeComponentProps>();
-  auto const &sourceProps = MultiComponent1NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
+  MultiComponent1NativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"disabled\\", false));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiComponent1NativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(MultiComponent2NativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiComponent2NativeComponentProps>();
-  auto const &sourceProps = MultiComponent2NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  MultiComponent2NativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiComponent2NativeComponentProps(parserContext, sourceProps, rawProps);
 }
 
 TEST(MultiComponent2NativeComponentProps_disabled, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<MultiComponent2NativeComponentProps>();
-  auto const &sourceProps = MultiComponent2NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  MultiComponent2NativeComponentProps sourceProps{};
+  RawProps rawProps(folly::dynamic::object(\\"disabled\\", true));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   MultiComponent2NativeComponentProps(parserContext, sourceProps, rawProps);
 }",
 }

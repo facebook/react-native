@@ -65,15 +65,15 @@ const TestTemplate = ({
   propValue: string,
 }) => `
 TEST(${componentName}_${testName}, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<${componentName}>();
-  auto const &sourceProps = ${componentName}();
-  auto const &rawProps = RawProps(folly::dynamic::object("${propName}", ${propValue}));
+  ${componentName} sourceProps{};
+  RawProps rawProps(folly::dynamic::object("${propName}", ${propValue}));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ${componentName}(parserContext, sourceProps, rawProps);
 }
 `;
@@ -81,8 +81,8 @@ TEST(${componentName}_${testName}, etc) {
 function getTestCasesForProp(
   propName: string,
   typeAnnotation: PropTypeAnnotation,
-) {
-  const cases = [];
+): Array<TestCase> {
+  const cases: Array<TestCase> = [];
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
     typeAnnotation.options.forEach(option =>
       cases.push({
@@ -105,6 +105,8 @@ function getTestCasesForProp(
       propValue: typeAnnotation.default != null ? typeAnnotation.default : true,
     });
     // $FlowFixMe[incompatible-type]
+    /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+     * roll out. See https://fburl.com/workplace/4oq3zi07. */
   } else if (typeAnnotation.type === 'IntegerTypeAnnotation') {
     cases.push({
       propName,

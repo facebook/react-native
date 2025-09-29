@@ -6,6 +6,7 @@
  *
  * @flow strict
  * @format
+ * @deprecated
  */
 
 'use strict';

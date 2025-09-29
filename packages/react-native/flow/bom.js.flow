@@ -12,6 +12,71 @@
 
 declare var window: typeof globalThis;
 
+type DevToolsColor =
+  | 'primary'
+  | 'primary-light'
+  | 'primary-dark'
+  | 'secondary'
+  | 'secondary-light'
+  | 'secondary-dark'
+  | 'tertiary'
+  | 'tertiary-light'
+  | 'tertiary-dark'
+  | 'warning'
+  | 'error';
+
+// $FlowExpectedError[libdef-override] Flow core definitions are incomplete.
+declare var console: {
+  // Logging
+  log(...data: $ReadOnlyArray<mixed>): void,
+  trace(...data: $ReadOnlyArray<mixed>): void,
+  debug(...data: $ReadOnlyArray<mixed>): void,
+  info(...data: $ReadOnlyArray<mixed>): void,
+  warn(...data: $ReadOnlyArray<mixed>): void,
+  error(...data: $ReadOnlyArray<mixed>): void,
+
+  // Grouping
+  group(...data: $ReadOnlyArray<mixed>): void,
+  groupCollapsed(...data: $ReadOnlyArray<mixed>): void,
+  groupEnd(): void,
+
+  // Printing
+  table(
+    tabularData:
+      | $ReadOnly<{[key: string]: mixed, ...}>
+      | $ReadOnlyArray<$ReadOnly<{[key: string]: mixed, ...}>>
+      | $ReadOnlyArray<$ReadOnlyArray<mixed>>,
+  ): void,
+  dir(...data: $ReadOnlyArray<mixed>): void,
+  dirxml(...data: $ReadOnlyArray<mixed>): void,
+  clear(): void,
+
+  // Utilities
+  assert(condition: mixed, ...data: $ReadOnlyArray<mixed>): void,
+
+  // Profiling
+  profile(name?: string): void,
+  profileEnd(name?: string): void,
+
+  // Counts
+  count(label?: string): void,
+  countReset(label?: string): void,
+
+  // Timing / tracing
+  time(label?: string): void,
+  timeEnd(label?: string): void,
+  timeStamp(
+    label?: string,
+    start?: string | number,
+    end?: string | number,
+    trackName?: string,
+    trackGroup?: string,
+    color?: DevToolsColor,
+  ): void,
+
+  ...
+};
+
 declare class Navigator {
   product: 'ReactNative';
   appName?: ?string;
@@ -23,11 +88,168 @@ declare var navigator: Navigator;
 // https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp
 declare type DOMHighResTimeStamp = number;
 
+type PerformanceEntryFilterOptions = {
+  entryType: string,
+  name: string,
+  ...
+};
+
+// https://www.w3.org/TR/performance-timeline-2/
+declare class PerformanceEntry {
+  duration: DOMHighResTimeStamp;
+  entryType: string;
+  name: string;
+  startTime: DOMHighResTimeStamp;
+  toJSON(): string;
+}
+
+// https://w3c.github.io/user-timing/#performancemark
+declare class PerformanceMark extends PerformanceEntry {
+  constructor(name: string, markOptions?: PerformanceMarkOptions): void;
+  +detail: mixed;
+}
+
+// https://w3c.github.io/user-timing/#performancemeasure
+declare class PerformanceMeasure extends PerformanceEntry {
+  +detail: mixed;
+}
+
+// https://w3c.github.io/server-timing/#the-performanceservertiming-interface
+declare class PerformanceServerTiming {
+  description: string;
+  duration: DOMHighResTimeStamp;
+  name: string;
+  toJSON(): string;
+}
+
+// https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming
+// https://w3c.github.io/server-timing/#extension-to-the-performanceresourcetiming-interface
+declare class PerformanceResourceTiming extends PerformanceEntry {
+  connectEnd: number;
+  connectStart: number;
+  decodedBodySize: number;
+  domainLookupEnd: number;
+  domainLookupStart: number;
+  encodedBodySize: number;
+  fetchStart: number;
+  initiatorType: string;
+  nextHopProtocol: string;
+  redirectEnd: number;
+  redirectStart: number;
+  requestStart: number;
+  responseEnd: number;
+  responseStart: number;
+  secureConnectionStart: number;
+  serverTiming: Array<PerformanceServerTiming>;
+  transferSize: number;
+  workerStart: number;
+}
+
+// https://w3c.github.io/event-timing/#sec-performance-event-timing
+declare class PerformanceEventTiming extends PerformanceEntry {
+  cancelable: boolean;
+  interactionId: number;
+  processingEnd: number;
+  processingStart: number;
+  target: ?Node;
+}
+
+// https://w3c.github.io/longtasks/#taskattributiontiming
+declare class TaskAttributionTiming extends PerformanceEntry {
+  containerId: string;
+  containerName: string;
+  containerSrc: string;
+  containerType: string;
+}
+
+// https://w3c.github.io/longtasks/#sec-PerformanceLongTaskTiming
+declare class PerformanceLongTaskTiming extends PerformanceEntry {
+  attribution: $ReadOnlyArray<TaskAttributionTiming>;
+}
+
+// https://www.w3.org/TR/user-timing/#extensions-performance-interface
+declare type PerformanceMarkOptions = {
+  detail?: mixed,
+  startTime?: number,
+};
+
+declare type PerformanceMeasureOptions = {
+  detail?: mixed,
+  duration?: number,
+  end?: number | string,
+  start?: number | string,
+};
+
+type EventCountsForEachCallbackType =
+  | (() => void)
+  | ((value: number) => void)
+  | ((value: number, key: string) => void)
+  | ((value: number, key: string, map: Map<string, number>) => void);
+
+// https://www.w3.org/TR/event-timing/#eventcounts
+declare interface EventCounts {
+  entries(): Iterator<[string, number]>;
+
+  forEach(callback: EventCountsForEachCallbackType): void;
+  get(key: string): ?number;
+  has(key: string): boolean;
+  keys(): Iterator<string>;
+  size: number;
+  values(): Iterator<number>;
+}
+
 declare class Performance {
-  now: () => DOMHighResTimeStamp;
+  +eventCounts: EventCounts;
+  +timeOrigin: DOMHighResTimeStamp;
+
+  clearMarks(name?: string): void;
+  clearMeasures(name?: string): void;
+  getEntries: (
+    options?: PerformanceEntryFilterOptions,
+  ) => Array<PerformanceEntry>;
+  getEntriesByName: (name: string, type?: string) => Array<PerformanceEntry>;
+  getEntriesByType: (type: string) => Array<PerformanceEntry>;
+  mark(name: string, options?: PerformanceMarkOptions): PerformanceMark;
+  measure(
+    name: string,
+    startMarkOrOptions?: string | PerformanceMeasureOptions,
+    endMark?: string,
+  ): PerformanceMeasure;
+  now(): DOMHighResTimeStamp;
+  toJSON(): string;
 }
 
 declare var performance: Performance;
+
+type PerformanceEntryList = Array<PerformanceEntry>;
+
+declare interface PerformanceObserverEntryList {
+  getEntries(): PerformanceEntryList;
+  getEntriesByName(name: string, type: ?string): PerformanceEntryList;
+  getEntriesByType(type: string): PerformanceEntryList;
+}
+
+type PerformanceObserverInit = {
+  buffered?: boolean,
+  entryTypes?: Array<string>,
+  type?: string,
+  ...
+};
+
+declare class PerformanceObserver {
+  constructor(
+    callback: (
+      entries: PerformanceObserverEntryList,
+      observer: PerformanceObserver,
+    ) => mixed,
+  ): void;
+
+  disconnect(): void;
+  observe(options: ?PerformanceObserverInit): void;
+  static supportedEntryTypes: Array<string>;
+
+  takeRecords(): PerformanceEntryList;
+}
 
 type FormDataEntryValue = string | File;
 

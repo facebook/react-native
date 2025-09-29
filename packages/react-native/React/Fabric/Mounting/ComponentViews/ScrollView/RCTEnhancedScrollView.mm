@@ -81,7 +81,8 @@
     return;
   }
 
-  CGFloat top = 0, left = 0;
+  CGFloat top = 0;
+  CGFloat left = 0;
   if (contentSize.width < boundsSize.width) {
     left = (boundsSize.width - contentSize.width) * 0.5f;
   }

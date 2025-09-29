@@ -15,8 +15,6 @@ runs:
   steps:
     - name: Setup xcode
       uses: ./.github/actions/setup-xcode
-    - name: Setup node.js
-      uses: ./.github/actions/setup-node
     - name: Restore Hermes workspace
       uses: ./.github/actions/restore-hermes-workspace
     - name: Restore Cached Artifacts
@@ -45,6 +43,8 @@ runs:
           echo "ARTIFACTS_EXIST=true" >> $GITHUB_ENV
           echo "ARTIFACTS_EXIST=true" >> $GITHUB_OUTPUT
         fi
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
     - name: Yarn- Install Dependencies
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: ./.github/actions/yarn-install
@@ -186,7 +186,7 @@ runs:
 
         cd ./packages/react-native/sdks/hermes || exit 1
 
-        DSYM_FILE_PATH=API/hermes/hermes.framework.dSYM
+        DSYM_FILE_PATH=lib/hermesvm.framework.dSYM
         cp -r build_macosx/$DSYM_FILE_PATH "$WORKING_DIR/macosx/"
         cp -r build_catalyst/$DSYM_FILE_PATH "$WORKING_DIR/catalyst/"
         cp -r build_iphoneos/$DSYM_FILE_PATH "$WORKING_DIR/iphoneos/"
@@ -197,10 +197,10 @@ runs:
         cp -r build_xrsimulator/$DSYM_FILE_PATH "$WORKING_DIR/xrsimulator/"
 
         DEST_DIR="/tmp/hermes/dSYM/$FLAVOR"
-        tar -C "$WORKING_DIR" -czvf "hermes.framework.dSYM" .
+        tar -C "$WORKING_DIR" -czvf "hermesvm.framework.dSYM" .
 
         mkdir -p "$DEST_DIR"
-        mv "hermes.framework.dSYM" "$DEST_DIR"
+        mv "hermesvm.framework.dSYM" "$DEST_DIR"
     - name: Upload hermes dSYM artifacts
       uses: actions/upload-artifact@v4.3.4
       with:

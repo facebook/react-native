@@ -7,8 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/RCTView.h>
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTScrollContentView : RCTView
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

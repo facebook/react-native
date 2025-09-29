@@ -6,6 +6,10 @@
  */
 
 package com.facebook.react.bridge
+
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+
 /**
  * Interface for receiving notification for bridge idle/busy events. Should not affect application
  * logic and should only be used for debug/monitoring/testing purposes. Call
@@ -14,6 +18,8 @@ package com.facebook.react.bridge
  * NB: onTransitionToBridgeIdle and onTransitionToBridgeBusy may be called from different threads,
  * and those threads may not be the same thread on which the listener was originally registered.
  */
+@Deprecated("NotThreadSafeBridgeIdleDebugListener will be deleted in the new architecture.")
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public interface NotThreadSafeBridgeIdleDebugListener {
   /**
    * Called once all pending JS calls have resolved via an onBatchComplete call in the bridge and

@@ -6,12 +6,14 @@
  */
 
 #include "LegacyViewManagerInteropComponentDescriptor.h"
+#include <React/RCTBridge+Private.h>
 #include <React/RCTBridge.h>
 #include <React/RCTBridgeModuleDecorator.h>
 #include <React/RCTBridgeProxy.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/ManagedObjectWrapper.h>
 #include "LegacyViewManagerInteropState.h"
@@ -61,13 +63,13 @@ static Class getViewManagerFromComponentName(const std::string &componentName)
   // 1. Try to get the manager with the RCT prefix.
   auto rctViewManagerName = "RCT" + viewManagerName;
   Class viewManagerClass = NSClassFromString(RCTNSStringFromString(rctViewManagerName));
-  if (viewManagerClass) {
+  if (viewManagerClass != nullptr) {
     return viewManagerClass;
   }
 
   // 2. Try to get the manager without the prefix.
   viewManagerClass = NSClassFromString(RCTNSStringFromString(viewManagerName));
-  if (viewManagerClass) {
+  if (viewManagerClass != nullptr) {
     return viewManagerClass;
   }
 
@@ -81,20 +83,29 @@ static Class getViewManagerClass(const std::string &componentName, RCTBridge *br
     return viewManager;
   }
 
-  // If all the heuristics fail, let's try to retrieve the view manager from the bridge/bridgeProxy
-  if (bridge != nil) {
-    return [[bridge moduleForName:RCTNSStringFromString(componentName)] class];
-  }
+  if (ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS()) {
+    NSArray<Class> *modulesClasses = RCTGetModuleClasses();
+    for (Class moduleClass in modulesClasses) {
+      if ([RCTBridgeModuleNameForClass(moduleClass) isEqualToString:RCTNSStringFromString(componentName)]) {
+        return moduleClass;
+      }
+    }
+  } else {
+    // If all the heuristics fail, let's try to retrieve the view manager from the bridge/bridgeProxy
+    if (bridge != nil) {
+      return [[bridge moduleForName:RCTNSStringFromString(componentName)] class];
+    }
 
-  if (bridgeProxy != nil) {
-    return [[bridgeProxy moduleForName:RCTNSStringFromString(componentName) lazilyLoadIfNecessary:YES] class];
+    if (bridgeProxy != nil) {
+      return [[bridgeProxy moduleForName:RCTNSStringFromString(componentName) lazilyLoadIfNecessary:YES] class];
+    }
   }
 
   return nil;
 }
 
 static const std::shared_ptr<void> constructCoordinator(
-    const ContextContainer::Shared &contextContainer,
+    const std::shared_ptr<const ContextContainer> &contextContainer,
     const ComponentDescriptor::Flavor &flavor)
 {
   auto optionalBridge = contextContainer->find<std::shared_ptr<void>>("Bridge");

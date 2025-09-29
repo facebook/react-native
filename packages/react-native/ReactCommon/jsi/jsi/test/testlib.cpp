@@ -176,6 +176,57 @@ TEST_P(JSITest, ObjectTest) {
   Array names = obj.getPropertyNames(rt);
   EXPECT_EQ(names.size(rt), 1);
   EXPECT_EQ(names.getValueAtIndex(rt, 0).getString(rt).utf8(rt), "a");
+
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::has/get/setProperty with Value overload
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    Value getProperty(const Object& object, const Value& name) override {
+      return Runtime::getProperty(object, name);
+    }
+
+    bool hasProperty(const Object& object, const Value& name) override {
+      return Runtime::hasProperty(object, name);
+    }
+
+    void setPropertyValue(
+        const Object& object,
+        const Value& name,
+        const Value& value) override {
+      Runtime::setPropertyValue(object, name, value);
+    }
+  };
+
+  RD rd = RD(rt);
+
+  obj = eval("const obj = {}; obj;").getObject(rd);
+  auto propVal = Value(123);
+  obj.setProperty(rd, propVal, 456);
+  EXPECT_TRUE(obj.hasProperty(rd, propVal));
+  auto getRes = obj.getProperty(rd, propVal);
+  EXPECT_EQ(getRes.getNumber(), 456);
+
+  /// The property is non-writable so it should fail
+  obj = eval(
+            "Object.defineProperty(obj, '456', {"
+            "  value: 10,"
+            "  writable: false,});")
+            .getObject(rd);
+  auto unwritableProp = Value(456);
+  EXPECT_THROW(obj.setProperty(rd, unwritableProp, 1), JSError);
+
+  auto badObjKey = eval(
+      "var badObj = {"
+      "    toString: function() {"
+      "        throw new Error('something went wrong');"
+      "    }"
+      "};"
+      "badObj;");
+  EXPECT_THROW(obj.setProperty(rd, badObjKey, 123), JSError);
+  EXPECT_THROW(obj.hasProperty(rd, badObjKey), JSError);
+  EXPECT_THROW(obj.getProperty(rd, badObjKey), JSError);
 }
 
 TEST_P(JSITest, HostObjectTest) {
@@ -1877,7 +1928,68 @@ TEST_P(JSITest, CastInterface) {
   auto randomUuid = UUID{0xf2cd96cf, 0x455e, 0x42d9, 0x850a, 0x13e2cde59b8b};
   auto ptr = rd.castInterface(randomUuid);
 
-  EXPECT_EQ(ptr, nullptr);
+  // Use == instead of EXPECT_EQ to avoid ambiguous operator usage due to the
+  // type of 'ptr'.
+  EXPECT_TRUE(ptr == nullptr);
+}
+
+TEST_P(JSITest, DeleteProperty) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::deleteProperty
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void deleteProperty(const Object& object, const PropNameID& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+    void deleteProperty(const Object& object, const String& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+    void deleteProperty(const Object& object, const Value& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+  };
+  RD rd = RD(rt);
+  auto obj = eval("obj = {1:2, foo: 'bar', 3: 4, salt:'pepper'}").getObject(rd);
+
+  auto prop = PropNameID::forAscii(rd, "1");
+  auto hasRes = obj.hasProperty(rd, prop);
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, prop);
+  hasRes = obj.hasProperty(rd, prop);
+  EXPECT_FALSE(hasRes);
+
+  auto str = String::createFromAscii(rd, "foo");
+  hasRes = obj.hasProperty(rd, str);
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, str);
+  hasRes = obj.hasProperty(rd, str);
+  EXPECT_FALSE(hasRes);
+
+  auto valProp = Value(3);
+  hasRes = obj.hasProperty(rd, "3");
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, valProp);
+  auto getRes = obj.getProperty(rd, "3");
+  EXPECT_TRUE(getRes.isUndefined());
+
+  hasRes = obj.hasProperty(rd, "salt");
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, "salt");
+  hasRes = obj.hasProperty(rd, "salt");
+  EXPECT_FALSE(hasRes);
+
+  obj = eval(
+            "const obj = {};"
+            "Object.defineProperty(obj, 'prop', {"
+            "  value: 10,"
+            "  configurable: false,});"
+            "obj;")
+            .getObject(rd);
+  EXPECT_THROW(obj.deleteProperty(rd, "prop"), JSError);
+  hasRes = obj.hasProperty(rd, "prop");
+  EXPECT_TRUE(hasRes);
 }
 
 INSTANTIATE_TEST_CASE_P(

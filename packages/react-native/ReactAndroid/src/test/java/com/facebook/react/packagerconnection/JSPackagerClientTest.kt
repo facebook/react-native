@@ -52,7 +52,8 @@ class JSPackagerClientTest {
     val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage(
-        """{"version": 2, "id": "idValue", "method": "methodValue", "params": "paramsValue"}""")
+        """{"version": 2, "id": "idValue", "method": "methodValue", "params": "paramsValue"}"""
+    )
     verify(handler, never()).onNotification(any())
     verify(handler).onRequest(eq("paramsValue"), any())
   }
@@ -143,12 +144,12 @@ class JSPackagerClientTest {
       requestHandlers: Map<String, RequestHandler>,
       clientId: String = "test_client",
       settings: PackagerConnectionSettings = this.settings,
-      connectionCallback: ConnectionCallback? = null
+      connectionCallback: ConnectionCallback? = null,
   ): JSPackagerClient = JSPackagerClient(clientId, settings, requestHandlers, connectionCallback)
 
   private fun createRequestHandler(
       action: String,
-      handler: RequestHandler
+      handler: RequestHandler,
   ): Map<String, RequestHandler> = mapOf(action to handler)
 
   private fun encodeUtf8(input: String): ByteString =

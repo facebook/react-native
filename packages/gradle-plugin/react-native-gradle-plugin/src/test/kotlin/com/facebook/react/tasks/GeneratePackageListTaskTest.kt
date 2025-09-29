@@ -33,9 +33,9 @@ class GeneratePackageListTaskTest {
     val inputFile = tempFolder.newFile("config.json")
 
     val task =
-        createTestTask<GeneratePackageListTask> {
-          it.generatedOutputDirectory.set(outputFolder)
-          it.autolinkInputFile.set(inputFile)
+        createTestTask<GeneratePackageListTask> { testTask ->
+          testTask.generatedOutputDirectory.set(outputFolder)
+          testTask.autolinkInputFile.set(inputFile)
         }
 
     assertThat(task.inputs.files.singleFile).isEqualTo(inputFile)
@@ -59,12 +59,13 @@ class GeneratePackageListTaskTest {
     assertThat(result)
         .isEqualTo(
             """
-      // @react-native/a-package
-      import com.facebook.react.aPackage;
-      // @react-native/another-package
-      import com.facebook.react.anotherPackage;
-    """
-                .trimIndent())
+            // @react-native/a-package
+            import com.facebook.react.aPackage;
+            // @react-native/another-package
+            import com.facebook.react.anotherPackage;
+            """
+                .trimIndent()
+        )
   }
 
   @Test
@@ -84,11 +85,12 @@ class GeneratePackageListTaskTest {
     assertThat(result)
         .isEqualTo(
             """
-      ,
-            new APackage(),
-            new AnotherPackage()
-    """
-                .trimIndent())
+            ,
+                  new APackage(),
+                  new AnotherPackage()
+            """
+                .trimIndent()
+        )
   }
 
   @Test
@@ -146,8 +148,12 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = null))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = null),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result)
         .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
@@ -174,8 +180,12 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = android),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result.entries.size).isEqualTo(1)
     assertThat(result["a-dependency"]).isEqualTo(android)
   }
@@ -189,7 +199,8 @@ class GeneratePackageListTaskTest {
             packageImportPath = "import com.facebook.react.aPackage;",
             packageInstance = "new APackage()",
             buildTypes = emptyList(),
-            isPureCxxDependency = true)
+            isPureCxxDependency = true,
+        )
 
     val result =
         task.filterAndroidPackages(
@@ -202,8 +213,12 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-pure-cxx-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = android),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result)
         .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
@@ -219,69 +234,71 @@ class GeneratePackageListTaskTest {
     assertThat(result)
         .isEqualTo(
             """
-    package com.facebook.react;
+            package com.facebook.react;
 
-    import android.app.Application;
-    import android.content.Context;
-    import android.content.res.Resources;
+            import android.app.Application;
+            import android.content.Context;
+            import android.content.res.Resources;
 
-    import com.facebook.react.ReactPackage;
-    import com.facebook.react.shell.MainPackageConfig;
-    import com.facebook.react.shell.MainReactPackage;
-    import java.util.Arrays;
-    import java.util.ArrayList;
+            import com.facebook.react.ReactPackage;
+            import com.facebook.react.shell.MainPackageConfig;
+            import com.facebook.react.shell.MainReactPackage;
+            import java.util.Arrays;
+            import java.util.ArrayList;
 
 
 
-    public class PackageList {
-      private Application application;
-      private ReactNativeHost reactNativeHost;
-      private MainPackageConfig mConfig;
+            @SuppressWarnings("deprecation")
+            public class PackageList {
+              private Application application;
+              private ReactNativeHost reactNativeHost;
+              private MainPackageConfig mConfig;
 
-      public PackageList(ReactNativeHost reactNativeHost) {
-        this(reactNativeHost, null);
-      }
+              public PackageList(ReactNativeHost reactNativeHost) {
+                this(reactNativeHost, null);
+              }
 
-      public PackageList(Application application) {
-        this(application, null);
-      }
+              public PackageList(Application application) {
+                this(application, null);
+              }
 
-      public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
-        this.reactNativeHost = reactNativeHost;
-        mConfig = config;
-      }
+              public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
+                this.reactNativeHost = reactNativeHost;
+                mConfig = config;
+              }
 
-      public PackageList(Application application, MainPackageConfig config) {
-        this.reactNativeHost = null;
-        this.application = application;
-        mConfig = config;
-      }
+              public PackageList(Application application, MainPackageConfig config) {
+                this.reactNativeHost = null;
+                this.application = application;
+                mConfig = config;
+              }
 
-      private ReactNativeHost getReactNativeHost() {
-        return this.reactNativeHost;
-      }
+              private ReactNativeHost getReactNativeHost() {
+                return this.reactNativeHost;
+              }
 
-      private Resources getResources() {
-        return this.getApplication().getResources();
-      }
+              private Resources getResources() {
+                return this.getApplication().getResources();
+              }
 
-      private Application getApplication() {
-        if (this.reactNativeHost == null) return this.application;
-        return this.reactNativeHost.getApplication();
-      }
+              private Application getApplication() {
+                if (this.reactNativeHost == null) return this.application;
+                return this.reactNativeHost.getApplication();
+              }
 
-      private Context getApplicationContext() {
-        return this.getApplication().getApplicationContext();
-      }
+              private Context getApplicationContext() {
+                return this.getApplication().getApplicationContext();
+              }
 
-      public ArrayList<ReactPackage> getPackages() {
-        return new ArrayList<>(Arrays.<ReactPackage>asList(
-          new MainReactPackage(mConfig)
-        ));
-      }
-    }
-    """
-                .trimIndent())
+              public ArrayList<ReactPackage> getPackages() {
+                return new ArrayList<>(Arrays.<ReactPackage>asList(
+                  new MainReactPackage(mConfig)
+                ));
+              }
+            }
+            """
+                .trimIndent()
+        )
   }
 
   @Test
@@ -295,74 +312,76 @@ class GeneratePackageListTaskTest {
     assertThat(result)
         .isEqualTo(
             """
-    package com.facebook.react;
+            package com.facebook.react;
 
-    import android.app.Application;
-    import android.content.Context;
-    import android.content.res.Resources;
+            import android.app.Application;
+            import android.content.Context;
+            import android.content.res.Resources;
 
-    import com.facebook.react.ReactPackage;
-    import com.facebook.react.shell.MainPackageConfig;
-    import com.facebook.react.shell.MainReactPackage;
-    import java.util.Arrays;
-    import java.util.ArrayList;
+            import com.facebook.react.ReactPackage;
+            import com.facebook.react.shell.MainPackageConfig;
+            import com.facebook.react.shell.MainReactPackage;
+            import java.util.Arrays;
+            import java.util.ArrayList;
 
-    // @react-native/a-package
-    import com.facebook.react.aPackage;
-    // @react-native/another-package
-    import com.facebook.react.anotherPackage;
+            // @react-native/a-package
+            import com.facebook.react.aPackage;
+            // @react-native/another-package
+            import com.facebook.react.anotherPackage;
 
-    public class PackageList {
-      private Application application;
-      private ReactNativeHost reactNativeHost;
-      private MainPackageConfig mConfig;
+            @SuppressWarnings("deprecation")
+            public class PackageList {
+              private Application application;
+              private ReactNativeHost reactNativeHost;
+              private MainPackageConfig mConfig;
 
-      public PackageList(ReactNativeHost reactNativeHost) {
-        this(reactNativeHost, null);
-      }
+              public PackageList(ReactNativeHost reactNativeHost) {
+                this(reactNativeHost, null);
+              }
 
-      public PackageList(Application application) {
-        this(application, null);
-      }
+              public PackageList(Application application) {
+                this(application, null);
+              }
 
-      public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
-        this.reactNativeHost = reactNativeHost;
-        mConfig = config;
-      }
+              public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
+                this.reactNativeHost = reactNativeHost;
+                mConfig = config;
+              }
 
-      public PackageList(Application application, MainPackageConfig config) {
-        this.reactNativeHost = null;
-        this.application = application;
-        mConfig = config;
-      }
+              public PackageList(Application application, MainPackageConfig config) {
+                this.reactNativeHost = null;
+                this.application = application;
+                mConfig = config;
+              }
 
-      private ReactNativeHost getReactNativeHost() {
-        return this.reactNativeHost;
-      }
+              private ReactNativeHost getReactNativeHost() {
+                return this.reactNativeHost;
+              }
 
-      private Resources getResources() {
-        return this.getApplication().getResources();
-      }
+              private Resources getResources() {
+                return this.getApplication().getResources();
+              }
 
-      private Application getApplication() {
-        if (this.reactNativeHost == null) return this.application;
-        return this.reactNativeHost.getApplication();
-      }
+              private Application getApplication() {
+                if (this.reactNativeHost == null) return this.application;
+                return this.reactNativeHost.getApplication();
+              }
 
-      private Context getApplicationContext() {
-        return this.getApplication().getApplicationContext();
-      }
+              private Context getApplicationContext() {
+                return this.getApplication().getApplicationContext();
+              }
 
-      public ArrayList<ReactPackage> getPackages() {
-        return new ArrayList<>(Arrays.<ReactPackage>asList(
-          new MainReactPackage(mConfig),
-          new APackage(),
-          new AnotherPackage()
-        ));
-      }
-    }
-    """
-                .trimIndent())
+              public ArrayList<ReactPackage> getPackages() {
+                return new ArrayList<>(Arrays.<ReactPackage>asList(
+                  new MainReactPackage(mConfig),
+                  new APackage(),
+                  new AnotherPackage()
+                ));
+              }
+            }
+            """
+                .trimIndent()
+        )
   }
 
   private val testDependencies =
@@ -386,5 +405,6 @@ class GeneratePackageListTaskTest {
                   libraryName = "anotherPackage",
                   componentDescriptors = emptyList(),
                   cmakeListsPath = "./another/directory/CMakeLists.txt",
-              ))
+              ),
+      )
 }

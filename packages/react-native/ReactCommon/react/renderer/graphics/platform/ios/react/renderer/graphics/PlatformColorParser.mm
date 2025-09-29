@@ -29,24 +29,24 @@ inline facebook::react::SharedColor RCTPlatformColorComponentsFromDynamicItems(
   SharedColor darkSharedColor{};
   SharedColor highContrastLightSharedColor{};
   SharedColor highContrastDarkSharedColor{};
-  if (dynamicItems.count("light")) {
+  if (dynamicItems.count("light") != 0u) {
     fromRawValue(contextContainer, surfaceId, dynamicItems.at("light"), lightSharedColor);
   }
-  if (dynamicItems.count("dark")) {
+  if (dynamicItems.count("dark") != 0u) {
     fromRawValue(contextContainer, surfaceId, dynamicItems.at("dark"), darkSharedColor);
   }
-  if (dynamicItems.count("highContrastLight")) {
+  if (dynamicItems.count("highContrastLight") != 0u) {
     fromRawValue(contextContainer, surfaceId, dynamicItems.at("highContrastLight"), highContrastLightSharedColor);
   }
-  if (dynamicItems.count("highContrastDark")) {
+  if (dynamicItems.count("highContrastDark") != 0u) {
     fromRawValue(contextContainer, surfaceId, dynamicItems.at("highContrastDark"), highContrastDarkSharedColor);
   }
 
   Color color = Color(DynamicColor{
-      (*lightSharedColor).getColor(),
-      (*darkSharedColor).getColor(),
-      (*highContrastLightSharedColor).getColor(),
-      (*highContrastDarkSharedColor).getColor()});
+      .lightColor = (*lightSharedColor).getColor(),
+      .darkColor = (*darkSharedColor).getColor(),
+      .highContrastLightColor = (*highContrastLightSharedColor).getColor(),
+      .highContrastDarkColor = (*highContrastDarkSharedColor).getColor()});
   return SharedColor(color);
 }
 

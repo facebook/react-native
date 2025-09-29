@@ -67,7 +67,9 @@ class BigStringBuffer : public jsi::Buffer {
   std::unique_ptr<const JSBigString> script_;
 };
 
-class JSIExecutor : public JSExecutor {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JSIExecutor
+    : public JSExecutor {
  public:
   using RuntimeInstaller = std::function<void(jsi::Runtime& runtime)>;
 
@@ -80,16 +82,16 @@ class JSIExecutor : public JSExecutor {
   void loadBundle(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override;
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
   void registerBundle(uint32_t bundleId, const std::string& bundlePath)
       override;
   void callFunction(
       const std::string& moduleId,
       const std::string& methodId,
       const folly::dynamic& arguments) override;
-  void invokeCallback(const double callbackId, const folly::dynamic& arguments)
+  void invokeCallback(double callbackId, const folly::dynamic& arguments)
       override;
   void setGlobalVariable(
       std::string propName,
@@ -111,7 +113,7 @@ class JSIExecutor : public JSExecutor {
   void flush() override;
 
  private:
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   class NativeModuleProxy;
 
   void bindBridge();
@@ -132,7 +134,7 @@ class JSIExecutor : public JSExecutor {
   std::optional<jsi::Function> callFunctionReturnFlushedQueue_;
   std::optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
   std::optional<jsi::Function> flushedQueue_;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 };
 
 using Logger =

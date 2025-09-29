@@ -24,13 +24,39 @@
 
 namespace facebook::react {
 
+namespace {
+
+class UIManagerCommitHookManagerImpl : public UIManagerCommitHookManager {
+ public:
+  explicit UIManagerCommitHookManagerImpl(std::weak_ptr<UIManager> uiManager)
+      : uiManager_(std::move(uiManager)) {}
+
+  ~UIManagerCommitHookManagerImpl() override = default;
+
+  void registerCommitHook(UIManagerCommitHook& commitHook) override {
+    if (auto uiManager = uiManager_.lock()) {
+      uiManager->registerCommitHook(commitHook);
+    }
+  }
+
+  void unregisterCommitHook(UIManagerCommitHook& commitHook) override {
+    if (auto uiManager = uiManager_.lock()) {
+      uiManager->unregisterCommitHook(commitHook);
+    }
+  }
+
+ private:
+  std::weak_ptr<UIManager> uiManager_;
+};
+
+} // namespace
+
 Scheduler::Scheduler(
     const SchedulerToolbox& schedulerToolbox,
     UIManagerAnimationDelegate* animationDelegate,
-    SchedulerDelegate* delegate) {
-  runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
-  contextContainer_ = schedulerToolbox.contextContainer;
-
+    SchedulerDelegate* delegate)
+    : runtimeExecutor_(schedulerToolbox.runtimeExecutor),
+      contextContainer_(schedulerToolbox.contextContainer) {
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ = std::make_shared<std::optional<const EventDispatcher>>();
 
@@ -39,11 +65,23 @@ Scheduler::Scheduler(
   auto performanceEntryReporter = PerformanceEntryReporter::getInstance();
   performanceEntryReporter_ = performanceEntryReporter;
 
+  if (ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
+      ReactNativeFeatureFlags::cdpInteractionMetricsEnabled()) {
+    cdpMetricsReporter_.emplace(CdpMetricsReporter{runtimeExecutor_});
+    performanceEntryReporter_->addEventTimingListener(&*cdpMetricsReporter_);
+  }
+
   eventPerformanceLogger_ =
       std::make_shared<EventPerformanceLogger>(performanceEntryReporter_);
 
   auto uiManager =
       std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
+  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
+    contextContainer_->insert(
+        std::string(UIManagerCommitHookManagerKey),
+        std::make_shared<UIManagerCommitHookManagerImpl>(uiManager));
+  }
+
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -165,6 +203,10 @@ Scheduler::~Scheduler() {
   uiManager_->setDelegate(nullptr);
   uiManager_->setAnimationDelegate(nullptr);
 
+  if (cdpMetricsReporter_) {
+    performanceEntryReporter_->removeEventTimingListener(&*cdpMetricsReporter_);
+  }
+
   // Then, let's verify that the requirement was satisfied.
   auto surfaceIds = std::vector<SurfaceId>{};
   uiManager_->getShadowTreeRegistry().enumerate(
@@ -270,7 +312,7 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
 }
 
 void Scheduler::uiManagerDidDispatchCommand(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
   TraceSection s("Scheduler::uiManagerDispatchCommand");
@@ -289,7 +331,7 @@ void Scheduler::uiManagerDidDispatchCommand(
 }
 
 void Scheduler::uiManagerDidSendAccessibilityEvent(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& eventType) {
   TraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
 
@@ -303,7 +345,7 @@ void Scheduler::uiManagerDidSendAccessibilityEvent(
  * Set JS responder for a view.
  */
 void Scheduler::uiManagerDidSetIsJSResponder(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     bool isJSResponder,
     bool blockNativeResponder) {
   if (delegate_ != nullptr) {
@@ -348,7 +390,7 @@ void Scheduler::reportMount(SurfaceId surfaceId) const {
   uiManager_->reportMount(surfaceId);
 }
 
-ContextContainer::Shared Scheduler::getContextContainer() const {
+std::shared_ptr<const ContextContainer> Scheduler::getContextContainer() const {
   return contextContainer_;
 }
 

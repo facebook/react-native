@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <string>
-#include <unordered_map>
-
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModule.h>
+#include <functional>
+#include <memory>
+#include <string>
 
 namespace facebook::react {
 

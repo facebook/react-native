@@ -37,7 +37,6 @@ const PAGE_DEFAULTS = {
 describe('inspector-proxy device socket handoff', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
-    projectRoot: '',
   });
   const autoCleanup = withAbortSignalForEachTest();
   afterEach(() => {
@@ -314,7 +313,7 @@ describe('inspector-proxy device socket handoff', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList).toEqual(
           expect.arrayContaining(

@@ -43,7 +43,7 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
 
 export {mergeConfig} from 'metro-config';
 
-let frameworkDefaults = {};
+let frameworkDefaults: InputConfigT = {};
 export function setFrameworkDefaults(config: InputConfigT) {
   frameworkDefaults = config;
 }

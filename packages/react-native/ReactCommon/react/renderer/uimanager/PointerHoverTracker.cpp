@@ -7,7 +7,6 @@
 
 #include "PointerHoverTracker.h"
 
-#include <ranges>
 #include <utility>
 
 namespace facebook::react {
@@ -15,13 +14,13 @@ namespace facebook::react {
 using EventPath = PointerHoverTracker::EventPath;
 
 PointerHoverTracker::PointerHoverTracker(
-    ShadowNode::Shared target,
+    std::shared_ptr<const ShadowNode> target,
     const UIManager& uiManager)
     : target_(std::move(target)) {
   if (target_ != nullptr) {
     // Retrieve the root shadow node at this current revision so that we can
     // leverage it to get the event path list at the moment the event occured
-    auto rootShadowNode = ShadowNode::Shared{};
+    auto rootShadowNode = std::shared_ptr<const ShadowNode>{};
     auto& shadowTreeRegistry = uiManager.getShadowTreeRegistry();
     shadowTreeRegistry.visit(
         target_->getSurfaceId(),
@@ -94,7 +93,7 @@ std::tuple<EventPath, EventPath> PointerHoverTracker::diffEventPath(
   for (auto nodeIt = myIt; nodeIt != myEventPath.rend(); nodeIt++) {
     const auto& latestNode = getLatestNode(*nodeIt, uiManager);
     if (latestNode != nullptr) {
-      removed.push_back(*latestNode);
+      removed.emplace_back(*latestNode);
     }
   }
 
@@ -102,7 +101,7 @@ std::tuple<EventPath, EventPath> PointerHoverTracker::diffEventPath(
   for (auto nodeIt = otherIt; nodeIt != otherEventPath.rend(); nodeIt++) {
     const auto& latestNode = other.getLatestNode(*nodeIt, uiManager);
     if (latestNode != nullptr) {
-      added.push_back(*latestNode);
+      added.emplace_back(*latestNode);
     }
   }
 

@@ -572,17 +572,17 @@ function translateEventEmitterToCpp(
   ${
     isVoidTypeAnnotation ? '' : `template <typename ${templateName}> `
   }void emit${toPascalCase(eventEmitter.name)}(${
-      isVoidTypeAnnotation
-        ? ''
-        : `${isArray ? `std::vector<${templateName}>` : templateName} value`
-    }) {${
-      isVoidTypeAnnotation
-        ? ''
-        : `
+    isVoidTypeAnnotation
+      ? ''
+      : `${isArray ? `std::vector<${templateName}>` : templateName} value`
+  }) {${
+    isVoidTypeAnnotation
+      ? ''
+      : `
     static_assert(bridging::supportsFromJs<${
       isArray ? `std::vector<${templateName}>` : templateName
     }, ${jsiType}>, "value cannnot be converted to ${jsiType}");`
-    }
+  }
     static_cast<AsyncEventEmitter<${
       isVoidTypeAnnotation ? '' : 'jsi::Value'
     }>&>(*delegate_.eventEmitterMap_["${eventEmitter.name}"]).emit(${

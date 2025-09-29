@@ -32,7 +32,7 @@ const prettier = require('prettier');
 const {styleText} = require('util');
 
 const prettierConfig = JSON.parse(
-  fs.readFileSync(path.resolve(__dirname, '..', '.prettierrc'), 'utf8'),
+  fs.readFileSync(path.resolve(__dirname, '..', 'build.prettierrc'), 'utf8'),
 );
 
 const SRC_DIR = 'src';
@@ -58,7 +58,7 @@ function getBuildPath(file, buildFolder) {
   return path.resolve(pkgBuildPath, relativeToSrcPath);
 }
 
-function buildFile(file, silent) {
+async function buildFile(file, silent) {
   const destPath = getBuildPath(file, BUILD_DIR);
 
   fs.mkdirSync(path.dirname(destPath), {recursive: true});
@@ -82,7 +82,7 @@ function buildFile(file, silent) {
           '\n',
       );
   } else {
-    const transformed = prettier.format(
+    const transformed = await prettier.format(
       babel.transformFileSync(file, {}).code,
       {
         ...prettierConfig,
@@ -111,6 +111,8 @@ const files = glob.sync(pattern, {nodir: true});
 
 process.stdout.write(fixedWidth(`${path.basename(PACKAGE_DIR)}\n`));
 
-files.forEach(file => buildFile(file, !process.argv.includes('--verbose')));
-
-process.stdout.write(`[  ${styleText('green', 'OK')}  ]\n`);
+Promise.all(
+  files.map(file => buildFile(file, !process.argv.includes('--verbose'))),
+).then(() => {
+  process.stdout.write(`[  ${styleText('green', 'OK')}  ]\n`);
+});

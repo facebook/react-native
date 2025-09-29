@@ -21,7 +21,7 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-export type TVProps = $ReadOnly<{
+export type TouchableOpacityTVProps = $ReadOnly<{
   /**
    * *(Apple TV only)* TV preferred focus (see documentation for the View component).
    *
@@ -79,7 +79,7 @@ type TouchableOpacityBaseProps = $ReadOnly<{
 
 export type TouchableOpacityProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
-  ...TVProps,
+  ...TouchableOpacityTVProps,
   ...TouchableOpacityBaseProps,
 }>;
 
@@ -294,7 +294,7 @@ class TouchableOpacity extends React.Component<
     const accessibilityLiveRegion =
       this.props['aria-live'] === 'off'
         ? 'none'
-        : this.props['aria-live'] ?? this.props.accessibilityLiveRegion;
+        : (this.props['aria-live'] ?? this.props.accessibilityLiveRegion);
 
     const accessibilityLabel =
       this.props['aria-label'] ?? this.props.accessibilityLabel;

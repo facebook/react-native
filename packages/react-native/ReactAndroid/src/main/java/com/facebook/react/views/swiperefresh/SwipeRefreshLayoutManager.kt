@@ -42,19 +42,19 @@ internal open class SwipeRefreshLayoutManager :
   override fun getName(): String = REACT_CLASS
 
   @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)
-  override fun setEnabled(view: ReactSwipeRefreshLayout, enabled: Boolean) {
-    view.isEnabled = enabled
+  override fun setEnabled(view: ReactSwipeRefreshLayout, value: Boolean) {
+    view.isEnabled = value
   }
 
   @ReactProp(name = "colors", customType = "ColorArray")
-  override fun setColors(view: ReactSwipeRefreshLayout, colors: ReadableArray?) {
-    if (colors != null) {
-      val colorValues = IntArray(colors.size())
-      for (i in 0..<colors.size()) {
-        if (colors.getType(i) == ReadableType.Map) {
-          colorValues[i] = ColorPropConverter.getColor(colors.getMap(i), view.context, 0)
+  override fun setColors(view: ReactSwipeRefreshLayout, value: ReadableArray?) {
+    if (value != null) {
+      val colorValues = IntArray(value.size())
+      for (i in 0..<value.size()) {
+        if (value.getType(i) == ReadableType.Map) {
+          colorValues[i] = ColorPropConverter.getColor(value.getMap(i), view.context, 0)
         } else {
-          colorValues[i] = colors.getInt(i)
+          colorValues[i] = value.getInt(i)
         }
       }
       view.setColorSchemeColors(*colorValues)
@@ -64,8 +64,8 @@ internal open class SwipeRefreshLayoutManager :
   }
 
   @ReactProp(name = "progressBackgroundColor", customType = "Color")
-  override fun setProgressBackgroundColor(view: ReactSwipeRefreshLayout, color: Int?) {
-    view.setProgressBackgroundColorSchemeColor(color ?: Color.TRANSPARENT)
+  override fun setProgressBackgroundColor(view: ReactSwipeRefreshLayout, value: Int?) {
+    view.setProgressBackgroundColorSchemeColor(value ?: Color.TRANSPARENT)
   }
 
   // TODO(T46143833): Remove this method once the 'size' prop has been migrated to String in JS.
@@ -73,13 +73,13 @@ internal open class SwipeRefreshLayoutManager :
     view.setSize(value)
   }
 
-  override fun setSize(view: ReactSwipeRefreshLayout, size: String?) {
-    if (size == null || size.equals("default")) {
+  override fun setSize(view: ReactSwipeRefreshLayout, value: String?) {
+    if (value == null || value.equals("default")) {
       view.setSize(SwipeRefreshLayout.DEFAULT)
-    } else if (size.equals("large")) {
+    } else if (value.equals("large")) {
       view.setSize(SwipeRefreshLayout.LARGE)
     } else {
-      throw IllegalArgumentException("Size must be 'default' or 'large', received: $size")
+      throw IllegalArgumentException("Size must be 'default' or 'large', received: $value")
     }
   }
 
@@ -97,13 +97,13 @@ internal open class SwipeRefreshLayoutManager :
   }
 
   @ReactProp(name = "refreshing")
-  override fun setRefreshing(view: ReactSwipeRefreshLayout, refreshing: Boolean) {
-    view.isRefreshing = refreshing
+  override fun setRefreshing(view: ReactSwipeRefreshLayout, value: Boolean) {
+    view.isRefreshing = value
   }
 
   @ReactProp(name = "progressViewOffset", defaultFloat = 0f)
-  override fun setProgressViewOffset(view: ReactSwipeRefreshLayout, offset: Float) {
-    view.setProgressViewOffset(offset)
+  override fun setProgressViewOffset(view: ReactSwipeRefreshLayout, value: Float) {
+    view.setProgressViewOffset(value)
   }
 
   override fun setNativeRefreshing(view: ReactSwipeRefreshLayout, value: Boolean) {
@@ -121,13 +121,17 @@ internal open class SwipeRefreshLayoutManager :
       mutableMapOf(
           "SIZE" to
               mutableMapOf(
-                  "DEFAULT" to SwipeRefreshLayout.DEFAULT, "LARGE" to SwipeRefreshLayout.LARGE))
+                  "DEFAULT" to SwipeRefreshLayout.DEFAULT,
+                  "LARGE" to SwipeRefreshLayout.LARGE,
+              )
+      )
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
     val eventTypeConstants: MutableMap<String, Any> = baseEventTypeConstants ?: HashMap()
     eventTypeConstants.putAll(
-        mutableMapOf("topRefresh" to mutableMapOf("registrationName" to "onRefresh")))
+        mutableMapOf("topRefresh" to mutableMapOf("registrationName" to "onRefresh"))
+    )
     return eventTypeConstants
   }
 

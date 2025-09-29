@@ -8,32 +8,51 @@
  * @format
  */
 
-import type Performance from '../Performance';
-
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-declare var performance: Performance;
-
 describe('Performance', () => {
-  it('measure validates mark names presence in the buffer, if specified', () => {
+  it('does NOT allow creating instances of Performance directly', () => {
     expect(() => {
-      performance.measure('measure', 'start', 'end');
-    }).toThrow(
-      "Failed to execute 'measure' on 'Performance': The mark 'start' does not exist.",
-    ); // This should also check that Error is an instance of DOMException and is SyntaxError,
-    // but toThrow checked currently only supports string argument.
+      return new Performance();
+    }).toThrow("Failed to construct 'Performance': Illegal constructor");
+  });
 
-    performance.mark('start');
+  it('does NOT allow creating instances of PerformanceEntry directly', () => {
     expect(() => {
-      performance.measure('measure', 'start', 'end');
-    }).toThrow(
-      "Failed to execute 'measure' on 'Performance': The mark 'end' does not exist.",
-    ); // This should also check that Error is an instance of DOMException and is SyntaxError,
-    // but toThrow checked currently only supports string argument.
+      return new PerformanceEntry();
+    }).toThrow("Failed to construct 'PerformanceEntry': Illegal constructor");
+  });
 
-    performance.mark('end');
-    expect(() => {
-      performance.measure('measure', 'start', 'end');
-    }).not.toThrow();
+  describe('now', () => {
+    it('provides increasing timestamps since boot time', () => {
+      const first = performance.now();
+      const second = performance.now();
+      const third = performance.now();
+
+      expect(typeof first).toBe('number');
+      expect(typeof second).toBe('number');
+      expect(typeof third).toBe('number');
+
+      expect(first).toBeGreaterThan(0);
+      expect(second).toBeGreaterThan(first);
+      expect(third).toBeGreaterThan(second);
+    });
+  });
+
+  describe('timeOrigin', () => {
+    it('allows moving timestamps to Unix epoch', () => {
+      // We need to truncate timestamps because `Date.now()` only provides
+      // integer millisecond precision.
+      const adjustedMonotonicTime = Math.trunc(
+        performance.now() + performance.timeOrigin,
+      );
+      const wallTime = Date.now();
+      const adjustedMonotonicTimeAfter = Math.trunc(
+        performance.now() + performance.timeOrigin,
+      );
+
+      expect(wallTime).toBeGreaterThanOrEqual(adjustedMonotonicTime);
+      expect(adjustedMonotonicTimeAfter).toBeGreaterThanOrEqual(wallTime);
+    });
   });
 });

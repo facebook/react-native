@@ -7,10 +7,11 @@
 
 #include "ModuleRegistry.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <glog/logging.h>
 #include <reactperflogger/BridgeNativeModulePerfLogger.h>
+#include <utility>
 
 #include "NativeModule.h"
 #include "TraceSection.h"
@@ -37,7 +38,8 @@ std::string normalizeName(std::string name) {
 ModuleRegistry::ModuleRegistry(
     std::vector<std::unique_ptr<NativeModule>> modules,
     ModuleNotFoundCallback callback)
-    : modules_{std::move(modules)}, moduleNotFoundCallback_{callback} {}
+    : modules_{std::move(modules)},
+      moduleNotFoundCallback_{std::move(callback)} {}
 
 void ModuleRegistry::updateModuleNamesFromIndex(size_t index) {
   for (; index < modules_.size(); index++) {
@@ -242,4 +244,4 @@ MethodCallResult ModuleRegistry::callSerializableNativeHook(
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

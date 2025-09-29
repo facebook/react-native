@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
+  s.source_files           = podspec_sources("**/*.{cpp,h}", "**/*.h")
   s.header_dir             = "react/renderer/css"
   s.exclude_files          = "tests"
   s.pod_target_xcconfig    = {
@@ -40,10 +40,7 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES",
   }
 
-  if ENV['USE_FRAMEWORKS']
-    s.module_name            = "React_renderercss"
-    s.header_mappings_dir  = "../../.."
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "../../..", module_name: "React_renderercss")
 
   add_dependency(s, "React-debug")
   add_dependency(s, "React-utils")

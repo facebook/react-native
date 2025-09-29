@@ -58,6 +58,7 @@ type Examples =
   | 'promise'
   | 'rejectPromise'
   | 'voidFunc'
+  | 'voidPromise'
   | 'setMenuItem'
   | 'optionalArgs'
   | 'emitDeviceEvent';
@@ -138,6 +139,10 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
+    voidPromise: () =>
+      NativeCxxModuleExample?.voidPromise().then(valuePromise =>
+        this._setResult('voidPromise', valuePromise),
+      ),
     setMenuItem: () => {
       let curValue = '';
       NativeCxxModuleExample?.setMenu({
@@ -167,7 +172,9 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
       DeviceEventEmitter.addListener(CUSTOM_EVENT_TYPE, (...args) => {
         this._setResult(
           'emitDeviceEvent',
-          `${CUSTOM_EVENT_TYPE}(${args.map(s => (typeof s === 'object' ? JSON.stringify(s) : s)).join(', ')})`,
+          `${CUSTOM_EVENT_TYPE}(${args
+            .map(s => (typeof s === 'object' ? JSON.stringify(s) : s))
+            .join(', ')})`,
         );
       });
       NativeCxxModuleExample?.emitCustomDeviceEvent(CUSTOM_EVENT_TYPE);
@@ -306,7 +313,7 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
             style={[styles.column, styles.button]}
             onPress={() =>
               Object.keys(this._tests).forEach(item =>
-                // $FlowFixMe
+                // $FlowFixMe[incompatible-type]
                 this._setResult(item, this._tests[item]()),
               )
             }>
@@ -323,7 +330,7 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
           </TouchableOpacity>
         </View>
         <FlatList
-          // $FlowFixMe[incompatible-type-arg]
+          // $FlowFixMe[incompatible-type]
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
           renderItem={({item}: {item: Examples, ...}) => (
@@ -343,7 +350,7 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
           </RNTesterText>
         </View>
         <FlatList
-          // $FlowFixMe[incompatible-type-arg]
+          // $FlowFixMe[incompatible-type]
           data={Object.keys(this._errorTests)}
           keyExtractor={item => item}
           renderItem={({item}: {item: ErrorExamples, ...}) => (

@@ -118,7 +118,7 @@ std::string jsonResult(
  * \param params Optional payload object.
  */
 std::string jsonNotification(
-    std::string_view method,
+    const std::string& method,
     std::optional<folly::dynamic> params = std::nullopt);
 
 /**
@@ -132,7 +132,7 @@ std::string jsonNotification(
  */
 std::string jsonRequest(
     RequestId id,
-    std::string_view method,
+    const std::string& method,
     std::optional<folly::dynamic> params = std::nullopt);
 
 } // namespace facebook::react::jsinspector_modern::cdp

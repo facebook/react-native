@@ -143,7 +143,7 @@ static void RCTPerformMountInstructions(
   RCTMountingTransactionObserverCoordinator _observerCoordinator;
   BOOL _transactionInFlight;
   BOOL _followUpTransactionRequired;
-  ContextContainer::Shared _contextContainer;
+  std::shared_ptr<const ContextContainer> _contextContainer;
 }
 
 - (instancetype)init
@@ -155,7 +155,7 @@ static void RCTPerformMountInstructions(
   return self;
 }
 
-- (void)setContextContainer:(ContextContainer::Shared)contextContainer
+- (void)setContextContainer:(std::shared_ptr<const ContextContainer>)contextContainer
 {
   _contextContainer = contextContainer;
 }

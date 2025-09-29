@@ -8,7 +8,7 @@
  * @format
  */
 
-const {PACKAGES_DIR} = require('../consts');
+const {PACKAGES_DIR} = require('../shared/consts');
 // $FlowFixMe[untyped-import]: TODO type ansi-styles
 const ansiStyles = require('ansi-styles');
 const {execSync, spawnSync} = require('child_process');
@@ -62,7 +62,7 @@ async function main() {
       'create-diff': createDiff,
       'no-build': noBuild,
     },
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 

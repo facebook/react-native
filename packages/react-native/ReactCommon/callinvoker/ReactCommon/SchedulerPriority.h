@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <chrono>
-
 namespace facebook::react {
 
 enum class SchedulerPriority : int {

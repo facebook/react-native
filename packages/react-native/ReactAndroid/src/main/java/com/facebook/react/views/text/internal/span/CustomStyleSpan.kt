@@ -14,6 +14,7 @@ import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.assets.ReactFontManager
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.views.text.ReactTypefaceUtils
 
 /**
@@ -32,7 +33,7 @@ internal class CustomStyleSpan(
     private val privateWeight: Int,
     val fontFeatureSettings: String?,
     val fontFamily: String?,
-    private val assetManager: AssetManager
+    private val assetManager: AssetManager,
 ) : MetricAffectingSpan(), ReactSpan {
   override fun updateDrawState(ds: TextPaint) {
     apply(ds, privateStyle, privateWeight, fontFeatureSettings, fontFamily, assetManager)
@@ -65,7 +66,7 @@ internal class CustomStyleSpan(
         weight: Int,
         fontFeatureSettingsParam: String?,
         family: String?,
-        assetManager: AssetManager
+        assetManager: AssetManager,
     ) {
       val typeface =
           ReactTypefaceUtils.applyStyles(paint.typeface, style, weight, family, assetManager)
@@ -73,6 +74,9 @@ internal class CustomStyleSpan(
         fontFeatureSettings = fontFeatureSettingsParam
         setTypeface(typeface)
         isSubpixelText = true
+        if (ReactNativeFeatureFlags.enableAndroidLinearText()) {
+          isLinearText = true
+        }
       }
     }
   }

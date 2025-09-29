@@ -14,6 +14,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.RetryableMountingLayerException
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderRadius
@@ -55,6 +56,23 @@ public open class ReactHorizontalScrollViewManager
 @JvmOverloads
 constructor(private val fpsListener: FpsListener? = null) :
     ViewGroupManager<ReactHorizontalScrollView>(), ScrollCommandHandler<ReactHorizontalScrollView> {
+  init {
+    if (ReactNativeFeatureFlags.enableViewRecyclingForScrollView()) {
+      setupViewRecycling()
+    }
+  }
+
+  override fun prepareToRecycleView(
+      reactContext: ThemedReactContext,
+      view: ReactHorizontalScrollView,
+  ): ReactHorizontalScrollView? {
+    // BaseViewManager
+    val preparedView = super.prepareToRecycleView(reactContext, view)
+    if (preparedView != null) {
+      preparedView.recycleView()
+    }
+    return preparedView
+  }
 
   override fun getName(): String = REACT_CLASS
 
@@ -64,7 +82,7 @@ constructor(private val fpsListener: FpsListener? = null) :
   override fun updateState(
       view: ReactHorizontalScrollView,
       props: ReactStylesDiffMap,
-      stateWrapper: StateWrapper
+      stateWrapper: StateWrapper,
   ): Any? {
     view.setStateWrapper(stateWrapper)
     return null
@@ -88,7 +106,7 @@ constructor(private val fpsListener: FpsListener? = null) :
   @ReactProp(name = "disableIntervalMomentum")
   public fun setDisableIntervalMomentum(
       view: ReactHorizontalScrollView,
-      disableIntervalMomentum: Boolean
+      disableIntervalMomentum: Boolean,
   ) {
     view.setDisableIntervalMomentum(disableIntervalMomentum)
   }
@@ -133,7 +151,7 @@ constructor(private val fpsListener: FpsListener? = null) :
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public fun setRemoveClippedSubviews(
       view: ReactHorizontalScrollView,
-      removeClippedSubviews: Boolean
+      removeClippedSubviews: Boolean,
   ) {
     view.removeClippedSubviews = removeClippedSubviews
   }
@@ -183,11 +201,12 @@ constructor(private val fpsListener: FpsListener? = null) :
 
   @Deprecated(
       "Use receiveCommand with String commandId instead",
-      ReplaceWith("receiveCommand(scrollView, commandId, args)"))
+      ReplaceWith("receiveCommand(scrollView, commandId, args)"),
+  )
   override fun receiveCommand(
       scrollView: ReactHorizontalScrollView,
       commandId: Int,
-      args: ReadableArray?
+      args: ReadableArray?,
   ) {
     receiveCommand<ReactHorizontalScrollView>(this, scrollView, commandId, args)
   }
@@ -195,7 +214,7 @@ constructor(private val fpsListener: FpsListener? = null) :
   override fun receiveCommand(
       scrollView: ReactHorizontalScrollView,
       commandId: String,
-      args: ReadableArray?
+      args: ReadableArray?,
   ) {
     receiveCommand<ReactHorizontalScrollView>(this, scrollView, commandId, args)
   }
@@ -220,7 +239,8 @@ constructor(private val fpsListener: FpsListener? = null) :
     val child =
         scrollView.getChildAt(0)
             ?: throw RetryableMountingLayerException(
-                "scrollToEnd called on HorizontalScrollView without child")
+                "scrollToEnd called on HorizontalScrollView without child"
+            )
     val right = child.width + scrollView.paddingRight
     scrollView.abortAnimation()
     if (data.mAnimated) {
@@ -249,8 +269,10 @@ constructor(private val fpsListener: FpsListener? = null) :
               ViewProps.BORDER_TOP_LEFT_RADIUS,
               ViewProps.BORDER_TOP_RIGHT_RADIUS,
               ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-              ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+          ],
+      defaultFloat = Float.NaN,
+  )
   public fun setBorderRadius(view: ReactHorizontalScrollView?, index: Int, borderRadius: Float) {
     if (view != null) {
       val radius =
@@ -275,8 +297,10 @@ constructor(private val fpsListener: FpsListener? = null) :
               ViewProps.BORDER_LEFT_WIDTH,
               ViewProps.BORDER_RIGHT_WIDTH,
               ViewProps.BORDER_TOP_WIDTH,
-              ViewProps.BORDER_BOTTOM_WIDTH],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_BOTTOM_WIDTH,
+          ],
+      defaultFloat = Float.NaN,
+  )
   public fun setBorderWidth(view: ReactHorizontalScrollView?, index: Int, width: Float) {
     if (view != null) {
       setBorderWidth(view, LogicalEdge.entries[index], width)
@@ -290,12 +314,14 @@ constructor(private val fpsListener: FpsListener? = null) :
               "borderLeftColor",
               "borderRightColor",
               "borderTopColor",
-              "borderBottomColor"],
-      customType = "Color")
+              "borderBottomColor",
+          ],
+      customType = "Color",
+  )
   public fun setBorderColor(
       view: ReactHorizontalScrollView,
       @Suppress("UNUSED_PARAMETER") index: Int,
-      color: Int?
+      color: Int?,
   ) {
     setBorderColor(view, LogicalEdge.ALL, color)
   }
@@ -335,13 +361,13 @@ constructor(private val fpsListener: FpsListener? = null) :
         // no-op
       }
     }
-    if (view.getFadingEdgeLengthStart() > 0 || view.getFadingEdgeLengthEnd() > 0) {
-      view.setHorizontalFadingEdgeEnabled(true)
+    if (view.fadingEdgeLengthStart > 0 || view.fadingEdgeLengthEnd > 0) {
+      view.isHorizontalFadingEdgeEnabled = true
       view.setFadingEdgeLength(
-          Math.round(
-              Math.max(view.getFadingEdgeLengthStart(), view.getFadingEdgeLengthEnd()).dpToPx()))
+          Math.round(Math.max(view.fadingEdgeLengthStart, view.fadingEdgeLengthEnd).dpToPx())
+      )
     } else {
-      view.setHorizontalFadingEdgeEnabled(false)
+      view.isHorizontalFadingEdgeEnabled = false
       view.setFadingEdgeLength(0)
     }
   }
@@ -360,7 +386,7 @@ constructor(private val fpsListener: FpsListener? = null) :
   @ReactProp(name = "maintainVisibleContentPosition")
   public fun setMaintainVisibleContentPosition(
       view: ReactHorizontalScrollView,
-      value: ReadableMap?
+      value: ReadableMap?,
   ) {
     if (value != null) {
       view.setMaintainVisibleContentPosition(fromReadableMap(value))
@@ -382,7 +408,7 @@ constructor(private val fpsListener: FpsListener? = null) :
   @ReactProp(name = "horizontal")
   public fun setHorizontal(
       @Suppress("UNUSED_PARAMETER") view: ReactHorizontalScrollView?,
-      @Suppress("UNUSED_PARAMETER") horizontal: Boolean
+      @Suppress("UNUSED_PARAMETER") horizontal: Boolean,
   ) {
     // Do Nothing: Align with static ViewConfigs
   }

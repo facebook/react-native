@@ -63,7 +63,7 @@ function generateCode(
   const outputDir =
     reactNativeCoreLibraryOutputPath(libraryName, platform) ?? outputPath;
   fs.mkdirSync(outputDir, {recursive: true});
-  // $FlowIssue[prop-missing] - `fs.cpSync` is missing in Flow libdefs.
+  // $FlowFixMe[prop-missing] - `fs.cpSync` is missing in Flow libdefs.
   fs.cpSync(tmpOutputDir, outputDir, {recursive: true});
   codegenLog(`Generated artifacts: ${outputDir}`);
 }

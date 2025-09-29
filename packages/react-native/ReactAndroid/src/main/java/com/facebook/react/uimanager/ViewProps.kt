@@ -193,7 +193,8 @@ public object ViewProps {
           Spacing.TOP,
           Spacing.BOTTOM,
           Spacing.LEFT,
-          Spacing.RIGHT)
+          Spacing.RIGHT,
+      )
   @JvmField
   public val PADDING_MARGIN_SPACING_TYPES: IntArray =
       intArrayOf(
@@ -205,7 +206,8 @@ public object ViewProps {
           Spacing.TOP,
           Spacing.BOTTOM,
           Spacing.LEFT,
-          Spacing.RIGHT)
+          Spacing.RIGHT,
+      )
   private val LAYOUT_ONLY_PROPS: HashSet<String> =
       HashSet(
           listOf(
@@ -254,7 +256,9 @@ public object ViewProps {
               PADDING_TOP,
               PADDING_BOTTOM,
               PADDING_START,
-              PADDING_END))
+              PADDING_END,
+          )
+      )
 
   @JvmStatic
   public fun isLayoutOnly(map: ReadableMap, prop: String): Boolean {
@@ -272,16 +276,19 @@ public object ViewProps {
       BORDER_RADIUS -> {
         if (map.hasKey(BACKGROUND_COLOR)) {
           val valueType = map.getType(BACKGROUND_COLOR)
-          if (valueType == ReadableType.Number &&
-              map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
+          if (
+              valueType == ReadableType.Number && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT
+          ) {
             return false
           } else if (valueType != ReadableType.Null) {
             return false
           }
         }
-        if (map.hasKey(BORDER_WIDTH) &&
-            !map.isNull(BORDER_WIDTH) &&
-            map.getDouble(BORDER_WIDTH) != 0.0) {
+        if (
+            map.hasKey(BORDER_WIDTH) &&
+                !map.isNull(BORDER_WIDTH) &&
+                map.getDouble(BORDER_WIDTH) != 0.0
+        ) {
           return false
         } else {
           return true

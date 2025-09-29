@@ -24,6 +24,7 @@ import {
 class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;
   responseHeaders: ?Object;
+  intervalId: ?IntervalID;
 
   constructor(props: any) {
     super(props);
@@ -32,6 +33,14 @@ class XHRExampleFetch extends React.Component<any, any> {
     };
     this.responseURL = null;
     this.responseHeaders = null;
+    this.intervalId = null;
+  }
+
+  componentWillUnmount() {
+    if (this.intervalId != null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   }
 
   submit(uri: string) {
@@ -68,6 +77,11 @@ class XHRExampleFetch extends React.Component<any, any> {
   }
 
   startRepeatedlyFetch() {
+    // Clear any existing interval first
+    if (this.intervalId != null) {
+      clearInterval(this.intervalId);
+    }
+
     const doRequest = () => {
       const url =
         'https://microsoftedge.github.io/Demos/json-dummy-data/5MB-min.json';
@@ -83,7 +97,7 @@ class XHRExampleFetch extends React.Component<any, any> {
         })
         .catch(error => console.error(error));
     };
-    setInterval(doRequest, 500);
+    this.intervalId = setInterval(doRequest, 500);
   }
 
   render(): React.Node {

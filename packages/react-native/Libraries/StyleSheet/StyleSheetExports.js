@@ -24,13 +24,7 @@ if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFill: {
-  +bottom: 0,
-  +left: 0,
-  +position: 'absolute',
-  +right: 0,
-  +top: 0,
-} = {
+const absoluteFill = {
   position: 'absolute',
   left: 0,
   right: 0,
@@ -108,7 +102,7 @@ export default {
    * so `absoluteFill` can be used for convenience and to reduce duplication of these repeated
    * styles.
    */
-  absoluteFill: (absoluteFill: any), // TODO: This should be updated after we fix downstream Flow sites.
+  absoluteFill,
 
   /**
    * Sometimes you may want `absoluteFill` but with a couple tweaks - `absoluteFillObject` can be

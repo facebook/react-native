@@ -40,13 +40,13 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun addCustomDevOption(
       optionName: String,
-      optionHandler: DevOptionHandler
+      optionHandler: DevOptionHandler,
   ): Unit = Unit
 
   public override fun showNewJSError(
       message: String?,
       details: ReadableArray?,
-      errorCookie: Int
+      errorCookie: Int,
   ): Unit = Unit
 
   public override fun createRootView(appKey: String): View? = null
@@ -106,7 +106,7 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun downloadBundleResourceFromUrlSync(
       resourceURL: String,
-      outputFile: File
+      outputFile: File,
   ): File? = null
 
   public override val lastErrorTitle: String?
@@ -142,11 +142,11 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun createSurfaceDelegate(moduleName: String): SurfaceDelegate? = null
 
-  public override fun openDebugger(): Unit = Unit
+  public override fun openDebugger(panel: String?): Unit = Unit
 
   public override fun showPausedInDebuggerOverlay(
       message: String,
-      listener: PausedInDebuggerOverlayCommandListener
+      listener: PausedInDebuggerOverlayCommandListener,
   ): Unit = Unit
 
   public override fun hidePausedInDebuggerOverlay(): Unit = Unit

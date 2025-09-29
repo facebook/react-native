@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <cxxreact/CxxModule.h>
 #include <cxxreact/NativeModule.h>
@@ -23,11 +23,14 @@ class MessageQueueThread;
 
 typedef void (*WarnOnUsageLogger)(std::string message);
 
+[[deprecated("This API will be removed along with the legacy architecture.")]]
 std::function<void(folly::dynamic)> makeCallback(
     std::weak_ptr<Instance> instance,
     const folly::dynamic& callbackId);
 
-class RN_EXPORT CxxNativeModule : public NativeModule {
+class RN_EXPORT [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] CxxNativeModule
+    : public NativeModule {
  public:
   CxxNativeModule(
       std::weak_ptr<Instance> instance,
@@ -69,4 +72,4 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

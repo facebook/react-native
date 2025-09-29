@@ -309,7 +309,10 @@ function updatePropertyError(
       oldType,
       oldError,
     );
-    const newFault = {property: name, fault: comparisonError};
+    const newFault: {fault?: TypeComparisonError, property: string} = {
+      property: name,
+      fault: comparisonError,
+    };
     if (result.errorProperties) {
       result.errorProperties.push(newFault);
     } else {
@@ -331,7 +334,10 @@ function updateEnumMemberError(
       oldType,
       oldError,
     );
-    const newFault = {member: name, fault: comparisonError};
+    const newFault: {fault?: TypeComparisonError, member: string} = {
+      member: name,
+      fault: comparisonError,
+    };
     if (result.errorMembers) {
       result.errorMembers.push(newFault);
     } else {
@@ -549,9 +555,9 @@ export function compareObjectTypes<T: CompleteTypeAnnotation>(
     return makeError(
       typeAnnotationComparisonError(
         'Object types do not match.',
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         objectTypeAnnotation(newerPropertyTypes),
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         objectTypeAnnotation(olderPropertyTypes),
       ),
     );

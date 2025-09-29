@@ -12,6 +12,7 @@
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InstanceAgent.h>
 #include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/TargetTracingAgent.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -65,6 +66,20 @@ class HostAgent final {
    */
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
 
+  /**
+   * Returns whether this HostAgent is part of the session that has an active
+   * Fusebox client connecte, i.e. with Chrome DevTools Frontend fork for React
+   * Native.
+   */
+  bool hasFuseboxClientConnected() const;
+
+  /**
+   * Emits the trace recording that was captured externally, not via the
+   * CDP-initiated request.
+   */
+  void emitExternalTraceRecording(
+      tracing::TraceRecordingState traceRecording) const;
+
  private:
   // We use the private implementation idiom to ensure this class has the same
   // layout regardless of whether REACT_NATIVE_DEBUGGER_ENABLED is defined. The
@@ -73,6 +88,27 @@ class HostAgent final {
   class Impl;
 
   std::unique_ptr<Impl> impl_;
+};
+
+#pragma mark - Tracing
+
+/**
+ * An Agent that handles Tracing events for a particular InstanceTarget.
+ *
+ * Lifetime of this agent is bound to the lifetime of the Tracing session -
+ * HostTargetTraceRecording.
+ */
+class HostTracingAgent : tracing::TargetTracingAgent {
+ public:
+  explicit HostTracingAgent(tracing::TraceRecordingState& state);
+
+  /**
+   * Registers the InstanceTarget with this tracing agent.
+   */
+  void setTracedInstance(InstanceTarget* instanceTarget);
+
+ private:
+  std::shared_ptr<InstanceTracingAgent> instanceTracingAgent_{nullptr};
 };
 
 } // namespace facebook::react::jsinspector_modern

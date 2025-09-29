@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.modules.deviceinfo
 
 import com.facebook.react.bridge.BridgeReactContext
@@ -104,7 +106,8 @@ class DeviceInfoModuleTest : TestCase() {
         reactContext,
         fakeLandscapeDisplayMetrics,
         fakePortraitDisplayMetrics,
-        fakeLandscapeDisplayMetrics)
+        fakeLandscapeDisplayMetrics,
+    )
   }
 
   private fun givenDisplayMetricsHolderContains(fakeDisplayMetrics: WritableMap?) {
@@ -116,7 +119,7 @@ class DeviceInfoModuleTest : TestCase() {
   companion object {
     private fun verifyUpdateDimensionsEventsEmitted(
         context: ReactContext?,
-        vararg expectedEvents: WritableMap
+        vararg expectedEvents: WritableMap,
     ) {
       val expectedEventList = listOf(*expectedEvents)
       val captor = ArgumentCaptor.forClass(WritableMap::class.java)

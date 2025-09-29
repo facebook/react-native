@@ -33,6 +33,8 @@ function deepFreezeAndThrowOnMutationInDev<T: {...} | Array<mixed>>(
   if (__DEV__) {
     if (
       typeof object !== 'object' ||
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       object === null ||
       Object.isFrozen(object) ||
       Object.isSealed(object)

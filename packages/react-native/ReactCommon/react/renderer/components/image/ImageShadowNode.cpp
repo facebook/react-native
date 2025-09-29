@@ -5,19 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "ImageState.h"
+
 #include <cstdlib>
 #include <limits>
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/image/ImageShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/imagemanager/ImageRequestParams.h>
-#include "ImageState.h"
 
 namespace facebook::react {
 
 const char ImageComponentName[] = "Image";
 
-void ImageShadowNode::setImageManager(const SharedImageManager& imageManager) {
+void ImageShadowNode::setImageManager(
+    const std::shared_ptr<ImageManager>& imageManager) {
   ensureUnsealed();
   imageManager_ = imageManager;
 
@@ -27,7 +30,8 @@ void ImageShadowNode::setImageManager(const SharedImageManager& imageManager) {
   // layout, if the image source was changed we have to initiate the image
   // request now since there is no guarantee that layout will run for the shadow
   // node at a later time.
-  if (getIsLayoutClean()) {
+  if (getIsLayoutClean() ||
+      ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
     auto sources = getConcreteProps().sources;
     auto layoutMetric = getLayoutMetrics();
     if (sources.size() <= 1 ||
@@ -70,17 +74,10 @@ void ImageShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  auto state = ImageState{
+  ImageState state{
       newImageSource,
       imageManager_->requestImage(
-          newImageSource,
-          getSurfaceId()
-#ifdef ANDROID
-              ,
-          newImageRequestParams,
-          getTag()
-#endif
-              ),
+          newImageSource, getSurfaceId(), newImageRequestParams, getTag()),
       newImageRequestParams};
   setStateData(std::move(state));
 }

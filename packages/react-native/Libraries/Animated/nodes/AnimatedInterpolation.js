@@ -224,7 +224,7 @@ function createStringInterpolation(
       outputRange.every(output =>
         output.components.every(
           (component, i) =>
-            // $FlowIgnoreMe[invalid-compare]
+            // $FlowFixMe[invalid-compare]
             typeof component === 'number' || component === firstOutput[i],
         ),
       ),
@@ -235,9 +235,9 @@ function createStringInterpolation(
   const numericComponents: $ReadOnlyArray<$ReadOnlyArray<number>> =
     outputRange.map(output =>
       isColor
-        ? // $FlowIgnoreMe[incompatible-call]
+        ? // $FlowFixMe[incompatible-type]
           output.components
-        : // $FlowIgnoreMe[incompatible-call]
+        : // $FlowFixMe[incompatible-call]
           output.components.filter(c => typeof c === 'number'),
     );
   const interpolations = numericComponents[0].map((_, i) =>
@@ -393,7 +393,7 @@ export default class AnimatedInterpolation<
     let outputRange = this._config.outputRange;
     let outputType = null;
     if (typeof outputRange[0] === 'string') {
-      // $FlowIgnoreMe[incompatible-cast]
+      // $FlowFixMe[incompatible-type]
       outputRange = ((outputRange: $ReadOnlyArray<string>).map(value => {
         const processedColor = processColor(value);
         if (typeof processedColor === 'number') {

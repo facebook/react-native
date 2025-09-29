@@ -11,27 +11,25 @@ import com.facebook.react.ReactExtension
 import com.facebook.react.model.ModelPackageJson
 import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
 import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
+import com.facebook.react.utils.PropertyUtils.EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.HERMES_ENABLED
-import com.facebook.react.utils.PropertyUtils.NEW_ARCH_ENABLED
+import com.facebook.react.utils.PropertyUtils.HERMES_V1_ENABLED
 import com.facebook.react.utils.PropertyUtils.REACT_NATIVE_ARCHITECTURES
+import com.facebook.react.utils.PropertyUtils.SCOPED_EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_ENABLED
-import com.facebook.react.utils.PropertyUtils.SCOPED_NEW_ARCH_ENABLED
+import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_V1_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_USE_THIRD_PARTY_JSC
 import com.facebook.react.utils.PropertyUtils.USE_THIRD_PARTY_JSC
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 
 internal object ProjectUtils {
 
   const val HERMES_FALLBACK = true
 
-  internal fun Project.isNewArchEnabled(extension: ReactExtension): Boolean {
-    return (project.hasProperty(NEW_ARCH_ENABLED) &&
-        project.property(NEW_ARCH_ENABLED).toString().toBoolean()) ||
-        (project.hasProperty(SCOPED_NEW_ARCH_ENABLED) &&
-            project.property(SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())
-  }
+  internal fun Project.isNewArchEnabled(): Boolean = true
 
   internal val Project.isHermesEnabled: Boolean
     get() =
@@ -59,12 +57,30 @@ internal object ProjectUtils {
           HERMES_FALLBACK
         }
 
+  internal val Project.isEdgeToEdgeEnabled: Boolean
+    get() =
+        (project.hasProperty(EDGE_TO_EDGE_ENABLED) &&
+            project.property(EDGE_TO_EDGE_ENABLED).toString().toBoolean()) ||
+            (project.hasProperty(SCOPED_EDGE_TO_EDGE_ENABLED) &&
+                project.property(SCOPED_EDGE_TO_EDGE_ENABLED).toString().toBoolean())
+
   internal val Project.useThirdPartyJSC: Boolean
     get() =
         (project.hasProperty(USE_THIRD_PARTY_JSC) &&
             project.property(USE_THIRD_PARTY_JSC).toString().toBoolean()) ||
             (project.hasProperty(SCOPED_USE_THIRD_PARTY_JSC) &&
                 project.property(SCOPED_USE_THIRD_PARTY_JSC).toString().toBoolean())
+
+  internal val Project.isHermesV1Enabled: Boolean
+    get() =
+        (project.hasProperty(HERMES_V1_ENABLED) &&
+            project.property(HERMES_V1_ENABLED).toString().toBoolean()) ||
+            (project.hasProperty(SCOPED_HERMES_V1_ENABLED) &&
+                project.property(SCOPED_HERMES_V1_ENABLED).toString().toBoolean()) ||
+            (project.extraProperties.has(HERMES_V1_ENABLED) &&
+                project.extraProperties.get(HERMES_V1_ENABLED).toString().toBoolean()) ||
+            (project.extraProperties.has(SCOPED_HERMES_V1_ENABLED) &&
+                project.extraProperties.get(SCOPED_HERMES_V1_ENABLED).toString().toBoolean())
 
   internal fun Project.needsCodegenFromPackageJson(rootProperty: DirectoryProperty): Boolean {
     val parsedPackageJson = readPackageJsonFile(this, rootProperty)

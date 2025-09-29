@@ -11,7 +11,8 @@
 
 #include <perfetto.h>
 
-PERFETTO_DEFINE_CATEGORIES(
+PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE(
+    facebook::react,
     perfetto::Category("react-native")
         .SetDescription("User timing events from React Native"));
 

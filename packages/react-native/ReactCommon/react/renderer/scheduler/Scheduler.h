@@ -8,9 +8,9 @@
 #pragma once
 
 #include <memory>
-#include <mutex>
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/performance/cdpmetrics/CdpMetricsReporter.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -84,14 +84,14 @@ class Scheduler final : public UIManagerDelegate {
       bool mountSynchronously) override;
   void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) override;
   void uiManagerDidDispatchCommand(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& commandName,
       const folly::dynamic& args) override;
   void uiManagerDidSendAccessibilityEvent(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& eventType) override;
   void uiManagerDidSetIsJSResponder(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) override;
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
@@ -106,7 +106,7 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidStartSurface(const ShadowTree& shadowTree) override;
 
 #pragma mark - ContextContainer
-  ContextContainer::Shared getContextContainer() const;
+  std::shared_ptr<const ContextContainer> getContextContainer() const;
 
 #pragma mark - UIManager
   std::shared_ptr<UIManager> getUIManager() const;
@@ -142,13 +142,14 @@ class Scheduler final : public UIManagerDelegate {
   std::shared_ptr<std::optional<const EventDispatcher>> eventDispatcher_;
 
   std::shared_ptr<PerformanceEntryReporter> performanceEntryReporter_;
+  std::optional<CdpMetricsReporter> cdpMetricsReporter_;
   std::shared_ptr<EventPerformanceLogger> eventPerformanceLogger_;
 
   /**
    * Hold onto ContextContainer. See SchedulerToolbox.
    * Must not be nullptr.
    */
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 
   RuntimeScheduler* runtimeScheduler_{nullptr};
 

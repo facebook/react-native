@@ -8,8 +8,10 @@
  * @format
  */
 
+import type {BenchmarkResult} from '../src/Benchmark';
 import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 
+import {getConstants} from '../src/Constants';
 import expect from './expect';
 import {createMockFunction} from './mocks';
 import patchWeakRef from './patchWeakRef';
@@ -30,13 +32,16 @@ export type TestCaseResult = {
 
 export type FailureDetail = {
   message: string,
-  stack: string,
+  stack?: string,
   cause?: FailureDetail,
 };
+
+export opaque type CoverageMap = mixed;
 
 export type TestSuiteResult =
   | {
       testResults: Array<TestCaseResult>,
+      coverageMap?: CoverageMap,
     }
   | {
       error: FailureDetail,
@@ -320,7 +325,7 @@ function runSpec(spec: Spec): TestCaseResult {
   }
 
   let status: 'passed' | 'failed' | 'pending';
-  let error;
+  let error: mixed;
 
   const start = Date.now();
   snapshotContext.setTargetTest(result.fullName);
@@ -331,16 +336,21 @@ function runSpec(spec: Spec): TestCaseResult {
     invokeHooks(spec.parentContext, 'afterEachHooks');
 
     status = 'passed';
-  } catch (e) {
+  } catch (e: mixed) {
     error = e;
     status = 'failed';
   }
 
   result.status = status;
   result.duration = Date.now() - start;
-  if (status === 'failed' && error) {
-    result.failureMessages = [error.stack ?? error.message ?? String(error)];
-    result.failureDetails = [serializeError(error)];
+  if (status === 'failed' && error != null) {
+    if (error instanceof Error) {
+      result.failureMessages = [error.stack ?? error.message ?? String(error)];
+      result.failureDetails = [serializeError(error)];
+    } else {
+      result.failureMessages = [`Non-error value thrown: ${String(error)}`];
+      result.failureDetails = [];
+    }
   } else {
     result.failureMessages = [];
     result.failureDetails = [];
@@ -394,6 +404,13 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
   );
 }
 
+export function reportBenchmarkResult(result: BenchmarkResult): void {
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+  NativeFantom.reportTestSuiteResultsJSON(JSON.stringify(result));
+}
+
 function validateEmptyMessageQueue(): void {
   // Force the import of the native module to be lazy
   const NativeFantom =
@@ -413,6 +430,33 @@ function serializeError(error: Error): FailureDetail {
   return result;
 }
 
+function runTest(): Array<TestCaseResult> {
+  const {jsTraceOutputPath} = getConstants();
+  if (jsTraceOutputPath == null) {
+    return runSuite(currentContext);
+  }
+
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+
+  try {
+    NativeFantom.startJSSamplingProfiler();
+  } catch (e) {
+    console.error('Could not start JS sampling profiler', e);
+  }
+
+  try {
+    return runSuite(currentContext);
+  } finally {
+    try {
+      NativeFantom.stopJSSamplingProfilerAndSaveToFile(jsTraceOutputPath);
+    } catch (e) {
+      console.error('Could not stop JS sampling profiler', e);
+    }
+  }
+}
+
 global.$$RunTests$$ = () => {
   if (testSetupError != null) {
     reportTestSuiteResult({
@@ -423,7 +467,8 @@ global.$$RunTests$$ = () => {
     });
   } else {
     reportTestSuiteResult({
-      testResults: runSuite(currentContext),
+      testResults: runTest(),
+      coverageMap: global.__coverage__,
     });
   }
 };

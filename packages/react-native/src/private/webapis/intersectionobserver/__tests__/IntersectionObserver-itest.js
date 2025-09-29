@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags utilizeTokensInIntersectionObserver:*
  * @flow strict-local
  * @format
  */
@@ -20,7 +19,6 @@ import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 import setUpIntersectionObserver from 'react-native/src/private/setup/setUpIntersectionObserver';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import DOMRectReadOnly from 'react-native/src/private/webapis/geometry/DOMRectReadOnly';
@@ -74,7 +72,7 @@ describe('IntersectionObserver', () => {
   describe('constructor(callback, {root, rootMargin, threshold, rnRootThreshold})', () => {
     it('should throw if `callback` is not provided', () => {
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         return new IntersectionObserver();
       }).toThrow(
         "Failed to construct 'IntersectionObserver': 1 argument required, but only 0 present.",
@@ -83,7 +81,7 @@ describe('IntersectionObserver', () => {
 
     it('should throw if `callback` is not a function', () => {
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         return new IntersectionObserver('not a function!');
       }).toThrow(
         "Failed to construct 'IntersectionObserver': parameter 1 is not of type 'Function'.",
@@ -115,7 +113,7 @@ describe('IntersectionObserver', () => {
 
     it('should throw if `threshold` contains a value that cannot be casted to a finite number', () => {
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         return new IntersectionObserver(() => {}, {threshold: ['test']});
       }).toThrow(
         "Failed to read the 'threshold' property from 'IntersectionObserverInit': The provided double value is non-finite.",
@@ -124,7 +122,7 @@ describe('IntersectionObserver', () => {
 
     it('should throw if `root` is not a `ReactNativeElement`', () => {
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         observer = new IntersectionObserver(() => {}, {root: 'something'});
       }).toThrow(
         "Failed to construct 'IntersectionObserver': Failed to read the 'root' property from 'IntersectionObserverInit': The provided value is not of type '(null or ReactNativeElement)",
@@ -182,22 +180,22 @@ describe('IntersectionObserver', () => {
 
       // Casts to number
       expect(
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         new IntersectionObserver(() => {}, {threshold: [true]}).thresholds,
       ).toEqual([1]);
       expect(
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         new IntersectionObserver(() => {}, {threshold: [false]}).thresholds,
       ).toEqual([0]);
       expect(
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         new IntersectionObserver(() => {}, {threshold: ['']}).thresholds,
       ).toEqual([0]);
     });
 
     it('should not throw if rnRootThreshold is null or undefined', () => {
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         return new IntersectionObserver(() => {}, {rnRootThreshold: null});
       }).not.toThrow();
 
@@ -220,7 +218,7 @@ describe('IntersectionObserver', () => {
 
       expect(() => {
         return new IntersectionObserver(() => {}, {
-          // $FlowExpectedError[incompatible-call]
+          // $FlowExpectedError[incompatible-type]
           rnRootThreshold: 'invalid',
         });
       }).toThrow(
@@ -237,7 +235,7 @@ describe('IntersectionObserver', () => {
         new IntersectionObserver(() => {}, {threshold: 1}).rnRootThresholds,
       ).toBeNull();
       expect(
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         new IntersectionObserver(() => {}, {rnRootThreshold: null})
           .rnRootThresholds,
       ).toBeNull();
@@ -253,7 +251,7 @@ describe('IntersectionObserver', () => {
       ).toBeNull();
 
       expect(
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         new IntersectionObserver(() => {}, {rnRootThreshold: [null]})
           .rnRootThresholds,
       ).toBeNull();
@@ -288,17 +286,17 @@ describe('IntersectionObserver', () => {
 
       // Casts to number
       expect(
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         new IntersectionObserver(() => {}, {rnRootThreshold: [true]})
           .rnRootThresholds,
       ).toEqual([1]);
       expect(
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         new IntersectionObserver(() => {}, {rnRootThreshold: [false]})
           .rnRootThresholds,
       ).toEqual([0]);
       expect(
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         new IntersectionObserver(() => {}, {rnRootThreshold: ['']})
           .rnRootThresholds,
       ).toEqual([0]);
@@ -316,7 +314,7 @@ describe('IntersectionObserver', () => {
 
     it('should default thresholds to [0] if rnRootThreshold is invalidly set', () => {
       expect(
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         new IntersectionObserver(() => {}, {rnRootThreshold: null}).thresholds,
       ).toEqual([0]);
 
@@ -330,7 +328,7 @@ describe('IntersectionObserver', () => {
     it('should throw if `target` is not a `ReactNativeElement`', () => {
       observer = new IntersectionObserver(() => {});
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         observer.observe('something');
       }).toThrow(
         "Failed to execute 'observe' on 'IntersectionObserver': parameter 1 is not of type 'ReactNativeElement'.",
@@ -1494,44 +1492,42 @@ describe('IntersectionObserver', () => {
       });
     });
 
-    if (ReactNativeFeatureFlags.utilizeTokensInIntersectionObserver()) {
-      it('should not retain initial children of observed targets', () => {
-        const root = Fantom.createRoot();
-        observer = new IntersectionObserver(() => {});
+    it('should not retain initial children of observed targets', () => {
+      const root = Fantom.createRoot();
+      observer = new IntersectionObserver(() => {});
 
-        const [getReferenceCount, ref] = createShadowNodeReferenceCountingRef();
+      const [getReferenceCount, ref] = createShadowNodeReferenceCountingRef();
 
-        const observeRef: React.RefSetter<
-          React.ElementRef<typeof View>,
-        > = instance => {
-          const element = ensureReactNativeElement(instance);
-          observer.observe(element);
-          return () => {
-            observer.unobserve(element);
-          };
+      const observeRef: React.RefSetter<
+        React.ElementRef<typeof View>,
+      > = instance => {
+        const element = ensureReactNativeElement(instance);
+        observer.observe(element);
+        return () => {
+          observer.unobserve(element);
         };
+      };
 
-        function Observe({children}: $ReadOnly<{children?: React.Node}>) {
-          return <View ref={observeRef}>{children}</View>;
-        }
+      function Observe({children}: $ReadOnly<{children?: React.Node}>) {
+        return <View ref={observeRef}>{children}</View>;
+      }
 
-        Fantom.runTask(() => {
-          root.render(
-            <Observe>
-              <View ref={ref} />
-            </Observe>,
-          );
-        });
-
-        expect(getReferenceCount()).toBeGreaterThan(0);
-
-        Fantom.runTask(() => {
-          root.render(<Observe />);
-        });
-
-        expect(getReferenceCount()).toBe(0);
+      Fantom.runTask(() => {
+        root.render(
+          <Observe>
+            <View ref={ref} />
+          </Observe>,
+        );
       });
-    }
+
+      expect(getReferenceCount()).toBeGreaterThan(0);
+
+      Fantom.runTask(() => {
+        root.render(<Observe />);
+      });
+
+      expect(getReferenceCount()).toBe(0);
+    });
 
     it('should NOT report multiple entries when observing a target that exists and we modify it later in the same tick', () => {
       const root = Fantom.createRoot({
@@ -2009,7 +2005,7 @@ describe('IntersectionObserver', () => {
     it('should throw if `target` is not a `ReactNativeElement`', () => {
       observer = new IntersectionObserver(() => {});
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         observer.unobserve('something');
       }).toThrow(
         "Failed to execute 'unobserve' on 'IntersectionObserver': parameter 1 is not of type 'ReactNativeElement'.",

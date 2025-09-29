@@ -82,7 +82,7 @@ function Inspector({
     const {measure, props} = hierarchyItem.getInspectorData(findNodeHandle);
 
     measure((x, y, width, height, left, top) => {
-      // $FlowFixMe[incompatible-call] `props` from InspectorData are defined as <string, string> dictionary, which is incompatible with ViewStyleProp
+      // $FlowFixMe[incompatible-type] `props` from InspectorData are defined as <string, string> dictionary, which is incompatible with ViewStyleProp
       setInspectedElement({
         frame: {left, top, width, height},
         style: props.style,
@@ -119,7 +119,7 @@ function Inspector({
       );
       setSelectionIndex(selectedIndex);
       setElementsHierarchy(hierarchy);
-      // $FlowFixMe[incompatible-call] `props` from InspectorData are defined as <string, string> dictionary, which is incompatible with ViewStyleProp
+      // $FlowFixMe[incompatible-type] `props` from InspectorData are defined as <string, string> dictionary, which is incompatible with ViewStyleProp
       setInspectedElement({
         frame,
         style: props.style,

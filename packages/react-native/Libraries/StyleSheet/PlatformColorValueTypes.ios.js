@@ -23,7 +23,7 @@ type LocalNativeColorValue = {
 };
 
 export const PlatformColor = (...names: Array<string>): ColorValue => {
-  // $FlowExpectedError[incompatible-return] LocalNativeColorValue is the iOS LocalNativeColorValue type
+  // $FlowExpectedError[incompatible-type] LocalNativeColorValue is the iOS LocalNativeColorValue type
   return ({semantic: names}: LocalNativeColorValue);
 };
 
@@ -44,7 +44,7 @@ export const DynamicColorIOSPrivate = (
       highContrastLight: tuple.highContrastLight,
       highContrastDark: tuple.highContrastDark,
     },
-    /* $FlowExpectedError[incompatible-return]
+    /* $FlowExpectedError[incompatible-type]
      * LocalNativeColorValue is the actual type of the opaque NativeColorValue on iOS platform */
   }: LocalNativeColorValue);
 };

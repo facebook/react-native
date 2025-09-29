@@ -13,6 +13,7 @@
 
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
+#include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/performance/timeline/PerformanceObserver.h>
@@ -74,6 +75,9 @@ NativePerformanceEntry toNativePerformanceEntry(const PerformanceEntry& entry) {
     nativeEntry.responseStart = resourceEntry.responseStart;
     nativeEntry.responseEnd = resourceEntry.responseEnd;
     nativeEntry.responseStatus = resourceEntry.responseStatus;
+    nativeEntry.contentType = resourceEntry.contentType;
+    nativeEntry.encodedBodySize = resourceEntry.encodedBodySize;
+    nativeEntry.decodedBodySize = resourceEntry.decodedBodySize;
   }
 
   return nativeEntry;
@@ -111,67 +115,62 @@ std::shared_ptr<PerformanceObserver> tryGetObserver(
   return observerWrapper ? observerWrapper->observer : nullptr;
 }
 
+PerformanceEntryReporter::UserTimingDetailProvider getDetailProviderFromEntry(
+    jsi::Runtime& rt,
+    jsi::Value& entry) {
+  return [&rt, &entry]() -> folly::dynamic {
+    try {
+      auto detail = entry.asObject(rt).getProperty(rt, "detail");
+      return jsi::dynamicFromValue(rt, detail);
+    } catch (jsi::JSIException&) {
+      return nullptr;
+    }
+  };
+}
+
 } // namespace
 
 NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
 HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
+  // This is not spec-compliant, as this is the duration from system boot to
+  // now, instead of from app startup to now.
+  // This should be carefully changed eventually.
   return HighResTimeStamp::now();
 }
 
-HighResTimeStamp NativePerformance::markWithResult(
-    jsi::Runtime& rt,
-    std::string name,
-    std::optional<HighResTimeStamp> startTime) {
-  auto entry =
-      PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
-  return entry.startTime;
+HighResDuration NativePerformance::timeOrigin(jsi::Runtime& /*rt*/) {
+  // This is not spec-compliant, as this is an approximation from Unix epoch to
+  // system boot, instead of a precise duration from Unix epoch to app startup.
+  return HighResTimeStamp::unsafeOriginFromUnixTimeStamp();
 }
 
-std::tuple<HighResTimeStamp, HighResDuration>
-NativePerformance::measureWithResult(
-    jsi::Runtime& runtime,
-    std::string name,
+void NativePerformance::reportMark(
+    jsi::Runtime& rt,
+    const std::string& name,
     HighResTimeStamp startTime,
-    HighResTimeStamp endTime,
-    std::optional<HighResDuration> duration,
-    std::optional<std::string> startMark,
-    std::optional<std::string> endMark) {
-  auto reporter = PerformanceEntryReporter::getInstance();
+    jsi::Value entry) {
+  PerformanceEntryReporter::getInstance()->reportMark(
+      name, startTime, getDetailProviderFromEntry(rt, entry));
+}
 
-  HighResTimeStamp startTimeValue = startTime;
-  // If the start time mark name is specified, it takes precedence over the
-  // startTime parameter, which can be set to 0 by default from JavaScript.
-  if (startMark) {
-    if (auto startMarkBufferedTime = reporter->getMarkTime(*startMark)) {
-      startTimeValue = *startMarkBufferedTime;
-    } else {
-      throw jsi::JSError(
-          runtime, "The mark '" + *startMark + "' does not exist.");
-    }
-  }
+void NativePerformance::reportMeasure(
+    jsi::Runtime& rt,
+    const std::string& name,
+    HighResTimeStamp startTime,
+    HighResDuration duration,
+    jsi::Value entry) {
+  PerformanceEntryReporter::getInstance()->reportMeasure(
+      name, startTime, duration, getDetailProviderFromEntry(rt, entry));
+}
 
-  HighResTimeStamp endTimeValue = endTime;
-  // If the end time mark name is specified, it takes precedence over the
-  // startTime parameter, which can be set to 0 by default from JavaScript.
-  if (endMark) {
-    if (auto endMarkBufferedTime = reporter->getMarkTime(*endMark)) {
-      endTimeValue = *endMarkBufferedTime;
-    } else {
-      throw jsi::JSError(
-          runtime, "The mark '" + *endMark + "' does not exist.");
-    }
-  } else if (duration) {
-    endTimeValue = startTimeValue + *duration;
-  } else if (endTimeValue < startTimeValue) {
-    // The end time is not specified, take the current time, according to the
-    // standard
-    endTimeValue = reporter->getCurrentTimeStamp();
-  }
-
-  auto entry = reporter->reportMeasure(name, startTime, endTime);
-  return std::tuple{entry.startTime, entry.duration};
+std::optional<double> NativePerformance::getMarkTime(
+    jsi::Runtime& /*rt*/,
+    const std::string& name) {
+  auto markTime = PerformanceEntryReporter::getInstance()->getMarkTime(name);
+  return markTime ? std::optional{(*markTime).toDOMHighResTimeStamp()}
+                  : std::nullopt;
 }
 
 void NativePerformance::clearMarks(
@@ -213,7 +212,7 @@ std::vector<NativePerformanceEntry> NativePerformance::getEntries(
 
 std::vector<NativePerformanceEntry> NativePerformance::getEntriesByName(
     jsi::Runtime& /*rt*/,
-    std::string entryName,
+    const std::string& entryName,
     std::optional<PerformanceEntryType> entryType) {
   std::vector<PerformanceEntry> entries;
 
@@ -266,7 +265,7 @@ std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(
 }
 
 std::unordered_map<std::string, double>
-NativePerformance::getReactNativeStartupTiming(jsi::Runtime& rt) {
+NativePerformance::getReactNativeStartupTiming(jsi::Runtime& /*rt*/) {
   std::unordered_map<std::string, double> result;
 
   ReactMarker::StartupLogger& startupLogger =
@@ -285,15 +284,6 @@ NativePerformance::getReactNativeStartupTiming(jsi::Runtime& rt) {
   if (!std::isnan(startupLogger.getRunJSBundleStartTime())) {
     result["executeJavaScriptBundleEntryPointStart"] =
         startupLogger.getRunJSBundleStartTime();
-  }
-
-  if (!std::isnan(startupLogger.getRunJSBundleEndTime())) {
-    result["executeJavaScriptBundleEntryPointEnd"] =
-        startupLogger.getRunJSBundleEndTime();
-  }
-
-  if (!std::isnan(startupLogger.getInitReactRuntimeEndTime())) {
-    result["initializeRuntimeEnd"] = startupLogger.getInitReactRuntimeEndTime();
   }
 
   if (!std::isnan(startupLogger.getAppStartupEndTime())) {
@@ -404,6 +394,12 @@ std::vector<PerformanceEntryType>
 NativePerformance::getSupportedPerformanceEntryTypes(jsi::Runtime& /*rt*/) {
   auto supportedEntryTypes = PerformanceEntryReporter::getSupportedEntryTypes();
   return {supportedEntryTypes.begin(), supportedEntryTypes.end()};
+}
+
+#pragma mark - Testing
+
+void NativePerformance::clearEventCountsForTesting(jsi::Runtime& /*rt*/) {
+  PerformanceEntryReporter::getInstance()->clearEventCounts();
 }
 
 } // namespace facebook::react

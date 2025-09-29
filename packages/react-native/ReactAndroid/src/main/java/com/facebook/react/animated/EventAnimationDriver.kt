@@ -21,10 +21,12 @@ internal class EventAnimationDriver(
     @JvmField var eventName: String,
     @JvmField internal var viewTag: Int,
     private val eventPath: List<String>,
-    @JvmField internal var valueNode: ValueAnimatedNode
+    @JvmField internal var valueNode: ValueAnimatedNode,
 ) : RCTModernEventEmitter {
   @Deprecated(
-      "Deprecated in Java", ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"))
+      "Deprecated in Java",
+      ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"),
+  )
   override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) =
       receiveEvent(-1, targetTag, eventName, params)
 
@@ -32,7 +34,7 @@ internal class EventAnimationDriver(
       surfaceId: Int,
       targetTag: Int,
       eventName: String,
-      params: WritableMap?
+      params: WritableMap?,
   ) =
       // We assume this event can't be coalesced. `customCoalesceKey` has no meaning in Fabric.
       receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
@@ -41,7 +43,7 @@ internal class EventAnimationDriver(
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
-      changedIndices: WritableArray
+      changedIndices: WritableArray,
   ) {
     throw UnsupportedOperationException("receiveTouches is not support by native animated events")
   }
@@ -53,7 +55,7 @@ internal class EventAnimationDriver(
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
       params: WritableMap?,
-      @EventCategoryDef category: Int
+      @EventCategoryDef category: Int,
   ) {
     requireNotNull(params) { "Native animated events must have event data." }
 

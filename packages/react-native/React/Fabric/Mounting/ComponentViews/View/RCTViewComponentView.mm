@@ -6,13 +6,13 @@
  */
 
 #import "RCTViewComponentView.h"
-#import "RCTViewAccessibilityElement.h"
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 #import <ranges>
 
+#import <RCTSwiftUIWrapper/RCTSwiftUIContainerViewWrapper.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTBoxShadow.h>
@@ -51,8 +51,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   UIView *_containerView;
   BOOL _useCustomContainerView;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
-  NSMutableArray<NSObject *> *_accessibilityElements;
-  RCTViewAccessibilityElement *_axElementDescribingSelf;
+  RCTSwiftUIContainerViewWrapper *_swiftUIWrapper;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -405,7 +404,11 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
       [_accessibilityOrderNativeIDs addObject:RCTNSStringFromString(childId)];
     }
 
-    _accessibilityElements = [NSMutableArray new];
+    // If we are prop updating and have children we can go ahead and assign this prop.
+    // Otherwise, we might not have children attached yet and need to wait before then.
+    if (self.currentContainerView.subviews.count > 0) {
+      [self updateAccessibilityElements];
+    }
   }
 
   // `accessibilityTraits`
@@ -570,10 +573,14 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     _backgroundColorLayer.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
   }
 
-  if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
+  if ((_props->transformOrigin.isSet() || !_props->transform.operations.empty()) &&
       layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
+  }
+
+  if (_swiftUIWrapper != nullptr) {
+    [_swiftUIWrapper updateLayoutWithBounds:self.bounds];
   }
 }
 
@@ -617,7 +624,6 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
   _reactSubviews = [NSMutableArray new];
-  _accessibilityElements = [NSMutableArray new];
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
@@ -644,7 +650,9 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   BOOL isPointInside = [self pointInside:point withEvent:event];
 
-  BOOL clipsToBounds = self.currentContainerView.clipsToBounds;
+  UIView *currentContainerView = self.currentContainerView;
+
+  BOOL clipsToBounds = currentContainerView.clipsToBounds;
 
   clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
 
@@ -652,8 +660,8 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     return nil;
   }
 
-  for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
-    UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
+  for (UIView *subview = nullptr in [currentContainerView.subviews reverseObjectEnumerator]) {
+    UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:currentContainerView] withEvent:event];
     if (hitView) {
       return hitView;
     }
@@ -793,43 +801,95 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       ((!_props->boxShadow.empty() || (clipToPaddingBox && nonZeroBorderWidth)) || _props->outlineWidth != 0);
 }
 
+// The view that is used as the receiver for all styling (borders, background,
+// etc.). Most of the time, this is just `self`. When a view has a filter like
+// `blur` applied, we need to wrap it in a SwiftUI view to render the effect.
+// In this case, `effectiveContentView` will be the content view inside the
+// SwiftUI wrapper.
+- (UIView *)effectiveContentView
+{
+  if (!ReactNativeFeatureFlags::enableSwiftUIBasedFilters()) {
+    return self;
+  }
+
+  UIView *effectiveContentView = self;
+
+  if (self.styleNeedsSwiftUIContainer) {
+    if (_swiftUIWrapper == nullptr) {
+      _swiftUIWrapper = [RCTSwiftUIContainerViewWrapper new];
+      UIView *swiftUIContentView = [[UIView alloc] init];
+      for (UIView *subview = nullptr in self.subviews) {
+        [swiftUIContentView addSubview:subview];
+      }
+      swiftUIContentView.clipsToBounds = self.clipsToBounds;
+      self.clipsToBounds = NO;
+      swiftUIContentView.layer.mask = self.layer.mask;
+      self.layer.mask = nil;
+      [_swiftUIWrapper updateContentView:swiftUIContentView];
+      [_swiftUIWrapper updateLayoutWithBounds:self.bounds];
+      [self addSubview:_swiftUIWrapper.hostingView];
+
+      [self transferVisualPropertiesFromView:self toView:swiftUIContentView];
+    }
+
+    effectiveContentView = _swiftUIWrapper.contentView;
+  } else {
+    if (_swiftUIWrapper != nullptr) {
+      UIView *swiftUIContentView = _swiftUIWrapper.contentView;
+      for (UIView *subview = nullptr in swiftUIContentView.subviews) {
+        [self addSubview:subview];
+      }
+      self.clipsToBounds = swiftUIContentView.clipsToBounds;
+      self.layer.mask = swiftUIContentView.layer.mask;
+
+      [self transferVisualPropertiesFromView:swiftUIContentView toView:self];
+
+      [_swiftUIWrapper.hostingView removeFromSuperview];
+      _swiftUIWrapper = nil;
+    }
+  }
+
+  return effectiveContentView;
+}
+
 // This UIView is the UIView that holds all subviews. It is sometimes not self
 // because we want to render "overflow ink" that extends beyond the bounds of
 // the view and is not affected by clipping.
 - (UIView *)currentContainerView
 {
+  UIView *effectiveContentView = self.effectiveContentView;
+
   if (_useCustomContainerView) {
     if (!_containerView) {
-      _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-      for (UIView *subview in self.subviews) {
+      _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+      for (UIView *subview = nullptr in effectiveContentView.subviews) {
         [_containerView addSubview:subview];
       }
-      _containerView.clipsToBounds = self.clipsToBounds;
-      self.clipsToBounds = NO;
-      _containerView.layer.mask = self.layer.mask;
-      self.layer.mask = nil;
-      [self addSubview:_containerView];
+      _containerView.clipsToBounds = effectiveContentView.clipsToBounds;
+      effectiveContentView.clipsToBounds = NO;
+      _containerView.layer.mask = effectiveContentView.layer.mask;
+      effectiveContentView.layer.mask = nil;
+      [effectiveContentView addSubview:_containerView];
     }
 
-    return _containerView;
+    effectiveContentView = _containerView;
   } else {
     if (_containerView) {
       for (UIView *subview in _containerView.subviews) {
-        [self addSubview:subview];
+        [effectiveContentView addSubview:subview];
       }
-      self.clipsToBounds = _containerView.clipsToBounds;
-      self.layer.mask = _containerView.layer.mask;
+      effectiveContentView.clipsToBounds = _containerView.clipsToBounds;
+      effectiveContentView.layer.mask = _containerView.layer.mask;
       [_containerView removeFromSuperview];
       _containerView = nil;
     }
-
-    return self;
   }
+  return effectiveContentView;
 }
 
 - (void)invalidateLayer
 {
-  CALayer *layer = self.layer;
+  CALayer *layer = self.effectiveContentView.layer;
 
   if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
     return;
@@ -910,7 +970,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     if (!_backgroundColorLayer) {
       _backgroundColorLayer = [CALayer layer];
       _backgroundColorLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-      [self.layer addSublayer:_backgroundColorLayer];
+      [layer addSublayer:_backgroundColorLayer];
     }
     [self shapeLayerToMatchView:_backgroundColorLayer borderMetrics:borderMetrics];
     _backgroundColorLayer.backgroundColor = backgroundColor.CGColor;
@@ -986,31 +1046,43 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   // filter
   [_filterLayer removeFromSuperlayer];
   _filterLayer = nil;
+  if (_swiftUIWrapper != nullptr) {
+    [_swiftUIWrapper updateBlurRadius:@(0)];
+  }
   self.layer.opacity = (float)_props->opacity;
   if (!_props->filter.empty()) {
     float multiplicativeBrightness = 1;
+    bool hasBrightnessFilter = false;
     for (const auto &primitive : _props->filter) {
       if (std::holds_alternative<Float>(primitive.parameters)) {
         if (primitive.type == FilterType::Brightness) {
           multiplicativeBrightness *= std::get<Float>(primitive.parameters);
+          hasBrightnessFilter = true;
         } else if (primitive.type == FilterType::Opacity) {
           self.layer.opacity *= std::get<Float>(primitive.parameters);
+        } else if (primitive.type == FilterType::Blur) {
+          if (_swiftUIWrapper != nullptr) {
+            Float blurRadius = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateBlurRadius:@(blurRadius)];
+          }
         }
       }
     }
 
-    _filterLayer = [CALayer layer];
-    [self shapeLayerToMatchView:_filterLayer borderMetrics:borderMetrics];
-    _filterLayer.compositingFilter = @"multiplyBlendMode";
-    _filterLayer.backgroundColor = [UIColor colorWithRed:multiplicativeBrightness
-                                                   green:multiplicativeBrightness
-                                                    blue:multiplicativeBrightness
-                                                   alpha:self.layer.opacity]
-                                       .CGColor;
-    // So that this layer is always above any potential sublayers this view may
-    // add
-    _filterLayer.zPosition = CGFLOAT_MAX;
-    [self.layer addSublayer:_filterLayer];
+    if (hasBrightnessFilter) {
+      _filterLayer = [CALayer layer];
+      [self shapeLayerToMatchView:_filterLayer borderMetrics:borderMetrics];
+      _filterLayer.compositingFilter = @"multiplyBlendMode";
+      _filterLayer.backgroundColor = [UIColor colorWithRed:multiplicativeBrightness
+                                                     green:multiplicativeBrightness
+                                                      blue:multiplicativeBrightness
+                                                     alpha:self.layer.opacity]
+                                         .CGColor;
+      // So that this layer is always above any potential sublayers this view may
+      // add
+      _filterLayer.zPosition = CGFLOAT_MAX;
+      [layer addSublayer:_filterLayer];
+    }
   }
 
   // background image
@@ -1025,7 +1097,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
         backgroundImageLayer.masksToBounds = YES;
         backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-        [self.layer addSublayer:backgroundImageLayer];
+        [layer addSublayer:backgroundImageLayer];
         [_backgroundImageLayers addObject:backgroundImageLayer];
       } else if (std::holds_alternative<RadialGradient>(backgroundImage)) {
         const auto &radialGradient = std::get<RadialGradient>(backgroundImage);
@@ -1034,7 +1106,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
         backgroundImageLayer.masksToBounds = YES;
         backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-        [self.layer addSublayer:backgroundImageLayer];
+        [layer addSublayer:backgroundImageLayer];
         [_backgroundImageLayers addObject:backgroundImageLayer];
       }
     }
@@ -1056,7 +1128,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
           self.layer.bounds.size);
       shadowLayer.zPosition = _borderLayer.zPosition;
-      [self.layer addSublayer:shadowLayer];
+      [layer addSublayer:shadowLayer];
       [_boxShadowLayers addObject:shadowLayer];
     }
   }
@@ -1149,43 +1221,37 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   return self;
 }
 
-- (NSArray<NSObject *> *)accessibilityElements
+- (void)didMoveToSuperview
 {
-  if ([_accessibilityOrderNativeIDs count] <= 0) {
-    return super.accessibilityElements;
+  // At this point we are guaranteed to have subviews, if we are going to have them
+  if (ReactNativeFeatureFlags::enableAccessibilityOrder()) {
+    [self updateAccessibilityElements];
   }
+}
 
-  // TODO: Currently this ignores changes to descendant nativeID's. While that should rarely, if ever happen, it's an
-  // edge case we should address. Currently this fixes some app deaths so landing this without addressing that edge case
-  // for now.
-  if ([_accessibilityElements count] > 0) {
-    return _accessibilityElements;
+- (void)updateAccessibilityElements
+{
+  if ([_accessibilityOrderNativeIDs count] == 0) {
+    self.accessibilityElements = nil;
+    return;
   }
 
   NSMutableDictionary<NSString *, UIView *> *nativeIdToView = [NSMutableDictionary new];
-
   [RCTViewComponentView collectAccessibilityElements:self
                                       intoDictionary:nativeIdToView
                                            nativeIds:_accessibilityOrderNativeIDs];
 
-  for (auto childId : _props->accessibilityOrder) {
+  NSMutableArray *accessibilityElements = [NSMutableArray new];
+  for (const auto &childId : _props->accessibilityOrder) {
     NSString *nsStringChildId = RCTNSStringFromString(childId);
-    // Special case to allow for self-referencing with accessibilityOrder
-    if ([nsStringChildId isEqualToString:self.nativeId]) {
-      if (!_axElementDescribingSelf) {
-        _axElementDescribingSelf = [[RCTViewAccessibilityElement alloc] initWithView:self];
-      }
-      _axElementDescribingSelf.isAccessibilityElement = [super isAccessibilityElement];
-      [_accessibilityElements addObject:_axElementDescribingSelf];
-    } else {
-      UIView *viewWithMatchingNativeId = [nativeIdToView objectForKey:nsStringChildId];
-      if (viewWithMatchingNativeId) {
-        [_accessibilityElements addObject:viewWithMatchingNativeId];
-      }
+
+    UIView *viewWithMatchingNativeId = [nativeIdToView objectForKey:nsStringChildId];
+    if (viewWithMatchingNativeId != nil) {
+      [accessibilityElements addObject:viewWithMatchingNativeId];
     }
   }
 
-  return _accessibilityElements;
+  self.accessibilityElements = accessibilityElements;
 }
 
 + (void)collectAccessibilityElements:(UIView *)view
@@ -1250,13 +1316,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   if (self.contentView != nil) {
     return self.contentView.isAccessibilityElement;
-  }
-
-  // If we reference ourselves in accessibilityOrder then we will make a
-  // UIAccessibilityElement object to represent ourselves since returning YES
-  // here would mean iOS would not call into accessibilityElements
-  if ([_accessibilityOrderNativeIDs containsObject:self.nativeId]) {
-    return NO;
   }
 
   return [super isAccessibilityElement];
@@ -1421,6 +1480,122 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
 {
   return RCTNSStringFromString([[self class] componentDescriptorProvider].name);
+}
+
+- (BOOL)styleNeedsSwiftUIContainer
+{
+  if (!_props->filter.empty()) {
+    for (const auto &primitive : _props->filter) {
+      if (primitive.type == FilterType::Blur) {
+        return YES;
+      }
+    }
+  }
+  return NO;
+}
+
+- (void)transferVisualPropertiesFromView:(UIView *)sourceView toView:(UIView *)destinationView
+{
+  // shadow
+  destinationView.layer.shadowColor = sourceView.layer.shadowColor;
+  sourceView.layer.shadowColor = nil;
+  destinationView.layer.shadowOffset = sourceView.layer.shadowOffset;
+  sourceView.layer.shadowOffset = CGSizeZero;
+  destinationView.layer.shadowOpacity = sourceView.layer.shadowOpacity;
+  sourceView.layer.shadowOpacity = 0;
+  destinationView.layer.shadowRadius = sourceView.layer.shadowRadius;
+  sourceView.layer.shadowRadius = 0;
+
+  // background
+  destinationView.layer.backgroundColor = sourceView.layer.backgroundColor;
+  sourceView.layer.backgroundColor = nil;
+  if (_backgroundColorLayer != nullptr) {
+    [destinationView.layer addSublayer:_backgroundColorLayer];
+  }
+
+  // border
+  destinationView.layer.borderColor = sourceView.layer.borderColor;
+  sourceView.layer.borderColor = nil;
+  destinationView.layer.borderWidth = sourceView.layer.borderWidth;
+  sourceView.layer.borderWidth = 0;
+
+  // corner
+  destinationView.layer.cornerRadius = sourceView.layer.cornerRadius;
+  sourceView.layer.cornerRadius = 0;
+  destinationView.layer.cornerCurve = sourceView.layer.cornerCurve;
+
+  // custom layers
+  if (_borderLayer != nullptr) {
+    [destinationView.layer addSublayer:_borderLayer];
+  }
+  if (_outlineLayer != nullptr) {
+    [destinationView.layer addSublayer:_outlineLayer];
+  }
+  if (_filterLayer != nullptr) {
+    [destinationView.layer addSublayer:_filterLayer];
+  }
+  for (CALayer *layer = nullptr in _backgroundImageLayers) {
+    [destinationView.layer addSublayer:layer];
+  }
+  for (CALayer *layer = nullptr in _boxShadowLayers) {
+    [destinationView.layer addSublayer:layer];
+  }
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  if ([commandName isEqualToString:@"focus"]) {
+    [self focus];
+    return;
+  }
+
+  if ([commandName isEqualToString:@"blur"]) {
+    [self blur];
+    return;
+  }
+}
+
+- (void)focus
+{
+  [self becomeFirstResponder];
+}
+
+- (void)blur
+{
+  [self resignFirstResponder];
+}
+
+#pragma mark - Focus Events
+
+- (BOOL)becomeFirstResponder
+{
+  if (![super becomeFirstResponder]) {
+    return NO;
+  }
+
+  if (_eventEmitter && ReactNativeFeatureFlags::enableImperativeFocus()) {
+    _eventEmitter->onFocus();
+  }
+
+  return YES;
+}
+
+- (BOOL)resignFirstResponder
+{
+  if (![super resignFirstResponder]) {
+    return NO;
+  }
+
+  if (_eventEmitter && ReactNativeFeatureFlags::enableImperativeFocus()) {
+    _eventEmitter->onBlur();
+  }
+
+  return YES;
 }
 
 @end

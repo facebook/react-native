@@ -87,7 +87,7 @@ class CodegenUtils
       codegen_path = file_manager.join(ios_folder, codegen_dir)
       return if !dir_manager.exist?(codegen_path)
 
-      FileUtils.rm_rf(dir_manager.glob("#{codegen_path}/*"))
+      FileUtils.rm_rf("#{codegen_path}")
       base_provider_path = file_manager.join(rn_path, 'React', 'Fabric', 'RCTThirdPartyFabricComponentsProvider')
       FileUtils.rm_rf("#{base_provider_path}.h")
       FileUtils.rm_rf("#{base_provider_path}.mm")

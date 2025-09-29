@@ -10,7 +10,6 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <utility>
 
 namespace facebook::react {
 
@@ -38,6 +37,8 @@ class IWebSocketClient {
 };
 
 extern const char WebSocketClientFactoryKey[];
+
+extern const char DevToolsWebSocketClientFactoryKey[];
 
 using WebSocketClientFactory =
     std::function<std::unique_ptr<IWebSocketClient>()>;

@@ -23,7 +23,7 @@ internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCo
     NativeHeadlessJsTaskSupportSpec(reactContext) {
   override fun notifyTaskRetry(taskIdDouble: Double, promise: Promise) {
     val taskId = taskIdDouble.toInt()
-    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(getReactApplicationContext())
+    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
     if (headlessJsTaskContext.isTaskRunning(taskId)) {
       val retryPosted = headlessJsTaskContext.retryTask(taskId)
       promise.resolve(retryPosted)
@@ -31,21 +31,23 @@ internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCo
       FLog.w(
           HeadlessJsTaskSupportModule::class.java,
           "Tried to retry non-active task with id %d. Did it time out?",
-          taskId)
+          taskId,
+      )
       promise.resolve(false)
     }
   }
 
   override fun notifyTaskFinished(taskIdDouble: Double) {
     val taskId = taskIdDouble.toInt()
-    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(getReactApplicationContext())
+    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
     if (headlessJsTaskContext.isTaskRunning(taskId)) {
       headlessJsTaskContext.finishTask(taskId)
     } else {
       FLog.w(
           HeadlessJsTaskSupportModule::class.java,
           "Tried to finish non-active task with id %d. Did it time out?",
-          taskId)
+          taskId,
+      )
     }
   }
 

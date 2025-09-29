@@ -11,12 +11,10 @@ import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.modules.core.ReactChoreographer
@@ -26,6 +24,7 @@ import com.facebook.react.uimanager.events.FabricEventDispatcher
 import com.facebook.react.uimanager.events.TouchEvent
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper
 import com.facebook.react.uimanager.events.TouchEventType
+import com.facebook.testutils.shadows.ShadowArguments
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -34,8 +33,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.*
-import org.mockito.MockedStatic
-import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -43,7 +40,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(shadows = [ShadowSoLoader::class])
+@Config(shadows = [ShadowSoLoader::class, ShadowArguments::class])
 class TouchEventDispatchTest {
   private val touchEventCoalescingKeyHelper = TouchEventCoalescingKeyHelper()
 
@@ -55,25 +52,30 @@ class TouchEventDispatchTest {
               action = MotionEvent.ACTION_DOWN,
               pointerId = 0,
               pointerIds = intArrayOf(0),
-              pointerCoords = arrayOf(pointerCoords(1f, 1f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 1f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_MOVE,
               pointerId = 0,
               pointerIds = intArrayOf(0),
-              pointerCoords = arrayOf(pointerCoords(1f, 2f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 2f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_MOVE,
               pointerId = 0,
               pointerIds = intArrayOf(0),
-              pointerCoords = arrayOf(pointerCoords(1f, 3f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 3f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_UP,
               pointerId = 0,
               pointerIds = intArrayOf(0),
-              pointerCoords = arrayOf(pointerCoords(1f, 3f))))
+              pointerCoords = arrayOf(pointerCoords(1f, 3f)),
+          ),
+      )
 
   /** Expected values for [startMoveEndSequence] */
   private val startMoveEndExpectedSequence =
@@ -95,7 +97,8 @@ class TouchEventDispatchTest {
               touches =
                   listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0))),
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)),
+          ),
           /*
            * MOVE event for touch 1:
            * {
@@ -113,7 +116,8 @@ class TouchEventDispatchTest {
               touches =
                   listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0))),
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)),
+          ),
           /*
            * MOVE event for touch 1:
            * {
@@ -131,7 +135,8 @@ class TouchEventDispatchTest {
               touches =
                   listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0))),
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)),
+          ),
           /*
            * END event for touch 1:
            * {
@@ -148,7 +153,9 @@ class TouchEventDispatchTest {
               pointerId = 0,
               touches = emptyList(),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0))))
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)),
+          ),
+      )
 
   /** Events (2 pointer): START 1st -> START 2nd -> MOVE 1st -> UP 2st -> UP 1st */
   private val startPointerMoveUpSequence =
@@ -158,31 +165,37 @@ class TouchEventDispatchTest {
               action = MotionEvent.ACTION_DOWN,
               pointerId = 0,
               pointerIds = intArrayOf(0),
-              pointerCoords = arrayOf(pointerCoords(1f, 1f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 1f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_POINTER_DOWN,
               pointerId = 1,
               pointerIds = intArrayOf(0, 1),
-              pointerCoords = arrayOf(pointerCoords(1f, 1f), pointerCoords(2f, 1f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 1f), pointerCoords(2f, 1f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_MOVE,
               pointerId = 0,
               pointerIds = intArrayOf(0, 1),
-              pointerCoords = arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_POINTER_UP,
               pointerId = 1,
               pointerIds = intArrayOf(0, 1),
-              pointerCoords = arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_POINTER_UP,
               pointerId = 0,
               pointerIds = intArrayOf(0),
-              pointerCoords = arrayOf(pointerCoords(1f, 2f))))
+              pointerCoords = arrayOf(pointerCoords(1f, 2f)),
+          ),
+      )
 
   /** Expected values for [startPointerMoveUpSequence] */
   private val startPointerMoveUpExpectedSequence =
@@ -205,7 +218,8 @@ class TouchEventDispatchTest {
               touches =
                   listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0))),
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)),
+          ),
           /*
            * START event for touch 2:
            * {
@@ -224,9 +238,11 @@ class TouchEventDispatchTest {
               touches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)),
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))),
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)),
+          ),
           /*
            * MOVE event for touch 1:
            * {
@@ -250,11 +266,14 @@ class TouchEventDispatchTest {
               touches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)),
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
               changedTouches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))),
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
+          ),
           buildGestureEvent(
               surfaceId = SURFACE_ID,
               viewTag = TARGET_VIEW_ID,
@@ -265,11 +284,14 @@ class TouchEventDispatchTest {
               touches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)),
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
               changedTouches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))),
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
+          ),
           /*
            * UP event pointer 1:
            * {
@@ -288,7 +310,8 @@ class TouchEventDispatchTest {
               touches =
                   listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))),
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)),
+          ),
           /*
            * UP event pointer 0:
            * {
@@ -306,7 +329,9 @@ class TouchEventDispatchTest {
               pointerId = 0,
               touches = emptyList(),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0))))
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)),
+          ),
+      )
 
   /** Events (2 pointer): START 1st -> START 2nd -> MOVE 1st -> CANCEL */
   private val startMoveCancelSequence =
@@ -316,25 +341,30 @@ class TouchEventDispatchTest {
               action = MotionEvent.ACTION_DOWN,
               pointerId = 0,
               pointerIds = intArrayOf(0),
-              pointerCoords = arrayOf(pointerCoords(1f, 1f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 1f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_POINTER_DOWN,
               pointerId = 1,
               pointerIds = intArrayOf(0, 1),
-              pointerCoords = arrayOf(pointerCoords(1f, 1f), pointerCoords(2f, 1f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 1f), pointerCoords(2f, 1f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_MOVE,
               pointerId = 0,
               pointerIds = intArrayOf(0, 1),
-              pointerCoords = arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f))),
+              pointerCoords = arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f)),
+          ),
           createTouchEvent(
               gestureTime = GESTURE_START_TIME,
               action = MotionEvent.ACTION_CANCEL,
               pointerId = 0,
               pointerIds = intArrayOf(0, 1),
-              pointerCoords = arrayOf(pointerCoords(1f, 3f), pointerCoords(2f, 1f))))
+              pointerCoords = arrayOf(pointerCoords(1f, 3f), pointerCoords(2f, 1f)),
+          ),
+      )
 
   /** Expected values for [startMoveCancelSequence] */
   private val startMoveCancelExpectedSequence =
@@ -357,7 +387,8 @@ class TouchEventDispatchTest {
               touches =
                   listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0))),
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)),
+          ),
           /*
            * START event for touch 2:
            * {
@@ -376,9 +407,11 @@ class TouchEventDispatchTest {
               touches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)),
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
               changedTouches =
-                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))),
+                  listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)),
+          ),
           /*
            * MOVE event for touch 1:
            * {
@@ -402,11 +435,14 @@ class TouchEventDispatchTest {
               touches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)),
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
               changedTouches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))),
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
+          ),
           buildGestureEvent(
               SURFACE_ID,
               TARGET_VIEW_ID,
@@ -416,10 +452,13 @@ class TouchEventDispatchTest {
               1,
               listOf(
                   buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
-                  buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)),
+                  buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+              ),
               listOf(
                   buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
-                  buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))),
+                  buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+              ),
+          ),
           /*
            * CANCEL event:
            * {
@@ -444,7 +483,9 @@ class TouchEventDispatchTest {
               changedTouches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))),
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
+          ),
           buildGestureEvent(
               surfaceId = SURFACE_ID,
               viewTag = TARGET_VIEW_ID,
@@ -456,25 +497,24 @@ class TouchEventDispatchTest {
               changedTouches =
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0),
-                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))))
+                      buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1),
+                  ),
+          ),
+      )
 
   private lateinit var eventDispatcher: EventDispatcher
   private lateinit var eventEmitter: FabricEventEmitter
-  private lateinit var arguments: MockedStatic<Arguments>
   private var reactChoreographerOriginal: ReactChoreographer? = null
 
   @Before
   fun setUp() {
     ReactNativeFeatureFlagsForTests.setUp()
 
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
     val metrics = DisplayMetrics()
     metrics.xdpi = 1f
     metrics.ydpi = 1f
     metrics.density = 1f
-    DisplayMetricsHolder.setWindowDisplayMetrics(metrics)
+    DisplayMetricsHolder.setScreenDisplayMetrics(metrics)
 
     val reactContext = ReactTestHelper.createCatalystContextForTest()
 
@@ -488,7 +528,6 @@ class TouchEventDispatchTest {
 
   @After
   fun tearDown() {
-    arguments.close()
     ReactChoreographer.overrideInstanceForTest(reactChoreographerOriginal)
   }
 
@@ -500,7 +539,14 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(eventEmitter, times(4))
         .receiveEvent(
-            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt())
+            anyInt(),
+            anyInt(),
+            anyString(),
+            anyBoolean(),
+            anyInt(),
+            argument.capture(),
+            anyInt(),
+        )
     assertThat(startMoveEndExpectedSequence).isEqualTo(argument.allValues)
   }
 
@@ -512,7 +558,14 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(eventEmitter, times(6))
         .receiveEvent(
-            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt())
+            anyInt(),
+            anyInt(),
+            anyString(),
+            anyBoolean(),
+            anyInt(),
+            argument.capture(),
+            anyInt(),
+        )
     assertThat(startMoveCancelExpectedSequence).isEqualTo(argument.allValues)
   }
 
@@ -524,7 +577,14 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(eventEmitter, times(6))
         .receiveEvent(
-            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt())
+            anyInt(),
+            anyInt(),
+            anyString(),
+            anyBoolean(),
+            anyInt(),
+            argument.capture(),
+            anyInt(),
+        )
     assertThat(startPointerMoveUpExpectedSequence).isEqualTo(argument.allValues)
   }
 
@@ -533,7 +593,7 @@ class TouchEventDispatchTest {
       action: Int,
       pointerId: Int,
       pointerIds: IntArray,
-      pointerCoords: Array<PointerCoords>
+      pointerCoords: Array<PointerCoords>,
   ): TouchEvent {
     touchEventCoalescingKeyHelper.addCoalescingKey(gestureTime.toLong())
     val shiftedAction = action or (pointerId shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
@@ -555,11 +615,13 @@ class TouchEventDispatchTest {
             0,
             0,
             0,
-            0),
+            0,
+        ),
         gestureTime.toLong(),
         pointerCoords[0].x,
         pointerCoords[0].y,
-        touchEventCoalescingKeyHelper)
+        touchEventCoalescingKeyHelper,
+    )
   }
 
   companion object {
@@ -587,7 +649,7 @@ class TouchEventDispatchTest {
         time: Int,
         pointerId: Int,
         touches: List<WritableMap>,
-        changedTouches: List<WritableMap>
+        changedTouches: List<WritableMap>,
     ): ReadableMap =
         buildGesture(surfaceId, viewTag, locationX, locationY, time, pointerId).apply {
           putArray("changedTouches", JavaOnlyArray.from(changedTouches))
@@ -600,7 +662,7 @@ class TouchEventDispatchTest {
         locationX: Float,
         locationY: Float,
         time: Int,
-        pointerId: Int
+        pointerId: Int,
     ): WritableMap =
         JavaOnlyMap().apply {
           putInt("targetSurface", surfaceId)

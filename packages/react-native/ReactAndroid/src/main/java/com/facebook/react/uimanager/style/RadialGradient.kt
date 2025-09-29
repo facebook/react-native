@@ -27,7 +27,7 @@ internal class RadialGradient(
     val shape: Shape,
     val size: GradientSize,
     val position: Position,
-    val colorStops: List<ColorStop>
+    val colorStops: List<ColorStop>,
 ) : Gradient {
   companion object {
     fun parse(gradientMap: ReadableMap, context: Context): Gradient? {
@@ -165,7 +165,7 @@ internal class RadialGradient(
       val top: LengthPercentage? = null,
       val left: LengthPercentage? = null,
       val right: LengthPercentage? = null,
-      val bottom: LengthPercentage? = null
+      val bottom: LengthPercentage? = null,
   )
 
   override fun getShader(width: Float, height: Float): Shader {
@@ -230,7 +230,7 @@ internal class RadialGradient(
       centerY: Float,
       width: Float,
       height: Float,
-      sizeKeyword: GradientSize.KeywordType
+      sizeKeyword: GradientSize.KeywordType,
   ): Pair<Float, Float> {
     val radiusXFromLeftSide = centerX
     val radiusYFromTopSide = centerY
@@ -263,7 +263,7 @@ internal class RadialGradient(
   private fun calculateEllipseRadius(
       offsetX: Float,
       offsetY: Float,
-      aspectRatio: Float
+      aspectRatio: Float,
   ): Pair<Float, Float> {
     if (aspectRatio == 0f || !aspectRatio.isFinite()) {
       return Pair(0f, 0f)
@@ -283,21 +283,22 @@ internal class RadialGradient(
       centerY: Float,
       width: Float,
       height: Float,
-      sizeKeyword: GradientSize.KeywordType
+      sizeKeyword: GradientSize.KeywordType,
   ): Pair<Float, Float> {
     val corners =
         arrayOf(
             Pair(0f, 0f), // top-left
             Pair(width, 0f), // top-right
             Pair(width, height), // bottom-right
-            Pair(0f, height) // bottom-left
-            )
+            Pair(0f, height), // bottom-left
+        )
 
     var cornerIndex = 0
     var distance =
         sqrt(
             (centerX - corners[cornerIndex].first).pow(2) +
-                (centerY - corners[cornerIndex].second).pow(2))
+                (centerY - corners[cornerIndex].second).pow(2)
+        )
     val isClosestCorner = sizeKeyword == GradientSize.KeywordType.CLOSEST_CORNER
 
     for (i in 1 until corners.size) {
@@ -332,14 +333,15 @@ internal class RadialGradient(
     return calculateEllipseRadius(
         corners[cornerIndex].first - centerX,
         corners[cornerIndex].second - centerY,
-        sideRadius.first / sideRadius.second)
+        sideRadius.first / sideRadius.second,
+    )
   }
 
   private fun calculateRadius(
       centerX: Float,
       centerY: Float,
       width: Float,
-      height: Float
+      height: Float,
   ): Pair<Float, Float> {
     if (size is GradientSize.Keyword) {
       return when (val keyword = size.keyword) {
@@ -369,7 +371,12 @@ internal class RadialGradient(
       }
     } else {
       return radiusToCorner(
-          centerX, centerY, width, height, GradientSize.KeywordType.FARTHEST_CORNER)
+          centerX,
+          centerY,
+          width,
+          height,
+          GradientSize.KeywordType.FARTHEST_CORNER,
+      )
     }
   }
 }

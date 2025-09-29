@@ -4,18 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_mode opt
  * @flow strict-local
  * @format
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type Performance from 'react-native/src/private/webapis/performance/Performance';
-
 import * as Fantom from '@react-native/fantom';
-
-declare var performance: Performance;
 
 const clearMarksAndMeasures = () => {
   performance.clearMarks();
@@ -23,7 +18,7 @@ const clearMarksAndMeasures = () => {
 };
 
 Fantom.unstable_benchmark
-  .suite('Performance API')
+  .suite('Performance API', {minIterations: 50000})
   .test(
     'mark (default)',
     () => {
@@ -39,6 +34,15 @@ Fantom.unstable_benchmark
       performance.mark('mark', {
         startTime: 100,
       });
+    },
+    {
+      afterEach: clearMarksAndMeasures,
+    },
+  )
+  .test(
+    'measure (default)',
+    () => {
+      performance.measure('measure');
     },
     {
       afterEach: clearMarksAndMeasures,
@@ -126,4 +130,17 @@ Fantom.unstable_benchmark
       },
       afterEach: clearMarksAndMeasures,
     },
-  );
+  )
+  .test('console.timeStamp (defaults)', () => {
+    console.timeStamp('label');
+  })
+  .test('console.timeStamp (all options)', () => {
+    console.timeStamp(
+      'label',
+      100,
+      300,
+      'My track',
+      'My track group',
+      'primary',
+    );
+  });

@@ -8,19 +8,21 @@
 #include "RuntimeAgent.h"
 #include "SessionState.h"
 
+#include <utility>
+
 namespace facebook::react::jsinspector_modern {
 
 RuntimeAgent::RuntimeAgent(
     FrontendChannel frontendChannel,
     RuntimeTargetController& targetController,
-    const ExecutionContextDescription& executionContextDescription,
+    ExecutionContextDescription executionContextDescription,
     SessionState& sessionState,
     std::unique_ptr<RuntimeAgentDelegate> delegate)
     : frontendChannel_(std::move(frontendChannel)),
       targetController_(targetController),
       sessionState_(sessionState),
       delegate_(std::move(delegate)),
-      executionContextDescription_(executionContextDescription) {
+      executionContextDescription_(std::move(executionContextDescription)) {
   for (auto& [name, contextSelectors] : sessionState_.subscribedBindings) {
     if (matchesAny(executionContextDescription_, contextSelectors)) {
       targetController_.installBindingHandler(name);
@@ -37,56 +39,21 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Runtime.addBinding") {
     std::string bindingName = req.params["name"].getString();
 
-    ExecutionContextSelector contextSelector = ExecutionContextSelector::all();
-
-    // TODO: Eventually, move execution context targeting out of RuntimeAgent.
-    // Right now, there's only ever one context (Runtime) in a Host, so we can
-    // handle it here for simplicity, and use session state to propagate
-    // bindings to the next RuntimeAgent.
-    if (req.params.count("executionContextId")) {
-      auto executionContextId = req.params["executionContextId"].getInt();
-      if (executionContextId < (int64_t)std::numeric_limits<int32_t>::min() ||
-          executionContextId > (int64_t)std::numeric_limits<int32_t>::max()) {
-        frontendChannel_(cdp::jsonError(
-            req.id,
-            cdp::ErrorCode::InvalidParams,
-            "Invalid execution context id"));
-        return true;
+    // Check if the binding has a context selector that matches the current
+    // context. The state will have been updated by HostAgent by the time we
+    // receive the request.
+    // NOTE: We DON'T do the reverse for removeBinding, for reasons explained
+    // in the implementation of HostAgent.
+    auto it = sessionState_.subscribedBindings.find(bindingName);
+    if (it != sessionState_.subscribedBindings.end()) {
+      auto contextSelectors = it->second;
+      if (matchesAny(executionContextDescription_, contextSelectors)) {
+        targetController_.installBindingHandler(bindingName);
       }
-      contextSelector =
-          ExecutionContextSelector::byId((int32_t)executionContextId);
-
-      if (req.params.count("executionContextName")) {
-        frontendChannel_(cdp::jsonError(
-            req.id,
-            cdp::ErrorCode::InvalidParams,
-            "executionContextName is mutually exclusive with executionContextId"));
-        return true;
-      }
-    } else if (req.params.count("executionContextName")) {
-      contextSelector = ExecutionContextSelector::byName(
-          req.params["executionContextName"].getString());
     }
-    if (contextSelector.matches(executionContextDescription_)) {
-      targetController_.installBindingHandler(bindingName);
-    }
-    sessionState_.subscribedBindings[bindingName].insert(contextSelector);
 
-    frontendChannel_(cdp::jsonResult(req.id));
-
-    return true;
-  }
-  if (req.method == "Runtime.removeBinding") {
-    // @cdp Runtime.removeBinding has no targeting by execution context. We
-    // interpret it to mean "unsubscribe, and stop installing the binding on
-    // all new contexts". This diverges slightly from V8, which continues
-    // to install the binding on new contexts after it's "removed", but *only*
-    // if the subscription is targeted by context name.
-    sessionState_.subscribedBindings.erase(req.params["name"].getString());
-
-    frontendChannel_(cdp::jsonResult(req.id));
-
-    return true;
+    // We are not responding to this request, just processing a side effect.
+    return false;
   }
   if (req.method == "Runtime.enable" && sessionState_.isLogDomainEnabled) {
     targetController_.notifyDebuggerSessionCreated();
@@ -119,7 +86,7 @@ void RuntimeAgent::notifyBindingCalled(
   // React Native intentionally replicates this behavior for the sake of
   // bug-for-bug compatibility with Chrome, but clients should probably not rely
   // on it.
-  if (!sessionState_.subscribedBindings.count(bindingName)) {
+  if (sessionState_.subscribedBindings.count(bindingName) == 0u) {
     return;
   }
 
@@ -149,10 +116,6 @@ RuntimeAgent::~RuntimeAgent() {
   sessionState_.lastRuntimeAgentExportedState = getExportedState();
 }
 
-void RuntimeAgent::registerForTracing() {
-  targetController_.registerForTracing();
-}
-
 void RuntimeAgent::enableSamplingProfiler() {
   targetController_.enableSamplingProfiler();
 }
@@ -163,6 +126,26 @@ void RuntimeAgent::disableSamplingProfiler() {
 
 tracing::RuntimeSamplingProfile RuntimeAgent::collectSamplingProfile() {
   return targetController_.collectSamplingProfile();
+}
+
+#pragma mark - Tracing
+
+RuntimeTracingAgent::RuntimeTracingAgent(
+    tracing::TraceRecordingState& state,
+    RuntimeTargetController& targetController)
+    : tracing::TargetTracingAgent(state), targetController_(targetController) {
+  if (state.mode == tracing::Mode::CDP) {
+    targetController_.enableSamplingProfiler();
+  }
+}
+
+RuntimeTracingAgent::~RuntimeTracingAgent() {
+  if (state_.mode == tracing::Mode::CDP) {
+    targetController_.disableSamplingProfiler();
+    auto profile = targetController_.collectSamplingProfile();
+
+    state_.runtimeSamplingProfiles.emplace_back(std::move(profile));
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern

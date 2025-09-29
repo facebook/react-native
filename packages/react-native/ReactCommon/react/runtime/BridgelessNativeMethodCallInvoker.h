@@ -9,7 +9,6 @@
 
 #include <ReactCommon/CallInvoker.h>
 #include <cxxreact/MessageQueueThread.h>
-#include <functional>
 #include <memory>
 
 namespace facebook::react {

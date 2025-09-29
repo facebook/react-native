@@ -13,7 +13,6 @@ import type {AnimatedNodeConfig} from './AnimatedNode';
 import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import {AnimatedEvent} from '../AnimatedEvent';
@@ -58,9 +57,7 @@ function createAnimatedProps(
           // we propagate the flattened `style` object to the `props` object.
           const flatStyle = flattenStyle(value as $FlowFixMe);
           node = AnimatedStyle.from(flatStyle, allowlist?.style, value);
-          if (ReactNativeFeatureFlags.alwaysFlattenAnimatedStyles()) {
-            staticValue = flatStyle;
-          }
+          staticValue = flatStyle;
         }
       } else if (value instanceof AnimatedNode) {
         node = value;
@@ -95,11 +92,11 @@ function createAnimatedProps(
 }
 
 export default class AnimatedProps extends AnimatedNode {
-  #callback: () => void;
-  #nodeKeys: $ReadOnlyArray<string>;
-  #nodes: $ReadOnlyArray<AnimatedNode>;
-  #props: {[string]: mixed};
-  #target: ?TargetView = null;
+  _callback: () => void;
+  _nodeKeys: $ReadOnlyArray<string>;
+  _nodes: $ReadOnlyArray<AnimatedNode>;
+  _props: {[string]: mixed};
+  _target: ?TargetView = null;
 
   constructor(
     inputProps: {[string]: mixed},
@@ -109,19 +106,19 @@ export default class AnimatedProps extends AnimatedNode {
   ) {
     super(config);
     const [nodeKeys, nodes, props] = createAnimatedProps(inputProps, allowlist);
-    this.#nodeKeys = nodeKeys;
-    this.#nodes = nodes;
-    this.#props = props;
-    this.#callback = callback;
+    this._nodeKeys = nodeKeys;
+    this._nodes = nodes;
+    this._props = props;
+    this._callback = callback;
   }
 
   __getValue(): Object {
     const props: {[string]: mixed} = {};
 
-    const keys = Object.keys(this.#props);
+    const keys = Object.keys(this._props);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
-      const value = this.#props[key];
+      const value = this._props[key];
 
       if (value instanceof AnimatedNode) {
         props[key] = value.__getValue();
@@ -146,7 +143,7 @@ export default class AnimatedProps extends AnimatedNode {
     const keys = Object.keys(staticProps);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
-      const maybeNode = this.#props[key];
+      const maybeNode = this._props[key];
 
       if (key === 'style') {
         const staticStyle = staticProps.style;
@@ -164,9 +161,7 @@ export default class AnimatedProps extends AnimatedNode {
           maybeNode.__replaceAnimatedNodeWithValues(mutableStyle);
           props[key] = maybeNode.__getValueForStyle(mutableStyle);
         } else {
-          if (ReactNativeFeatureFlags.alwaysFlattenAnimatedStyles()) {
-            props[key] = flatStaticStyle;
-          }
+          props[key] = flatStaticStyle;
         }
       } else if (maybeNode instanceof AnimatedNode) {
         props[key] = maybeNode.__getValue();
@@ -181,10 +176,10 @@ export default class AnimatedProps extends AnimatedNode {
   __getNativeAnimatedEventTuples(): $ReadOnlyArray<[string, AnimatedEvent]> {
     const tuples = [];
 
-    const keys = Object.keys(this.#props);
+    const keys = Object.keys(this._props);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
-      const value = this.#props[key];
+      const value = this._props[key];
 
       if (value instanceof AnimatedEvent && value.__isNative) {
         tuples.push([key, value]);
@@ -197,8 +192,8 @@ export default class AnimatedProps extends AnimatedNode {
   __getAnimatedValue(): Object {
     const props: {[string]: mixed} = {};
 
-    const nodeKeys = this.#nodeKeys;
-    const nodes = this.#nodes;
+    const nodeKeys = this._nodeKeys;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const key = nodeKeys[ii];
       const node = nodes[ii];
@@ -209,7 +204,7 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   __attach(): void {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__addChild(this);
@@ -218,12 +213,12 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   __detach(): void {
-    if (this.__isNative && this.#target != null) {
-      this.#disconnectAnimatedView(this.#target);
+    if (this.__isNative && this._target != null) {
+      this.#disconnectAnimatedView(this._target);
     }
-    this.#target = null;
+    this._target = null;
 
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__removeChild(this);
@@ -233,11 +228,11 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   update(): void {
-    this.#callback();
+    this._callback();
   }
 
   __makeNative(platformConfig: ?PlatformConfig): void {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__makeNative(platformConfig);
@@ -251,19 +246,19 @@ export default class AnimatedProps extends AnimatedNode {
       // where it will be needed to traverse the graph of attached values.
       super.__setPlatformConfig(platformConfig);
 
-      if (this.#target != null) {
-        this.#connectAnimatedView(this.#target);
+      if (this._target != null) {
+        this.#connectAnimatedView(this._target);
       }
     }
   }
 
   setNativeView(instance: TargetViewInstance): void {
-    if (this.#target?.instance === instance) {
+    if (this._target?.instance === instance) {
       return;
     }
-    this.#target = {instance, connectedViewTag: null};
+    this._target = {instance, connectedViewTag: null};
     if (this.__isNative) {
-      this.#connectAnimatedView(this.#target);
+      this.#connectAnimatedView(this._target);
     }
   }
 
@@ -311,8 +306,8 @@ export default class AnimatedProps extends AnimatedNode {
     const platformConfig = this.__getPlatformConfig();
     const propsConfig: {[string]: number} = {};
 
-    const nodeKeys = this.#nodeKeys;
-    const nodes = this.#nodes;
+    const nodeKeys = this._nodeKeys;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const key = nodeKeys[ii];
       const node = nodes[ii];
@@ -330,8 +325,8 @@ export default class AnimatedProps extends AnimatedNode {
 
 // Supported versions of JSC do not implement the newer Object.hasOwn. Remove
 // this shim when they do.
-// $FlowIgnore[method-unbinding]
+// $FlowFixMe[method-unbinding]
 const _hasOwnProp = Object.prototype.hasOwnProperty;
 const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
-  // $FlowIgnore[method-unbinding]
+  // $FlowFixMe[method-unbinding]
   Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));

@@ -9,9 +9,9 @@
 
 #include <react/http/IHttpClient.h>
 
-namespace facebook::react::http {
+namespace facebook::react {
 
-class StubRequestToken : public IRequestToken {
+class StubRequestToken : public http::IRequestToken {
  public:
   StubRequestToken() = default;
   ~StubRequestToken() override = default;
@@ -33,15 +33,17 @@ class StubHttpClient : public IHttpClient {
   StubHttpClient& operator=(StubHttpClient&& other) = delete;
 
   std::unique_ptr<http::IRequestToken> sendRequest(
-      NetworkCallbacks&& /*callback*/,
+      http::NetworkCallbacks&& /*callback*/,
       const std::string& /*method*/,
       const std::string& /*url*/,
-      const Headers& /*headers*/ = {},
-      const Body& /*body*/ = {},
+      const http::Headers& /*headers*/ = {},
+      const http::Body& /*body*/ = {},
       uint32_t /*timeout*/ = 0,
       std::optional<std::string> /*loggingId*/ = std::nullopt) override {
-    return std::make_unique<http::StubRequestToken>();
+    return std::make_unique<StubRequestToken>();
   }
 };
 
-} // namespace facebook::react::http
+HttpClientFactory getStubHttpClientFactory();
+
+} // namespace facebook::react

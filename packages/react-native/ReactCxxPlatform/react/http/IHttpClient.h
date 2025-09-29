@@ -82,6 +82,8 @@ struct IHttpClient {
 
 extern const char HttpClientFactoryKey[];
 
+extern const char DevToolsHttpClientFactoryKey[];
+
 using HttpClientFactory = std::function<std::unique_ptr<IHttpClient>()>;
 
 HttpClientFactory getHttpClientFactory();

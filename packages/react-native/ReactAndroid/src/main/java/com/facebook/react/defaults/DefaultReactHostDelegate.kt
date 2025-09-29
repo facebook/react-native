@@ -42,7 +42,7 @@ public class DefaultReactHostDelegate(
     override val jsRuntimeFactory: JSRuntimeFactory = HermesInstance(),
     override val bindingsInstaller: BindingsInstaller? = null,
     private val exceptionHandler: (Exception) -> Unit = { throw it },
-    override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
+    override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder,
 ) : ReactHostDelegate {
   override fun handleInstanceException(error: Exception): Unit = exceptionHandler(error)
 }

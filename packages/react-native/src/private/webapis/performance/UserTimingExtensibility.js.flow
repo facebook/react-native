@@ -1,0 +1,38 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict
+ * @format
+ */
+
+export type DevToolsColor =
+  | 'primary'
+  | 'primary-light'
+  | 'primary-dark'
+  | 'secondary'
+  | 'secondary-light'
+  | 'secondary-dark'
+  | 'tertiary'
+  | 'tertiary-light'
+  | 'tertiary-dark'
+  | 'warning'
+  | 'error';
+
+export interface ExtensionTrackEntryPayload {
+  dataType?: 'track-entry'; // Defaults to "track-entry"
+  color?: DevToolsColor; // Defaults to "primary"
+  track: string; // Required: Name of the custom track
+  trackGroup?: string; // Optional: Group for organizing tracks
+  properties?: Array<[string, string]>; // Key-value pairs for detailed view
+  tooltipText?: string; // Short description for tooltip
+}
+
+export interface ExtensionMarkerPayload {
+  dataType: 'marker'; // Required: Identifies as a marker
+  color?: DevToolsColor; // Defaults to "primary"
+  properties?: Array<[string, string]>; // Key-value pairs for detailed view
+  tooltipText?: string; // Short description for tooltip
+}

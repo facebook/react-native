@@ -33,10 +33,12 @@ import java.util.WeakHashMap
  * a [ProgressBar] changes, we have to drop the existing [ProgressBar] (if there is one) and create
  * a new one with the style given.
  */
+@Suppress("DEPRECATION")
 @ReactModule(name = ReactProgressBarViewManager.REACT_CLASS)
 internal class ReactProgressBarViewManager :
     BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode>(),
     AndroidProgressBarManagerInterface<ProgressBarContainerView> {
+  @Suppress("IDENTITY_SENSITIVE_OPERATIONS_WITH_VALUE_TYPE")
   private val measuredStyles = WeakHashMap<Int, Pair<Int, Int>>()
 
   private val delegate: ViewManagerDelegate<ProgressBarContainerView> =
@@ -49,28 +51,28 @@ internal class ReactProgressBarViewManager :
   }
 
   @ReactProp(name = PROP_STYLE)
-  override fun setStyleAttr(view: ProgressBarContainerView, styleName: String?) {
-    view.setStyle(styleName)
+  override fun setStyleAttr(view: ProgressBarContainerView, value: String?) {
+    view.setStyle(value)
   }
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
-  override fun setColor(view: ProgressBarContainerView, color: Int?) {
-    view.color = color
+  override fun setColor(view: ProgressBarContainerView, value: Int?) {
+    view.color = value
   }
 
   @ReactProp(name = PROP_INDETERMINATE)
-  override fun setIndeterminate(view: ProgressBarContainerView, indeterminate: Boolean) {
-    view.indeterminate = indeterminate
+  override fun setIndeterminate(view: ProgressBarContainerView, value: Boolean) {
+    view.indeterminate = value
   }
 
   @ReactProp(name = PROP_PROGRESS)
-  override fun setProgress(view: ProgressBarContainerView, progress: Double) {
-    view.progress = progress
+  override fun setProgress(view: ProgressBarContainerView, value: Double) {
+    view.progress = value
   }
 
   @ReactProp(name = PROP_ANIMATING)
-  override fun setAnimating(view: ProgressBarContainerView, animating: Boolean) {
-    view.animating = animating
+  override fun setAnimating(view: ProgressBarContainerView, value: Boolean) {
+    view.animating = value
   }
 
   override fun setTestID(view: ProgressBarContainerView, value: String?) {
@@ -104,7 +106,7 @@ internal class ReactProgressBarViewManager :
       widthMode: YogaMeasureMode,
       height: Float,
       heightMode: YogaMeasureMode,
-      attachmentsPositions: FloatArray?
+      attachmentsPositions: FloatArray?,
   ): Long {
     val style = getStyleFromString(props.getString(PROP_STYLE))
     val value =
@@ -116,7 +118,9 @@ internal class ReactProgressBarViewManager :
         }
 
     return YogaMeasureOutput.make(
-        toDIPFromPixel(value.first.toFloat()), toDIPFromPixel(value.second.toFloat()))
+        toDIPFromPixel(value.first.toFloat()),
+        toDIPFromPixel(value.second.toFloat()),
+    )
   }
 
   companion object {

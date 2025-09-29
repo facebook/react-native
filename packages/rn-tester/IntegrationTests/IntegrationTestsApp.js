@@ -36,7 +36,7 @@ const TESTS = [
 TESTS.forEach(test =>
   AppRegistry.registerComponent(
     test.displayName || test.name || '',
-    /* $FlowFixMe[incompatible-call] (>=0.54.0 site=react_native_fb,react_native_
+    /* $FlowFixMe[incompatible-type] (>=0.54.0 site=react_native_fb,react_native_
      * oss) This comment suppresses an error found when Flow v0.54 was deployed.
      * To see the error delete this comment and run Flow. */
     () => test,
@@ -48,7 +48,7 @@ require('./LoggingTestModule');
 
 type Test = any;
 
-class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
+class IntegrationTestsApp extends React.Component<{...}, $FlowFixMe> {
   state: {test: ?Test} = {
     test: (null: ?Test),
   };

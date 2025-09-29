@@ -2,11 +2,6 @@ name: Test All
 
 on:
   workflow_dispatch:
-    inputs:
-      run-e2e-tests:
-        description: Whether to run E2E tests or not
-        type: boolean
-        default: false
   pull_request:
   push:
     branches:
@@ -16,6 +11,7 @@ on:
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     outputs:
       RELEASE_TYPE: ${{ steps.set_release_type.outputs.RELEASE_TYPE }}
     env:
@@ -39,6 +35,7 @@ jobs:
 
   prepare_hermes_workspace:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
@@ -117,6 +114,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   prebuild_apple_dependencies:
+    if: github.repository == 'facebook/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -128,7 +126,7 @@ jobs:
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-14
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -141,31 +139,12 @@ jobs:
           ruby-version: "3.2.0"
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-
-  test_ios_rntester_dynamic_frameworks:
-    runs-on: macos-14
-    needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run it
-        uses: ./.github/actions/test-ios-rntester
-        with:
-          use-frameworks: DynamicFrameworks
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          flavor: Debug
 
   test_ios_rntester:
     runs-on: macos-14-large
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -174,20 +153,19 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [Debug, Release]
+        frameworks: [StaticLibraries, DynamicFrameworks]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
-          run-unit-tests: "false"
-          use-frameworks: StaticLibraries
+          use-frameworks: ${{ matrix.frameworks }}
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_rntester:
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
     runs-on: macos-14-large
     needs:
       [test_ios_rntester]
@@ -221,7 +199,6 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_templateapp:
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
     runs-on: macos-14-large
     needs: [build_npm_package, prebuild_apple_dependencies]
     env:
@@ -264,6 +241,19 @@ jobs:
       - name: Print third-party folder
         shell: bash
         run: ls -lR /tmp/third-party
+      - name: Download React Native Prebuilds
+        uses: actions/download-artifact@v4
+        with:
+          name: ReactCore${{ matrix.flavor }}.xcframework.tar.gz
+          path: /tmp/ReactCore
+      - name: Print ReactCore folder
+        shell: bash
+        run: ls -lR /tmp/ReactCore
+      - name: Configure git
+        shell: bash
+        run: |
+            git config --global user.email "react-native-bot@meta.com"
+            git config --global user.name "React Native Bot"
       - name: Prepare artifacts
         run: |
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
@@ -286,6 +276,8 @@ jobs:
           NEW_ARCH_ENABLED=1
 
           export RCT_USE_LOCAL_RN_DEP=/tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+          # Disable prebuilds for now, as they are causing issues with E2E tests for 0.82-stable branch
+          # export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ matrix.flavor }}.xcframework.tar.gz"
           HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
 
           xcodebuild \
@@ -305,7 +297,6 @@ jobs:
           working-directory: /tmp/RNTestProject
 
   test_e2e_android_templateapp:
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
     runs-on: 4-core-ubuntu
     needs: build_npm_package
     strategy:
@@ -388,13 +379,32 @@ jobs:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
+  run_fantom_tests:
+    runs-on: 8-core-ubuntu
+    needs: [set_release_type]
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        TERM: "dumb"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
+        ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test Fantom
+        uses: ./.github/actions/run-fantom-tests
+        with:
+          release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
   build_hermesc_windows:
     runs-on: windows-2025
     needs: prepare_hermes_workspace
     env:
-      HERMES_WS_DIR: 'D:\tmp\hermes'
-      HERMES_TARBALL_ARTIFACTS_DIR: 'D:\tmp\hermes\hermes-runtime-darwin'
-      HERMES_OSXBIN_ARTIFACTS_DIR: 'D:\tmp\hermes\osx-bin'
+      HERMES_WS_DIR: 'C:\tmp\hermes'
+      HERMES_TARBALL_ARTIFACTS_DIR: 'C:\tmp\hermes\hermes-runtime-darwin'
+      HERMES_OSXBIN_ARTIFACTS_DIR: 'C:\tmp\hermes\osx-bin'
       ICU_URL: "https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip"
       MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
       CMAKE_DIR: 'C:\Program Files\CMake\bin'
@@ -424,11 +434,9 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
-          run-e2e-tests: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   test_e2e_android_rntester:
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
     runs-on: 4-core-ubuntu
     needs: [build_android]
     strategy:
@@ -548,7 +556,7 @@ jobs:
 
   test_ios_helloworld_with_ruby_3_2_0:
     runs-on: macos-14
-    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     env:
       PROJECT_NAME: iOSTemplateProject
       HERMES_WS_DIR: /tmp/hermes
@@ -565,7 +573,7 @@ jobs:
 
   test_ios_helloworld:
     runs-on: macos-14
-    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     strategy:
       matrix:
         flavor: [Debug, Release]
@@ -590,10 +598,11 @@ jobs:
 
   test_js:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["24", "22"]
+        node-version: ["24.4.1", "22", "20.19.4"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -604,6 +613,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -626,7 +636,7 @@ jobs:
   rerun-failed-jobs:
     runs-on: ubuntu-latest
     needs: [test_e2e_ios_rntester, test_e2e_android_rntester, test_e2e_ios_templateapp, test_e2e_android_templateapp]
-    if: always()
+    if: ${{ github.ref == 'refs/heads/main' && always() }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

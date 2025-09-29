@@ -11,6 +11,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(facebook-hte-CArray,modernize-avoid-c-arrays)
 const char ViewComponentName[] = "View";
 
 ViewShadowNodeProps::ViewShadowNodeProps(

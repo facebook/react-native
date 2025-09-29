@@ -20,7 +20,7 @@ import com.facebook.react.module.annotations.ReactModule
 @ReactModule(name = NativeDeviceEventManagerSpec.NAME)
 public open class DeviceEventManagerModule(
     reactContext: ReactApplicationContext?,
-    backBtnHandler: DefaultHardwareBackBtnHandler?
+    backBtnHandler: DefaultHardwareBackBtnHandler?,
 ) : NativeDeviceEventManagerSpec(reactContext) {
   @DoNotStripAny
   public fun interface RCTDeviceEventEmitter : JavaScriptModule {
@@ -55,7 +55,7 @@ public open class DeviceEventManagerModule(
     // There should be no need to check if the catalyst instance is alive. After initialization
     // the thread instances cannot be null, and scheduling on a thread after ReactApplicationContext
     // teardown is a noop.
-    getReactApplicationContext().runOnUiQueueThread(invokeDefaultBackPressRunnable)
+    reactApplicationContext.runOnUiQueueThread(invokeDefaultBackPressRunnable)
   }
 
   public companion object {

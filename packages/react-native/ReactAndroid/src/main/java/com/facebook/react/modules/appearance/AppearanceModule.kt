@@ -22,7 +22,7 @@ public class AppearanceModule
 @JvmOverloads
 constructor(
     reactContext: ReactApplicationContext,
-    private val overrideColorScheme: OverrideColorScheme? = null
+    private val overrideColorScheme: OverrideColorScheme? = null,
 ) : NativeAppearanceSpec(reactContext) {
 
   private var lastEmittedColorScheme: String? = null

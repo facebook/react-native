@@ -326,15 +326,13 @@ void TurboModuleManager::installJSIBindings(
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
 
-  cxxPart->runtimeExecutor_([cxxPart,
-                             javaPart = jni::make_global(javaPart),
+  cxxPart->runtimeExecutor_([javaPart = jni::make_global(javaPart),
                              shouldCreateLegacyModules](jsi::Runtime& runtime) {
     TurboModuleBinding::install(
         runtime,
-        cxxPart->createTurboModuleProvider(javaPart, &runtime),
-        shouldCreateLegacyModules
-            ? cxxPart->createLegacyModuleProvider(javaPart)
-            : nullptr);
+        createTurboModuleProvider(javaPart, &runtime),
+        shouldCreateLegacyModules ? createLegacyModuleProvider(javaPart)
+                                  : nullptr);
   });
 }
 

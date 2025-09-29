@@ -27,9 +27,9 @@ const HERMES_SOURCE_TARBALL_BASE_URL =
 const HERMES_TARBALL_DOWNLOAD_DIR = path.join(SDKS_DIR, 'download');
 const MACOS_BIN_DIR = path.join(SDKS_DIR, 'hermesc', 'osx-bin');
 const MACOS_HERMESC_PATH = path.join(MACOS_BIN_DIR, 'hermesc');
-const MACOS_IMPORT_HERMESC_PATH = path.join(
+const MACOS_IMPORT_HOST_COMPILERS_PATH = path.join(
   MACOS_BIN_DIR,
-  'ImportHermesc.cmake',
+  'ImportHostCompilers.cmake',
 );
 
 /**
@@ -208,14 +208,17 @@ function shouldUsePrebuiltHermesC(
 }
 
 function configureMakeForPrebuiltHermesC() {
-  const IMPORT_HERMESC_TEMPLATE = `add_executable(native-hermesc IMPORTED)
+  const IMPORT_HOST_COMPILERS_TEMPLATE = `add_executable(native-hermesc IMPORTED)
 set_target_properties(native-hermesc PROPERTIES
   IMPORTED_LOCATION "${MACOS_HERMESC_PATH}"
   )`;
 
   try {
     fs.mkdirSync(MACOS_BIN_DIR, {recursive: true});
-    fs.writeFileSync(MACOS_IMPORT_HERMESC_PATH, IMPORT_HERMESC_TEMPLATE);
+    fs.writeFileSync(
+      MACOS_IMPORT_HOST_COMPILERS_PATH,
+      IMPORT_HOST_COMPILERS_TEMPLATE,
+    );
   } catch (error) {
     console.warn(
       `[Hermes] Re-compiling hermesc. Unable to configure make: ${error}`,
@@ -301,7 +304,7 @@ function createHermesPrebuiltArtifactsTarball(
 function validateHermesFrameworksExist(destrootDir /*: string */) {
   if (
     !fs.existsSync(
-      path.join(destrootDir, 'Library/Frameworks/macosx/hermes.framework'),
+      path.join(destrootDir, 'Library/Frameworks/macosx/hermesvm.framework'),
     )
   ) {
     throw new Error(
@@ -310,7 +313,10 @@ function validateHermesFrameworksExist(destrootDir /*: string */) {
   }
   if (
     !fs.existsSync(
-      path.join(destrootDir, 'Library/Frameworks/universal/hermes.xcframework'),
+      path.join(
+        destrootDir,
+        'Library/Frameworks/universal/hermesvm.xcframework',
+      ),
     )
   ) {
     throw new Error(

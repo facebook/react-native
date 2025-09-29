@@ -5,37 +5,26 @@
 
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
+if(UNIX AND NOT APPLE)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+  set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -latomic")
+  set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
+endif()
 
 project(fantom_tester)
-find_library(LIB_HERMES libhermes
-  NAMES hermes
-  HINTS ${REACT_ANDROID_DIR}/hermes-engine/build/hermes/API/hermes
-  REQUIRED)
-# Ensure the library path is correct and the library exists
-if(NOT LIB_HERMES)
-  message(FATAL_ERROR "libhermes not found at the specified path.")
-endif()
-# Check if the found library is a framework (macOS specific)
-get_filename_component(LIB_EXT ${LIB_HERMES} EXT)
-if(LIB_EXT STREQUAL ".framework")
-  # For frameworks, we need to use a different approach
-  add_library(hermes-engine::libhermes INTERFACE IMPORTED)
-  set_target_properties(hermes-engine::libhermes PROPERTIES
-    INTERFACE_LINK_LIBRARIES ${LIB_HERMES})
-else()
-  # For regular libraries, use ALIAS as before
-  add_library(hermes-engine::libhermes ALIAS ${LIB_HERMES})
-endif()
-
-find_package(OpenSSL REQUIRED)
 
 include_directories(${REACT_ANDROID_DIR}/hermes-engine/build/prefab-headers)
 
-include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
-
 include(Deps)
+
+find_library(LIB_HERMES hermesvm
+  HINTS ${REACT_ANDROID_DIR}/hermes-engine/build/hermes/lib
+  REQUIRED)
+add_library(hermes-engine::hermesvm INTERFACE IMPORTED)
+set_target_properties(hermes-engine::hermesvm PROPERTIES
+  INTERFACE_LINK_LIBRARIES ${LIB_HERMES})
+find_package(OpenSSL REQUIRED)
 
 # Boost in NDK is not compatible with desktop build
 add_third_party_subdir(boost)
@@ -83,7 +72,9 @@ add_react_common_subdir(react/nativemodule/intersectionobserver)
 add_react_common_subdir(react/nativemodule/microtasks)
 add_react_common_subdir(react/nativemodule/mutationobserver)
 add_react_common_subdir(react/nativemodule/webperformance)
+add_react_common_subdir(react/performance/cdpmetrics)
 add_react_common_subdir(react/performance/timeline)
+add_react_common_subdir(react/renderer/animated)
 add_react_common_subdir(react/renderer/attributedstring)
 add_react_common_subdir(react/renderer/bridging)
 add_react_common_subdir(react/renderer/componentregistry)
@@ -132,14 +123,18 @@ add_react_cxx_platform_subdir(react/io)
 add_react_cxx_platform_subdir(react/logging)
 add_react_cxx_platform_subdir(react/nativemodule)
 add_react_cxx_platform_subdir(react/profiling)
-add_react_cxx_platform_subdir(react/renderer/animated)
 add_react_cxx_platform_subdir(react/renderer/scheduler)
 add_react_cxx_platform_subdir(react/renderer/uimanager)
 add_react_cxx_platform_subdir(react/runtime)
 add_react_cxx_platform_subdir(react/threading)
 add_react_cxx_platform_subdir(react/utils)
 
-file(GLOB SOURCES src/*.cpp src/**/*.cpp)
+file(GLOB SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/render/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/stubs/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/oss/*.cpp
+)
 add_executable(fantom_tester ${SOURCES})
 
 target_include_directories(fantom_tester PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -155,7 +150,7 @@ target_link_libraries(fantom_tester
     glog
 
     # hermes
-    hermes-engine::libhermes
+    hermes-engine::hermesvm
 
     # codegen
     react_codegen_rncore
@@ -192,6 +187,7 @@ target_link_libraries(fantom_tester
     react_nativemodule_microtasks
     react_nativemodule_mutationobserver
     react_nativemodule_webperformance
+    react_performance_cdpmetrics
     react_performance_timeline
     react_renderer_attributedstring
     react_renderer_componentregistry
@@ -234,7 +230,7 @@ target_link_libraries(fantom_tester
     react_cxx_platform_react_io
     react_cxx_platform_react_logging
     react_cxx_platform_react_profiling
-    react_cxx_platform_react_renderer_animated
+    react_renderer_animated
     react_cxx_platform_react_renderer_scheduler
     react_cxx_platform_react_runtime
     react_cxx_platform_react_threading

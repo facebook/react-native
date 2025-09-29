@@ -9,7 +9,6 @@ package com.facebook.react.views.textinput
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 
 /**
@@ -19,13 +18,8 @@ import com.facebook.react.uimanager.events.Event
 internal class ReactTextInputEndEditingEvent(
     surfaceId: Int,
     viewId: Int,
-    private val text: String
+    private val text: String,
 ) : Event<ReactTextInputEndEditingEvent>(surfaceId, viewId) {
-  @Deprecated(
-      "Use the constructor with surfaceId instead",
-      ReplaceWith("ReactTextInputEndEditingEvent(surfaceId, viewId, text)"))
-  constructor(viewId: Int, text: String) : this(ViewUtil.NO_SURFACE_ID, viewId, text)
-
   override fun getEventName(): String = EVENT_NAME
 
   override fun canCoalesce(): Boolean = false

@@ -54,7 +54,7 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
       currentJSFPS: Double,
       droppedUIFrames: Int,
       total4PlusFrameStutters: Int,
-      runningOnFabric: Boolean
+      runningOnFabric: Boolean,
   ) {
     var fpsString =
         String.format(
@@ -62,7 +62,8 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
             "UI: %.1f fps\n%d dropped so far\n%d stutters (4+) so far",
             currentFPS,
             droppedUIFrames,
-            total4PlusFrameStutters)
+            total4PlusFrameStutters,
+        )
     if (!runningOnFabric) {
       // The JS FPS is only relevant for the legacy architecture, as Fabric we don't use
       // BridgeIdleDebugListener to track JS frame drops.
@@ -89,7 +90,8 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
           frameCallback.jsFPS,
           totalFramesDropped,
           total4PlusFrameStutters,
-          frameCallback.isRunningOnFabric)
+          frameCallback.isRunningOnFabric,
+      )
       frameCallback.reset()
       postDelayed(this, UPDATE_INTERVAL_MS.toLong())
     }

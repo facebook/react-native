@@ -45,10 +45,14 @@ namespace facebook::react {
 DevServerHelper::DevServerHelper(
     std::string appId,
     std::string deviceName,
+    std::string devServerHost,
+    uint32_t devServerPort,
     const HttpClientFactory& httpClientFactory,
     JavaScriptModuleCallback javaScriptModuleCallback) noexcept
     : appId_(std::move(appId)),
       deviceName_(std::move(deviceName)),
+      devServerHost_(std::move(devServerHost)),
+      devServerPort_(devServerPort),
       httpClient_(httpClientFactory()),
       javaScriptModuleCallback_(std::move(javaScriptModuleCallback)) {
   deviceId_ = SHA256(fmt::format("{}-{}", deviceName_, appId_));
@@ -101,8 +105,8 @@ std::string DevServerHelper::getInspectorUrl() const {
 
   return fmt::format(
       "ws://{}:{}/inspector/device?name={}&app={}&device={}&profiling={}",
-      DEFAULT_DEV_SERVER_HOST,
-      DEFAULT_DEV_SERVER_PORT,
+      devServerHost_,
+      devServerPort_,
       urlEscape(deviceName_),
       appId_,
       deviceId_,
@@ -122,8 +126,8 @@ std::string DevServerHelper::getBundleUrl() const {
   bool runModule = !splitBundle;
   return fmt::format(
       "http://{}:{}/{}.bundle?platform={}&dev={}&lazy={}&minify={}&app={}&modulesOnly={}&runModule={}&inlineSourceMap=false&excludeSource=true&sourcePaths=url-server",
-      DEFAULT_DEV_SERVER_HOST,
-      DEFAULT_DEV_SERVER_PORT,
+      devServerHost_,
+      devServerPort_,
       sourcePath_,
       DEFAULT_PLATFORM,
       dev,
@@ -135,15 +139,14 @@ std::string DevServerHelper::getBundleUrl() const {
 };
 
 std::string DevServerHelper::getPackagerConnectionUrl() const {
-  return fmt::format(
-      "ws://{}:{}/message", DEFAULT_DEV_SERVER_HOST, DEFAULT_DEV_SERVER_PORT);
+  return fmt::format("ws://{}:{}/message", devServerHost_, devServerPort_);
 }
 
 void DevServerHelper::openDebugger() const {
   auto requestUrl = fmt::format(
       "http://{}:{}/open-debugger?device={}",
-      DEFAULT_DEV_SERVER_HOST,
-      DEFAULT_DEV_SERVER_PORT,
+      devServerHost_,
+      devServerPort_,
       deviceId_);
   httpClient_->sendRequest({}, "POST", requestUrl);
 }
@@ -152,8 +155,8 @@ void DevServerHelper::setupHMRClient() const {
   folly::dynamic params = folly::dynamic::array(
       DEFAULT_PLATFORM,
       sourcePath_,
-      DEFAULT_DEV_SERVER_HOST,
-      DEFAULT_DEV_SERVER_PORT,
+      devServerHost_,
+      devServerPort_,
       true /*enable*/);
   javaScriptModuleCallback_("HMRClient", "setup", std::move(params));
 }

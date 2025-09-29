@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <ReactCommon/TestCallInvoker.h>
 #include <gtest/gtest.h>
 #include <hermes/hermes.h>
 #include <react/bridging/Bridging.h>
@@ -15,34 +16,24 @@
 
 namespace facebook::react {
 
-class TestCallInvoker : public CallInvoker {
- public:
-  void invokeAsync(CallFunc&& fn) noexcept override {
-    queue_.push_back(std::move(fn));
-  }
-
-  void invokeSync(CallFunc&&) override {
-    FAIL() << "JSCallInvoker does not support invokeSync()";
-  }
-
- private:
-  friend class BridgingTest;
-
-  std::list<CallFunc> queue_;
-};
-
 class BridgingTest : public ::testing::Test {
+ public:
+  BridgingTest(BridgingTest& other) = delete;
+  BridgingTest& operator=(BridgingTest& other) = delete;
+  BridgingTest(BridgingTest&& other) = delete;
+  BridgingTest& operator=(BridgingTest&& other) = delete;
+
  protected:
   BridgingTest()
-      : invoker(std::make_shared<TestCallInvoker>()),
-        runtime(hermes::makeHermesRuntime(
+      : runtime(hermes::makeHermesRuntime(
             ::hermes::vm::RuntimeConfig::Builder()
                 // Make promises work with Hermes microtasks.
                 .withMicrotaskQueue(true)
                 .build())),
-        rt(*runtime) {}
+        rt(*runtime),
+        invoker(std::make_shared<TestCallInvoker>(*runtime)) {}
 
-  ~BridgingTest() {
+  ~BridgingTest() override {
     LongLivedObjectCollection::get(rt).clear();
   }
 
@@ -62,16 +53,12 @@ class BridgingTest : public ::testing::Test {
   }
 
   void flushQueue() {
-    while (!invoker->queue_.empty()) {
-      invoker->queue_.front()(*runtime);
-      invoker->queue_.pop_front();
-      rt.drainMicrotasks(); // Run microtasks every cycle.
-    }
+    invoker->flushQueue();
   }
 
-  std::shared_ptr<TestCallInvoker> invoker;
-  std::unique_ptr<jsi::Runtime> runtime;
+  std::shared_ptr<jsi::Runtime> runtime;
   jsi::Runtime& rt;
+  std::shared_ptr<TestCallInvoker> invoker;
 };
 
 } // namespace facebook::react

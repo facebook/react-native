@@ -133,7 +133,7 @@ internal object FilterHelper {
       offsetY: Float,
       blurRadius: Float,
       color: Int,
-      chainedEffects: RenderEffect? = null
+      chainedEffects: RenderEffect? = null,
   ): RenderEffect {
     val identity: RenderEffect
     val offsetEffect: RenderEffect
@@ -157,7 +157,9 @@ internal object FilterHelper {
      */
     val colorEffect: RenderEffect =
         RenderEffect.createColorFilterEffect(
-            BlendModeColorFilter(color, BlendMode.SRC_IN), offsetEffect)
+            BlendModeColorFilter(color, BlendMode.SRC_IN),
+            offsetEffect,
+        )
     val blurEffect: RenderEffect =
         RenderEffect.createBlurEffect(blurRadius, blurRadius, colorEffect, Shader.TileMode.DECAL)
 
@@ -172,7 +174,7 @@ internal object FilterHelper {
 
   fun parseAndCreateDropShadowEffect(
       filterValues: ReadableMap,
-      chainedEffects: RenderEffect? = null
+      chainedEffects: RenderEffect? = null,
   ): RenderEffect {
     val offsetX: Float = filterValues.getDouble("offsetX").dpToPx()
     val offsetY: Float = filterValues.getDouble("offsetY").dpToPx()
@@ -221,7 +223,9 @@ internal object FilterHelper {
             0f,
             0f,
             1f,
-            0f))
+            0f,
+        )
+    )
   }
 
   // https://www.w3.org/TR/filter-effects-1/#grayscaleEquivalent
@@ -252,7 +256,9 @@ internal object FilterHelper {
             0f,
             0f,
             1f,
-            0f))
+            0f,
+        )
+    )
   }
 
   // https://www.w3.org/TR/filter-effects-1/#sepiaEquivalent
@@ -283,7 +289,9 @@ internal object FilterHelper {
             0f,
             0f,
             1f,
-            0f))
+            0f,
+        )
+    )
   }
 
   // https://www.w3.org/TR/filter-effects-1/#saturateEquivalent
@@ -327,7 +335,9 @@ internal object FilterHelper {
             0f,
             0f,
             1f,
-            0f))
+            0f,
+        )
+    )
   }
 
   // https://www.w3.org/TR/filter-effects-1/#invertEquivalent
@@ -359,12 +369,14 @@ internal object FilterHelper {
             0f,
             0f,
             1f,
-            0f))
+            0f,
+        )
+    )
   }
 
   private fun createColorMatrixEffect(
       colorMatrix: ColorMatrix,
-      chainedEffects: RenderEffect? = null
+      chainedEffects: RenderEffect? = null,
   ): RenderEffect {
     return if (chainedEffects == null) {
       RenderEffect.createColorFilterEffect(ColorMatrixColorFilter(colorMatrix))

@@ -18,7 +18,6 @@ import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
-import InteractionManager from '../../Interaction/InteractionManager';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
@@ -85,8 +84,8 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  * See https://reactnative.dev/docs/animatedvalue
  */
 export default class AnimatedValue extends AnimatedWithChildren {
-  #listenerCount: number;
-  #updateSubscription: ?EventSubscription;
+  _listenerCount: number;
+  _updateSubscription: ?EventSubscription;
 
   _value: number;
   _startingValue: number;
@@ -100,8 +99,8 @@ export default class AnimatedValue extends AnimatedWithChildren {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
 
-    this.#listenerCount = 0;
-    this.#updateSubscription = null;
+    this._listenerCount = 0;
+    this._updateSubscription = null;
 
     this._startingValue = this._value = value;
     this._offset = 0;
@@ -127,38 +126,38 @@ export default class AnimatedValue extends AnimatedWithChildren {
 
   __makeNative(platformConfig: ?PlatformConfig): void {
     super.__makeNative(platformConfig);
-    if (this.#listenerCount > 0) {
-      this.#ensureUpdateSubscriptionExists();
+    if (this._listenerCount > 0) {
+      this.__ensureUpdateSubscriptionExists();
     }
   }
 
   addListener(callback: (value: any) => mixed): string {
     const id = super.addListener(callback);
-    this.#listenerCount++;
+    this._listenerCount++;
     if (this.__isNative) {
-      this.#ensureUpdateSubscriptionExists();
+      this.__ensureUpdateSubscriptionExists();
     }
     return id;
   }
 
   removeListener(id: string): void {
     super.removeListener(id);
-    this.#listenerCount--;
-    if (this.__isNative && this.#listenerCount === 0) {
-      this.#updateSubscription?.remove();
+    this._listenerCount--;
+    if (this.__isNative && this._listenerCount === 0) {
+      this._updateSubscription?.remove();
     }
   }
 
   removeAllListeners(): void {
     super.removeAllListeners();
-    this.#listenerCount = 0;
+    this._listenerCount = 0;
     if (this.__isNative) {
-      this.#updateSubscription?.remove();
+      this._updateSubscription?.remove();
     }
   }
 
-  #ensureUpdateSubscriptionExists(): void {
-    if (this.#updateSubscription != null) {
+  __ensureUpdateSubscriptionExists(): void {
+    if (this._updateSubscription != null) {
       return;
     }
     const nativeTag = this.__getNativeTag();
@@ -173,13 +172,13 @@ export default class AnimatedValue extends AnimatedWithChildren {
         },
       );
 
-    this.#updateSubscription = {
+    this._updateSubscription = {
       remove: () => {
         // Only this function assigns to `this.#updateSubscription`.
-        if (this.#updateSubscription == null) {
+        if (this._updateSubscription == null) {
           return;
         }
-        this.#updateSubscription = null;
+        this._updateSubscription = null;
         subscription.remove();
         NativeAnimatedAPI.stopListeningToAnimatedNodeValue(nativeTag);
       },
@@ -312,10 +311,6 @@ export default class AnimatedValue extends AnimatedWithChildren {
    * See https://reactnative.dev/docs/animatedvalue#animate
    */
   animate(animation: Animation, callback: ?EndCallback): void {
-    let handle = null;
-    if (animation.__isInteraction) {
-      handle = InteractionManager.createInteractionHandle();
-    }
     const previousAnimation = this._animation;
     this._animation && this._animation.stop();
     this._animation = animation;
@@ -328,9 +323,6 @@ export default class AnimatedValue extends AnimatedWithChildren {
       },
       result => {
         this._animation = null;
-        if (handle !== null) {
-          InteractionManager.clearInteractionHandle(handle);
-        }
         callback && callback(result);
       },
       previousAnimation,

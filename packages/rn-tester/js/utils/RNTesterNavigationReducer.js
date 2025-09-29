@@ -45,7 +45,7 @@ const getUpdatedRecentlyUsed = ({
   if (existingKeys.includes(key)) {
     existingKeys = existingKeys.filter(k => k !== key);
   }
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   existingKeys.unshift(key);
 
   updatedRecentlyUsed[exampleType] = existingKeys.slice(0, 5);

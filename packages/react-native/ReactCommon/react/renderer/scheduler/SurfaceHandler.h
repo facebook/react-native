@@ -80,7 +80,7 @@ class SurfaceHandler {
    * Must be called before surface is started.
    */
   void setContextContainer(
-      ContextContainer::Shared contextContainer) const noexcept;
+      std::shared_ptr<const ContextContainer> contextContainer) const noexcept;
 
   /*
    * Returns a momentum value of the status.
@@ -187,7 +187,7 @@ class SurfaceHandler {
     folly::dynamic props{};
     LayoutConstraints layoutConstraints{};
     LayoutContext layoutContext{};
-    ContextContainer::Shared contextContainer{};
+    std::shared_ptr<const ContextContainer> contextContainer{};
   };
 
   /*

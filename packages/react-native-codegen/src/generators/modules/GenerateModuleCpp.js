@@ -47,15 +47,15 @@ const HostFunctionTemplate = ({
     isVoid
       ? `\n  ${methodCall};`
       : isNullable
-      ? `\n  auto result = ${methodCall};`
-      : ''
+        ? `\n  auto result = ${methodCall};`
+        : ''
   }
   return ${
     isVoid
       ? 'jsi::Value::undefined()'
       : isNullable
-      ? 'result ? jsi::Value(std::move(*result)) : jsi::Value::null()'
-      : methodCall
+        ? 'result ? jsi::Value(std::move(*result)) : jsi::Value::null()'
+        : methodCall
   };
 }`;
 };

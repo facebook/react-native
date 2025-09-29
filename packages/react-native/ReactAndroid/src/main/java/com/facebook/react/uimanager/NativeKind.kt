@@ -14,6 +14,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 //   - `kind == PARENT` checks whether the node can host children in the native tree.
 //   - `kind != NONE` checks whether the node appears in the native tree.
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal enum class NativeKind {
   // Node is in the native hierarchy and the HierarchyOptimizer should assume it can host children
   // (e.g. because it's a ViewGroup). Note that it's okay if the node doesn't support children. When

@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewProps} from 'react-native';
 
 import React, {useState} from 'react';
@@ -155,4 +156,4 @@ exports.examples = [
       return <AddChildrenForInteropLayer testID="add-children" />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTBridgeDelegate.h>
-#import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
 #import "RCTDefaultReactNativeFactoryDelegate.h"
 #import "RCTReactNativeFactory.h"
@@ -68,7 +66,8 @@ __attribute__((deprecated(
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong, nonnull) UIWindow *window;
 
-@property (nonatomic, nullable) RCTBridge *bridge;
+@property (nonatomic, nullable) RCTBridge *bridge
+    __attribute__((deprecated("The bridge is deprecated and will be removed when removing the legacy architecture.")));
 @property (nonatomic, strong, nullable) NSString *moduleName;
 @property (nonatomic, strong, nullable) NSDictionary *initialProps;
 @property (nonatomic, strong) RCTReactNativeFactory *reactNativeFactory;
@@ -76,7 +75,9 @@ __attribute__((deprecated(
 /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
 @property (nonatomic, assign) BOOL automaticallyLoadReactNativeWindow;
 
-@property (nonatomic, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
+@property (nonatomic, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter __attribute__((
+    deprecated("The bridge adapter is deprecated and will be removed when removing the legacy architecture.")));
+;
 
 - (RCTRootViewFactory *)rootViewFactory;
 

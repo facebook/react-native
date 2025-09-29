@@ -18,7 +18,6 @@
 #include <react/runtime/BufferedRuntimeExecutor.h>
 #include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/TimerManager.h>
-#include <vector>
 
 namespace facebook::react {
 
@@ -41,7 +40,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
 
   struct JSRuntimeFlags {
     bool isProfiling = false;
-    const std::string runtimeDiagnosticFlags = "";
+    const std::string runtimeDiagnosticFlags;
   };
 
   void initializeRuntime(

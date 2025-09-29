@@ -31,7 +31,7 @@ TEST(RecoverableError, RunRethrowingAsRecoverableFallthroughTest) {
     RecoverableError::runRethrowingAsRecoverable<std::runtime_error>(
         []() { throw std::logic_error("catch me"); });
     FAIL() << "Unthrown exception";
-  } catch (const RecoverableError& err) {
+  } catch (const RecoverableError&) {
     FAIL() << "Recovered exception that should have fallen through";
   } catch (const std::exception& err) {
     ASSERT_STREQ(err.what(), "catch me");

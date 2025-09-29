@@ -26,6 +26,8 @@
 #import <objc/runtime.h>
 #import <atomic>
 #import <iostream>
+#import <mutex>
+
 #import <sstream>
 #import <vector>
 
@@ -39,8 +41,7 @@ static int32_t getUniqueId()
   return counter++;
 }
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace TurboModuleConvertUtils {
 /**
@@ -58,7 +59,7 @@ static jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *va
 
 static jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
-  return jsi::String::createFromUtf8(runtime, [value UTF8String] ? [value UTF8String] : "");
+  return jsi::String::createFromUtf8(runtime, ([value UTF8String] != nullptr) ? [value UTF8String] : "");
 }
 
 static jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
@@ -123,7 +124,7 @@ static NSArray *convertJSIArrayToNSArray(
   for (size_t i = 0; i < size; i++) {
     // Insert kCFNull when it's `undefined` value to preserve the indices.
     id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker, useNSNull);
-    [result addObject:convertedObject ? convertedObject : (id)kCFNull];
+    [result addObject:(convertedObject != nullptr) ? convertedObject : (id)kCFNull];
   }
   return result;
 }
@@ -141,7 +142,7 @@ static NSDictionary *convertJSIObjectToNSDictionary(
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
     id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker, useNSNull);
-    if (v) {
+    if (v != nullptr) {
       result[k] = v;
     }
   }
@@ -251,7 +252,7 @@ static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, N
 jsi::Value
 ObjCTurboModule::createPromise(jsi::Runtime &runtime, const std::string &methodName, PromiseInvocationBlock invoke)
 {
-  if (!invoke) {
+  if (invoke == nullptr) {
     return jsi::Value::undefined();
   }
 
@@ -285,44 +286,77 @@ ObjCTurboModule::createPromise(jsi::Runtime &runtime, const std::string &methodN
                 {rt, args[0].getObject(rt).getFunction(rt), std::move(jsInvoker)});
             __block std::optional<AsyncCallback<>> reject(
                 {rt, args[1].getObject(rt).getFunction(rt), std::move(jsInvoker)});
+            __block std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
 
             RCTPromiseResolveBlock resolveBlock = ^(id result) {
-              if (!resolve || !reject) {
-                if (resolveWasCalled) {
-                  RCTLogError(@"%s: Tried to resolve a promise more than once.", moduleMethod.c_str());
+              std::optional<AsyncCallback<>> localResolve;
+              bool alreadyResolved = false;
+              bool alreadyRejected = false;
+              {
+                std::lock_guard<std::mutex> lock(*mutex);
+                if (!resolve || !reject) {
+                  alreadyResolved = resolveWasCalled;
+                  alreadyRejected = !resolveWasCalled;
                 } else {
-                  RCTLogError(
-                      @"%s: Tried to resolve a promise after it's already been rejected.", moduleMethod.c_str());
+                  resolveWasCalled = YES;
+                  localResolve = std::move(resolve);
+                  resolve = std::nullopt;
+                  reject = std::nullopt;
                 }
+              }
+
+              if (alreadyResolved) {
+                RCTLogError(@"%s: Tried to resolve a promise more than once.", moduleMethod.c_str());
                 return;
               }
 
-              resolve->call([result](jsi::Runtime &rt, jsi::Function &jsFunction) {
+              if (alreadyRejected) {
+                RCTLogError(@"%s: Tried to resolve a promise after it's already been rejected.", moduleMethod.c_str());
+                return;
+              }
+
+              localResolve->call([result](jsi::Runtime &rt, jsi::Function &jsFunction) {
                 jsFunction.call(rt, convertObjCObjectToJSIValue(rt, result));
               });
-
-              resolveWasCalled = YES;
-              resolve = std::nullopt;
-              reject = std::nullopt;
             };
 
             RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
-              if (!resolve || !reject) {
-                if (resolveWasCalled) {
-                  RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
+              std::optional<AsyncCallback<>> localReject;
+              bool alreadyResolved = false;
+              bool alreadyRejected = false;
+              {
+                std::lock_guard<std::mutex> lock(*mutex);
+                if (!resolve || !reject) {
+                  alreadyResolved = resolveWasCalled;
+                  alreadyRejected = !resolveWasCalled;
                 } else {
-                  RCTLogError(@"%s: Tried to reject a promise more than once.", moduleMethod.c_str());
+                  resolveWasCalled = NO;
+                  localReject = std::move(reject);
+                  reject = std::nullopt;
+                  resolve = std::nullopt;
                 }
+              }
+
+              if (alreadyResolved) {
+                RCTLogError(
+                    @"%s: Tried to reject a promise after it's already been resolved. Message: %s",
+                    moduleMethod.c_str(),
+                    message.UTF8String);
+                return;
+              }
+
+              if (alreadyRejected) {
+                RCTLogError(
+                    @"%s: Tried to reject a promise more than once. Message: %s",
+                    moduleMethod.c_str(),
+                    message.UTF8String);
                 return;
               }
 
               NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-              reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
+              localReject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
                 jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails));
               });
-              resolveWasCalled = NO;
-              resolve = std::nullopt;
-              reject = std::nullopt;
             };
 
             invokeCopy(resolveBlock, rejectBlock);
@@ -354,7 +388,7 @@ id ObjCTurboModule::performMethodInvocation(
 
   void (^block)() = ^{
     id<RCTBridgeModule> strongModule = weakModule;
-    if (!strongModule) {
+    if (strongModule == nullptr) {
       return;
     }
 
@@ -423,7 +457,7 @@ void ObjCTurboModule::performVoidMethodInvocation(
 
   void (^block)() = ^{
     id<RCTBridgeModule> strongModule = weakModule;
-    if (!strongModule) {
+    if (strongModule == nullptr) {
       return;
     }
 
@@ -526,14 +560,14 @@ jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
  */
 NSString *ObjCTurboModule::getArgumentTypeName(jsi::Runtime &runtime, NSString *methodName, int argIndex)
 {
-  if (!methodArgumentTypeNames_) {
+  if (methodArgumentTypeNames_ == nullptr) {
     NSMutableDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames = [NSMutableDictionary new];
 
     unsigned int numberOfMethods;
     Class cls = [instance_ class];
     Method *methods = class_copyMethodList(object_getClass(cls), &numberOfMethods);
 
-    if (methods) {
+    if (methods != nullptr) {
       for (unsigned int i = 0; i < numberOfMethods; i++) {
         SEL s = method_getName(methods[i]);
         NSString *mName = NSStringFromSelector(s);
@@ -563,7 +597,7 @@ NSString *ObjCTurboModule::getArgumentTypeName(jsi::Runtime &runtime, NSString *
     methodArgumentTypeNames_ = methodArgumentTypeNames;
   }
 
-  if (methodArgumentTypeNames_[methodName]) {
+  if (methodArgumentTypeNames_[methodName] != nullptr) {
     assert([methodArgumentTypeNames_[methodName] count] > argIndex);
     return methodArgumentTypeNames_[methodName][argIndex];
   }
@@ -622,7 +656,7 @@ void ObjCTurboModule::setInvocationArg(
    */
   BOOL enableModuleArgumentNSNullConversionIOS = ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
   id objCArg = convertJSIValueToObjCObject(runtime, arg, jsInvoker_, enableModuleArgumentNSNullConversionIOS);
-  if (objCArg) {
+  if (objCArg != nullptr) {
     NSString *methodNameNSString = @(methodName);
 
     /**
@@ -644,7 +678,7 @@ void ObjCTurboModule::setInvocationArg(
           }
 
           [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
-          if (convertedObjCArg) {
+          if (convertedObjCArg != nullptr) {
             [retainedObjectsForInvocation addObject:convertedObjCArg];
           }
           return;
@@ -674,7 +708,7 @@ void ObjCTurboModule::setInvocationArg(
    * Insert converted args unmodified.
    */
   [inv setArgument:(void *)&objCArg atIndex:i + 2];
-  if (objCArg) {
+  if (objCArg != nullptr) {
     [retainedObjectsForInvocation addObject:objCArg];
   }
 }
@@ -814,7 +848,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
 
 BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
-  return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] &&
+  return (methodArgConversionSelectors_ != nullptr) && (methodArgConversionSelectors_[methodName] != nullptr) &&
       ![methodArgConversionSelectors_[methodName][argIndex] isEqual:(id)kCFNull];
 }
 
@@ -826,11 +860,11 @@ SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, size_t
 
 void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_t argIndex, NSString *fnName)
 {
-  if (!methodArgConversionSelectors_) {
+  if (methodArgConversionSelectors_ == nullptr) {
     methodArgConversionSelectors_ = [NSMutableDictionary new];
   }
 
-  if (!methodArgConversionSelectors_[methodName]) {
+  if (methodArgConversionSelectors_[methodName] == nullptr) {
     auto metaData = methodMap_.at([methodName UTF8String]);
     auto argCount = metaData.argCount;
 
@@ -856,8 +890,7 @@ void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterC
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 @implementation EventEmitterCallbackWrapper
 @end

@@ -7,10 +7,8 @@
 
 #pragma once
 
-#include <cstdint>
-#include <string_view>
-
 #include <react/utils/toLower.h>
+#include <string_view>
 
 namespace facebook::react {
 

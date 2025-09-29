@@ -16,8 +16,8 @@ import type {
   MouseEvent,
 } from '../Types/CoreEventTypes';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import SoundManager from '../Components/Sound/SoundManager';
-import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import UIManager from '../ReactNative/UIManager';
 import {type RectOrSize, normalizeRect} from '../StyleSheet/Rect';
 import {type PointerEvent} from '../Types/CoreEventTypes';

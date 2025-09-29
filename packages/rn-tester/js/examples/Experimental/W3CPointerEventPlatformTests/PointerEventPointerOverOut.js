@@ -21,7 +21,6 @@ function getNativeTagFromHostElement(elem: ?HostInstance | number): ?number {
     return elem;
   }
   if (elem != null) {
-    // $FlowExpectedError - accessing non-public property
     return elem.__nativeTag;
   }
   return undefined;

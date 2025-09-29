@@ -10,12 +10,14 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 const React = require('react');
 const {Alert, Image, StyleSheet, Text, View} = require('react-native');
 
-class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
+class ScreenshotExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {uri: void} = {
     uri: undefined,
   };
@@ -71,4 +73,4 @@ exports.examples = [
       return <ScreenshotExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -119,7 +119,8 @@ using namespace facebook::react;
           .props([] {
             auto sharedProps = std::make_shared<RootProps>();
             auto &props = *sharedProps;
-            props.layoutConstraints = LayoutConstraints{{0, 0}, {500, 500}};
+            props.layoutConstraints = LayoutConstraints{
+                .minimumSize = {.width = 0, .height = 0}, .maximumSize = {.width = 500, .height = 500}};
             auto &yogaStyle = props.yogaStyle;
             yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(200));
             yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(200));
@@ -416,7 +417,8 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
                      .props([] {
                        auto sharedProps = std::make_shared<RootProps>();
                        auto &props = *sharedProps;
-                       props.layoutConstraints = LayoutConstraints{{0, 0}, {500, 500}};
+                       props.layoutConstraints = LayoutConstraints{
+                           .minimumSize = {.width = 0, .height = 0}, .maximumSize = {.width = 500, .height = 500}};
                        auto &yogaStyle = props.yogaStyle;
                        yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(200));
                        yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(200));

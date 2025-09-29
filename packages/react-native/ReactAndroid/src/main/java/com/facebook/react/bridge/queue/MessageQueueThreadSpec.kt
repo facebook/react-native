@@ -12,7 +12,7 @@ public class MessageQueueThreadSpec
 private constructor(
     public val threadType: ThreadType,
     public val name: String,
-    public val stackSize: Long = DEFAULT_STACK_SIZE_BYTES
+    public val stackSize: Long = DEFAULT_STACK_SIZE_BYTES,
 ) {
   public enum class ThreadType {
     MAIN_UI,
@@ -26,6 +26,7 @@ private constructor(
     public const val DEFAULT_STACK_SIZE_BYTES: Long = 0
 
     @JvmStatic
+    @Deprecated("Use newBackgroundThreadSpec")
     public fun newUIBackgroundTreadSpec(name: String): MessageQueueThreadSpec =
         MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name)
 
