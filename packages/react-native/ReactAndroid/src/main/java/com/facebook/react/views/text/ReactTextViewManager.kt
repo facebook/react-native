@@ -29,7 +29,7 @@ import java.util.HashMap
  */
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
 @OptIn(UnstableReactNativeAPI::class)
-public class ReactTextViewManager
+public open class ReactTextViewManager
 @JvmOverloads
 public constructor(
     protected var reactTextViewManagerCallback: ReactTextViewManagerCallback? = null
@@ -92,7 +92,7 @@ public constructor(
   override fun createShadowNodeInstance(): ReactTextShadowNode =
       ReactTextShadowNode(reactTextViewManagerCallback)
 
-  public fun createShadowNodeInstance(
+  public open fun createShadowNodeInstance(
       reactTextViewManagerCallback: ReactTextViewManagerCallback?
   ): ReactTextShadowNode = ReactTextShadowNode(reactTextViewManagerCallback)
 
