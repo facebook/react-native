@@ -84,7 +84,8 @@ class OrderIndexTest : public ::testing::Test {
             node->getFamily(), [&](const ShadowNode& oldShadowNode) {
               auto viewProps = std::make_shared<ViewShadowNodeProps>();
               callback(*viewProps);
-              return oldShadowNode.clone(ShadowNodeFragment{viewProps});
+              return oldShadowNode.clone(
+                  ShadowNodeFragment{.props = viewProps});
             }));
   }
 
