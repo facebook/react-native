@@ -71,13 +71,7 @@ public class BackgroundSizeLengthPercentage(
   }
 }
 
-public enum class BackgroundSizeKeyword {
-  Cover,
-  Contain
-}
-
 public sealed class BackgroundSize {
-  public class Keyword(public val keyword: BackgroundSizeKeyword) : BackgroundSize()
   public class LengthPercentageAuto(public val lengthPercentage: BackgroundSizeLengthPercentage) :
     BackgroundSize()
 
@@ -86,13 +80,6 @@ public sealed class BackgroundSize {
       if (backgroundSizeValue == null) return null
 
       return when (backgroundSizeValue.type) {
-        ReadableType.String -> {
-          when (backgroundSizeValue.asString()) {
-            "cover" -> Keyword(BackgroundSizeKeyword.Cover)
-            "contain" -> Keyword(BackgroundSizeKeyword.Contain)
-            else -> null
-          }
-        }
         ReadableType.Map -> {
           val backgroundSizeValueMap = backgroundSizeValue.asMap() ?: return null;
           val lengthPercentage = BackgroundSizeLengthPercentage.parse(backgroundSizeValueMap)
