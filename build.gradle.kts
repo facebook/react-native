@@ -128,7 +128,7 @@ if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoole
 
       That's fine for local development, but you should not commit this change.
       ********************************************************************************
-  """
+      """
           .trimIndent()
   )
   allprojects {
