@@ -22,13 +22,13 @@ end
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
 versionProperties = Hash[*File.read("version.properties").split(/[=\n]+/)]
 
-# TODO: Should this include the logic related to adding -SNAPSHOT, or should that be set
-# explicitly in the version string? Remember to also update the logic for Android
 if ENV['RCT_HERMES_V1_ENABLED'] == "1"
   version = versionProperties['HERMES_V1_VERSION_NAME']
 else
   version = versionProperties['HERMES_VERSION_NAME']
 end
+
+puts "================= Using Hermes version: #{version} ================="
 
 source_type = hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
