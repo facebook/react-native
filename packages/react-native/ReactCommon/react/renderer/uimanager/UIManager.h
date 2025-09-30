@@ -36,6 +36,7 @@ namespace facebook::react {
 class UIManagerBinding;
 class UIManagerCommitHook;
 class UIManagerMountHook;
+class AnimationBackend;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
@@ -62,6 +63,9 @@ class UIManager final : public ShadowTreeDelegate {
    * the pointer before being destroyed.
    */
   void setAnimationDelegate(UIManagerAnimationDelegate* delegate);
+  void unstable_setAnimationBackend(
+      std::weak_ptr<AnimationBackend> animationBackend);
+  std::weak_ptr<AnimationBackend> unstable_getAnimationBackend();
 
   /**
    * Execute stopSurface on any UIMAnagerAnimationDelegate.
@@ -258,6 +262,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   std::unique_ptr<LazyShadowTreeRevisionConsistencyManager>
       lazyShadowTreeRevisionConsistencyManager_;
+
+  std::weak_ptr<AnimationBackend> animationBackend_;
 };
 
 } // namespace facebook::react
