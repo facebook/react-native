@@ -167,23 +167,27 @@ internal class BackgroundImageDrawable(
           // clipping.
           val widthOfEdgePinnedImages = tileWidth * 2
           val availableWidthForCenterImages = backgroundPaintingArea.width() - widthOfEdgePinnedImages
-          if (availableWidthForCenterImages > 0 || FloatUtil.floatsEqual(availableWidthForCenterImages, 0f)) {
+          val roundedTileWidth = round(tileWidth)
+          if (roundedTileWidth > 0 && (availableWidthForCenterImages > 0 || FloatUtil.floatsEqual(availableWidthForCenterImages, 0f))) {
             // round the values when flooring to avoid floating point precision issues
-            val centerImagesCount = floor(round(availableWidthForCenterImages) / round(tileWidth)).toInt()
+            val centerImagesCount = floor(round(availableWidthForCenterImages) / roundedTileWidth).toInt()
             val centerImagesWidth = centerImagesCount * tileWidth
             val totalFreeSpace = availableWidthForCenterImages - centerImagesWidth
             val totalInstances = centerImagesCount + 2
-            xSpacing = totalFreeSpace / (totalInstances - 1);
+            xSpacing = totalFreeSpace / (totalInstances - 1)
             xTilesCount = totalInstances
             initialX = backgroundPaintingArea.left
           } else {
             xTilesCount = 1
           }
-        } else if (repeatX == BackgroundRepeatKeyword.Round || repeatX == BackgroundRepeatKeyword.Repeat) { 
-          val tilesBeforeX = ceil(round(initialX) / round(tileWidth)).toInt()
-          val tilesAfterX = ceil(round((backgroundPaintingArea.width() - initialX)) / round(tileWidth)).toInt()
-          xTilesCount = tilesBeforeX + tilesAfterX
-          initialX -= (tilesBeforeX * tileWidth)
+        } else if (repeatX == BackgroundRepeatKeyword.Round || repeatX == BackgroundRepeatKeyword.Repeat) {
+          val roundedTileWidth = round(tileWidth)
+          if (roundedTileWidth > 0) {
+            val tilesBeforeX = ceil(round(initialX) / roundedTileWidth).toInt()
+            val tilesAfterX = ceil(round((backgroundPaintingArea.width() - initialX)) / roundedTileWidth).toInt()
+            xTilesCount = tilesBeforeX + tilesAfterX
+            initialX -= (tilesBeforeX * tileWidth)
+          }
           xSpacing = 0f
         }
 
@@ -194,22 +198,26 @@ internal class BackgroundImageDrawable(
         if (repeatY == BackgroundRepeatKeyword.Space) {
           val heightOfEdgePinnedImages = tileHeight * 2
           val availableHeightForCenterImages = backgroundPaintingArea.height() - heightOfEdgePinnedImages
-          if (availableHeightForCenterImages > 0 || FloatUtil.floatsEqual(availableHeightForCenterImages, 0f)) {
-            val centerImagesCount = floor(round(availableHeightForCenterImages) / round(tileHeight)).toInt()
+          val roundedTileHeight = round(tileHeight)
+          if (roundedTileHeight > 0 && (availableHeightForCenterImages > 0 || FloatUtil.floatsEqual(availableHeightForCenterImages, 0f))) {
+            val centerImagesCount = floor(round(availableHeightForCenterImages) / roundedTileHeight).toInt()
             val centerImagesHeight = centerImagesCount * tileHeight
             val totalFreeSpace = availableHeightForCenterImages - centerImagesHeight
             val totalInstances = centerImagesCount + 2
-            ySpacing = totalFreeSpace / (totalInstances - 1);
+            ySpacing = totalFreeSpace / (totalInstances - 1)
             yTilesCount = totalInstances
             initialY = backgroundPaintingArea.top
           } else {
             yTilesCount = 1
           }
         } else if (repeatY == BackgroundRepeatKeyword.Round || repeatY == BackgroundRepeatKeyword.Repeat) {
-          val tilesBeforeY = ceil(round(initialY) / round(tileHeight)).toInt()
-          val tilesAfterY = ceil(round((backgroundPaintingArea.height() - initialY)) / round(tileHeight)).toInt()
-          yTilesCount = tilesBeforeY + tilesAfterY
-          initialY -= (tilesBeforeY * tileHeight)
+          val roundedTileHeight = round(tileHeight)
+          if (roundedTileHeight > 0) {
+            val tilesBeforeY = ceil(round(initialY) / roundedTileHeight).toInt()
+            val tilesAfterY = ceil(round((backgroundPaintingArea.height() - initialY)) / roundedTileHeight).toInt()
+            yTilesCount = tilesBeforeY + tilesAfterY
+            initialY -= (tilesBeforeY * tileHeight)
+          }
           ySpacing = 0f
         }
 
