@@ -4,9 +4,6 @@ inputs:
   release-type:
     required: true
     description: The type of release we are building. It could be nightly, release or dry-run
-  hermes-ws-dir:
-    required: 'true'
-    description: The workspace for hermes
   gha-npm-token:
     required: false
     description: The GHA npm token, required only to publish to npm
@@ -20,87 +17,6 @@ runs:
     - name: Setup git safe folders
       shell: bash
       run: git config --global --add safe.directory '*'
-    - name: Create /tmp/hermes/osx-bin directory
-      shell: bash
-      run: mkdir -p /tmp/hermes/osx-bin
-    - name: Download osx-bin release artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-osx-bin-Release
-        path: /tmp/hermes/osx-bin/Release
-    - name: Download osx-bin debug artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-osx-bin-Debug
-        path: /tmp/hermes/osx-bin/Debug
-    - name: Download darwin-bin release artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-darwin-bin-Release
-        path: /tmp/hermes/hermes-runtime-darwin
-    - name: Download darwin-bin debug artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-darwin-bin-Debug
-        path: /tmp/hermes/hermes-runtime-darwin
-    - name: Download hermes dSYM debug artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-dSYM-Debug
-        path: /tmp/hermes/dSYM/Debug
-    - name: Download hermes dSYM release vartifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-dSYM-Release
-        path: /tmp/hermes/dSYM/Release
-    - name: Download windows-bin artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-win64-bin
-        path: /tmp/hermes/win64-bin
-    - name: Download linux-bin artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-linux-bin
-        path: /tmp/hermes/linux64-bin
-    - name: Show /tmp/hermes directory
-      shell: bash
-      run: ls -lR /tmp/hermes
-    - name: Copy Hermes binaries
-      shell: bash
-      run: |
-        mkdir -p ./packages/react-native/sdks/hermesc ./packages/react-native/sdks/hermesc/osx-bin ./packages/react-native/sdks/hermesc/win64-bin ./packages/react-native/sdks/hermesc/linux64-bin
-
-        # When build_hermes_macos runs as a matrix, it outputs
-        if [[ -d ${{ inputs.hermes-ws-dir }}/osx-bin/Release ]]; then
-          cp -r ${{ inputs.hermes-ws-dir }}/osx-bin/Release/* ./packages/react-native/sdks/hermesc/osx-bin/.
-        elif [[ -d ${{ inputs.hermes-ws-dir }}/osx-bin/Debug ]]; then
-          cp -r ${{ inputs.hermes-ws-dir }}/osx-bin/Debug/* ./packages/react-native/sdks/hermesc/osx-bin/.
-        else
-          ls ${{ inputs.hermes-ws-dir }}/osx-bin || echo "hermesc macOS artifacts directory missing."
-          echo "Could not locate macOS hermesc binary."; exit 1;
-        fi
-
-        # Sometimes, GHA creates artifacts with lowercase Debug/Release. Make sure that if it happen, we uppercase them.
-        if [[ -f "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-debug.tar.gz" ]]; then
-          mv "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-debug.tar.gz" "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Debug.tar.gz"
-        fi
-
-        if [[ -f "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-release.tar.gz" ]]; then
-          mv "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-release.tar.gz" "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Release.tar.gz"
-        fi
-
-        cp -r ${{ inputs.hermes-ws-dir }}/win64-bin/* ./packages/react-native/sdks/hermesc/win64-bin/.
-        cp -r ${{ inputs.hermes-ws-dir }}/linux64-bin/* ./packages/react-native/sdks/hermesc/linux64-bin/.
-
-        # Make sure the hermesc files are actually executable.
-        chmod -R +x packages/react-native/sdks/hermesc/*
-
-        mkdir -p ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
-        cp ${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Debug.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
-        cp ${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Release.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
-        cp ${{ inputs.hermes-ws-dir }}/dSYM/Debug/hermesvm.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-debug.tar.gz
-        cp ${{ inputs.hermes-ws-dir }}/dSYM/Release/hermesvm.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-release.tar.gz
     - name: Download ReactNativeDependencies
       uses: actions/download-artifact@v4
       with:
