@@ -1,0 +1,8 @@
+{
+  "name": "react-native",
+  "version": "1000.0.0",
+  "description": "fake react native package",
+  "dependencies": {
+    "hermes-compiler": "0.0.0"
+  }
+}
