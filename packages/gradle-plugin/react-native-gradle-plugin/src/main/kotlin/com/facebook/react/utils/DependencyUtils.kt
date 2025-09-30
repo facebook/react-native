@@ -192,6 +192,7 @@ internal object DependencyUtils {
           )
       )
     } else if (hermesV1Enabled) {
+      // TODO: remove this?
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:hermes-android",
