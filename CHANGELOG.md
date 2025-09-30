@@ -1,5 +1,112 @@
 # Changelog
 
+## v0.82.0-rc.5
+
+### Breaking
+
+- InteractionManager has been deprecated and no longer respects interaction handles. Instead, it is now recommended to avoid executing long-running JavaScript tasks by breaking them up into smaller tasks and scheduling them using `requestIdleCallback()`. ([03d9f34a82](https://github.com/facebook/react-native/commit/03d9f34a8252456d389d9f9a3bd04b99a2828c16) by [@yungsters](https://github.com/yungsters))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Crash the app if they force the legacy architecture. ([dc132a4fd4](https://github.com/facebook/react-native/commit/dc132a4fd4ca8dc28dc7dbb2406ac67dac1a0ee7) by [@cipolleschi](https://github.com/cipolleschi))
+- Add invalidation callback for non-recycled component instances ([dc4a6d2c7e](https://github.com/facebook/react-native/commit/dc4a6d2c7e2ed421b61929896f60b1a864a60d97) by [@kkafar](https://github.com/kkafar))
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.82.0-rc.5 ([3336199242](https://github.com/facebook/react-native/commit/33361992422592547ba6446c58e4b0cbe41856af) by [@react-native-bot](https://github.com/react-native-bot))
+- [0.82] Update Hermes V1 version ([6efaeaf953](https://github.com/facebook/react-native/commit/6efaeaf953969ee91a44315825ce1c5c83e1b464) by [@j-piasecki](https://github.com/j-piasecki))
+- Bump Podfile.lock ([0dd3730d23](https://github.com/facebook/react-native/commit/0dd3730d231ba4acc1829cc5f0cd3a7f3c6c53c2) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.82.0-rc.4 ([a70e817da5](https://github.com/facebook/react-native/commit/a70e817da551408df3e115b870bffb4a90b3cd24) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.81.4
 
 ### Fixed
