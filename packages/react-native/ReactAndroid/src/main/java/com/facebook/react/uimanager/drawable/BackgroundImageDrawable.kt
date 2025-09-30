@@ -123,9 +123,10 @@ internal class BackgroundImageDrawable(
     val backgroundPositioningArea = backgroundPositioningArea ?: return
 
     if (hasInvalidDimensions(backgroundPositioningArea, backgroundPaintingArea)) {
-      canvas.restore()
       return
     }
+    
+    canvas.save()
 
 
     // 1. Clip the canvas to match the rounded border path and truncate repeating tiles
