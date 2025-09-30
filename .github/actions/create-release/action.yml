@@ -4,6 +4,12 @@ inputs:
   version:
     description: "The version of React Native we want to release. For example 0.75.0-rc.0"
     required: true
+  hermes-version:
+    description: "The version of Hermes to be used in this release. For example 0.14.0"
+    required: true
+  hermes-v1-version:
+    description: "The version of Hermes V1 to be used in this release. For example 250829098.0.0"
+    required: true
   is-latest-on-npm:
     description: "Whether we want to tag this release as latest on NPM"
     required: true
@@ -28,6 +34,8 @@ runs:
       run: |
         node scripts/releases/create-release-commit.js \
           --reactNativeVersion "${{ inputs.version }}" \
+          --hermesVersion "${{ inputs.hermes-version }}" \
+          --hermesV1Version "${{ inputs.hermes-v1-version }}" \
           --tagAsLatestRelease "${{ inputs.is-latest-on-npm }}" \
           --dryRun "${{ inputs.dry-run }}"
         GIT_PAGER=cat git show HEAD
