@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<287689f62d05f2d27c146856b7857010>>
+ * @generated SignedSource<<eaa70bab0a654728f753556ea694269a>>
  */
 
 /**
@@ -256,6 +256,10 @@ double ReactNativeFeatureFlags::preparedTextCacheSize() {
 
 bool ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion() {
   return getAccessor().preventShadowTreeCommitExhaustion();
+}
+
+bool ReactNativeFeatureFlags::responderTerminateOnScrollAndroid() {
+  return getAccessor().responderTerminateOnScrollAndroid();
 }
 
 bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7879aa079d5dc8603faac4dbf40f70c5>>
+ * @generated SignedSource<<3440b5b2c1c7f6c82af4d67520b75ce3>>
  */
 
 /**
@@ -256,6 +256,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool preventShadowTreeCommitExhaustion() override {
+    return false;
+  }
+
+  bool responderTerminateOnScrollAndroid() override {
     return false;
   }
 

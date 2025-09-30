@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f3420de2307aab53b885fa491183d84b>>
+ * @generated SignedSource<<198ce13b659fe826883501215f171930>>
  */
 
 /**
@@ -82,6 +82,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var perfMonitorV2EnabledCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
+  private var responderTerminateOnScrollAndroidCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var sweepActiveTouchOnChildNativeGesturesAndroidCache: Boolean? = null
@@ -678,6 +679,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.preventShadowTreeCommitExhaustion()
       accessedFeatureFlags.add("preventShadowTreeCommitExhaustion")
       preventShadowTreeCommitExhaustionCache = cached
+    }
+    return cached
+  }
+
+  override fun responderTerminateOnScrollAndroid(): Boolean {
+    var cached = responderTerminateOnScrollAndroidCache
+    if (cached == null) {
+      cached = currentProvider.responderTerminateOnScrollAndroid()
+      accessedFeatureFlags.add("responderTerminateOnScrollAndroid")
+      responderTerminateOnScrollAndroidCache = cached
     }
     return cached
   }

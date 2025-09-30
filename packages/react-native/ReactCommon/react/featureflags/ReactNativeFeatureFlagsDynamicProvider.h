@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b61bcdcabe00ba0e97e42a7ffc2fa8ef>>
+ * @generated SignedSource<<f68a7fd60b89be3c7897c1c67531027e>>
  */
 
 /**
@@ -565,6 +565,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::preventShadowTreeCommitExhaustion();
+  }
+
+  bool responderTerminateOnScrollAndroid() override {
+    auto value = values_["responderTerminateOnScrollAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::responderTerminateOnScrollAndroid();
   }
 
   bool shouldPressibilityUseW3CPointerEventsForHover() override {
