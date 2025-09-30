@@ -34,6 +34,30 @@ inline folly::dynamic toDynamic(const std::vector<std::string>& arrayValue) {
   return resultArray;
 }
 
+inline folly::dynamic toDynamic(const std::vector<int>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+inline folly::dynamic toDynamic(const std::vector<double>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+inline folly::dynamic toDynamic(const std::vector<Float>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
 inline folly::dynamic toDynamic(const std::vector<folly::dynamic>& arrayValue) {
   folly::dynamic resultArray = folly::dynamic::array();
   for (auto& value : arrayValue) {
