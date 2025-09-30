@@ -116,51 +116,39 @@ struct CSSDataTypeParser<CSSLinearGradientDirection> {
     
     if (primaryDir == CSSKeyword::Top) {
       if (secondaryDir == CSSKeyword::Left) {
-        auto direction = CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopLeft};
-        return direction;
+        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopLeft};
       } else if (secondaryDir == CSSKeyword::Right) {
-        auto direction = CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopRight};
-        return direction;
+        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopRight};
       } else {
         // "to top" = 0 degrees
-        auto direction = CSSLinearGradientDirection{CSSAngle{0.0f}};
-        return direction;
+        return CSSLinearGradientDirection{CSSAngle{0.0f}};
       }
     } else if (primaryDir == CSSKeyword::Bottom) {
       if (secondaryDir == CSSKeyword::Left) {
-        auto direction = CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomLeft};
-        return direction;
+        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomLeft};
       } else if (secondaryDir == CSSKeyword::Right) {
-        auto direction = CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomRight};
-        return direction;
+        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomRight};
       } else {
         // "to bottom" = 180 degrees
-        auto direction = CSSLinearGradientDirection{CSSAngle{180.0f}};
-        return direction;
+        return CSSLinearGradientDirection{CSSAngle{180.0f}};
       }
     } else if (primaryDir == CSSKeyword::Left) {
       if (secondaryDir == CSSKeyword::Top) {
-        auto direction = CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopLeft};
-        return direction;
+        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopLeft};
       } else if (secondaryDir == CSSKeyword::Bottom) {
-        auto direction = CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomLeft};
-        return direction;
+        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomLeft};
       } else {
         // "to left" = 270 degrees
-        auto direction = CSSLinearGradientDirection{CSSAngle{270.0f}};
-        return direction;
+        return CSSLinearGradientDirection{CSSAngle{270.0f}};
       }
     } else if (primaryDir == CSSKeyword::Right) {
       if (secondaryDir == CSSKeyword::Top) {
-        auto direction = CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopRight};
-        return direction;
+        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToTopRight};
       } else if (secondaryDir == CSSKeyword::Bottom) {
-        auto direction = CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomRight};
-        return direction;
+        return CSSLinearGradientDirection{CSSLinearGradientDirectionKeyword::ToBottomRight};
       } else {
         // "to right" = 90 degrees
-        auto direction = CSSLinearGradientDirection{CSSAngle{90.0f}};
-        return direction;
+        return CSSLinearGradientDirection{CSSAngle{90.0f}};
       }
     }
     
