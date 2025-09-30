@@ -2,7 +2,12 @@ name: Prebuild iOS Dependencies
 
 on:
   workflow_call: # this directive allow us to call this workflow from other workflows
-
+    inputs:
+      use-hermes-nightly:
+        description: 'Whether to use the hermes nightly build or read the version from the versions.properties file'
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   build-rn-slice:
@@ -36,35 +41,16 @@ jobs:
       - name: Yarn Install
         if: steps.restore-ios-slice.outputs.cache-hit != 'true'
         uses: ./.github/actions/yarn-install
-      - name: Download Hermes
-        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: hermes-darwin-bin-${{ matrix.flavor }}
-          path: /tmp/hermes/hermes-runtime-darwin
-      - name: Extract Hermes
-        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
+      - name: Set Hermes version
         shell: bash
         run: |
-          HERMES_TARBALL_ARTIFACTS_DIR=/tmp/hermes/hermes-runtime-darwin
-          if [ ! -d $HERMES_TARBALL_ARTIFACTS_DIR ]; then
-            echo "Hermes tarball artifacts dir not present ($HERMES_TARBALL_ARTIFACTS_DIR)."
-            exit 0
+          if [ "${{ inputs.use-hermes-nightly }}" == "true" ]; then
+            HERMES_VERSION="nightly"
+          else
+            HERMES_VERSION=$(sed -n 's/^HERMES_VERSION_NAME=//p' packages/react-native/sdks/hermes-engine/version.properties)
           fi
-
-          TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "${{ matrix.flavor }}")
-          TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
-
-          echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
-          echo "$TARBALL_PATH"
-
-          if [ ! -f $TARBALL_PATH ]; then
-            echo "Hermes tarball not present ($TARBALL_PATH). Build Hermes from source."
-            exit 0
-          fi
-
-          echo "Found Hermes tarball at $TARBALL_PATH"
-          echo "HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $GITHUB_ENV
+          echo "Using Hermes version: $HERMES_VERSION"
+          echo "HERMES_VERSION=$HERMES_VERSION" >> $GITHUB_ENV
       - name: Download ReactNativeDependencies
         uses: actions/download-artifact@v4
         with:
