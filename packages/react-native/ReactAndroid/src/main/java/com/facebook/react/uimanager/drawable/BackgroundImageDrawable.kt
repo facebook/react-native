@@ -113,12 +113,12 @@ internal class BackgroundImageDrawable(
   }
 
   override fun draw(canvas: Canvas) {
-    updatePath()
     if (backgroundImageLayers == null || backgroundImageLayers?.isEmpty() == true) {
       return
     }
-    
-    canvas.save()
+
+    updatePath()
+
     val backgroundPaintingArea = backgroundPaintingArea ?: return
     val backgroundPositioningArea = backgroundPositioningArea ?: return
 
