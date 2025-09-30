@@ -29,7 +29,7 @@
 #include <unordered_map>
 
 namespace facebook::react {
-inline void parseProcessedBackgroundImage(
+void parseProcessedBackgroundImage(
     const PropsParserContext& context,
     const RawValue& value,
     std::vector<BackgroundImage>& result) {
@@ -220,7 +220,7 @@ inline void parseProcessedBackgroundImage(
   result = backgroundImage;
 }
 
-inline void parseUnProcessedBackgroundImageList(
+void parseUnProcessedBackgroundImageList(
     const PropsParserContext& context,
     const RawValue& value,
     std::vector<BackgroundImage>& result) {
@@ -433,7 +433,7 @@ inline void parseUnProcessedBackgroundImageList(
   result = backgroundImage;
 }
 
-inline ValueUnit convertLengthPercentageToValueUnit(const std::variant<CSSLength, CSSPercentage>& value) {
+ValueUnit convertLengthPercentageToValueUnit(const std::variant<CSSLength, CSSPercentage>& value) {
   if (std::holds_alternative<CSSLength>(value)) {
     return ValueUnit(std::get<CSSLength>(value).value, UnitType::Point);
   } else {
@@ -441,7 +441,7 @@ inline ValueUnit convertLengthPercentageToValueUnit(const std::variant<CSSLength
   }
 }
 
-inline void fromCSSColorStop(const std::variant<CSSColorStop, CSSColorHint>& item, std::vector<ColorStop>& colorStops) {
+void fromCSSColorStop(const std::variant<CSSColorStop, CSSColorHint>& item, std::vector<ColorStop>& colorStops) {
   if (std::holds_alternative<CSSColorStop>(item)) {
     const auto& colorStop = std::get<CSSColorStop>(item);
     
@@ -479,7 +479,7 @@ inline void fromCSSColorStop(const std::variant<CSSColorStop, CSSColorHint>& ite
   }
 }
 
-inline std::optional<BackgroundImage> fromCSSBackgroundImage(const CSSBackgroundImageVariant& cssBackgroundImage) {
+std::optional<BackgroundImage> fromCSSBackgroundImage(const CSSBackgroundImageVariant& cssBackgroundImage) {
   if (std::holds_alternative<CSSLinearGradientFunction>(cssBackgroundImage)) {
     const auto& gradient = std::get<CSSLinearGradientFunction>(cssBackgroundImage);
     LinearGradient linearGradient;
@@ -573,7 +573,7 @@ inline std::optional<BackgroundImage> fromCSSBackgroundImage(const CSSBackground
   return std::nullopt;
 }
 
-inline void parseUnprocessedBackgroundImageString(std::string&& value, std::vector<BackgroundImage>& result) {
+void parseUnprocessedBackgroundImageString(std::string&& value, std::vector<BackgroundImage>& result) {
   auto backgroundImageList = parseCSSProperty<CSSBackgroundImageList>((std::string)value);
   if (!std::holds_alternative<CSSBackgroundImageList>(backgroundImageList)) {
     result = {};
