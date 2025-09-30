@@ -59,6 +59,8 @@ using namespace facebook::react;
     self.rootViewFactory = [self createRCTRootViewFactory];
 
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+    
+    self.customBundleConfiguration = [[RCTCustomBundleConfiguration alloc] init];
   }
 
   return self;
@@ -83,7 +85,8 @@ using namespace facebook::react;
 {
   UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
                                             initialProperties:initialProperties
-                                                launchOptions:launchOptions];
+                                                launchOptions:launchOptions
+                                              customBundleConfiguration:self.customBundleConfiguration];
   UIViewController *rootViewController = [_delegate createRootViewController];
   [_delegate setRootView:rootView toRootViewController:rootViewController];
   window.rootViewController = rootViewController;

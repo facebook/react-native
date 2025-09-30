@@ -185,6 +185,8 @@ RCT_EXPORT_MODULE()
 - (void)initialize
 {
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
+  [_packagerConnection startWithBundleManager:_bundleManager];
+  
   if (numInitializedModules++ == 0) {
     reloadToken = [_packagerConnection
         addNotificationHandler:^(id params) {
@@ -267,11 +269,6 @@ RCT_EXPORT_MODULE()
 - (id)settingForKey:(NSString *)key
 {
   return [_dataSource settingForKey:key];
-}
-
-- (void)startPackagerConnection
-{
-  NSLog(@"Starting Packager Connection from RCTDevSettings");
 }
 
 - (BOOL)isDeviceDebuggingAvailable

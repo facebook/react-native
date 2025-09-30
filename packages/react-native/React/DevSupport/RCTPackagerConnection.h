@@ -63,6 +63,8 @@ typedef void (^RCTConnectedHandler)(void);
 /** Reconnect with given packager server. */
 - (void)reconnect:(NSString *)packagerServerHostPort;
 
+- (void)startWithBundleManager:(RCTBundleManager *)bundleManager;
+
 /**
  * Historically no distinction was made between notification and request
  * handlers. If you use this method, it will be registered as *both* a

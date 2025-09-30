@@ -182,8 +182,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
     _launchOptions = [launchOptions copy];
-    
     _bundleManager.customBundleConfig = customBundleConfiguration;
+
+    [self setBundleURLProvider:provider];
 
     __weak RCTHost *weakSelf = self;
     auto bundleURLGetter = ^NSURL *() {
@@ -192,7 +193,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
         return nil;
       }
 
-      return strongSelf->_bundleURL;
+      return [strongSelf->_bundleManager.customBundleConfig getBundleURL:^NSURL * {
+        return strongSelf->_bundleURL;
+      }];
     };
 
     auto bundleURLSetter = ^(NSURL *bundleURL_) {
@@ -205,7 +208,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
         return nil;
       }
 
-      return strongSelf->_bundleURLProvider();
+      return [strongSelf->_bundleManager.customBundleConfig getBundleURL:^NSURL * {
+        return strongSelf->_bundleURLProvider();
+      }];
     };
 
     [_bundleManager setBridgelessBundleURLGetter:bundleURLGetter
@@ -448,7 +453,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  // Update the global bundle URLq
+  // Update the global bundle URL
   RCTReloadCommandSetBundleURL(_bundleURL);
 }
 

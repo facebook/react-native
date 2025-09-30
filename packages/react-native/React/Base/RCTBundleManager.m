@@ -9,6 +9,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import <React/RCTBundleURLProvider.h>
 
 @implementation RCTCustomBundleConfiguration
 
@@ -31,9 +32,47 @@
   return self;
 }
 
-- (NSURL *)getBundleURL:(NSMutableArray<NSURLQueryItem *> *)query
+- (NSString *)getPackagerServerScheme
 {
-  return [NSURL alloc];
+  if (!_packagerServerScheme) {
+    return [[RCTBundleURLProvider sharedSettings] packagerScheme];
+  }
+  
+  return _packagerServerScheme;
+}
+
+- (NSString *)getPackagerServerHost
+{
+  if (!_packagerServerHost) {
+    return [[RCTBundleURLProvider sharedSettings] packagerServerHostPort];
+  }
+  
+  return _packagerServerHost;
+}
+
+- (NSURL *)getBundleURL:(NSURL * (^)(void))fallbackURLProvider
+{
+  if (_packagerServerScheme && _packagerServerHost) {
+    NSArray<NSURLQueryItem *> *jsBundleURLQuery = [[RCTBundleURLProvider sharedSettings] createJSBundleURLQuery:_packagerServerHost packagerScheme:_packagerServerScheme];
+    
+    return [[RCTBundleURLProvider class] resourceURLForResourcePath:@"js/RNTesterApp.ios"
+                                         packagerHost:_packagerServerHost
+                                         scheme:_packagerServerScheme
+                                         queryItems:jsBundleURLQuery];
+  }
+  
+  if (_bundleFilePath) {
+    // TODO: modify bundle path
+  }
+  
+  return fallbackURLProvider();
+}
+
+- (void)clean
+{
+  _packagerServerHost = nil;
+  _packagerServerScheme = nil;
+  _bundleFilePath = nil;
 }
 
 @end

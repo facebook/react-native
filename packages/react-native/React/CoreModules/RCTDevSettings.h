@@ -98,8 +98,6 @@
  */
 - (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL;
 
-- (void)startPackagerConnection;
-
 #if RCT_DEV_MENU
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler
     forPackagerMethod:(NSString *)name __deprecated_msg("Use RCTPackagerConnection directly instead");

@@ -37,7 +37,13 @@ typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
 - (instancetype)initWithPackagerServerScheme:(NSString *)packagerServerScheme
                           packagerServerHost:(NSString *)packagerServerHost;
 
-- (NSURL *)getBundleURL:(NSMutableArray<NSURLQueryItem *> *)query;
+- (NSURL *)getBundleURL:(NSURL *__nullable (^)(void))fallbackURLProvider;
+
+- (NSString *)getPackagerServerScheme;
+
+- (NSString *)getPackagerServerHost;
+
+- (void)clean;
 
 @end
 

@@ -292,7 +292,7 @@ const RNTesterApp = ({
           ) : undefined}
         </RNTTitleBar>
       )}
-      <View
+      {/* <View
         style={StyleSheet.compose(styles.container, {
           backgroundColor: theme.GroupedBackgroundColor,
         })}>
@@ -308,7 +308,7 @@ const RNTesterApp = ({
             handleModuleCardPress={handleModuleCardPress}
           />
         )}
-      </View>
+      </View> */}
       {!shouldHideChrome && (
         <View style={styles.bottomNavbar}>
           <RNTesterNavBar

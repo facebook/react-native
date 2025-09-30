@@ -770,11 +770,6 @@ typedef struct {
   if ([module respondsToSelector:@selector(initialize)]) {
     [(id<RCTInitializing>)module initialize];
   }
-  
-  if ([module isKindOfClass:[RCTDevSettings class]]) {
-    RCTDevSettings *devSettings = (RCTDevSettings *)module;
-    [devSettings startPackagerConnection];
-  }
 
   /**
    * Attach method queue to id<RCTBridgeModule> object.

@@ -20,7 +20,6 @@
 #else
 #import <React/CoreModulesPlugins.h>
 #endif
-#import <React/RCTBundleURLProvider.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTFabricSurface.h>
@@ -142,13 +141,13 @@
 }
 
 - (void)initializeReactHostWithLaunchOptions:(NSDictionary *)launchOptions
-        customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
+                   customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
 {
   // Enable TurboModule interop by default in Bridgeless mode
   RCTEnableTurboModuleInterop(YES);
   RCTEnableTurboModuleInteropBridgeProxy(YES);
 
-  [self createReactHostIfNeeded:launchOptions];
+  [self createReactHostIfNeeded:launchOptions customBundleConfiguration:customBundleConfiguration];
   return;
 }
 
@@ -156,7 +155,10 @@
              initialProperties:(NSDictionary *)initProps
                  launchOptions:(NSDictionary *)launchOptions
 {
-  return [self viewWithModuleName:moduleName initialProperties:initProps launchOptions:launchOptions customBundleConfiguration:nil];
+  return [self viewWithModuleName:moduleName
+                initialProperties:initProps
+                    launchOptions:launchOptions
+        customBundleConfiguration:nil];
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
@@ -235,11 +237,12 @@
 #pragma mark - New Arch Utilities
 
 - (void)createReactHostIfNeeded:(NSDictionary *)launchOptions
+      customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
 {
   if (self.reactHost) {
     return;
   }
-  self.reactHost = [self createReactHost:launchOptions];
+  self.reactHost = [self createReactHost:launchOptions customBundleConfiguration:customBundleConfiguration];
 }
 
 - (RCTHost *)createReactHost:(NSDictionary *)launchOptions
@@ -248,7 +251,7 @@
 }
 
 - (RCTHost *)createReactHost:(NSDictionary *)launchOptions
-   customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
+    customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
 {
   __weak __typeof(self) weakSelf = self;
   RCTHost *reactHost =
@@ -259,10 +262,7 @@
                                   return [weakSelf createJSRuntimeFactory];
                                 }
                                    launchOptions:launchOptions
-              customBundleConfiguration:customBundleConfiguration];
-  [reactHost setBundleURLProvider:^NSURL *() {
-    return [weakSelf bundleURL];
-  }];
+                       customBundleConfiguration:customBundleConfiguration];
   [reactHost start];
   return reactHost;
 }

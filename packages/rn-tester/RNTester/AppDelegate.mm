@@ -9,9 +9,9 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import <React/RCTBundleManager.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
-#import <React/RCTBundleManager.h>
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -43,9 +43,10 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 #if USE_OSS_CODEGEN
   self.dependencyProvider = [RCTAppDependencyProvider new];
 #endif
-  
-  RCTCustomBundleConfiguration *customBundleConfiguration = [[RCTCustomBundleConfiguration alloc] initWithPackagerServerScheme:@"http" packagerServerHost:@"http"];
-  
+
+  RCTCustomBundleConfiguration *customBundleConfiguration =
+      [[RCTCustomBundleConfiguration alloc] initWithPackagerServerScheme:@"http" packagerServerHost:@"localhost"];
+
   self.reactNativeFactory.customBundleConfiguration = customBundleConfiguration;
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
