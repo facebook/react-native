@@ -29,14 +29,14 @@ using DirectManipulationCallback =
 class AnimationBackend {
  public:
   std::vector<Callback> callbacks;
-  const StartOnRenderCallback& startOnRenderCallback_;
-  const StopOnRenderCallback& stopOnRenderCallback_;
-  const DirectManipulationCallback& directManipulationCallback_;
+  const StartOnRenderCallback startOnRenderCallback_;
+  const StopOnRenderCallback stopOnRenderCallback_;
+  const DirectManipulationCallback directManipulationCallback_;
 
   AnimationBackend(
-      const StartOnRenderCallback& startOnRenderCallback,
-      const StopOnRenderCallback& stopOnRenderCallback,
-      const DirectManipulationCallback& directManipulationCallback);
+      StartOnRenderCallback&& startOnRenderCallback,
+      StopOnRenderCallback&& stopOnRenderCallback,
+      DirectManipulationCallback&& directManipulationCallback);
   void onAnimationFrame(double timestamp);
   void start(const Callback& callback);
   void stop();
