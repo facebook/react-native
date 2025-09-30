@@ -66,6 +66,8 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
         };
 
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+      // TODO: this should be initialized outside of animated, but for now it
+      // was convenient to do it here
       animationBackend_ = std::make_shared<AnimationBackend>(
           std::move(startOnRenderCallback_),
           std::move(stopOnRenderCallback_),
@@ -73,6 +75,8 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(animationBackend_);
+
+      uiManager->unstable_setAnimationBackend(animationBackend_);
     } else {
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(
