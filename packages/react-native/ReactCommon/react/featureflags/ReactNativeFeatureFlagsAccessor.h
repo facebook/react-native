@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae0e9dbf8605126b358f776226e68130>>
+ * @generated SignedSource<<6c6458278652bc91570db82b2be6c7f1>>
  */
 
 /**
@@ -103,6 +103,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useOptimizedEventBatchingOnAndroid();
   bool useRawPropsJsiValue();
   bool useShadowNodeStateOnClone();
+  bool useSharedAnimatedBackend();
   bool useTurboModuleInterop();
   bool useTurboModules();
   double viewCullingOutsetRatio();
@@ -119,7 +120,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 76> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 77> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -192,6 +193,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;
   std::atomic<std::optional<bool>> useRawPropsJsiValue_;
   std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
+  std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
   std::atomic<std::optional<double>> viewCullingOutsetRatio_;
