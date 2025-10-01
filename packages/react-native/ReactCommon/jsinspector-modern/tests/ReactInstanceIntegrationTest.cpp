@@ -236,7 +236,9 @@ INSTANTIATE_TEST_SUITE_P(
     ReactInstanceVaryingInspectorBackend,
     ReactInstanceIntegrationTest,
     ::testing::Values(
+#if !defined(HERMES_STATIC_HERMES)
         ReactInstanceIntegrationTestMode::LEGACY_HERMES,
+#endif
         ReactInstanceIntegrationTestMode::FUSEBOX));
 
 } // namespace facebook::react::jsinspector_modern
