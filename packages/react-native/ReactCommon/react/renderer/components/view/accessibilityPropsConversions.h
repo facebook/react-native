@@ -233,7 +233,7 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext&,
+    const PropsParserContext& /*unused*/,
     const RawValue& value,
     AccessibilityValue& result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;

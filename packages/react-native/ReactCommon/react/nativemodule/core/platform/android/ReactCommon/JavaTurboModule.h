@@ -53,7 +53,8 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
  protected:
   void configureEventEmitterCallback();
 
-  [[deprecated]] void setEventEmitterCallback(jni::alias_ref<jobject>) {
+  [[deprecated]] void setEventEmitterCallback(
+      jni::alias_ref<jobject> /*unused*/) {
     configureEventEmitterCallback();
   }
 
