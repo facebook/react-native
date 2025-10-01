@@ -17,7 +17,7 @@
 
 namespace facebook::react {
 
-const char ImageComponentName[] = "Image";
+const char ImageComponentName[] = "Image"; // NOLINT(facebook-hte-CArray)
 
 void ImageShadowNode::setImageManager(
     const std::shared_ptr<ImageManager>& imageManager) {
