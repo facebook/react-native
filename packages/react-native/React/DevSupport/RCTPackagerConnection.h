@@ -60,7 +60,7 @@ typedef void (^RCTConnectedHandler)(void);
 /** Disconnects and removes all handlers. */
 - (void)stop;
 
-/** Reconnect with given packager server. */
+/** Reconnect with given packager server, if packagerServerHostPort has changed. */
 - (void)reconnect:(NSString *)packagerServerHostPort;
 
 - (void)startWithBundleManager:(RCTBundleManager *)bundleManager;

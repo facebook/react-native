@@ -155,7 +155,7 @@ RCT_EXPORT_METHOD(canOpenURL
 RCT_EXPORT_METHOD(getInitialURL : (RCTPromiseResolveBlock)resolve reject : (__unused RCTPromiseRejectBlock)reject)
 {
   NSURL *initialURL = nil;
-  if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
+  if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey] != nullptr) {
     initialURL = self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
   } else {
     NSDictionary *userActivityDictionary =

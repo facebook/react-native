@@ -96,7 +96,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
-  private final ArrayList<PendingJSCall> mJSCallsPendingInit = new ArrayList<PendingJSCall>();
+  private final ArrayList<PendingJSCall> mJSCallsPendingInit = new ArrayList<>();
   private final Object mJSCallsPendingInitLock = new Object();
 
   private final NativeModuleRegistry mNativeModuleRegistry;

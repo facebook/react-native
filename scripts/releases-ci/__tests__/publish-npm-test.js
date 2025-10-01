@@ -282,8 +282,6 @@ describe('publish-npm', () => {
         code: 0,
       }));
 
-      process.env.NPM_CONFIG_OTP = 'otp';
-
       await publishNpm('release');
 
       expect(setVersionMock).not.toBeCalled();
@@ -303,7 +301,7 @@ describe('publish-npm', () => {
       expect(publishPackageMock.mock.calls).toEqual([
         [
           path.join(REPO_ROOT, 'packages', 'react-native'),
-          {otp: process.env.NPM_CONFIG_OTP, tags: ['0.81-stable']},
+          {tags: ['0.81-stable']},
         ],
       ]);
 
@@ -322,8 +320,6 @@ describe('publish-npm', () => {
         code: 0,
       }));
 
-      process.env.NPM_CONFIG_OTP = 'otp';
-
       await publishNpm('release');
 
       expect(updateReactNativeArtifactsMock).not.toBeCalled();
@@ -341,10 +337,7 @@ describe('publish-npm', () => {
       );
 
       expect(publishPackageMock.mock.calls).toEqual([
-        [
-          path.join(REPO_ROOT, 'packages', 'react-native'),
-          {otp: process.env.NPM_CONFIG_OTP, tags: ['latest']},
-        ],
+        [path.join(REPO_ROOT, 'packages', 'react-native'), {tags: ['latest']}],
       ]);
 
       expect(consoleLogMock.mock.calls).toEqual([
@@ -364,8 +357,6 @@ describe('publish-npm', () => {
 
       execMock.mockReturnValueOnce({code: 1});
       isTaggedLatestMock.mockReturnValueOnce(true);
-
-      process.env.NPM_CONFIG_OTP = 'otp';
 
       await expect(async () => {
         await publishNpm('release');
@@ -388,10 +379,7 @@ describe('publish-npm', () => {
       );
 
       expect(publishPackageMock.mock.calls).toEqual([
-        [
-          path.join(REPO_ROOT, 'packages', 'react-native'),
-          {otp: process.env.NPM_CONFIG_OTP, tags: ['latest']},
-        ],
+        [path.join(REPO_ROOT, 'packages', 'react-native'), {tags: ['latest']}],
       ]);
       expect(consoleLogMock).not.toHaveBeenCalled();
     });
@@ -405,8 +393,6 @@ describe('publish-npm', () => {
       publishPackageMock.mockImplementation(() => ({
         code: 0,
       }));
-
-      process.env.NPM_CONFIG_OTP = 'otp';
 
       await publishNpm('release');
 
@@ -425,10 +411,7 @@ describe('publish-npm', () => {
       );
 
       expect(publishPackageMock.mock.calls).toEqual([
-        [
-          path.join(REPO_ROOT, 'packages', 'react-native'),
-          {otp: process.env.NPM_CONFIG_OTP, tags: ['next']},
-        ],
+        [path.join(REPO_ROOT, 'packages', 'react-native'), {tags: ['next']}],
       ]);
       expect(consoleLogMock.mock.calls).toEqual([
         [`Published react-native@${expectedVersion} to npm`],

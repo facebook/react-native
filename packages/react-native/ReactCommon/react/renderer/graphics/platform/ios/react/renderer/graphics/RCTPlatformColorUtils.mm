@@ -153,11 +153,11 @@ static UIColor *_Nullable _UIColorFromSemanticString(NSString *semanticString)
       : semanticString;
   NSDictionary<NSString *, NSDictionary *> *platformColorSelectorsDict = _PlatformColorSelectorsDict();
   NSDictionary<NSString *, id> *colorInfo = platformColorSelectorsDict[platformColorString];
-  if (colorInfo) {
+  if (colorInfo != nullptr) {
     SEL objcColorSelector = NSSelectorFromString([platformColorString stringByAppendingString:kColorSuffix]);
     if (![UIColor respondsToSelector:objcColorSelector]) {
       NSNumber *fallbackRGB = colorInfo[kFallbackARGBKey];
-      if (fallbackRGB) {
+      if (fallbackRGB != nullptr) {
         return _UIColorFromHexValue(fallbackRGB);
       }
     } else {

@@ -35,8 +35,10 @@ static void testShadowNodeTreeLifeCycle(
 
   auto eventDispatcher = EventDispatcher::Shared{};
   auto contextContainer = std::make_shared<ContextContainer>();
-  auto componentDescriptorParameters =
-      ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
+  auto componentDescriptorParameters = ComponentDescriptorParameters{
+      .eventDispatcher = eventDispatcher,
+      .contextContainer = contextContainer,
+      .flavor = nullptr};
   auto viewComponentDescriptor =
       ViewComponentDescriptor(componentDescriptorParameters);
   auto rootComponentDescriptor =
@@ -49,21 +51,26 @@ static void testShadowNodeTreeLifeCycle(
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();
 
-    auto family =
-        rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
+    auto family = rootComponentDescriptor.createFamily(
+        {.tag = Tag(1), .surfaceId = SurfaceId(1), .instanceHandle = nullptr});
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
         std::static_pointer_cast<const RootShadowNode>(
             rootComponentDescriptor.createShadowNode(
-                ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
+                ShadowNodeFragment{
+                    .props = RootShadowNode::defaultSharedProps()},
                 family)));
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
         parserContext,
         LayoutConstraints{
-            Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
+            .minimumSize = Size{.width = 512, .height = 0},
+            .maximumSize =
+                Size{
+                    .width = 512,
+                    .height = std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
 
     // Generation of a random tree.
@@ -73,8 +80,9 @@ static void testShadowNodeTreeLifeCycle(
     // Injecting a tree into the root node.
     auto currentRootNode = std::static_pointer_cast<const RootShadowNode>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
-            ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+            .props = ShadowNodeFragment::propsPlaceholder(),
+            .children = std::make_shared<
+                std::vector<std::shared_ptr<const ShadowNode>>>(
                 std::vector<std::shared_ptr<const ShadowNode>>{
                     singleRootChildNode})}));
 
@@ -184,8 +192,10 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
   auto eventDispatcher = EventDispatcher::Shared{};
   auto contextContainer = std::make_shared<ContextContainer>();
 
-  auto componentDescriptorParameters =
-      ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
+  auto componentDescriptorParameters = ComponentDescriptorParameters{
+      .eventDispatcher = eventDispatcher,
+      .contextContainer = contextContainer,
+      .flavor = nullptr};
   auto viewComponentDescriptor =
       ViewComponentDescriptor(componentDescriptorParameters);
   auto rootComponentDescriptor =
@@ -198,21 +208,26 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();
 
-    auto family =
-        rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
+    auto family = rootComponentDescriptor.createFamily(
+        {.tag = Tag(1), .surfaceId = SurfaceId(1), .instanceHandle = nullptr});
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
         std::static_pointer_cast<const RootShadowNode>(
             rootComponentDescriptor.createShadowNode(
-                ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
+                ShadowNodeFragment{
+                    .props = RootShadowNode::defaultSharedProps()},
                 family)));
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
         parserContext,
         LayoutConstraints{
-            Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
+            .minimumSize = Size{.width = 512, .height = 0},
+            .maximumSize =
+                Size{
+                    .width = 512,
+                    .height = std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
 
     // Generation of a random tree.
@@ -222,8 +237,9 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
     // Injecting a tree into the root node.
     auto currentRootNode = std::static_pointer_cast<const RootShadowNode>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
-            ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+            .props = ShadowNodeFragment::propsPlaceholder(),
+            .children = std::make_shared<
+                std::vector<std::shared_ptr<const ShadowNode>>>(
                 std::vector<std::shared_ptr<const ShadowNode>>{
                     singleRootChildNode})}));
 

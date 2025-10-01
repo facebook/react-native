@@ -27,7 +27,7 @@ class ImageSource {
   std::string uri{};
   std::string bundle{};
   Float scale{3};
-  Size size{0};
+  Size size{.width = 0};
   std::string body{};
   std::string method{};
   CacheStategy cache = CacheStategy::Default;

@@ -245,7 +245,15 @@ public object ReactScrollViewHelper {
   @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeScrollListener(listener: ScrollListener) {
-    scrollListeners.removeIf { it.get() == null || it.get() == listener }
+    // Avoid using removeIf, only available in API 26+
+    val toRemove = ArrayList<WeakReference<ScrollListener>>()
+    for (ref in scrollListeners) {
+      val target = ref.get()
+      if (target == null || target == listener) {
+        toRemove.add(ref)
+      }
+    }
+    scrollListeners.removeAll(toRemove)
   }
 
   @JvmStatic
@@ -256,7 +264,15 @@ public object ReactScrollViewHelper {
   @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeLayoutChangeListener(listener: LayoutChangeListener) {
-    layoutChangeListeners.removeIf { it.get() == null || it.get() == listener }
+    // Avoid using removeIf, only available in API 26+
+    val toRemove = ArrayList<WeakReference<LayoutChangeListener>>()
+    for (ref in layoutChangeListeners) {
+      val target = ref.get()
+      if (target == null || target == listener) {
+        toRemove.add(ref)
+      }
+    }
+    layoutChangeListeners.removeAll(toRemove)
   }
 
   /**

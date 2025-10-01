@@ -152,6 +152,7 @@ RCT_EXPORT_MODULE()
 
 #endif
 
+  _isShakeGestureEnabled = true;
   return [self initWithDataSource:dataSource];
 }
 
@@ -186,7 +187,7 @@ RCT_EXPORT_MODULE()
 {
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   [_packagerConnection startWithBundleManager:_bundleManager];
-  
+
   if (numInitializedModules++ == 0) {
     reloadToken = [_packagerConnection
         addNotificationHandler:^(id params) {
@@ -271,6 +272,12 @@ RCT_EXPORT_MODULE()
   return [_dataSource settingForKey:key];
 }
 
+- (void)setIsShakeGestureEnabled:(BOOL)isShakeGestureEnabled
+{
+  _isShakeGestureEnabled = isShakeGestureEnabled;
+  [self setIsShakeToShowDevMenuEnabled:isShakeGestureEnabled];
+}
+
 - (BOOL)isDeviceDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
@@ -314,7 +321,7 @@ RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
 
 - (BOOL)isShakeToShowDevMenuEnabled
 {
-  return [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
+  return _isShakeGestureEnabled && [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
 }
 
 RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
@@ -427,7 +434,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
-   [_packagerConnection addHandler:handler forMethod:name];
+  [_packagerConnection addHandler:handler forMethod:name];
 #endif
 }
 

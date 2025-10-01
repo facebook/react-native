@@ -15,6 +15,7 @@
 #include <cxxreact/TraceSection.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
+#include <jsi/hermes.h>
 #include <jsi/instrumentation.h>
 #include <jsinspector-modern/HostTarget.h>
 #include <jsireact/JSIExecutor.h>
@@ -242,7 +243,17 @@ void ReactInstance::loadScript(
           ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
     }
 
-    runtime.evaluateJavaScript(buffer, sourceURL);
+    // Check if the shermes unit is avaliable.
+    auto* shUnitAPI = jsi::castInterface<hermes::IHermesSHUnit>(&runtime);
+    auto* shUnitCreator = shUnitAPI ? shUnitAPI->getSHUnitCreator() : nullptr;
+    if (shUnitCreator) {
+      LOG(WARNING) << "ReactInstance: evaluateSHUnit";
+      auto* hermesAPI = jsi::castInterface<hermes::IHermes>(&runtime);
+      hermesAPI->evaluateSHUnit(shUnitCreator);
+    } else {
+      LOG(WARNING) << "ReactInstance: evaluateJavaScript() with JS bundle";
+      runtime.evaluateJavaScript(buffer, sourceURL);
+    }
 
     /**
      * TODO(T183610671): We need a safe/reliable way to enable the js

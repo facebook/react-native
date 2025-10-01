@@ -28,9 +28,7 @@ import type {
 
 import CdpDebugLogging from './CdpDebugLogging';
 import DeviceEventReporter from './DeviceEventReporter';
-import * as fs from 'fs';
 import invariant from 'invariant';
-import * as path from 'path';
 import WS from 'ws';
 
 const debug = require('debug')('Metro:InspectorProxy');
@@ -75,7 +73,6 @@ export type DeviceOptions = $ReadOnly<{
   name: string,
   app: string,
   socket: WS,
-  projectRoot: string,
   eventReporter: ?EventReporter,
   createMessageMiddleware: ?CreateCustomMessageHandlerFn,
   deviceRelativeBaseUrl: URL,
@@ -120,9 +117,6 @@ export default class Device {
   // Mapping built from scriptParsed events and used to fetch file content in `Debugger.getScriptSource`.
   #scriptIdToSourcePathMapping: Map<string, string> = new Map();
 
-  // Root of the project used for relative to absolute source path conversion.
-  #projectRoot: string;
-
   #deviceEventReporter: ?DeviceEventReporter;
 
   #pagesPollingIntervalId: ReturnType<typeof setInterval>;
@@ -151,7 +145,6 @@ export default class Device {
     name,
     app,
     socket,
-    projectRoot,
     eventReporter,
     createMessageMiddleware,
     serverRelativeBaseUrl,
@@ -163,7 +156,6 @@ export default class Device {
     this.#name = name;
     this.#app = app;
     this.#deviceSocket = socket;
-    this.#projectRoot = projectRoot;
     this.#serverRelativeBaseUrl = serverRelativeBaseUrl;
     this.#deviceRelativeBaseUrl = deviceRelativeBaseUrl;
     this.#deviceEventReporter = eventReporter
@@ -880,7 +872,7 @@ export default class Device {
         return this.#processDebuggerSetBreakpointByUrl(req, debuggerInfo);
       case 'Debugger.getScriptSource':
         // Sends response to debugger via side-effect
-        this.#processDebuggerGetScriptSource(req, socket);
+        void this.#processDebuggerGetScriptSource(req, socket);
         return null;
       case 'Network.loadNetworkResource':
         // If we're rewriting URLs (to frontend-relative), we don't want to
@@ -965,10 +957,10 @@ export default class Device {
     return processedReq;
   }
 
-  #processDebuggerGetScriptSource(
+  async #processDebuggerGetScriptSource(
     req: CDPRequest<'Debugger.getScriptSource'>,
     socket: WS,
-  ): void {
+  ): Promise<void> {
     const sendSuccessResponse = (scriptSource: string) => {
       const result: {
         scriptSource: string,
@@ -1005,33 +997,23 @@ export default class Device {
     const pathToSource = this.#scriptIdToSourcePathMapping.get(
       req.params.scriptId,
     );
-    if (pathToSource != null) {
-      const httpURL = this.#tryParseHTTPURL(pathToSource);
-      if (httpURL) {
-        // URL is server-relatve, so we should be able to fetch it from here.
-        this.#fetchText(httpURL).then(
-          text => sendSuccessResponse(text),
-          err =>
-            sendErrorResponse(
-              `Failed to fetch source url ${pathToSource}: ${err.message}`,
-            ),
+
+    try {
+      const httpURL =
+        pathToSource == null ? null : this.#tryParseHTTPURL(pathToSource);
+      if (!httpURL) {
+        throw new Error(
+          `Can't parse requested URL ${pathToSource === undefined ? 'undefined' : JSON.stringify(pathToSource)}`,
         );
-      } else {
-        let file;
-        try {
-          file = fs.readFileSync(
-            path.resolve(this.#projectRoot, pathToSource),
-            'utf8',
-          );
-        } catch (err) {
-          sendErrorResponse(
-            `Failed to fetch source file ${pathToSource}: ${err.message}`,
-          );
-        }
-        if (file != null) {
-          sendSuccessResponse(file);
-        }
       }
+
+      const text = await this.#fetchText(httpURL);
+
+      sendSuccessResponse(text);
+    } catch (err) {
+      sendErrorResponse(
+        `Failed to fetch source url ${pathToSource === undefined ? 'undefined' : JSON.stringify(pathToSource)} for scriptId ${req.params.scriptId}: ${err.message}`,
+      );
     }
   }
 

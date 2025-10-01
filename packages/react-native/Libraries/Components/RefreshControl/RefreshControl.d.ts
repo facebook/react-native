@@ -49,7 +49,7 @@ export interface RefreshControlPropsAndroid extends ViewProps {
   /**
    * Size of the refresh indicator, see RefreshControl.SIZE.
    */
-  size?: number | undefined;
+  size?: 'default' | 'large' | undefined;
 }
 
 export interface RefreshControlProps

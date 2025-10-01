@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9c0acc876e3205fe2ea181e71eb512c9>>
+ * @generated SignedSource<<0bd8796f4580322a78690ec4469c07ce>>
  */
 
 /**
@@ -48,6 +48,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableAndroidLinearText(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableAndroidTextMeasurementOptimizations(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableBridgelessArchitecture(): Boolean
@@ -76,9 +78,13 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingAndroid(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableImperativeFocus(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
 
@@ -100,9 +106,13 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableResourceTimingAPI(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableSwiftUIBasedFilters(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableViewCulling(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewRecycling(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableViewRecyclingForImage(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForScrollView(): Boolean
 
@@ -116,6 +126,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableVirtualViewWindowFocusDetection(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableWebPerformanceAPIsByDefault(): Boolean
+
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fuseboxEnabledRelease(): Boolean
@@ -123,6 +135,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun hideOffscreenVirtualViewsOnIOS(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun perfMonitorV2Enabled(): Boolean
 
@@ -156,9 +170,13 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun useShadowNodeStateOnClone(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun useSharedAnimatedBackend(): Boolean
+
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModules(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun viewCullingOutsetRatio(): Double
 
   @DoNotStrip @JvmStatic public external fun virtualViewHysteresisRatio(): Double
 

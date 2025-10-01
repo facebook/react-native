@@ -68,7 +68,7 @@ TextMeasurement TextLayoutManager::measure(
           (NSAttributedString *)unwrapManagedObject(attributedStringBox.getOpaquePointer());
 
       auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-      if (telemetry) {
+      if (telemetry != nullptr) {
         telemetry->willMeasureText();
       }
 
@@ -77,7 +77,7 @@ TextMeasurement TextLayoutManager::measure(
                                                    layoutContext:layoutContext
                                                layoutConstraints:layoutConstraints];
 
-      if (telemetry) {
+      if (telemetry != nullptr) {
         telemetry->didMeasureText();
       }
 

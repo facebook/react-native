@@ -7,13 +7,21 @@
 
 package com.facebook.react.devsupport.perfmonitor
 
+import com.facebook.react.devsupport.interfaces.TracingState
+
 /**
  * [Experimental] Interface implemented by [com.facebook.react.runtime.ReactHostInspectorTarget]
  * exposing actions for the V2 Perf Monitor.
  */
 internal interface PerfMonitorInspectorTargetBinding {
-  /** Attempt to pause the current background performance trace, and open in DevTools. */
-  public fun pauseAndAnalyzeBackgroundTrace()
+  /** Get the current CDP or background performance tracing state. */
+  public fun getTracingState(): TracingState
+
+  /**
+   * Attempt to pause the current background performance trace, and open in DevTools. Returns true
+   * if there is an active session that can display the trace, false otherwise.
+   */
+  public fun pauseAndAnalyzeBackgroundTrace(): Boolean
 
   /** Attempt to start a new background performance trace. */
   public fun resumeBackgroundTrace()

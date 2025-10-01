@@ -32,6 +32,7 @@ target_link_libraries(react_cxx_platform_react_runtime
       react_cxx_platform_react_logging
       react_cxx_platform_react_nativemodule
       react_renderer_animated
+      react_renderer_animationbackend
       react_cxx_platform_react_renderer_uimanager
       react_cxx_platform_react_threading
       react_cxx_platform_react_utils

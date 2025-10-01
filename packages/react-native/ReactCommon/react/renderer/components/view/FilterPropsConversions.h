@@ -301,7 +301,8 @@ inline std::optional<FilterFunction> parseDropShadow(
     }
   }
 
-  return FilterFunction{FilterType::DropShadow, dropShadowParams};
+  return FilterFunction{
+      .type = FilterType::DropShadow, .parameters = dropShadowParams};
 }
 
 inline std::optional<FilterFunction> parseFilterRawValue(
@@ -326,12 +327,13 @@ inline std::optional<FilterFunction> parseFilterRawValue(
       if (*length < 0.0f) {
         return {};
       }
-      return FilterFunction{FilterType::Blur, *length};
+      return FilterFunction{.type = FilterType::Blur, .parameters = *length};
     }
     return {};
   } else if (filterKey == "hue-rotate") {
     if (auto angle = coerceAngle(rawFilter.begin()->second)) {
-      return FilterFunction{FilterType::HueRotate, *angle};
+      return FilterFunction{
+          .type = FilterType::HueRotate, .parameters = *angle};
     }
     return {};
   } else {
@@ -339,7 +341,8 @@ inline std::optional<FilterFunction> parseFilterRawValue(
       if (*amount < 0.0f) {
         return {};
       }
-      return FilterFunction{filterTypeFromString(filterKey), *amount};
+      return FilterFunction{
+          .type = filterTypeFromString(filterKey), .parameters = *amount};
     }
     return {};
   }

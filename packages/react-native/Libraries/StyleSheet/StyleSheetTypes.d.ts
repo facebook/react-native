@@ -373,7 +373,7 @@ export type GradientValue = {
   direction?: string | undefined;
   colorStops: ReadonlyArray<{
     color: ColorValue | null;
-    positions?: ReadonlyArray<string[]> | undefined;
+    positions?: ReadonlyArray<string> | undefined;
   }>;
 };
 

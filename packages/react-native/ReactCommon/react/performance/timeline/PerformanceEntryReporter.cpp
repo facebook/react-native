@@ -297,16 +297,6 @@ void PerformanceEntryReporter::reportLongTask(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
-
-  std::vector<PerformanceEntryReporterEventTimingListener*> listenersCopy;
-  {
-    std::shared_lock lock(listenersMutex_);
-    listenersCopy = eventTimingListeners_;
-  }
-
-  for (auto* listener : listenersCopy) {
-    listener->onLongTaskEntry(entry);
-  }
 }
 
 void PerformanceEntryReporter::reportResourceTiming(
@@ -317,7 +307,10 @@ void PerformanceEntryReporter::reportResourceTiming(
     std::optional<HighResTimeStamp> connectEnd,
     HighResTimeStamp responseStart,
     HighResTimeStamp responseEnd,
-    const std::optional<int>& responseStatus) {
+    int responseStatus,
+    const std::string& contentType,
+    int encodedBodySize,
+    int decodedBodySize) {
   const auto entry = PerformanceResourceTiming{
       {.name = url, .startTime = fetchStart},
       fetchStart,
@@ -327,6 +320,9 @@ void PerformanceEntryReporter::reportResourceTiming(
       responseStart,
       responseEnd,
       responseStatus,
+      contentType,
+      encodedBodySize,
+      decodedBodySize,
   };
 
   // Add to buffers & notify observers

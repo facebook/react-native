@@ -48,7 +48,7 @@ NSString *const NODE_TAG_KEY = @"nodeTag";
   if ([value isKindOfClass:[NSDictionary class]]) {
     NSDictionary<NSString *, id> *dict = (NSDictionary *)value;
     id nodeTag = [dict objectForKey:NODE_TAG_KEY];
-    if (nodeTag && [nodeTag isKindOfClass:[NSNumber class]]) {
+    if ((nodeTag != nullptr) && [nodeTag isKindOfClass:[NSNumber class]]) {
       RCTAnimatedNode *node = [self.parentNodes objectForKey:(NSNumber *)nodeTag];
       if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
         RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;

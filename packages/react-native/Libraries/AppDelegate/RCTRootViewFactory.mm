@@ -7,6 +7,7 @@
 
 #import "RCTRootViewFactory.h"
 #import <React/RCTCxxBridgeDelegate.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
@@ -132,41 +133,54 @@
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties
 {
-  return [self viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:nil];
+  return [self viewWithModuleName:moduleName
+                initialProperties:initialProperties
+                    launchOptions:nil
+             devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
 {
-  return [self viewWithModuleName:moduleName initialProperties:nil launchOptions:nil];
+  return [self viewWithModuleName:moduleName
+                initialProperties:nil
+                    launchOptions:nil
+             devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (void)initializeReactHostWithLaunchOptions:(NSDictionary *)launchOptions
                    customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
+                        devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   // Enable TurboModule interop by default in Bridgeless mode
   RCTEnableTurboModuleInterop(YES);
   RCTEnableTurboModuleInteropBridgeProxy(YES);
 
-  [self createReactHostIfNeeded:launchOptions customBundleConfiguration:customBundleConfiguration];
+  [self createReactHostIfNeeded:launchOptions
+      customBundleConfiguration:customBundleConfiguration
+           devMenuConfiguration:devMenuConfiguration];
   return;
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initProps
+             initialProperties:(NSDictionary *)initialProperties
                  launchOptions:(NSDictionary *)launchOptions
 {
   return [self viewWithModuleName:moduleName
-                initialProperties:initProps
+                initialProperties:initialProperties
                     launchOptions:launchOptions
-        customBundleConfiguration:nil];
+        customBundleConfiguration:nil
+             devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initProps
                  launchOptions:(NSDictionary *)launchOptions
      customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
+          devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
-  [self initializeReactHostWithLaunchOptions:launchOptions customBundleConfiguration:customBundleConfiguration];
+  [self initializeReactHostWithLaunchOptions:launchOptions
+                   customBundleConfiguration:customBundleConfiguration
+                        devMenuConfiguration:devMenuConfiguration];
 
   RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName
                                                         initialProperties:initProps ? initProps : @{}];
@@ -238,20 +252,27 @@
 
 - (void)createReactHostIfNeeded:(NSDictionary *)launchOptions
       customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
+           devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self.reactHost) {
     return;
   }
-  self.reactHost = [self createReactHost:launchOptions customBundleConfiguration:customBundleConfiguration];
+
+  self.reactHost = [self createReactHost:launchOptions
+               customBundleConfiguration:customBundleConfiguration
+                    devMenuConfiguration:devMenuConfiguration];
 }
 
 - (RCTHost *)createReactHost:(NSDictionary *)launchOptions
 {
-  return [self createReactHost:launchOptions customBundleConfiguration:nil];
+  return [self createReactHost:launchOptions
+      customBundleConfiguration:nil
+           devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (RCTHost *)createReactHost:(NSDictionary *)launchOptions
     customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
+         devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   __weak __typeof(self) weakSelf = self;
   RCTHost *reactHost =
@@ -262,7 +283,11 @@
                                   return [weakSelf createJSRuntimeFactory];
                                 }
                                    launchOptions:launchOptions
-                       customBundleConfiguration:customBundleConfiguration];
+                       customBundleConfiguration:customBundleConfiguration
+                            devMenuConfiguration:devMenuConfiguration];
+  [reactHost setBundleURLProvider:^NSURL *() {
+    return [weakSelf bundleURL];
+  }];
   [reactHost start];
   return reactHost;
 }

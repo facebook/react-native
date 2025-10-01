@@ -8,6 +8,7 @@
 #import "RCTReactNativeFactory.h"
 #import <React/RCTBundleManager.h>
 #import <React/RCTColorSpaceUtils.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
@@ -59,7 +60,7 @@ using namespace facebook::react;
     self.rootViewFactory = [self createRCTRootViewFactory];
 
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-    
+
     self.customBundleConfiguration = [[RCTCustomBundleConfiguration alloc] init];
   }
 
@@ -86,7 +87,8 @@ using namespace facebook::react;
   UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
                                             initialProperties:initialProperties
                                                 launchOptions:launchOptions
-                                              customBundleConfiguration:self.customBundleConfiguration];
+                                    customBundleConfiguration:self.customBundleConfiguration
+                                         devMenuConfiguration:self.devMenuConfiguration];
   UIViewController *rootViewController = [_delegate createRootViewController];
   [_delegate setRootView:rootView toRootViewController:rootViewController];
   window.rootViewController = rootViewController;

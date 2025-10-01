@@ -83,6 +83,6 @@ internal class BridgelessDevSupportManager(
   }
 
   fun tracingState(): TracingState {
-    return TracingState.DISABLED
+    return TracingState.ENABLEDINCDPMODE
   }
 }

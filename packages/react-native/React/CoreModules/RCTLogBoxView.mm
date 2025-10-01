@@ -12,9 +12,9 @@
 #import <React/RCTSurfaceHostingView.h>
 
 @implementation RCTLogBoxView {
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   RCTSurface *_surface;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -35,11 +35,9 @@
   self.rootViewController = _rootViewController;
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge
 {
-  RCTErrorNewArchitectureValidation(RCTNotAllowedInFabricWithoutLegacy, @"RCTLogBoxView", nil);
-
   self = [super initWithWindowScene:window.windowScene];
 
   self.windowLevel = UIWindowLevelStatusBar - 1;
@@ -55,7 +53,7 @@
 
   return self;
 }
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 - (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
@@ -74,9 +72,9 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   [_surface setSize:self.frame.size];
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 }
 
 - (void)dealloc

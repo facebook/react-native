@@ -69,7 +69,10 @@ struct PerformanceResourceTiming : AbstractPerformanceEntry {
   std::optional<HighResTimeStamp> responseStart;
   /** Aligns with `duration`. */
   std::optional<HighResTimeStamp> responseEnd;
-  std::optional<int> responseStatus;
+  int responseStatus;
+  std::string contentType;
+  int encodedBodySize;
+  int decodedBodySize;
 };
 
 using PerformanceEntry = std::variant<

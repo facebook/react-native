@@ -59,6 +59,11 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
         !projectPath.includes('/Pods/') && // exclude Pods/Pods.xcodeproj
         !projectPath.includes('/node_modules/'), // exclude all the xcodeproj in node_modules of libraries
     )[0];
+  if (!xcodeproj) {
+    throw new Error(
+      `Cannot find .xcodeproj file inside ${appPath}. This is required to determine codegen spec paths relative to native project.`,
+    );
+  }
   const jsFiles = '-name "Native*.js" -or -name "*NativeComponent.js"';
   const tsFiles = '-name "Native*.ts" -or -name "*NativeComponent.ts"';
   const findCommand = `find ${path.join(appPath, jsSrcsDir)} -type f -not -path "*/__mocks__/*" -and \\( ${jsFiles} -or ${tsFiles} \\)`;

@@ -65,12 +65,12 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
 
   ~JsiIntegrationPortableTestBase() override {
     toPage_.reset();
-    if (runtimeTarget_) {
+    if (runtimeTarget_ != nullptr) {
       EXPECT_TRUE(instance_);
       instance_->unregisterRuntime(*runtimeTarget_);
       runtimeTarget_ = nullptr;
     }
-    if (instance_) {
+    if (instance_ != nullptr) {
       page_->unregisterInstance(*instance_);
       instance_ = nullptr;
     }
@@ -108,12 +108,12 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
   }
 
   void reload() {
-    if (runtimeTarget_) {
+    if (runtimeTarget_ != nullptr) {
       ASSERT_TRUE(instance_);
       instance_->unregisterRuntime(*runtimeTarget_);
       runtimeTarget_ = nullptr;
     }
-    if (instance_) {
+    if (instance_ != nullptr) {
       page_->unregisterInstance(*instance_);
       instance_ = nullptr;
     }

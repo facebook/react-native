@@ -10,15 +10,6 @@ import com.facebook.react.devsupport.interfaces.TracingState
 
 /** [Experimental] An interface for subscribing to updates for the V2 Perf Monitor. */
 internal interface PerfMonitorUpdateListener {
-  data class LongTaskEventData(
-      val durationMs: Int,
-      val responsivenessScore: Int,
-      val ttl: Int,
-  )
-
-  /** Called when a new active performance event should be displayed. */
-  fun onNewFocusedEvent(data: LongTaskEventData)
-
   /** Called when the recording state of the background performance trace has changed. */
   fun onRecordingStateChanged(state: TracingState)
 }

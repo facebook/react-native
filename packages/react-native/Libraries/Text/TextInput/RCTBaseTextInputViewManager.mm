@@ -7,7 +7,7 @@
 
 #import <React/RCTBaseTextInputViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
@@ -181,4 +181,4 @@ RCT_EXPORT_METHOD(setTextAndSelection
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

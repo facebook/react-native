@@ -37,13 +37,13 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
 
   external fun startBackgroundTrace(): Boolean
 
-  external fun stopAndStashBackgroundTrace()
+  external fun stopAndMaybeEmitBackgroundTrace(): Boolean
 
   external fun stopAndDiscardBackgroundTrace()
 
   external fun tracingStateAsInt(): Int
 
-  fun tracingState(): TracingState {
+  override fun getTracingState(): TracingState {
     return TracingState.entries[tracingStateAsInt()]
   }
 
@@ -51,29 +51,19 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
     perfMonitorListeners.add(listener)
   }
 
-  override fun pauseAndAnalyzeBackgroundTrace() {
-    stopAndStashBackgroundTrace()
+  override fun pauseAndAnalyzeBackgroundTrace(): Boolean {
+    val emitted = stopAndMaybeEmitBackgroundTrace()
     perfMonitorListeners.forEach { listener ->
       listener.onRecordingStateChanged(TracingState.DISABLED)
     }
+
+    return emitted
   }
 
   override fun resumeBackgroundTrace() {
     startBackgroundTrace()
     perfMonitorListeners.forEach { listener ->
       listener.onRecordingStateChanged(TracingState.ENABLEDINBACKGROUNDMODE)
-    }
-  }
-
-  fun handleNativePerfMonitorMetricUpdate(
-      longTaskDurationMs: Int,
-      responsivenessScore: Int,
-      ttl: Int,
-  ) {
-    perfMonitorListeners.forEach { listener ->
-      listener.onNewFocusedEvent(
-          PerfMonitorUpdateListener.LongTaskEventData(longTaskDurationMs, responsivenessScore, ttl)
-      )
     }
   }
 

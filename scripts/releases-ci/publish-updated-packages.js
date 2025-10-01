@@ -14,7 +14,6 @@ const {execSync} = require('child_process');
 const {parseArgs} = require('util');
 
 const PUBLISH_PACKAGES_TAG = '#publish-packages-to-npm';
-const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
 
 const config = {
   options: {
@@ -139,7 +138,6 @@ function runPublish(
 ) {
   const result = publishPackage(packagePath, {
     tags,
-    otp: NPM_CONFIG_OTP,
   });
 
   if (result.code !== 0) {

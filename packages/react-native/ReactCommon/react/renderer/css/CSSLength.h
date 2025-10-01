@@ -32,7 +32,7 @@ struct CSSDataTypeParser<CSSLength> {
     switch (token.type()) {
       case CSSTokenType::Dimension:
         if (auto unit = parseCSSLengthUnit(token.unit())) {
-          return CSSLength{token.numericValue(), *unit};
+          return CSSLength{.value = token.numericValue(), .unit = *unit};
         }
         break;
       case CSSTokenType::Number:
@@ -42,7 +42,8 @@ struct CSSDataTypeParser<CSSLength> {
         // property (such as line-height), it must parse as a <number>.
         // https://www.w3.org/TR/css-values-4/#lengths
         if (token.numericValue() == 0) {
-          return CSSLength{token.numericValue(), CSSLengthUnit::Px};
+          return CSSLength{
+              .value = token.numericValue(), .unit = CSSLengthUnit::Px};
         }
         break;
       default:

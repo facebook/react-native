@@ -82,11 +82,11 @@ class PrepareGflagsTaskTest {
     val gflagsThirdPartyPath = tempFolder.newFolder("gflagspath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareGflagsTask> {
-          it.gflagsPath.setFrom(gflagspath)
-          it.gflagsThirdPartyPath.set(gflagsThirdPartyPath)
-          it.gflagsVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareGflagsTask> { taskConfig ->
+          taskConfig.gflagsPath.setFrom(gflagspath)
+          taskConfig.gflagsThirdPartyPath.set(gflagsThirdPartyPath)
+          taskConfig.gflagsVersion.set("1.0.0")
+          taskConfig.outputDir.set(output)
         }
     File(gflagspath, "gflags-1.0.0/src/gflags_declare.h.in").apply {
       parentFile.mkdirs()

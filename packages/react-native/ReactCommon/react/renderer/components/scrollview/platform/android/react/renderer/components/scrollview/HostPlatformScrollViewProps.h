@@ -14,7 +14,7 @@
 
 namespace facebook::react {
 
-class HostPlatformScrollViewProps final : public BaseScrollViewProps {
+class HostPlatformScrollViewProps : public BaseScrollViewProps {
  public:
   HostPlatformScrollViewProps() = default;
   HostPlatformScrollViewProps(

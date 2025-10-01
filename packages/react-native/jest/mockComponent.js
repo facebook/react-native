@@ -22,12 +22,14 @@ type TComponentType = React.ComponentType<{...}>;
  */
 export default function mockComponent<
   TComponentModule: Modulish<TComponentType>,
+  TIsESModule: boolean,
 >(
   moduleName: string,
   instanceMethods: ?interface {},
-  isESModule: boolean,
-): typeof isESModule extends true
-  ? ModuleDefault<TComponentModule & typeof instanceMethods>
+  isESModule: TIsESModule,
+): TIsESModule extends true
+  ? // $FlowFixMe[incompatible-use]
+    ModuleDefault<TComponentModule & typeof instanceMethods>
   : TComponentModule & typeof instanceMethods {
   const RealComponent: TComponentType = isESModule
     ? // $FlowFixMe[prop-missing]

@@ -33,7 +33,6 @@ describe.each(['HTTP', 'HTTPS'])(
   protocol => {
     const serverRef = withServerForEachTest({
       logger: undefined,
-      projectRoot: '',
       secure: protocol === 'HTTPS',
     });
     const autoCleanup = withAbortSignalForEachTest();

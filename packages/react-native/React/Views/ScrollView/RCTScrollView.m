@@ -7,7 +7,7 @@
 
 #import "RCTScrollView.h"
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <UIKit/UIKit.h>
 
@@ -679,7 +679,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     return;
   }
 
-  CGFloat top = 0, left = 0;
+  CGFloat top = 0;
+  CGFloat left = 0;
   if (contentSize.width < boundsSize.width) {
     left = (boundsSize.width - contentSize.width) * 0.5f;
   }
@@ -1166,4 +1167,4 @@ void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNu
   [eventDispatcher sendEvent:fakeScrollEvent];
 }
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

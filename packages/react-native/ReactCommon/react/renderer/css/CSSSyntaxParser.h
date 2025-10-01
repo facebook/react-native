@@ -147,7 +147,7 @@ class CSSSyntaxParser {
    *
    * https://www.w3.org/TR/css-syntax-3/#consume-component-value
    *
-   * @param <ReturnT> caller-specified return type of visitors. This type will
+   * @tparam ReturnT caller-specified return type of visitors. This type will
    * be set to its default constructed state if consuming a component value with
    * no matching visitors, or syntax error
    * @param visitors A unique list of CSSComponentValueVisitor to be called on a

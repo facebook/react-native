@@ -28,6 +28,7 @@ import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
 import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
+import com.facebook.react.utils.ProjectUtils.isHermesV1Enabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
@@ -54,6 +55,10 @@ class ReactPlugin : Plugin<Project> {
                 project,
             )
 
+    if (project.rootProject.isHermesV1Enabled) {
+      rootExtension.hermesV1Enabled.set(true)
+    }
+
     // App Only Configuration
     project.pluginManager.withPlugin("com.android.application") {
       // We wire the root extension with the values coming from the app (either user populated or
@@ -66,10 +71,12 @@ class ReactPlugin : Plugin<Project> {
       project.afterEvaluate {
         val reactNativeDir = extension.reactNativeDir.get().asFile
         val propertiesFile = File(reactNativeDir, "ReactAndroid/gradle.properties")
-        val versionAndGroupStrings = readVersionAndGroupStrings(propertiesFile)
-        val versionString = versionAndGroupStrings.first
-        val groupString = versionAndGroupStrings.second
-        configureDependencies(project, versionString, groupString)
+        val hermesVersionPropertiesFile =
+            File(reactNativeDir, "sdks/hermes-engine/version.properties")
+        val versionAndGroupStrings =
+            readVersionAndGroupStrings(propertiesFile, hermesVersionPropertiesFile)
+        val hermesV1Enabled = rootExtension.hermesV1Enabled.get()
+        configureDependencies(project, versionAndGroupStrings, hermesV1Enabled)
         configureRepositories(project)
       }
 

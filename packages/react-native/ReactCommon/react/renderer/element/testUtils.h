@@ -26,7 +26,9 @@ inline ComponentBuilder simpleComponentBuilder(
   auto componentDescriptorRegistry =
       componentDescriptorProviderRegistry.createComponentDescriptorRegistry(
           ComponentDescriptorParameters{
-              eventDispatcher, std::move(contextContainer), nullptr});
+              .eventDispatcher = eventDispatcher,
+              .contextContainer = std::move(contextContainer),
+              .flavor = nullptr});
 
   componentDescriptorProviderRegistry.add(
       concreteComponentDescriptorProvider<RootComponentDescriptor>());

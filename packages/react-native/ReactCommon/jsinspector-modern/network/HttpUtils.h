@@ -7,11 +7,12 @@
 
 #pragma once
 
-#include "NetworkTypes.h"
-
+#include <map>
 #include <string>
 
 namespace facebook::react::jsinspector_modern {
+
+using Headers = std::map<std::string, std::string>;
 
 /**
  * Get the HTTP reason phrase for a given status code (RFC 9110).

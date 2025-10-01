@@ -57,13 +57,13 @@ extern RN_EXPORT std::shared_mutex logTaggedMarkerImplMutex;
 extern RN_EXPORT LogTaggedMarker logTaggedMarkerImpl;
 extern RN_EXPORT LogTaggedMarker logTaggedMarkerBridgelessImpl;
 
-extern RN_EXPORT void logMarker(const ReactMarkerId markerId); // Bridge only
+extern RN_EXPORT void logMarker(ReactMarkerId markerId); // Bridge only
 extern RN_EXPORT void logTaggedMarker(
-    const ReactMarkerId markerId,
+    ReactMarkerId markerId,
     const char* tag); // Bridge only
-extern RN_EXPORT void logMarkerBridgeless(const ReactMarkerId markerId);
+extern RN_EXPORT void logMarkerBridgeless(ReactMarkerId markerId);
 extern RN_EXPORT void logTaggedMarkerBridgeless(
-    const ReactMarkerId markerId,
+    ReactMarkerId markerId,
     const char* tag);
 
 struct ReactMarkerEvent {
@@ -76,7 +76,7 @@ class RN_EXPORT StartupLogger {
  public:
   static StartupLogger& getInstance();
 
-  void logStartupEvent(const ReactMarkerId markerId, double markerTime);
+  void logStartupEvent(ReactMarkerId markerId, double markerTime);
   void reset();
   double getAppStartupStartTime();
   double getInitReactRuntimeStartTime();
@@ -101,8 +101,6 @@ class RN_EXPORT StartupLogger {
 // When the marker got logged from the platform, it will notify here. This is
 // used to collect react markers that are logged in the platform instead of in
 // C++.
-extern RN_EXPORT void logMarkerDone(
-    const ReactMarkerId markerId,
-    double markerTime);
+extern RN_EXPORT void logMarkerDone(ReactMarkerId markerId, double markerTime);
 
 } // namespace facebook::react::ReactMarker

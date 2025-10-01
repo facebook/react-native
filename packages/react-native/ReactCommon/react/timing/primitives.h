@@ -201,6 +201,11 @@ class HighResTimeStamp {
     return HighResTimeStamp(chronoNow());
   }
 
+  static HighResDuration unsafeOriginFromUnixTimeStamp() noexcept {
+    static auto origin = computeUnsafeOriginFromUnixTimeStamp();
+    return origin;
+  }
+
   static constexpr HighResTimeStamp min() noexcept {
     return HighResTimeStamp(std::chrono::steady_clock::time_point::min());
   }
@@ -284,6 +289,13 @@ class HighResTimeStamp {
       : chronoTimePoint_(chronoTimePoint) {}
 
   std::chrono::steady_clock::time_point chronoTimePoint_;
+
+  static HighResDuration computeUnsafeOriginFromUnixTimeStamp() noexcept {
+    auto systemNow = std::chrono::system_clock::now();
+    auto steadyNow = std::chrono::steady_clock::now();
+    return HighResDuration(
+        systemNow.time_since_epoch() - steadyNow.time_since_epoch());
+  }
 
 #ifdef REACT_NATIVE_DEBUG
   static std::function<std::chrono::steady_clock::time_point()>&

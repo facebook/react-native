@@ -59,7 +59,7 @@ class InspectorPackagerConnectionTestBase : public testing::Test {
     auto pages = getInspectorInstance().getPages();
     int liveConnectionCount = 0;
     for (size_t i = 0; i != localConnections_.objectsVended(); ++i) {
-      if (localConnections_[i]) {
+      if (localConnections_[i] != nullptr) {
         liveConnectionCount++;
         // localConnections_[i] is a strict mock and will complain when we
         // removePage if the call is unexpected.
@@ -69,7 +69,7 @@ class InspectorPackagerConnectionTestBase : public testing::Test {
     for (auto& page : pages) {
       getInspectorInstance().removePage(page.id);
     }
-    if (!pages.empty() && liveConnectionCount) {
+    if (!pages.empty() && (liveConnectionCount != 0)) {
       if (!::testing::Test::HasFailure()) {
         FAIL()
             << "Test case ended with " << liveConnectionCount

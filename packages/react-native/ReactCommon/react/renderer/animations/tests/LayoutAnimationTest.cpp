@@ -50,8 +50,10 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
   auto eventDispatcher = EventDispatcher::Shared{};
   auto contextContainer = std::make_shared<const ContextContainer>();
-  auto componentDescriptorParameters =
-      ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
+  auto componentDescriptorParameters = ComponentDescriptorParameters{
+      .eventDispatcher = eventDispatcher,
+      .contextContainer = contextContainer,
+      .flavor = nullptr};
   auto viewComponentDescriptor =
       ViewComponentDescriptor(componentDescriptorParameters);
   auto rootComponentDescriptor =
@@ -93,20 +95,27 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
     auto surfaceId = SurfaceId(surfaceIdInt);
 
     auto family = rootComponentDescriptor.createFamily(
-        {Tag(surfaceIdInt), surfaceId, nullptr});
+        {.tag = Tag(surfaceIdInt),
+         .surfaceId = surfaceId,
+         .instanceHandle = nullptr});
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
         std::static_pointer_cast<const RootShadowNode>(
             rootComponentDescriptor.createShadowNode(
-                ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
+                ShadowNodeFragment{
+                    .props = RootShadowNode::defaultSharedProps()},
                 family)));
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
         parserContext,
         LayoutConstraints{
-            Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
+            .minimumSize = Size{.width = 512, .height = 0},
+            .maximumSize =
+                Size{
+                    .width = 512,
+                    .height = std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
 
     // Generation of a random tree.
@@ -116,8 +125,9 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
     // Injecting a tree into the root node.
     auto currentRootNode = std::static_pointer_cast<const RootShadowNode>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
-            ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+            .props = ShadowNodeFragment::propsPlaceholder(),
+            .children = std::make_shared<
+                std::vector<std::shared_ptr<const ShadowNode>>>(
                 std::vector<std::shared_ptr<const ShadowNode>>{
                     singleRootChildNode})}));
 
@@ -169,31 +179,35 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
       // Configure animation
       animationDriver->uiManagerDidConfigureNextLayoutAnimation(
-          {surfaceId,
-           0,
-           false,
-           {(double)animation_duration,
-            {/* Create */ AnimationType::EaseInEaseOut,
-             AnimationProperty::Opacity,
-             (double)animation_duration,
-             0,
-             0,
-             0},
-            {/* Update */ AnimationType::EaseInEaseOut,
-             AnimationProperty::ScaleXY,
-             (double)animation_duration,
-             0,
-             0,
-             0},
-            {/* Delete */ AnimationType::EaseInEaseOut,
-             AnimationProperty::Opacity,
-             (double)animation_duration,
-             0,
-             0,
-             0}},
-           {},
-           {},
-           {}});
+          {.surfaceId = surfaceId,
+           .startTime = 0,
+           .completed = false,
+           .layoutAnimationConfig =
+               {.duration = (double)animation_duration,
+                .createConfig = {
+                    /* Create */ .animationType = AnimationType::EaseInEaseOut,
+                    .animationProperty = AnimationProperty::Opacity,
+                    .duration = (double)animation_duration,
+                    .delay = 0,
+                    .springDamping = 0,
+                    .initialVelocity = 0},
+                .updateConfig = {
+                    /* Update */ .animationType = AnimationType::EaseInEaseOut,
+                    .animationProperty = AnimationProperty::ScaleXY,
+                    .duration = (double)animation_duration,
+                    .delay = 0,
+                    .springDamping = 0,
+                    .initialVelocity = 0},
+                .deleteConfig = {
+                    /* Delete */ .animationType = AnimationType::EaseInEaseOut,
+                    .animationProperty = AnimationProperty::Opacity,
+                    .duration = (double)animation_duration,
+                    .delay = 0,
+                    .springDamping = 0,
+                    .initialVelocity = 0}},
+           .successCallback = {},
+           .failureCallback = {},
+           .keyFrames = {}});
 
       // Get mutations for each frame
       for (int k = 0; k < animation_frames + 2; k++) {

@@ -9,6 +9,7 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {AnimatedNode} from 'react-native/Libraries/Animated/AnimatedExports';
 
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
@@ -144,6 +145,13 @@ function TranslatePercentage() {
   return <View style={styles.translatePercentageView} />;
 }
 
+function TranslateMatrix2D() {
+  return <View style={styles.translateMatrix2D} />;
+}
+function TranslateMatrix3D() {
+  return <View style={styles.translateMatrix3D} />;
+}
+
 const styles = StyleSheet.create({
   container: {
     height: 500,
@@ -219,7 +227,16 @@ const styles = StyleSheet.create({
     height: 50,
     position: 'absolute',
     top: 0,
-    transform: [{translate: [200, 350]}, {scale: 2.5}, {rotate: '-0.2rad'}],
+    transform: [
+      {
+        translate: [200, 350] as [
+          number | string | AnimatedNode,
+          number | string | AnimatedNode,
+        ],
+      },
+      {scale: 2.5},
+      {rotate: '-0.2rad'},
+    ],
     width: 100,
   },
   box5: {
@@ -231,7 +248,16 @@ const styles = StyleSheet.create({
     width: 50,
   },
   box5Transform: {
-    transform: [{translate: [-50, 35]}, {rotate: '50deg'}, {scale: 2}],
+    transform: [
+      {
+        translate: [-50, 35] as [
+          number | string | AnimatedNode,
+          number | string | AnimatedNode,
+        ],
+      },
+      {rotate: '50deg'},
+      {scale: 2},
+    ],
   },
   box6: {
     backgroundColor: 'salmon',
@@ -287,6 +313,18 @@ const styles = StyleSheet.create({
     padding: 50,
     alignSelf: 'flex-start',
     backgroundColor: 'lightblue',
+  },
+  translateMatrix2D: {
+    transform: [{matrix: [1, 0, 0, 0, 1, 0, 0, 0, 1]}],
+    width: 50,
+    height: 50,
+    backgroundColor: 'red',
+  },
+  translateMatrix3D: {
+    transform: [{matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]}],
+    height: 50,
+    width: 50,
+    backgroundColor: 'green',
   },
 });
 
@@ -412,6 +450,21 @@ exports.examples = [
     description: "transform: 'translate(50%)'",
     render(): React.Node {
       return <TranslatePercentage />;
+    },
+  },
+  {
+    title: 'Transform Matrix 2D',
+    description: "transform: 'matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)'",
+    render(): React.Node {
+      return <TranslateMatrix2D />;
+    },
+  },
+  {
+    title: 'Transform Matrix 3D',
+    description:
+      "transform: 'matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'",
+    render(): React.Node {
+      return <TranslateMatrix3D />;
     },
   },
 ] as Array<RNTesterModuleExample>;

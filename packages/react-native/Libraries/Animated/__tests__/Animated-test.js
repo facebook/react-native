@@ -873,56 +873,6 @@ describe('Animated', () => {
     });
   });
 
-  describe('Animated Interactions', () => {
-    let Animated; // eslint-disable-line no-shadow
-    let InteractionManager;
-
-    beforeEach(() => {
-      jest.mock('../../Interaction/InteractionManager');
-      Animated = require('../Animated').default;
-      InteractionManager =
-        require('../../Interaction/InteractionManager').default;
-    });
-
-    afterEach(() => {
-      jest.unmock('../../Interaction/InteractionManager');
-    });
-
-    it('registers an interaction by default', () => {
-      // $FlowFixMe[prop-missing]
-      InteractionManager.createInteractionHandle.mockReturnValue(777);
-
-      const value = new Animated.Value(0);
-      const callback = jest.fn();
-      Animated.timing(value, {
-        toValue: 100,
-        duration: 100,
-        useNativeDriver: false,
-      }).start(callback);
-      jest.runAllTimers();
-
-      expect(InteractionManager.createInteractionHandle).toBeCalled();
-      expect(InteractionManager.clearInteractionHandle).toBeCalledWith(777);
-      expect(callback).toBeCalledWith({finished: true});
-    });
-
-    it('does not register an interaction when specified', () => {
-      const value = new Animated.Value(0);
-      const callback = jest.fn();
-      Animated.timing(value, {
-        toValue: 100,
-        duration: 100,
-        isInteraction: false,
-        useNativeDriver: false,
-      }).start(callback);
-      jest.runAllTimers();
-
-      expect(InteractionManager.createInteractionHandle).not.toBeCalled();
-      expect(InteractionManager.clearInteractionHandle).not.toBeCalled();
-      expect(callback).toBeCalledWith({finished: true});
-    });
-  });
-
   describe('Animated Tracking', () => {
     it('should track values', () => {
       const value1 = new Animated.Value(0);

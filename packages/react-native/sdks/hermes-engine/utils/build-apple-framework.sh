@@ -88,6 +88,11 @@ function configure_apple_framework {
     xcode_15_flags="LINKER:-ld_classic"
   fi
 
+  boost_context_flag=""
+  if [[ $1 == "catalyst" ]]; then
+    boost_context_flag="-DHERMES_ALLOW_BOOST_CONTEXT=0"
+  fi
+
   pushd "$HERMES_PATH" > /dev/null || exit 1
     cmake -S . -B "build_$1" \
       -DHERMES_EXTRA_LINKER_FLAGS="$xcode_15_flags" \
@@ -107,7 +112,8 @@ function configure_apple_framework {
       -DIMPORT_HOST_COMPILERS:PATH="$IMPORT_HOST_COMPILERS_PATH" \
       -DJSI_DIR="$JSI_PATH" \
       -DHERMES_RELEASE_VERSION="for RN $(get_release_version)" \
-      -DCMAKE_BUILD_TYPE="$cmake_build_type"
+      -DCMAKE_BUILD_TYPE="$cmake_build_type" \
+      $boost_context_flag
     popd > /dev/null || exit 1
 }
 

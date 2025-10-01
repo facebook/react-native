@@ -123,13 +123,13 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
     std::scoped_lock lock(currentAnimationMutex_);
 
     uiManagerDidConfigureNextLayoutAnimation(LayoutAnimation{
-        -1,
-        0,
-        false,
-        *layoutAnimationConfig,
-        successCallback,
-        failureCallback,
-        {}});
+        .surfaceId = -1,
+        .startTime = 0,
+        .completed = false,
+        .layoutAnimationConfig = *layoutAnimationConfig,
+        .successCallback = successCallback,
+        .failureCallback = failureCallback,
+        .keyFrames = {}});
   } else {
     LOG(ERROR) << "Parsing LayoutAnimationConfig failed: "
                << (folly::dynamic)config;
@@ -500,14 +500,15 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 mutation);
 
             keyFrame = AnimationKeyFrame{
-                /* .finalMutationsForKeyFrame = */ {},
-                /* .type = */ AnimationConfigurationType::Create,
-                /* .tag = */ tag,
-                /* .parentTag = */ parentTag,
-                /* .viewStart = */ viewStart,
-                /* .viewEnd = */ viewFinal,
-                /* .viewPrev = */ baselineShadowView,
-                /* .initialProgress = */ 0};
+                /* .finalMutationsForKeyFrame = */ .finalMutationsForKeyFrame =
+                    {},
+                /* .type = */ .type = AnimationConfigurationType::Create,
+                /* .tag = */ .tag = tag,
+                /* .parentTag = */ .parentTag = parentTag,
+                /* .viewStart = */ .viewStart = viewStart,
+                /* .viewEnd = */ .viewEnd = viewFinal,
+                /* .viewPrev = */ .viewPrev = baselineShadowView,
+                /* .initialProgress = */ .initialProgress = 0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
 // This is just for assertion purposes.
 // The NDEBUG check here is to satisfy the compiler in certain environments
@@ -538,14 +539,15 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 mutation);
 
             keyFrame = AnimationKeyFrame{
-                /* .finalMutationsForKeyFrame = */ {mutation},
-                /* .type = */ AnimationConfigurationType::Update,
-                /* .tag = */ tag,
-                /* .parentTag = */ parentTag,
-                /* .viewStart = */ viewStart,
-                /* .viewEnd = */ viewFinal,
-                /* .viewPrev = */ baselineShadowView,
-                /* .initialProgress = */ 0};
+                /* .finalMutationsForKeyFrame = */ .finalMutationsForKeyFrame =
+                    {mutation},
+                /* .type = */ .type = AnimationConfigurationType::Update,
+                /* .tag = */ .tag = tag,
+                /* .parentTag = */ .parentTag = parentTag,
+                /* .viewStart = */ .viewStart = viewStart,
+                /* .viewEnd = */ .viewEnd = viewFinal,
+                /* .viewPrev = */ .viewPrev = baselineShadowView,
+                /* .initialProgress = */ .initialProgress = 0};
           } else {
             // This should just be "Remove" instructions that are not animated
             // (either this is a "move", or there's a corresponding "Delete"
@@ -624,14 +626,15 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   mutation);
 
               keyFrame = AnimationKeyFrame{
-                  /* .finalMutationsForKeyFrame */ {mutation, deleteMutation},
-                  /* .type */ AnimationConfigurationType::Delete,
-                  /* .tag */ tag,
-                  /* .parentTag */ parentTag,
-                  /* .viewStart */ viewStart,
-                  /* .viewEnd */ viewFinal,
-                  /* .viewPrev */ baselineShadowView,
-                  /* .initialProgress */ 0};
+                  /* .finalMutationsForKeyFrame */ .finalMutationsForKeyFrame =
+                      {mutation, deleteMutation},
+                  /* .type */ .type = AnimationConfigurationType::Delete,
+                  /* .tag */ .tag = tag,
+                  /* .parentTag */ .parentTag = parentTag,
+                  /* .viewStart */ .viewStart = viewStart,
+                  /* .viewEnd */ .viewEnd = viewFinal,
+                  /* .viewPrev */ .viewPrev = baselineShadowView,
+                  /* .initialProgress */ .initialProgress = 0};
             } else {
               PrintMutationInstruction(
                   "Executing Remove Immediately, due to reordering operation",

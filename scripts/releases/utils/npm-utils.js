@@ -35,7 +35,6 @@ type PackageJSON = {
 }
 type NpmPackageOptions = {
   tags: ?Array<string> | ?Array<?string>,
-  otp: ?string,
   access?: ?('public' | 'restricted')
 }
 */
@@ -130,7 +129,7 @@ function publishPackage(
   packageOptions /*: NpmPackageOptions */,
   execOptions /*: ?ExecOptsSync */,
 ) /*: ShellString */ {
-  const {otp, tags, access} = packageOptions;
+  const {tags, access} = packageOptions;
 
   let tagsFlag = '';
   if (tags != null) {
@@ -142,13 +141,12 @@ function publishPackage(
           .join('');
   }
 
-  const otpFlag = otp != null ? ` --otp ${otp}` : '';
   const accessFlag = access != null ? ` --access ${access}` : '';
   const options /*: ExecOptsSync */ = execOptions
     ? {...execOptions, cwd: packagePath}
     : {cwd: packagePath};
 
-  return exec(`npm publish${tagsFlag}${otpFlag}${accessFlag}`, options);
+  return exec(`npm publish${tagsFlag}${accessFlag}`, options);
 }
 
 /**

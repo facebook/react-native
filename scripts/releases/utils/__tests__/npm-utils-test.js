@@ -33,37 +33,35 @@ describe('npm-utils', () => {
     it('should run publish command', () => {
       publishPackage(
         'path/to/my-package',
-        {tags: ['latest'], otp: 'otp'},
+        {tags: ['latest']},
         {silent: true, cwd: 'i/expect/this/to/be/overriden'},
       );
-      expect(execMock).toHaveBeenCalledWith(
-        'npm publish --tag latest --otp otp',
-        {silent: true, cwd: 'path/to/my-package'},
-      );
+      expect(execMock).toHaveBeenCalledWith('npm publish --tag latest', {
+        silent: true,
+        cwd: 'path/to/my-package',
+      });
     });
 
     it('should run publish command when no execOptions', () => {
-      publishPackage('path/to/my-package', {tags: ['latest'], otp: 'otp'});
-      expect(execMock).toHaveBeenCalledWith(
-        'npm publish --tag latest --otp otp',
-        {cwd: 'path/to/my-package'},
-      );
+      publishPackage('path/to/my-package', {tags: ['latest']});
+      expect(execMock).toHaveBeenCalledWith('npm publish --tag latest', {
+        cwd: 'path/to/my-package',
+      });
     });
 
     it('should handle multiple tags', () => {
       publishPackage('path/to/my-package', {
         tags: ['next', '0.72-stable'],
-        otp: 'otp',
       });
       expect(execMock).toHaveBeenCalledWith(
-        'npm publish --tag next --tag 0.72-stable --otp otp',
+        'npm publish --tag next --tag 0.72-stable',
         {cwd: 'path/to/my-package'},
       );
     });
 
     it('should handle -no-tag', () => {
-      publishPackage('path/to/my-package', {tags: ['--no-tag'], otp: 'otp'});
-      expect(execMock).toHaveBeenCalledWith('npm publish --no-tag --otp otp', {
+      publishPackage('path/to/my-package', {tags: ['--no-tag']});
+      expect(execMock).toHaveBeenCalledWith('npm publish --no-tag', {
         cwd: 'path/to/my-package',
       });
     });

@@ -197,10 +197,10 @@ class JsonUtilsTest {
     val validJson =
         createJsonFile(
             """
-            
+
             > AwesomeProject@0.0.1 npx
             > rnc-cli config
-            
+
              {
               "reactNativeVersion": "1000.0.0",
               "project": {

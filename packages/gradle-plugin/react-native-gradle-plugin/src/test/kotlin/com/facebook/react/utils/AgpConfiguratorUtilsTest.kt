@@ -34,9 +34,9 @@ class AgpConfiguratorUtilsTest {
           writeText(
               // language=xml
               """
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-          </manifest>
-          """
+              <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              </manifest>
+              """
                   .trimIndent()
           )
         }
@@ -53,9 +53,9 @@ class AgpConfiguratorUtilsTest {
           writeText(
               // language=xml
               """
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.facebook.react" >
-          </manifest>
-          """
+              <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.facebook.react" >
+              </manifest>
+              """
                   .trimIndent()
           )
         }

@@ -68,7 +68,10 @@ export function rawToPerformanceEntry(
         connectEnd: entry.connectEnd ?? 0,
         responseStart: entry.responseStart ?? 0,
         responseEnd: entry.responseEnd ?? 0,
-        responseStatus: entry.responseStatus,
+        responseStatus: entry.responseStatus ?? 0,
+        contentType: entry.contentType ?? '',
+        encodedBodySize: entry.encodedBodySize ?? 0,
+        decodedBodySize: entry.decodedBodySize ?? 0,
       });
     default:
       return new PerformanceEntry(rawToPerformanceEntryType(entry.entryType), {

@@ -11,7 +11,6 @@
 import type {ConfigT} from 'metro-config';
 
 import {isOSS, validateEnvironmentVariables} from '../EnvironmentOptions';
-import {PROJECT_ROOT} from '../paths';
 import build from './build';
 import {createDevMiddleware} from '@react-native/dev-middleware';
 import connect from 'connect';
@@ -53,7 +52,6 @@ async function startMetroServer() {
     middleware: devMiddleware,
     websocketEndpoints: debuggerWebsocketEndpoints,
   } = createDevMiddleware({
-    projectRoot: PROJECT_ROOT,
     serverBaseUrl: `http://localhost:${metroConfig.server.port}`,
   });
 

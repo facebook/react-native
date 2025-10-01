@@ -7,7 +7,7 @@
 
 #import <React/RCTViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import "RCTBaseTextViewManager.h"
 
@@ -16,4 +16,4 @@ __attribute__((deprecated("This API will be removed along with the legacy archit
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

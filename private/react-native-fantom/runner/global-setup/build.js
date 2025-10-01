@@ -78,6 +78,7 @@ async function warmUpMetro(isOptimizedMode: boolean): Promise<void> {
     platform: 'android',
     minify: isOptimizedMode,
     dev: !isOptimizedMode,
+    customTransformOptions: undefined,
   });
 
   try {

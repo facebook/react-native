@@ -13,6 +13,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(facebook-hte-CArray,modernize-avoid-c-arrays)
 constexpr const char LayoutConformanceShadowNodeComponentName[] =
     "LayoutConformance";
 

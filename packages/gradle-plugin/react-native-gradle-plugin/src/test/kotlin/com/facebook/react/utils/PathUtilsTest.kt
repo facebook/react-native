@@ -162,6 +162,16 @@ class PathUtilsTest {
     assertThat(detectOSAwareHermesCommand(tempFolder.root, "")).isEqualTo(expected.toString())
   }
 
+  @Test
+  @WithOs(OS.MAC)
+  fun detectOSAwareHermesCommand_withHermesV1Enabled() {
+    tempFolder.newFolder("node_modules/hermes-compiler/hermesc/osx-bin/")
+    val expected = tempFolder.newFile("node_modules/hermes-compiler/hermesc/osx-bin/hermesc")
+
+    assertThat(detectOSAwareHermesCommand(tempFolder.root, "", hermesV1Enabled = true))
+        .isEqualTo(expected.toString())
+  }
+
   @Test(expected = IllegalStateException::class)
   @WithOs(OS.MAC)
   fun detectOSAwareHermesCommand_failsIfNotFound() {
@@ -310,11 +320,11 @@ class PathUtilsTest {
       writeText(
           // language=json
           """
-      {
-        "name": "a-library",
-        "codegenConfig": {}
-      }
-      """
+          {
+            "name": "a-library",
+            "codegenConfig": {}
+          }
+          """
               .trimIndent()
       )
     }

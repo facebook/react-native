@@ -59,6 +59,11 @@ if [[ $xcode_major_version -ge 15 ]]; then
   xcode_15_flags="LINKER:-ld_classic"
 fi
 
+boost_context_flag=""
+if [[ $PLATFORM_NAME == "catalyst" ]]; then
+  boost_context_flag="-DHERMES_ALLOW_BOOST_CONTEXT=0"
+fi
+
 architectures=$( echo "$ARCHS" | tr  " " ";" )
 
 echo "Configure Apple framework"
@@ -83,7 +88,8 @@ echo "Configure Apple framework"
   -DIMPORT_HOST_COMPILERS:PATH="${hermesc_path}" \
   -DJSI_DIR="$jsi_path" \
   -DHERMES_RELEASE_VERSION="for RN $release_version" \
-  -DCMAKE_BUILD_TYPE="$cmake_build_type"
+  -DCMAKE_BUILD_TYPE="$cmake_build_type" \
+  $boost_context_flag
 
 echo "Build Apple framework"
 
@@ -96,6 +102,7 @@ echo "Copy Apple framework to destroot/Library/Frameworks"
 
 platform_copy_destination=$(get_platform_copy_destination $PLATFORM_NAME)
 
+mkdir -p "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${platform_copy_destination}"
 cp -pfR \
   "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}/lib/hermesvm.framework" \
   "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${platform_copy_destination}"

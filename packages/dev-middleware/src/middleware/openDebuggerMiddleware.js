@@ -21,6 +21,7 @@ import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
+import {createHash} from 'crypto';
 import url from 'url';
 
 const LEGACY_SYNTHETIC_PAGE_TITLE =
@@ -190,11 +191,15 @@ export default function openDebuggerMiddleware({
               }
             }
             if (shouldUseStandaloneFuseboxShell) {
-              const windowKey = [
-                serverBaseUrl,
-                target.webSocketDebuggerUrl,
-                target.appId,
-              ].join('-');
+              const windowKey = createHash('sha256')
+                .update(
+                  [
+                    serverBaseUrl,
+                    target.webSocketDebuggerUrl,
+                    target.appId,
+                  ].join('-'),
+                )
+                .digest('hex');
               if (!browserLauncher.unstable_showFuseboxShell) {
                 throw new Error(
                   'Fusebox shell is not supported by the current browser launcher',

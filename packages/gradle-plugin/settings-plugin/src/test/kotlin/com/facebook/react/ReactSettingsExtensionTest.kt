@@ -238,30 +238,30 @@ class ReactSettingsExtensionTest {
         File(generatedFolder, "autolinking.json").apply {
           writeText(
               """
-      {
-        "root": "/",
-        "reactNativePath": "/node_modules/react-native",
-        "reactNativeVersion": "0.75",
-        "dependencies": {},
-        "healthChecks": [],
-        "platforms": {
-          "ios": {},
-          "android": {}
-        },
-        "assets": [],
-        "project": {
-          "ios": {},
-          "android": {
-            "sourceDir": "/",
-            "appName": "app",
-            "packageName": "com.TestApp",
-            "applicationId": "com.TestApp",
-            "mainActivity": ".MainActivity",
-            "assets": []
-          }
-        }
-      }
-    """
+              {
+                "root": "/",
+                "reactNativePath": "/node_modules/react-native",
+                "reactNativeVersion": "0.75",
+                "dependencies": {},
+                "healthChecks": [],
+                "platforms": {
+                  "ios": {},
+                  "android": {}
+                },
+                "assets": [],
+                "project": {
+                  "ios": {},
+                  "android": {
+                    "sourceDir": "/",
+                    "appName": "app",
+                    "packageName": "com.TestApp",
+                    "applicationId": "com.TestApp",
+                    "mainActivity": ".MainActivity",
+                    "assets": []
+                  }
+                }
+              }
+              """
                   .trimIndent()
           )
         }
@@ -309,13 +309,13 @@ class ReactSettingsExtensionTest {
         File(generatedFolder, "autolinking.json").apply {
           writeText(
               """
-      {
-        "project": {
-          "ios": {},
-          "android": {}
-        }
-      }
-    """
+              {
+                "project": {
+                  "ios": {},
+                  "android": {}
+                }
+              }
+              """
                   .trimIndent()
           )
         }

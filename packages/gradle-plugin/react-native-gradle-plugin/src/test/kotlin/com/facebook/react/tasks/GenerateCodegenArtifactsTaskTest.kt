@@ -138,16 +138,16 @@ class GenerateCodegenArtifactsTaskTest {
           // language=JSON
           writeText(
               """
-        {
-            "name": "@a/library",
-            "codegenConfig": {
-                "name": "an-awesome-library",
-                "android": {
-                  "javaPackageName": "com.awesome.package"
-                }
-            }
-        }
-        """
+              {
+                  "name": "@a/library",
+                  "codegenConfig": {
+                      "name": "an-awesome-library",
+                      "android": {
+                        "javaPackageName": "com.awesome.package"
+                      }
+                  }
+              }
+              """
                   .trimIndent()
           )
         }
@@ -172,12 +172,12 @@ class GenerateCodegenArtifactsTaskTest {
           // language=JSON
           writeText(
               """
-        {
-            "name": "@a/library",
-            "codegenConfig": {
-            }
-        }
-        """
+              {
+                  "name": "@a/library",
+                  "codegenConfig": {
+                  }
+              }
+              """
                   .trimIndent()
           )
         }

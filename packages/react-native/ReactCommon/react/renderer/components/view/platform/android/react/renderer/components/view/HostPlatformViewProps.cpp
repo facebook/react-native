@@ -310,7 +310,7 @@ static void updateBorderColorPropValue(
     const std::optional<SharedColor>& newColor,
     const std::optional<SharedColor>& oldColor) {
   if (newColor != oldColor) {
-    result[propName] = *newColor.value_or(SharedColor());
+    result[propName] = newColor.has_value() ? *newColor.value() : NULL;
   }
 }
 

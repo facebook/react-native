@@ -80,7 +80,9 @@ static void RCTPathAddEllipticArc(
     CGFloat endAngle,
     BOOL clockwise)
 {
-  CGFloat xScale = 1, yScale = 1, radius = 0;
+  CGFloat xScale = 1;
+  CGFloat yScale = 1;
+  CGFloat radius = 0;
   if (size.width != 0) {
     xScale = 1;
     yScale = size.height / size.width;

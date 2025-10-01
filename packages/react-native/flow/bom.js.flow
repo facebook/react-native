@@ -199,11 +199,11 @@ declare interface EventCounts {
 }
 
 declare class Performance {
+  +eventCounts: EventCounts;
+  +timeOrigin: DOMHighResTimeStamp;
+
   clearMarks(name?: string): void;
-
   clearMeasures(name?: string): void;
-
-  eventCounts: EventCounts;
   getEntries: (
     options?: PerformanceEntryFilterOptions,
   ) => Array<PerformanceEntry>;
@@ -215,7 +215,7 @@ declare class Performance {
     startMarkOrOptions?: string | PerformanceMeasureOptions,
     endMark?: string,
   ): PerformanceMeasure;
-  now: () => DOMHighResTimeStamp;
+  now(): DOMHighResTimeStamp;
   toJSON(): string;
 }
 

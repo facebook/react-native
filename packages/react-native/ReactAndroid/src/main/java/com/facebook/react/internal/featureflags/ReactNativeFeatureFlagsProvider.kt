@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<845b2ee5edc9aedbdbd052d9a930f666>>
+ * @generated SignedSource<<d4370bcde97d3c2b0b8d2a77e42a6031>>
  */
 
 /**
@@ -43,6 +43,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
+  @DoNotStrip public fun enableAndroidLinearText(): Boolean
+
   @DoNotStrip public fun enableAndroidTextMeasurementOptimizations(): Boolean
 
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
@@ -71,9 +73,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
 
+  @DoNotStrip public fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
+
   @DoNotStrip public fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
 
   @DoNotStrip public fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
+
+  @DoNotStrip public fun enableImperativeFocus(): Boolean
 
   @DoNotStrip public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
 
@@ -95,9 +101,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableResourceTimingAPI(): Boolean
 
+  @DoNotStrip public fun enableSwiftUIBasedFilters(): Boolean
+
   @DoNotStrip public fun enableViewCulling(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
+
+  @DoNotStrip public fun enableViewRecyclingForImage(): Boolean
 
   @DoNotStrip public fun enableViewRecyclingForScrollView(): Boolean
 
@@ -111,6 +121,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableVirtualViewWindowFocusDetection(): Boolean
 
+  @DoNotStrip public fun enableWebPerformanceAPIsByDefault(): Boolean
+
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
@@ -118,6 +130,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip public fun hideOffscreenVirtualViewsOnIOS(): Boolean
+
+  @DoNotStrip public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean
 
   @DoNotStrip public fun perfMonitorV2Enabled(): Boolean
 
@@ -151,9 +165,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
 
+  @DoNotStrip public fun useSharedAnimatedBackend(): Boolean
+
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip public fun useTurboModules(): Boolean
+
+  @DoNotStrip public fun viewCullingOutsetRatio(): Double
 
   @DoNotStrip public fun virtualViewHysteresisRatio(): Double
 

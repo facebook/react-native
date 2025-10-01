@@ -19,10 +19,10 @@ namespace facebook::react {
  * Unified layout constraints for measuring.
  */
 struct LayoutConstraints {
-  Size minimumSize{0, 0};
+  Size minimumSize{.width = 0, .height = 0};
   Size maximumSize{
-      std::numeric_limits<Float>::infinity(),
-      std::numeric_limits<Float>::infinity()};
+      .width = std::numeric_limits<Float>::infinity(),
+      .height = std::numeric_limits<Float>::infinity()};
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
 
   /*

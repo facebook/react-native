@@ -69,16 +69,11 @@ munge_underscores=true
 module.name_mapper='^react-native$' -> '<PROJECT_ROOT>/packages/react-native/index.js'
 module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/packages/react-native/\1'
 module.name_mapper='^@react-native/dev-middleware$' -> '<PROJECT_ROOT>/packages/dev-middleware'
-module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\|xml\)$' -> '<PROJECT_ROOT>/packages/react-native/Libraries/Image/RelativeImageStub'
+module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\|xml\|ktx\)$' -> '<PROJECT_ROOT>/packages/react-native/Libraries/Image/RelativeImageStub'
 
 module.system.haste.module_ref_prefix=m#
 
 react.runtime=automatic
-
-experimental.only_support_flow_fixme_and_expected_error=true
-experimental.require_suppression_with_error_code=true
-experimental.invariant_subtyping_error_message_improvement=true
-experimental.natural_inference.local_object_literals.followup_fix=true
 
 ban_spread_key_props=true
 
@@ -103,4 +98,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.280.0
+^0.287.0

@@ -26,6 +26,7 @@ target_link_libraries(react_renderer_animated
       react_renderer_mounting
       react_renderer_uimanager
       react_renderer_scheduler
+      react_renderer_animationbackend
       glog
       folly_runtime
 )

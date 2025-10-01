@@ -7,12 +7,17 @@
 
 #pragma once
 
+#if __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#include "FBReactNativeSpecJSI.h"
+#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#endif
 #include <folly/dynamic.h>
 #include <react/bridging/Function.h>
 #include <react/debug/flags.h>
 #include <react/renderer/animated/EventEmitterListener.h>
 #include <react/renderer/animated/event_drivers/EventAnimationDriver.h>
+#include <react/renderer/animationbackend/AnimationBackend.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <chrono>
 #include <memory>
@@ -62,6 +67,9 @@ class NativeAnimatedNodesManager {
       StartOnRenderCallback&& startOnRenderCallback = nullptr,
       StopOnRenderCallback&& stopOnRenderCallback = nullptr) noexcept;
 
+  explicit NativeAnimatedNodesManager(
+      std::shared_ptr<AnimationBackend> animationBackend) noexcept;
+
   ~NativeAnimatedNodesManager() noexcept;
 
   template <
@@ -79,6 +87,9 @@ class NativeAnimatedNodesManager {
   std::optional<double> getValue(Tag tag) noexcept;
 
 #pragma mark - Graph
+
+  // Called from JS thread
+  void createAnimatedNodeAsync(Tag tag, const folly::dynamic& config) noexcept;
 
   void createAnimatedNode(Tag tag, const folly::dynamic& config) noexcept;
 
@@ -101,6 +112,8 @@ class NativeAnimatedNodesManager {
   void extractAnimatedNodeOffsetOp(Tag tag);
 
   void setAnimatedNodeOffset(Tag tag, double offset);
+
+  AnimationMutations pullAnimationMutations();
 
 #pragma mark - Drivers
 
@@ -199,10 +212,17 @@ class NativeAnimatedNodesManager {
       const std::string& eventName,
       const EventPayload& payload) noexcept;
 
+  std::shared_ptr<AnimationBackend> animationBackend_;
+
   std::unique_ptr<AnimatedNode> animatedNode(
       Tag tag,
       const folly::dynamic& config) noexcept;
 
+  static thread_local bool isOnRenderThread_;
+
+  std::mutex animatedNodesCreatedAsyncMutex_;
+  std::unordered_map<Tag, std::unique_ptr<AnimatedNode>>
+      animatedNodesCreatedAsync_;
   std::unordered_map<Tag, std::unique_ptr<AnimatedNode>> animatedNodes_;
   std::unordered_map<Tag, Tag> connectedAnimatedNodes_;
   std::unordered_map<int, std::unique_ptr<AnimationDriver>> activeAnimations_;

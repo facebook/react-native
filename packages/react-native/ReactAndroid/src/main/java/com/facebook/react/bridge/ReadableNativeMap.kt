@@ -17,32 +17,76 @@ import com.facebook.proguard.annotations.DoNotStripAny
  */
 @DoNotStripAny
 public open class ReadableNativeMap protected constructor() : NativeMap(), ReadableMap {
-  private val keys: Array<String> by
-      lazy(LazyThreadSafetyMode.SYNCHRONIZED) { importKeys().also { jniPassCounter++ } }
-
-  private val localMap: HashMap<String, Any?> by
-      lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        val length = keys.size
-        val res = HashMap<String, Any?>(length)
-        val values = importValues()
-        jniPassCounter++
-        for (i in 0 until length) {
-          res[keys[i]] = values[i]
-        }
-        res
+  private var keysStorage: Array<String>? = null
+  private val keys: Array<String>
+    get() {
+      var keys = keysStorage
+      if (keys != null) {
+        return keys
       }
 
-  private val localTypeMap: HashMap<String, ReadableType> by
-      lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        val length = keys.size
-        val res = HashMap<String, ReadableType>(length)
-        val types = importTypes()
-        jniPassCounter++
-        for (i in 0 until length) {
-          res[keys[i]] = types[i] as ReadableType
+      synchronized(this) {
+        // Check again with the lock held to prevent duplicate construction
+        keys = keysStorage
+        if (keys == null) {
+          keys = importKeys()
+          keysStorage = keys
+          jniPassCounter++
         }
-        res
+        return keys
       }
+    }
+
+  private var localMapStorage: Map<String, Any?>? = null
+  private val localMap: Map<String, Any?>
+    get() {
+      var localMap = localMapStorage
+      if (localMap != null) {
+        return localMap
+      }
+
+      synchronized(this) {
+        // Check again with the lock held to prevent duplicate construction
+        localMap = localMapStorage
+        if (localMap == null) {
+          val keys = keys
+          val length = keys.size
+          localMap = HashMap<String, Any?>()
+          val values = importValues()
+          for (i in 0 until length) {
+            localMap[keys[i]] = values[i]
+          }
+          localMapStorage = localMap
+          jniPassCounter++
+        }
+        return localMap
+      }
+    }
+
+  private var localTypeMapStorage: Map<String, ReadableType>? = null
+  private val localTypeMap: Map<String, ReadableType>
+    get() {
+      var localTypeMap = localTypeMapStorage
+      if (localTypeMap != null) {
+        return localTypeMap
+      }
+
+      synchronized(this) {
+        // Check again with the lock held to prevent duplicate construction
+        localTypeMap = localTypeMapStorage
+        if (localTypeMap == null) {
+          val keys = keys
+          localTypeMap = HashMap<String, ReadableType>()
+          val types = importTypes()
+          for (i in 0 until keys.size) {
+            localTypeMap[keys[i]] = types[i] as ReadableType
+          }
+          localTypeMapStorage = localTypeMap
+          jniPassCounter++
+        }
+        return localTypeMap
+      }
+    }
 
   private external fun importKeys(): Array<String>
 
@@ -76,7 +120,7 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
   private inline fun <reified T> getValue(name: String, type: Class<T>): T =
       checkInstance(name, getValue(name), type)
 
-  private fun getNullableValue(name: String): Any? = localMap.get(name)
+  private fun getNullableValue(name: String): Any? = localMap[name]
 
   private inline fun <reified T> getNullableValue(name: String, type: Class<T>): T? {
     val res = getNullableValue(name)
@@ -110,36 +154,29 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
   override fun getDynamic(name: String): Dynamic = DynamicFromMap.create(this, name)
 
   override val entryIterator: Iterator<Map.Entry<String, Any>>
-    get() =
-        synchronized(this) {
-          val iteratorKeys = keys
-          val iteratorValues = importValues()
-          jniPassCounter++
-          return object : Iterator<Map.Entry<String, Any>> {
-            var currentIndex = 0
+    get() {
+      val iteratorKeys = keys
+      val iteratorValues = importValues()
+      jniPassCounter++
+      return object : Iterator<Map.Entry<String, Any>> {
+        var currentIndex = 0
 
-            override fun hasNext(): Boolean {
-              return currentIndex < iteratorKeys.size
-            }
+        override fun hasNext(): Boolean {
+          return currentIndex < iteratorKeys.size
+        }
 
-            override fun next(): Map.Entry<String, Any> {
-              val index = currentIndex++
-              return object : MutableMap.MutableEntry<String, Any> {
-                override val key: String
-                  get() = iteratorKeys[index]
+        override fun next(): Map.Entry<String, Any> {
+          val index = currentIndex++
+          return object : Map.Entry<String, Any> {
+            override val key: String
+              get() = iteratorKeys[index]
 
-                override val value: Any
-                  get() = iteratorValues[index]
-
-                override fun setValue(newValue: Any): Any {
-                  throw UnsupportedOperationException(
-                      "Can't set a value while iterating over a ReadableNativeMap"
-                  )
-                }
-              }
-            }
+            override val value: Any
+              get() = iteratorValues[index]
           }
         }
+      }
+    }
 
   override fun keySetIterator(): ReadableMapKeySetIterator {
     val iteratorKeys = keys

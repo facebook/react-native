@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9c51131fae9f19d03050be0c74ca3d4b>>
+ * @generated SignedSource<<6c6458278652bc91570db82b2be6c7f1>>
  */
 
 /**
@@ -42,6 +42,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool disableTextLayoutManagerCacheAndroid();
   bool enableAccessibilityOrder();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
+  bool enableAndroidLinearText();
   bool enableAndroidTextMeasurementOptimizations();
   bool enableBridgelessArchitecture();
   bool enableCppPropsIteratorSetter();
@@ -56,8 +57,10 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
+  bool enableImagePrefetchingJNIBatchingAndroid();
   bool enableImagePrefetchingOnUiThreadAndroid();
   bool enableImmediateUpdateModeForContentOffsetChanges();
+  bool enableImperativeFocus();
   bool enableInteropViewManagerClassLookUpOptimizationIOS();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
@@ -68,18 +71,22 @@ class ReactNativeFeatureFlagsAccessor {
   bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
   bool enableResourceTimingAPI();
+  bool enableSwiftUIBasedFilters();
   bool enableViewCulling();
   bool enableViewRecycling();
+  bool enableViewRecyclingForImage();
   bool enableViewRecyclingForScrollView();
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
   bool enableVirtualViewDebugFeatures();
   bool enableVirtualViewRenderState();
   bool enableVirtualViewWindowFocusDetection();
+  bool enableWebPerformanceAPIsByDefault();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
   bool hideOffscreenVirtualViewsOnIOS();
+  bool overrideBySynchronousMountPropsAtMountingAndroid();
   bool perfMonitorV2Enabled();
   double preparedTextCacheSize();
   bool preventShadowTreeCommitExhaustion();
@@ -96,8 +103,10 @@ class ReactNativeFeatureFlagsAccessor {
   bool useOptimizedEventBatchingOnAndroid();
   bool useRawPropsJsiValue();
   bool useShadowNodeStateOnClone();
+  bool useSharedAnimatedBackend();
   bool useTurboModuleInterop();
   bool useTurboModules();
+  double viewCullingOutsetRatio();
   double virtualViewHysteresisRatio();
   double virtualViewPrerenderRatio();
 
@@ -111,7 +120,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 68> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 77> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -123,6 +132,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> disableTextLayoutManagerCacheAndroid_;
   std::atomic<std::optional<bool>> enableAccessibilityOrder_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
+  std::atomic<std::optional<bool>> enableAndroidLinearText_;
   std::atomic<std::optional<bool>> enableAndroidTextMeasurementOptimizations_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
@@ -137,8 +147,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
+  std::atomic<std::optional<bool>> enableImagePrefetchingJNIBatchingAndroid_;
   std::atomic<std::optional<bool>> enableImagePrefetchingOnUiThreadAndroid_;
   std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
+  std::atomic<std::optional<bool>> enableImperativeFocus_;
   std::atomic<std::optional<bool>> enableInteropViewManagerClassLookUpOptimizationIOS_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
@@ -149,18 +161,22 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableResourceTimingAPI_;
+  std::atomic<std::optional<bool>> enableSwiftUIBasedFilters_;
   std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
+  std::atomic<std::optional<bool>> enableViewRecyclingForImage_;
   std::atomic<std::optional<bool>> enableViewRecyclingForScrollView_;
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
   std::atomic<std::optional<bool>> enableVirtualViewRenderState_;
   std::atomic<std::optional<bool>> enableVirtualViewWindowFocusDetection_;
+  std::atomic<std::optional<bool>> enableWebPerformanceAPIsByDefault_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
+  std::atomic<std::optional<bool>> overrideBySynchronousMountPropsAtMountingAndroid_;
   std::atomic<std::optional<bool>> perfMonitorV2Enabled_;
   std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustion_;
@@ -177,8 +193,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;
   std::atomic<std::optional<bool>> useRawPropsJsiValue_;
   std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
+  std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
+  std::atomic<std::optional<double>> viewCullingOutsetRatio_;
   std::atomic<std::optional<double>> virtualViewHysteresisRatio_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;
 };

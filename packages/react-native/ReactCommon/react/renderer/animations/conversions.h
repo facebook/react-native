@@ -64,12 +64,12 @@ static inline std::optional<AnimationConfig> parseAnimationConfig(
     bool parsePropertyType) {
   if (config.empty() || !config.isObject()) {
     return AnimationConfig{
-        AnimationType::Linear,
-        AnimationProperty::NotApplicable,
-        defaultDuration,
-        0,
-        0,
-        0};
+        .animationType = AnimationType::Linear,
+        .animationProperty = AnimationProperty::NotApplicable,
+        .duration = defaultDuration,
+        .delay = 0,
+        .springDamping = 0,
+        .initialVelocity = 0};
   }
 
   const auto typeIt = config.find("type");
@@ -165,12 +165,12 @@ static inline std::optional<AnimationConfig> parseAnimationConfig(
   }
 
   return std::optional<AnimationConfig>(AnimationConfig{
-      *animationType,
-      animationProperty,
-      duration,
-      delay,
-      springDamping,
-      initialVelocity});
+      .animationType = *animationType,
+      .animationProperty = animationProperty,
+      .duration = duration,
+      .delay = delay,
+      .springDamping = springDamping,
+      .initialVelocity = initialVelocity});
 }
 
 // Parse animation config from JS
@@ -206,7 +206,10 @@ static inline std::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
   }
 
   return LayoutAnimationConfig{
-      duration, *createConfig, *updateConfig, *deleteConfig};
+      .duration = duration,
+      .createConfig = *createConfig,
+      .updateConfig = *updateConfig,
+      .deleteConfig = *deleteConfig};
 }
 
 } // namespace facebook::react

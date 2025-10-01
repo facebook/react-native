@@ -175,6 +175,7 @@
     "commander": "^12.0.0",
     "flow-enums-runtime": "^0.0.6",
     "glob": "^7.1.1",
+    "hermes-compiler": "0.0.0",
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.7.0",
     "memoize-one": "^5.0.0",
@@ -190,7 +191,7 @@
     "semver": "^7.1.3",
     "stacktrace-parser": "^0.1.10",
     "whatwg-fetch": "^3.0.0",
-    "ws": "^6.2.3",
+    "ws": "^7.5.10",
     "yargs": "^17.6.2"
   },
   "codegenConfig": {

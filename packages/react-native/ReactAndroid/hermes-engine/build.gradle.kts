@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.tasks.internal.*
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -50,6 +51,8 @@ fun getSDKManagerPath(): String {
   }
 }
 
+val hermesV1Enabled =
+    rootProject.extensions.getByType(PrivateReactExtension::class.java).hermesV1Enabled.get()
 val reactNativeRootDir = project(":packages:react-native:ReactAndroid").projectDir.parent
 val customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 val downloadsDir =
@@ -79,12 +82,21 @@ val hermesBuildOutputFileTree =
     fileTree(hermesBuildDir.toString())
         .include("**/*.cmake", "**/*.marks", "**/compiler_depends.ts", "**/Makefile", "**/link.txt")
 
-var hermesVersion = "main"
-val hermesVersionFile = File(reactNativeRootDir, "sdks/.hermesversion")
+val hermesVersionProvider: Provider<String> =
+    providers.provider {
+      var hermesVersion = if (hermesV1Enabled) "250829098.0.0-stable" else "main"
+      val hermesVersionFile =
+          File(
+              reactNativeRootDir,
+              if (hermesV1Enabled) "sdks/.hermesv1version" else "sdks/.hermesversion",
+          )
 
-if (hermesVersionFile.exists()) {
-  hermesVersion = hermesVersionFile.readText()
-}
+      if (hermesVersionFile.exists()) {
+        hermesVersion = hermesVersionFile.readText()
+      }
+
+      hermesVersion
+    }
 
 val ndkBuildJobs = Runtime.getRuntime().availableProcessors().toString()
 val prefabHeadersDir = File("$buildDir/prefab-headers")
@@ -95,7 +107,11 @@ val jsiDir = File(reactNativeRootDir, "ReactCommon/jsi")
 val downloadHermesDest = File(downloadsDir, "hermes.tar.gz")
 val downloadHermes by
     tasks.registering(Download::class) {
-      src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
+      src(
+          providers.provider {
+            "https://github.com/facebook/hermes/tarball/${hermesVersionProvider.get()}"
+          }
+      )
       onlyIfModified(true)
       overwrite(true)
       quiet(true)
@@ -151,6 +167,7 @@ val configureBuildForHermes by
               "-B",
               hermesBuildDir.toString(),
               "-DJSI_DIR=" + jsiDir.absolutePath,
+              "-DCMAKE_BUILD_TYPE=Release",
           )
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         cmakeCommandLine = cmakeCommandLine + "-GNMake Makefiles"
@@ -295,7 +312,11 @@ android {
           // Therefore we're passing as build type Release, to provide a faster build.
           // This has the (unlucky) side effect of letting AGP call the build
           // tasks `configureCMakeRelease` while is actually building the debug flavor.
-          arguments("-DCMAKE_BUILD_TYPE=Release")
+          arguments(
+              "-DCMAKE_BUILD_TYPE=Release",
+              // For debug builds, explicitly enable the Hermes Debugger.
+              "-DHERMES_ENABLE_DEBUGGER=True",
+          )
         }
       }
     }

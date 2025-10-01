@@ -9,6 +9,7 @@
  */
 
 import type {
+  CoverageMap,
   FailureDetail,
   TestCaseResult,
   TestSuiteResult,
@@ -23,6 +24,7 @@ import type {
 
 import {printBenchmarkResultsRanking} from './benchmarkUtils';
 import {createBundle, createSourceMap} from './bundling';
+import {shouldCollectCoverage} from './coverageUtils';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import {run as runHermesCompiler} from './executables/hermesc';
@@ -193,6 +195,7 @@ function generateBytecodeBundle({
 module.exports = async function runTest(
   globalConfig: {
     updateSnapshot: 'all' | 'new' | 'none',
+    collectCoverage: boolean,
     ...
   },
   config: {
@@ -205,6 +208,7 @@ module.exports = async function runTest(
   runtime: {...},
   testPath: string,
 ): mixed {
+  let coverageMap: CoverageMap | void;
   const snapshotResolver = await buildSnapshotResolver(config);
   const snapshotPath = snapshotResolver.resolveSnapshotPath(testPath);
   const snapshotState = new SnapshotState(snapshotPath, {
@@ -339,6 +343,13 @@ module.exports = async function runTest(
       dev: !testConfig.isJsOptimized,
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
+      customTransformOptions: {
+        collectCoverage: shouldCollectCoverage(
+          testPath,
+          testContents,
+          globalConfig,
+        ),
+      },
     };
 
     await createBundle({
@@ -456,6 +467,8 @@ module.exports = async function runTest(
     }
 
     testResultsByConfig.push(testResults);
+
+    coverageMap = processedResult.coverageMap;
   }
 
   const endTime = Date.now();
@@ -481,6 +494,7 @@ module.exports = async function runTest(
       globalConfig,
       testPath,
     ),
+    coverage: coverageMap,
     leaks: false,
     openHandles: [],
     perfStats: {

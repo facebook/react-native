@@ -310,8 +310,8 @@ public open class JavaTimerManager(
           }
         }
       }
-      timersToCall?.let {
-        javaScriptTimerExecutor.callTimers(it)
+      timersToCall?.let { timers ->
+        javaScriptTimerExecutor.callTimers(timers)
         timersToCall = null
       }
       reactChoreographer.postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, this)

@@ -49,8 +49,14 @@ struct RuntimeSamplingProfile {
     /// id of the corresponding script in the VM.
     uint32_t scriptId;
     /// name of the function that represents call frame.
+    /// Storing a std::string_view should be considered safe here, beacause
+    /// the lifetime of the string contents are guaranteed as long as the raw
+    // Sampling Profiler object from Hermes is allocated.
     std::string_view functionName;
     /// source url of the corresponding script in the VM.
+    /// Storing a std::string_view should be considered safe here, beacause
+    /// the lifetime of the string contents are guaranteed as long as the raw
+    // Sampling Profiler object from Hermes is allocated.
     std::optional<std::string_view> scriptURL = std::nullopt;
     /// 0-based line number of the corresponding call frame.
     std::optional<uint32_t> lineNumber = std::nullopt;

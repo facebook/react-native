@@ -83,8 +83,8 @@ StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
       sliceChildShadowNodeViewPairs(rootShadowNodePair, scope, false, {}, {}));
 
   auto emptyRootShadowNode = rootShadowNode.clone(ShadowNodeFragment{
-      ShadowNodeFragment::propsPlaceholder(),
-      ShadowNode::emptySharedShadowNodeSharedList()});
+      .props = ShadowNodeFragment::propsPlaceholder(),
+      .children = ShadowNode::emptySharedShadowNodeSharedList()});
 
   auto stubViewTree = StubViewTree(ShadowView(*emptyRootShadowNode));
   stubViewTree.mutate(mutations);
@@ -94,8 +94,8 @@ StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
 StubViewTree buildStubViewTreeUsingDifferentiator(
     const ShadowNode& rootShadowNode) {
   auto emptyRootShadowNode = rootShadowNode.clone(ShadowNodeFragment{
-      ShadowNodeFragment::propsPlaceholder(),
-      ShadowNode::emptySharedShadowNodeSharedList()});
+      .props = ShadowNodeFragment::propsPlaceholder(),
+      .children = ShadowNode::emptySharedShadowNodeSharedList()});
 
   auto mutations =
       calculateShadowViewMutations(*emptyRootShadowNode, rootShadowNode);

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a78e171b87f70a1b2ab0de2f9e48012b>>
+ * @generated SignedSource<<b4b62078cf82f1444cb14af59bc7d2f5>>
  */
 
 /**
@@ -35,6 +35,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool disableTextLayoutManagerCacheAndroid() = 0;
   virtual bool enableAccessibilityOrder() = 0;
   virtual bool enableAccumulatedUpdatesInRawPropsAndroid() = 0;
+  virtual bool enableAndroidLinearText() = 0;
   virtual bool enableAndroidTextMeasurementOptimizations() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
   virtual bool enableCppPropsIteratorSetter() = 0;
@@ -49,8 +50,10 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableIOSTextBaselineOffsetPerLine() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
   virtual bool enableImagePrefetchingAndroid() = 0;
+  virtual bool enableImagePrefetchingJNIBatchingAndroid() = 0;
   virtual bool enableImagePrefetchingOnUiThreadAndroid() = 0;
   virtual bool enableImmediateUpdateModeForContentOffsetChanges() = 0;
+  virtual bool enableImperativeFocus() = 0;
   virtual bool enableInteropViewManagerClassLookUpOptimizationIOS() = 0;
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
@@ -61,18 +64,22 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enablePreparedTextLayout() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
   virtual bool enableResourceTimingAPI() = 0;
+  virtual bool enableSwiftUIBasedFilters() = 0;
   virtual bool enableViewCulling() = 0;
   virtual bool enableViewRecycling() = 0;
+  virtual bool enableViewRecyclingForImage() = 0;
   virtual bool enableViewRecyclingForScrollView() = 0;
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
   virtual bool enableVirtualViewDebugFeatures() = 0;
   virtual bool enableVirtualViewRenderState() = 0;
   virtual bool enableVirtualViewWindowFocusDetection() = 0;
+  virtual bool enableWebPerformanceAPIsByDefault() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
   virtual bool hideOffscreenVirtualViewsOnIOS() = 0;
+  virtual bool overrideBySynchronousMountPropsAtMountingAndroid() = 0;
   virtual bool perfMonitorV2Enabled() = 0;
   virtual double preparedTextCacheSize() = 0;
   virtual bool preventShadowTreeCommitExhaustion() = 0;
@@ -89,8 +96,10 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRawPropsJsiValue() = 0;
   virtual bool useShadowNodeStateOnClone() = 0;
+  virtual bool useSharedAnimatedBackend() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
+  virtual double viewCullingOutsetRatio() = 0;
   virtual double virtualViewHysteresisRatio() = 0;
   virtual double virtualViewPrerenderRatio() = 0;
 };

@@ -34,7 +34,6 @@ describe('enableStandaloneFuseboxShell experiment', () => {
   };
   const serverRef = withServerForEachTest({
     logger: undefined,
-    projectRoot: '',
     unstable_browserLauncher: BrowserLauncherWithFuseboxShell,
     unstable_experiments: {
       enableStandaloneFuseboxShell: true,

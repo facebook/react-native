@@ -37,6 +37,7 @@ struct TestState {
 #endif
 };
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 static const char TestComponentName[] = "Test";
 
 class TestProps : public ViewProps {

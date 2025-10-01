@@ -26,7 +26,7 @@ CdpMetricsReporter::CdpMetricsReporter(RuntimeExecutor runtimeExecutor)
 
 void CdpMetricsReporter::onEventTimingEntry(
     const PerformanceEventTiming& entry) {
-  runtimeExecutor_([entry = std::move(entry)](jsi::Runtime& runtime) {
+  runtimeExecutor_([entry](jsi::Runtime& runtime) {
     auto global = runtime.global();
     if (!global.hasProperty(runtime, metricsReporterName.data())) {
       return;
@@ -63,29 +63,6 @@ void CdpMetricsReporter::onEventTimingEntry(
         static_cast<int>(entry.startTime.toDOMHighResTimeStamp());
     jsonPayload["interactionType"] =
         std::string(getInteractionTypeForEvent(entry.name));
-
-    auto jsonString = folly::toJson(jsonPayload);
-    auto jsiString = jsi::String::createFromUtf8(runtime, jsonString);
-    auto metricsReporter =
-        global.getPropertyAsFunction(runtime, metricsReporterName.data());
-    metricsReporter.call(runtime, jsiString);
-  });
-}
-
-void CdpMetricsReporter::onLongTaskEntry(
-    const PerformanceLongTaskTiming& entry) {
-  runtimeExecutor_([entry = std::move(entry)](jsi::Runtime& runtime) {
-    auto global = runtime.global();
-    if (!global.hasProperty(runtime, metricsReporterName.data())) {
-      return;
-    }
-
-    folly::dynamic jsonPayload = folly::dynamic::object;
-    jsonPayload["name"] = "__ReactNative__LongTask";
-    jsonPayload["duration"] =
-        static_cast<int>(entry.duration.toDOMHighResTimeStamp());
-    jsonPayload["startTime"] =
-        static_cast<int>(entry.startTime.toDOMHighResTimeStamp());
 
     auto jsonString = folly::toJson(jsonPayload);
     auto jsiString = jsi::String::createFromUtf8(runtime, jsonString);

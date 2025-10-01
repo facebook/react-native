@@ -21,8 +21,8 @@ namespace facebook::react {
  * Contains the location and dimensions of a rectangle.
  */
 struct Rect {
-  Point origin{0, 0};
-  Size size{0, 0};
+  Point origin{.x = 0, .y = 0};
+  Size size{.width = 0, .height = 0};
 
   bool operator==(const Rect& rhs) const noexcept {
     return std::tie(this->origin, this->size) == std::tie(rhs.origin, rhs.size);
@@ -51,7 +51,7 @@ struct Rect {
     return origin.y + size.height / 2;
   }
   Point getCenter() const noexcept {
-    return {getMidX(), getMidY()};
+    return {.x = getMidX(), .y = getMidY()};
   }
 
   void unionInPlace(const Rect& rect) noexcept {
@@ -59,8 +59,8 @@ struct Rect {
     auto y1 = std::min(getMinY(), rect.getMinY());
     auto x2 = std::max(getMaxX(), rect.getMaxX());
     auto y2 = std::max(getMaxY(), rect.getMaxY());
-    origin = {x1, y1};
-    size = {x2 - x1, y2 - y1};
+    origin = {.x = x1, .y = y1};
+    size = {.width = x2 - x1, .height = y2 - y1};
   }
 
   bool containsPoint(Point point) noexcept {
@@ -84,7 +84,9 @@ struct Rect {
       return {};
     }
 
-    return {{x1, y1}, {intersectionWidth, intersectionHeight}};
+    return {
+        .origin = {.x = x1, .y = y1},
+        .size = {.width = intersectionWidth, .height = intersectionHeight}};
   }
 
   static Rect boundingRect(
@@ -112,9 +114,10 @@ struct Rect {
     rightBottomPoint.y = std::max(rightBottomPoint.y, d.y);
 
     return {
-        leftTopPoint,
-        {rightBottomPoint.x - leftTopPoint.x,
-         rightBottomPoint.y - leftTopPoint.y}};
+        .origin = leftTopPoint,
+        .size = {
+            .width = rightBottomPoint.x - leftTopPoint.x,
+            .height = rightBottomPoint.y - leftTopPoint.y}};
   }
 };
 

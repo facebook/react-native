@@ -55,7 +55,7 @@ public class AndroidInfoModule(reactContext: ReactApplicationContext) :
       constants["ServerHost"] =
           AndroidInfoHelpers.getServerHost(reactApplicationContext.applicationContext)
     }
-    constants["isTesting"] = "true" == System.getProperty(IS_TESTING) || isRunningScreenshotTest()
+    constants["isTesting"] = "true" == System.getProperty(IS_TESTING)
     val isDisableAnimations = System.getProperty(IS_DISABLE_ANIMATIONS)
     if (isDisableAnimations != null) {
       constants["isDisableAnimations"] = "true" == isDisableAnimations
@@ -70,15 +70,6 @@ public class AndroidInfoModule(reactContext: ReactApplicationContext) :
   }
 
   override fun invalidate() {}
-
-  private fun isRunningScreenshotTest(): Boolean {
-    return try {
-      Class.forName("com.facebook.testing.react.screenshots.ReactAppScreenshotTestActivity")
-      true
-    } catch (ignored: ClassNotFoundException) {
-      false
-    }
-  }
 
   public companion object {
     public const val NAME: String = NativePlatformConstantsAndroidSpec.NAME

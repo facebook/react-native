@@ -7,7 +7,7 @@
 
 #include "MethodCall.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <folly/json.h>
 #include <stdexcept>
@@ -88,4 +88,4 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

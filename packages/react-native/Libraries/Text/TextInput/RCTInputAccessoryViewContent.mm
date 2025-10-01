@@ -7,7 +7,7 @@
 
 #import <React/RCTInputAccessoryViewContent.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/UIView+React.h>
 
@@ -75,4 +75,4 @@
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

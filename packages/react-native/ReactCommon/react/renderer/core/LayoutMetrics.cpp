@@ -22,39 +22,39 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
     const LayoutMetrics& object,
     DebugStringConvertibleOptions options) {
   return {
-      {"frame",
-       "{x:" + getDebugDescription(object.frame.origin.x, {}) +
+      {.name = "frame",
+       .value = "{x:" + getDebugDescription(object.frame.origin.x, {}) +
            ",y:" + getDebugDescription(object.frame.origin.y, {}) +
            ",width:" + getDebugDescription(object.frame.size.width, {}) +
            ",height:" + getDebugDescription(object.frame.size.height, {}) +
            "}"},
-      {"contentInsets",
-       "{top:" + getDebugDescription(object.contentInsets.top, {}) +
+      {.name = "contentInsets",
+       .value = "{top:" + getDebugDescription(object.contentInsets.top, {}) +
            ",right:" + getDebugDescription(object.contentInsets.right, {}) +
            ",bottom:" + getDebugDescription(object.contentInsets.bottom, {}) +
            ",left:" + getDebugDescription(object.contentInsets.left, {}) + "}"},
-      {"borderWidth",
-       "{top:" + getDebugDescription(object.borderWidth.top, {}) +
+      {.name = "borderWidth",
+       .value = "{top:" + getDebugDescription(object.borderWidth.top, {}) +
            ",right:" + getDebugDescription(object.borderWidth.right, {}) +
            ",bottom:" + getDebugDescription(object.borderWidth.bottom, {}) +
            ",left:" + getDebugDescription(object.borderWidth.left, {}) + "}"},
-      {"overflowInset",
-       "{top:" + getDebugDescription(object.overflowInset.top, {}) +
+      {.name = "overflowInset",
+       .value = "{top:" + getDebugDescription(object.overflowInset.top, {}) +
            ",right:" + getDebugDescription(object.overflowInset.right, {}) +
            ",bottom:" + getDebugDescription(object.overflowInset.bottom, {}) +
            ",left:" + getDebugDescription(object.overflowInset.left, {}) + "}"},
-      {"displayType",
-       object.displayType == DisplayType::None
+      {.name = "displayType",
+       .value = object.displayType == DisplayType::None
            ? "None"
            : (object.displayType == DisplayType::Flex ? "Flex" : "Inline")},
-      {"layoutDirection",
-       object.layoutDirection == LayoutDirection::Undefined
+      {.name = "layoutDirection",
+       .value = object.layoutDirection == LayoutDirection::Undefined
            ? "Undefined"
            : (object.layoutDirection == LayoutDirection::LeftToRight
                   ? "LeftToRight"
                   : "RightToLeft")},
-      {"pointScaleFactor",
-       getDebugDescription(object.pointScaleFactor, options)},
+      {.name = "pointScaleFactor",
+       .value = getDebugDescription(object.pointScaleFactor, options)},
   };
 }
 

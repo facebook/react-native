@@ -29,14 +29,14 @@ bool UIColorIsP3ColorSpace(const std::shared_ptr<void> &uiColor)
 
   if (CGColorSpaceGetModel(colorSpace) == kCGColorSpaceModelRGB) {
     CFStringRef name = CGColorSpaceGetName(colorSpace);
-    if (name != NULL && CFEqual(name, kCGColorSpaceDisplayP3)) {
+    if (name != NULL && (CFEqual(name, kCGColorSpaceDisplayP3) != 0u)) {
       return true;
     }
   }
   return false;
 }
 
-UIColor *_Nullable UIColorFromInt32(uint32_t intColor)
+UIColor *_Nullable UIColorFromInt32(int32_t intColor)
 {
   CGFloat a = CGFloat((intColor >> 24) & 0xFF) / 255.0;
   CGFloat r = CGFloat((intColor >> 16) & 0xFF) / 255.0;
@@ -49,10 +49,10 @@ UIColor *_Nullable UIColorFromInt32(uint32_t intColor)
 
 UIColor *_Nullable UIColorFromDynamicColor(const facebook::react::DynamicColor &dynamicColor)
 {
-  uint32_t light = dynamicColor.lightColor;
-  uint32_t dark = dynamicColor.darkColor;
-  uint32_t highContrastLight = dynamicColor.highContrastLightColor;
-  uint32_t highContrastDark = dynamicColor.highContrastDarkColor;
+  int32_t light = dynamicColor.lightColor;
+  int32_t dark = dynamicColor.darkColor;
+  int32_t highContrastLight = dynamicColor.highContrastLightColor;
+  int32_t highContrastDark = dynamicColor.highContrastDarkColor;
 
   UIColor *lightColor = UIColorFromInt32(light);
   UIColor *darkColor = UIColorFromInt32(dark);
@@ -83,7 +83,7 @@ UIColor *_Nullable UIColorFromDynamicColor(const facebook::react::DynamicColor &
   return nil;
 }
 
-uint32_t ColorFromColorComponents(const facebook::react::ColorComponents &components)
+int32_t ColorFromColorComponents(const facebook::react::ColorComponents &components)
 {
   float ratio = 255;
   auto color = ((int32_t)round((float)components.alpha * ratio) & 0xff) << 24 |
@@ -92,7 +92,7 @@ uint32_t ColorFromColorComponents(const facebook::react::ColorComponents &compon
   return color;
 }
 
-uint32_t ColorFromUIColor(UIColor *color)
+int32_t ColorFromUIColor(UIColor *color)
 {
   CGFloat rgba[4];
   [color getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
@@ -100,12 +100,12 @@ uint32_t ColorFromUIColor(UIColor *color)
       {.red = (float)rgba[0], .green = (float)rgba[1], .blue = (float)rgba[2], .alpha = (float)rgba[3]});
 }
 
-uint32_t ColorFromUIColorForSpecificTraitCollection(
+int32_t ColorFromUIColorForSpecificTraitCollection(
     const std::shared_ptr<void> &uiColor,
     UITraitCollection *traitCollection)
 {
   UIColor *color = (UIColor *)unwrapManagedObject(uiColor);
-  if (color) {
+  if (color != nullptr) {
     color = [color resolvedColorWithTraitCollection:traitCollection];
     return ColorFromUIColor(color);
   }
@@ -113,7 +113,7 @@ uint32_t ColorFromUIColorForSpecificTraitCollection(
   return 0;
 }
 
-uint32_t ColorFromUIColor(const std::shared_ptr<void> &uiColor)
+int32_t ColorFromUIColor(const std::shared_ptr<void> &uiColor)
 {
   return ColorFromUIColorForSpecificTraitCollection(uiColor, [UITraitCollection currentTraitCollection]);
 }
@@ -172,7 +172,7 @@ std::size_t hashFromUIColor(const std::shared_ptr<void> &uiColor)
 
 } // anonymous namespace
 
-Color::Color(uint32_t color)
+Color::Color(int32_t color)
 {
   uiColor_ = wrapManagedObject(UIColorFromInt32(color));
   uiColorHashValue_ = facebook::react::hash_combine(color, 0);
@@ -199,7 +199,7 @@ Color::Color(const ColorComponents &components)
 Color::Color(std::shared_ptr<void> uiColor)
 {
   UIColor *color = ((UIColor *)unwrapManagedObject(uiColor));
-  if (color) {
+  if (color != nullptr) {
     auto colorHash = hashFromUIColor(uiColor);
     uiColorHashValue_ = colorHash;
   }
@@ -217,7 +217,7 @@ bool Color::operator!=(const Color &other) const
   return !(*this == other);
 }
 
-uint32_t Color::getColor() const
+int32_t Color::getColor() const
 {
   return ColorFromUIColor(uiColor_);
 }

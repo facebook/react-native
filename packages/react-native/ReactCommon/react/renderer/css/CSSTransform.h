@@ -310,7 +310,7 @@ struct CSSDataTypeParser<CSSScale> {
         ? std::get<CSSNumber>(y).value
         : std::get<CSSPercentage>(y).value / 100.0f;
 
-    return CSSScale{normX, normY};
+    return CSSScale{.x = normX, .y = normY};
   }
 };
 
