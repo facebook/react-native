@@ -13,6 +13,7 @@
 #include <react/debug/flags.h>
 #include <react/renderer/animated/EventEmitterListener.h>
 #include <react/renderer/animated/event_drivers/EventAnimationDriver.h>
+#include <react/renderer/animationbackend/AnimationBackend.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <chrono>
 #include <memory>
@@ -104,6 +105,8 @@ class NativeAnimatedNodesManager {
   void extractAnimatedNodeOffsetOp(Tag tag);
 
   void setAnimatedNodeOffset(Tag tag, double offset);
+
+  AnimationMutations pullAnimationMutations();
 
 #pragma mark - Drivers
 
@@ -201,6 +204,8 @@ class NativeAnimatedNodesManager {
       Tag tag,
       const std::string& eventName,
       const EventPayload& payload) noexcept;
+
+  std::shared_ptr<AnimationBackend> animationBackend_;
 
   std::unique_ptr<AnimatedNode> animatedNode(
       Tag tag,
