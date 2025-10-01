@@ -69,15 +69,19 @@ using namespace facebook::react;
         // Use rounded values to avoid floating point precision issues
         auto roundedAvailableWidth = round(availableWidthForCenterImages);
         auto roundedItemWidth = round(itemSize.width);
-        auto centerImagesCount = floor(roundedAvailableWidth / roundedItemWidth);
-        auto centerImagesWidth = centerImagesCount * itemSize.width;
-        auto totalFreeSpace = availableWidthForCenterImages - centerImagesWidth;
-        auto totalInstances = centerImagesCount + 2;
-        auto spacing = totalFreeSpace / (totalInstances - 1);
-        replicatorX.instanceTransform = CATransform3DMakeTranslation(itemSize.width + spacing, 0, 0);
-        replicatorX.instanceCount = totalInstances;
-        finalX = paintingArea.origin.x;
-        finalW = paintingArea.size.width;
+        if (roundedItemWidth > 0) {
+          auto centerImagesCount = floor(roundedAvailableWidth / roundedItemWidth);
+          auto centerImagesWidth = centerImagesCount * itemSize.width;
+          auto totalFreeSpace = availableWidthForCenterImages - centerImagesWidth;
+          auto totalInstances = centerImagesCount + 2;
+          auto spacing = totalFreeSpace / (totalInstances - 1);
+          replicatorX.instanceTransform = CATransform3DMakeTranslation(itemSize.width + spacing, 0, 0);
+          replicatorX.instanceCount = totalInstances;
+          finalX = paintingArea.origin.x;
+          finalW = paintingArea.size.width;
+        } else {
+          replicatorX.instanceCount = 1;
+        }
       }
       // Only one image can fit in the space
       else {
@@ -92,12 +96,16 @@ using namespace facebook::react;
       auto roundedGradientFrameX = round(gradientFrameX);
       auto roundedItemWidth = round(itemSize.width);
       auto roundedPaintingWidth = round(paintingArea.size.width);
-      auto tilesBeforeX = ceil(roundedGradientFrameX / roundedItemWidth);
-      auto tilesAfterX = ceil((roundedPaintingWidth - roundedGradientFrameX) / roundedItemWidth);
-      auto totalInstances = tilesBeforeX + tilesAfterX;
-      replicatorX.instanceCount = totalInstances;
-      finalX = gradientFrameX - (tilesBeforeX * itemSize.width);
-      finalW = totalInstances * itemSize.width;
+      if (roundedItemWidth > 0) {
+        auto tilesBeforeX = ceil(roundedGradientFrameX / roundedItemWidth);
+        auto tilesAfterX = ceil((roundedPaintingWidth - roundedGradientFrameX) / roundedItemWidth);
+        auto totalInstances = tilesBeforeX + tilesAfterX;
+        replicatorX.instanceCount = totalInstances;
+        finalX = gradientFrameX - (tilesBeforeX * itemSize.width);
+        finalW = totalInstances * itemSize.width;
+      } else {
+        replicatorX.instanceCount = 1;
+      }
     }
   }
 
@@ -121,15 +129,19 @@ using namespace facebook::react;
         // Use pixel rounded values to avoid floating point precision issues
         auto roundedAvailableHeight = round(availableHeightForCenterImages);
         auto roundedItemHeight = round(itemSize.height);
-        auto centerImagesCount = floor(roundedAvailableHeight / roundedItemHeight);
-        auto centerImagesHeight = centerImagesCount * itemSize.height;
-        auto totalFreeSpace = availableHeightForCenterImages - centerImagesHeight;
-        auto totalInstances = centerImagesCount + 2;
-        auto spacing = totalFreeSpace / (totalInstances - 1);
-        replicatorY.instanceTransform = CATransform3DMakeTranslation(0, itemSize.height + spacing, 0);
-        replicatorY.instanceCount = totalInstances;
-        finalY = paintingArea.origin.y;
-        finalH = paintingArea.size.height;
+        if (roundedItemHeight > 0) {
+          auto centerImagesCount = floor(roundedAvailableHeight / roundedItemHeight);
+          auto centerImagesHeight = centerImagesCount * itemSize.height;
+          auto totalFreeSpace = availableHeightForCenterImages - centerImagesHeight;
+          auto totalInstances = centerImagesCount + 2;
+          auto spacing = totalFreeSpace / (totalInstances - 1);
+          replicatorY.instanceTransform = CATransform3DMakeTranslation(0, itemSize.height + spacing, 0);
+          replicatorY.instanceCount = totalInstances;
+          finalY = paintingArea.origin.y;
+          finalH = paintingArea.size.height;
+        } else {
+          replicatorY.instanceCount = 1;
+        }
       } else {
         replicatorY.instanceCount = 1;
       }
@@ -142,12 +154,16 @@ using namespace facebook::react;
       auto roundedGradientFrameY = round(gradientFrameY);
       auto roundedItemHeight = round(itemSize.height);
       auto roundedPaintingHeight = round(paintingArea.size.height);
-      auto tilesBeforeY = ceil(roundedGradientFrameY / roundedItemHeight);
-      auto tilesAfterY = ceil((roundedPaintingHeight - roundedGradientFrameY) / roundedItemHeight);
-      auto instanceCount = tilesBeforeY + tilesAfterY;
-      replicatorY.instanceCount = instanceCount;
-      finalY = gradientFrameY - (tilesBeforeY * itemSize.height);
-      finalH = instanceCount * itemSize.height;
+      if (roundedItemHeight > 0) {
+        auto tilesBeforeY = ceil(roundedGradientFrameY / roundedItemHeight);
+        auto tilesAfterY = ceil((roundedPaintingHeight - roundedGradientFrameY) / roundedItemHeight);
+        auto instanceCount = tilesBeforeY + tilesAfterY;
+        replicatorY.instanceCount = instanceCount;
+        finalY = gradientFrameY - (tilesBeforeY * itemSize.height);
+        finalH = instanceCount * itemSize.height;
+      } else {
+        replicatorY.instanceCount = 1;
+      }
     }
   }
 
@@ -197,9 +213,13 @@ using namespace facebook::react;
       if (!floatEquality(remainder, 0.0)) {
         auto roundedPositioningWidth = round(positioningAreaSize.width);
         auto roundedItemFinalWidth = round(itemFinalSize.width);
-        auto divisor = round(roundedPositioningWidth / roundedItemFinalWidth);
-        if (divisor > 0) {
-          itemFinalSize.width = positioningAreaSize.width / divisor;
+        if (roundedItemFinalWidth > 0) {
+          auto divisor = round(roundedPositioningWidth / roundedItemFinalWidth);
+          if (divisor > 0) {
+            itemFinalSize.width = positioningAreaSize.width / divisor;
+          }
+        } else {
+          itemFinalSize.width = 0;
         }
       }
     }
@@ -211,9 +231,11 @@ using namespace facebook::react;
       if (!floatEquality(remainder, 0.0)) {
         auto roundedPositioningHeight = round(positioningAreaSize.height);
         auto roundedItemFinalHeight = round(itemFinalSize.height);
-        auto divisor = round(roundedPositioningHeight / roundedItemFinalHeight);
-        if (divisor > 0) {
-          itemFinalSize.height = positioningAreaSize.height / divisor;
+        if (roundedItemFinalHeight > 0) {
+          auto divisor = round(roundedPositioningHeight / roundedItemFinalHeight);
+          if (divisor > 0) {
+            itemFinalSize.height = positioningAreaSize.height / divisor;
+          }
         }
       }
     }
