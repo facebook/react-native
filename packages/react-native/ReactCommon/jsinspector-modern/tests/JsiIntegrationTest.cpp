@@ -565,6 +565,10 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
       std::to_string(executionContextId)));
 }
 
+#if !defined(HERMES_STATIC_HERMES)
+// FIXME(T239924718): Breakpoint resolution in Static Hermes is broken for
+// locations without column numbers under lazy compilation.
+
 TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterEval) {
   this->connect();
 
@@ -644,6 +648,8 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
       breakpointInfo->value()["params"]["location"]["scriptId"],
       scriptInfo->value()["params"]["scriptId"]);
 }
+
+#endif // !defined(HERMES_STATIC_HERMES)
 
 TYPED_TEST(JsiIntegrationHermesTest, CDPAgentReentrancyRegressionTest) {
   this->connect();
