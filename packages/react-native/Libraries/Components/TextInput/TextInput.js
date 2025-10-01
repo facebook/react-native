@@ -449,12 +449,6 @@ function InternalTextInput(props: TextInputProps): React.Node {
         before we can get to the long term breaking change.
       */
       if (instance != null) {
-        // Register the input immediately when the ref is set so that focus()
-        // can be called from ref callbacks
-        // Double registering during useLayoutEffect is fine, because the underlying
-        // state is a Set.
-        TextInputState.registerInput(instance);
-
         // $FlowFixMe[prop-missing] - See the explanation above.
         // $FlowFixMe[unsafe-object-assign]
         Object.assign(instance, {

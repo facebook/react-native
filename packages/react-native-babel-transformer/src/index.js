@@ -23,13 +23,14 @@ import type {
 */
 
 const {parseSync, transformFromAstSync} = require('@babel/core');
+const {getCacheKey: getPresetCacheKey} = require('@react-native/babel-preset');
 const makeHMRConfig = require('@react-native/babel-preset/src/configs/hmr');
 const crypto = require('crypto');
 const fs = require('fs');
 const nullthrows = require('nullthrows');
 const path = require('path');
 
-const cacheKeyParts = [fs.readFileSync(__filename)];
+const cacheKeyParts = [getPresetCacheKey(), fs.readFileSync(__filename)];
 
 // TS detection conditions copied from @react-native/babel-preset
 function isTypeScriptSource(fileName /*: string */) {

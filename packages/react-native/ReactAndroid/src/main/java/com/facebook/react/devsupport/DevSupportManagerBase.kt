@@ -398,6 +398,24 @@ public abstract class DevSupportManagerBase(
           }
     }
 
+    if (ReactNativeFeatureFlags.perfMonitorV2Enabled()) {
+      val isConnected = isPackagerConnected
+
+      val togglePerfMonitorItemString =
+          if (perfMonitorOverlayManager?.isEnabled == true)
+              applicationContext.getString(R.string.catalyst_performance_disable)
+          else applicationContext.getString(R.string.catalyst_performance_enable)
+
+      if (!isConnected) {
+        disabledItemKeys.add(togglePerfMonitorItemString)
+      }
+
+      options[togglePerfMonitorItemString] =
+          if (perfMonitorOverlayManager?.isEnabled == true)
+              DevOptionHandler { perfMonitorOverlayManager?.disable() }
+          else DevOptionHandler { perfMonitorOverlayManager?.enable() }
+    }
+
     options[applicationContext.getString(R.string.catalyst_change_bundle_location)] =
         DevOptionHandler {
           val context = reactInstanceDevHelper.currentActivity

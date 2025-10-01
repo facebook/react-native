@@ -105,11 +105,11 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
 
   error(
       """
-        Couldn't determine CLI location!
+      Couldn't determine CLI location!
 
-        Please set `react { cliFile = file(...) }` inside your
-        build.gradle to the path of the react-native cli.js file.
-        This file typically resides in `node_modules/react-native/cli.js`
+      Please set `react { cliFile = file(...) }` inside your
+      build.gradle to the path of the react-native cli.js file.
+      This file typically resides in `node_modules/react-native/cli.js`
       """
           .trimIndent()
   )

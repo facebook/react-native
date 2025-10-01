@@ -66,6 +66,11 @@
 @property (nonatomic, assign, setter=setHotLoadingEnabled:) BOOL isHotLoadingEnabled;
 
 /**
+ * Whether shake gesture is enabled.
+ */
+@property (nonatomic, assign) BOOL isShakeGestureEnabled;
+
+/**
  * Enables starting of profiling sampler on launch
  */
 @property (nonatomic, assign) BOOL startSamplingProfilerOnLaunch;

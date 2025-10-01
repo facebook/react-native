@@ -66,6 +66,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.fabric.mounting.mountitems.PrefetchResourcesMountItem;
+import com.facebook.react.fabric.mounting.mountitems.SynchronousMountItem;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
@@ -178,7 +179,7 @@ public class FabricUIManager
 
   private final BatchEventDispatchedListener mBatchEventDispatchedListener;
 
-  private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
+  private final List<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
   private boolean mMountNotificationScheduled = false;
   private List<Integer> mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
@@ -791,35 +792,7 @@ public class FabricUIManager
     //    android.view.View.updateDisplayListIfDirty(View.java:20466)
     // 3. A view is deleted while its parent is being drawn, causing a crash.
 
-    MountItem synchronousMountItem =
-        new MountItem() {
-          @Override
-          public void execute(MountingManager mountingManager) {
-            try {
-              mountingManager.storeSynchronousMountPropsOverride(reactTag, props);
-              mountingManager.updatePropsSynchronously(reactTag, props);
-            } catch (Exception ex) {
-              // TODO T42943890: Fix animations in Fabric and remove this try/catch?
-              // There might always be race conditions between surface teardown and
-              // animations/other operations, so it may not be feasible to remove this.
-              // Practically 100% of reported errors from this point are because the
-              // surface has stopped by this point, but the MountItem was queued before
-              // the surface was stopped. It's likely not feasible to prevent all such races.
-            }
-          }
-
-          @Override
-          public int getSurfaceId() {
-            return View.NO_ID;
-          }
-
-          @Override
-          public String toString() {
-            String propsString =
-                IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>";
-            return String.format("SYNC UPDATE PROPS [%d]: %s", reactTag, propsString);
-          }
-        };
+    MountItem synchronousMountItem = new SynchronousMountItem(reactTag, props);
 
     // If the reactTag exists, we assume that it might at the end of the next
     // batch of MountItems. Otherwise, we try to execute immediately.
@@ -1399,24 +1372,21 @@ public class FabricUIManager
         // delay paint.
         UiThreadUtil.getUiThreadHandler()
             .postAtFrontOfQueue(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    mMountNotificationScheduled = false;
+                () -> {
+                  mMountNotificationScheduled = false;
 
-                    // Create a copy in case mount hooks trigger more mutations
-                    final List<Integer> surfaceIdsToReportMount =
-                        mSurfaceIdsWithPendingMountNotification;
-                    mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
+                  // Create a copy in case mount hooks trigger more mutations
+                  final List<Integer> surfaceIdsToReportMount =
+                      mSurfaceIdsWithPendingMountNotification;
+                  mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
 
-                    final @Nullable FabricUIManagerBinding binding = mBinding;
-                    if (binding == null || mDestroyed) {
-                      return;
-                    }
+                  final @Nullable FabricUIManagerBinding binding = mBinding;
+                  if (binding == null || mDestroyed) {
+                    return;
+                  }
 
-                    for (int surfaceId : surfaceIdsToReportMount) {
-                      binding.reportMount(surfaceId);
-                    }
+                  for (int surfaceId : surfaceIdsToReportMount) {
+                    binding.reportMount(surfaceId);
                   }
                 });
       }

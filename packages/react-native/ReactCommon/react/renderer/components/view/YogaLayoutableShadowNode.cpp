@@ -531,9 +531,9 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
   // TODO: Why does this not use `ShadowNodeFragment::statePlaceholder()` like
   // `adoptYogaChild()`?
   auto clonedChildNode = childNode.clone(
-      {ShadowNodeFragment::propsPlaceholder(),
-       ShadowNodeFragment::childrenPlaceholder(),
-       childNode.getState()});
+      {.props = ShadowNodeFragment::propsPlaceholder(),
+       .children = ShadowNodeFragment::childrenPlaceholder(),
+       .state = childNode.getState()});
 
   replaceChild(childNode, clonedChildNode, layoutableChildIndex);
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
@@ -814,10 +814,10 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
   auto& shadowNode = shadowNodeFromContext(yogaNode);
 
-  auto minimumSize = Size{0, 0};
+  auto minimumSize = Size{.width = 0, .height = 0};
   auto maximumSize = Size{
-      std::numeric_limits<Float>::infinity(),
-      std::numeric_limits<Float>::infinity()};
+      .width = std::numeric_limits<Float>::infinity(),
+      .height = std::numeric_limits<Float>::infinity()};
 
   switch (widthMode) {
     case YGMeasureModeUndefined:
@@ -844,7 +844,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
   }
 
   auto size = shadowNode.measureContent(
-      threadLocalLayoutContext, {minimumSize, maximumSize});
+      threadLocalLayoutContext,
+      {.minimumSize = minimumSize, .maximumSize = maximumSize});
 
 #ifdef REACT_NATIVE_DEBUG
   bool widthInBounds = size.width + kDefaultEpsilon >= minimumSize.width &&

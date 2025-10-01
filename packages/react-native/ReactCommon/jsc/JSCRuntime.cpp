@@ -1047,7 +1047,14 @@ void JSCRuntime::setPropertyValue(
 }
 
 bool JSCRuntime::isArray(const jsi::Object& obj) const {
-  return JSValueIsArray(ctx_, objectRef(obj));
+  // JSValueIsArray only returns true if the object is a JS array. There's no
+  // public JSC API equivalent to Array.isArray, so we call the JS function
+  // through JSI directly.
+  auto constRt = const_cast<JSCRuntime*>(this);
+  auto isArrayFn = constRt->global()
+                       .getPropertyAsObject(*constRt, "Array")
+                       .getPropertyAsFunction(*constRt, "isArray");
+  return isArrayFn.call(*constRt, obj).asBool();
 }
 
 bool JSCRuntime::isArrayBuffer(const jsi::Object& obj) const {

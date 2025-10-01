@@ -15,23 +15,35 @@ internal class PerfMonitorOverlayManager(
     private val onRequestOpenDevTools: () -> Unit,
 ) : PerfMonitorUpdateListener {
   private var enabled: Boolean = false
+
+  /** Whether the Perf Monitor overlay is currently enabled. */
+  val isEnabled: Boolean
+    get() = enabled
+
   private var view: PerfMonitorOverlayView? = null
   private var tracingState: TracingState = TracingState.ENABLEDINCDPMODE
 
   /** Enable the Perf Monitor overlay. */
   fun enable() {
+    if (enabled) {
+      return
+    }
+
     enabled = true
     UiThreadUtil.runOnUiThread {
       val context = devHelper.currentActivity ?: return@runOnUiThread
-      view = PerfMonitorOverlayView(context, ::handleRecordingButtonPress)
+      if (view == null) {
+        view = PerfMonitorOverlayView(context, ::handleRecordingButtonPress)
+      }
+      view?.show()
     }
   }
 
   /** Disable the Perf Monitor overlay. Will remain hidden when updates are received. */
   fun disable() {
-    UiThreadUtil.runOnUiThread { view?.hide() }
-    view = null
     enabled = false
+
+    UiThreadUtil.runOnUiThread { view?.hide() }
   }
 
   /** Start background trace recording. */

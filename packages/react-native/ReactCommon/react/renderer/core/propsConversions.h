@@ -34,6 +34,30 @@ inline folly::dynamic toDynamic(const std::vector<std::string>& arrayValue) {
   return resultArray;
 }
 
+inline folly::dynamic toDynamic(const std::vector<int>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+inline folly::dynamic toDynamic(const std::vector<double>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+inline folly::dynamic toDynamic(const std::vector<Float>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
 inline folly::dynamic toDynamic(const std::vector<folly::dynamic>& arrayValue) {
   folly::dynamic resultArray = folly::dynamic::array();
   for (auto& value : arrayValue) {
@@ -168,7 +192,7 @@ T convertRawProp(
     return result;
   } catch (const std::exception& e) {
     // In case of errors, log the error and fall back to the default
-    RawPropsKey key{namePrefix, name, nameSuffix};
+    RawPropsKey key{.prefix = namePrefix, .name = name, .suffix = nameSuffix};
     // TODO: report this using ErrorUtils so it's more visible to the user
     LOG(ERROR) << "Error while converting prop '"
                << static_cast<std::string>(key) << "': " << e.what();

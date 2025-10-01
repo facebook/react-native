@@ -53,17 +53,20 @@ SharedColor colorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
 SharedColor clearColor() {
-  static SharedColor color = colorFromComponents(ColorComponents{0, 0, 0, 0});
+  static SharedColor color = colorFromComponents(
+      ColorComponents{.red = 0, .green = 0, .blue = 0, .alpha = 0});
   return color;
 }
 
 SharedColor blackColor() {
-  static SharedColor color = colorFromComponents(ColorComponents{0, 0, 0, 1});
+  static SharedColor color = colorFromComponents(
+      ColorComponents{.red = 0, .green = 0, .blue = 0, .alpha = 1});
   return color;
 }
 
 SharedColor whiteColor() {
-  static SharedColor color = colorFromComponents(ColorComponents{1, 1, 1, 1});
+  static SharedColor color = colorFromComponents(
+      ColorComponents{.red = 1, .green = 1, .blue = 1, .alpha = 1});
   return color;
 }
 

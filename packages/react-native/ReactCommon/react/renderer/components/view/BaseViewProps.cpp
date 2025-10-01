@@ -558,9 +558,6 @@ Transform BaseViewProps::resolveTransform(
     const Transform& transform,
     const TransformOrigin& transformOrigin) {
   auto transformMatrix = Transform{};
-  if (frameSize.width == 0 && frameSize.height == 0) {
-    return transformMatrix;
-  }
 
   // transform is matrix
   if (transform.operations.size() == 1 &&

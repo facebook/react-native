@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bad2aadea64eba29430e9c93c169d621>>
+ * @generated SignedSource<<559a8be87c24238e70fceded8ac962a0>>
  */
 
 /**
@@ -403,6 +403,11 @@ class ReactNativeFeatureFlags {
    * When enabled, NativeModules will be executed by using the TurboModule system
    */
   RN_EXPORT static bool useTurboModules();
+
+  /**
+   * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
+   */
+  RN_EXPORT static double viewCullingOutsetRatio();
 
   /**
    * Sets a hysteresis window for transition between prerender and hidden modes.

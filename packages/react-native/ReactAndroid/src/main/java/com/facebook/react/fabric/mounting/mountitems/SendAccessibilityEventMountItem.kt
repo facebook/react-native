@@ -12,17 +12,17 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.RetryableMountingLayerException
 import com.facebook.react.fabric.mounting.MountingManager
 
+private const val TAG = "SendAccessibilityEventMountItem"
+
 internal class SendAccessibilityEventMountItem(
-    private val _surfaceId: Int,
+    private val surfaceId: Int,
     private val reactTag: Int,
     private val eventType: Int,
 ) : MountItem {
 
-  private val TAG = "Fabric.SendAccessibilityEvent"
-
   override fun execute(mountingManager: MountingManager) {
     try {
-      mountingManager.sendAccessibilityEvent(_surfaceId, reactTag, eventType)
+      mountingManager.sendAccessibilityEvent(surfaceId, reactTag, eventType)
     } catch (e: RetryableMountingLayerException) {
       // Accessibility events are similar to commands in that they're imperative
       // calls from JS, disconnected from the commit lifecycle, and therefore
@@ -35,7 +35,7 @@ internal class SendAccessibilityEventMountItem(
     }
   }
 
-  override fun getSurfaceId(): Int = _surfaceId
+  override fun getSurfaceId(): Int = surfaceId
 
-  override fun toString(): String = "SendAccessibilityEventMountItem [$reactTag] $eventType"
+  override fun toString(): String = "$TAG [$reactTag] $eventType"
 }
