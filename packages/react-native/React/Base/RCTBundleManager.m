@@ -55,7 +55,8 @@
   if (_packagerServerScheme && _packagerServerHost) {
     NSArray<NSURLQueryItem *> *jsBundleURLQuery = [[RCTBundleURLProvider sharedSettings] createJSBundleURLQuery:_packagerServerHost packagerScheme:_packagerServerScheme];
     
-    return [[RCTBundleURLProvider class] resourceURLForResourcePath:@"js/RNTesterApp.ios"
+    NSString *path = [NSString stringWithFormat:@"/%@.bundle", @"js/RNTesterApp.ios"];
+    return [[RCTBundleURLProvider class] resourceURLForResourcePath:path
                                          packagerHost:_packagerServerHost
                                          scheme:_packagerServerScheme
                                          queryItems:jsBundleURLQuery];
