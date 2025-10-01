@@ -67,7 +67,7 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                             launchOptions:(nullable NSDictionary *)launchOptions
                 customBundleConfiguration:(nullable RCTCustomBundleConfiguration *)customBundleConfiguration
-                     devMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration
+                     devMenuConfiguration:(nullable RCTDevMenuConfiguration *)devMenuConfiguration
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider

@@ -136,6 +136,7 @@
   return [self viewWithModuleName:moduleName
                 initialProperties:initialProperties
                     launchOptions:nil
+            customBundleConfiguration:nil
              devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
@@ -144,6 +145,7 @@
   return [self viewWithModuleName:moduleName
                 initialProperties:nil
                     launchOptions:nil
+          customBundleConfiguration:nil
              devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 

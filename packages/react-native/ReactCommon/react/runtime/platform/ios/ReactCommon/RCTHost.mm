@@ -163,7 +163,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
               turboModuleManagerDelegate:turboModuleManagerDelegate
                         jsEngineProvider:jsEngineProvider
                            launchOptions:launchOptions
-               customBundleConfiguration:nil];
+               customBundleConfiguration:nil
+                    devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 /**
@@ -176,20 +177,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                             launchOptions:(nullable NSDictionary *)launchOptions
                 customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
-{
-  return [self initWithBundleURLProvider:provider
-                            hostDelegate:hostDelegate
-              turboModuleManagerDelegate:turboModuleManagerDelegate
-                        jsEngineProvider:jsEngineProvider
-                           launchOptions:launchOptions
-                    devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
-}
-
-- (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
-                             hostDelegate:(id<RCTHostDelegate>)hostDelegate
-               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                         jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
-                            launchOptions:(nullable NSDictionary *)launchOptions
                      devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self = [super init]) {
