@@ -381,8 +381,8 @@ public abstract class DevSupportManagerBase(
                 DevOptionHandler {
                   UiThreadUtil.runOnUiThread {
                     if (reactInstanceDevHelper is PerfMonitorDevHelper) {
-                      reactInstanceDevHelper.inspectorTarget?.let {
-                        if (it.pauseAndAnalyzeBackgroundTrace()) {
+                      reactInstanceDevHelper.inspectorTarget?.let { target ->
+                        if (!target.pauseAndAnalyzeBackgroundTrace()) {
                           openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString())
                         }
                       }
