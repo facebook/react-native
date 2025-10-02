@@ -663,6 +663,10 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["filter"] = toDynamic(filter);
   }
 
+  if (backgroundImage != oldProps->backgroundImage) {
+    result["experimental_backgroundImage"] = toDynamic(backgroundImage);
+  }
+
   if (mixBlendMode != oldProps->mixBlendMode) {
     result["mixBlendMode"] = toString(mixBlendMode);
   }
