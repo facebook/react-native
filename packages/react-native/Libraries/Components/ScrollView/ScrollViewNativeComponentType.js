@@ -63,6 +63,7 @@ export type ScrollViewNativeProps = $ReadOnly<{
   pagingEnabled?: ?boolean,
   persistentScrollbar?: ?boolean,
   pinchGestureEnabled?: ?boolean,
+  responderIgnoreScroll?: ?boolean,
   scrollEnabled?: ?boolean,
   scrollEventThrottle?: ?number,
   scrollIndicatorInsets?: ?EdgeInsetsProp,

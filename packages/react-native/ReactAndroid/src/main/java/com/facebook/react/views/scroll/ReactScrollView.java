@@ -131,6 +131,7 @@ public class ReactScrollView extends ScrollView
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
   private int mFadingEdgeLengthStart;
   private int mFadingEdgeLengthEnd;
+  private boolean mResponderIgnoreScroll;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -193,6 +194,7 @@ public class ReactScrollView extends ScrollView
     mMaintainVisibleContentPositionHelper = null;
     mFadingEdgeLengthStart = 0;
     mFadingEdgeLengthEnd = 0;
+    mResponderIgnoreScroll = true;
   }
 
   /* package */ void recycleView() {
@@ -593,7 +595,9 @@ public class ReactScrollView extends ScrollView
   }
 
   protected void handleInterceptedTouchEvent(MotionEvent ev) {
-    NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    if (mResponderIgnoreScroll) {
+      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    }
     ReactScrollViewHelper.emitScrollBeginDragEvent(this);
     mDragging = true;
     enableFpsListener();
@@ -619,7 +623,9 @@ public class ReactScrollView extends ScrollView
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(this, velocityX, velocityY);
-      NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      if (mResponderIgnoreScroll) {
+        NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      }
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
@@ -1526,5 +1532,13 @@ public class ReactScrollView extends ScrollView
   @Override
   public long getLastScrollDispatchTime() {
     return mLastScrollDispatchTime;
+  }
+
+  public void setResponderIgnoreScroll(boolean responderIgnoreScroll) {
+    mResponderIgnoreScroll = responderIgnoreScroll;
+  }
+
+  public boolean getResponderIgnoreScroll() {
+    return mResponderIgnoreScroll;
   }
 }

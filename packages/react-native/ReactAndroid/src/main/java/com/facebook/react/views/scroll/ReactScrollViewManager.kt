@@ -428,6 +428,11 @@ constructor(private val fpsListener: FpsListener? = null) :
     }
   }
 
+  @ReactProp(name = "responderIgnoreScroll")
+  public fun setResponderIgnoreScroll(view: ReactScrollView, responderIgnoreScroll: Boolean) {
+    view.responderIgnoreScroll = responderIgnoreScroll
+  }
+
   public companion object {
     public const val REACT_CLASS: String = "RCTScrollView"
 
