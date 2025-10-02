@@ -262,8 +262,12 @@ public class ReactActivityDelegate {
       ReactHost reactHost = getReactHost();
       lifecycle = reactHost != null ? reactHost.getLifecycleState() : LifecycleState.BEFORE_CREATE;
     } else {
-      ReactInstanceManager instanceManager = getReactInstanceManager();
-      lifecycle = instanceManager.getLifecycleState();
+      ReactNativeHost reactNativeHost = getReactNativeHost();
+      if (!reactNativeHost.hasInstance()) {
+        lifecycle = LifecycleState.BEFORE_CREATE;
+      } else {
+        lifecycle = reactNativeHost.getReactInstanceManager().getLifecycleState();
+      }
     }
 
     // If the permission request didn't show a dialog to the user, we can call the callback immediately.
