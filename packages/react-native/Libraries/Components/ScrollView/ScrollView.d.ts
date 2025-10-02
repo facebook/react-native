@@ -586,6 +586,19 @@ export interface ScrollViewPropsAndroid {
    * Causes the scrollbars not to turn transparent when they are not in use. The default value is false.
    */
   persistentScrollbar?: boolean | undefined;
+
+  /**
+   * Emit touchcancel from native Android ScrollView, instead of letting Responder System
+   * terminate responder at scroll.
+   *
+   * When it's set to false, `onTouchCancel` on ScrollView children will not be invoked, but
+   * `onTouchEnd` will be invoked (if touch starts on it) - which aligns with iOS.
+   *
+   * The default value is true.
+   *
+   * @platform android
+   */
+  responderIgnoreScroll?: boolean | undefined;
 }
 
 export interface ScrollViewProps

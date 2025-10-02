@@ -32,6 +32,7 @@ class HostPlatformScrollViewProps : public BaseScrollViewProps {
 
   bool sendMomentumEvents{};
   bool nestedScrollEnabled{};
+  bool responderIgnoreScroll{};
 
 #pragma mark - DebugStringConvertible
 

@@ -38,6 +38,15 @@ HostPlatformScrollViewProps::HostPlatformScrollViewProps(
                     rawProps,
                     "nestedScrollEnabled",
                     sourceProps.nestedScrollEnabled,
+                    true)),
+      responderIgnoreScroll(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.responderIgnoreScroll
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "responderIgnoreScroll",
+                    sourceProps.responderIgnoreScroll,
                     true))
 
 {}
@@ -57,6 +66,7 @@ void HostPlatformScrollViewProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(sendMomentumEvents);
     RAW_SET_PROP_SWITCH_CASE_BASIC(nestedScrollEnabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(responderIgnoreScroll);
   }
 }
 
@@ -76,7 +86,11 @@ SharedDebugStringConvertibleList HostPlatformScrollViewProps::getDebugProps()
           debugStringConvertibleItem(
               "nestedScrollEnabled",
               nestedScrollEnabled,
-              defaultScrollViewProps.nestedScrollEnabled)};
+              defaultScrollViewProps.nestedScrollEnabled),
+          debugStringConvertibleItem(
+              "responderIgnoreScroll",
+              responderIgnoreScroll,
+              defaultScrollViewProps.responderIgnoreScroll)};
 }
 #endif
 
@@ -346,6 +360,10 @@ folly::dynamic HostPlatformScrollViewProps::getDiffProps(
 
   if (nestedScrollEnabled != oldProps->nestedScrollEnabled) {
     result["nestedScrollEnabled"] = nestedScrollEnabled;
+  }
+
+  if (responderIgnoreScroll != oldProps->responderIgnoreScroll) {
+    result["responderIgnoreScroll"] = responderIgnoreScroll;
   }
 
   return result;

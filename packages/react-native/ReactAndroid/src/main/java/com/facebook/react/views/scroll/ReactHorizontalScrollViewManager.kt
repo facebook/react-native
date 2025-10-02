@@ -413,6 +413,14 @@ constructor(private val fpsListener: FpsListener? = null) :
     // Do Nothing: Align with static ViewConfigs
   }
 
+  @ReactProp(name = "responderIgnoreScroll")
+  public fun setResponderIgnoreScroll(
+      view: ReactHorizontalScrollView,
+      responderIgnoreScroll: Boolean,
+  ) {
+    view.responderIgnoreScroll = responderIgnoreScroll
+  }
+
   public companion object {
     public const val REACT_CLASS: String = "AndroidHorizontalScrollView"
   }
