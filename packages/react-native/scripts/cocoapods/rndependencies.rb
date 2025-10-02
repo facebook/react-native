@@ -158,9 +158,10 @@ class ReactNativeDependenciesUtils
 
         url = release_tarball_url(@@react_native_version, :debug)
         rndeps_log("Using tarball from URL: #{url}")
-        download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
+        destinationDebug = download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
         download_stable_rndeps(@@react_native_path, @@react_native_version, :release)
-        return {:http => url}
+
+        return {:http => URI::File.build(path: destinationDebug).to_s }
     end
 
     def self.release_tarball_url(version, build_type)
