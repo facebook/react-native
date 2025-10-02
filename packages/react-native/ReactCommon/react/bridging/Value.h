@@ -24,7 +24,7 @@ struct Bridging<std::nullptr_t> {
     }
   }
 
-  static std::nullptr_t toJs(jsi::Runtime&, std::nullptr_t) {
+  static std::nullptr_t toJs(jsi::Runtime& /*unused*/, std::nullptr_t) {
     return nullptr;
   }
 };
