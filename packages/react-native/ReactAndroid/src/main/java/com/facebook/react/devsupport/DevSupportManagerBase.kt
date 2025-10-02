@@ -567,8 +567,10 @@ public abstract class DevSupportManagerBase(
       perfMonitorOverlayManager?.let { manager ->
         reactInstanceDevHelper.inspectorTarget?.addPerfMonitorListener(manager)
       }
-      perfMonitorOverlayManager?.enable()
-      perfMonitorOverlayManager?.startBackgroundTrace()
+      if (isPackagerConnected) {
+        perfMonitorOverlayManager?.enable()
+        perfMonitorOverlayManager?.startBackgroundTrace()
+      }
       perfMonitorInitialized = true
     }
 
