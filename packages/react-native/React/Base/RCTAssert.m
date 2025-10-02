@@ -22,7 +22,7 @@ RCTAssertFunction RCTCurrentAssertFunction = nil;
 RCTFatalHandler RCTCurrentFatalHandler = nil;
 RCTFatalExceptionHandler RCTCurrentFatalExceptionHandler = nil;
 
-NSException *_RCTNotImplementedException(SEL, Class);
+NSException *_RCTNotImplementedException(SEL /*cmd*/, Class /*cls*/);
 NSException *_RCTNotImplementedException(SEL cmd, Class cls)
 {
   NSString *msg = [NSString stringWithFormat:

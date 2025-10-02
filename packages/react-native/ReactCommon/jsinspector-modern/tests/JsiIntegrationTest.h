@@ -186,7 +186,7 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
   }
 
   void onSetPausedInDebuggerMessage(
-      const OverlaySetPausedInDebuggerMessageRequest&) override {}
+      const OverlaySetPausedInDebuggerMessageRequest& /*request*/) override {}
 };
 
 } // namespace facebook::react::jsinspector_modern

@@ -21,8 +21,8 @@ class RCTMessageThread : public MessageQueueThread,
  public:
   RCTMessageThread(NSRunLoop* runLoop, RCTJavaScriptCompleteBlock errorBlock);
   ~RCTMessageThread() override;
-  void runOnQueue(std::function<void()>&&) override;
-  void runOnQueueSync(std::function<void()>&&) override;
+  void runOnQueue(std::function<void()>&& /*func*/) override;
+  void runOnQueueSync(std::function<void()>&& /*func*/) override;
   void quitSynchronous() override;
   void setRunLoop(NSRunLoop* runLoop);
 

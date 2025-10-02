@@ -25,8 +25,9 @@ class DefaultTurboModuleManagerDelegate : public jni::HybridClass<
       "Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate;";
 
   static jni::local_ref<jhybriddata> initHybrid(
-      jni::alias_ref<jclass>,
-      jni::alias_ref<jni::JList<CxxReactPackage::javaobject>::javaobject>);
+      jni::alias_ref<jclass> /*unused*/,
+      jni::alias_ref<jni::JList<
+          CxxReactPackage::javaobject>::javaobject> /*cxxReactPackages*/);
 
   static void registerNatives();
 

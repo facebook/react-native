@@ -37,8 +37,13 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
   do {                            \
   } while (false)
 #endif
-RCT_EXTERN void _RCTAssertFormat(const char *, const char *, int, const char *, NSString *, ...)
-    NS_FORMAT_FUNCTION(5, 6);
+RCT_EXTERN void _RCTAssertFormat(
+    const char * /*condition*/,
+    const char * /*fileName*/,
+    int /*lineNumber*/,
+    const char * /*function*/,
+    NSString * /*format*/,
+    ...) NS_FORMAT_FUNCTION(5, 6);
 
 /**
  * Report a fatal condition when executing. These calls will _NOT_ be compiled out

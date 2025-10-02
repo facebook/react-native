@@ -215,7 +215,7 @@ Size SurfaceHandler::measure(
   std::shared_lock lock(linkMutex_);
 
   if (link_.status != Status::Running) {
-    return layoutConstraints.clamp({0, 0});
+    return layoutConstraints.clamp({.width = 0, .height = 0});
   }
 
   react_native_assert(

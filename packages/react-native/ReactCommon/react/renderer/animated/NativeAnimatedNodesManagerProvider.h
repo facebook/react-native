@@ -46,6 +46,7 @@ class NativeAnimatedNodesManagerProvider {
   std::shared_ptr<EventEmitterListener> getEventEmitterListener();
 
  private:
+  std::shared_ptr<AnimationBackend> animationBackend_;
   std::shared_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
 
   std::shared_ptr<EventEmitterListenerContainer> eventEmitterListenerContainer_;
