@@ -898,11 +898,13 @@ public abstract class DevSupportManagerBase(
             override fun onPackagerConnected() {
               isPackagerConnected = true
               perfMonitorOverlayManager?.enable()
+              perfMonitorOverlayManager?.startBackgroundTrace()
             }
 
             override fun onPackagerDisconnected() {
               isPackagerConnected = false
               perfMonitorOverlayManager?.disable()
+              perfMonitorOverlayManager?.stopBackgroundTrace()
             }
 
             override fun onPackagerReloadCommand() {
