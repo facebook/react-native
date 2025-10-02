@@ -37,7 +37,7 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       "Lcom/facebook/react/runtime/ReactInstance;";
 
   static jni::local_ref<jhybriddata> initHybrid(
-      jni::alias_ref<jhybridobject>,
+      jni::alias_ref<jhybridobject> /*unused*/,
       jni::alias_ref<JJSRuntimeFactory::javaobject> jsRuntimeFactory,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
       jni::alias_ref<JavaMessageQueueThread::javaobject>
