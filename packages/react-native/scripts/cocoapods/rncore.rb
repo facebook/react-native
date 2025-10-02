@@ -24,12 +24,14 @@ end
 ## - RCT_USE_PREBUILT_RNCORE: If set to 1, it will use the release tarball from Maven instead of building from source.
 ## - RCT_TESTONLY_RNCORE_TARBALL_PATH: **TEST ONLY** If set, it will use a local tarball of RNCore if it exists.
 ## - RCT_TESTONLY_RNCORE_VERSION: **TEST ONLY** If set, it will override the version of RNCore to be used.
+## - RCT_SYMBOLICATE_PREBUILT_FRAMEWORKS: If set to 1, it will download the dSYMs for the prebuilt RNCore frameworks and install these in the framework folders
 
 class ReactNativeCoreUtils
     @@build_from_source = true
     @@react_native_path = ""
     @@react_native_version = ""
     @@use_nightly = false
+    @@download_dsyms = false
 
     ## Sets up wether ReactNative Core should be built from source or not.
     ## If RCT_USE_PREBUILT_RNCORE is set to 1 and the artifacts exists on Maven, it will
@@ -40,6 +42,7 @@ class ReactNativeCoreUtils
             rncore_log("Setting up ReactNativeCore...")
             @@react_native_path = react_native_path
             @@react_native_version = ENV["RCT_TESTONLY_RNCORE_VERSION"] == nil ? react_native_version : ENV["RCT_TESTONLY_RNCORE_VERSION"]
+            @@download_dsyms = ENV["RCT_SYMBOLICATE_PREBUILT_FRAMEWORKS"] == "1"
 
             if @@react_native_version.include? "nightly"
                 @@use_nightly = true
@@ -89,7 +92,7 @@ class ReactNativeCoreUtils
         if ENV["RCT_USE_PREBUILT_RNCORE"] == "1"
             if @@use_nightly
                 begin
-                    return self.podspec_source_download_prebuilt_nightly_tarball(@@react_native_version)
+                    return self.podspec_source_download_prebuilt_nightly_tarball()
                 rescue => e
                     rncore_log("Failed to download nightly tarball: #{e.message}", :error)
                     return
@@ -120,11 +123,63 @@ class ReactNativeCoreUtils
         if @@build_from_source
             return
         end
-        url = stable_tarball_url(@@react_native_version, :debug)
-        rncore_log("Using tarball from URL: #{url}")
-        download_stable_rncore(@@react_native_path, @@react_native_version, :debug)
-        download_stable_rncore(@@react_native_path, @@react_native_version, :release)
-        return {:http => url}
+
+        destinationDebug = download_stable_rncore(@@react_native_path, @@react_native_version, :debug)
+        destinationRelease = download_stable_rncore(@@react_native_path, @@react_native_version, :release)
+
+        if @@download_dsyms
+            dSymsDebug = download_stable_rncore(@@react_native_path, @@react_native_version, :debug, true)
+            dSymsRelease = download_stable_rncore(@@react_native_path, @@react_native_version, :release, true)
+            rncore_log("Resolved stable dSYMs")
+            rncore_log("  #{Pathname.new(dSymsDebug).relative_path_from(Pathname.pwd).to_s}")
+            rncore_log("  #{Pathname.new(dSymsRelease).relative_path_from(Pathname.pwd).to_s}")
+
+            # Make sure that the dSYMs are processed
+            process_dsyms(destinationDebug, dSymsDebug)
+            process_dsyms(destinationRelease, dSymsRelease)
+        end
+
+        rncore_log("Resolved stable ReactNativeCore-prebuilt version:")
+        rncore_log("  #{Pathname.new(destinationDebug).relative_path_from(Pathname.pwd).to_s}")
+        rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
+
+        return {:http => URI::File.build(path: destinationDebug).to_s }
+    end
+
+    def self.podspec_source_download_prebuilt_nightly_tarball()
+        if @@react_native_path == ""
+            rncore_log("react_native_path is not set", :error)
+            return
+        end
+
+        if @@react_native_version == ""
+            rncore_log("react_native_version is not set", :error)
+            return
+        end
+
+        if @@build_from_source
+            return
+        end
+
+        destinationDebug = download_nightly_rncore(@@react_native_path, @@react_native_version, :debug)
+        destinationRelease = download_nightly_rncore(@@react_native_path, @@react_native_version, :release)
+
+        if @@download_dsyms
+            dSymsDebug = download_nightly_rncore(@@react_native_path, @@react_native_version, :debug, true)
+            dSymsRelease = download_nightly_rncore(@@react_native_path, @@react_native_version, :release, true)
+            rncore_log("Resolved nightly dSYMs")
+            rncore_log("  #{Pathname.new(dSymsDebug).relative_path_from(Pathname.pwd).to_s}")
+            rncore_log("  #{Pathname.new(dSymsRelease).relative_path_from(Pathname.pwd).to_s}")
+
+            # Make sure that the dSYMs are processed
+            process_dsyms(destinationDebug, dSymsDebug)
+            process_dsyms(destinationRelease, dSymsRelease)
+        end
+
+        rncore_log("Resolved nightly ReactNativeCore-prebuilt version:")
+        rncore_log("  #{Pathname.new(destinationDebug).relative_path_from(Pathname.pwd).to_s}")
+        rncore_log("  #{Pathname.new(destinationRelease).relative_path_from(Pathname.pwd).to_s}")
+        return {:http => URI::File.build(path: destinationDebug).to_s }
     end
 
     def self.process_dsyms(frameworkTarball, dSymsTarball)
@@ -275,7 +330,7 @@ class ReactNativeCoreUtils
         PLIST
     end
 
-    def self.stable_tarball_url(version, build_type)
+    def self.stable_tarball_url(version, build_type, dsyms = false)
         ## You can use the `ENTERPRISE_REPOSITORY` ariable to customise the base url from which artifacts will be downloaded.
         ## The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
         maven_repo_url =
@@ -285,12 +340,12 @@ class ReactNativeCoreUtils
         group = "com/facebook/react"
         # Sample url from Maven:
         # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.81.0/react-native-artifacts-0.81.0-reactnative-core-debug.tar.gz
-        return "#{maven_repo_url}/#{group}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-reactnative-core-#{build_type.to_s}.tar.gz"
+        return "#{maven_repo_url}/#{group}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-reactnative-core-#{dsyms ? "dSYM-" : ""}#{build_type.to_s}.tar.gz"
     end
 
-    def self.nightly_tarball_url(version)
+    def self.nightly_tarball_url(version, configuration, dsyms = false)
         artefact_coordinate = "react-native-artifacts"
-        artefact_name = "reactnative-core-debug.tar.gz"
+        artefact_name = "reactnative-core-#{dsyms ? "dSYM-" : ""}#{configuration ? configuration : "debug"}.tar.gz"
         xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artefact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
 
         response = Net::HTTP.get_response(URI(xml_url))
@@ -307,26 +362,28 @@ class ReactNativeCoreUtils
         end
     end
 
-    def self.download_stable_rncore(react_native_path, version, configuration)
-        tarball_url = stable_tarball_url(version, configuration)
-        download_rncore_tarball(react_native_path, tarball_url, version, configuration)
+    def self.download_stable_rncore(react_native_path, version, configuration, dsyms = false)
+        tarball_url = stable_tarball_url(version, configuration, dsyms)
+        download_rncore_tarball(react_native_path, tarball_url, version, configuration, dsyms)
     end
 
-    def self.podspec_source_download_prebuilt_nightly_tarball(version)
-        url = nightly_tarball_url(version)
-        rncore_log("Using nightly tarball from URL: #{url}")
-        return {:http => url}
+    def self.download_nightly_rncore(react_native_path, version, configuration, dsyms = false)
+        tarball_url = nightly_tarball_url(version, configuration, dsyms)
+        download_rncore_tarball(react_native_path, tarball_url, version, configuration, dsyms)
     end
 
-    def self.download_rncore_tarball(react_native_path, tarball_url, version, configuration)
+    def self.download_rncore_tarball(react_native_path, tarball_url, version, configuration, dsyms = false)
         destination_path = configuration == nil ?
-            "#{artifacts_dir()}/reactnative-core-#{version}.tar.gz" :
-            "#{artifacts_dir()}/reactnative-core-#{version}-#{configuration}.tar.gz"
+            "#{artifacts_dir()}/reactnative-core-#{version}#{dsyms ? "-dSYM" : ""}.tar.gz" :
+            "#{artifacts_dir()}/reactnative-core-#{version}#{dsyms ? "-dSYM" : ""}-#{configuration}.tar.gz"
 
         unless File.exist?(destination_path)
           # Download to a temporary file first so we don't cache incomplete downloads.
+          rncore_log("Downloading ReactNativeCore-prebuilt #{dsyms ? "dSYMs " : ""}#{configuration ? configuration.to_s : ""} tarball from #{tarball_url} to #{Pathname.new(destination_path).relative_path_from(Pathname.pwd).to_s}")
           tmp_file = "#{artifacts_dir()}/reactnative-core.download"
           `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+        else
+          rncore_log("Using downloaded ReactNativeCore-prebuilt #{dsyms ? "dSYMs " : ""}#{configuration ? configuration.to_s : ""} tarball at #{Pathname.new(destination_path).relative_path_from(Pathname.pwd).to_s}")
         end
 
         return destination_path
@@ -337,7 +394,7 @@ class ReactNativeCoreUtils
     end
 
     def self.nightly_artifact_exists(version)
-        return artifact_exists(nightly_tarball_url(version).gsub("\\", ""))
+        return artifact_exists(nightly_tarball_url(version, :debug).gsub("\\", ""))
     end
 
     def self.artifacts_dir()
