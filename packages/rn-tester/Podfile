@@ -21,8 +21,6 @@ end
 
 prepare_react_native_project!
 
-IN_CI = ENV['CI'] == 'true'
-
 @prefix_path = "../react-native"
 
 linkage = ENV['USE_FRAMEWORKS']

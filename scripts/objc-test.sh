@@ -86,7 +86,8 @@ buildForTesting() {
   xcodebuild build-for-testing \
     -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
-    -sdk iphonesimulator
+    -sdk iphonesimulator \
+    -derivedDataPath "/tmp/RNTesterBuild"
 }
 
 runTestsOnly() {
@@ -155,7 +156,7 @@ main() {
 
     # Build and run tests.
     RESULT=-1
-    MAX_RETRY=3
+    MAX_RETRY=1
     for ((i=1; i<=MAX_RETRY; i++))
     do
       echo "Attempt #$i of running tests..."
