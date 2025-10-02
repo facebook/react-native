@@ -20,6 +20,7 @@ import com.facebook.react.bridge.JavaScriptModuleRegistry
 import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -30,6 +31,8 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcherProvider
+import com.facebook.react.uimanager.events.RCTEventEmitter
+import java.lang.IllegalArgumentException
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -124,6 +127,14 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
 
   override fun <T : JavaScriptModule> getJSModule(jsInterface: Class<T>): T? {
     mInteropModuleRegistry?.getInteropModule(jsInterface)?.let {
+      if (jsInterface == RCTEventEmitter::class.java) {
+        logSoftException(
+            TAG,
+            IllegalArgumentException(
+                "getJSModule(RCTEventEmitter) is not recommended in the new architecture and will stop working with interop disabled. Please use UIManagerHelper.getEventDispatcher or UIManagerHelper.getEventDispatcherForReactTag instead"
+            ),
+        )
+      }
       return it
     }
 
