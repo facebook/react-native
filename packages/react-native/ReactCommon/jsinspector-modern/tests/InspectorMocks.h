@@ -175,7 +175,7 @@ class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
   inline MockRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
-      std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState> /*unused*/,
       ExecutionContextDescription executionContextDescription,
       const RuntimeExecutor& /*runtimeExecutor*/)
       : frontendChannel(std::move(frontendChannel)),
