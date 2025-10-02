@@ -143,7 +143,7 @@ runs:
       shell: bash
       run: |
         echo "zipping tests results"
-        cd /Users/distiller/Library/Developer/Xcode
+        cd /Users/runner/Library/Developer/Xcode
         XCRESULT_PATH=$(find . -name '*.xcresult')
         tar -zcvf xcresults.tar.gz $XCRESULT_PATH
     - name: Upload artifact
@@ -151,7 +151,7 @@ runs:
       if: ${{ inputs.run-unit-integration-tests == 'true' }}
       with:
         name: xcresults
-        path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
+        path: /Users/runner/Library/Developer/Xcode/xcresults.tar.gz
     - name: Upload RNTester App
       if: ${{ inputs.use-frameworks == 'StaticLibraries' && inputs.ruby-version == '2.6.10' }} # This is needed to avoid conflicts with the artifacts
       uses: actions/upload-artifact@v4.3.4
