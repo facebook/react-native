@@ -169,6 +169,11 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
       collectSamplingProfile,
       (),
       (override));
+  MOCK_METHOD(
+      std::optional<folly::dynamic>,
+      serializeStackTrace,
+      (const StackTrace& stackTrace),
+      (override));
 
   inline MockRuntimeTargetDelegate() {
     using namespace testing;
