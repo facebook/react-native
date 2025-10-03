@@ -12,22 +12,30 @@
 #endif
 
 #if RNCXX_WITH_PROFILING_PROVIDER
-#include <hz_tracing/TracingMacros.h>
+#include <hz_tracing/v2/TracingMacros.h>
 
-#define SCOPED_TRACE_CPU_AUTO()                  \
-  HZT_TRACE_SCOPE_AUTO(                          \
-      ::horizon::tracing::TraceLevel::Important, \
-      ::horizon::tracing::EventCategory::Update, \
-      "react_native",                            \
-      ::horizon::tracing::DestinationFlag::Default);
+#ifndef TRACE_FUNCTION
+#if defined(__GNUC__) || defined(__clang__)
+#define TRACE_FUNCTION __PRETTY_FUNCTION__
+#else
+#define TRACE_FUNCTION __FUNCTION__
+#endif
+#endif // TRACE_FUNCTION
 
-#define SCOPED_TRACE_CPU(name)                   \
-  HZT_TRACE_SCOPE(                               \
-      name,                                      \
-      ::horizon::tracing::TraceLevel::Important, \
-      ::horizon::tracing::EventCategory::Update, \
-      "react_native",                            \
-      ::horizon::tracing::DestinationFlag::Default);
+static inline constexpr char kTraceCategory[] = "react_native";
+
+HZT_DEFINE_TRACING_CATEGORIES(
+    facebook::react,
+    horizon::tracing::v2::Category(
+        kTraceCategory,
+        "react_native",
+        horizon::tracing::v2::StrippingLevel::Important));
+
+#define SCOPED_TRACE_CPU_AUTO() \
+  HZT_TRACE_SCOPE_NS_V2(::facebook::react, kTraceCategory, TRACE_FUNCTION);
+
+#define SCOPED_TRACE_CPU(name) \
+  HZT_TRACE_SCOPE_NS_V2(::facebook::react, kTraceCategory, name);
 
 #else
 #ifndef SCOPED_TRACE_CPU_AUTO
