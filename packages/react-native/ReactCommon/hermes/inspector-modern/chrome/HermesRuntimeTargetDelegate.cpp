@@ -78,6 +78,14 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
       return &hermesStackTrace_;
     }
 
+    const HermesStackTrace& operator*() const {
+      return hermesStackTrace_;
+    }
+
+    const HermesStackTrace* operator->() const {
+      return &hermesStackTrace_;
+    }
+
    private:
     HermesStackTrace hermesStackTrace_;
   };
@@ -216,6 +224,16 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
     return samplingProfileDelegate_->collectSamplingProfile();
   }
 
+  std::optional<folly::dynamic> serializeStackTrace(
+      const StackTrace& stackTrace) override {
+    if (auto* hermesStackTraceWrapper =
+            dynamic_cast<const HermesStackTraceWrapper*>(&stackTrace)) {
+      return folly::parseJson(cdpDebugAPI_->serializeStackTraceToJsonStr(
+          **hermesStackTraceWrapper));
+    }
+    return std::nullopt;
+  }
+
  private:
   HermesRuntimeTargetDelegate& delegate_;
   std::shared_ptr<HermesRuntime> runtime_;
@@ -309,6 +327,11 @@ void HermesRuntimeTargetDelegate::disableSamplingProfiler() {
 tracing::RuntimeSamplingProfile
 HermesRuntimeTargetDelegate::collectSamplingProfile() {
   return impl_->collectSamplingProfile();
+}
+
+std::optional<folly::dynamic> HermesRuntimeTargetDelegate::serializeStackTrace(
+    const StackTrace& stackTrace) {
+  return impl_->serializeStackTrace(stackTrace);
 }
 
 #ifdef HERMES_ENABLE_DEBUGGER
