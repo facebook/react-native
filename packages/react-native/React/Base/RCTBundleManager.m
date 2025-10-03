@@ -22,7 +22,7 @@
   return self;
 }
 
-- (instancetype)initWithPackagerServerScheme:(NSString *)packagerServerScheme xw
+- (instancetype)initWithPackagerServerScheme:(NSString *)packagerServerScheme
                           packagerServerHost:(NSString *)packagerServerHost
                                   bundlePath:(NSString *)bundlePath
 {
