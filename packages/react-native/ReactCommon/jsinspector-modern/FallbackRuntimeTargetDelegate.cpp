@@ -58,4 +58,10 @@ FallbackRuntimeTargetDelegate::collectSamplingProfile() {
       "Sampling Profiler capabilities are not supported for Runtime fallback");
 }
 
+std::optional<folly::dynamic>
+FallbackRuntimeTargetDelegate::serializeStackTrace(
+    const StackTrace& /*stackTrace*/) {
+  return std::nullopt;
+}
+
 } // namespace facebook::react::jsinspector_modern
