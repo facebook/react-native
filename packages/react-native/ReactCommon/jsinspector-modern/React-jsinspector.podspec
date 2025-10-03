@@ -46,6 +46,7 @@ Pod::Spec.new do |s|
 
   resolve_use_frameworks(s, module_name: module_name)
 
+  add_dependency(s, "boost")
   add_dependency(s, "React-oscompat") # Needed for USE_FRAMEWORKS=dynamic
   s.dependency "React-featureflags"
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
@@ -55,7 +56,6 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-perflogger", version
   add_dependency(s, "React-oscompat")
-
   if use_hermes()
     s.dependency "hermes-engine"
   end

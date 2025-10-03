@@ -426,6 +426,7 @@ RCT_EXPORT_MODULE()
   if (request) {
     __block RCTURLRequestCancellationBlock cancellationBlock = nil;
     RCTNetworkTask *task =
+        // TODO(moti): migrate to networkTaskWithDevToolsRequestId
         [self networkTaskWithRequest:request
                      completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
                        dispatch_async(self->_methodQueue, ^{
@@ -437,11 +438,11 @@ RCT_EXPORT_MODULE()
     [task start];
 
     __weak RCTNetworkTask *weakTask = task;
-    NSNumber *requestId = [task.requestID copy];
+    NSString *devToolsRequestId = task.devToolsRequestId;
     return ^{
       [weakTask cancel];
       if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
-        [RCTInspectorNetworkReporter reportRequestFailed:requestId cancelled:YES];
+        [RCTInspectorNetworkReporter reportRequestFailed:devToolsRequestId cancelled:YES];
       }
       if (cancellationBlock) {
         cancellationBlock();
@@ -571,7 +572,7 @@ RCT_EXPORT_MODULE()
     }
     bool base64Encoded = [responseType isEqualToString:@"base64"] || [responseType isEqualToString:@"blob"];
 
-    [RCTInspectorNetworkReporter maybeStoreResponseBody:task.requestID
+    [RCTInspectorNetworkReporter maybeStoreResponseBody:task.devToolsRequestId
                                                    data:responseDataForPreview
                                           base64Encoded:base64Encoded];
   }
@@ -583,6 +584,7 @@ RCT_EXPORT_MODULE()
           responseType:(NSString *)responseType
     incrementalUpdates:(BOOL)incrementalUpdates
         responseSender:(RCTResponseSenderBlock)responseSender
+     devToolsRequestId:(NSString *)devToolsRequestId
 {
   RCTAssertThread(_methodQueue, @"sendRequest: must be called on request queue");
   __weak __typeof(self) weakSelf = self;
@@ -608,7 +610,7 @@ RCT_EXPORT_MODULE()
     NSArray<id> *responseJSON = @[ task.requestID, @(status), headers, responseURL ];
 
     if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
-      [RCTInspectorNetworkReporter reportResponseStart:task.requestID
+      [RCTInspectorNetworkReporter reportResponseStart:task.devToolsRequestId
                                               response:response
                                             statusCode:status
                                                headers:headers];
@@ -648,8 +650,8 @@ RCT_EXPORT_MODULE()
         ];
 
         if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
-          [RCTInspectorNetworkReporter reportDataReceived:task.requestID data:data];
-          [RCTInspectorNetworkReporter maybeStoreResponseBodyIncremental:task.requestID data:responseString];
+          [RCTInspectorNetworkReporter reportDataReceived:task.devToolsRequestId data:data];
+          [RCTInspectorNetworkReporter maybeStoreResponseBodyIncremental:task.devToolsRequestId data:responseString];
         }
         [weakSelf sendEventWithName:@"didReceiveNetworkIncrementalData" body:responseJSON];
       };
@@ -677,16 +679,16 @@ RCT_EXPORT_MODULE()
 
     if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
       if (error != nullptr) {
-        [RCTInspectorNetworkReporter reportRequestFailed:task.requestID cancelled:NO];
+        [RCTInspectorNetworkReporter reportRequestFailed:task.devToolsRequestId cancelled:NO];
       } else {
-        [RCTInspectorNetworkReporter reportResponseEnd:task.requestID encodedDataLength:data.length];
+        [RCTInspectorNetworkReporter reportResponseEnd:task.devToolsRequestId encodedDataLength:data.length];
       }
     }
     [strongSelf sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
     [strongSelf->_tasksByRequestID removeObjectForKey:task.requestID];
   };
 
-  task = [self networkTaskWithRequest:request completionBlock:completionBlock];
+  task = [self networkTaskWithDevToolsRequestId:devToolsRequestId request:request completionBlock:completionBlock];
   task.downloadProgressBlock = downloadProgressBlock;
   task.incrementalDataBlock = incrementalDataBlock;
   task.responseBlock = responseBlock;
@@ -699,10 +701,10 @@ RCT_EXPORT_MODULE()
     _tasksByRequestID[task.requestID] = task;
     responseSender(@[ task.requestID ]);
     if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
-      [RCTInspectorNetworkReporter reportRequestStart:task.requestID
+      [RCTInspectorNetworkReporter reportRequestStart:task.devToolsRequestId
                                               request:request
                                     encodedDataLength:task.response.expectedContentLength];
-      [RCTInspectorNetworkReporter reportConnectionTiming:task.requestID request:task.request];
+      [RCTInspectorNetworkReporter reportConnectionTiming:task.devToolsRequestId request:task.request];
     }
   }
 
@@ -740,13 +742,23 @@ RCT_EXPORT_MODULE()
 - (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request
                            completionBlock:(RCTURLRequestCompletionBlock)completionBlock
 {
+  return [self networkTaskWithDevToolsRequestId:nil request:request completionBlock:completionBlock];
+}
+
+- (RCTNetworkTask *)networkTaskWithDevToolsRequestId:(NSString *)devToolsRequestId
+                                             request:(NSURLRequest *)request
+                                     completionBlock:(RCTURLRequestCompletionBlock)completionBlock
+{
   id<RCTURLRequestHandler> handler = [self handlerForRequest:request];
   if (!handler) {
     RCTLogError(@"No suitable URL request handler found for %@", request.URL);
     return nil;
   }
 
-  RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request handler:handler callbackQueue:_methodQueue];
+  RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithDevToolsRequestId:devToolsRequestId
+                                                                   request:request
+                                                                   handler:handler
+                                                             callbackQueue:_methodQueue];
   task.completionBlock = completionBlock;
   return task;
 }
@@ -765,6 +777,7 @@ RCT_EXPORT_METHOD(sendRequest
   bool queryIncrementalUpdates = query.incrementalUpdates();
   double timeout = query.timeout();
   bool withCredentials = query.withCredentials();
+  NSString *devToolsRequestId = query.unstable_devToolsRequestId();
 
   dispatch_async(_methodQueue, ^{
     NSDictionary *queryDict = @{
@@ -776,6 +789,7 @@ RCT_EXPORT_METHOD(sendRequest
       @"incrementalUpdates" : @(queryIncrementalUpdates),
       @"timeout" : @(timeout),
       @"withCredentials" : @(withCredentials),
+      @"devToolsRequestId" : devToolsRequestId,
     };
 
     // TODO: buildRequest returns a cancellation block, but there's currently
@@ -788,7 +802,8 @@ RCT_EXPORT_METHOD(sendRequest
           [self sendRequest:request
                     responseType:responseType
               incrementalUpdates:incrementalUpdates
-                  responseSender:responseSender];
+                  responseSender:responseSender
+               devToolsRequestId:devToolsRequestId];
         }];
   });
 }

@@ -19,11 +19,6 @@ JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
       jsExecutor_{jsExecutor},
       runtimeTargetDelegate_{runtime_} {}
 
-/* static */ InspectorFlagOverrides
-JsiIntegrationTestHermesEngineAdapter::getInspectorFlagOverrides() noexcept {
-  return {};
-}
-
 RuntimeTargetDelegate&
 JsiIntegrationTestHermesEngineAdapter::getRuntimeTargetDelegate() {
   return runtimeTargetDelegate_;

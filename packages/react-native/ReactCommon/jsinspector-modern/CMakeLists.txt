@@ -19,6 +19,7 @@ target_merge_so(jsinspector)
 target_include_directories(jsinspector PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(jsinspector
+        boost
         folly_runtime
         glog
         jsinspector_network
