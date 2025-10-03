@@ -21,6 +21,7 @@ struct InspectorFlagOverrides {
   // the implementation file.
   std::optional<bool> fuseboxEnabledRelease;
   std::optional<bool> networkInspectionEnabled;
+  std::optional<bool> enableNetworkEventReporting;
 };
 
 /**
