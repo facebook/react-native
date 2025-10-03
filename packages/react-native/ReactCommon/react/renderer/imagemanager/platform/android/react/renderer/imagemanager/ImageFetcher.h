@@ -18,7 +18,8 @@
 
 namespace facebook::react {
 
-class ImageFetcher : public UIManagerCommitHook {
+class ImageFetcher : public UIManagerCommitHook,
+                     public std::enable_shared_from_this<ImageFetcher> {
  public:
   ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer);
   ~ImageFetcher() override;
@@ -47,7 +48,9 @@ class ImageFetcher : public UIManagerCommitHook {
  private:
   void flushImageRequests();
 
+  bool commitHookRegistered_{false};
   std::unordered_map<SurfaceId, std::vector<ImageRequestItem>> items_;
   std::shared_ptr<const ContextContainer> contextContainer_;
 };
+
 } // namespace facebook::react
