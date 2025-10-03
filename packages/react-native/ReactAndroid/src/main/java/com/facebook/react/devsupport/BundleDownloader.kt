@@ -135,19 +135,17 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     // In case the server doesn't support multipart/mixed responses, fallback to
                     // normal
                     // download.
-                    resp.body().use { body ->
-                      if (body != null) {
-                        processBundleResult(
-                            url,
-                            resp.code(),
-                            resp.headers(),
-                            body.source(),
-                            outputFile,
-                            bundleInfo,
-                            callback,
-                        )
-                      }
-                    }
+                  resp.body()?.use { body ->
+                    processBundleResult(
+                        url,
+                        resp.code(),
+                        resp.headers(),
+                        body.source(),
+                        outputFile,
+                        bundleInfo,
+                        callback,
+                    )
+                  }
                   }
                 }
               }
@@ -164,24 +162,8 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       bundleInfo: BundleInfo?,
       callback: DevBundleDownloadListener,
   ) {
-    if (response.body() == null) {
-      callback.onFailure(
-          DebugServerException(
-              ("""
-                    Error while reading multipart response.
-                    
-                    Response body was empty: ${response.code()}
-                    
-                    URL: $url
-                    
-                    
-                    """
-                  .trimIndent())
-          )
-      )
-      return
-    }
-    val source = checkNotNull(response.body()?.source())
+    val responseBody = response.body()
+    val source = responseBody.source()
     val bodyReader = MultipartStreamReader(source, boundary)
     val completed =
         bodyReader.readAllParts(
