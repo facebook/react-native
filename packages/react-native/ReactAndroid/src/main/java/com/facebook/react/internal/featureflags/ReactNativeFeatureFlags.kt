@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8af0aea8bbf4cffaad7d312032bef0e4>>
+ * @generated SignedSource<<bff2b41ec9f2f66e66d97e2172da78e9>>
  */
 
 /**
@@ -377,6 +377,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun preventShadowTreeCommitExhaustion(): Boolean = accessor.preventShadowTreeCommitExhaustion()
+
+  /**
+   * Do not emit touchcancel from Android ScrollView, instead responder system will terminate responder at scroll.
+   */
+  @JvmStatic
+  public fun responderTerminateOnScrollAndroid(): Boolean = accessor.responderTerminateOnScrollAndroid()
 
   /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks

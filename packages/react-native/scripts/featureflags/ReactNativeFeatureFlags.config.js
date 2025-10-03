@@ -667,6 +667,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'experimental',
     },
+    responderTerminateOnScrollAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-30',
+        description:
+          'Do not emit touchcancel from Android ScrollView, instead responder system will terminate responder at scroll.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     shouldPressibilityUseW3CPointerEventsForHover: {
       defaultValue: false,
       metadata: {

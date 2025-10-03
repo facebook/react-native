@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce76bbae9b797c6c1c9a1ceb1350f370>>
+ * @generated SignedSource<<40ec76836495f75aac39d99cf167f8e8>>
  */
 
 /**
@@ -328,6 +328,11 @@ class ReactNativeFeatureFlags {
    * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
    */
   RN_EXPORT static bool preventShadowTreeCommitExhaustion();
+
+  /**
+   * Do not emit touchcancel from Android ScrollView, instead responder system will terminate responder at scroll.
+   */
+  RN_EXPORT static bool responderTerminateOnScrollAndroid();
 
   /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks

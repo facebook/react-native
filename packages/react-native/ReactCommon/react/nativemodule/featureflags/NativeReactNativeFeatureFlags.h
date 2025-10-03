@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<990b6518e7b1d196deb0965e9ada6605>>
+ * @generated SignedSource<<6040457ae7b95118a4f1ec11a3606b6e>>
  */
 
 /**
@@ -151,6 +151,8 @@ class NativeReactNativeFeatureFlags
   double preparedTextCacheSize(jsi::Runtime& runtime);
 
   bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
+
+  bool responderTerminateOnScrollAndroid(jsi::Runtime& runtime);
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 

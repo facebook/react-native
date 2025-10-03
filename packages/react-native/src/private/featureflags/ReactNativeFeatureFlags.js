@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3507d3aa8ee32332308a94bf932e01c2>>
+ * @generated SignedSource<<43ab3b774863afd41bc316e03d8cfaeb>>
  * @flow strict
  * @noformat
  */
@@ -108,6 +108,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   perfMonitorV2Enabled: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
   preventShadowTreeCommitExhaustion: Getter<boolean>,
+  responderTerminateOnScrollAndroid: Getter<boolean>,
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   sweepActiveTouchOnChildNativeGesturesAndroid: Getter<boolean>,
@@ -440,6 +441,10 @@ export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('pre
  * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
  */
 export const preventShadowTreeCommitExhaustion: Getter<boolean> = createNativeFlagGetter('preventShadowTreeCommitExhaustion', false);
+/**
+ * Do not emit touchcancel from Android ScrollView, instead responder system will terminate responder at scroll.
+ */
+export const responderTerminateOnScrollAndroid: Getter<boolean> = createNativeFlagGetter('responderTerminateOnScrollAndroid', false);
 /**
  * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
  */
