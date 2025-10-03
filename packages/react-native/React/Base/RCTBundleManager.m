@@ -10,6 +10,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTLog.h"
 
 @implementation RCTCustomBundleConfiguration
 
@@ -68,7 +69,12 @@
   }
 
   if (_bundleFilePath) {
-    // TODO: modify bundle path
+    if (!_bundleFilePath.fileURL) {
+      RCTLogError(@"Bundle file path must be a file URL");
+      return nil;
+    }
+
+    return _bundleFilePath;
   }
 
   return fallbackURLProvider();

@@ -48,9 +48,12 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   self.dependencyProvider = [RCTAppDependencyProvider new];
 #endif
 
-  RCTCustomBundleConfiguration *customBundleConfiguration =
-      [[RCTCustomBundleConfiguration alloc] initWithPackagerServerScheme:@"http" packagerServerHost:@"localhost" bundlePath:kBundlePath];
-
+//  RCTCustomBundleConfiguration *customBundleConfiguration =
+//      [[RCTCustomBundleConfiguration alloc] initWithPackagerServerScheme:@"http" packagerServerHost:@"localhost" bundlePath:@"js/custom-bundle.js.bundle"];
+//  
+  NSURL *bundleURL = [NSURL fileURLWithPath:@"js/custom-bundle.js.bundle"];
+  RCTCustomBundleConfiguration *customBundleConfiguration = [[RCTCustomBundleConfiguration alloc] initWithBundleFilePath:bundleURL];
+  
   self.reactNativeFactory.customBundleConfiguration = customBundleConfiguration;
 
 #if RCT_DEV_MENU
