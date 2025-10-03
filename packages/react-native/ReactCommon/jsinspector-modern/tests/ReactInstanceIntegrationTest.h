@@ -24,7 +24,6 @@ namespace facebook::react::jsinspector_modern {
 using namespace ::testing;
 
 enum ReactInstanceIntegrationTestMode {
-  LEGACY_HERMES,
   FUSEBOX,
 };
 
