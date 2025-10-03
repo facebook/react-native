@@ -66,7 +66,6 @@ import com.facebook.react.views.scroll.ScrollEventType.Companion.getJSEventName
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColor
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHighlight
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHint
-import com.facebook.react.views.text.ReactBaseTextShadowNode
 import com.facebook.react.views.text.ReactTextUpdate
 import com.facebook.react.views.text.ReactTextUpdate.Companion.buildReactTextUpdateFromState
 import com.facebook.react.views.text.ReactTextViewManagerCallback
@@ -100,15 +99,6 @@ public open class ReactTextInputManager public constructor() :
         )
     return editText
   }
-
-  override fun createShadowNodeInstance(): ReactBaseTextShadowNode = ReactTextInputShadowNode()
-
-  public fun createShadowNodeInstance(
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?
-  ): ReactBaseTextShadowNode = ReactTextInputShadowNode(reactTextViewManagerCallback)
-
-  override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
-      ReactTextInputShadowNode::class.java
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
     val baseEventTypeConstants = super.getExportedCustomBubblingEventTypeConstants()
