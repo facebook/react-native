@@ -39,6 +39,7 @@ import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory
+import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.InspectorFlags
@@ -364,6 +365,12 @@ public class ReactHostImpl(
   /** Remove a listener previously added with [addReactInstanceEventListener]. */
   override fun removeReactInstanceEventListener(listener: ReactInstanceEventListener) {
     reactInstanceEventListeners.remove(listener)
+  }
+
+  override fun setDevMenuConfiguration(config: DevMenuConfiguration) {
+    devSupportManager.devMenuEnabled = config.devMenuEnabled
+    devSupportManager.shakeGestureEnabled = config.shakeGestureEnabled
+    devSupportManager.keyboardShortcutsEnabled = config.keyboardShortcutsEnabled
   }
 
   /**
