@@ -18,6 +18,9 @@ const {
   updateReactNativeArtifacts,
 } = require('../releases/set-rn-artifacts-version');
 const {setVersion} = require('../releases/set-version');
+const {
+  updateHermesVersionsToNightly,
+} = require('../releases/utils/hermes-utils');
 const {getNpmInfo, publishPackage} = require('../releases/utils/npm-utils');
 const {
   publishAndroidArtifactsToMaven,
@@ -96,6 +99,9 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
 
   // For stable releases, ci job `prepare_package_for_release` handles this
   if (buildType === 'nightly') {
+    // Set hermes versions to latest available
+    await updateHermesVersionsToNightly();
+
     // Set same version for all monorepo packages
     await setVersion(version);
     await publishMonorepoPackages(tag);
@@ -113,6 +119,8 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
     const packageJson = JSON.parse(packageJsonContent);
 
     if (packageJson.version === '1000.0.0') {
+      // Set hermes versions to latest available
+      await updateHermesVersionsToNightly();
       await updateReactNativeArtifacts(version, buildType);
     }
   }
