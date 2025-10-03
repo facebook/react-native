@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce76bbae9b797c6c1c9a1ceb1350f370>>
+ * @generated SignedSource<<72899a3f546792dd4c868c561f55c10f>>
  */
 
 /**
@@ -333,6 +333,11 @@ class ReactNativeFeatureFlags {
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
    */
   RN_EXPORT static bool shouldPressibilityUseW3CPointerEventsForHover();
+
+  /**
+   * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
+   */
+  RN_EXPORT static bool shouldTriggerResponderTransferOnScrollAndroid();
 
   /**
    * Skip activity identity assertion in ReactHostImpl::onHostPause()
