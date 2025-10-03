@@ -528,11 +528,24 @@ public class ReactScrollView extends ScrollView
   }
 
   private void scrollToChild(View child) {
+    // Only scroll the nearest ReactScrollView ancestor into view, rather than the focused child.
+    // Nested ScrollView instances will handle scrolling the child into their respective viewports.
+    View parent = child;
+    View scrollViewAncestor = null;
+    while (parent != null && parent != this) {
+      if (parent instanceof ReactScrollView) {
+        scrollViewAncestor = parent;
+      }
+      parent = (View) parent.getParent();
+    }
+
+    View scrollIntoViewTarget = scrollViewAncestor != null ? scrollViewAncestor : child;
+
     Rect tempRect = new Rect();
-    child.getDrawingRect(tempRect);
+    scrollIntoViewTarget.getDrawingRect(tempRect);
 
     /* Offset from child's local coordinates to ScrollView coordinates */
-    offsetDescendantRectToMyCoords(child, tempRect);
+    offsetDescendantRectToMyCoords(scrollIntoViewTarget, tempRect);
 
     int scrollDelta = computeScrollDeltaToGetChildRectOnScreen(tempRect);
 
