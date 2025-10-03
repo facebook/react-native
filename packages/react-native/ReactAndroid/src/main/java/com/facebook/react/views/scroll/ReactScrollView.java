@@ -1455,6 +1455,11 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
+  public void setReactScrollViewScrollState(ReactScrollViewScrollState scrollState) {
+    mReactScrollViewScrollState = scrollState;
+  }
+
+  @Override
   public ReactScrollViewScrollState getReactScrollViewScrollState() {
     return mReactScrollViewScrollState;
   }
