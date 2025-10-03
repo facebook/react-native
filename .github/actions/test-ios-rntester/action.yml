@@ -150,7 +150,7 @@ runs:
       uses: actions/upload-artifact@v4.3.4
       if: ${{ inputs.run-unit-integration-tests == 'true' }}
       with:
-        name: xcresults
+        name: xcresults-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-Ruby${{ inputs.ruby-version }}
         path: /Users/runner/Library/Developer/Xcode/xcresults.tar.gz
     - name: Upload RNTester App
       if: ${{ inputs.use-frameworks == 'StaticLibraries' && inputs.ruby-version == '2.6.10' }} # This is needed to avoid conflicts with the artifacts
@@ -162,5 +162,5 @@ runs:
       if: ${{ inputs.run-unit-integration-tests == 'true' }}
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: test-results
+        name: test-results-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-Ruby${{ inputs.ruby-version }}
         path: ./reports/junit
