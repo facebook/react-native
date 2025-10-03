@@ -50,7 +50,7 @@ class ReactInstanceIntegrationTest
   std::shared_ptr<MockMessageQueueThread> messageQueueThread;
   std::shared_ptr<ErrorUtils> errorHandler;
 
-  MockRemoteConnection& getRemoteConnection() {
+  NiceMock<MockRemoteConnection>& getRemoteConnection() {
     EXPECT_EQ(mockRemoteConnections_.objectsVended(), 1);
     auto rawPtr = mockRemoteConnections_[0];
     assert(rawPtr);
@@ -64,7 +64,7 @@ class ReactInstanceIntegrationTest
   size_t id_ = 1;
   bool verbose_ = false;
   std::optional<int> pageId_;
-  UniquePtrFactory<MockRemoteConnection> mockRemoteConnections_;
+  UniquePtrFactory<NiceMock<MockRemoteConnection>> mockRemoteConnections_;
   std::unique_ptr<ILocalConnection> clientToVM_;
   folly::QueuedImmediateExecutor immediateExecutor_;
   MockHostTargetDelegate hostTargetDelegate_;

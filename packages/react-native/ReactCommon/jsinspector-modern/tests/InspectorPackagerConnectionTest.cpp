@@ -49,6 +49,8 @@ class InspectorPackagerConnectionTestBase : public testing::Test {
           socket->getDelegate().didOpen();
           return std::move(socket);
         });
+    EXPECT_CALL(*packagerConnectionDelegate(), connectWebSocket(_, _))
+        .Times(AnyNumber());
   }
 
   void TearDown() override {
