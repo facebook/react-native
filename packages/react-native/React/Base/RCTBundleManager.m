@@ -6,10 +6,10 @@
  */
 
 #import "RCTBundleManager.h"
+#import <React/RCTBundleURLProvider.h>
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
-#import <React/RCTBundleURLProvider.h>
 
 @implementation RCTCustomBundleConfiguration
 
@@ -18,17 +18,20 @@
   if (self = [super init]) {
     _bundleFilePath = bundleFilePath;
   }
-  
+
   return self;
 }
 
-- (instancetype)initWithPackagerServerScheme:(NSString *)packagerServerScheme packagerServerHost:(NSString *)packagerServerHost
+- (instancetype)initWithPackagerServerScheme:(NSString *)packagerServerScheme xw
+                          packagerServerHost:(NSString *)packagerServerHost
+                                  bundlePath:(NSString *)bundlePath
 {
   if (self = [super init]) {
     _packagerServerScheme = packagerServerScheme;
     _packagerServerHost = packagerServerHost;
+    _bundlePath = bundlePath;
   }
-  
+
   return self;
 }
 
@@ -37,7 +40,7 @@
   if (!_packagerServerScheme) {
     return [[RCTBundleURLProvider sharedSettings] packagerScheme];
   }
-  
+
   return _packagerServerScheme;
 }
 
@@ -46,26 +49,28 @@
   if (!_packagerServerHost) {
     return [[RCTBundleURLProvider sharedSettings] packagerServerHostPort];
   }
-  
+
   return _packagerServerHost;
 }
 
 - (NSURL *)getBundleURL:(NSURL * (^)(void))fallbackURLProvider
 {
   if (_packagerServerScheme && _packagerServerHost) {
-    NSArray<NSURLQueryItem *> *jsBundleURLQuery = [[RCTBundleURLProvider sharedSettings] createJSBundleURLQuery:_packagerServerHost packagerScheme:_packagerServerScheme];
-    
-    NSString *path = [NSString stringWithFormat:@"/%@.bundle", @"js/RNTesterApp.ios"];
+    NSArray<NSURLQueryItem *> *jsBundleURLQuery =
+        [[RCTBundleURLProvider sharedSettings] createJSBundleURLQuery:_packagerServerHost
+                                                       packagerScheme:_packagerServerScheme];
+
+    NSString *path = [NSString stringWithFormat:@"/%@.bundle", _bundlePath];
     return [[RCTBundleURLProvider class] resourceURLForResourcePath:path
-                                         packagerHost:_packagerServerHost
-                                         scheme:_packagerServerScheme
-                                         queryItems:jsBundleURLQuery];
+                                                       packagerHost:_packagerServerHost
+                                                             scheme:_packagerServerScheme
+                                                         queryItems:jsBundleURLQuery];
   }
-  
+
   if (_bundleFilePath) {
     // TODO: modify bundle path
   }
-  
+
   return fallbackURLProvider();
 }
 

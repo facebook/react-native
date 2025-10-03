@@ -49,7 +49,7 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 #endif
 
   RCTCustomBundleConfiguration *customBundleConfiguration =
-      [[RCTCustomBundleConfiguration alloc] initWithPackagerServerScheme:@"http" packagerServerHost:@"localhost"];
+      [[RCTCustomBundleConfiguration alloc] initWithPackagerServerScheme:@"http" packagerServerHost:@"localhost" bundlePath:kBundlePath];
 
   self.reactNativeFactory.customBundleConfiguration = customBundleConfiguration;
 

@@ -32,10 +32,16 @@ typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
  */
 @property (nonatomic, readonly, nullable) NSString *packagerServerHost;
 
+/**
+ * The relative path to the bundle.
+ */
+@property (nonatomic, readonly, nullable) NSString *bundlePath;
+
 - (instancetype)initWithBundleFilePath:(NSURL *)bundleFilePath;
 
 - (instancetype)initWithPackagerServerScheme:(NSString *)packagerServerScheme
-                          packagerServerHost:(NSString *)packagerServerHost;
+                          packagerServerHost:(NSString *)packagerServerHost
+                                  bundlePath:(NSString *)bundlePath;
 
 - (NSURL *)getBundleURL:(NSURL *__nullable (^)(void))fallbackURLProvider;
 
