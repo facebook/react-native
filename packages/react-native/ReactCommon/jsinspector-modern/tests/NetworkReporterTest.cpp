@@ -44,9 +44,37 @@ class NetworkReporterTest : public JsiIntegrationPortableTestBase<
   void SetUp() override {
     JsiIntegrationPortableTestBase::SetUp();
     connect();
+    EXPECT_CALL(
+        fromPage(),
+        onMessage(
+            JsonParsed(AllOf(AtJsonPtr("/method", "Debugger.scriptParsed")))))
+        .Times(AnyNumber())
+        .WillRepeatedly(Invoke<>([this](const std::string& message) {
+          auto params = folly::parseJson(message);
+          // Store the script ID and URL for later use.
+          scriptUrlsById_.emplace(
+              params.at("params").at("scriptId").getString(),
+              params.at("params").at("url").getString());
+        }));
+  }
+
+  template <typename InnerMatcher>
+  Matcher<folly::dynamic> ScriptIdMapsTo(InnerMatcher urlMatcher) {
+    return ResultOf(
+        [this](const auto& id) { return getScriptUrlById(id.getString()); },
+        urlMatcher);
   }
 
  private:
+  std::optional<std::string> getScriptUrlById(const std::string& scriptId) {
+    auto it = scriptUrlsById_.find(scriptId);
+    if (it == scriptUrlsById_.end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  }
+
+  std::unordered_map<std::string, std::string> scriptUrlsById_;
 };
 
 TEST_P(NetworkReporterTest, testNetworkEnableDisable) {
@@ -453,6 +481,104 @@ TEST_P(NetworkReporterTest, testNetworkEventsWhenDisabled) {
       "disabled-request", 512, 512);
   NetworkReporter::getInstance().reportResponseEnd("disabled-request", 1024);
   NetworkReporter::getInstance().reportRequestFailed("disabled-request", false);
+}
+
+TEST_P(NetworkReporterTest, testRequestWillBeSentWithInitiator) {
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 0,
+                                          "result": {}
+                                      })"));
+  this->toPage_->sendMessage(R"({
+                                  "id": 0,
+                                  "method": "Debugger.enable"
+                              })");
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                  "id": 1,
+                                  "method": "Network.enable"
+                                })");
+  RequestInfo requestInfo;
+  requestInfo.url = "https://example.com/initiator";
+  requestInfo.httpMethod = "GET";
+
+  auto& runtime = engineAdapter_->getRuntime();
+
+  auto requestId = this->eval(R"( // line 0
+    function inner() { // line 1
+      return globalThis.__NETWORK_REPORTER__.createDevToolsRequestId(); // line 2
+    } // line 3
+    function outer() { // line 4
+      return inner(); // line 5
+    } // line 6
+    outer(); // line 7
+
+    //# sourceURL=initiatorTest.js
+  )")
+                       .asString(runtime)
+                       .utf8(runtime);
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Network.requestWillBeSent"),
+      AtJsonPtr("/params/requestId", requestId),
+      AtJsonPtr("/params/initiator/type", "script"),
+      AtJsonPtr(
+          "/params/initiator/stack/callFrames",
+          AllOf(
+              Each(AllOf(
+                  AtJsonPtr("/url", "initiatorTest.js"),
+                  AtJsonPtr(
+                      "/scriptId", this->ScriptIdMapsTo("initiatorTest.js")))),
+              ElementsAre(
+                  AllOf(
+                      AtJsonPtr("/functionName", "inner"),
+                      AtJsonPtr("/lineNumber", 2)),
+                  AllOf(
+                      AtJsonPtr("/functionName", "outer"),
+                      AtJsonPtr("/lineNumber", 5)),
+                  AllOf(
+                      AtJsonPtr("/functionName", "global"),
+                      AtJsonPtr("/lineNumber", 7))))))));
+
+  NetworkReporter::getInstance().reportRequestStart(
+      requestId, requestInfo, 0, std::nullopt);
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 2,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                  "id": 2,
+                                  "method": "Network.disable"
+                                })");
+}
+
+TEST_P(NetworkReporterTest, testCreateRequestIdWithoutNetworkDomain) {
+  InSequence s;
+
+  auto& runtime = engineAdapter_->getRuntime();
+
+  auto id1 = this->eval(R"(
+    globalThis.__NETWORK_REPORTER__.createDevToolsRequestId();
+  )")
+                 .asString(runtime)
+                 .utf8(runtime);
+  EXPECT_NE(id1, "");
+
+  auto id2 = this->eval(R"(
+    globalThis.__NETWORK_REPORTER__.createDevToolsRequestId();
+  )")
+                 .asString(runtime)
+                 .utf8(runtime);
+
+  EXPECT_NE(id2, "");
+
+  EXPECT_NE(id1, id2);
 }
 
 static const auto paramValues = testing::Values(

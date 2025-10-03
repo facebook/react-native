@@ -300,6 +300,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   void installDebuggerSessionObserver();
 
   /**
+   * Installs the private __NETWORK_REPORTER__ object on the Runtime's
+   * global object.
+   */
+  void installNetworkReporterAPI();
+
+  /**
    * Propagates the debugger session state change to the JavaScript via calling
    * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
    */
@@ -310,6 +316,50 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
    */
   void emitDebuggerSessionDestroyed();
+
+  /**
+   * Run the callback \p func synchronously while on the JS thread and pass it a
+   * safe reference to our RuntimeTargetDelegate for use on the JS thread. \see
+   * RuntimeTargetDelegate for information on which methods are safe to call on
+   * the JS thread. \warning The callback will not run if the RuntimeTarget has
+   * been destroyed.
+   * The \p runtime parameter is required to signify that the function is being
+   * called on the JS thread.
+   */
+  template <std::invocable<RuntimeTarget&> Fn>
+  static void tryRunWithSelfSync(
+      std::weak_ptr<RuntimeTarget> selfWeak,
+      jsi::Runtime& /*unused*/,
+      Fn func) {
+    if (auto self = selfWeak.lock()) {
+      auto selfExecutor = self->executorFromThis();
+      // Q: Why is it safe to use self->delegate_ here?
+      // A: Because the caller of InspectorTarget::registerRuntime
+      // is explicitly required to guarantee that the delegate not
+      // only outlives the target, but also outlives all JS code
+      // execution that occurs on the JS thread.
+      func(*self);
+      // To ensure we never destroy `self` on the JS thread, send
+      // our shared_ptr back to the inspector thread.
+      selfExecutor([self = std::move(self)](auto&) { (void)self; });
+    }
+  }
+
+  /**
+   * \returns an opaque representation of the current stack trace if the
+   * RuntimeTarget is valid, or std::nullopt otherwise.
+   * \see RuntimeTargetDelegate::captureStackTrace
+   */
+  static std::optional<std::unique_ptr<StackTrace>> tryCaptureStackTrace(
+      std::weak_ptr<RuntimeTarget> selfWeak,
+      jsi::Runtime& runtime,
+      size_t framesToSkip = 0);
+
+  /**
+   * \returns a globally unique ID for a network request.
+   * May be called from any thread as long as the RuntimeTarget is valid.
+   */
+  std::string createNetworkRequestId();
 
   // Necessary to allow RuntimeAgent to access RuntimeTarget's internals in a
   // controlled way (i.e. only RuntimeTargetController gets friend access, while
