@@ -50,7 +50,7 @@ else
   cmake_build_type="MinSizeRel"
 fi
 
-deployment_target=$(get_deployment_target $PLATFORM_NAME)
+deployment_target=$(get_deployment_target "$PLATFORM_NAME")
 
 xcode_15_flags=""
 xcode_major_version=$(xcodebuild -version | grep -oE '[0-9]*' | head -n 1)
@@ -100,7 +100,7 @@ echo "Build Apple framework"
 
 echo "Copy Apple framework to destroot/Library/Frameworks"
 
-platform_copy_destination=$(get_platform_copy_destination $PLATFORM_NAME)
+platform_copy_destination=$(get_platform_copy_destination "$PLATFORM_NAME")
 
 mkdir -p "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${platform_copy_destination}"
 cp -pfR \
