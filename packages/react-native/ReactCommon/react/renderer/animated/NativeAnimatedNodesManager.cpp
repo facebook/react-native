@@ -33,6 +33,8 @@
 #include <react/renderer/animated/nodes/TrackingAnimatedNode.h>
 #include <react/renderer/animated/nodes/TransformAnimatedNode.h>
 #include <react/renderer/animated/nodes/ValueAnimatedNode.h>
+#include <react/renderer/animationbackend/AnimatedPropsBuilder.h>
+#include <react/renderer/animationbackend/AnimationBackend.h>
 #include <react/renderer/core/EventEmitter.h>
 
 namespace facebook::react {
