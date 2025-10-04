@@ -12,7 +12,7 @@
 #endif
 
 #if RNCXX_WITH_PROFILING_PROVIDER
-#include <hz_tracing/v2/TracingMacros.h>
+#include <hz_tracing/TracingMacros.h>
 
 #ifndef TRACE_FUNCTION
 #if defined(__GNUC__) || defined(__clang__)
@@ -26,16 +26,16 @@ static inline constexpr char kTraceCategory[] = "react_native";
 
 HZT_DEFINE_TRACING_CATEGORIES(
     facebook::react,
-    horizon::tracing::v2::Category(
+    horizon::tracing::Category(
         kTraceCategory,
         "react_native",
-        horizon::tracing::v2::StrippingLevel::Important));
+        horizon::tracing::StrippingLevel::Important));
 
 #define SCOPED_TRACE_CPU_AUTO() \
-  HZT_TRACE_SCOPE_NS_V2(::facebook::react, kTraceCategory, TRACE_FUNCTION);
+  HZT_TRACE_SCOPE_NS(::facebook::react, kTraceCategory, TRACE_FUNCTION);
 
 #define SCOPED_TRACE_CPU(name) \
-  HZT_TRACE_SCOPE_NS_V2(::facebook::react, kTraceCategory, name);
+  HZT_TRACE_SCOPE_NS(::facebook::react, kTraceCategory, name);
 
 #else
 #ifndef SCOPED_TRACE_CPU_AUTO
