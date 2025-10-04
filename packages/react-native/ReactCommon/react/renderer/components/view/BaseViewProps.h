@@ -61,7 +61,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   // Shadow
   SharedColor shadowColor{};
-  Size shadowOffset{0, -3};
+  Size shadowOffset{.width = 0, .height = -3};
   Float shadowOpacity{};
   Float shadowRadius{3};
 
