@@ -62,7 +62,7 @@ Pod::Spec.new do |spec|
       exit 0
     fi
 
-    cp -R "$HEADERS_PATH/" Headers
+    cp -R "$HEADERS_PATH/." Headers
     mkdir -p framework/packages/react-native
     cp -R "$XCFRAMEWORK_PATH/../." framework/packages/react-native/
     find "$XCFRAMEWORK_PATH/.." -type f -exec rm {} +
