@@ -13,6 +13,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
+#import <React/RCTBundleManager.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
@@ -52,41 +53,12 @@ struct Registration {
   std::vector<Registration<RCTConnectedHandler>> _connectedRegistrations;
 }
 
-+ (instancetype)sharedPackagerConnection
-{
-  static RCTPackagerConnection *connection;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    connection = [RCTPackagerConnection new];
-  });
-  return connection;
-}
+@synthesize bundleManager;
 
 - (instancetype)init
 {
   if (self = [super init]) {
     _nextToken = 1; // Prevent randomly erasing a handler if you pass a bogus 0 token
-    _serverHostPortForSocket = [[RCTBundleURLProvider sharedSettings] packagerServerHostPort];
-    _serverSchemeForSocket = [[RCTBundleURLProvider sharedSettings] packagerScheme];
-    _socket = socketForLocation(_serverHostPortForSocket, _serverSchemeForSocket);
-    _socket.delegate = self;
-    [_socket start];
-
-    RCTPackagerConnection *const __weak weakSelf = self;
-    _bundleURLChangeObserver =
-        [[NSNotificationCenter defaultCenter] addObserverForName:RCTBundleURLProviderUpdatedNotification
-                                                          object:nil
-                                                           queue:[NSOperationQueue mainQueue]
-                                                      usingBlock:^(NSNotification *_Nonnull __unused note) {
-                                                        [weakSelf bundleURLSettingsChanged];
-                                                      }];
-    _reloadWithPotentiallyNewURLObserver =
-        [[NSNotificationCenter defaultCenter] addObserverForName:RCTTriggerReloadCommandNotification
-                                                          object:nil
-                                                           queue:[NSOperationQueue mainQueue]
-                                                      usingBlock:^(NSNotification *_Nonnull __unused note) {
-                                                        [weakSelf bundleURLSettingsChanged];
-                                                      }];
   }
   return self;
 }
@@ -119,6 +91,31 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHostPor
   return [[RCTReconnectingWebSocket alloc] initWithURL:components.URL queue:queue];
 }
 
+- (void)startWithBundleManager:(RCTBundleManager *)bundleManager
+{
+  _serverHostPortForSocket = [bundleManager.customBundleConfig getPackagerServerHost];
+  _serverSchemeForSocket = [bundleManager.customBundleConfig getPackagerServerScheme];
+  _socket = socketForLocation(_serverHostPortForSocket, _serverSchemeForSocket);
+  _socket.delegate = self;
+  [_socket start];
+
+  RCTPackagerConnection *const __weak weakSelf = self;
+  _bundleURLChangeObserver =
+      [[NSNotificationCenter defaultCenter] addObserverForName:RCTBundleURLProviderUpdatedNotification
+                                                        object:nil
+                                                         queue:[NSOperationQueue mainQueue]
+                                                    usingBlock:^(NSNotification *_Nonnull __unused note) {
+                                                      [weakSelf bundleURLSettingsChanged];
+                                                    }];
+  _reloadWithPotentiallyNewURLObserver =
+      [[NSNotificationCenter defaultCenter] addObserverForName:RCTTriggerReloadCommandNotification
+                                                        object:nil
+                                                         queue:[NSOperationQueue mainQueue]
+                                                    usingBlock:^(NSNotification *_Nonnull __unused note) {
+                                                      [weakSelf bundleURLSettingsChanged];
+                                                    }];
+}
+
 - (void)stop
 {
   std::lock_guard<std::mutex> l(_mutex);
@@ -144,7 +141,7 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHostPor
     return; // already stopped
   }
 
-  NSString *const serverScheme = [[RCTBundleURLProvider sharedSettings] packagerScheme];
+  NSString *const serverScheme = [bundleManager.customBundleConfig getPackagerServerScheme];
   if ([packagerServerHostPort isEqual:_serverHostPortForSocket] && [serverScheme isEqual:_serverSchemeForSocket]) {
     return; // unchanged
   }
@@ -161,7 +158,7 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHostPor
 - (void)bundleURLSettingsChanged
 {
   // Will only reconnect if `packagerServerHostPort` has actually changed
-  [self reconnect:[[RCTBundleURLProvider sharedSettings] packagerServerHostPort]];
+  [self reconnect:[bundleManager.customBundleConfig getPackagerServerHost]];
 }
 
 - (RCTHandlerToken)addNotificationHandler:(RCTNotificationHandler)handler

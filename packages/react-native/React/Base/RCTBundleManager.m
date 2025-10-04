@@ -6,9 +6,88 @@
  */
 
 #import "RCTBundleManager.h"
+#import <React/RCTBundleURLProvider.h>
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTLog.h"
+
+@implementation RCTCustomBundleConfiguration
+
+- (instancetype)initWithBundleFilePath:(NSURL *)bundleFilePath
+{
+  if (self = [super init]) {
+    _bundleFilePath = bundleFilePath;
+  }
+
+  return self;
+}
+
+- (instancetype)initWithPackagerServerScheme:(NSString *)packagerServerScheme
+                          packagerServerHost:(NSString *)packagerServerHost
+                                  bundlePath:(NSString *)bundlePath
+{
+  if (self = [super init]) {
+    _packagerServerScheme = packagerServerScheme;
+    _packagerServerHost = packagerServerHost;
+    _bundlePath = bundlePath;
+  }
+
+  return self;
+}
+
+- (NSString *)getPackagerServerScheme
+{
+  if (!_packagerServerScheme) {
+    return [[RCTBundleURLProvider sharedSettings] packagerScheme];
+  }
+
+  return _packagerServerScheme;
+}
+
+- (NSString *)getPackagerServerHost
+{
+  if (!_packagerServerHost) {
+    return [[RCTBundleURLProvider sharedSettings] packagerServerHostPort];
+  }
+
+  return _packagerServerHost;
+}
+
+- (NSURL *)getBundleURL:(NSURL * (^)(void))fallbackURLProvider
+{
+  if (_packagerServerScheme && _packagerServerHost) {
+    NSArray<NSURLQueryItem *> *jsBundleURLQuery =
+        [[RCTBundleURLProvider sharedSettings] createJSBundleURLQuery:_packagerServerHost
+                                                       packagerScheme:_packagerServerScheme];
+
+    NSString *path = [NSString stringWithFormat:@"/%@.bundle", _bundlePath];
+    return [[RCTBundleURLProvider class] resourceURLForResourcePath:path
+                                                       packagerHost:_packagerServerHost
+                                                             scheme:_packagerServerScheme
+                                                         queryItems:jsBundleURLQuery];
+  }
+
+  if (_bundleFilePath) {
+    if (!_bundleFilePath.fileURL) {
+      RCTLogError(@"Bundle file path must be a file URL");
+      return nil;
+    }
+
+    return _bundleFilePath;
+  }
+
+  return fallbackURLProvider();
+}
+
+- (void)clean
+{
+  _packagerServerHost = nil;
+  _packagerServerScheme = nil;
+  _bundleFilePath = nil;
+}
+
+@end
 
 @implementation RCTBundleManager {
 #ifndef RCT_REMOVE_LEGACY_ARCH
@@ -18,6 +97,7 @@
   RCTBridgelessBundleURLSetter _bridgelessBundleURLSetter;
   RCTBridgelessBundleURLGetter _bridgelessBundleURLDefaultGetter;
 }
+@synthesize customBundleConfig;
 
 #ifndef RCT_REMOVE_LEGACY_ARCH
 - (void)setBridge:(RCTBridge *)bridge

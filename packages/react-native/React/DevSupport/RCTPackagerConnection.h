@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTDefines.h>
+#import <React/RCTBundleManager.h>
 
 #if RCT_DEV
 
@@ -24,7 +25,7 @@ typedef void (^RCTConnectedHandler)(void);
 /** Encapsulates singleton connection to React Native packager. */
 @interface RCTPackagerConnection : NSObject
 
-+ (instancetype)sharedPackagerConnection;
+@property (nonatomic, weak, readwrite) RCTBundleManager *bundleManager;
 
 /**
  * Registers a handler for a notification broadcast from the packager. An
@@ -61,6 +62,8 @@ typedef void (^RCTConnectedHandler)(void);
 
 /** Reconnect with given packager server, if packagerServerHostPort has changed. */
 - (void)reconnect:(NSString *)packagerServerHostPort;
+
+- (void)startWithBundleManager:(RCTBundleManager *)bundleManager;
 
 /**
  * Historically no distinction was made between notification and request
