@@ -63,6 +63,8 @@ runs:
         else
           echo "[HERMES] Building Hermes for iOS: $SLICE"
 
+          echo "TEST"
+
           chmod +x ./utils/build-ios-framework.sh
           BUILD_TYPE="${{ inputs.flavor }}" ./utils/build-ios-framework.sh "$SLICE"
         fi
