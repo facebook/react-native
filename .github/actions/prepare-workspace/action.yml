@@ -1,0 +1,16 @@
+name: prepare-workspace
+description: This action prepares the workspace with the right react-native version.
+outputs:
+  react-native-version:
+    description: the version of React Native tied to this run
+    value: ${{ steps.react-native-version.outputs.VERSION }}
+runs:
+  using: composite
+  steps:
+    - name: Get react-native version
+      shell: bash
+      id: react-native-version
+      run: |
+        VERSION=$(cat packages/react-native/package.json | jq -r '.version')
+        echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+        echo "React Native Version is $VERSION"
