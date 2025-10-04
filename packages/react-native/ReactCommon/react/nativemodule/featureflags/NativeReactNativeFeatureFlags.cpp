@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e799e5ce5aea7adbef02a7e7431f8a35>>
+ * @generated SignedSource<<4d5d0795ed4cea8c1e185f6fe3fa0fad>>
  */
 
 /**
@@ -35,7 +35,7 @@ namespace facebook::react {
 
 NativeReactNativeFeatureFlags::NativeReactNativeFeatureFlags(
     std::shared_ptr<CallInvoker> jsInvoker)
-    : NativeReactNativeFeatureFlagsCxxSpecJSI(std::move(jsInvoker)) {}
+    : NativeReactNativeFeatureFlagsCxxSpec(std::move(jsInvoker)) {}
 
 bool NativeReactNativeFeatureFlags::commonTestFlag(
     jsi::Runtime& /*runtime*/) {
