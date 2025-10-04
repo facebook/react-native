@@ -91,6 +91,8 @@ class JSI_EXPORT TurboModule : public jsi::HostObject {
         size_t count);
   };
   std::unordered_map<std::string, MethodMetadata> methodMap_;
+
+  friend class TurboModuleTestFixtureInternal;
   std::unordered_map<std::string, std::shared_ptr<IAsyncEventEmitter>>
       eventEmitterMap_;
 
