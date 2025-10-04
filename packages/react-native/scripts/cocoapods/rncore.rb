@@ -66,7 +66,6 @@ class ReactNativeCoreUtils
                 rncore_log("No prebuilt artifacts found, reverting to building from source.")
             end
             rncore_log("Building from source: #{@@build_from_source}")
-            rncore_log("Source: #{self.resolve_podspec_source()}")
         end
     end
 
@@ -89,7 +88,6 @@ class ReactNativeCoreUtils
 
         if ENV["RCT_USE_PREBUILT_RNCORE"] == "1"
             if @@use_nightly
-                rncore_log("Using nightly tarball")
                 begin
                     return self.podspec_source_download_prebuilt_nightly_tarball(@@react_native_version)
                 rescue => e
@@ -210,14 +208,14 @@ class ReactNativeCoreUtils
         if !Object.const_defined?("Pod::UI")
             return
         end
-        log_message = '[ReactNativeCore] ' + message
+        log_message = '[ReactNativeCore] '
         case level
         when :info
-            Pod::UI.puts log_message.green
+            Pod::UI.puts log_message.green + message
         when :error
-            Pod::UI.puts log_message.red
+            Pod::UI.puts log_message.red + message
         else
-            Pod::UI.puts log_message.yellow
+            Pod::UI.puts log_message.yellow + message
         end
     end
 
