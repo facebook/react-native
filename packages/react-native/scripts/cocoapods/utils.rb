@@ -190,13 +190,13 @@ class ReactNativePodsUtils
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             if pod_name.to_s == target_pod_name
                 target_installation_result.native_target.build_configurations.each do |config|
-                        if configuration_type == nil || (configuration_type != nil && config.type == configuration_type)
-                            config.build_settings[settings_name] ||= '$(inherited) '
-                            config.build_settings[settings_name] << settings_value
-                        end
+                    if configuration_type == nil || (configuration_type != nil && config.type == configuration_type)
+                        config.build_settings[settings_name] ||= '$(inherited) '
+                        config.build_settings[settings_name] << settings_value
                     end
                 end
             end
+        end
     end
 
     def self.fix_library_search_path(config)

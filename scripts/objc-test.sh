@@ -15,9 +15,6 @@ SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname "$SCRIPTS")
 
 SKIPPED_TESTS=()
-# TODO: T60408036 This test crashes iOS 13 for bad access, please investigate
-# and re-enable. See https://gist.github.com/0xced/56035d2f57254cf518b5.
-SKIPPED_TESTS+=("-skip-testing:RNTesterUnitTests/RCTJSONTests/testNotUTF8Convertible")
 
 # Create cleanup handler
 cleanup() {
@@ -89,7 +86,9 @@ buildForTesting() {
   xcodebuild build-for-testing \
     -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
-    -sdk iphonesimulator
+    -sdk iphonesimulator \
+    -derivedDataPath "/tmp/RNTesterBuild" \
+    GCC_PREPROCESSOR_DEFINITIONS='$(inherited) NDEBUG=1'
 }
 
 runTestsOnly() {
@@ -158,7 +157,7 @@ main() {
 
     # Build and run tests.
     RESULT=-1
-    MAX_RETRY=3
+    MAX_RETRY=1
     for ((i=1; i<=MAX_RETRY; i++))
     do
       echo "Attempt #$i of running tests..."
