@@ -82,6 +82,7 @@ public object ViewProps {
   public const val FONT_FAMILY: String = "fontFamily"
   public const val LINE_HEIGHT: String = "lineHeight"
   public const val LETTER_SPACING: String = "letterSpacing"
+  public const val CONTENT_SENSITIVITY: String = "contentSensitivity"
   public const val NEEDS_OFFSCREEN_ALPHA_COMPOSITING: String = "needsOffscreenAlphaCompositing"
   public const val NUMBER_OF_LINES: String = "numberOfLines"
   public const val ELLIPSIZE_MODE: String = "ellipsizeMode"
