@@ -120,12 +120,159 @@ class ReactNativeCoreUtils
         if @@build_from_source
             return
         end
-
         url = stable_tarball_url(@@react_native_version, :debug)
         rncore_log("Using tarball from URL: #{url}")
         download_stable_rncore(@@react_native_path, @@react_native_version, :debug)
         download_stable_rncore(@@react_native_path, @@react_native_version, :release)
         return {:http => url}
+    end
+
+    def self.process_dsyms(frameworkTarball, dSymsTarball)
+        if !@@download_dsyms
+            return
+        end
+
+        if @@react_native_path == ""
+            rncore_log("react_native_path is not set", :error)
+            return
+        end
+
+        if @@react_native_version == ""
+            rncore_log("react_native_version is not set", :error)
+            return
+        end
+
+        if @@build_from_source
+            return
+        end
+
+        # gunzip the dSymsTarball and the frameworkTarball into a temporary folder
+        # and then copy the dSYMs into the framework folder and then tar/gz the framework folder again
+        # into the same location as the original frameworkTarball
+
+        rncore_log("Adding symbols #{Pathname.new(dSymsTarball).relative_path_from(Pathname.pwd).to_s} to framework tarball #{Pathname.new(frameworkTarball).relative_path_from(Pathname.pwd).to_s}")
+
+        FileUtils.mkdir_p(File.dirname(frameworkTarball))
+        FileUtils.cp(frameworkTarball, "#{frameworkTarball}.orig")
+
+        rncore_log("  Backed up original tarballs")
+
+        begin
+            # Now let's gunzip the framework tarball into a .tar file
+            # Get filename and foldername from the tarball path
+            frameworkFolder = File.dirname(frameworkTarball)
+            frameworkFilename = File.basename(frameworkTarball, ".tar.gz")
+            frameworkTarPath = File.join(frameworkFolder, frameworkFilename + ".tar")
+
+            # Now gunzip the tarball into the frameworkFolder - this will remove the .gz file and leave us with a .tar file
+            rncore_log("  Unpacking framework tarball")
+            `gunzip "#{frameworkTarball}"`
+
+            # Now let's untar the dSyms tarball into a temporary folder / dSYMs subfolder
+            dsyms_tmp_dir = "#{artifacts_dir}/dSYMs"
+            rncore_log("  Unpacking dSYMs to temporary folder")
+            `mkdir -p "#{dsyms_tmp_dir}" && tar -xzf "#{dSymsTarball}" -C "#{dsyms_tmp_dir}"`
+
+            # Now we need to remap the symbol files to be relative to the framework folder
+            remap_sourcemaps_for_symbols(dsyms_tmp_dir)
+
+            # Add the dSYMs folder to the framework folder
+            rncore_log("  Adding dSYMs to framework tarball")
+            `(cd "$(dirname "#{dsyms_tmp_dir}")" && mkdir -p React.xcframework && cp -r "$(basename "#{dsyms_tmp_dir}")" React.xcframework/dSYMs && tar -rf "#{frameworkTarPath}" React.xcframework/dSYMs && rm -rf React.xcframework)`
+
+            # Now gzip the framework tarball again - remember to use the .tar file and not the .gz file
+            rncore_log("  Packing #{Pathname.new(frameworkTarPath).relative_path_from(Pathname.pwd).to_s}")
+            `gzip -1 "#{frameworkTarPath}"`
+
+            # Clean up the temporary folder
+            FileUtils.remove_entry(dsyms_tmp_dir)
+            rncore_log("  Processed dSYMs into framework tarball #{Pathname.new(frameworkTarball).relative_path_from(Pathname.pwd).to_s}")
+
+            # Remove backup of original tarballs
+            FileUtils.rm_f("#{frameworkTarball}.orig")
+
+        rescue => e
+            rncore_log("Failed to process dSYMs: #{e.message}", :error)
+            # Restore the original tarballs
+            FileUtils.mv("#{frameworkTarball}.orig", frameworkTarball) if File.exist?("#{frameworkTarball}.orig")
+            rncore_log("Restored original tarballs", :error)
+            abort "Couldn't process dSYMs: #{e.message}"
+        end
+    end
+
+    def self.remap_sourcemaps_for_symbols(symbolsPath)
+        rncore_log("  Remapping dSYMs to be relative to framework folder")
+
+        # Find all .dSYM bundles in the symbols path
+        dsym_bundles = []
+        Dir.glob(File.join(symbolsPath, "**", "*.dSYM")).each do |path|
+            if File.directory?(path)
+                # Check if it's a valid dSYM bundle with Info.plist
+                info_plist = File.join(path, 'Contents', 'Info.plist')
+                dsym_bundles << path if File.exist?(info_plist)
+            end
+        end
+
+        return if dsym_bundles.empty?
+
+        # Define source path mappings - from absolute build paths to relative framework paths
+        mappings = [
+            # Make sure to make react_native_path absolute
+            ["/Users/runner/work/react-native/react-native/packages/react-native", "#{File.expand_path(@@react_native_path)}"],
+        ]
+
+        dsym_bundles.each do |dsym_path| begin
+            # Get UUIDs for this dSYM bundle
+            uuid_output = `dwarfdump --uuid "#{dsym_path}" 2>/dev/null`
+            uuids = uuid_output.scan(/UUID:\s+([0-9A-F-]{36})/i).flatten
+
+            next if uuids.empty?
+
+            # Create Resources directory if it doesn't exist
+            resources_dir = File.join(dsym_path, 'Contents', 'Resources')
+            FileUtils.mkdir_p(resources_dir)
+
+            # Generate plist content with path mappings
+            plist_content = generate_plist_content(mappings)
+
+            # Write plist for each UUID
+            uuids.each do |uuid|
+                plist_path = File.join(resources_dir, "#{uuid}.plist")
+                File.write(plist_path, plist_content)
+            end
+
+            rescue => e
+            rncore_log("    Failed to process dSYM #{dsym_path}: #{e.message}", :error)
+            end
+        end
+
+        rncore_log("    Completed dSYM remapping for #{dsym_bundles.length} bundles")
+    end
+
+    def self.generate_plist_content(mappings)
+    # Generate the source path remapping entries
+    remapping_entries = mappings.map do |from, to|
+        "    <key>#{from}</key><string>#{to}</string>"
+    end.join("\n")
+
+    # Use the first mapping for legacy keys
+    first_from, first_to = mappings.first
+
+    return <<~PLIST
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+            <key>DBGVersion</key><string>3</string>
+            <key>DBGBuildSourcePath</key><string>#{first_from}</string>
+            <key>DBGSourcePath</key><string>#{first_to}</string>
+            <key>DBGSourcePathRemapping</key>
+            <dict>
+            #{remapping_entries}
+            </dict>
+            </dict>
+            </plist>
+        PLIST
     end
 
     def self.stable_tarball_url(version, build_type)
