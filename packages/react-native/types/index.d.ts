@@ -104,6 +104,7 @@ export * from '../Libraries/Components/View/ViewAccessibility';
 export * from '../Libraries/Components/View/ViewPropTypes';
 export * from '../Libraries/Components/Button';
 export * from '../Libraries/Core/registerCallableModule';
+export * as NativeComponentRegistry from '../Libraries/NativeComponent/NativeComponentRegistry';
 export * from '../Libraries/EventEmitter/NativeEventEmitter';
 export * from '../Libraries/EventEmitter/RCTDeviceEventEmitter';
 export * from '../Libraries/EventEmitter/RCTNativeAppEventEmitter';
