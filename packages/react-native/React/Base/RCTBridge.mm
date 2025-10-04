@@ -36,6 +36,10 @@ static dispatch_queue_t RCTModuleClassesSyncQueue;
 NSArray<Class> *RCTGetModuleClasses(void)
 {
   __block NSArray<Class> *result;
+  
+  // no modules have been registered yet
+  if(!RCTModuleClasses) return @[];
+  
   dispatch_sync(RCTModuleClassesSyncQueue, ^{
     result = [RCTModuleClasses copy];
   });

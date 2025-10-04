@@ -521,6 +521,7 @@ class ReactNativePodsUtils
 
         if current_setting.include?(flag)
             current_setting.slice! flag
+            current_setting.strip!
         end
 
         config.build_settings[key] = current_setting
