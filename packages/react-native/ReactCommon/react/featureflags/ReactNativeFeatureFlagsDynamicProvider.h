@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b61bcdcabe00ba0e97e42a7ffc2fa8ef>>
+ * @generated SignedSource<<5759dee54e04c91401a3ece5b899a7f1>>
  */
 
 /**
@@ -574,6 +574,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::shouldPressibilityUseW3CPointerEventsForHover();
+  }
+
+  bool shouldTriggerResponderTransferOnScrollAndroid() override {
+    auto value = values_["shouldTriggerResponderTransferOnScrollAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldTriggerResponderTransferOnScrollAndroid();
   }
 
   bool skipActivityIdentityAssertionOnHostPause() override {

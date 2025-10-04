@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d4370bcde97d3c2b0b8d2a77e42a6031>>
+ * @generated SignedSource<<aa0e9e5830b13c4b290dcae42b757a3a>>
  */
 
 /**
@@ -140,6 +140,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun preventShadowTreeCommitExhaustion(): Boolean
 
   @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
+
+  @DoNotStrip public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 
   @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
