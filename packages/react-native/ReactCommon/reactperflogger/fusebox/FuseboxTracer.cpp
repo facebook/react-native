@@ -110,7 +110,10 @@ void FuseboxTracer::addEvent(
     return;
   }
   buffer_.push_back(BufferEvent{
-      start, end, std::string(name), std::string(track.value_or(""))});
+      .start = start,
+      .end = end,
+      .name = std::string(name),
+      .track = std::string(track.value_or(""))});
 }
 
 bool FuseboxTracer::stopTracingAndWriteToFile(const std::string& path) {
