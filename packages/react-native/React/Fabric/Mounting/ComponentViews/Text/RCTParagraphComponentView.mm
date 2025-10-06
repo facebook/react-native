@@ -376,6 +376,10 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
 
 - (CGRect)calculateCenteredFrameWithAttributedText:(NSAttributedString *)attributedText
                                              frame:(CGRect)frame {
+  if (!attributedText || attributedText.length == 0) {
+    return frame;
+  }
+  
   UIFont *font = [attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
   if (!font) {
       font = [UIFontMetrics.defaultMetrics scaledFontForFont:[UIFont systemFontOfSize:14]];
