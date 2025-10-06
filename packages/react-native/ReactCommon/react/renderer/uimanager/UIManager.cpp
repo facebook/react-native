@@ -70,7 +70,7 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
+  PropsParserContext propsParserContext{surfaceId, *contextContainer_};
 
   auto family = componentDescriptor.createFamily(
       {tag, surfaceId, std::move(instanceHandle)});
@@ -111,7 +111,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
 
   PropsParserContext propsParserContext{
-      shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
+      shadowNode.getFamily().getSurfaceId(), *contextContainer_};
 
   auto& componentDescriptor = shadowNode.getComponentDescriptor();
   auto& family = shadowNode.getFamily();
@@ -455,7 +455,7 @@ void UIManager::setNativeProps_DEPRECATED(
                         componentDescriptorRegistry_->at(
                             shadowNode->getComponentHandle());
                     PropsParserContext propsParserContext{
-                        family.getSurfaceId(), *contextContainer_.get()};
+                        family.getSurfaceId(), *contextContainer_};
                     auto props = componentDescriptor.cloneProps(
                         propsParserContext,
                         getShadowNodeInSubtree(*shadowNode, ancestorShadowNode)
