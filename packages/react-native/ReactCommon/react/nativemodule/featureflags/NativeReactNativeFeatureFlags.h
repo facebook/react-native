@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<990b6518e7b1d196deb0965e9ada6605>>
+ * @generated SignedSource<<3c0d98fc75ad480d43c32c6a1c3dfb16>>
  */
 
 /**
@@ -153,6 +153,8 @@ class NativeReactNativeFeatureFlags
   bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
+
+  bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 
   bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
 
