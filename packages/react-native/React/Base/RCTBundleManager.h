@@ -49,8 +49,6 @@ typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
 
 - (NSString *)getPackagerServerHost;
 
-- (void)clean;
-
 @end
 
 /**

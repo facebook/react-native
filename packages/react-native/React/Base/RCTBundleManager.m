@@ -80,13 +80,6 @@
   return fallbackURLProvider();
 }
 
-- (void)clean
-{
-  _packagerServerHost = nil;
-  _packagerServerScheme = nil;
-  _bundleFilePath = nil;
-}
-
 @end
 
 @implementation RCTBundleManager {
