@@ -93,13 +93,6 @@ generateCodegenArtifactsFromSchema () {
     popd >/dev/null || exit 1
 }
 
-generateArtifacts () {
-    describe "Generating codegen artifacts"
-    pushd "$RCT_SCRIPT_RN_DIR" >/dev/null || exit 1
-        "$NODE_BINARY" "scripts/generate-codegen-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$TEMP_OUTPUT_DIR" --targetPlatform "ios"
-    popd >/dev/null || exit 1
-}
-
 moveOutputs () {
     mkdir -p "$RCT_SCRIPT_OUTPUT_DIR"
 
@@ -110,22 +103,21 @@ moveOutputs () {
 }
 
 withCodegenDiscovery () {
-    setup_dirs
-    find_node
-    find_codegen
-    generateArtifacts
-    moveOutputs
+    describe "Generating codegen artifacts"
+    pushd "$RCT_SCRIPT_RN_DIR" >/dev/null || exit 1
+        "$NODE_BINARY" "scripts/generate-codegen-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$RCT_SCRIPT_OUTPUT_DIR" --targetPlatform "ios"
+    popd >/dev/null || exit 1
 }
 
 noCodegenDiscovery () {
     setup_dirs
-    find_node
-    find_codegen
     generateCodegenSchemaFromJavaScript
     generateCodegenArtifactsFromSchema
     moveOutputs
 }
 
+find_node
+find_codegen
 if [ "$RCT_SCRIPT_TYPE" = "withCodegenDiscovery" ]; then
     withCodegenDiscovery "$@"
 else
