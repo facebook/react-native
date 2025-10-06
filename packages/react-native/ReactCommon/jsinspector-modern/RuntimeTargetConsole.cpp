@@ -6,7 +6,6 @@
  */
 
 #include <jsinspector-modern/RuntimeTarget.h>
-#include <jsinspector-modern/tracing/PerformanceTracer.h>
 
 #include <reactperflogger/ReactPerfettoLogger.h>
 #include <concepts>
@@ -389,7 +388,8 @@ auto forwardToOriginalConsole(
 void consoleTimeStamp(
     jsi::Runtime& runtime,
     const jsi::Value* arguments,
-    size_t argumentsCount) {
+    size_t argumentsCount,
+    const ConsoleTimeStampCallback& timestampCallback) {
   auto& performanceTracer = tracing::PerformanceTracer::getInstance();
   if ((!performanceTracer.isTracing() && !ReactPerfettoLogger::isTracing()) ||
       argumentsCount == 0) {
@@ -460,6 +460,10 @@ void consoleTimeStamp(
     }
   }
 
+  if (timestampCallback) {
+    timestampCallback(label, start, end, trackName, trackGroup);
+  }
+
   if (performanceTracer.isTracing()) {
     performanceTracer.reportTimeStamp(
         label, start, end, trackName, trackGroup, color);
@@ -485,7 +489,8 @@ void consoleTimeStamp(
 void installConsoleTimeStamp(
     jsi::Runtime& runtime,
     std::shared_ptr<jsi::Object> originalConsole,
-    jsi::Object& consoleObject) {
+    jsi::Object& consoleObject,
+    const ConsoleTimeStampCallback& timestampCallback) {
   consoleObject.setProperty(
       runtime,
       "timeStamp",
@@ -496,22 +501,25 @@ void installConsoleTimeStamp(
           forwardToOriginalConsole(
               originalConsole,
               "timeStamp",
-              [](jsi::Runtime& runtime,
-                 const jsi::Value& /*thisVal*/,
-                 const jsi::Value* args,
-                 size_t count) {
-                consoleTimeStamp(runtime, args, count);
+              [timestampCallback](
+                  jsi::Runtime& runtime,
+                  const jsi::Value& /*thisVal*/,
+                  const jsi::Value* args,
+                  size_t count) {
+                consoleTimeStamp(runtime, args, count, timestampCallback);
                 return jsi::Value::undefined();
               })));
 }
 
 } // namespace
 
-void RuntimeTarget::installConsoleHandler() {
+void RuntimeTarget::installConsoleHandler(
+    const ConsoleTimeStampCallback& timestampCallback) {
   auto delegateSupportsConsole = delegate_.supportsConsole();
   jsExecutor_([selfWeak = weak_from_this(),
                selfExecutor = executorFromThis(),
-               delegateSupportsConsole](jsi::Runtime& runtime) {
+               delegateSupportsConsole,
+               timestampCallback](jsi::Runtime& runtime) {
     jsi::Value consolePrototype = jsi::Value::null();
     auto originalConsoleVal = runtime.global().getProperty(runtime, "console");
     std::shared_ptr<jsi::Object> originalConsole;
@@ -624,7 +632,8 @@ void RuntimeTarget::installConsoleHandler() {
     /**
      * console.timeStamp
      */
-    installConsoleTimeStamp(runtime, originalConsole, console);
+    installConsoleTimeStamp(
+        runtime, originalConsole, console, timestampCallback);
 
     // Install forwarding console methods.
 #define FORWARDING_CONSOLE_METHOD(name, type) \

@@ -246,7 +246,10 @@ HostTargetDelegate::~HostTargetDelegate() = default;
 InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
   assert(!currentInstance_ && "Only one instance allowed");
   currentInstance_ = InstanceTarget::create(
-      executionContextManager_, delegate, makeVoidExecutor(executorFromThis()));
+      executionContextManager_,
+      delegate,
+      makeVoidExecutor(executorFromThis()),
+      delegate_); // Pass HostTargetDelegate reference through
   sessions_.forEach(
       [currentInstance = &*currentInstance_](HostTargetSession& session) {
         session.setCurrentInstance(currentInstance);
