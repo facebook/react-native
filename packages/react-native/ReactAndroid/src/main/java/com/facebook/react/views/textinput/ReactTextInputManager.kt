@@ -101,15 +101,6 @@ public open class ReactTextInputManager public constructor() :
     return editText
   }
 
-  override fun createShadowNodeInstance(): ReactBaseTextShadowNode = ReactTextInputShadowNode()
-
-  public fun createShadowNodeInstance(
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?
-  ): ReactBaseTextShadowNode = ReactTextInputShadowNode(reactTextViewManagerCallback)
-
-  override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
-      ReactTextInputShadowNode::class.java
-
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
     val baseEventTypeConstants = super.getExportedCustomBubblingEventTypeConstants()
     val eventTypeConstants = baseEventTypeConstants ?: mutableMapOf()
@@ -137,6 +128,21 @@ public open class ReactTextInputManager public constructor() :
     )
     return eventTypeConstants
   }
+
+  override fun createShadowNodeInstance(): ReactBaseTextShadowNode =
+      throw IllegalStateException(
+          "createShadowNodeInstance should not be called in new architecture"
+      )
+
+  public fun createShadowNodeInstance(
+      reactTextViewManagerCallback: ReactTextViewManagerCallback?
+  ): ReactBaseTextShadowNode =
+      throw IllegalStateException(
+          "createShadowNodeInstance should not be called in new architecture"
+      )
+
+  override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
+      throw IllegalStateException("getShadowNodeClass should not be called in new architecture")
 
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> {
     val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
