@@ -5779,6 +5779,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun setReactScrollViewScrollState (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;)V
 	public fun setRemoveClippedSubviews (Z)V
 	public fun setScrollAwayTopPaddingEnabledUnstable (I)V
+	public fun setScrollAwayTopPaddingEnabledUnstable (IZ)V
 	public fun setScrollEnabled (Z)V
 	public fun setScrollEventThrottle (I)V
 	public fun setScrollPerfTag (Ljava/lang/String;)V
