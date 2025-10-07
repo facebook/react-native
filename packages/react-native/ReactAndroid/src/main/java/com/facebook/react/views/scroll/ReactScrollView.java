@@ -18,6 +18,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -1439,6 +1440,10 @@ public class ReactScrollView extends ScrollView
    * style. `translateY` must never be set from ReactJS while using this feature!
    */
   public void setScrollAwayTopPaddingEnabledUnstable(int topPadding) {
+    setScrollAwayTopPaddingEnabledUnstable(topPadding, true);
+  }
+
+  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding, boolean updateState) {
     int count = getChildCount();
 
     Assertions.assertCondition(
@@ -1458,7 +1463,9 @@ public class ReactScrollView extends ScrollView
       setPadding(0, 0, 0, topPadding);
     }
 
-    updateScrollAwayState(topPadding);
+    if (updateState) {
+      updateScrollAwayState(topPadding);
+    }
     setRemoveClippedSubviews(mRemoveClippedSubviews);
   }
 
@@ -1470,6 +1477,12 @@ public class ReactScrollView extends ScrollView
   @Override
   public void setReactScrollViewScrollState(ReactScrollViewScrollState scrollState) {
     mReactScrollViewScrollState = scrollState;
+    if (ReactNativeFeatureFlags.enableViewCulling()) {
+      setScrollAwayTopPaddingEnabledUnstable(scrollState.getScrollAwayPaddingTop(), false);
+
+      Point scrollPosition = scrollState.getLastStateUpdateScroll();
+      scrollTo(scrollPosition.x, scrollPosition.y);
+    }
   }
 
   @Override
