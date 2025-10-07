@@ -27,6 +27,7 @@ class SmallValueBuffer {
     *this = other;
   }
   SmallValueBuffer(SmallValueBuffer&& other) noexcept = default;
+  ~SmallValueBuffer() = default;
 
   // Add a new element to the buffer, returning the index of the element
   uint16_t push(uint32_t value) {
