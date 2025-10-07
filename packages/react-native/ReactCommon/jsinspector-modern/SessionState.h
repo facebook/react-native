@@ -24,6 +24,7 @@ struct SessionState {
   bool isLogDomainEnabled{false};
   bool isReactNativeApplicationDomainEnabled{false};
   bool isRuntimeDomainEnabled{false};
+  bool isNetworkDomainEnabled{false};
 
   /**
    * Whether the Trace Recording was initialized via CDP Tracing.start method
