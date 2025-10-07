@@ -13,7 +13,7 @@ namespace facebook::react {
 
 template <>
 struct Bridging<bool> {
-  static bool fromJs(jsi::Runtime&, const jsi::Value& value) {
+  static bool fromJs(jsi::Runtime& /*unused*/, const jsi::Value& value) {
     return value.asBool();
   }
 

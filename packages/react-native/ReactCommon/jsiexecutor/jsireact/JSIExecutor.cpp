@@ -45,7 +45,10 @@ class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
     return nativeModules->getModule(rt, name);
   }
 
-  void set(Runtime&, const PropNameID&, const Value&) override {
+  void set(
+      Runtime& /*unused*/,
+      const PropNameID& /*name*/,
+      const Value& /*value*/) override {
     throw std::runtime_error(
         "Unable to put on NativeModules: Operation unsupported");
   }

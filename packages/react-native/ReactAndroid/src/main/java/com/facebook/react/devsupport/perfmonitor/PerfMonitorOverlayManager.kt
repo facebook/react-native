@@ -58,6 +58,18 @@ internal class PerfMonitorOverlayManager(
     }
   }
 
+  /** Stop background trace recording. */
+  fun stopBackgroundTrace() {
+    if (!enabled) {
+      return
+    }
+
+    devHelper.inspectorTarget?.let { target ->
+      target.stopBackgroundTrace()
+      onRecordingStateChanged(target.getTracingState())
+    }
+  }
+
   override fun onRecordingStateChanged(state: TracingState) {
     tracingState = state
     UiThreadUtil.runOnUiThread {

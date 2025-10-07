@@ -179,7 +179,8 @@ class SyncCallback<R(Args...)> {
   }
 
   template <size_t... Index>
-  R apply(std::tuple<Args...>&& args, std::index_sequence<Index...>) const {
+  R apply(std::tuple<Args...>&& args, std::index_sequence<Index...> /*unused*/)
+      const {
     return call(std::move(std::get<Index>(args))...);
   }
 
@@ -262,7 +263,7 @@ struct Bridging<std::function<R(Args...)>> {
       jsi::Runtime& rt,
       const jsi::Value* args,
       const std::shared_ptr<CallInvoker>& jsInvoker,
-      std::index_sequence<Index...>) {
+      std::index_sequence<Index...> /*unused*/) {
     return fn(bridging::fromJs<Args>(rt, args[Index], jsInvoker)...);
   }
 };

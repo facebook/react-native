@@ -24,7 +24,7 @@ struct Bridging;
 template <>
 struct Bridging<void> {
   // Highly generic code may result in "casting" to void.
-  static void fromJs(jsi::Runtime&, const jsi::Value&) {}
+  static void fromJs(jsi::Runtime& /*unused*/, const jsi::Value& /*unused*/) {}
 };
 
 namespace bridging {
@@ -105,7 +105,8 @@ template <typename T>
 auto toJs(
     jsi::Runtime& rt,
     T&& value,
-    const std::shared_ptr<CallInvoker>& = nullptr) -> remove_cvref_t<T> {
+    const std::shared_ptr<CallInvoker>& /*unused*/ = nullptr)
+    -> remove_cvref_t<T> {
   return convert(rt, std::forward<T>(value));
 }
 
@@ -113,7 +114,7 @@ template <typename T>
 auto toJs(
     jsi::Runtime& rt,
     T&& value,
-    const std::shared_ptr<CallInvoker>& = nullptr)
+    const std::shared_ptr<CallInvoker>& /*unused*/ = nullptr)
     -> decltype(Bridging<bridging_t<T>>::toJs(rt, std::forward<T>(value))) {
   return Bridging<bridging_t<T>>::toJs(rt, std::forward<T>(value));
 }

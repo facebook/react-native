@@ -16,4 +16,15 @@ namespace facebook::react {
 
 using BackgroundImage = std::variant<LinearGradient, RadialGradient>;
 
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const BackgroundImage& backgroundImage) {
+  if (std::holds_alternative<LinearGradient>(backgroundImage)) {
+    return std::get<LinearGradient>(backgroundImage).toDynamic();
+  } else if (std::holds_alternative<RadialGradient>(backgroundImage)) {
+    return std::get<RadialGradient>(backgroundImage).toDynamic();
+  }
+  return folly::dynamic(nullptr);
+}
+#endif
+
 }; // namespace facebook::react

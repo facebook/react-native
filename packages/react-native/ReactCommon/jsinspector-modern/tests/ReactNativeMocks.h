@@ -29,7 +29,7 @@ class MockMessageQueueThread : public react::MessageQueueThread {
   void runOnQueue(std::function<void()>&& func) override;
 
   // Unused
-  void runOnQueueSync(std::function<void()>&&) override;
+  void runOnQueueSync(std::function<void()>&& callback) override;
 
   // Unused
   void quitSynchronous() override;

@@ -33,7 +33,7 @@ class DefaultComponentsRegistry
 
  private:
   static void setRegistryRunction(
-      jni::alias_ref<jclass>,
+      jni::alias_ref<jclass> /*unused*/,
       ComponentFactory* delegate);
 };
 

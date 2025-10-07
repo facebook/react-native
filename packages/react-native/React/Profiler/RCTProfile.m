@@ -184,7 +184,7 @@ RCT_EXTERN void RCTProfileTrampoline(void);
 static void *RCTProfileTrampoline = NULL;
 #endif
 
-RCT_EXTERN void RCTProfileTrampolineStart(id, SEL);
+RCT_EXTERN void RCTProfileTrampolineStart(id /*self*/, SEL /*cmd*/);
 void RCTProfileTrampolineStart(id self, SEL cmd)
 {
   /**

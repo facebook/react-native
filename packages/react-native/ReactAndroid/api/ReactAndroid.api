@@ -7,11 +7,6 @@ public abstract class com/facebook/react/BaseReactPackage : com/facebook/react/R
 	protected fun getViewManagers (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
 }
 
-public class com/facebook/react/CoreModulesPackage$$ReactModuleInfoProvider : com/facebook/react/module/model/ReactModuleInfoProvider {
-	public fun <init> ()V
-	public fun getReactModuleInfos ()Ljava/util/Map;
-}
-
 public final class com/facebook/react/DebugCorePackage : com/facebook/react/BaseReactPackage, com/facebook/react/ViewManagerOnDemandReactPackage {
 	public fun <init> ()V
 	public fun createViewManager (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/String;)Lcom/facebook/react/uimanager/ViewManager;

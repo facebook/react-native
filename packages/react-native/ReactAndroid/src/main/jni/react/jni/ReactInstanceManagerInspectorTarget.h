@@ -62,7 +62,7 @@ class ReactInstanceManagerInspectorTarget
   jsinspector_modern::HostTargetMetadata getMetadata() override;
   void onReload(const PageReloadRequest& request) override;
   void onSetPausedInDebuggerMessage(
-      const OverlaySetPausedInDebuggerMessageRequest&) override;
+      const OverlaySetPausedInDebuggerMessageRequest& /*request*/) override;
   void loadNetworkResource(
       const jsinspector_modern::LoadNetworkResourceRequest& params,
       jsinspector_modern::ScopedExecutor<

@@ -27,8 +27,8 @@ class ArgsConverter;
 class JSCRuntime;
 
 struct Lock {
-  void lock(const jsc::JSCRuntime&) const {}
-  void unlock(const jsc::JSCRuntime&) const {}
+  void lock(const jsc::JSCRuntime& /*unused*/) const {}
+  void unlock(const jsc::JSCRuntime& /*unused*/) const {}
 };
 
 class JSCRuntime : public jsi::Runtime {
@@ -158,78 +158,88 @@ class JSCRuntime : public jsi::Runtime {
       override;
   jsi::PropNameID createPropNameIDFromString(const jsi::String& str) override;
   jsi::PropNameID createPropNameIDFromSymbol(const jsi::Symbol& sym) override;
-  std::string utf8(const jsi::PropNameID&) override;
-  bool compare(const jsi::PropNameID&, const jsi::PropNameID&) override;
+  std::string utf8(const jsi::PropNameID& /*sym*/) override;
+  bool compare(const jsi::PropNameID& /*a*/, const jsi::PropNameID& /*b*/)
+      override;
 
-  std::string symbolToString(const jsi::Symbol&) override;
+  std::string symbolToString(const jsi::Symbol& /*sym*/) override;
 
-  jsi::BigInt createBigIntFromInt64(int64_t) override;
-  jsi::BigInt createBigIntFromUint64(uint64_t) override;
-  bool bigintIsInt64(const jsi::BigInt&) override;
-  bool bigintIsUint64(const jsi::BigInt&) override;
-  uint64_t truncate(const jsi::BigInt&) override;
-  jsi::String bigintToString(const jsi::BigInt&, int) override;
+  jsi::BigInt createBigIntFromInt64(int64_t /*unused*/) override;
+  jsi::BigInt createBigIntFromUint64(uint64_t /*unused*/) override;
+  bool bigintIsInt64(const jsi::BigInt& /*unused*/) override;
+  bool bigintIsUint64(const jsi::BigInt& /*unused*/) override;
+  uint64_t truncate(const jsi::BigInt& /*unused*/) override;
+  jsi::String bigintToString(const jsi::BigInt& /*unused*/, int /*unused*/)
+      override;
 
   jsi::String createStringFromAscii(const char* str, size_t length) override;
   jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) override;
-  std::string utf8(const jsi::String&) override;
+  std::string utf8(const jsi::String& /*str*/) override;
 
   jsi::Object createObject() override;
   jsi::Object createObject(std::shared_ptr<jsi::HostObject> ho) override;
   virtual std::shared_ptr<jsi::HostObject> getHostObject(
-      const jsi::Object&) override;
-  jsi::HostFunctionType& getHostFunction(const jsi::Function&) override;
+      const jsi::Object& /*obj*/) override;
+  jsi::HostFunctionType& getHostFunction(const jsi::Function& /*obj*/) override;
 
-  bool hasNativeState(const jsi::Object&) override;
-  std::shared_ptr<jsi::NativeState> getNativeState(const jsi::Object&) override;
-  void setNativeState(const jsi::Object&, std::shared_ptr<jsi::NativeState>)
-      override;
+  bool hasNativeState(const jsi::Object& /*obj*/) override;
+  std::shared_ptr<jsi::NativeState> getNativeState(
+      const jsi::Object& /*obj*/) override;
+  void setNativeState(
+      const jsi::Object& /*obj*/,
+      std::shared_ptr<jsi::NativeState> /*nativeState*/) override;
 
-  jsi::Value getProperty(const jsi::Object&, const jsi::String& name) override;
-  jsi::Value getProperty(const jsi::Object&, const jsi::PropNameID& name)
+  jsi::Value getProperty(const jsi::Object& /*obj*/, const jsi::String& name)
       override;
-  bool hasProperty(const jsi::Object&, const jsi::String& name) override;
-  bool hasProperty(const jsi::Object&, const jsi::PropNameID& name) override;
+  jsi::Value getProperty(
+      const jsi::Object& /*obj*/,
+      const jsi::PropNameID& name) override;
+  bool hasProperty(const jsi::Object& /*obj*/, const jsi::String& name)
+      override;
+  bool hasProperty(const jsi::Object& /*obj*/, const jsi::PropNameID& name)
+      override;
   void setPropertyValue(
-      const jsi::Object&,
+      const jsi::Object& /*object*/,
       const jsi::String& name,
       const jsi::Value& value) override;
   void setPropertyValue(
-      const jsi::Object&,
+      const jsi::Object& /*object*/,
       const jsi::PropNameID& name,
       const jsi::Value& value) override;
-  bool isArray(const jsi::Object&) const override;
-  bool isArrayBuffer(const jsi::Object&) const override;
-  bool isFunction(const jsi::Object&) const override;
-  bool isHostObject(const jsi::Object&) const override;
-  bool isHostFunction(const jsi::Function&) const override;
-  jsi::Array getPropertyNames(const jsi::Object&) override;
+  bool isArray(const jsi::Object& /*obj*/) const override;
+  bool isArrayBuffer(const jsi::Object& /*obj*/) const override;
+  bool isFunction(const jsi::Object& /*obj*/) const override;
+  bool isHostObject(const jsi::Object& /*obj*/) const override;
+  bool isHostFunction(const jsi::Function& /*obj*/) const override;
+  jsi::Array getPropertyNames(const jsi::Object& /*obj*/) override;
 
   // TODO: revisit this implementation
-  jsi::WeakObject createWeakObject(const jsi::Object&) override;
-  jsi::Value lockWeakObject(const jsi::WeakObject&) override;
+  jsi::WeakObject createWeakObject(const jsi::Object& /*obj*/) override;
+  jsi::Value lockWeakObject(const jsi::WeakObject& /*obj*/) override;
 
   jsi::Array createArray(size_t length) override;
   jsi::ArrayBuffer createArrayBuffer(
       std::shared_ptr<jsi::MutableBuffer> buffer) override;
-  size_t size(const jsi::Array&) override;
-  size_t size(const jsi::ArrayBuffer&) override;
-  uint8_t* data(const jsi::ArrayBuffer&) override;
-  jsi::Value getValueAtIndex(const jsi::Array&, size_t i) override;
-  void setValueAtIndexImpl(const jsi::Array&, size_t i, const jsi::Value& value)
-      override;
+  size_t size(const jsi::Array& /*arr*/) override;
+  size_t size(const jsi::ArrayBuffer& /*obj*/) override;
+  uint8_t* data(const jsi::ArrayBuffer& /*obj*/) override;
+  jsi::Value getValueAtIndex(const jsi::Array& /*arr*/, size_t i) override;
+  void setValueAtIndexImpl(
+      const jsi::Array& /*arr*/,
+      size_t i,
+      const jsi::Value& value) override;
 
   jsi::Function createFunctionFromHostFunction(
       const jsi::PropNameID& name,
       unsigned int paramCount,
       jsi::HostFunctionType func) override;
   jsi::Value call(
-      const jsi::Function&,
+      const jsi::Function& /*f*/,
       const jsi::Value& jsThis,
       const jsi::Value* args,
       size_t count) override;
   jsi::Value callAsConstructor(
-      const jsi::Function&,
+      const jsi::Function& /*f*/,
       const jsi::Value* args,
       size_t count) override;
 
@@ -238,7 +248,8 @@ class JSCRuntime : public jsi::Runtime {
   bool strictEquals(const jsi::String& a, const jsi::String& b) const override;
   bool strictEquals(const jsi::Object& a, const jsi::Object& b) const override;
   bool instanceOf(const jsi::Object& o, const jsi::Function& f) override;
-  void setExternalMemoryPressure(const jsi::Object&, size_t) override;
+  void setExternalMemoryPressure(const jsi::Object& /*obj*/, size_t /*amount*/)
+      override;
 
  private:
   // Basically convenience casts
@@ -605,7 +616,7 @@ jsi::Runtime::PointerValue* JSCRuntime::cloneSymbol(
 }
 
 jsi::Runtime::PointerValue* JSCRuntime::cloneBigInt(
-    const Runtime::PointerValue*) {
+    const Runtime::PointerValue* /*pv*/) {
   throw std::logic_error("Not implemented");
 }
 
@@ -683,27 +694,29 @@ std::string JSCRuntime::symbolToString(const jsi::Symbol& sym) {
   return jsi::Value(*this, sym).toString(*this).utf8(*this);
 }
 
-jsi::BigInt JSCRuntime::createBigIntFromInt64(int64_t) {
+jsi::BigInt JSCRuntime::createBigIntFromInt64(int64_t /*unused*/) {
   throw std::logic_error("Not implemented");
 }
 
-jsi::BigInt JSCRuntime::createBigIntFromUint64(uint64_t) {
+jsi::BigInt JSCRuntime::createBigIntFromUint64(uint64_t /*unused*/) {
   throw std::logic_error("Not implemented");
 }
 
-bool JSCRuntime::bigintIsInt64(const jsi::BigInt&) {
+bool JSCRuntime::bigintIsInt64(const jsi::BigInt& /*unused*/) {
   throw std::logic_error("Not implemented");
 }
 
-bool JSCRuntime::bigintIsUint64(const jsi::BigInt&) {
+bool JSCRuntime::bigintIsUint64(const jsi::BigInt& /*unused*/) {
   throw std::logic_error("Not implemented");
 }
 
-uint64_t JSCRuntime::truncate(const jsi::BigInt&) {
+uint64_t JSCRuntime::truncate(const jsi::BigInt& /*unused*/) {
   throw std::logic_error("Not implemented");
 }
 
-jsi::String JSCRuntime::bigintToString(const jsi::BigInt&, int) {
+jsi::String JSCRuntime::bigintToString(
+    const jsi::BigInt& /*unused*/,
+    int /*unused*/) {
   throw std::logic_error("Not implemented");
 }
 
@@ -1426,7 +1439,9 @@ bool JSCRuntime::instanceOf(const jsi::Object& o, const jsi::Function& f) {
   return res;
 }
 
-void JSCRuntime::setExternalMemoryPressure(const jsi::Object&, size_t) {}
+void JSCRuntime::setExternalMemoryPressure(
+    const jsi::Object& /*obj*/,
+    size_t /*amount*/) {}
 
 jsi::Runtime::PointerValue* JSCRuntime::makeSymbolValue(
     JSValueRef symbolRef) const {

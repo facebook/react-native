@@ -162,12 +162,6 @@ function build_apple_framework {
     mkdir -p destroot/include/hermes/cdp
     cp API/hermes/cdp/*.h destroot/include/hermes/cdp
 
-    mkdir -p destroot/include/hermes/inspector
-    cp API/hermes/inspector/*.h destroot/include/hermes/inspector
-
-    mkdir -p destroot/include/hermes/inspector/chrome
-    cp API/hermes/inspector/chrome/*.h destroot/include/hermes/inspector/chrome
-
     mkdir -p destroot/include/jsi
     cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
   popd > /dev/null || exit 1
@@ -191,12 +185,6 @@ function prepare_dest_root_for_ci {
 
   mkdir -p destroot/include/hermes/cdp
   cp API/hermes/cdp/*.h destroot/include/hermes/cdp
-
-  mkdir -p destroot/include/hermes/inspector
-  cp API/hermes/inspector/*.h destroot/include/hermes/inspector
-
-  mkdir -p destroot/include/hermes/inspector/chrome
-  cp API/hermes/inspector/chrome/*.h destroot/include/hermes/inspector/chrome
 
   mkdir -p destroot/include/jsi
   cp "$JSI_PATH"/jsi/*.h destroot/include/jsi

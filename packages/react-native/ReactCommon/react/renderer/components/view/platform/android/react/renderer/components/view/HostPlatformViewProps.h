@@ -49,6 +49,12 @@ class HostPlatformViewProps : public BaseViewProps {
   bool renderToHardwareTextureAndroid{false};
   bool screenReaderFocusable{false};
 
+  std::optional<int> nextFocusDown{};
+  std::optional<int> nextFocusForward{};
+  std::optional<int> nextFocusLeft{};
+  std::optional<int> nextFocusRight{};
+  std::optional<int> nextFocusUp{};
+
 #pragma mark - Convenience Methods
 
   bool getProbablyMoreHorizontalThanVertical_DEPRECATED() const;

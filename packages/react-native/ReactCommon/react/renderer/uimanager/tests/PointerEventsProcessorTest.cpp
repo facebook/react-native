@@ -43,7 +43,9 @@ class PointerEventsProcessorTest : public ::testing::Test {
     auto componentDescriptorRegistry =
         componentDescriptorProviderRegistry.createComponentDescriptorRegistry(
             ComponentDescriptorParameters{
-                eventDispatcher, std::move(contextContainer), nullptr});
+                .eventDispatcher = eventDispatcher,
+                .contextContainer = std::move(contextContainer),
+                .flavor = nullptr});
 
     componentDescriptorProviderRegistry.add(
         concreteComponentDescriptorProvider<RootComponentDescriptor>());
@@ -83,7 +85,7 @@ class PointerEventsProcessorTest : public ::testing::Test {
             auto sharedProps = std::make_shared<RootProps>();
             auto &props = *sharedProps;
             listenToAllPointerEvents(props);
-            props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+            props.layoutConstraints = LayoutConstraints{.minimumSize={.width=0,.height=0}, .maximumSize={.width=500, .height=500}};
             auto &yogaStyle = props.yogaStyle;
             yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(400));
             yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(400));

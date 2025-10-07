@@ -97,6 +97,7 @@ class MockInspectorPackagerConnectionDelegate
             executor_.add(callback);
           }
         }));
+    EXPECT_CALL(*this, scheduleCallback(_, _)).Times(AnyNumber());
   }
 
   // InspectorPackagerConnectionDelegate methods
@@ -168,6 +169,15 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
       collectSamplingProfile,
       (),
       (override));
+
+  inline MockRuntimeTargetDelegate() {
+    using namespace testing;
+
+    // Silence "uninteresting mock function call" warnings for methods that
+    // don't have side effects.
+
+    EXPECT_CALL(*this, supportsConsole()).Times(AnyNumber());
+  }
 };
 
 class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
@@ -175,7 +185,7 @@ class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
   inline MockRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
-      std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState> /*unused*/,
       ExecutionContextDescription executionContextDescription,
       const RuntimeExecutor& /*runtimeExecutor*/)
       : frontendChannel(std::move(frontendChannel)),

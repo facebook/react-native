@@ -24,7 +24,7 @@ class BlobCollector : public jni::HybridClass<BlobCollector>,
       "Lcom/facebook/react/modules/blob/BlobCollector;";
 
   static void nativeInstall(
-      jni::alias_ref<jclass>,
+      jni::alias_ref<jclass> /*unused*/,
       jni::alias_ref<jobject> blobModule,
       jlong jsContextNativePointer);
 

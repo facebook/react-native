@@ -19,8 +19,8 @@ class JInspectorFlags : public jni::JavaClass<JInspectorFlags> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/devsupport/InspectorFlags;";
 
-  static bool getFuseboxEnabled(jni::alias_ref<jclass>);
-  static bool getIsProfilingBuild(jni::alias_ref<jclass>);
+  static bool getFuseboxEnabled(jni::alias_ref<jclass> /*unused*/);
+  static bool getIsProfilingBuild(jni::alias_ref<jclass> /*unused*/);
 
   static void registerNatives();
 

@@ -117,7 +117,7 @@ NSSet<NSString *> *getCoreModuleClasses(void)
 }
 
 static NSMutableArray<NSString *> *modulesLoadedWithOldArch;
-void addModuleLoadedWithOldArch(NSString *);
+void addModuleLoadedWithOldArch(NSString * /*moduleName*/);
 void addModuleLoadedWithOldArch(NSString *moduleName)
 {
   static dispatch_once_t onceToken;
@@ -138,7 +138,7 @@ NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void)
  * prior to the first bridge initialization.
  * TODO: (T115656171) Refactor RCTRegisterModule out of Bridge.m since it doesn't use the Bridge.
  */
-void RCTRegisterModule(Class);
+void RCTRegisterModule(Class /*moduleClass*/);
 void RCTRegisterModule(Class moduleClass)
 {
   if (RCTAreLegacyLogsEnabled() && ![getCoreModuleClasses() containsObject:[moduleClass description]]) {

@@ -67,6 +67,13 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
     }
   }
 
+  override fun stopBackgroundTrace() {
+    stopAndDiscardBackgroundTrace()
+    perfMonitorListeners.forEach { listener ->
+      listener.onRecordingStateChanged(TracingState.DISABLED)
+    }
+  }
+
   override fun close() {
     mHybridData.resetNative()
   }

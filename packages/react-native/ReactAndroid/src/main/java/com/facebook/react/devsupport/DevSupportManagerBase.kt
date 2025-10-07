@@ -381,8 +381,8 @@ public abstract class DevSupportManagerBase(
                 DevOptionHandler {
                   UiThreadUtil.runOnUiThread {
                     if (reactInstanceDevHelper is PerfMonitorDevHelper) {
-                      reactInstanceDevHelper.inspectorTarget?.let {
-                        if (it.pauseAndAnalyzeBackgroundTrace()) {
+                      reactInstanceDevHelper.inspectorTarget?.let { target ->
+                        if (!target.pauseAndAnalyzeBackgroundTrace()) {
                           openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString())
                         }
                       }
@@ -543,7 +543,14 @@ public abstract class DevSupportManagerBase(
               !disabledItemKeys.contains(getItem(position))
 
           override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
-              super.getView(position, convertView, parent).apply { isEnabled = isEnabled(position) }
+              super.getView(position, convertView, parent).apply {
+                isEnabled = isEnabled(position)
+                if (this is TextView) {
+                  setTextColor(
+                      if (isEnabled) android.graphics.Color.WHITE else android.graphics.Color.GRAY
+                  )
+                }
+              }
         }
 
     devOptionsDialog =
@@ -558,6 +565,24 @@ public abstract class DevSupportManagerBase(
 
     devOptionsDialog?.show()
 
+    // Prior to Android 12, the list view in AlertDialogs did not match
+    // their content size.
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+      devOptionsDialog?.getListView()?.let { listView ->
+        val displayMetrics = context.resources.displayMetrics
+        val maxHeight = (displayMetrics.heightPixels * 0.7).toInt()
+
+        val layoutParams =
+            listView.layoutParams
+                ?: ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
+        layoutParams.height = maxHeight
+        listView.layoutParams = layoutParams
+      }
+    }
+
     val reactContext = currentReactContext
     reactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)?.emit("RCTDevMenuShown", null)
   }
@@ -567,8 +592,10 @@ public abstract class DevSupportManagerBase(
       perfMonitorOverlayManager?.let { manager ->
         reactInstanceDevHelper.inspectorTarget?.addPerfMonitorListener(manager)
       }
-      perfMonitorOverlayManager?.enable()
-      perfMonitorOverlayManager?.startBackgroundTrace()
+      if (isPackagerConnected) {
+        perfMonitorOverlayManager?.enable()
+        perfMonitorOverlayManager?.startBackgroundTrace()
+      }
       perfMonitorInitialized = true
     }
 
@@ -896,11 +923,13 @@ public abstract class DevSupportManagerBase(
             override fun onPackagerConnected() {
               isPackagerConnected = true
               perfMonitorOverlayManager?.enable()
+              perfMonitorOverlayManager?.startBackgroundTrace()
             }
 
             override fun onPackagerDisconnected() {
               isPackagerConnected = false
               perfMonitorOverlayManager?.disable()
+              perfMonitorOverlayManager?.stopBackgroundTrace()
             }
 
             override fun onPackagerReloadCommand() {

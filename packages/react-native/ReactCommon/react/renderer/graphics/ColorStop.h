@@ -17,6 +17,15 @@ struct ColorStop {
   bool operator==(const ColorStop& other) const = default;
   SharedColor color;
   ValueUnit position;
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["color"] = *color;
+    result["position"] = position.toDynamic();
+    return result;
+  }
+#endif
 };
 
 struct ProcessedColorStop {

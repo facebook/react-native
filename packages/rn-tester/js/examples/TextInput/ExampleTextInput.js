@@ -12,14 +12,9 @@ import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import React, {useContext} from 'react';
 import {StyleSheet, TextInput} from 'react-native';
 
-type LooseOmit<O: interface {}, K: $Keys<$FlowFixMe>> = Pick<
-  O,
-  Exclude<$Keys<O>, K>,
->;
-
 const ExampleTextInput: component(
   ref?: React.RefSetter<null | React.ElementRef<typeof TextInput>>,
-  ...props: LooseOmit<React.ElementProps<typeof TextInput>, 'ref'>
+  ...props: Omit<React.ElementConfig<typeof TextInput>, 'ref'>
 ) = ({
   ref,
   ...props

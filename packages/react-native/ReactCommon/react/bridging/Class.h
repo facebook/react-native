@@ -86,12 +86,12 @@ JSReturnT callFromJs(
 }
 
 template <typename ReturnT, typename... ArgsT>
-constexpr size_t getParameterCount(ReturnT (*)(ArgsT...)) {
+constexpr size_t getParameterCount(ReturnT (* /*unused*/)(ArgsT...)) {
   return sizeof...(ArgsT);
 }
 
 template <typename Class, typename ReturnT, typename... ArgsT>
-constexpr size_t getParameterCount(ReturnT (Class::*)(ArgsT...)) {
+constexpr size_t getParameterCount(ReturnT (Class::* /*unused*/)(ArgsT...)) {
   return sizeof...(ArgsT);
 }
 

@@ -37,9 +37,7 @@ export default function mockComponent<
     : // $FlowFixMe[incompatible-type]
       jest.requireActual<TComponentModule>(moduleName);
 
-  const SuperClass: typeof React.Component<
-    React.ElementProps<typeof RealComponent>,
-  > =
+  const SuperClass: typeof React.Component<{...}> =
     typeof RealComponent === 'function' &&
     RealComponent.prototype.constructor instanceof React.Component
       ? RealComponent

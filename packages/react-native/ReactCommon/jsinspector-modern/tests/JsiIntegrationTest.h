@@ -47,9 +47,8 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
  protected:
   Executor executor_;
 
-  JsiIntegrationPortableTestBase()
-      : inspectorFlagsGuard_{EngineAdapter::getInspectorFlagOverrides()},
-        engineAdapter_{executor_} {}
+  JsiIntegrationPortableTestBase(InspectorFlagOverrides overrides = {})
+      : inspectorFlagsGuard_(overrides), engineAdapter_{executor_} {}
 
   void SetUp() override {
     // NOTE: Using SetUp() so we can call virtual methods like
@@ -186,7 +185,7 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
   }
 
   void onSetPausedInDebuggerMessage(
-      const OverlaySetPausedInDebuggerMessageRequest&) override {}
+      const OverlaySetPausedInDebuggerMessageRequest& /*request*/) override {}
 };
 
 } // namespace facebook::react::jsinspector_modern

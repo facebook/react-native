@@ -90,7 +90,7 @@ class RCTObjcExecutor : public JSExecutor {
                          }];
   }
 
-  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override
+  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> /*bundleRegistry*/) override
   {
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }

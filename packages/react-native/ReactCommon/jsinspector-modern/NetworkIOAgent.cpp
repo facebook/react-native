@@ -280,15 +280,15 @@ bool NetworkIOAgent::handleRequest(
     if (req.method == "Network.enable") {
       networkHandler.setFrontendChannel(frontendChannel_);
       networkHandler.enable();
-      frontendChannel_(cdp::jsonResult(req.id));
-      return true;
+      // NOTE: Domain enable/disable responses are sent by HostAgent.
+      return false;
     }
 
     // @cdp Network.disable support is experimental.
     if (req.method == "Network.disable") {
       networkHandler.disable();
-      frontendChannel_(cdp::jsonResult(req.id));
-      return true;
+      // NOTE: Domain enable/disable responses are sent by HostAgent.
+      return false;
     }
 
     // @cdp Network.getResponseBody support is experimental.

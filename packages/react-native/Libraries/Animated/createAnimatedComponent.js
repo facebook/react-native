@@ -97,7 +97,7 @@ export default function createAnimatedComponent<
 >(
   Component: TInstance,
 ): AnimatedComponentType<
-  $ReadOnly<React.ElementProps<TInstance>>,
+  $ReadOnly<React.ElementConfig<TInstance>>,
   React.ElementRef<TInstance>,
 > {
   return unstable_createAnimatedComponentWithAllowlist(Component, null);

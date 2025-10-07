@@ -110,7 +110,7 @@ class CxxModule {
     Method(
         std::string aname,
         std::function<void(folly::dynamic, Callback, Callback)>&& afunc,
-        AsyncTagType)
+        AsyncTagType /*unused*/)
         : name(std::move(aname)),
           callbacks(2),
           isPromise(false),
@@ -163,7 +163,7 @@ class CxxModule {
         std::string aname,
         T* t,
         void (T::*method)(folly::dynamic, Callback, Callback),
-        AsyncTagType)
+        AsyncTagType /*unused*/)
         : name(std::move(aname)),
           callbacks(2),
           isPromise(false),
@@ -183,7 +183,7 @@ class CxxModule {
     Method(
         std::string aname,
         std::function<folly::dynamic()>&& afunc,
-        SyncTagType)
+        SyncTagType /*unused*/)
         : name(std::move(aname)),
           callbacks(0),
           isPromise(false),
@@ -194,7 +194,7 @@ class CxxModule {
     Method(
         std::string aname,
         std::function<folly::dynamic(folly::dynamic)>&& afunc,
-        SyncTagType)
+        SyncTagType /*unused*/)
         : name(std::move(aname)),
           callbacks(0),
           isPromise(false),

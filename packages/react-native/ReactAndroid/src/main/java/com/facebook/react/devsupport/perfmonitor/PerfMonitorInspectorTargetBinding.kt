@@ -25,4 +25,7 @@ internal interface PerfMonitorInspectorTargetBinding {
 
   /** Attempt to start a new background performance trace. */
   public fun resumeBackgroundTrace()
+
+  /** Attempt to stop the current performance trace. */
+  public fun stopBackgroundTrace()
 }

@@ -37,7 +37,7 @@ struct BridgingStatic {
       facebook::jsi::Runtime& rt,
       const T& array,
       const std::shared_ptr<CallInvoker>& jsInvoker,
-      std::index_sequence<Index...>) {
+      std::index_sequence<Index...> /*unused*/) {
     return jsi::Array::createWithElements(
         rt, bridging::toJs(rt, std::get<Index>(array), jsInvoker)...);
   }

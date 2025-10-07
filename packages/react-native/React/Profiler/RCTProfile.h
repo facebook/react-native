@@ -43,7 +43,7 @@ RCT_EXTERN dispatch_queue_t RCTProfileGetQueue(void)
 
 RCT_EXTERN NSUInteger _RCTProfileBeginFlowEvent(void)
     __deprecated_msg("This API will be removed along with the legacy architecture.");
-RCT_EXTERN void _RCTProfileEndFlowEvent(NSUInteger)
+RCT_EXTERN void _RCTProfileEndFlowEvent(NSUInteger /*cookie*/)
     __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
@@ -55,7 +55,7 @@ RCT_EXTERN BOOL RCTProfileIsProfiling(void)
 /**
  * Start collecting profiling information
  */
-RCT_EXTERN void RCTProfileInit(RCTBridge *)
+RCT_EXTERN void RCTProfileInit(RCTBridge * /*bridge*/)
     __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
@@ -63,7 +63,7 @@ RCT_EXTERN void RCTProfileInit(RCTBridge *)
  * returned is compliant with google's trace event format - the format used
  * as input to trace-viewer
  */
-RCT_EXTERN void RCTProfileEnd(RCTBridge *, void (^)(NSString *))
+RCT_EXTERN void RCTProfileEnd(RCTBridge * /*bridge*/, void (^/*callback*/)(NSString *))
     __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
@@ -164,13 +164,13 @@ RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag, NSString *name, NSTimeInt
 /**
  * Hook into a bridge instance to log all bridge module's method calls
  */
-RCT_EXTERN void RCTProfileHookModules(RCTBridge *)
+RCT_EXTERN void RCTProfileHookModules(RCTBridge * /*bridge*/)
     __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Unhook from a given bridge instance's modules
  */
-RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *)
+RCT_EXTERN void RCTProfileUnhookModules(RCTBridge * /*bridge*/)
     __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
@@ -215,7 +215,7 @@ typedef struct {
   void (*end_async_flow)(uint64_t tag, const char *name, int cookie);
 } RCTProfileCallbacks __deprecated_msg("This API will be removed along with the legacy architecture.");
 
-RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *)
+RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks * /*cb*/)
     __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
