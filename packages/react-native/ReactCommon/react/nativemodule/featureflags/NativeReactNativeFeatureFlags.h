@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d444d5ae614fb3c35e5b942f75345b57>>
+ * @generated SignedSource<<c85e22d73a1e272c7838c4a4e9db9b6d>>
  */
 
 /**
@@ -28,11 +28,13 @@
 namespace facebook::react {
 
 class NativeReactNativeFeatureFlags
-    : public NativeReactNativeFeatureFlagsCxxSpecJSI {
+    : public NativeReactNativeFeatureFlagsCxxSpec<
+          NativeReactNativeFeatureFlags> {
  public:
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 
-  static constexpr std::string_view kModuleName = "NativeReactNativeFeatureFlagsCxx";
+  static constexpr std::string_view kModuleName =
+      "NativeReactNativeFeatureFlagsCxx";
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
@@ -80,7 +82,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
-  bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
+  bool enableInteropViewManagerClassLookUpOptimizationIOS(
+      jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
