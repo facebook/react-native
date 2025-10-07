@@ -10,8 +10,38 @@
 #include <glog/logging.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/renderer/imagemanager/conversions.h>
+#include <react/renderer/uimanager/UIManagerCommitHook.h>
 
 namespace facebook::react {
+
+class ImageFetcherCommitHook : public UIManagerCommitHook {
+ public:
+  explicit ImageFetcherCommitHook(ImageFetcher* fetcher) : fetcher_(fetcher) {}
+
+  RootShadowNode::Unshared shadowTreeWillCommit(
+      const ShadowTree& /*shadowTree*/,
+      const RootShadowNode::Shared& /*oldRootShadowNode*/,
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTree::CommitOptions& /*commitOptions*/) noexcept override {
+    if (fetcher_ != nullptr) {
+      fetcher_->flushImageRequests();
+    }
+    return newRootShadowNode;
+  }
+
+  void commitHookWasRegistered(
+      const UIManager& /*uiManager*/) noexcept override {}
+
+  void commitHookWasUnregistered(
+      const UIManager& /*uiManager*/) noexcept override {}
+
+  void invalidate() {
+    fetcher_ = nullptr;
+  }
+
+ private:
+  ImageFetcher* fetcher_;
+};
 
 ImageFetcher::ImageFetcher(
     std::shared_ptr<const ContextContainer> contextContainer)
@@ -22,20 +52,24 @@ ImageFetcher::ImageFetcher(
                 ->find<std::shared_ptr<UIManagerCommitHookManager>>(
                     std::string(UIManagerCommitHookManagerKey));
         uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->registerCommitHook(*this);
+      commitHook_ = std::make_unique<ImageFetcherCommitHook>(this);
+      (*uiManagerCommitHookManager)->registerCommitHook(*commitHook_);
     }
   }
 }
 
 ImageFetcher::~ImageFetcher() {
-  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid() &&
+      commitHook_ != nullptr) {
+    commitHook_->invalidate();
     if (auto uiManagerCommitHookManager =
             contextContainer_
                 ->find<std::shared_ptr<UIManagerCommitHookManager>>(
                     std::string(UIManagerCommitHookManagerKey));
         uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->unregisterCommitHook(*this);
+      (*uiManagerCommitHookManager)->unregisterCommitHook(*commitHook_);
     }
+    commitHook_ = nullptr;
   }
 }
 
@@ -56,15 +90,6 @@ ImageRequest ImageFetcher::requestImage(
   }
 
   return {imageSource, telemetry};
-}
-
-RootShadowNode::Unshared ImageFetcher::shadowTreeWillCommit(
-    const ShadowTree& /*shadowTree*/,
-    const RootShadowNode::Shared& /*oldRootShadowNode*/,
-    const RootShadowNode::Unshared& newRootShadowNode,
-    const ShadowTree::CommitOptions& /*commitOptions*/) noexcept {
-  flushImageRequests();
-  return newRootShadowNode;
 }
 
 void ImageFetcher::flushImageRequests() {
