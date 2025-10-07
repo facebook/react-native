@@ -10,6 +10,7 @@ package com.facebook.react.modules.appearance
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import com.facebook.fbreact.specs.NativeAppearanceSpec
+import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.buildReadableMap
@@ -84,12 +85,23 @@ constructor(
   /** Sends an event to the JS instance that the preferred color scheme has changed. */
   public fun emitAppearanceChanged(colorScheme: String) {
     val appearancePreferences = buildReadableMap { put("colorScheme", colorScheme) }
+
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     reactApplicationContext?.emitDeviceEvent(APPEARANCE_CHANGED_EVENT_NAME, appearancePreferences)
+
+    // Invalidate platform color cache on native side
+    invalidatePlatformColorCache()
+  }
+
+  public fun invalidatePlatformColorCache() {
+    // call into static invalidatePlatformColorCache?.run() method
+    Companion.invalidatePlatformColorCache?.run()
   }
 
   public companion object {
     public const val NAME: String = NativeAppearanceSpec.NAME
     private const val APPEARANCE_CHANGED_EVENT_NAME = "appearanceChanged"
+
+    @DoNotStrip private var invalidatePlatformColorCache: Runnable? = null
   }
 }
