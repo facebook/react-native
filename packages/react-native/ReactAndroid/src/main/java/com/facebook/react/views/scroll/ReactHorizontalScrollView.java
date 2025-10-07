@@ -1650,6 +1650,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Override
+  public void setReactScrollViewScrollState(ReactScrollViewScrollState scrollState) {
+    mReactScrollViewScrollState = scrollState;
+  }
+
+  @Override
   public ReactScrollViewScrollState getReactScrollViewScrollState() {
     return mReactScrollViewScrollState;
   }
