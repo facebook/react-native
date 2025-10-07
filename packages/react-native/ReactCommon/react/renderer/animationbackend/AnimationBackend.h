@@ -24,16 +24,17 @@ struct AnimationMutation {
 };
 
 using AnimationMutations = std::vector<AnimationMutation>;
-using Callback = std::function<AnimationMutations(float)>;
-using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
-using StopOnRenderCallback = std::function<void()>;
-using DirectManipulationCallback =
-    std::function<void(Tag, const folly::dynamic&)>;
-using FabricCommitCallback =
-    std::function<void(std::unordered_map<Tag, folly::dynamic>&)>;
 
 class AnimationBackend {
  public:
+  using Callback = std::function<AnimationMutations(float)>;
+  using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
+  using StopOnRenderCallback = std::function<void()>;
+  using DirectManipulationCallback =
+      std::function<void(Tag, const folly::dynamic&)>;
+  using FabricCommitCallback =
+      std::function<void(std::unordered_map<Tag, folly::dynamic>&)>;
+
   std::vector<Callback> callbacks;
   const StartOnRenderCallback startOnRenderCallback_;
   const StopOnRenderCallback stopOnRenderCallback_;
