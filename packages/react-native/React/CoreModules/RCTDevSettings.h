@@ -10,7 +10,8 @@
 #import <React/RCTDefines.h>
 #import <React/RCTEventEmitter.h>
 #import <React/RCTInitializing.h>
-#import <React/RCTPackagerConnection.h>
+
+@class RCTPackagerConnection;
 
 @protocol RCTPackagerClientMethod;
 
