@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8af0aea8bbf4cffaad7d312032bef0e4>>
+ * @generated SignedSource<<4f9777b3b50f714214f9f0f86d5176f1>>
  */
 
 /**
@@ -383,6 +383,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = accessor.shouldPressibilityUseW3CPointerEventsForHover()
+
+  /**
+   * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
+   */
+  @JvmStatic
+  public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = accessor.shouldTriggerResponderTransferOnScrollAndroid()
 
   /**
    * Skip activity identity assertion in ReactHostImpl::onHostPause()
