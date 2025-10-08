@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/utils/OnScopeExit.h>
 #include <cassert>
 #include <functional>
 #include <memory>
@@ -93,5 +94,33 @@ class EnableExecutorFromThis : public std::enable_shared_from_this<Self> {
  private:
   VoidExecutor baseExecutor_;
 };
+
+/**
+ * Synchronously executes a callback if the given object is still alive,
+ * and keeps the object alive at least until the callback returns, without
+ * moving ownership of the object itself across threads.
+ *
+ * The caller is responsible for all thread safety concerns outside of the
+ * lifetime of the object itself (e.g. the safety of calling particular methods
+ * on the object).
+ */
+template <typename ExecutorEnabledType>
+  requires std::derived_from<
+      ExecutorEnabledType,
+      EnableExecutorFromThis<ExecutorEnabledType>>
+static void tryExecuteSync(
+    std::weak_ptr<ExecutorEnabledType> selfWeak,
+    std::invocable<ExecutorEnabledType&> auto func) {
+  if (auto self = selfWeak.lock()) {
+    auto selfExecutor = self->executorFromThis();
+    OnScopeExit onScopeExit{[self, selfExecutor = std::move(selfExecutor)]() {
+      // To ensure we never destroy `self` on the wrong thread, send
+      // our shared_ptr back to the correct executor.
+      selfExecutor([self = std::move(self)](auto&) { (void)self; });
+    }};
+
+    func(*self);
+  }
+}
 
 } // namespace facebook::react::jsinspector_modern
