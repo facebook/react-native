@@ -163,6 +163,34 @@ void RuntimeTarget::emitDebuggerSessionDestroyed() {
   });
 }
 
+void RuntimeTarget::enableSamplingProfiler() {
+  delegate_.enableSamplingProfiler();
+}
+
+void RuntimeTarget::disableSamplingProfiler() {
+  delegate_.disableSamplingProfiler();
+}
+
+tracing::RuntimeSamplingProfile RuntimeTarget::collectSamplingProfile() {
+  return delegate_.collectSamplingProfile();
+}
+
+void RuntimeTarget::notifyDomainStateChanged(
+    Domain domain,
+    bool enabled,
+    const RuntimeAgent& notifyingAgent) {
+  if (enabled) {
+    agentsByEnabledDomain_[domain].insert(&notifyingAgent);
+  } else {
+    agentsByEnabledDomain_[domain].erase(&notifyingAgent);
+  }
+  threadSafeDomainStatus_[domain] = !agentsByEnabledDomain_[domain].empty();
+}
+
+bool RuntimeTarget::isDomainEnabled(Domain domain) const {
+  return threadSafeDomainStatus_[domain];
+}
+
 RuntimeTargetController::RuntimeTargetController(RuntimeTarget& target)
     : target_(target) {}
 
@@ -192,16 +220,11 @@ RuntimeTargetController::collectSamplingProfile() {
   return target_.collectSamplingProfile();
 }
 
-void RuntimeTarget::enableSamplingProfiler() {
-  delegate_.enableSamplingProfiler();
-}
-
-void RuntimeTarget::disableSamplingProfiler() {
-  delegate_.disableSamplingProfiler();
-}
-
-tracing::RuntimeSamplingProfile RuntimeTarget::collectSamplingProfile() {
-  return delegate_.collectSamplingProfile();
+void RuntimeTargetController::notifyDomainStateChanged(
+    Domain domain,
+    bool enabled,
+    const RuntimeAgent& notifyingAgent) {
+  target_.notifyDomainStateChanged(domain, enabled, notifyingAgent);
 }
 
 } // namespace facebook::react::jsinspector_modern
