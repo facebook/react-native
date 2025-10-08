@@ -127,6 +127,20 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes/Public'
     end
 
+    if ENV['RCT_HERMES_V1_ENABLED'] != "1"
+      spec.subspec 'inspector' do |ss|
+        ss.source_files = ''
+        ss.public_header_files = 'API/hermes/inspector/*.h'
+        ss.header_dir = 'hermes/inspector'
+      end
+
+      spec.subspec 'inspector_chrome' do |ss|
+        ss.source_files = ''
+        ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
+        ss.header_dir = 'hermes/inspector/chrome'
+      end
+    end
+
     hermesc_path = "${PODS_ROOT}/hermes-engine/build_host_hermesc"
 
     if ENV.has_key?('HERMES_OVERRIDE_HERMESC_PATH') && File.exist?(ENV['HERMES_OVERRIDE_HERMESC_PATH']) then
