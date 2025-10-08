@@ -29,9 +29,14 @@ RuntimeAgent::RuntimeAgent(
     }
   }
 
-  if (sessionState_.isRuntimeDomainEnabled &&
-      sessionState_.isLogDomainEnabled) {
-    targetController_.notifyDebuggerSessionCreated();
+  if (sessionState_.isRuntimeDomainEnabled) {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::Runtime, true, *this);
+  }
+
+  if (sessionState_.isLogDomainEnabled) {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::Log, true, *this);
   }
 
   if (sessionState_.isNetworkDomainEnabled) {
@@ -60,20 +65,20 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
     // We are not responding to this request, just processing a side effect.
     return false;
   }
-  if (req.method == "Runtime.enable" && sessionState_.isLogDomainEnabled) {
-    targetController_.notifyDebuggerSessionCreated();
-  }
-  if (req.method == "Log.enable" && sessionState_.isRuntimeDomainEnabled) {
-    targetController_.notifyDebuggerSessionCreated();
-  }
-  if (req.method == "Runtime.disable" && sessionState_.isLogDomainEnabled) {
-    targetController_.notifyDebuggerSessionDestroyed();
-  }
-  if (req.method == "Log.disable" && sessionState_.isRuntimeDomainEnabled) {
-    targetController_.notifyDebuggerSessionDestroyed();
-  }
-
-  if (req.method == "Network.enable" || req.method == "Network.disable") {
+  if (req.method == "Runtime.enable" || req.method == "Runtime.disable") {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::Runtime,
+        sessionState_.isRuntimeDomainEnabled,
+        *this);
+    // Fall through
+  } else if (req.method == "Log.enable" || req.method == "Log.disable") {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::Log,
+        sessionState_.isLogDomainEnabled,
+        *this);
+    // Fall through
+  } else if (
+      req.method == "Network.enable" || req.method == "Network.disable") {
     targetController_.notifyDomainStateChanged(
         RuntimeTargetController::Domain::Network,
         sessionState_.isNetworkDomainEnabled,
@@ -120,9 +125,13 @@ RuntimeAgent::ExportedState RuntimeAgent::getExportedState() {
 }
 
 RuntimeAgent::~RuntimeAgent() {
-  if (sessionState_.isRuntimeDomainEnabled &&
-      sessionState_.isLogDomainEnabled) {
-    targetController_.notifyDebuggerSessionDestroyed();
+  if (sessionState_.isRuntimeDomainEnabled) {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::Runtime, false, *this);
+  }
+  if (sessionState_.isLogDomainEnabled) {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::Log, false, *this);
   }
   if (sessionState_.isNetworkDomainEnabled) {
     targetController_.notifyDomainStateChanged(

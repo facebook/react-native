@@ -124,7 +124,7 @@ class RuntimeTargetDelegate {
  */
 class RuntimeTargetController {
  public:
-  enum class Domain { Network, kMaxValue };
+  enum class Domain { Network, Runtime, Log, kMaxValue };
 
   explicit RuntimeTargetController(RuntimeTarget& target);
 
@@ -134,18 +134,6 @@ class RuntimeTargetController {
    * sessions that have registered to receive binding events for that name.
    */
   void installBindingHandler(const std::string& bindingName);
-
-  /**
-   * Notifies the target to emit some message that debugger session is
-   * created.
-   */
-  void notifyDebuggerSessionCreated();
-
-  /**
-   * Notifies the target to emit some message that debugger session is
-   * destroyed.
-   */
-  void notifyDebuggerSessionDestroyed();
 
   /**
    * Notifies the target that an agent has received an enable or disable
@@ -293,6 +281,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * thread. \see isDomainEnabled.
    */
   EnumArray<Domain, std::atomic<bool>> threadSafeDomainStatus_{};
+
+  /**
+   * The number of agents that currently have both the Log and Runtime domains
+   * enabled.
+   */
+  size_t agentsWithRuntimeAndLogDomainsEnabled_{0};
 
   /**
    * This TracingAgent is owned by the InstanceTracingAgent, both are bound to

@@ -148,4 +148,48 @@ TEST_F(
   EXPECT_FALSE(eval("latestStatus").asBool());
 }
 
+TEST_F(DebuggerSessionObserverTest, testTwoConcurrentConnections) {
+  connect();
+
+  auto secondary = connectSecondary();
+
+  EXPECT_CALL(fromPage(), onMessage(_)).Times(AnyNumber());
+  EXPECT_CALL(secondary.fromPage(), onMessage(_)).Times(AnyNumber());
+
+  // No domains enabled to start with
+  EXPECT_FALSE(eval("__DEBUGGER_SESSION_OBSERVER__.hasActiveSession").asBool());
+
+  toPage_->sendMessage(R"({"id": 1, "method": "Runtime.enable"})");
+  // Primary: Runtime, Secondary: None
+  EXPECT_FALSE(eval("__DEBUGGER_SESSION_OBSERVER__.hasActiveSession").asBool());
+
+  secondary.toPage().sendMessage(R"({"id": 2, "method": "Log.enable"})");
+  // Primary: Runtime, Secondary: Log
+  EXPECT_FALSE(eval("__DEBUGGER_SESSION_OBSERVER__.hasActiveSession").asBool());
+
+  secondary.toPage().sendMessage(R"({"id": 3, "method": "Runtime.enable"})");
+  // Primary: Runtime, Secondary: [Runtime, Log]
+  EXPECT_TRUE(eval("__DEBUGGER_SESSION_OBSERVER__.hasActiveSession").asBool());
+
+  toPage_->sendMessage(R"({"id": 4, "method": "Log.enable"})");
+  // Primary: [Runtime, Log], Secondary: [Runtime, Log]
+  EXPECT_TRUE(eval("__DEBUGGER_SESSION_OBSERVER__.hasActiveSession").asBool());
+
+  toPage_->sendMessage(R"({"id": 5, "method": "Runtime.disable"})");
+  // Primary: Log, Secondary: [Runtime, Log]
+  EXPECT_TRUE(eval("__DEBUGGER_SESSION_OBSERVER__.hasActiveSession").asBool());
+
+  secondary.toPage().sendMessage(R"({"id": 6, "method": "Log.disable"})");
+  // Primary: Log, Secondary: Runtime
+  EXPECT_FALSE(eval("__DEBUGGER_SESSION_OBSERVER__.hasActiveSession").asBool());
+
+  secondary.toPage().sendMessage(R"({"id": 7, "method": "Runtime.disable"})");
+  // Primary: Log, Secondary: None
+  EXPECT_FALSE(eval("__DEBUGGER_SESSION_OBSERVER__.hasActiveSession").asBool());
+
+  toPage_->sendMessage(R"({"id": 8, "method": "Log.disable"})");
+  // Primary: None, Secondary: None
+  EXPECT_FALSE(eval("__DEBUGGER_SESSION_OBSERVER__.hasActiveSession").asBool());
+}
+
 } // namespace facebook::react::jsinspector_modern
