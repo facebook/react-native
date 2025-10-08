@@ -8,6 +8,7 @@
 #pragma once
 
 #include "ConsoleMessage.h"
+#include "EnumArray.h"
 #include "ExecutionContext.h"
 #include "InspectorInterfaces.h"
 #include "RuntimeAgent.h"
@@ -123,6 +124,8 @@ class RuntimeTargetDelegate {
  */
 class RuntimeTargetController {
  public:
+  enum class Domain { Network, kMaxValue };
+
   explicit RuntimeTargetController(RuntimeTarget& target);
 
   /**
@@ -143,6 +146,15 @@ class RuntimeTargetController {
    * destroyed.
    */
   void notifyDebuggerSessionDestroyed();
+
+  /**
+   * Notifies the target that an agent has received an enable or disable
+   * message for the given domain.
+   */
+  void notifyDomainStateChanged(
+      Domain domain,
+      bool enabled,
+      const RuntimeAgent& notifyingAgent);
 
   /**
    * Start sampling profiler for the corresponding RuntimeTarget.
@@ -239,6 +251,8 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   tracing::RuntimeSamplingProfile collectSamplingProfile();
 
  private:
+  using Domain = RuntimeTargetController::Domain;
+
   /**
    * Constructs a new RuntimeTarget. The caller must call setExecutor
    * immediately afterwards.
@@ -266,6 +280,19 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   RuntimeExecutor jsExecutor_;
   WeakList<RuntimeAgent> agents_;
   RuntimeTargetController controller_{*this};
+
+  /**
+   * Keeps track of the agents that have enabled various domains.
+   */
+  EnumArray<Domain, std::unordered_set<const RuntimeAgent*>>
+      agentsByEnabledDomain_;
+
+  /**
+   * For each Domain, contains true if the domain has been enabled by any
+   * active agent. Unlike agentsByEnabledDomain_, this is safe to read from any
+   * thread. \see isDomainEnabled.
+   */
+  EnumArray<Domain, std::atomic<bool>> threadSafeDomainStatus_{};
 
   /**
    * This TracingAgent is owned by the InstanceTracingAgent, both are bound to
@@ -322,6 +349,23 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * May be called from any thread as long as the RuntimeTarget is valid.
    */
   std::string createNetworkRequestId();
+
+  /**
+   * Notifies the target that an agent has received an enable or disable
+   * message for the given domain.
+   */
+  void notifyDomainStateChanged(
+      Domain domain,
+      bool enabled,
+      const RuntimeAgent& notifyingAgent);
+
+  /**
+   * Checks whether the given domain is enabled in at least one session
+   * that is currently connected. This may be called from any thread, with
+   * the caveat that the result can change at arbitrary times unless the caller
+   * is on the inspector thread.
+   */
+  bool isDomainEnabled(Domain domain) const;
 
   // Necessary to allow RuntimeAgent to access RuntimeTarget's internals in a
   // controlled way (i.e. only RuntimeTargetController gets friend access, while
