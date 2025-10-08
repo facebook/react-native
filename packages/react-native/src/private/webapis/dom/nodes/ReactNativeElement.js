@@ -25,8 +25,10 @@ import type {InstanceHandle} from './internals/NodeInternals';
 import type ReactNativeDocument from './ReactNativeDocument';
 
 import TextInputState from '../../../../../Libraries/Components/TextInput/TextInputState';
+import {Commands as ViewCommands} from '../../../../../Libraries/Components/View/ViewNativeComponent';
 import {create as createAttributePayload} from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
+import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import {
   getNativeElementReference,
   getPublicInstanceFromInstanceHandle,
@@ -140,11 +142,19 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
    */
 
   blur(): void {
-    TextInputState.blurTextInput(this);
+    if (TextInputState.isTextInput(this)) {
+      TextInputState.blurTextInput(this);
+    } else if (ReactNativeFeatureFlags.enableImperativeFocus()) {
+      ViewCommands.blur(this);
+    }
   }
 
   focus() {
-    TextInputState.focusTextInput(this);
+    if (TextInputState.isTextInput(this)) {
+      TextInputState.focusTextInput(this);
+    } else if (ReactNativeFeatureFlags.enableImperativeFocus()) {
+      ViewCommands.focus(this);
+    }
   }
 
   measure(callback: MeasureOnSuccessCallback) {

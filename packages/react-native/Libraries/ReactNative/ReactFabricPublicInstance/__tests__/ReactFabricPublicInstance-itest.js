@@ -14,6 +14,7 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import type {HostInstance} from 'react-native';
 
 import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
+import TextInput from '../../../Components/TextInput/TextInput';
 import TextInputState from '../../../Components/TextInput/TextInputState';
 import View from '../../../Components/View/View';
 import ReactFabricHostComponent from '../ReactFabricHostComponent';
@@ -48,7 +49,7 @@ describe('ReactFabricPublicInstance', () => {
       const nodeRef = createRef<HostInstance>();
 
       Fantom.runTask(() => {
-        root.render(<View ref={nodeRef} />);
+        root.render(<TextInput ref={nodeRef} />);
       });
 
       const node = nullthrows(nodeRef.current);
@@ -73,7 +74,7 @@ describe('ReactFabricPublicInstance', () => {
       const ref = createRef<HostInstance>();
 
       Fantom.runTask(() => {
-        root.render(<View ref={ref} />);
+        root.render(<TextInput ref={ref} />);
       });
 
       const node = nullthrows(ref.current);
