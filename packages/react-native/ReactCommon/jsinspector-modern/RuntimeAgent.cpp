@@ -33,6 +33,11 @@ RuntimeAgent::RuntimeAgent(
       sessionState_.isLogDomainEnabled) {
     targetController_.notifyDebuggerSessionCreated();
   }
+
+  if (sessionState_.isNetworkDomainEnabled) {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::Network, true, *this);
+  }
 }
 
 bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
@@ -67,6 +72,17 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Log.disable" && sessionState_.isRuntimeDomainEnabled) {
     targetController_.notifyDebuggerSessionDestroyed();
   }
+
+  if (req.method == "Network.enable" || req.method == "Network.disable") {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::Network,
+        sessionState_.isNetworkDomainEnabled,
+        *this);
+
+    // We are not responding to this request, just processing a side effect.
+    return false;
+  }
+
   if (delegate_) {
     return delegate_->handleRequest(req);
   }
@@ -107,6 +123,10 @@ RuntimeAgent::~RuntimeAgent() {
   if (sessionState_.isRuntimeDomainEnabled &&
       sessionState_.isLogDomainEnabled) {
     targetController_.notifyDebuggerSessionDestroyed();
+  }
+  if (sessionState_.isNetworkDomainEnabled) {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::Network, false, *this);
   }
 
   // TODO: Eventually, there may be more than one Runtime per Page, and we'll
