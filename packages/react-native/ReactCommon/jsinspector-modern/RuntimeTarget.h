@@ -300,6 +300,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   void installDebuggerSessionObserver();
 
   /**
+   * Installs the private __NETWORK_REPORTER__ object on the Runtime's
+   * global object.
+   */
+  void installNetworkReporterAPI();
+
+  /**
    * Propagates the debugger session state change to the JavaScript via calling
    * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
    */
@@ -310,6 +316,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
    */
   void emitDebuggerSessionDestroyed();
+
+  /**
+   * \returns a globally unique ID for a network request.
+   * May be called from any thread as long as the RuntimeTarget is valid.
+   */
+  std::string createNetworkRequestId();
 
   // Necessary to allow RuntimeAgent to access RuntimeTarget's internals in a
   // controlled way (i.e. only RuntimeTargetController gets friend access, while
