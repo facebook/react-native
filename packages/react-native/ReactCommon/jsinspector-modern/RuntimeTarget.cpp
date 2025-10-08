@@ -54,7 +54,12 @@ RuntimeTarget::RuntimeTarget(
 void RuntimeTarget::installGlobals() {
   // NOTE: RuntimeTarget::installConsoleHandler is in RuntimeTargetConsole.cpp
   installConsoleHandler();
+  // NOTE: RuntimeTarget::installDebuggerSessionObserver is in
+  // RuntimeTargetDebuggerSessionObserver.cpp
   installDebuggerSessionObserver();
+  // NOTE: RuntimeTarget::installNetworkReporterAPI is in
+  // RuntimeTargetNetwork.cpp
+  installNetworkReporterAPI();
 }
 
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
