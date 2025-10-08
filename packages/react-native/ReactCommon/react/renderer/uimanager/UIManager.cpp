@@ -681,11 +681,12 @@ void UIManager::setNativeAnimatedDelegate(
 }
 
 void UIManager::unstable_setAnimationBackend(
-    std::weak_ptr<AnimationBackend> animationBackend) {
+    std::weak_ptr<UIManagerAnimationBackend> animationBackend) {
   animationBackend_ = animationBackend;
 }
 
-std::weak_ptr<AnimationBackend> UIManager::unstable_getAnimationBackend() {
+std::weak_ptr<UIManagerAnimationBackend>
+UIManager::unstable_getAnimationBackend() {
   return animationBackend_;
 }
 
