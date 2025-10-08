@@ -52,10 +52,7 @@ void RuntimeTarget::installNetworkReporterAPI() {
     std::optional<std::string> devToolsRequestId;
     tryExecuteSync(selfWeak, [&](RuntimeTarget& self) {
       devToolsRequestId = self.createNetworkRequestId();
-      // TODO(moti): Instead of checking the singleton state,
-      // directly check whether the current target has a session
-      // with the Network domain enabled.
-      if (NetworkHandler::getInstance().isEnabled()) {
+      if (self.isDomainEnabled(Domain::Network)) {
         // Q: Why is it safe to use self.delegate_ here?
         // A: Because the caller of InspectorTarget::registerRuntime
         // is explicitly required to guarantee that the delegate not
