@@ -1528,7 +1528,7 @@ public class ReactInstanceManager {
     catalystInstance.runJSBundle();
     Systrace.endSection(TRACE_TAG_REACT);
 
-    if (reactContext.isBridgeless() && ReactNativeFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
+    if (reactContext.isBridgeless() && ReactNativeNewArchitectureFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
       // Eagerly initialize TurboModules
       for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
         turboModuleManager.getModule(moduleName);
