@@ -23,6 +23,7 @@
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/mounting/ShadowTreeDelegate.h>
 #include <react/renderer/mounting/ShadowTreeRegistry.h>
+#include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 #include <react/renderer/uimanager/UIManagerNativeAnimatedDelegate.h>
@@ -36,7 +37,6 @@ namespace facebook::react {
 class UIManagerBinding;
 class UIManagerCommitHook;
 class UIManagerMountHook;
-class AnimationBackend;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
@@ -63,9 +63,13 @@ class UIManager final : public ShadowTreeDelegate {
    * the pointer before being destroyed.
    */
   void setAnimationDelegate(UIManagerAnimationDelegate* delegate);
+
+  /**
+   * Sets and gets UIManager's AnimationBackend reference.
+   */
   void unstable_setAnimationBackend(
-      std::weak_ptr<AnimationBackend> animationBackend);
-  std::weak_ptr<AnimationBackend> unstable_getAnimationBackend();
+      std::weak_ptr<UIManagerAnimationBackend> animationBackend);
+  std::weak_ptr<UIManagerAnimationBackend> unstable_getAnimationBackend();
 
   /**
    * Execute stopSurface on any UIMAnagerAnimationDelegate.
@@ -263,7 +267,7 @@ class UIManager final : public ShadowTreeDelegate {
   std::unique_ptr<LazyShadowTreeRevisionConsistencyManager>
       lazyShadowTreeRevisionConsistencyManager_;
 
-  std::weak_ptr<AnimationBackend> animationBackend_;
+  std::weak_ptr<UIManagerAnimationBackend> animationBackend_;
 };
 
 } // namespace facebook::react

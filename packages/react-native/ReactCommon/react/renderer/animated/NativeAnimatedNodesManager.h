@@ -19,6 +19,7 @@
 #include <react/renderer/animated/event_drivers/EventAnimationDriver.h>
 #include <react/renderer/animationbackend/AnimationBackend.h>
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <chrono>
 #include <memory>
 #include <mutex>
@@ -68,7 +69,7 @@ class NativeAnimatedNodesManager {
       StopOnRenderCallback&& stopOnRenderCallback = nullptr) noexcept;
 
   explicit NativeAnimatedNodesManager(
-      std::shared_ptr<AnimationBackend> animationBackend) noexcept;
+      std::shared_ptr<UIManagerAnimationBackend> animationBackend) noexcept;
 
   ~NativeAnimatedNodesManager() noexcept;
 
@@ -212,7 +213,7 @@ class NativeAnimatedNodesManager {
       const std::string& eventName,
       const EventPayload& payload) noexcept;
 
-  std::shared_ptr<AnimationBackend> animationBackend_;
+  std::shared_ptr<UIManagerAnimationBackend> animationBackend_;
 
   std::unique_ptr<AnimatedNode> animatedNode(
       Tag tag,

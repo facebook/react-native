@@ -10,6 +10,7 @@
 #include <folly/dynamic.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/uimanager/UIManager.h>
+#include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <functional>
 #include <vector>
 #include "AnimatedProps.h"
@@ -25,7 +26,7 @@ struct AnimationMutation {
 
 using AnimationMutations = std::vector<AnimationMutation>;
 
-class AnimationBackend {
+class AnimationBackend : public UIManagerAnimationBackend {
  public:
   using Callback = std::function<AnimationMutations(float)>;
   using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
@@ -54,8 +55,8 @@ class AnimationBackend {
   void synchronouslyUpdateProps(
       const std::unordered_map<Tag, AnimatedProps>& updates);
 
-  void onAnimationFrame(double timestamp);
+  void onAnimationFrame(double timestamp) override;
   void start(const Callback& callback);
-  void stop();
+  void stop() override;
 };
 } // namespace facebook::react

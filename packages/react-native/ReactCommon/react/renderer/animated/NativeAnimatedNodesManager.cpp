@@ -33,6 +33,7 @@
 #include <react/renderer/animated/nodes/TrackingAnimatedNode.h>
 #include <react/renderer/animated/nodes/TransformAnimatedNode.h>
 #include <react/renderer/animated/nodes/ValueAnimatedNode.h>
+#include <react/renderer/animationbackend/AnimatedPropsBuilder.h>
 #include <react/renderer/core/EventEmitter.h>
 
 namespace facebook::react {
@@ -92,7 +93,7 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
 }
 
 NativeAnimatedNodesManager::NativeAnimatedNodesManager(
-    std::shared_ptr<AnimationBackend> animationBackend) noexcept
+    std::shared_ptr<UIManagerAnimationBackend> animationBackend) noexcept
     : animationBackend_(std::move(animationBackend)) {}
 
 NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
@@ -514,8 +515,12 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    animationBackend_->start(
-        [this](float /*f*/) { return pullAnimationMutations(); });
+    if (auto animationBackend =
+            std::static_pointer_cast<AnimationBackend>(animationBackend_)) {
+      animationBackend->start(
+          [this](float /*f*/) { return pullAnimationMutations(); });
+    }
+
     return;
   }
   // This method can be called from either the UI thread or JavaScript thread.
