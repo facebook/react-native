@@ -30,6 +30,12 @@ static TextAttributes convertRawProp(
       "color",
       sourceTextAttributes.foregroundColor,
       defaultTextAttributes.foregroundColor);
+  textAttributes.gradientColors = convertRawProp(
+      context,
+      rawProps,
+      "gradientColors",
+      sourceTextAttributes.gradientColors,
+      defaultTextAttributes.gradientColors);
 
   // Font
   textAttributes.fontFamily = convertRawProp(
@@ -237,7 +243,7 @@ BaseTextProps::BaseTextProps(
                     context,
                     rawProps,
                     sourceProps.textAttributes,
-                    TextAttributes{})){};
+                    TextAttributes{})){}
 
 void BaseTextProps::setProp(
     const PropsParserContext& context,
@@ -249,6 +255,8 @@ void BaseTextProps::setProp(
   switch (hash) {
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, foregroundColor, "color");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, gradientColors, "gradientColors");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, fontFamily, "fontFamily");
     REBUILD_FIELD_SWITCH_CASE(

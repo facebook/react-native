@@ -27,6 +27,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
       : backgroundColor;
   opacity =
       !std::isnan(textAttributes.opacity) ? textAttributes.opacity : opacity;
+  gradientColors = textAttributes.gradientColors.has_value()
+      ? textAttributes.gradientColors
+      : gradientColors;
 
   // Font
   fontFamily = !textAttributes.fontFamily.empty() ? textAttributes.fontFamily
@@ -171,7 +174,8 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
       floatEquality(fontSizeMultiplier, rhs.fontSizeMultiplier) &&
       floatEquality(letterSpacing, rhs.letterSpacing) &&
       floatEquality(lineHeight, rhs.lineHeight) &&
-      floatEquality(textShadowRadius, rhs.textShadowRadius);
+      floatEquality(textShadowRadius, rhs.textShadowRadius) &&
+      gradientColors == rhs.gradientColors;
 }
 
 TextAttributes TextAttributes::defaultTextAttributes() {

@@ -42,6 +42,7 @@ class TextAttributes : public DebugStringConvertible {
   SharedColor foregroundColor{};
   SharedColor backgroundColor{};
   Float opacity{std::numeric_limits<Float>::quiet_NaN()};
+  std::optional<std::vector<SharedColor>> gradientColors{};
 
   // Font
   std::string fontFamily{""};

@@ -27,6 +27,7 @@ const {
   Text,
   TextInput,
   View,
+  processColor,
 } = require('react-native');
 
 class Entity extends React.Component<{children: React.Node}> {
@@ -1230,7 +1231,40 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
   );
 }
 
+function GradientColorsExample(props: {}): React.Node {
+  const colors = ['red', 'green', 'blue', 'yellow'].map(processColor);
+  return (
+    <View testID="gradient-colors">
+      <RNTesterText>
+        Nested gradient colors{' '}
+        <RNTesterText gradientColors={colors}>
+          Gradient Text
+        </RNTesterText>
+      </RNTesterText>
+      <RNTesterText gradientColors={colors}>
+        Gradient Text (4 colors)
+      </RNTesterText>
+      <RNTesterText gradientColors={colors.slice(0, 3)}>
+        Gradient Text (3 colors)
+      </RNTesterText>
+      <RNTesterText gradientColors={colors.slice(0, 2)}>
+        Gradient Text (2 colors)
+      </RNTesterText>
+      <RNTesterText gradientColors={colors.slice(0, 1)}>
+        Gradient Text (1 color) - no gradient
+      </RNTesterText>
+    </View>
+  );
+}
+
 const examples = [
+  {
+    title: 'Gradient Colors',
+    name: 'gradient-colors',
+    render(): React.Node {
+      return <GradientColorsExample />;
+    },
+  },
   {
     title: 'Background Color and Border Width',
     name: 'background-border-width',

@@ -42,6 +42,7 @@ import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan
 import com.facebook.react.views.text.internal.span.ReactClickableSpan
 import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan
+import com.facebook.react.views.text.internal.span.LinearGradientSpan
 import com.facebook.react.views.text.internal.span.ReactOpacitySpan
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
 import com.facebook.react.views.text.internal.span.ReactTagSpan
@@ -254,6 +255,14 @@ internal object TextLayoutManager {
         if (textAttributes.mIsColorSet) {
           ops.add(SetSpanOperation(start, end, ReactForegroundColorSpan(textAttributes.mColor)))
         }
+        if (textAttributes.gradientColors != null && textAttributes.gradientColors!!.size >= 2) {
+          val effectiveFontSize = textAttributes.effectiveFontSize
+          ops.add(
+              SetSpanOperation(
+                  start,
+                  end,
+                  LinearGradientSpan(start * effectiveFontSize.toFloat(), textAttributes.gradientColors!!)))
+        }
         if (textAttributes.mIsBackgroundColorSet) {
           ops.add(
               SetSpanOperation(
@@ -391,6 +400,15 @@ internal object TextLayoutManager {
 
         if (fragment.props.isColorSet) {
           spannable.setSpan(ReactForegroundColorSpan(fragment.props.color), start, end, spanFlags)
+        }
+
+        if (fragment.props.gradientColors != null && fragment.props.gradientColors!!.size >= 2) {
+          val effectiveFontSize = fragment.props.effectiveFontSize
+          spannable.setSpan(
+              LinearGradientSpan(start * effectiveFontSize.toFloat(), fragment.props.gradientColors!!),
+              start,
+              end,
+              spanFlags)
         }
 
         if (fragment.props.isBackgroundColorSet) {

@@ -27,6 +27,7 @@ const {
   Text,
   TextInput,
   View,
+  processColor,
 } = require('react-native');
 
 type TextAlignExampleRTLState = {
@@ -570,7 +571,40 @@ class TextWithCapBaseBox extends React.Component<
   }
 }
 
+function GradientColorsExample(props: {}): React.Node {
+  const colors = ['red', 'green', 'blue', 'yellow'].map(processColor);
+  return (
+    <View testID="gradient-colors">
+      <RNTesterText>
+        Nested gradient colors{' '}
+        <RNTesterText gradientColors={colors}>
+          Gradient Text
+        </RNTesterText>
+      </RNTesterText>
+      <Text gradientColors={colors}>
+        Gradient Text (4 colors)
+      </Text>
+      <Text gradientColors={colors.slice(0, 3)}>
+        Gradient Text (3 colors)
+      </Text>
+      <Text gradientColors={colors.slice(0, 2)}>
+        Gradient Text (2 colors)
+      </Text>
+      <Text gradientColors={colors.slice(0, 1)}>
+        Gradient Text (1 color) - no gradient
+      </Text>
+    </View>
+  );
+}
+
 const examples = [
+  {
+    title: 'Gradient Colors',
+    name: 'gradient-colors',
+    render(): React.Node {
+      return <GradientColorsExample />;
+    },
+  },
   {
     title: 'iOS System Font Families (iOS only)',
     name: 'iOSSystemFontFamilies',

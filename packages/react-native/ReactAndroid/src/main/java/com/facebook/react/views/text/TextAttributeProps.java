@@ -18,6 +18,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
@@ -64,6 +65,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_ROLE = 26;
   public static final short TA_KEY_TEXT_TRANSFORM = 27;
   public static final short TA_KEY_MAX_FONT_SIZE_MULTIPLIER = 29;
+  public static final short TA_KEY_GRADIENT_COLORS = 30;
 
   public static final int UNSET = -1;
 
@@ -147,6 +149,8 @@ public class TextAttributeProps {
 
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
+  
+  protected @Nullable int[] mGradientColors = null;
 
   private TextAttributeProps() {}
 
@@ -231,6 +235,9 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_TRANSFORM:
           result.setTextTransform(entry.getStringValue());
           break;
+        case TA_KEY_GRADIENT_COLORS:
+          result.setGradientColors(entry.getMapBufferValue());
+          break;
         case TA_KEY_MAX_FONT_SIZE_MULTIPLIER:
           result.setMaxFontSizeMultiplier((float) entry.getDoubleValue());
           break;
@@ -277,6 +284,7 @@ public class TextAttributeProps {
     result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));
     result.setAccessibilityRole(getStringProp(props, ViewProps.ACCESSIBILITY_ROLE));
     result.setRole(getStringProp(props, ViewProps.ROLE));
+    result.setGradientColors(getArrayProp(props, "gradientColors"));
     return result;
   }
 
@@ -751,6 +759,39 @@ public class TextAttributeProps {
 
   private void setRole(Role role) {
     mRole = role;
+  }
+
+  private void setGradientColors(@Nullable ReadableArray gradientColors) {
+    if (gradientColors == null) return;
+    
+    ArrayList<Integer> colors = new ArrayList<>();
+    for (int i = 0; i < gradientColors.size(); i++) {
+      if (!gradientColors.isNull(i) && gradientColors.getType(i) == ReadableType.Number) {
+        colors.add(gradientColors.getInt(i));
+      }
+    }
+    setGradientColorsFromList(colors);
+  }
+
+  private void setGradientColors(@Nullable MapBuffer gradientColors) {
+    if (gradientColors == null) return;
+    
+    ArrayList<Integer> colors = new ArrayList<>();
+    Iterator<MapBuffer.Entry> iterator = gradientColors.iterator();
+    while (iterator.hasNext()) {
+      colors.add(iterator.next().getIntValue());
+    }
+    setGradientColorsFromList(colors);
+  }
+
+  private void setGradientColorsFromList(ArrayList<Integer> colors) {
+    if (colors.size() >= 2) {
+      mGradientColors = colors.stream().mapToInt(Integer::intValue).toArray();
+    }
+  }
+
+  public @Nullable int[] getGradientColors() {
+    return mGradientColors;
   }
 
   public static int getTextBreakStrategy(@Nullable String textBreakStrategy) {
