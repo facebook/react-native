@@ -71,13 +71,12 @@ struct TransformOrigin {
         xy[1].value != 0.0f || xy[1].unit != UnitType::Undefined || z != 0.0f;
   }
 
-#ifdef ANDROID
-
+#ifdef RN_SERIALIZABLE_STATE
   /**
    * Convert to folly::dynamic.
    */
   operator folly::dynamic() const {
-    return folly::dynamic::array(xy[0].value, xy[1].value, z);
+    return folly::dynamic::array(xy[0].toDynamic(), xy[1].toDynamic(), z);
   }
 
 #endif
