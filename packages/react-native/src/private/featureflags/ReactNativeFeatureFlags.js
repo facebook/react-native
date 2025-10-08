@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3078b8488e9905153bfbf2dc26b7a2c5>>
+ * @generated SignedSource<<dc249978e6199d4aba3d039d8e967400>>
  * @flow strict
  * @noformat
  */
@@ -54,6 +54,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   cdpInteractionMetricsEnabled: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
   cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
+  disableEarlyViewCommandExecution: Getter<boolean>,
   disableFabricCommitInCXXAnimated: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean>,
@@ -225,6 +226,10 @@ export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter(
  * Removes JS sync at end of native animation
  */
 export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedRemoveJsSync', false);
+/**
+ * Dispatch view commands in mount item order.
+ */
+export const disableEarlyViewCommandExecution: Getter<boolean> = createNativeFlagGetter('disableEarlyViewCommandExecution', false);
 /**
  * Prevents use of Fabric commit in C++ Animated implementation
  */

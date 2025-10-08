@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5759dee54e04c91401a3ece5b899a7f1>>
+ * @generated SignedSource<<4201556d98b0bb67b6a982502e50591d>>
  */
 
 /**
@@ -79,6 +79,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedRemoveJsSync();
+  }
+
+  bool disableEarlyViewCommandExecution() override {
+    auto value = values_["disableEarlyViewCommandExecution"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableEarlyViewCommandExecution();
   }
 
   bool disableFabricCommitInCXXAnimated() override {

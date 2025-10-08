@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7e45b713bab183402e93ee058ea7cb36>>
+ * @generated SignedSource<<7ea729886da71d6d117442c83736fc5f>>
  */
 
 /**
@@ -24,6 +24,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var cdpInteractionMetricsEnabledCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
+  private var disableEarlyViewCommandExecutionCache: Boolean? = null
   private var disableFabricCommitInCXXAnimatedCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var disableOldAndroidAttachmentMetricsWorkaroundsCache: Boolean? = null
@@ -131,6 +132,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.cxxNativeAnimatedRemoveJsSync()
       cxxNativeAnimatedRemoveJsSyncCache = cached
+    }
+    return cached
+  }
+
+  override fun disableEarlyViewCommandExecution(): Boolean {
+    var cached = disableEarlyViewCommandExecutionCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.disableEarlyViewCommandExecution()
+      disableEarlyViewCommandExecutionCache = cached
     }
     return cached
   }
