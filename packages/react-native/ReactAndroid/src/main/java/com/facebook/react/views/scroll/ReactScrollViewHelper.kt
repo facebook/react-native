@@ -26,6 +26,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
+import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
 import com.facebook.react.uimanager.ReactClippingViewGroup
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
@@ -361,6 +362,10 @@ public object ReactScrollViewHelper {
       return
     }
     val scrollState = scrollView.reactScrollViewScrollState
+
+    // User driven scrolling should disable scroll state updates coming from Fabric
+    scrollState.isUpdatedByScroll = true
+
     // Dedupe events to reduce JNI traffic
     if (scrollState.lastStateUpdateScroll.equals(scrollX, scrollY)) {
       return
@@ -397,6 +402,29 @@ public object ReactScrollViewHelper {
       )
       stateWrapper.updateState(newStateData)
     }
+  }
+
+  @JvmStatic
+  internal fun <T> loadFabricScrollState(scrollView: T, stateWrapper: StateWrapper)
+      where T : HasScrollState?, T : HasStateWrapper?, T : ViewGroup {
+    if (scrollView.reactScrollViewScrollState.isUpdatedByScroll) {
+      return
+    }
+
+    val stateData = stateWrapper.stateData
+    if (stateData == null) {
+      return
+    }
+
+    // Assign the data loaded from the shadow node state
+    val scrollX = toPixelFromDIP(stateData.getDouble(CONTENT_OFFSET_LEFT)).toInt()
+    val scrollY = toPixelFromDIP(stateData.getDouble(CONTENT_OFFSET_TOP)).toInt()
+    val scrollAwayPaddingTop = toPixelFromDIP(stateData.getDouble(SCROLL_AWAY_PADDING_TOP)).toInt()
+
+    val scrollState =
+        scrollView.reactScrollViewScrollState.copy(scrollAwayPaddingTop = scrollAwayPaddingTop)
+    scrollState.setLastStateUpdateScroll(scrollX, scrollY)
+    scrollView.reactScrollViewScrollState = scrollState
   }
 
   @JvmStatic
@@ -596,21 +624,22 @@ public object ReactScrollViewHelper {
     }
   }
 
-  public class ReactScrollViewScrollState {
-
-    /** Get the position after current animation is finished */
-    public val finalAnimatedPositionScroll: Point = Point()
-    /** Get the padding on the top for nav bar */
-    public var scrollAwayPaddingTop: Int = 0
-    /** Get the Fabric state of last scroll position */
-    public val lastStateUpdateScroll: Point = Point(-1, -1)
-    /** Get true if the previous animation was canceled */
-    public var isCanceled: Boolean = false
-    /** Get true if previous animation was finished */
-    public var isFinished: Boolean = true
-    /** Get true if previous animation was finished */
-    public var decelerationRate: Float = 0.985f
-
+  public data class ReactScrollViewScrollState(
+      /** Get the position after current animation is finished */
+      val finalAnimatedPositionScroll: Point = Point(),
+      /** Get the padding on the top for nav bar */
+      var scrollAwayPaddingTop: Int = 0,
+      /** Get the Fabric state of last scroll position */
+      val lastStateUpdateScroll: Point = Point(-1, -1),
+      /** Get true if the previous animation was canceled */
+      var isCanceled: Boolean = false,
+      /** Get true if previous animation was finished */
+      var isFinished: Boolean = true,
+      /** Get true if previous animation was finished */
+      var decelerationRate: Float = 0.985f,
+      /** Get true if the component submitted the state through user scrolling */
+      var isUpdatedByScroll: Boolean = false,
+  ) {
     /** Set the final scroll position after scrolling animation is finished */
     public fun setFinalAnimatedPositionScroll(
         finalAnimatedPositionScrollX: Int,
@@ -632,7 +661,7 @@ public object ReactScrollViewHelper {
 
   public interface HasScrollState {
     /** Get the scroll state for the current ScrollView */
-    public val reactScrollViewScrollState: ReactScrollViewScrollState
+    public var reactScrollViewScrollState: ReactScrollViewScrollState
   }
 
   public interface HasFlingAnimator {
