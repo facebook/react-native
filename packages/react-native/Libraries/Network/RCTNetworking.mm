@@ -12,7 +12,6 @@
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
-#import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 
 #import <React/RCTHTTPRequestHandler.h>
@@ -20,6 +19,8 @@
 
 #import "RCTInspectorNetworkReporter.h"
 #import "RCTNetworkPlugins.h"
+#import "RCTNetworking+Internal.h"
+#import "RCTNetworking.h"
 
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
 
@@ -153,6 +154,7 @@ static NSString *RCTGenerateFormBoundary()
   NSArray<id<RCTURLRequestHandler>> * (^_handlersProvider)(RCTModuleRegistry *);
   NSMutableArray<id<RCTNetworkingRequestHandler>> *_requestHandlers;
   NSMutableArray<id<RCTNetworkingResponseHandler>> *_responseHandlers;
+  NSMutableArray<id<RCTNetworkingTextResponseHandler>> *_textResponseHandlers;
   dispatch_queue_t _requestQueue;
 }
 
@@ -672,6 +674,18 @@ RCT_EXPORT_MODULE()
     if (!(incrementalUpdates && [responseType isEqualToString:@"text"])) {
       [strongSelf sendData:data responseType:responseType response:response forTask:task];
     }
+
+    if ([responseType isEqualToString:@"text"]) {
+      for (id<RCTNetworkingTextResponseHandler> handler in strongSelf->_textResponseHandlers) {
+        if ([handler canHandleNetworkingTextResponseForRequest:task.request]) {
+          NSString *responseString = [RCTNetworking decodeTextData:data
+                                                      fromResponse:task.response
+                                                     withCarryData:[NSMutableData new]];
+          [handler handleNetworkingResponseText:responseString request:task.request];
+        }
+      }
+    }
+
     NSArray *responseJSON =
         @[ task.requestID, RCTNullIfNil(error.localizedDescription), error.code == kCFURLErrorTimedOut ? @YES : @NO ];
 
@@ -725,6 +739,14 @@ RCT_EXPORT_MODULE()
     _responseHandlers = [NSMutableArray new];
   }
   [_responseHandlers addObject:handler];
+}
+
+- (void)addTextResponseHandler:(id<RCTNetworkingTextResponseHandler>)handler
+{
+  if (!_textResponseHandlers) {
+    _textResponseHandlers = [NSMutableArray new];
+  }
+  [_textResponseHandlers addObject:handler];
 }
 
 - (void)removeRequestHandler:(id<RCTNetworkingRequestHandler>)handler
