@@ -156,6 +156,14 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
     return result;
   }
 
+  RuntimeTargetDelegate& dangerouslyGetRuntimeTargetDelegate() {
+    return engineAdapter_->getRuntimeTargetDelegate();
+  }
+
+  jsi::Runtime& dangerouslyGetRuntime() {
+    return engineAdapter_->getRuntime();
+  }
+
   std::shared_ptr<HostTarget> page_;
   InstanceTarget* instance_{};
   RuntimeTarget* runtimeTarget_{};

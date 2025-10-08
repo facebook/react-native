@@ -893,6 +893,88 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObjectGroup) {
                                })");
 }
 
+// A low-level test for captureStackTrace and serializeStackTrace in
+// HermesRuntimeTargetDelegate. This functionality is not directly exposed
+// to user code, but serves as a building block for higher-level CDP domains.
+TYPED_TEST(JsiIntegrationHermesTest, testCaptureAndSerializeStackTrace) {
+  auto& runtimeTargetDelegate = this->dangerouslyGetRuntimeTargetDelegate();
+  auto& runtime = this->dangerouslyGetRuntime();
+  runtime.global().setProperty(
+      runtime,
+      "captureCdpStackTrace",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "captureCdpStackTrace"),
+          0,
+          [&runtimeTargetDelegate](
+              jsi::Runtime& rt,
+              const jsi::Value& /* thisVal */,
+              const jsi::Value* /* args */,
+              size_t /* count */) -> jsi::Value {
+            auto stackTraceDynamic = runtimeTargetDelegate.serializeStackTrace(
+                *runtimeTargetDelegate.captureStackTrace(rt));
+            if (!stackTraceDynamic.has_value()) {
+              return jsi::Value::undefined();
+            }
+            return jsi::String::createFromUtf8(
+                rt, folly::toJson(*stackTraceDynamic));
+          }));
+
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
+
+  auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "stackTraceTest.js"))));
+
+  auto stackTrace = this->eval(R"( // line 0
+    function inner() { // line 1
+      return globalThis.captureCdpStackTrace(); // line 2
+    } // line 3
+    function outer() { // line 4
+      return inner(); // line 5
+    } // line 6
+    outer(); // line 7
+    //# sourceURL=stackTraceTest.js
+  )")
+                        .getString(runtime)
+                        .utf8(runtime);
+
+  ASSERT_TRUE(scriptInfo->has_value());
+
+  EXPECT_THAT(
+      stackTrace,
+      JsonParsed(AllOf(
+          AtJsonPtr("/callFrames/0/functionName", "inner"),
+          AtJsonPtr(
+              "/callFrames/0/scriptId",
+              scriptInfo->value()["params"]["scriptId"]),
+          AtJsonPtr("/callFrames/0/lineNumber", 2),
+          AtJsonPtr("/callFrames/0/columnNumber", 44),
+          AtJsonPtr("/callFrames/1/functionName", "outer"),
+          AtJsonPtr(
+              "/callFrames/1/scriptId",
+              scriptInfo->value()["params"]["scriptId"]),
+          AtJsonPtr("/callFrames/1/lineNumber", 5),
+          AtJsonPtr("/callFrames/1/columnNumber", 18),
+          AtJsonPtr("/callFrames/2/functionName", "global"),
+          AtJsonPtr(
+              "/callFrames/2/scriptId",
+              scriptInfo->value()["params"]["scriptId"]),
+          AtJsonPtr("/callFrames/2/lineNumber", 7),
+          AtJsonPtr("/callFrames/2/columnNumber", 9))));
+}
+
 #pragma endregion // AllHermesVariants
 
 } // namespace facebook::react::jsinspector_modern
