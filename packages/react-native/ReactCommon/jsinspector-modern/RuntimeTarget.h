@@ -108,6 +108,14 @@ class RuntimeTargetDelegate {
    * Return recorded sampling profile for the previous sampling session.
    */
   virtual tracing::RuntimeSamplingProfile collectSamplingProfile() = 0;
+
+  /**
+   * \returns a JSON representation of the given stack trace, conforming to the
+   * @cdp Runtime.StackTrace type, if the runtime supports it. Otherwise,
+   * returns std::nullopt.
+   */
+  virtual std::optional<folly::dynamic> serializeStackTrace(
+      const StackTrace& stackTrace) = 0;
 };
 
 /**
