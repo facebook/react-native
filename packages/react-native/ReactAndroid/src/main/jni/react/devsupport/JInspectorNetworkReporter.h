@@ -21,7 +21,7 @@ class JInspectorNetworkReporter
 
   static void reportRequestStart(
       jni::alias_ref<jclass> /*unused*/,
-      jint requestId,
+      jni::alias_ref<jstring> requestId,
       jni::alias_ref<jstring> requestUrl,
       jni::alias_ref<jstring> requestMethod,
       jni::alias_ref<jni::JMap<jstring, jstring>> requestHeaders,
@@ -30,12 +30,12 @@ class JInspectorNetworkReporter
 
   static void reportConnectionTiming(
       jni::alias_ref<jclass> /*unused*/,
-      jint requestId,
+      jni::alias_ref<jstring> requestId,
       jni::alias_ref<jni::JMap<jstring, jstring>> headers);
 
   static void reportResponseStart(
       jni::alias_ref<jclass> /*unused*/,
-      jint requestId,
+      jni::alias_ref<jstring> requestId,
       jni::alias_ref<jstring> requestUrl,
       jint responseStatus,
       jni::alias_ref<jni::JMap<jstring, jstring>> responseHeaders,
@@ -43,28 +43,28 @@ class JInspectorNetworkReporter
 
   static void reportDataReceivedImpl(
       jni::alias_ref<jclass> /*unused*/,
-      jint requestId,
+      jni::alias_ref<jstring> requestId,
       jint dataLength);
 
   static void reportResponseEnd(
       jni::alias_ref<jclass> /*unused*/,
-      jint requestId,
+      jni::alias_ref<jstring> requestId,
       jlong encodedDataLength);
 
   static void reportRequestFailed(
       jni::alias_ref<jclass> /*unused*/,
-      jint requestId,
+      jni::alias_ref<jstring> requestId,
       jboolean cancelled);
 
   static void maybeStoreResponseBodyImpl(
       jni::alias_ref<jclass> /*unused*/,
-      jint requestId,
+      jni::alias_ref<jstring> requestId,
       jni::alias_ref<jstring> body,
       jboolean base64Encoded);
 
   static void maybeStoreResponseBodyIncrementalImpl(
       jni::alias_ref<jclass> /*unused*/,
-      jint requestId,
+      jni::alias_ref<jstring> requestId,
       jni::alias_ref<jstring> data);
 
   static void registerNatives();
