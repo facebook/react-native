@@ -28,6 +28,7 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTUtils.h>
+#import <React/RCTDevSettings.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 #import <ReactCommon/TurboCxxModule.h>
