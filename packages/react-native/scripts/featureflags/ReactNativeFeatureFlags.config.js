@@ -92,6 +92,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableEarlyViewCommandExecution: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-07',
+        description: 'Dispatch view commands in mount item order.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableFabricCommitInCXXAnimated: {
       defaultValue: false,
       metadata: {

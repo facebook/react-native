@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f9777b3b50f714214f9f0f86d5176f1>>
+ * @generated SignedSource<<3fee7079eaa30dca86e3cb366cdd261e>>
  */
 
 /**
@@ -53,6 +53,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedRemoveJsSync(): Boolean = accessor.cxxNativeAnimatedRemoveJsSync()
+
+  /**
+   * Dispatch view commands in mount item order.
+   */
+  @JvmStatic
+  public fun disableEarlyViewCommandExecution(): Boolean = accessor.disableEarlyViewCommandExecution()
 
   /**
    * Prevents use of Fabric commit in C++ Animated implementation

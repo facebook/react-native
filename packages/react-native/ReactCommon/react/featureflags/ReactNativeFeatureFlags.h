@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<72899a3f546792dd4c868c561f55c10f>>
+ * @generated SignedSource<<93fb26b6c04daf8d35aec7bca867fa70>>
  */
 
 /**
@@ -58,6 +58,11 @@ class ReactNativeFeatureFlags {
    * Removes JS sync at end of native animation
    */
   RN_EXPORT static bool cxxNativeAnimatedRemoveJsSync();
+
+  /**
+   * Dispatch view commands in mount item order.
+   */
+  RN_EXPORT static bool disableEarlyViewCommandExecution();
 
   /**
    * Prevents use of Fabric commit in C++ Animated implementation

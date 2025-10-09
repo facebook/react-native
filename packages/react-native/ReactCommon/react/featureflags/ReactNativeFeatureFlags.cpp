@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bbe47fc20b10610f0ef14e2d35406145>>
+ * @generated SignedSource<<68811ae2e7fcb8b8b406097839f669dd>>
  */
 
 /**
@@ -40,6 +40,10 @@ bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() {
   return getAccessor().cxxNativeAnimatedRemoveJsSync();
+}
+
+bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {
+  return getAccessor().disableEarlyViewCommandExecution();
 }
 
 bool ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated() {
