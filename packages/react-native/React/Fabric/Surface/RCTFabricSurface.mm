@@ -57,7 +57,7 @@ using namespace facebook::react;
   if (self = [super init]) {
     _surfacePresenter = surfacePresenter;
 
-    _surfaceHandler = SurfaceHandler{RCTStringFromNSString(moduleName), getNextRootViewTag()};
+    _surfaceHandler.emplace(RCTStringFromNSString(moduleName), getNextRootViewTag());
     _surfaceHandler->setProps(convertIdToFollyDynamic(initialProperties));
 
     [_surfacePresenter registerSurface:self];
