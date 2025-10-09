@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71a5b931e802e2fd1dc345849147cbe1>>
+ * @generated SignedSource<<1c0cdfdfd5d77e602e4b44bb13e7be4b>>
  */
 
 /**
@@ -183,6 +183,8 @@ class NativeReactNativeFeatureFlags
   bool useShadowNodeStateOnClone(jsi::Runtime& runtime);
 
   bool useSharedAnimatedBackend(jsi::Runtime& runtime);
+
+  bool useTraitHiddenOnAndroid(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 

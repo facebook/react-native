@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ddb240bc600ff3cfa0cfe5896c59b23>>
+ * @generated SignedSource<<5c430e6e6ac1a7272eae8f89f4052193>>
  */
 
 /**
@@ -320,6 +320,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useSharedAnimatedBackend() override {
+    return false;
+  }
+
+  bool useTraitHiddenOnAndroid() override {
     return false;
   }
 
