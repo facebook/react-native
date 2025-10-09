@@ -11,7 +11,9 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animated/MergedValueDispatcher.h>
 #include <react/renderer/animated/internal/AnimatedMountingOverrideDelegate.h>
+#ifdef RN_USE_ANIMATION_BACKEND
 #include <react/renderer/animationbackend/AnimationBackend.h>
+#endif
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 namespace facebook::react {
@@ -66,6 +68,7 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
         };
 
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+#ifdef RN_USE_ANIMATION_BACKEND
       // TODO: this should be initialized outside of animated, but for now it
       // was convenient to do it here
       animationBackend_ = std::make_shared<AnimationBackend>(
@@ -74,6 +77,7 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           std::move(directManipulationCallback),
           std::move(fabricCommitCallback),
           uiManager);
+#endif
 
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(animationBackend_);
