@@ -97,6 +97,8 @@ async function main() {
       ...IGNORE_PREFIXES.map(prefix => new RegExp('^' + escapeRegex(prefix))),
       ...IGNORE_FILES.map(file => new RegExp('^' + escapeRegex(file) + '$')),
     ],
+    // Include devDependencies in the build.
+    prune: false,
   });
 }
 
