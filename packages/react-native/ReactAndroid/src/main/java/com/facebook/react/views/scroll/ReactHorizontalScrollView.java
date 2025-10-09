@@ -18,6 +18,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -1647,6 +1648,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void setStateWrapper(StateWrapper stateWrapper) {
     mStateWrapper = stateWrapper;
+  }
+
+  @Override
+  public void setReactScrollViewScrollState(ReactScrollViewScrollState scrollState) {
+    mReactScrollViewScrollState = scrollState;
+    if (ReactNativeFeatureFlags.enableViewCulling()) {
+      Point scrollPosition = scrollState.getLastStateUpdateScroll();
+      scrollTo(scrollPosition.x, scrollPosition.y);
+    }
   }
 
   @Override

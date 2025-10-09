@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fde4b531c2b0f19bef7bc69aaf3c5639>>
+ * @generated SignedSource<<26ec8e488a5366a6069efe717e3d29a0>>
  */
 
 /**
@@ -29,6 +29,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool cdpInteractionMetricsEnabled() = 0;
   virtual bool cxxNativeAnimatedEnabled() = 0;
   virtual bool cxxNativeAnimatedRemoveJsSync() = 0;
+  virtual bool disableEarlyViewCommandExecution() = 0;
   virtual bool disableFabricCommitInCXXAnimated() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
   virtual bool disableOldAndroidAttachmentMetricsWorkarounds() = 0;
@@ -84,6 +85,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual double preparedTextCacheSize() = 0;
   virtual bool preventShadowTreeCommitExhaustion() = 0;
   virtual bool shouldPressibilityUseW3CPointerEventsForHover() = 0;
+  virtual bool shouldTriggerResponderTransferOnScrollAndroid() = 0;
   virtual bool skipActivityIdentityAssertionOnHostPause() = 0;
   virtual bool sweepActiveTouchOnChildNativeGesturesAndroid() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
@@ -96,6 +98,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRawPropsJsiValue() = 0;
   virtual bool useShadowNodeStateOnClone() = 0;
+  virtual bool useSharedAnimatedBackend() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
   virtual double viewCullingOutsetRatio() = 0;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<559a8be87c24238e70fceded8ac962a0>>
+ * @generated SignedSource<<93fb26b6c04daf8d35aec7bca867fa70>>
  */
 
 /**
@@ -58,6 +58,11 @@ class ReactNativeFeatureFlags {
    * Removes JS sync at end of native animation
    */
   RN_EXPORT static bool cxxNativeAnimatedRemoveJsSync();
+
+  /**
+   * Dispatch view commands in mount item order.
+   */
+  RN_EXPORT static bool disableEarlyViewCommandExecution();
 
   /**
    * Prevents use of Fabric commit in C++ Animated implementation
@@ -335,6 +340,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool shouldPressibilityUseW3CPointerEventsForHover();
 
   /**
+   * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
+   */
+  RN_EXPORT static bool shouldTriggerResponderTransferOnScrollAndroid();
+
+  /**
    * Skip activity identity assertion in ReactHostImpl::onHostPause()
    */
   RN_EXPORT static bool skipActivityIdentityAssertionOnHostPause();
@@ -393,6 +403,11 @@ class ReactNativeFeatureFlags {
    * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
    */
   RN_EXPORT static bool useShadowNodeStateOnClone();
+
+  /**
+   * Use shared animation backend in C++ Animated
+   */
+  RN_EXPORT static bool useSharedAnimatedBackend();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

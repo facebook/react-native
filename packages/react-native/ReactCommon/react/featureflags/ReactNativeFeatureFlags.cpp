@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f01f3d1a08880a7fa9d3490e6bd9c61a>>
+ * @generated SignedSource<<68811ae2e7fcb8b8b406097839f669dd>>
  */
 
 /**
@@ -40,6 +40,10 @@ bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() {
   return getAccessor().cxxNativeAnimatedRemoveJsSync();
+}
+
+bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {
+  return getAccessor().disableEarlyViewCommandExecution();
 }
 
 bool ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated() {
@@ -262,6 +266,10 @@ bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {
   return getAccessor().shouldPressibilityUseW3CPointerEventsForHover();
 }
 
+bool ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid() {
+  return getAccessor().shouldTriggerResponderTransferOnScrollAndroid();
+}
+
 bool ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause() {
   return getAccessor().skipActivityIdentityAssertionOnHostPause();
 }
@@ -308,6 +316,10 @@ bool ReactNativeFeatureFlags::useRawPropsJsiValue() {
 
 bool ReactNativeFeatureFlags::useShadowNodeStateOnClone() {
   return getAccessor().useShadowNodeStateOnClone();
+}
+
+bool ReactNativeFeatureFlags::useSharedAnimatedBackend() {
+  return getAccessor().useSharedAnimatedBackend();
 }
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {

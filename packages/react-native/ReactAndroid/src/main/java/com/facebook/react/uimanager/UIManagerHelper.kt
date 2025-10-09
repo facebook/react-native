@@ -194,7 +194,8 @@ public object UIManagerHelper {
   public fun getSurfaceId(view: View): Int {
     if (view is ReactRoot) {
       val rootView = view as ReactRoot
-      return if (rootView.uiManagerType == UIManagerType.FABRIC) rootView.rootViewTag else -1
+      return if (rootView.getUIManagerType() == UIManagerType.FABRIC) rootView.getRootViewTag()
+      else -1
     }
 
     val reactTag = view.id

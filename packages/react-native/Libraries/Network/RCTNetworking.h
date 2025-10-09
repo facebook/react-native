@@ -47,6 +47,9 @@
  */
 - (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request
                            completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
+- (RCTNetworkTask *)networkTaskWithDevToolsRequestId:(NSString *)devToolsRequestId
+                                             request:(NSURLRequest *)request
+                                     completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
 
 - (void)addRequestHandler:(id<RCTNetworkingRequestHandler>)handler;
 

@@ -8,6 +8,7 @@
 #pragma once
 
 #include "ConsoleMessage.h"
+#include "EnumArray.h"
 #include "ExecutionContext.h"
 #include "InspectorInterfaces.h"
 #include "RuntimeAgent.h"
@@ -108,6 +109,14 @@ class RuntimeTargetDelegate {
    * Return recorded sampling profile for the previous sampling session.
    */
   virtual tracing::RuntimeSamplingProfile collectSamplingProfile() = 0;
+
+  /**
+   * \returns a JSON representation of the given stack trace, conforming to the
+   * @cdp Runtime.StackTrace type, if the runtime supports it. Otherwise,
+   * returns std::nullopt.
+   */
+  virtual std::optional<folly::dynamic> serializeStackTrace(
+      const StackTrace& stackTrace) = 0;
 };
 
 /**
@@ -115,6 +124,8 @@ class RuntimeTargetDelegate {
  */
 class RuntimeTargetController {
  public:
+  enum class Domain { Network, Runtime, Log, kMaxValue };
+
   explicit RuntimeTargetController(RuntimeTarget& target);
 
   /**
@@ -125,16 +136,13 @@ class RuntimeTargetController {
   void installBindingHandler(const std::string& bindingName);
 
   /**
-   * Notifies the target to emit some message that debugger session is
-   * created.
+   * Notifies the target that an agent has received an enable or disable
+   * message for the given domain.
    */
-  void notifyDebuggerSessionCreated();
-
-  /**
-   * Notifies the target to emit some message that debugger session is
-   * destroyed.
-   */
-  void notifyDebuggerSessionDestroyed();
+  void notifyDomainStateChanged(
+      Domain domain,
+      bool enabled,
+      const RuntimeAgent& notifyingAgent);
 
   /**
    * Start sampling profiler for the corresponding RuntimeTarget.
@@ -231,6 +239,8 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   tracing::RuntimeSamplingProfile collectSamplingProfile();
 
  private:
+  using Domain = RuntimeTargetController::Domain;
+
   /**
    * Constructs a new RuntimeTarget. The caller must call setExecutor
    * immediately afterwards.
@@ -258,6 +268,25 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   RuntimeExecutor jsExecutor_;
   WeakList<RuntimeAgent> agents_;
   RuntimeTargetController controller_{*this};
+
+  /**
+   * Keeps track of the agents that have enabled various domains.
+   */
+  EnumArray<Domain, std::unordered_set<const RuntimeAgent*>>
+      agentsByEnabledDomain_;
+
+  /**
+   * For each Domain, contains true if the domain has been enabled by any
+   * active agent. Unlike agentsByEnabledDomain_, this is safe to read from any
+   * thread. \see isDomainEnabled.
+   */
+  EnumArray<Domain, std::atomic<bool>> threadSafeDomainStatus_{};
+
+  /**
+   * The number of agents that currently have both the Log and Runtime domains
+   * enabled.
+   */
+  size_t agentsWithRuntimeAndLogDomainsEnabled_{0};
 
   /**
    * This TracingAgent is owned by the InstanceTracingAgent, both are bound to
@@ -292,6 +321,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   void installDebuggerSessionObserver();
 
   /**
+   * Installs the private __NETWORK_REPORTER__ object on the Runtime's
+   * global object.
+   */
+  void installNetworkReporterAPI();
+
+  /**
    * Propagates the debugger session state change to the JavaScript via calling
    * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
    */
@@ -302,6 +337,29 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
    */
   void emitDebuggerSessionDestroyed();
+
+  /**
+   * \returns a globally unique ID for a network request.
+   * May be called from any thread as long as the RuntimeTarget is valid.
+   */
+  std::string createNetworkRequestId();
+
+  /**
+   * Notifies the target that an agent has received an enable or disable
+   * message for the given domain.
+   */
+  void notifyDomainStateChanged(
+      Domain domain,
+      bool enabled,
+      const RuntimeAgent& notifyingAgent);
+
+  /**
+   * Checks whether the given domain is enabled in at least one session
+   * that is currently connected. This may be called from any thread, with
+   * the caveat that the result can change at arbitrary times unless the caller
+   * is on the inspector thread.
+   */
+  bool isDomainEnabled(Domain domain) const;
 
   // Necessary to allow RuntimeAgent to access RuntimeTarget's internals in a
   // controlled way (i.e. only RuntimeTargetController gets friend access, while

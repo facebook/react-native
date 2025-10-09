@@ -92,6 +92,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableEarlyViewCommandExecution: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-07',
+        description: 'Dispatch view commands in mount item order.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableFabricCommitInCXXAnimated: {
       defaultValue: false,
       metadata: {
@@ -677,6 +687,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    shouldTriggerResponderTransferOnScrollAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-30',
+        description:
+          'Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     skipActivityIdentityAssertionOnHostPause: {
       defaultValue: false,
       metadata: {
@@ -799,6 +820,16 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-04-16',
         description:
           'Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    useSharedAnimatedBackend: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-2',
+        description: 'Use shared animation backend in C++ Animated',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

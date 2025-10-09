@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<27c7bc7a528da06ffe2bcea48211f6bd>>
+ * @generated SignedSource<<d71a9f35d3517ff57364324bc0afe358>>
  */
 
 /**
@@ -35,7 +35,7 @@ namespace facebook::react {
 
 NativeReactNativeFeatureFlags::NativeReactNativeFeatureFlags(
     std::shared_ptr<CallInvoker> jsInvoker)
-    : NativeReactNativeFeatureFlagsCxxSpecJSI(std::move(jsInvoker)) {}
+    : NativeReactNativeFeatureFlagsCxxSpec(std::move(jsInvoker)) {}
 
 bool NativeReactNativeFeatureFlags::commonTestFlag(
     jsi::Runtime& /*runtime*/) {
@@ -62,6 +62,11 @@ bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
 bool NativeReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
+}
+
+bool NativeReactNativeFeatureFlags::disableEarlyViewCommandExecution(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableEarlyViewCommandExecution();
 }
 
 bool NativeReactNativeFeatureFlags::disableFabricCommitInCXXAnimated(
@@ -339,6 +344,11 @@ bool NativeReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHove
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
 }
 
+bool NativeReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
@@ -397,6 +407,11 @@ bool NativeReactNativeFeatureFlags::useRawPropsJsiValue(
 bool NativeReactNativeFeatureFlags::useShadowNodeStateOnClone(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useShadowNodeStateOnClone();
+}
+
+bool NativeReactNativeFeatureFlags::useSharedAnimatedBackend(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useSharedAnimatedBackend();
 }
 
 bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
