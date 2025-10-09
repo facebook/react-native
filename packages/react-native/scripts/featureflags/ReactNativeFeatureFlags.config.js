@@ -835,6 +835,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useTraitHiddenOnAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-9',
+        description: 'Use Trait::hidden on Android',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {
