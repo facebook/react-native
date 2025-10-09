@@ -12,6 +12,7 @@
 
 const {
   findXcodeProjectDirectory,
+  runIosPrebuild,
   runPodDeintegrate,
 } = require('../prepare-app-utils');
 
@@ -171,6 +172,165 @@ describe('findXcodeProjectDirectory', () => {
       `find "${appPath}" -name "${xcodeProjectName}" -type d -print`,
       {encoding: 'utf8'},
     );
+  });
+});
+
+describe('runIosPrebuild', () => {
+  let mockExecSync;
+  let mockConsoleLog;
+  let originalProcessEnv;
+
+  beforeEach(() => {
+    // Setup mocks
+    const childProcess = require('child_process');
+    mockExecSync = childProcess.execSync;
+
+    mockConsoleLog = console.log;
+
+    // Store original process.env to restore later
+    originalProcessEnv = process.env;
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Restore original process.env
+    process.env = originalProcessEnv;
+  });
+
+  it('should run iOS prebuild successfully with nightly versions', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    mockExecSync.mockReturnValue(undefined);
+
+    // Execute
+    await runIosPrebuild(reactNativePath);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith('node scripts/ios-prebuild -s', {
+      cwd: reactNativePath,
+      env: {
+        ...originalProcessEnv,
+        RN_DEP_VERSION: 'nightly',
+        HERMES_VERSION: 'nightly',
+      },
+      stdio: 'inherit',
+    });
+    expect(mockExecSync).toHaveBeenCalledTimes(1);
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Running iOS prebuild with nightly versions...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith('✓ iOS prebuild completed');
+    expect(mockConsoleLog).toHaveBeenCalledTimes(2);
+  });
+
+  it('should handle different React Native paths', async () => {
+    // Setup
+    const reactNativePath = '/Users/developer/react-native';
+
+    mockExecSync.mockReturnValue(undefined);
+
+    // Execute
+    await runIosPrebuild(reactNativePath);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith('node scripts/ios-prebuild -s', {
+      cwd: reactNativePath,
+      env: {
+        ...originalProcessEnv,
+        RN_DEP_VERSION: 'nightly',
+        HERMES_VERSION: 'nightly',
+      },
+      stdio: 'inherit',
+    });
+  });
+
+  it('should handle paths with spaces correctly', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react native project';
+
+    mockExecSync.mockReturnValue(undefined);
+
+    // Execute
+    await runIosPrebuild(reactNativePath);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith('node scripts/ios-prebuild -s', {
+      cwd: reactNativePath,
+      env: {
+        ...originalProcessEnv,
+        RN_DEP_VERSION: 'nightly',
+        HERMES_VERSION: 'nightly',
+      },
+      stdio: 'inherit',
+    });
+  });
+
+  it('should throw error when iOS prebuild fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const mockError = new Error('Build failed');
+
+    mockExecSync.mockImplementation(() => {
+      throw mockError;
+    });
+
+    // Execute & Assert
+    await expect(runIosPrebuild(reactNativePath)).rejects.toThrow(
+      'iOS prebuild failed: Build failed',
+    );
+
+    expect(mockExecSync).toHaveBeenCalledWith('node scripts/ios-prebuild -s', {
+      cwd: reactNativePath,
+      env: {
+        ...originalProcessEnv,
+        RN_DEP_VERSION: 'nightly',
+        HERMES_VERSION: 'nightly',
+      },
+      stdio: 'inherit',
+    });
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Running iOS prebuild with nightly versions...',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith('✓ iOS prebuild completed');
+  });
+
+  it('should handle script not found error', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const mockError = new Error('Cannot find module scripts/ios-prebuild');
+
+    mockExecSync.mockImplementation(() => {
+      throw mockError;
+    });
+
+    // Execute & Assert
+    await expect(runIosPrebuild(reactNativePath)).rejects.toThrow(
+      'iOS prebuild failed: Cannot find module scripts/ios-prebuild',
+    );
+  });
+
+  it('should handle root directory path', async () => {
+    // Setup
+    const reactNativePath = '/';
+
+    mockExecSync.mockReturnValue(undefined);
+
+    // Execute
+    await runIosPrebuild(reactNativePath);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith('node scripts/ios-prebuild -s', {
+      cwd: '/',
+      env: {
+        ...originalProcessEnv,
+        RN_DEP_VERSION: 'nightly',
+        HERMES_VERSION: 'nightly',
+      },
+      stdio: 'inherit',
+    });
   });
 });
 
