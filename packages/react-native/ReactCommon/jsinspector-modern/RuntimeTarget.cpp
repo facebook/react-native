@@ -179,12 +179,38 @@ void RuntimeTarget::notifyDomainStateChanged(
     Domain domain,
     bool enabled,
     const RuntimeAgent& notifyingAgent) {
+  bool runtimeAndLogStatusBefore = false, runtimeAndLogStatusAfter = false;
+  if (domain == Domain::Log || domain == Domain::Runtime) {
+    runtimeAndLogStatusBefore =
+        agentsByEnabledDomain_[Domain::Runtime].contains(&notifyingAgent) &&
+        agentsByEnabledDomain_[Domain::Log].contains(&notifyingAgent);
+  }
+
   if (enabled) {
     agentsByEnabledDomain_[domain].insert(&notifyingAgent);
   } else {
     agentsByEnabledDomain_[domain].erase(&notifyingAgent);
   }
   threadSafeDomainStatus_[domain] = !agentsByEnabledDomain_[domain].empty();
+
+  if (domain == Domain::Log || domain == Domain::Runtime) {
+    runtimeAndLogStatusAfter =
+        agentsByEnabledDomain_[Domain::Runtime].contains(&notifyingAgent) &&
+        agentsByEnabledDomain_[Domain::Log].contains(&notifyingAgent);
+
+    if (runtimeAndLogStatusBefore != runtimeAndLogStatusAfter) {
+      if (runtimeAndLogStatusAfter) {
+        if (++agentsWithRuntimeAndLogDomainsEnabled_ == 1) {
+          emitDebuggerSessionCreated();
+        }
+      } else {
+        assert(agentsWithRuntimeAndLogDomainsEnabled_ > 0);
+        if (--agentsWithRuntimeAndLogDomainsEnabled_ == 0) {
+          emitDebuggerSessionDestroyed();
+        }
+      }
+    }
+  }
 }
 
 bool RuntimeTarget::isDomainEnabled(Domain domain) const {
@@ -197,14 +223,6 @@ RuntimeTargetController::RuntimeTargetController(RuntimeTarget& target)
 void RuntimeTargetController::installBindingHandler(
     const std::string& bindingName) {
   target_.installBindingHandler(bindingName);
-}
-
-void RuntimeTargetController::notifyDebuggerSessionCreated() {
-  target_.emitDebuggerSessionCreated();
-}
-
-void RuntimeTargetController::notifyDebuggerSessionDestroyed() {
-  target_.emitDebuggerSessionDestroyed();
 }
 
 void RuntimeTargetController::enableSamplingProfiler() {

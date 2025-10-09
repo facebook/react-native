@@ -164,6 +164,52 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
     return engineAdapter_->getRuntime();
   }
 
+  class SecondaryConnection {
+   public:
+    SecondaryConnection(
+        std::unique_ptr<ILocalConnection> toPage,
+        JsiIntegrationPortableTestBase<EngineAdapter, Executor>& test,
+        size_t remoteConnectionIndex)
+        : toPage_(std::move(toPage)),
+          remoteConnectionIndex_(remoteConnectionIndex),
+          test_(test) {}
+
+    ILocalConnection& toPage() {
+      return *toPage_;
+    }
+
+    MockRemoteConnection& fromPage() {
+      return *test_.remoteConnections_[remoteConnectionIndex_];
+    }
+
+   private:
+    std::unique_ptr<ILocalConnection> toPage_;
+    size_t remoteConnectionIndex_;
+    JsiIntegrationPortableTestBase<EngineAdapter, Executor>& test_;
+  };
+
+  SecondaryConnection connectSecondary() {
+    auto toPage = page_->connect(remoteConnections_.make_unique());
+
+    SecondaryConnection secondary{
+        std::move(toPage), *this, remoteConnections_.objectsVended() - 1};
+
+    using namespace ::testing;
+    // Default to ignoring console messages originating inside the backend.
+    EXPECT_CALL(
+        secondary.fromPage(),
+        onMessage(JsonParsed(AllOf(
+            AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+            AtJsonPtr("/params/context", "main#InstanceAgent")))))
+        .Times(AnyNumber());
+
+    // We'll always get an onDisconnect call when we tear
+    // down the test. Expect it in order to satisfy the strict mock.
+    EXPECT_CALL(secondary.fromPage(), onDisconnect());
+
+    return secondary;
+  }
+
   std::shared_ptr<HostTarget> page_;
   InstanceTarget* instance_{};
   RuntimeTarget* runtimeTarget_{};
