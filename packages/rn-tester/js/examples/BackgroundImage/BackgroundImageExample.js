@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import {StyleSheet, Text, View} from 'react-native';
@@ -412,7 +413,7 @@ exports.examples = [
   {
     title: 'Complex Striped Pattern',
     name: 'striped-pattern',
-    render() {
+    render(): React.Node {
       return (
         <BackgroundImageBox
           style={{
@@ -478,4 +479,4 @@ exports.examples = [
       );
     },
   },
-];
+] as Array<RNTesterModuleExample>;

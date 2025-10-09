@@ -10,9 +10,21 @@
 
 'use strict';
 
-import type {BackgroundRepeatValue} from './StyleSheetTypes';
+import type {
+  BackgroundRepeatKeyword,
+  BackgroundRepeatValue,
+} from './StyleSheetTypes';
 
-const validValues = ['repeat', 'space', 'round', 'no-repeat'] as const;
+function isBackgroundRepeatKeyword(
+  value: string,
+): value is BackgroundRepeatKeyword {
+  return (
+    value === 'repeat' ||
+    value === 'space' ||
+    value === 'round' ||
+    value === 'no-repeat'
+  );
+}
 
 export default function processBackgroundRepeat(
   backgroundRepeat: ?($ReadOnlyArray<BackgroundRepeatValue> | string),
@@ -77,7 +89,10 @@ function parseBackgroundRepeatCSSString(
       }
       const token1 = part1.toLowerCase();
       const token2 = part2.toLowerCase();
-      if (validValues.includes(token1) && validValues.includes(token2)) {
+      if (
+        isBackgroundRepeatKeyword(token1) &&
+        isBackgroundRepeatKeyword(token2)
+      ) {
         result.push({x: token1, y: token2});
       } else {
         return [];
