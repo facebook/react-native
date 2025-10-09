@@ -61,6 +61,7 @@ import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
@@ -647,7 +648,15 @@ public class ReactHostImpl(
     val currentReactContext = this.currentReactContext
     if (currentReactContext != null) {
       if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
+        val previousFontScale = PixelUtil.toPixelFromSP(1.0)
         DisplayMetricsHolder.initDisplayMetrics(currentReactContext)
+        val newFontScale = PixelUtil.toPixelFromSP(1.0)
+
+        if (previousFontScale != newFontScale) {
+          synchronized(attachedSurfaces) {
+            attachedSurfaces.forEach { surface -> surface.view?.requestLayout() }
+          }
+        }
       }
 
       val appearanceModule = currentReactContext.getNativeModule(AppearanceModule::class.java)

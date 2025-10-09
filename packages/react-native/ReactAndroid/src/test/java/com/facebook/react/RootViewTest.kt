@@ -98,7 +98,7 @@ class RootViewTest {
     val rootViewId = 11
     val rootView = ReactRootView(reactContext)
     rootView.id = rootViewId
-    rootView.rootViewTag = rootViewId
+    rootView.setRootViewTag(rootViewId)
     rootView.startReactApplication(instanceManager, "")
     rootView.simulateAttachForTesting()
     val ts = SystemClock.currentTimeMillis()

@@ -21,7 +21,7 @@
 #include "ModuleRegistryBuilder.h"
 #include "ReactInstanceManagerInspectorTarget.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 
@@ -43,7 +43,8 @@ class [[deprecated(
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
+  static jni::local_ref<jhybriddata> initHybrid(
+      jni::alias_ref<jclass> /*unused*/);
 
   static void registerNatives();
 

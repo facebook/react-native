@@ -69,6 +69,8 @@ void NetworkHandler::onRequestWillBeSent(
   }
 
   double timestamp = getCurrentUnixTimestampSeconds();
+  std::optional<folly::dynamic> initiator;
+  initiator = consumeStoredRequestInitiator(requestId);
   auto params = cdp::network::RequestWillBeSentParams{
       .requestId = requestId,
       .loaderId = "",
@@ -79,7 +81,9 @@ void NetworkHandler::onRequestWillBeSent(
       // Unix epoch for both.
       .timestamp = timestamp,
       .wallTime = timestamp,
-      .initiator = folly::dynamic::object("type", "script"),
+      .initiator = initiator.has_value()
+          ? std::move(initiator.value())
+          : folly::dynamic::object("type", "script"),
       .redirectHasExtraInfo = redirectResponse.has_value(),
       .redirectResponse = redirectResponse,
   };
@@ -114,7 +118,7 @@ void NetworkHandler::onResponseReceived(
 
   auto resourceType = cdp::network::resourceTypeFromMimeType(response.mimeType);
   {
-    std::lock_guard<std::mutex> lock(resourceTypeMapMutex_);
+    std::lock_guard<std::mutex> lock(requestMetadataMutex_);
     resourceTypeMap_.emplace(requestId, resourceType);
   }
 
@@ -175,7 +179,7 @@ void NetworkHandler::onLoadingFailed(
   }
 
   {
-    std::lock_guard<std::mutex> lock(resourceTypeMapMutex_);
+    std::lock_guard<std::mutex> lock(requestMetadataMutex_);
     auto params = cdp::network::LoadingFailedParams{
         .requestId = requestId,
         .timestamp = getCurrentUnixTimestampSeconds(),
@@ -210,6 +214,32 @@ std::optional<std::tuple<std::string, bool>> NetworkHandler::getResponseBody(
 
   return std::make_optional<std::tuple<std::string, bool>>(
       responseBody->data, responseBody->base64Encoded);
+}
+
+void NetworkHandler::recordRequestInitiatorStack(
+    const std::string& requestId,
+    folly::dynamic stackTrace) {
+  if (!isEnabledNoSync()) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(requestMetadataMutex_);
+  requestInitiatorById_.emplace(
+      requestId,
+      folly::dynamic::object("type", "script")("stack", std::move(stackTrace)));
+}
+
+std::optional<folly::dynamic> NetworkHandler::consumeStoredRequestInitiator(
+    const std::string& requestId) {
+  std::lock_guard<std::mutex> lock(requestMetadataMutex_);
+  auto it = requestInitiatorById_.find(requestId);
+  if (it == requestInitiatorById_.end()) {
+    return std::nullopt;
+  }
+  // Remove and return
+  auto result = std::move(it->second);
+  requestInitiatorById_.erase(it);
+  return result;
 }
 
 } // namespace facebook::react::jsinspector_modern

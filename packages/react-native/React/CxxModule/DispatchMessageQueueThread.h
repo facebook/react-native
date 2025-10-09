@@ -10,7 +10,7 @@
 #include <React/RCTLog.h>
 #include <cxxreact/MessageQueueThread.h>
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 
@@ -47,4 +47,4 @@ class [[deprecated("This API will be removed along with the legacy architecture.
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

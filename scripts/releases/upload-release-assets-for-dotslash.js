@@ -56,7 +56,7 @@ async function main() {
       force: {type: 'boolean', default: false},
       dryRun: {type: 'boolean', default: false},
       help: {type: 'boolean'},
-    },
+    } /*:: as {[string]: util$ParseArgsOption} */,
   });
 
   if (help) {

@@ -7,6 +7,7 @@
 
 #import "RCTReactNativeFactory.h"
 #import <React/RCTColorSpaceUtils.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
@@ -82,7 +83,8 @@ using namespace facebook::react;
 {
   UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
                                             initialProperties:initialProperties
-                                                launchOptions:launchOptions];
+                                                launchOptions:launchOptions
+                                         devMenuConfiguration:self.devMenuConfiguration];
   UIViewController *rootViewController = [_delegate createRootViewController];
   [_delegate setRootView:rootView toRootViewController:rootViewController];
   window.rootViewController = rootViewController;

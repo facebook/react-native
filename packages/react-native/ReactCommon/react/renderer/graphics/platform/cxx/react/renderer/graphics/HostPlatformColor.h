@@ -56,10 +56,10 @@ inline bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
 inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
   float ratio = 255;
   return ColorComponents{
-      static_cast<float>(redFromHostPlatformColor(color)) / ratio,
-      static_cast<float>(greenFromHostPlatformColor(color)) / ratio,
-      static_cast<float>(blueFromHostPlatformColor(color)) / ratio,
-      static_cast<float>(alphaFromHostPlatformColor(color)) / ratio};
+      .red = static_cast<float>(redFromHostPlatformColor(color)) / ratio,
+      .green = static_cast<float>(greenFromHostPlatformColor(color)) / ratio,
+      .blue = static_cast<float>(blueFromHostPlatformColor(color)) / ratio,
+      .alpha = static_cast<float>(alphaFromHostPlatformColor(color)) / ratio};
 }
 
 } // namespace facebook::react

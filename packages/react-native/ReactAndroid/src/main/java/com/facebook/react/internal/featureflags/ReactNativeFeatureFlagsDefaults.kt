@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4fa15189361a6c92bdd44bafc9356167>>
+ * @generated SignedSource<<bd9b92174bcc46a6df01d0489b2aebc8>>
  */
 
 /**
@@ -30,6 +30,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
   override fun cxxNativeAnimatedRemoveJsSync(): Boolean = false
+
+  override fun disableEarlyViewCommandExecution(): Boolean = false
 
   override fun disableFabricCommitInCXXAnimated(): Boolean = false
 
@@ -72,6 +74,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
+
+  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = false
 
   override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
 
@@ -139,6 +143,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
 
+  override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
+
   override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
 
   override fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = false
@@ -163,9 +169,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useShadowNodeStateOnClone(): Boolean = false
 
+  override fun useSharedAnimatedBackend(): Boolean = false
+
   override fun useTurboModuleInterop(): Boolean = false
 
   override fun useTurboModules(): Boolean = false
+
+  override fun viewCullingOutsetRatio(): Double = 0.0
 
   override fun virtualViewHysteresisRatio(): Double = 0.0
 

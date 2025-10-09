@@ -14,7 +14,7 @@ import {StyleSheet, TextInput} from 'react-native';
 
 const ExampleTextInput: component(
   ref?: React.RefSetter<null | React.ElementRef<typeof TextInput>>,
-  ...props: React.ElementConfig<typeof TextInput>
+  ...props: Omit<React.ElementConfig<typeof TextInput>, 'ref'>
 ) = ({
   ref,
   ...props

@@ -523,9 +523,7 @@ public constructor(
         val child: ReactShadowNode<*> = textShadowNode.getChildAt(i)
 
         @Suppress("DEPRECATION")
-        if (child is ReactRawTextShadowNode) {
-          child.text?.let { sb.append(apply(it, textAttributes.textTransform)) }
-        } else if (child is ReactBaseTextShadowNode) {
+        if (child is ReactBaseTextShadowNode) {
           buildSpannedFromShadowNode(
               child,
               sb,

@@ -25,7 +25,9 @@ app.setVersion(pkg.version + '-' + buildInfo.revision);
 const {
   values: {version = false},
 } = util.parseArgs({
-  options: {version: {type: 'boolean'}},
+  options: {
+    version: {type: 'boolean'},
+  },
   args: process.argv.slice(app.isPackaged ? 1 : 2),
   strict: false,
 });

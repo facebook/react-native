@@ -128,7 +128,9 @@ EventTag EventPerformanceLogger::onEventStart(
   {
     std::lock_guard lock(eventsInFlightMutex_);
     eventsInFlight_.emplace(
-        eventTag, EventEntry{reportedName, target, timeStamp});
+        eventTag,
+        EventEntry{
+            .name = reportedName, .target = target, .startTime = timeStamp});
   }
   return eventTag;
 }

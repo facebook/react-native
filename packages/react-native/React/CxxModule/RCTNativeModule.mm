@@ -7,7 +7,7 @@
 
 #import "RCTNativeModule.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <Foundation/Foundation.h>
 #import <React/RCTBridge.h>
@@ -238,4 +238,4 @@ static MethodCallResult invokeInner(
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

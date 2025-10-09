@@ -9,7 +9,7 @@
 #import <React/RCTVirtualTextView.h>
 #import <React/RCTVirtualTextViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 @implementation RCTVirtualTextViewManager
 
@@ -27,4 +27,4 @@ RCT_EXPORT_MODULE(RCTVirtualText)
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

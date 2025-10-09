@@ -68,7 +68,7 @@ function StaticViewAndImageWithState(props: Props): React.Node {
 
 const styles = StyleSheet.create({
   blurWithShadow: {
-    filter: [{blur: 10}],
+    filter: [{blur: 10 as string | number}],
     boxShadow: '0 0 10px 10px black',
     overflow: 'hidden',
     backgroundColor: 'pink',

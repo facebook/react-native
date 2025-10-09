@@ -151,7 +151,9 @@ Rect getScrollableContentBounds(
       : std::max(
             paddingFrame.getMaxX(), contentBounds.getMaxX() + paddingRight);
 
-  return Rect{Point{minX, minY}, Size{maxX - minX, maxY - minY}};
+  return Rect{
+      .origin = Point{.x = minX, .y = minY},
+      .size = Size{.width = maxX - minX, .height = maxY - minY}};
 }
 
 } // namespace

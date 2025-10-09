@@ -25,7 +25,7 @@ using namespace facebook::jsi;
 
 namespace facebook::react {
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
@@ -45,7 +45,10 @@ class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
     return nativeModules->getModule(rt, name);
   }
 
-  void set(Runtime&, const PropNameID&, const Value&) override {
+  void set(
+      Runtime& /*unused*/,
+      const PropNameID& /*name*/,
+      const Value& /*value*/) override {
     throw std::runtime_error(
         "Unable to put on NativeModules: Operation unsupported");
   }
@@ -523,7 +526,7 @@ Value JSIExecutor::globalEvalWithSourceUrl(const Value* args, size_t count) {
       std::make_unique<StringBuffer>(std::move(code)), url);
 }
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 
 JSIExecutor::JSIExecutor(
     std::shared_ptr<jsi::Runtime> runtime,
@@ -570,7 +573,7 @@ void JSIExecutor::handleMemoryPressure(int pressureLevel) {}
 
 void JSIExecutor::flush() {}
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 void bindNativeLogger(Runtime& runtime, Logger logger) {
   runtime.global().setProperty(

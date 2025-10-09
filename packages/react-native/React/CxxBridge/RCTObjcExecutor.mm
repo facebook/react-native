@@ -7,7 +7,7 @@
 
 #import "RCTObjcExecutor.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTCxxUtils.h>
 #import <React/RCTJavaScriptExecutor.h>
@@ -90,7 +90,7 @@ class RCTObjcExecutor : public JSExecutor {
                          }];
   }
 
-  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override
+  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> /*bundleRegistry*/) override
   {
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
@@ -147,4 +147,4 @@ std::unique_ptr<JSExecutor> RCTObjcExecutorFactory::createJSExecutor(
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

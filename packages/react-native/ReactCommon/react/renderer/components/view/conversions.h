@@ -131,12 +131,13 @@ inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
   auto layoutMetrics = LayoutMetrics{};
 
   layoutMetrics.frame = Rect{
-      Point{
-          floatFromYogaFloat(YGNodeLayoutGetLeft(&yogaNode)),
-          floatFromYogaFloat(YGNodeLayoutGetTop(&yogaNode))},
-      Size{
-          floatFromYogaFloat(YGNodeLayoutGetWidth(&yogaNode)),
-          floatFromYogaFloat(YGNodeLayoutGetHeight(&yogaNode))}};
+      .origin =
+          Point{
+              .x = floatFromYogaFloat(YGNodeLayoutGetLeft(&yogaNode)),
+              .y = floatFromYogaFloat(YGNodeLayoutGetTop(&yogaNode))},
+      .size = Size{
+          .width = floatFromYogaFloat(YGNodeLayoutGetWidth(&yogaNode)),
+          .height = floatFromYogaFloat(YGNodeLayoutGetHeight(&yogaNode))}};
 
   layoutMetrics.borderWidth = EdgeInsets{
       floatFromYogaFloat(YGNodeLayoutGetBorder(&yogaNode, YGEdgeLeft)),
@@ -613,12 +614,42 @@ inline void fromRawValue(
         return;
       }
 
-      size_t i = 0;
-      for (auto number : numbers) {
-        transformMatrix.matrix[i++] = number;
+      if (numbers.size() == 16) {
+        size_t i = 0;
+
+        for (auto number : numbers) {
+          transformMatrix.matrix[i++] = number;
+        }
+      } else if (numbers.size() == 9) {
+        // We need to convert the 2d transform matrix into a 3d one as such:
+        // [
+        //   x00, x01, 0, x02
+        //   x10, x11, 0, x12
+        //   0,   0,   1, 0
+        //   x20, x21, 0, x22
+        // ]
+        transformMatrix.matrix[0] = numbers[0];
+        transformMatrix.matrix[1] = numbers[1];
+        transformMatrix.matrix[2] = 0;
+        transformMatrix.matrix[3] = numbers[2];
+        transformMatrix.matrix[4] = numbers[3];
+        transformMatrix.matrix[5] = numbers[4];
+        transformMatrix.matrix[6] = 0;
+        transformMatrix.matrix[7] = numbers[5];
+        transformMatrix.matrix[8] = 0;
+        transformMatrix.matrix[9] = 0;
+        transformMatrix.matrix[10] = 1;
+        transformMatrix.matrix[11] = 0;
+        transformMatrix.matrix[12] = numbers[6];
+        transformMatrix.matrix[13] = numbers[7];
+        transformMatrix.matrix[14] = 0;
+        transformMatrix.matrix[15] = numbers[8];
       }
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Arbitrary, Zero, Zero, Zero});
+          .type = TransformOperationType::Arbitrary,
+          .x = Zero,
+          .y = Zero,
+          .z = Zero});
     } else if (operation == "perspective") {
       if (!parameters.hasType<Float>()) {
         result = {};
@@ -626,10 +657,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Perspective,
-          ValueUnit((Float)parameters, UnitType::Point),
-          Zero,
-          Zero});
+          .type = TransformOperationType::Perspective,
+          .x = ValueUnit((Float)parameters, UnitType::Point),
+          .y = Zero,
+          .z = Zero});
     } else if (operation == "rotateX") {
       auto radians = toRadians(parameters);
       if (!radians.has_value()) {
@@ -638,10 +669,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Rotate,
-          ValueUnit(*radians, UnitType::Point),
-          Zero,
-          Zero});
+          .type = TransformOperationType::Rotate,
+          .x = ValueUnit(*radians, UnitType::Point),
+          .y = Zero,
+          .z = Zero});
     } else if (operation == "rotateY") {
       auto radians = toRadians(parameters);
       if (!radians.has_value()) {
@@ -650,10 +681,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Rotate,
-          Zero,
-          ValueUnit(*radians, UnitType::Point),
-          Zero});
+          .type = TransformOperationType::Rotate,
+          .x = Zero,
+          .y = ValueUnit(*radians, UnitType::Point),
+          .z = Zero});
     } else if (operation == "rotateZ" || operation == "rotate") {
       auto radians = toRadians(parameters);
       if (!radians.has_value()) {
@@ -662,10 +693,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Rotate,
-          Zero,
-          Zero,
-          ValueUnit(*radians, UnitType::Point)});
+          .type = TransformOperationType::Rotate,
+          .x = Zero,
+          .y = Zero,
+          .z = ValueUnit(*radians, UnitType::Point)});
     } else if (operation == "scale") {
       if (!parameters.hasType<Float>()) {
         result = {};
@@ -674,7 +705,10 @@ inline void fromRawValue(
 
       auto number = ValueUnit((Float)parameters, UnitType::Point);
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Scale, number, number, number});
+          .type = TransformOperationType::Scale,
+          .x = number,
+          .y = number,
+          .z = number});
     } else if (operation == "scaleX") {
       if (!parameters.hasType<Float>()) {
         result = {};
@@ -682,10 +716,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Scale,
-          ValueUnit((Float)parameters, UnitType::Point),
-          One,
-          One});
+          .type = TransformOperationType::Scale,
+          .x = ValueUnit((Float)parameters, UnitType::Point),
+          .y = One,
+          .z = One});
     } else if (operation == "scaleY") {
       if (!parameters.hasType<Float>()) {
         result = {};
@@ -693,10 +727,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Scale,
-          One,
-          ValueUnit((Float)parameters, UnitType::Point),
-          One});
+          .type = TransformOperationType::Scale,
+          .x = One,
+          .y = ValueUnit((Float)parameters, UnitType::Point),
+          .z = One});
     } else if (operation == "scaleZ") {
       if (!parameters.hasType<Float>()) {
         result = {};
@@ -704,10 +738,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Scale,
-          One,
-          One,
-          ValueUnit((Float)parameters, UnitType::Point)});
+          .type = TransformOperationType::Scale,
+          .x = One,
+          .y = One,
+          .z = ValueUnit((Float)parameters, UnitType::Point)});
     } else if (operation == "translate") {
       if (!parameters.hasType<std::vector<RawValue>>()) {
         result = {};
@@ -733,7 +767,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Translate, valueX, valueY, Zero});
+          .type = TransformOperationType::Translate,
+          .x = valueX,
+          .y = valueY,
+          .z = Zero});
     } else if (operation == "translateX") {
       auto valueX = toValueUnit(parameters);
       if (!valueX) {
@@ -742,7 +779,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Translate, valueX, Zero, Zero});
+          .type = TransformOperationType::Translate,
+          .x = valueX,
+          .y = Zero,
+          .z = Zero});
     } else if (operation == "translateY") {
       auto valueY = toValueUnit(parameters);
       if (!valueY) {
@@ -751,7 +791,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Translate, Zero, valueY, Zero});
+          .type = TransformOperationType::Translate,
+          .x = Zero,
+          .y = valueY,
+          .z = Zero});
     } else if (operation == "skewX") {
       auto radians = toRadians(parameters);
       if (!radians.has_value()) {
@@ -760,10 +803,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Skew,
-          ValueUnit(*radians, UnitType::Point),
-          Zero,
-          Zero});
+          .type = TransformOperationType::Skew,
+          .x = ValueUnit(*radians, UnitType::Point),
+          .y = Zero,
+          .z = Zero});
     } else if (operation == "skewY") {
       auto radians = toRadians(parameters);
       if (!radians.has_value()) {
@@ -772,10 +815,10 @@ inline void fromRawValue(
       }
 
       transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Skew,
-          Zero,
-          ValueUnit(*radians, UnitType::Point),
-          Zero});
+          .type = TransformOperationType::Skew,
+          .x = Zero,
+          .y = ValueUnit(*radians, UnitType::Point),
+          .z = Zero});
     }
   }
 
@@ -1305,7 +1348,7 @@ inline void fromRawValue(
           if (xIt != sizeMap.end() && yIt != sizeMap.end()) {
             RadialGradientSize sizeObj;
             sizeObj.value = RadialGradientSize::Dimensions{
-                toValueUnit(xIt->second), toValueUnit(yIt->second)};
+                .x = toValueUnit(xIt->second), .y = toValueUnit(yIt->second)};
             radialGradient.size = sizeObj;
           }
         }

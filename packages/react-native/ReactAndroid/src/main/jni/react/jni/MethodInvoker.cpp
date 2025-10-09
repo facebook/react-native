@@ -22,7 +22,7 @@
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 using namespace facebook::jni;
 

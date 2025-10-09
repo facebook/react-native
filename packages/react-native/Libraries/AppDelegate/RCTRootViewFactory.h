@@ -18,6 +18,7 @@
 @class RCTHost;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
+@class RCTDevMenuConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -201,7 +202,13 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * @parameter: moduleName  - the name of the app, used by Metro to resolve the module.
  * @parameter: initialProperties  -  a set of initial properties.
  * @parameter: launchOptions  - a dictionary with a set of options.
+ * @parameter: devMenuConfiguration - a configuration for enabling/disabling dev menu.
  */
+- (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
+                     initialProperties:(NSDictionary *__nullable)initialProperties
+                         launchOptions:(NSDictionary *__nullable)launchOptions
+                  devMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration;
+
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
                      initialProperties:(NSDictionary *__nullable)initialProperties
                          launchOptions:(NSDictionary *__nullable)launchOptions;
@@ -219,10 +226,15 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * Use it to speed up later viewWithModuleName: calls.
  *
  * @parameter: launchOptions  - a dictionary with a set of options.
+ * @parameter: devMenuConfiguration - a configuration for enabling/disabling dev menu.
  */
-- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions;
+- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions
+                        devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration;
 
 - (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
+
+- (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions
+        devMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration;
 
 @end
 

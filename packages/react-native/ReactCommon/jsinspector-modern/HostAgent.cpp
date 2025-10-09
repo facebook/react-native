@@ -9,6 +9,7 @@
 #include "InstanceAgent.h"
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
+#include "InspectorFlags.h"
 #include "NetworkIOAgent.h"
 #include "SessionState.h"
 #include "TracingAgent.h"
@@ -141,6 +142,24 @@ class HostAgent::Impl final {
           .isFinishedHandlingRequest = false,
           .shouldSendOKResponse = true,
       };
+    }
+    if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
+      if (req.method == "Network.enable") {
+        sessionState_.isNetworkDomainEnabled = true;
+
+        return {
+            .isFinishedHandlingRequest = false,
+            .shouldSendOKResponse = true,
+        };
+      }
+      if (req.method == "Network.disable") {
+        sessionState_.isNetworkDomainEnabled = false;
+
+        return {
+            .isFinishedHandlingRequest = false,
+            .shouldSendOKResponse = true,
+        };
+      }
     }
 
     // Methods other than domain enables/disables: handle anything we know how

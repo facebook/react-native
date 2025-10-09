@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <functional>
 #include <istream>
@@ -61,12 +61,12 @@ class RN_EXPORT [[deprecated(
   };
 
   void init();
-  std::string getModuleCode(const uint32_t id) const;
-  void readBundle(char* buffer, const std::streamsize bytes) const;
+  std::string getModuleCode(uint32_t id) const;
+  void readBundle(char* buffer, std::streamsize bytes) const;
   void readBundle(
       char* buffer,
-      const std::streamsize bytes,
-      const std::istream::pos_type position) const;
+      std::streamsize bytes,
+      std::istream::pos_type position) const;
 
   mutable std::unique_ptr<std::istream> m_bundle;
   ModuleTable m_table;
@@ -76,4 +76,4 @@ class RN_EXPORT [[deprecated(
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
