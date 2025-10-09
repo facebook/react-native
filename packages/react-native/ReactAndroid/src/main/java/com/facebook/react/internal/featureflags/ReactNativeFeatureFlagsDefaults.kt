@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd9b92174bcc46a6df01d0489b2aebc8>>
+ * @generated SignedSource<<a048b52a2c83977dc904cd881e330a08>>
  */
 
 /**
@@ -49,7 +49,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 
-  override fun enableBridgelessArchitecture(): Boolean = false
+  override fun enableBridgelessArchitecture(): Boolean = true
 
   override fun enableCppPropsIteratorSetter(): Boolean = false
 
@@ -65,7 +65,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricLogs(): Boolean = false
 
-  override fun enableFabricRenderer(): Boolean = false
+  override fun enableFabricRenderer(): Boolean = true
 
   override fun enableFontScaleChangesUpdatingLayout(): Boolean = true
 
@@ -173,7 +173,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useTurboModuleInterop(): Boolean = false
 
-  override fun useTurboModules(): Boolean = false
+  override fun useTurboModules(): Boolean = true
 
   override fun viewCullingOutsetRatio(): Double = 0.0
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4464982256b8ce543d9235fccbf67054>>
+ * @generated SignedSource<<2c7426b2e2671f753182372371c3c64d>>
  */
 
 /**
@@ -23,15 +23,9 @@ public open class ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android : ReactN
   // We could use JNI to get the defaults from C++,
   // but that is more expensive than just duplicating the defaults here.
 
-  override fun enableBridgelessArchitecture(): Boolean = true
-
-  override fun enableFabricRenderer(): Boolean = true
-
   override fun enableWebPerformanceAPIsByDefault(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = true
 
   override fun useTurboModuleInterop(): Boolean = true
-
-  override fun useTurboModules(): Boolean = true
 }
