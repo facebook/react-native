@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f707e26d09b6f7962ec97296a1a215b6>>
+ * @generated SignedSource<<3fee7079eaa30dca86e3cb366cdd261e>>
  */
 
 /**
@@ -53,6 +53,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedRemoveJsSync(): Boolean = accessor.cxxNativeAnimatedRemoveJsSync()
+
+  /**
+   * Dispatch view commands in mount item order.
+   */
+  @JvmStatic
+  public fun disableEarlyViewCommandExecution(): Boolean = accessor.disableEarlyViewCommandExecution()
 
   /**
    * Prevents use of Fabric commit in C++ Animated implementation
@@ -385,6 +391,12 @@ public object ReactNativeFeatureFlags {
   public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = accessor.shouldPressibilityUseW3CPointerEventsForHover()
 
   /**
+   * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
+   */
+  @JvmStatic
+  public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = accessor.shouldTriggerResponderTransferOnScrollAndroid()
+
+  /**
    * Skip activity identity assertion in ReactHostImpl::onHostPause()
    */
   @JvmStatic
@@ -455,6 +467,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useShadowNodeStateOnClone(): Boolean = accessor.useShadowNodeStateOnClone()
+
+  /**
+   * Use shared animation backend in C++ Animated
+   */
+  @JvmStatic
+  public fun useSharedAnimatedBackend(): Boolean = accessor.useSharedAnimatedBackend()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

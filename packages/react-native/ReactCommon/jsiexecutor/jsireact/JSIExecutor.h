@@ -83,7 +83,7 @@ class [[deprecated(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override;
 #ifndef RCT_REMOVE_LEGACY_ARCH
-  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override;
+  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> r) override;
 #endif // RCT_REMOVE_LEGACY_ARCH
   void registerBundle(uint32_t bundleId, const std::string& bundlePath)
       override;

@@ -55,10 +55,12 @@ struct CSSDataTypeParser<CSSRatio> {
       if (std::holds_alternative<CSSNumber>(denominator) &&
           std::get<CSSNumber>(denominator).value >= 0) {
         parseNextCSSValue<CSSNumber>(parser, CSSDelimiter::Solidus);
-        return CSSRatio{numeratorValue, std::get<CSSNumber>(denominator).value};
+        return CSSRatio{
+            .numerator = numeratorValue,
+            .denominator = std::get<CSSNumber>(denominator).value};
       }
 
-      return CSSRatio{numeratorValue, 1.0f};
+      return CSSRatio{.numerator = numeratorValue, .denominator = 1.0f};
     }
 
     return {};

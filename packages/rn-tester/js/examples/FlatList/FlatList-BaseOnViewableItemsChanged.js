@@ -10,15 +10,15 @@
 
 'use strict';
 
-import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
+import type {
+  ViewabilityConfig,
+  ViewToken,
+} from 'react-native/Libraries/Lists/ViewabilityHelper';
 
 import BaseFlatListExample from './BaseFlatListExample';
 import * as React from 'react';
 import {useCallback, useRef, useState} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-
-type FlatListProps = React.ElementProps<typeof FlatList>;
-type ViewabilityConfig = FlatListProps['viewabilityConfig'];
+import {StyleSheet, View} from 'react-native';
 
 const BASE_VIEWABILITY_CONFIG = {
   minimumViewTime: 1000,

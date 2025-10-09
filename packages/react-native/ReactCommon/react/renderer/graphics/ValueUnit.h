@@ -7,6 +7,10 @@
 
 #pragma once
 
+#ifdef RN_SERIALIZABLE_STATE
+#include <folly/dynamic.h>
+#endif
+
 namespace facebook::react {
 
 enum class UnitType {
@@ -44,5 +48,18 @@ struct ValueUnit {
   constexpr operator bool() const {
     return unit != UnitType::Undefined;
   }
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const {
+    switch (unit) {
+      case UnitType::Undefined:
+        return nullptr;
+      case UnitType::Point:
+        return value;
+      case UnitType::Percent:
+        return std::format("{}%", value);
+    }
+  }
+#endif
 };
 } // namespace facebook::react

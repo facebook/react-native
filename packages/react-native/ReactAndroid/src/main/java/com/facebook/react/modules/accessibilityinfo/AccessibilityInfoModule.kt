@@ -89,10 +89,10 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   init {
     val appContext = context.applicationContext
     accessibilityManager =
-        appContext.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+        appContext.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager?
     contentResolver = reactApplicationContext.contentResolver
-    touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
-    accessibilityServiceEnabled = accessibilityManager.isEnabled
+    touchExplorationEnabled = accessibilityManager?.isTouchExplorationEnabled ?: false
+    accessibilityServiceEnabled = accessibilityManager?.isEnabled ?: false
     reduceMotionEnabled = isReduceMotionEnabledValue
     highTextContrastEnabled = isHighTextContrastEnabledValue
     grayscaleModeEnabled = isGrayscaleEnabledValue

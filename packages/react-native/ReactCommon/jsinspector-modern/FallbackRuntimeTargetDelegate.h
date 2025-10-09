@@ -46,6 +46,9 @@ class FallbackRuntimeTargetDelegate : public RuntimeTargetDelegate {
 
   tracing::RuntimeSamplingProfile collectSamplingProfile() override;
 
+  std::optional<folly::dynamic> serializeStackTrace(
+      const StackTrace& stackTrace) override;
+
  private:
   std::string engineDescription_;
 };
