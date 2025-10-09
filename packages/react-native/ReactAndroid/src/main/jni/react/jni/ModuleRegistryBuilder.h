@@ -11,7 +11,6 @@
 #include <cxxreact/ModuleRegistry.h>
 #include <fbjni/fbjni.h>
 
-#include "CxxModuleWrapper.h"
 #include "JavaModuleWrapper.h"
 
 #ifndef RCT_REMOVE_LEGACY_ARCH
@@ -37,8 +36,6 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
     std::weak_ptr<Instance> winstance,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
         javaModules,
-    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-        cxxModules,
     std::shared_ptr<MessageQueueThread> moduleMessageQueue);
 } // namespace facebook::react
 
