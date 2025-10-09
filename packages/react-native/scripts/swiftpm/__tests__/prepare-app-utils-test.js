@@ -10,10 +10,28 @@
 
 'use strict';
 
-const {findXcodeProjectDirectory} = require('../prepare-app-utils');
+const {
+  findXcodeProjectDirectory,
+  runPodDeintegrate,
+} = require('../prepare-app-utils');
 
 // Mock child_process module
 jest.mock('child_process');
+
+// Mock console methods - disable React Native's strict console checking
+const originalConsole = global.console;
+
+beforeAll(() => {
+  global.console = {
+    ...originalConsole,
+    log: jest.fn(),
+    warn: jest.fn(),
+  };
+});
+
+afterAll(() => {
+  global.console = originalConsole;
+});
 
 describe('findXcodeProjectDirectory', () => {
   let mockExecSync;
@@ -152,6 +170,141 @@ describe('findXcodeProjectDirectory', () => {
     expect(mockExecSync).toHaveBeenCalledWith(
       `find "${appPath}" -name "${xcodeProjectName}" -type d -print`,
       {encoding: 'utf8'},
+    );
+  });
+});
+
+describe('runPodDeintegrate', () => {
+  let mockExecSync;
+  let mockConsoleLog;
+  let mockConsoleWarn;
+
+  beforeEach(() => {
+    // Setup mocks
+    const childProcess = require('child_process');
+    mockExecSync = childProcess.execSync;
+
+    mockConsoleLog = console.log;
+    mockConsoleWarn = console.warn;
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  it('should run pod deintegrate successfully', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+
+    mockExecSync.mockReturnValue(undefined);
+
+    // Execute
+    await runPodDeintegrate(appIosPath);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith('pod deintegrate', {
+      cwd: appIosPath,
+      stdio: 'inherit',
+    });
+    expect(mockExecSync).toHaveBeenCalledTimes(1);
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Running pod deintegrate in: /path/to/app/ios',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith('✓ Pod deintegrate completed');
+    expect(mockConsoleLog).toHaveBeenCalledTimes(2);
+    expect(mockConsoleWarn).not.toHaveBeenCalled();
+  });
+
+  it('should handle different iOS directory paths', async () => {
+    // Setup
+    const appIosPath = '/Users/developer/MyApp/ios';
+
+    mockExecSync.mockReturnValue(undefined);
+
+    // Execute
+    await runPodDeintegrate(appIosPath);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith('pod deintegrate', {
+      cwd: appIosPath,
+      stdio: 'inherit',
+    });
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Running pod deintegrate in: /Users/developer/MyApp/ios',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith('✓ Pod deintegrate completed');
+  });
+
+  it('should handle paths with spaces correctly', async () => {
+    // Setup
+    const appIosPath = '/path/to/my app/ios folder';
+
+    mockExecSync.mockReturnValue(undefined);
+
+    // Execute
+    await runPodDeintegrate(appIosPath);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith('pod deintegrate', {
+      cwd: appIosPath,
+      stdio: 'inherit',
+    });
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Running pod deintegrate in: /path/to/my app/ios folder',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith('✓ Pod deintegrate completed');
+  });
+
+  it('should handle pod deintegrate command failure gracefully', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const mockError = new Error('No Podfile.lock found');
+
+    mockExecSync.mockImplementation(() => {
+      throw mockError;
+    });
+
+    // Execute
+    await runPodDeintegrate(appIosPath);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith('pod deintegrate', {
+      cwd: appIosPath,
+      stdio: 'inherit',
+    });
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Running pod deintegrate in: /path/to/app/ios',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      '✓ Pod deintegrate completed',
+    );
+    expect(mockConsoleWarn).toHaveBeenCalledWith(
+      '⚠️  Pod deintegrate failed (this might be expected if no Podfile.lock exists)',
+    );
+    expect(mockConsoleWarn).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle command not found error', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const mockError = new Error('command not found: pod');
+
+    mockExecSync.mockImplementation(() => {
+      throw mockError;
+    });
+
+    // Execute
+    await runPodDeintegrate(appIosPath);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith('pod deintegrate', {
+      cwd: appIosPath,
+      stdio: 'inherit',
+    });
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Running pod deintegrate in: /path/to/app/ios',
+    );
+    expect(mockConsoleWarn).toHaveBeenCalledWith(
+      '⚠️  Pod deintegrate failed (this might be expected if no Podfile.lock exists)',
     );
   });
 });
