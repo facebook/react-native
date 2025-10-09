@@ -65,7 +65,7 @@ async function computeNightlyTarballURL(
   artifactCoordinate /*: string */,
   artifactName /*: string */,
 ) /*: Promise<string> */ {
-  const xmlUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/${artifactCoordinate}/${version}-SNAPSHOT/maven-metadata.xml`;
+  const xmlUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/hermes/${artifactCoordinate}/${version}-SNAPSHOT/maven-metadata.xml`;
 
   const response = await fetch(xmlUrl);
   if (!response.ok) {
@@ -97,7 +97,7 @@ async function computeNightlyTarballURL(
   const buildNumber = buildNumberMatch[1];
 
   const fullVersion = `${version}-${timestamp}-${buildNumber}`;
-  const finalUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/${artifactCoordinate}/${version}-SNAPSHOT/${artifactCoordinate}-${fullVersion}-${artifactName}`;
+  const finalUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/hermes/${artifactCoordinate}/${version}-SNAPSHOT/${artifactCoordinate}-${fullVersion}-${artifactName}`;
   return finalUrl;
 }
 
