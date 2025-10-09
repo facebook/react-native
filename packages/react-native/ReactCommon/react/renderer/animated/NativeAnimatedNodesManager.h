@@ -17,7 +17,9 @@
 #include <react/debug/flags.h>
 #include <react/renderer/animated/EventEmitterListener.h>
 #include <react/renderer/animated/event_drivers/EventAnimationDriver.h>
+#ifdef RN_USE_ANIMATION_BACKEND
 #include <react/renderer/animationbackend/AnimationBackend.h>
+#endif
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <chrono>
@@ -114,7 +116,9 @@ class NativeAnimatedNodesManager {
 
   void setAnimatedNodeOffset(Tag tag, double offset);
 
+#ifdef RN_USE_ANIMATION_BACKEND
   AnimationMutations pullAnimationMutations();
+#endif
 
 #pragma mark - Drivers
 
