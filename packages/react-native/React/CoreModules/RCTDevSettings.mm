@@ -145,6 +145,7 @@ RCT_EXPORT_MODULE()
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
+  _isShakeGestureEnabled = true;
   return [self initWithDataSource:dataSource];
 }
 
@@ -262,6 +263,12 @@ RCT_EXPORT_MODULE()
   return [_dataSource settingForKey:key];
 }
 
+- (void)setIsShakeGestureEnabled:(BOOL)isShakeGestureEnabled
+{
+  _isShakeGestureEnabled = isShakeGestureEnabled;
+  [self setIsShakeToShowDevMenuEnabled:isShakeGestureEnabled];
+}
+
 - (BOOL)isDeviceDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
@@ -305,7 +312,7 @@ RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
 
 - (BOOL)isShakeToShowDevMenuEnabled
 {
-  return [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
+  return _isShakeGestureEnabled && [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
 }
 
 RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7a0a26494846d6b4881bea01beabb9d6>>
+ * @generated SignedSource<<bd78270ae3d4461c8f54a9bfb9fc8b20>>
  */
 
 /**
@@ -60,6 +60,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool cxxNativeAnimatedRemoveJsSync() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedRemoveJsSync");
+    return method(javaProvider_);
+  }
+
+  bool disableEarlyViewCommandExecution() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableEarlyViewCommandExecution");
     return method(javaProvider_);
   }
 
@@ -393,6 +399,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool shouldTriggerResponderTransferOnScrollAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldTriggerResponderTransferOnScrollAndroid");
+    return method(javaProvider_);
+  }
+
   bool skipActivityIdentityAssertionOnHostPause() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("skipActivityIdentityAssertionOnHostPause");
@@ -465,6 +477,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool useSharedAnimatedBackend() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useSharedAnimatedBackend");
+    return method(javaProvider_);
+  }
+
   bool useTurboModuleInterop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModuleInterop");
@@ -517,6 +535,11 @@ bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
 bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableEarlyViewCommandExecution();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated(
@@ -794,6 +817,11 @@ bool JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsFo
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::shouldTriggerResponderTransferOnScrollAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
@@ -852,6 +880,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue(
 bool JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useShadowNodeStateOnClone();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::useSharedAnimatedBackend(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useSharedAnimatedBackend();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
@@ -922,6 +955,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "cxxNativeAnimatedRemoveJsSync",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync),
+      makeNativeMethod(
+        "disableEarlyViewCommandExecution",
+        JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution),
       makeNativeMethod(
         "disableFabricCommitInCXXAnimated",
         JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated),
@@ -1088,6 +1124,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "shouldPressibilityUseW3CPointerEventsForHover",
         JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsForHover),
       makeNativeMethod(
+        "shouldTriggerResponderTransferOnScrollAndroid",
+        JReactNativeFeatureFlagsCxxInterop::shouldTriggerResponderTransferOnScrollAndroid),
+      makeNativeMethod(
         "skipActivityIdentityAssertionOnHostPause",
         JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause),
       makeNativeMethod(
@@ -1123,6 +1162,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useShadowNodeStateOnClone",
         JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone),
+      makeNativeMethod(
+        "useSharedAnimatedBackend",
+        JReactNativeFeatureFlagsCxxInterop::useSharedAnimatedBackend),
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),

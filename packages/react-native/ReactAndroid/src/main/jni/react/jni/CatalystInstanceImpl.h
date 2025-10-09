@@ -43,7 +43,8 @@ class [[deprecated(
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
+  static jni::local_ref<jhybriddata> initHybrid(
+      jni::alias_ref<jclass> /*unused*/);
 
   static void registerNatives();
 

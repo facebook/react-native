@@ -18,6 +18,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -528,11 +529,24 @@ public class ReactScrollView extends ScrollView
   }
 
   private void scrollToChild(View child) {
+    // Only scroll the nearest ReactScrollView ancestor into view, rather than the focused child.
+    // Nested ScrollView instances will handle scrolling the child into their respective viewports.
+    View parent = child;
+    View scrollViewAncestor = null;
+    while (parent != null && parent != this) {
+      if (parent instanceof ReactScrollView) {
+        scrollViewAncestor = parent;
+      }
+      parent = (View) parent.getParent();
+    }
+
+    View scrollIntoViewTarget = scrollViewAncestor != null ? scrollViewAncestor : child;
+
     Rect tempRect = new Rect();
-    child.getDrawingRect(tempRect);
+    scrollIntoViewTarget.getDrawingRect(tempRect);
 
     /* Offset from child's local coordinates to ScrollView coordinates */
-    offsetDescendantRectToMyCoords(child, tempRect);
+    offsetDescendantRectToMyCoords(scrollIntoViewTarget, tempRect);
 
     int scrollDelta = computeScrollDeltaToGetChildRectOnScreen(tempRect);
 
@@ -1426,6 +1440,10 @@ public class ReactScrollView extends ScrollView
    * style. `translateY` must never be set from ReactJS while using this feature!
    */
   public void setScrollAwayTopPaddingEnabledUnstable(int topPadding) {
+    setScrollAwayTopPaddingEnabledUnstable(topPadding, true);
+  }
+
+  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding, boolean updateState) {
     int count = getChildCount();
 
     Assertions.assertCondition(
@@ -1445,13 +1463,26 @@ public class ReactScrollView extends ScrollView
       setPadding(0, 0, 0, topPadding);
     }
 
-    updateScrollAwayState(topPadding);
+    if (updateState) {
+      updateScrollAwayState(topPadding);
+    }
     setRemoveClippedSubviews(mRemoveClippedSubviews);
   }
 
   private void updateScrollAwayState(int scrollAwayPaddingTop) {
     getReactScrollViewScrollState().setScrollAwayPaddingTop(scrollAwayPaddingTop);
     ReactScrollViewHelper.forceUpdateState(this);
+  }
+
+  @Override
+  public void setReactScrollViewScrollState(ReactScrollViewScrollState scrollState) {
+    mReactScrollViewScrollState = scrollState;
+    if (ReactNativeFeatureFlags.enableViewCulling()) {
+      setScrollAwayTopPaddingEnabledUnstable(scrollState.getScrollAwayPaddingTop(), false);
+
+      Point scrollPosition = scrollState.getLastStateUpdateScroll();
+      scrollTo(scrollPosition.x, scrollPosition.y);
+    }
   }
 
   @Override

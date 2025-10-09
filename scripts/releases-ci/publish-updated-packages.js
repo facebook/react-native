@@ -65,8 +65,8 @@ async function publishUpdatedPackages() {
   const packagesToUpdate = [];
 
   await Promise.all(
-    Object.values(packages).map(async package => {
-      const version = package.packageJson.version;
+    Object.values(packages).map(async pck => {
+      const version = pck.packageJson.version;
 
       if (!version.startsWith('0.')) {
         throw new Error(
@@ -74,19 +74,17 @@ async function publishUpdatedPackages() {
         );
       }
 
-      const response = await fetch(
-        'https://registry.npmjs.org/' + package.name,
-      );
+      const response = await fetch('https://registry.npmjs.org/' + pck.name);
       const {versions: versionsInRegistry} = await response.json();
 
       if (version in versionsInRegistry) {
         console.log(
-          `- Skipping ${package.name} (${version} already present on npm)`,
+          `- Skipping ${pck.name} (${version} already present on npm)`,
         );
         return;
       }
 
-      packagesToUpdate.push(package.name);
+      packagesToUpdate.push(pck.name);
     }),
   );
 
@@ -97,19 +95,17 @@ async function publishUpdatedPackages() {
   const failedPackages = [];
 
   for (const packageName of packagesToUpdate) {
-    const package = packages[packageName];
-    console.log(
-      `- Publishing ${package.name} (${package.packageJson.version})`,
-    );
+    const pck = packages[packageName];
+    console.log(`- Publishing ${pck.name} (${pck.packageJson.version})`);
 
     try {
-      runPublish(package.name, package.path, tags);
+      runPublish(pck.name, pck.path, tags);
     } catch {
       console.log('--- Retrying once! ---');
       try {
-        runPublish(package.name, package.path, tags);
+        runPublish(pck.name, pck.path, tags);
       } catch (e) {
-        failedPackages.push(package.name);
+        failedPackages.push(pck.name);
       }
     }
   }

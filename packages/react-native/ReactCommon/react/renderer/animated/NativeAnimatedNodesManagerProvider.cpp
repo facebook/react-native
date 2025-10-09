@@ -11,6 +11,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animated/MergedValueDispatcher.h>
 #include <react/renderer/animated/internal/AnimatedMountingOverrideDelegate.h>
+#include <react/renderer/animationbackend/AnimationBackend.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 namespace facebook::react {
@@ -64,11 +65,28 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           uiManager->synchronouslyUpdateViewOnUIThread(viewTag, props);
         };
 
-    nativeAnimatedNodesManager_ = std::make_shared<NativeAnimatedNodesManager>(
-        std::move(directManipulationCallback),
-        std::move(fabricCommitCallback),
-        std::move(startOnRenderCallback_),
-        std::move(stopOnRenderCallback_));
+    if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+      // TODO: this should be initialized outside of animated, but for now it
+      // was convenient to do it here
+      animationBackend_ = std::make_shared<AnimationBackend>(
+          std::move(startOnRenderCallback_),
+          std::move(stopOnRenderCallback_),
+          std::move(directManipulationCallback),
+          std::move(fabricCommitCallback),
+          uiManager);
+
+      nativeAnimatedNodesManager_ =
+          std::make_shared<NativeAnimatedNodesManager>(animationBackend_);
+
+      uiManager->unstable_setAnimationBackend(animationBackend_);
+    } else {
+      nativeAnimatedNodesManager_ =
+          std::make_shared<NativeAnimatedNodesManager>(
+              std::move(directManipulationCallback),
+              std::move(fabricCommitCallback),
+              std::move(startOnRenderCallback_),
+              std::move(stopOnRenderCallback_));
+    }
 
     addEventEmitterListener(
         nativeAnimatedNodesManager_->getEventEmitterListener());

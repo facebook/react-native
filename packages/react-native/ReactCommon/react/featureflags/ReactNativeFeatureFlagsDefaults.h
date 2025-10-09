@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e8eb056e546c41e5863073e460362020>>
+ * @generated SignedSource<<3ddb240bc600ff3cfa0cfe5896c59b23>>
  */
 
 /**
@@ -40,6 +40,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool cxxNativeAnimatedRemoveJsSync() override {
+    return false;
+  }
+
+  bool disableEarlyViewCommandExecution() override {
     return false;
   }
 
@@ -263,6 +267,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool shouldTriggerResponderTransferOnScrollAndroid() override {
+    return false;
+  }
+
   bool skipActivityIdentityAssertionOnHostPause() override {
     return false;
   }
@@ -308,6 +316,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useShadowNodeStateOnClone() override {
+    return false;
+  }
+
+  bool useSharedAnimatedBackend() override {
     return false;
   }
 
