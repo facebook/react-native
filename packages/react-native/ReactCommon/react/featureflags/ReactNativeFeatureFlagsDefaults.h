@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ddb240bc600ff3cfa0cfe5896c59b23>>
+ * @generated SignedSource<<8165ba6a223f1561f2b26813cb05f5fb>>
  */
 
 /**
@@ -80,7 +80,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableBridgelessArchitecture() override {
-    return false;
+    return true;
   }
 
   bool enableCppPropsIteratorSetter() override {
@@ -112,7 +112,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFabricRenderer() override {
-    return false;
+    return true;
   }
 
   bool enableFontScaleChangesUpdatingLayout() override {
@@ -328,7 +328,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useTurboModules() override {
-    return false;
+    return true;
   }
 
   double viewCullingOutsetRatio() override {

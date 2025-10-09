@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc249978e6199d4aba3d039d8e967400>>
+ * @generated SignedSource<<8f8c075c7507ed5d99110cb9e04b5f0d>>
  * @flow strict
  * @noformat
  */
@@ -265,7 +265,7 @@ export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = create
 /**
  * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
  */
-export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', false);
+export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', true);
 /**
  * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
  */
@@ -297,7 +297,7 @@ export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableF
 /**
  * Enables the use of the Fabric renderer in the whole app.
  */
-export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', false);
+export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', true);
 /**
  * Enables font scale changes updating layout for measurable nodes.
  */
@@ -513,7 +513,7 @@ export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('us
 /**
  * When enabled, NativeModules will be executed by using the TurboModule system
  */
-export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurboModules', false);
+export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurboModules', true);
 /**
  * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
  */

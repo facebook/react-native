@@ -191,14 +191,14 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableBridgelessArchitecture: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         description:
           'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'canary',
+      ossReleaseStage: 'stable',
     },
     enableCppPropsIteratorSetter: {
       defaultValue: false,
@@ -273,13 +273,13 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableFabricRenderer: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         description: 'Enables the use of the Fabric renderer in the whole app.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'canary',
+      ossReleaseStage: 'stable',
     },
     enableFontScaleChangesUpdatingLayout: {
       defaultValue: true,
@@ -847,14 +847,14 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'canary',
     },
     useTurboModules: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         description:
           'When enabled, NativeModules will be executed by using the TurboModule system',
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'canary',
+      ossReleaseStage: 'stable',
     },
     viewCullingOutsetRatio: {
       defaultValue: 0,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<32a03e199994c91c022013d7929bfea5>>
+ * @generated SignedSource<<ae59067a621102f0683fc27e1c8b1440>>
  */
 
 /**
@@ -27,14 +27,6 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
  public:
     ReactNativeFeatureFlagsOverridesOSSCanary() = default;
 
-  bool enableBridgelessArchitecture() override {
-    return true;
-  }
-
-  bool enableFabricRenderer() override {
-    return true;
-  }
-
   bool enableWebPerformanceAPIsByDefault() override {
     return true;
   }
@@ -44,10 +36,6 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
   }
 
   bool useTurboModuleInterop() override {
-    return true;
-  }
-
-  bool useTurboModules() override {
     return true;
   }
 };
