@@ -85,7 +85,7 @@ public object AndroidInfoHelpers {
   private fun getReactNativeVersionString(): String {
     val version = ReactNativeVersion.VERSION
     return "${version["major"]}.${version["minor"]}.${version["patch"]}" +
-        (version["prerelease"]?.let { "-$it" } ?: "")
+        (version["prerelease"]?.let { "-$it" }.orEmpty())
   }
 
   private fun getDevServerPort(context: Context): Int =
@@ -123,7 +123,7 @@ public object AndroidInfoHelpers {
       var lastLine = ""
       var line: String?
       while (reader.readLine().also { line = it } != null) {
-        lastLine = line ?: ""
+        lastLine = line.orEmpty()
       }
       metroHostPropValue = lastLine
     } catch (e: Exception) {
@@ -133,6 +133,6 @@ public object AndroidInfoHelpers {
       reader?.close()
       process?.destroy()
     }
-    return metroHostPropValue ?: ""
+    return metroHostPropValue.orEmpty()
   }
 }
