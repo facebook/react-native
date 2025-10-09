@@ -23,26 +23,6 @@ SurfaceHandler::SurfaceHandler(
   parameters_.surfaceId = surfaceId;
 }
 
-SurfaceHandler::SurfaceHandler(SurfaceHandler&& other) noexcept {
-  operator=(std::move(other));
-}
-
-SurfaceHandler& SurfaceHandler::operator=(SurfaceHandler&& other) noexcept {
-  std::unique_lock lock1(linkMutex_, std::defer_lock);
-  std::unique_lock lock2(parametersMutex_, std::defer_lock);
-  std::unique_lock lock3(other.linkMutex_, std::defer_lock);
-  std::unique_lock lock4(other.parametersMutex_, std::defer_lock);
-  std::lock(lock1, lock2, lock3, lock4);
-
-  link_ = other.link_;
-  parameters_ = other.parameters_;
-
-  other.link_ = Link{};
-  other.parameters_ = Parameters{};
-  other.parameters_.contextContainer = parameters_.contextContainer;
-  return *this;
-}
-
 #pragma mark - Surface Life-Cycle Management
 
 void SurfaceHandler::setContextContainer(
