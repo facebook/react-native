@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc249978e6199d4aba3d039d8e967400>>
+ * @generated SignedSource<<42fe3f524ad5d1e8a565ada8f9eebd24>>
  * @flow strict
  * @noformat
  */
@@ -124,6 +124,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useRawPropsJsiValue: Getter<boolean>,
   useShadowNodeStateOnClone: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
+  useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
@@ -506,6 +507,10 @@ export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter
  * Use shared animation backend in C++ Animated
  */
 export const useSharedAnimatedBackend: Getter<boolean> = createNativeFlagGetter('useSharedAnimatedBackend', false);
+/**
+ * Use Trait::hidden on Android
+ */
+export const useTraitHiddenOnAndroid: Getter<boolean> = createNativeFlagGetter('useTraitHiddenOnAndroid', false);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */
