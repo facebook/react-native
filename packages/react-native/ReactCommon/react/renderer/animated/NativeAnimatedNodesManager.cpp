@@ -97,7 +97,7 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
 
 NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     std::shared_ptr<UIManagerAnimationBackend> animationBackend) noexcept
-    : animationBackend_(std::move(animationBackend)) {}
+    : animationBackend_(animationBackend) {}
 
 NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
   stopRenderCallbackIfNeeded();
@@ -519,10 +519,9 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
-    if (auto animationBackend =
-            std::static_pointer_cast<AnimationBackend>(animationBackend_)) {
-      animationBackend->start(
-          [this](float /*f*/) { return pullAnimationMutations(); });
+    if (auto animationBackend = animationBackend_.lock()) {
+      std::static_pointer_cast<AnimationBackend>(animationBackend)
+          ->start([this](float /*f*/) { return pullAnimationMutations(); });
     }
 #endif
 
@@ -546,7 +545,9 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
 
 void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    animationBackend_->stop();
+    if (auto animationBackend = animationBackend_.lock()) {
+      animationBackend->stop();
+    }
     return;
   }
   // When multiple threads reach this point, only one thread should call

@@ -217,7 +217,7 @@ class NativeAnimatedNodesManager {
       const std::string& eventName,
       const EventPayload& payload) noexcept;
 
-  std::shared_ptr<UIManagerAnimationBackend> animationBackend_;
+  std::weak_ptr<UIManagerAnimationBackend> animationBackend_;
 
   std::unique_ptr<AnimatedNode> animatedNode(
       Tag tag,
