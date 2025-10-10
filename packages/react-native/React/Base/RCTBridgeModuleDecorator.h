@@ -23,11 +23,13 @@
 @property (nonatomic, strong, readonly) RCTViewRegistry *viewRegistry_DEPRECATED;
 @property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
 @property (nonatomic, strong, readonly) RCTBundleManager *bundleManager;
+@property (nonatomic, strong, readonly) RCTBundleProvider *bundleProvider;
 @property (nonatomic, strong, readonly) RCTCallableJSModules *callableJSModules;
 
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
                       moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                        bundleManager:(RCTBundleManager *)bundleManager
+                      bundleProvider:(RCTBundleProvider *)bundleProvider
                    callableJSModules:(RCTCallableJSModules *)callableJSModules;
 
 - (void)attachInteropAPIsToModule:(id<RCTBridgeModule>)bridgeModule;
