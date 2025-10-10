@@ -120,8 +120,6 @@ export type NativeMethodsMixin = NativeMethods;
  */
 export type NativeMethodsMixinType = NativeMethods;
 
-export type HostInstance = NativeMethods;
-
 /**
  * Represents a native component, such as those returned from `requireNativeComponent`.
  *
@@ -137,3 +135,118 @@ export interface HostComponent<P>
   > {
   new (props: P, context?: any): React.Component<P> & HostInstance;
 }
+
+export interface ArrayLike<T> extends Iterable<T> {
+  [indexer: number]: T;
+  readonly length: number;
+}
+
+export interface HTMLCollection<T> extends Iterable<T>, ArrayLike<T> {
+  [index: number]: T;
+  readonly length: number;
+  item(index: number): null | T;
+  namedItem(name: string): null | T;
+  [Symbol.iterator](): Iterator<T>;
+}
+
+export interface NodeList<T> extends Iterable<T>, ArrayLike<T> {
+  [index: number]: T;
+  readonly length: number;
+  entries(): Iterator<[number, T]>;
+  forEach<ThisType>(
+    callbackFn: (value: T, index: number, array: NodeList<T>) => unknown,
+    thisArg?: ThisType,
+  ): void;
+  item(index: number): null | T;
+  keys(): Iterator<number>;
+  values(): Iterator<T>;
+  [Symbol.iterator](): Iterator<T>;
+}
+
+export interface ReadOnlyNode {
+  get childNodes(): NodeList<ReadOnlyNode>;
+  compareDocumentPosition(otherNode: ReadOnlyNode): number;
+  contains(otherNode: ReadOnlyNode): boolean;
+  get firstChild(): null | ReadOnlyNode;
+  getRootNode(): ReadOnlyNode;
+  hasChildNodes(): boolean;
+  get isConnected(): boolean;
+  get lastChild(): null | ReadOnlyNode;
+  get nextSibling(): null | ReadOnlyNode;
+  get nodeName(): string;
+  get nodeType(): number;
+  get nodeValue(): null | string;
+  get ownerDocument(): null | ReactNativeDocument;
+  get parentElement(): null | ReadOnlyElement;
+  get parentNode(): null | ReadOnlyNode;
+  get previousSibling(): null | ReadOnlyNode;
+  get textContent(): string;
+}
+
+export interface ReactNativeDocument extends ReadOnlyNode {
+  get childElementCount(): number;
+  get children(): HTMLCollection<ReadOnlyElement>;
+  get documentElement(): ReactNativeElement;
+  get firstElementChild(): null | ReadOnlyElement;
+  getElementById(id: string): null | ReadOnlyElement;
+  get lastElementChild(): null | ReadOnlyElement;
+  get nodeName(): string;
+  get nodeType(): number;
+  get nodeValue(): null;
+}
+
+export interface ReadOnlyElement extends ReadOnlyNode {
+  get childElementCount(): number;
+  get children(): HTMLCollection<ReadOnlyElement>;
+  get clientHeight(): number;
+  get clientLeft(): number;
+  get clientTop(): number;
+  get clientWidth(): number;
+  get firstElementChild(): null | ReadOnlyElement;
+  getBoundingClientRect(): DOMRect;
+  hasPointerCapture(pointerId: number): boolean;
+  get id(): string;
+  get lastElementChild(): null | ReadOnlyElement;
+  get nextElementSibling(): null | ReadOnlyElement;
+  get nodeName(): string;
+  get nodeType(): number;
+  get nodeValue(): null | string;
+  set nodeValue(value: string);
+  get previousElementSibling(): null | ReadOnlyElement;
+  releasePointerCapture(pointerId: number): void;
+  get scrollHeight(): number;
+  get scrollLeft(): number;
+  get scrollTop(): number;
+  get scrollWidth(): number;
+  setPointerCapture(pointerId: number): void;
+  get tagName(): string;
+  get textContent(): string;
+}
+
+export interface ReactNativeElement extends ReadOnlyElement, NativeMethods {
+  blur(): void;
+  focus(): void;
+  get offsetHeight(): number;
+  get offsetLeft(): number;
+  get offsetParent(): null | ReadOnlyElement;
+  get offsetTop(): number;
+  get offsetWidth(): number;
+  setNativeProps(nativeProps: {}): void;
+}
+
+export interface ReadOnlyCharacterData extends ReadOnlyNode {
+  get data(): string;
+  get length(): number;
+  get nextElementSibling(): null | ReadOnlyElement;
+  get nodeValue(): string;
+  get previousElementSibling(): null | ReadOnlyElement;
+  substringData(offset: number, count: number): string;
+  get textContent(): string;
+}
+
+export interface ReadOnlyText extends ReadOnlyCharacterData {
+  get nodeName(): string;
+  get nodeType(): number;
+}
+
+export type HostInstance = ReactNativeElement;
