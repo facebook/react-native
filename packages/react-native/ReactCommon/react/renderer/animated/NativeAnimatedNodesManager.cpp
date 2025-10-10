@@ -33,8 +33,11 @@
 #include <react/renderer/animated/nodes/TrackingAnimatedNode.h>
 #include <react/renderer/animated/nodes/TransformAnimatedNode.h>
 #include <react/renderer/animated/nodes/ValueAnimatedNode.h>
-#include <react/renderer/animationbackend/AnimatedPropsBuilder.h>
 #include <react/renderer/core/EventEmitter.h>
+
+#ifdef RN_USE_ANIMATION_BACKEND
+#include <react/renderer/animationbackend/AnimatedPropsBuilder.h>
+#endif
 
 namespace facebook::react {
 
@@ -515,11 +518,13 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+#ifdef RN_USE_ANIMATION_BACKEND
     if (auto animationBackend =
             std::static_pointer_cast<AnimationBackend>(animationBackend_)) {
       animationBackend->start(
           [this](float /*f*/) { return pullAnimationMutations(); });
     }
+#endif
 
     return;
   }
@@ -887,6 +892,7 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
   }
 }
 
+#ifdef RN_USE_ANIMATION_BACKEND
 AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
   if (!ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
     return {};
@@ -1005,6 +1011,7 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
   }
   return mutations;
 }
+#endif
 
 void NativeAnimatedNodesManager::onRender() {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
