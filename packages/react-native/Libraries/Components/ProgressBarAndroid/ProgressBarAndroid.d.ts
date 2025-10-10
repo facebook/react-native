@@ -9,7 +9,7 @@
 
 import type * as React from 'react';
 import {Constructor} from '../../../types/private/Utilities';
-import {NativeMethods} from '../../../types/public/ReactNativeTypes';
+import {HostInstance} from '../../../types/public/ReactNativeTypes';
 import {ColorValue} from '../../StyleSheet/StyleSheet';
 import {ViewProps} from '../View/ViewPropTypes';
 
@@ -72,7 +72,7 @@ export interface ProgressBarAndroidProps extends ViewProps {
  * that the app is loading or there is some activity in the app.
  */
 declare class ProgressBarAndroidComponent extends React.Component<ProgressBarAndroidProps> {}
-declare const ProgressBarAndroidBase: Constructor<NativeMethods> &
+declare const ProgressBarAndroidBase: Constructor<HostInstance> &
   typeof ProgressBarAndroidComponent;
 /**
  * ProgressBarAndroid has been extracted from react-native core and will be removed in a future release.
