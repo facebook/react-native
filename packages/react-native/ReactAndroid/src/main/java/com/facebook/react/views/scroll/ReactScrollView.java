@@ -1481,7 +1481,8 @@ public class ReactScrollView extends ScrollView
   @Override
   public void setReactScrollViewScrollState(ReactScrollViewScrollState scrollState) {
     mReactScrollViewScrollState = scrollState;
-    if (ReactNativeFeatureFlags.enableViewCulling()) {
+    if (ReactNativeFeatureFlags.enableViewCulling()
+        || ReactNativeFeatureFlags.useTraitHiddenOnAndroid()) {
       setScrollAwayTopPaddingEnabledUnstable(scrollState.getScrollAwayPaddingTop(), false);
 
       Point scrollPosition = scrollState.getLastStateUpdateScroll();

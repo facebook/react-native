@@ -384,7 +384,10 @@ constructor(private val fpsListener: FpsListener? = null) :
       stateWrapper: StateWrapper,
   ): Any? {
     view.setStateWrapper(stateWrapper)
-    if (ReactNativeFeatureFlags.enableViewCulling()) {
+    if (
+        ReactNativeFeatureFlags.enableViewCulling() ||
+            ReactNativeFeatureFlags.useTraitHiddenOnAndroid()
+    ) {
       ReactScrollViewHelper.loadFabricScrollState(view, stateWrapper)
     }
     return null
