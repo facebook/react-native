@@ -54,10 +54,6 @@
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
 
-#ifdef WITH_FBSYSTRACE
-#import <React/RCTFBSystrace.h>
-#endif
-
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
 #import <React/RCTDevLoadingViewProtocol.h>
 #endif
@@ -1507,9 +1503,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   RCTAssertMainQueue();
 
   [self ensureOnJavaScriptThread:^{
-#if WITH_FBSYSTRACE
-    [RCTFBSystrace registerCallbacks];
-#endif
     RCTProfileInit(self);
 
     [self enqueueJSCall:@"Systrace" method:@"setEnabled" args:@[ @YES ] completion:NULL];
@@ -1525,14 +1518,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);
-#if WITH_FBSYSTRACE
-      if (![RCTFBSystrace verifyTraceSize:logData.length]) {
-        RCTLogWarn(
-            @"Your FBSystrace trace might be truncated, try to bump up the buffer size"
-             " in RCTFBSystrace.m or capture a shorter trace");
-      }
-      [RCTFBSystrace unregisterCallbacks];
-#endif
     });
   }];
 }
