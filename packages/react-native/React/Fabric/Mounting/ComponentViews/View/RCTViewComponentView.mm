@@ -1451,14 +1451,24 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (void)accessibilityIncrement
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
-    _eventEmitter->onAccessibilityAction("increment");
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+    
+    // Dispatch the event synchronously - JS will run and update props immediately
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityAction("increment");
+    });
   }
 }
 
 - (void)accessibilityDecrement
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
-    _eventEmitter->onAccessibilityAction("decrement");
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+    
+    // Dispatch the event synchronously - JS will run and update props immediately
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityAction("decrement");
+    });
   }
 }
 
