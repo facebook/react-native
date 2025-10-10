@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef2223fbbb85ea118a10f1147ac0efd3>>
+ * @generated SignedSource<<f6425bd8373ceb2a9d928fd94f1c9576>>
  */
 
 /**
@@ -1361,6 +1361,24 @@ bool ReactNativeFeatureFlagsAccessor::useSharedAnimatedBackend() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::useTraitHiddenOnAndroid() {
+  auto flagValue = useTraitHiddenOnAndroid_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(74, "useTraitHiddenOnAndroid");
+
+    flagValue = currentProvider_->useTraitHiddenOnAndroid();
+    useTraitHiddenOnAndroid_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::useTurboModuleInterop() {
   auto flagValue = useTurboModuleInterop_.load();
 
@@ -1370,7 +1388,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModuleInterop() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(74, "useTurboModuleInterop");
+    markFlagAsAccessed(75, "useTurboModuleInterop");
 
     flagValue = currentProvider_->useTurboModuleInterop();
     useTurboModuleInterop_ = flagValue;
@@ -1388,7 +1406,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModules() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(75, "useTurboModules");
+    markFlagAsAccessed(76, "useTurboModules");
 
     flagValue = currentProvider_->useTurboModules();
     useTurboModules_ = flagValue;
@@ -1406,7 +1424,7 @@ double ReactNativeFeatureFlagsAccessor::viewCullingOutsetRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(76, "viewCullingOutsetRatio");
+    markFlagAsAccessed(77, "viewCullingOutsetRatio");
 
     flagValue = currentProvider_->viewCullingOutsetRatio();
     viewCullingOutsetRatio_ = flagValue;
@@ -1424,7 +1442,7 @@ double ReactNativeFeatureFlagsAccessor::virtualViewHysteresisRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(77, "virtualViewHysteresisRatio");
+    markFlagAsAccessed(78, "virtualViewHysteresisRatio");
 
     flagValue = currentProvider_->virtualViewHysteresisRatio();
     virtualViewHysteresisRatio_ = flagValue;
@@ -1442,7 +1460,7 @@ double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(78, "virtualViewPrerenderRatio");
+    markFlagAsAccessed(79, "virtualViewPrerenderRatio");
 
     flagValue = currentProvider_->virtualViewPrerenderRatio();
     virtualViewPrerenderRatio_ = flagValue;

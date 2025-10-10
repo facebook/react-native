@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3fee7079eaa30dca86e3cb366cdd261e>>
+ * @generated SignedSource<<132ff30c4a5ecf6b38dd0d6cc47d3abc>>
  */
 
 /**
@@ -473,6 +473,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useSharedAnimatedBackend(): Boolean = accessor.useSharedAnimatedBackend()
+
+  /**
+   * Use Trait::hidden on Android
+   */
+  @JvmStatic
+  public fun useTraitHiddenOnAndroid(): Boolean = accessor.useTraitHiddenOnAndroid()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

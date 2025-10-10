@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7ea729886da71d6d117442c83736fc5f>>
+ * @generated SignedSource<<38838d89c61124afce1f13045593aeb4>>
  */
 
 /**
@@ -94,6 +94,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useRawPropsJsiValueCache: Boolean? = null
   private var useShadowNodeStateOnCloneCache: Boolean? = null
   private var useSharedAnimatedBackendCache: Boolean? = null
+  private var useTraitHiddenOnAndroidCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
@@ -762,6 +763,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useSharedAnimatedBackend()
       useSharedAnimatedBackendCache = cached
+    }
+    return cached
+  }
+
+  override fun useTraitHiddenOnAndroid(): Boolean {
+    var cached = useTraitHiddenOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useTraitHiddenOnAndroid()
+      useTraitHiddenOnAndroidCache = cached
     }
     return cached
   }
