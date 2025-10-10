@@ -222,7 +222,7 @@ public class NetworkingModule(
     val requestId = requestIdAsDouble.toInt()
     val timeout = timeoutAsDouble.toInt()
     try {
-      sendRequestInternal(
+      sendRequestInternalReal(
           method,
           url,
           requestId,
@@ -245,8 +245,34 @@ public class NetworkingModule(
     }
   }
 
+  @Deprecated("""sendRequestInternal is internal and will be made private in a future release.""")
   /** @param timeout value of 0 results in no timeout */
   public fun sendRequestInternal(
+      method: String,
+      url: String?,
+      requestId: Int,
+      headers: ReadableArray?,
+      data: ReadableMap?,
+      responseType: String,
+      useIncrementalUpdates: Boolean,
+      timeout: Int,
+      withCredentials: Boolean,
+  ) {
+    sendRequestInternalReal(
+        method,
+        url,
+        requestId,
+        headers,
+        data,
+        responseType,
+        useIncrementalUpdates,
+        timeout,
+        withCredentials,
+    )
+  }
+
+  /** @param timeout value of 0 results in no timeout */
+  private fun sendRequestInternalReal(
       method: String,
       url: String?,
       requestId: Int,
