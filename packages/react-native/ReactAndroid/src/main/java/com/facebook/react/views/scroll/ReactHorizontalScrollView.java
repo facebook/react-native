@@ -1660,8 +1660,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (ReactNativeFeatureFlags.enableViewCulling()
         || ReactNativeFeatureFlags.useTraitHiddenOnAndroid()) {
       Point scrollPosition = scrollState.getLastStateUpdateScroll();
-      scrollTo(scrollPosition.x, scrollPosition.y);
+      restoreScrollTo(scrollPosition.x, scrollPosition.y);
     }
+  }
+
+  protected void restoreScrollTo(int x, int y) {
+    scrollTo(x, y);
   }
 
   @Override
