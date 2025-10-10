@@ -67,6 +67,7 @@ import com.facebook.react.uimanager.events.BlackHoleEventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import java.lang.ref.WeakReference
+import java.util.WeakHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -128,6 +129,9 @@ public class ReactHostImpl(
   private val id = counter.getAndIncrement()
   private var memoryPressureListener: MemoryPressureListener? = null
   private var defaultHardwareBackBtnHandler: DefaultHardwareBackBtnHandler? = null
+
+  // Discord added fix for https://app.asana.com/1/236888843494340/project/1199705967702853/task/1211580756398579?focus=true
+  private val activeActivities: MutableMap<Activity, Boolean> = WeakHashMap()
 
   private val reactInstanceEventListeners: MutableList<ReactInstanceEventListener> =
       CopyOnWriteArrayList()
@@ -232,6 +236,11 @@ public class ReactHostImpl(
     val method = "onHostResume(activity)"
     log(method)
 
+    if (activity != null) {
+      // It's possible that multiple activities are active at the same time
+      activeActivities[activity] = true
+    }
+
     currentActivity = activity
 
     maybeEnableDevSupport(true)
@@ -251,18 +260,29 @@ public class ReactHostImpl(
     val method = "onHostPause(activity)"
     log(method)
 
-    val currentActivity = this.currentActivity
-    if (currentActivity != null) {
-      val currentActivityClass = currentActivity.javaClass.simpleName
-      val activityClass = if (activity == null) "null" else activity.javaClass.simpleName
-      Assertions.assertCondition(
-          activity === currentActivity,
-          "Pausing an activity that is not the current activity, this is incorrect! Current activity: $currentActivityClass Paused activity: $activityClass")
+
+    if (activity != null) {
+      activeActivities.remove(activity)
+      if (activeActivities.size > 0) {
+        // There is still at least one activity active, so we don't want to pause RN yet.
+        return
+      }
     }
+
+    // Note: this code was here previously to our added "activeActivities" logic, but it seems wrong
+    // upstream they added a feature flag to disable this check
+    // val currentActivity = this.currentActivity
+    // if (currentActivity != null) {
+    //   val currentActivityClass = currentActivity.javaClass.simpleName
+    //   val activityClass = if (activity == null) "null" else activity.javaClass.simpleName
+    //   Assertions.assertCondition(
+    //       activity === currentActivity,
+    //       "Pausing an activity that is not the current activity, this is incorrect! Current activity: $currentActivityClass Paused activity: $activityClass")
+    // }
 
     maybeEnableDevSupport(false)
     defaultHardwareBackBtnHandler = null
-    reactLifecycleStateManager.moveToOnHostPause(currentReactContext, currentActivity)
+    reactLifecycleStateManager.moveToOnHostPause(currentReactContext, activity)
   }
 
   /** To be called when the host activity is paused. */
