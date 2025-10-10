@@ -570,6 +570,9 @@ public abstract class com/facebook/react/bridge/BaseJavaModule : com/facebook/re
 	protected fun setEventEmitterCallback (Lcom/facebook/react/bridge/CxxCallbackImpl;)V
 }
 
+public final class com/facebook/react/bridge/BridgeReactContext$Companion {
+}
+
 public abstract interface class com/facebook/react/bridge/BridgeReactContext$RCTDeviceEventEmitter : com/facebook/react/bridge/JavaScriptModule {
 	public abstract fun emit (Ljava/lang/String;Ljava/lang/Object;)V
 }
