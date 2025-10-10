@@ -46,6 +46,7 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.ShakeDetector
 import com.facebook.react.common.SurfaceDelegate
 import com.facebook.react.common.SurfaceDelegateFactory
+import com.facebook.react.views.common.UiModeUtils
 import com.facebook.react.devsupport.DebugOverlayController.Companion.requestPermission
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener
 import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
@@ -547,7 +548,11 @@ public abstract class DevSupportManagerBase(
                 isEnabled = isEnabled(position)
                 if (this is TextView) {
                   setTextColor(
-                      if (isEnabled) android.graphics.Color.WHITE else android.graphics.Color.GRAY
+                      if (isEnabled) {
+                        if (UiModeUtils.isDarkMode(context)) android.graphics.Color.WHITE else android.graphics.Color.BLACK
+                      } else {
+                        android.graphics.Color.GRAY
+                      }
                   )
                 }
               }
