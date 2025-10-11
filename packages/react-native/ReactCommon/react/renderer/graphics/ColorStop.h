@@ -10,6 +10,7 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/ValueUnit.h>
+#include <optional>
 
 namespace facebook::react {
 
@@ -19,12 +20,7 @@ struct ColorStop {
   ValueUnit position;
 
 #ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const {
-    folly::dynamic result = folly::dynamic::object();
-    result["color"] = *color;
-    result["position"] = position.toDynamic();
-    return result;
-  }
+  folly::dynamic toDynamic() const;
 #endif
 };
 

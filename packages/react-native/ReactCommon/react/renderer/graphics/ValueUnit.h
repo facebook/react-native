@@ -50,16 +50,7 @@ struct ValueUnit {
   }
 
 #ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const {
-    switch (unit) {
-      case UnitType::Undefined:
-        return nullptr;
-      case UnitType::Point:
-        return value;
-      case UnitType::Percent:
-        return std::format("{}%", value);
-    }
-  }
+  folly::dynamic toDynamic() const;
 #endif
 };
 } // namespace facebook::react
