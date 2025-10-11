@@ -345,6 +345,14 @@ export type ViewPropsAndroid = $ReadOnly<{
    * @platform android
    */
   onClick?: ?(event: GestureResponderEvent) => mixed,
+
+  /**
+   * Sets content sensitivity mode to determine whether this view displays sensitive content (e.g. username, password etc.).
+   * The system may improve user privacy i.e. hide content drawn by a sensitive view from screen sharing and recording.
+   *
+   * @platform android
+   */
+  contentSensitivity?: 'auto' | 'sensitive' | 'not-sensitive',
 }>;
 
 export type TVViewPropsIOS = $ReadOnly<{
