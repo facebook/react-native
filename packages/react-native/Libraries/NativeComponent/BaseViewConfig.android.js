@@ -179,6 +179,15 @@ const validAttributesForNonEventProps = {
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
   transformOrigin: true,
+  experimental_backgroundSize: {
+    process: require('../StyleSheet/processBackgroundSize').default,
+  },
+  experimental_backgroundPosition: {
+    process: require('../StyleSheet/processBackgroundPosition').default,
+  },
+  experimental_backgroundRepeat: {
+    process: require('../StyleSheet/processBackgroundRepeat').default,
+  },
   experimental_backgroundImage: {
     process: require('../StyleSheet/processBackgroundImage').default,
   },
