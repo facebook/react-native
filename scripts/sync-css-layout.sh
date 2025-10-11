@@ -12,7 +12,7 @@ function usage {
 function patchfile {
   # Add React Native copyright
   printf "/**\n"  > /tmp/yogasync.tmp
-  printf " * Copyright (c) 2014-present, Facebook, Inc.\n"  >> /tmp/yogasync.tmp
+  printf " * Copyright (c) 2014-present, Meta Platforms, Inc.\n"  >> /tmp/yogasync.tmp
   printf " *\n" >> /tmp/yogasync.tmp
   printf " * This source code is licensed under the MIT license found in the\n"  >> /tmp/yogasync.tmp
   printf " * LICENSE file in the root directory of this source tree.\n"  >> /tmp/yogasync.tmp
