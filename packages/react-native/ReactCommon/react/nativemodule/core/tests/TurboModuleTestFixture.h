@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/TestCallInvoker.h>
+#include <ReactCommon/TurboModule.h>
 #include <gtest/gtest.h>
 #include <hermes/hermes.h>
 #include <react/bridging/Bridging.h>
@@ -16,10 +17,25 @@
 #include <optional>
 
 namespace facebook::react {
-class TurboModule;
+
+class TurboModuleTestFixtureInternal {
+ public:
+  static bool containsEventEmitter(
+      TurboModule& turboModule,
+      const std::string& eventEmitterName) {
+    return turboModule.eventEmitterMap_.contains(eventEmitterName);
+  }
+
+  static const std::shared_ptr<IAsyncEventEmitter> getEventEmitter(
+      TurboModule& turboModule,
+      const std::string& eventEmitterName) {
+    return turboModule.eventEmitterMap_.at(eventEmitterName);
+  }
+};
 
 template <typename T, typename... Args>
-class TurboModuleTestFixture : public ::testing::Test {
+class TurboModuleTestFixture : public TurboModuleTestFixtureInternal,
+                               public ::testing::Test {
   static_assert(
       std::is_base_of<TurboModule, T>::value,
       "T must be derived from TurboModule");
@@ -52,6 +68,29 @@ class TurboModuleTestFixture : public ::testing::Test {
               });
               return jsi::Value::undefined();
             }));
+  }
+
+  template <typename... EventType, typename Listener>
+  EventSubscription addEventEmitterListener(
+      jsi::Runtime& rt,
+      const std::string& eventEmitterName,
+      Listener&& listener) {
+    EXPECT_TRUE(containsEventEmitter(*module_, eventEmitterName));
+    auto listenJs = bridging::toJs(
+        rt,
+        [listener = std::forward<Listener>(listener)](
+            const EventType&... event) { listener(event...); },
+        jsInvoker_);
+    std::shared_ptr<AsyncEventEmitter<EventType...>> eventEmitter =
+        std::static_pointer_cast<AsyncEventEmitter<EventType...>>(
+            getEventEmitter(*module_, eventEmitterName));
+    jsi::Object eventEmitterJs = bridging::toJs(rt, *eventEmitter, jsInvoker_);
+    auto eventSubscriptionJs =
+        jsi::Object(eventEmitterJs.asFunction(rt)
+                        .callWithThis(rt, eventEmitterJs, listenJs)
+                        .asObject(rt));
+    return bridging::fromJs<EventSubscription>(
+        rt, eventSubscriptionJs, jsInvoker_);
   }
 
   void TearDown() override {

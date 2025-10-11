@@ -28,14 +28,27 @@ class EventSubscription {
   EventSubscription(const EventSubscription&) = delete;
   EventSubscription& operator=(const EventSubscription&) = delete;
 
+  void remove() {
+    remove_();
+  }
+
  private:
   friend Bridging<EventSubscription>;
-
   std::function<void()> remove_;
 };
 
 template <>
 struct Bridging<EventSubscription> {
+  static EventSubscription fromJs(
+      jsi::Runtime& rt,
+      const jsi::Object& value,
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
+    auto listener = bridging::fromJs<AsyncCallback<>>(
+        rt, value.getProperty(rt, "remove"), jsInvoker);
+    return EventSubscription(
+        [listener = std::move(listener)]() mutable { listener(); });
+  }
+
   static jsi::Object toJs(
       jsi::Runtime& rt,
       const EventSubscription& eventSubscription,
