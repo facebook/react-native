@@ -535,7 +535,8 @@ inline std::optional<Float> toRadians(const RawValue& value) {
 
   auto angle = parseCSSProperty<CSSAngle>((std::string)value);
   if (std::holds_alternative<CSSAngle>(angle)) {
-    return std::get<CSSAngle>(angle).degrees * M_PI / 180.0f;
+    return static_cast<float>(
+        std::get<CSSAngle>(angle).degrees * M_PI / 180.0f);
   }
 
   return {};
