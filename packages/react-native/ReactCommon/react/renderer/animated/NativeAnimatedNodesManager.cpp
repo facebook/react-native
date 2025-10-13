@@ -74,11 +74,13 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     DirectManipulationCallback&& directManipulationCallback,
     FabricCommitCallback&& fabricCommitCallback,
     StartOnRenderCallback&& startOnRenderCallback,
-    StopOnRenderCallback&& stopOnRenderCallback) noexcept
+    StopOnRenderCallback&& stopOnRenderCallback,
+    FrameRateListenerCallback&& frameRateListenerCallback) noexcept
     : directManipulationCallback_(std::move(directManipulationCallback)),
       fabricCommitCallback_(std::move(fabricCommitCallback)),
       startOnRenderCallback_(std::move(startOnRenderCallback)),
-      stopOnRenderCallback_(std::move(stopOnRenderCallback)) {
+      stopOnRenderCallback_(std::move(stopOnRenderCallback)),
+      frameRateListenerCallback_(std::move(frameRateListenerCallback)) {
   if (!fabricCommitCallback_) {
     LOG(WARNING)
         << "C++ Animated was setup without commit callback. This may lead to issue where buttons are not tappable when animation is driven by onScroll event.";
@@ -527,6 +529,7 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
 
     return;
   }
+
   // This method can be called from either the UI thread or JavaScript thread.
   // It ensures `startOnRenderCallback_` is called exactly once using atomic
   // operations. We use std::atomic_bool rather than std::mutex to avoid
@@ -550,6 +553,11 @@ void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
     }
     return;
   }
+#if defined(WITH_PERFETTO) && WITH_PERFETTO == 1
+  if (frameRateListenerCallback_) {
+    frameRateListenerCallback_(false);
+  }
+#endif
   // When multiple threads reach this point, only one thread should call
   // stopOnRenderCallback_. This synchronization is primarily needed during
   // destruction of NativeAnimatedNodesManager. In normal operation,
@@ -1018,6 +1026,13 @@ void NativeAnimatedNodesManager::onRender() {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
     return;
   }
+
+#if defined(WITH_PERFETTO) && WITH_PERFETTO == 1
+  if (frameRateListenerCallback_) {
+    frameRateListenerCallback_(true);
+  }
+#endif
+
   TraceSection s(
       "NativeAnimatedNodesManager::onRender",
       "numActiveAnimations",
