@@ -8,6 +8,10 @@
  * @format
  */
 
+const {symlinkThirdPartyDependenciesHeaders} = require('./headers-utils');
+const {
+  symlinkReactNativeHeaders,
+} = require('./prepare-app-dependencies-headers');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -206,10 +210,37 @@ async function setBuildFromSource(
   }
 }
 
+/**
+ * Create hard links for React Native headers in React/includes
+ */
+async function createHardlinks(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
+  try {
+    console.log('Creating hard links for React Native headers...');
+    const reactIncludesPath = path.join(reactNativePath, 'React');
+    symlinkReactNativeHeaders(reactNativePath, reactIncludesPath, 'includes');
+    console.log('✓ React Native hard links created in React/includes');
+
+    console.log('Creating hard links for third-party dependencies...');
+    symlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      reactIncludesPath,
+      'includes',
+    );
+    console.log(
+      '✓ Third-party dependencies hard links created in React/includes',
+    );
+  } catch (error) {
+    throw new Error(`Hard link creation failed: ${error.message}`);
+  }
+}
+
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
   runIosPrebuild,
   configureAppForSwift,
   setBuildFromSource,
+  createHardlinks,
 };
