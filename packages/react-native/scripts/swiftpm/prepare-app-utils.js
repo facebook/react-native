@@ -8,6 +8,7 @@
  * @format
  */
 
+const codegenExecutor = require('../codegen/generate-artifacts-executor');
 const {symlinkThirdPartyDependenciesHeaders} = require('./headers-utils');
 const {
   symlinkReactNativeHeaders,
@@ -236,6 +237,26 @@ async function createHardlinks(
   }
 }
 
+/**
+ * Generate codegen artifacts using the executor
+ */
+async function generateCodegenArtifacts(
+  reactNativePath /*: string */,
+  appPath /*: string */,
+  appIosPath /*: string */,
+) /*: Promise<void> */ {
+  try {
+    console.log('Generating codegen artifacts...');
+
+    // Use the codegen executor directly
+    codegenExecutor.execute(appPath, 'ios', appIosPath, 'app');
+
+    console.log('✓ Codegen artifacts generated');
+  } catch (error) {
+    throw new Error(`Codegen generation failed: ${error.message}`);
+  }
+}
+
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
@@ -243,4 +264,5 @@ module.exports = {
   configureAppForSwift,
   setBuildFromSource,
   createHardlinks,
+  generateCodegenArtifacts,
 };
