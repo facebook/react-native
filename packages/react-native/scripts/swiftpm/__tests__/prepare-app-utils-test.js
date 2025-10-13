@@ -12,6 +12,7 @@
 
 const {
   configureAppForSwift,
+  createHardlinks,
   findXcodeProjectDirectory,
   runIosPrebuild,
   runPodDeintegrate,
@@ -24,6 +25,12 @@ jest.mock('child_process');
 // Mock fs module
 jest.mock('fs');
 
+// Mock headers-utils module
+jest.mock('../headers-utils');
+
+// Mock prepare-app-dependencies-headers module
+jest.mock('../prepare-app-dependencies-headers');
+
 // Mock path module for absolute paths
 jest.mock('path', () => {
   const actualPath = jest.requireActual('path');
@@ -32,6 +39,204 @@ jest.mock('path', () => {
     join: jest.fn((...args) => args.join('/')),
     relative: jest.fn((from, to) => to.replace(from + '/', '')),
   };
+});
+
+describe('createHardlinks', () => {
+  let mockSymlinkReactNativeHeaders;
+  let mockSymlinkThirdPartyDependenciesHeaders;
+  let mockPath;
+  let mockConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    const headersUtils = require('../headers-utils');
+    const prepareAppDependenciesHeaders = require('../prepare-app-dependencies-headers');
+
+    mockSymlinkReactNativeHeaders =
+      prepareAppDependenciesHeaders.symlinkReactNativeHeaders;
+    mockSymlinkThirdPartyDependenciesHeaders =
+      headersUtils.symlinkThirdPartyDependenciesHeaders;
+
+    mockPath = require('path');
+    mockConsoleLog = console.log;
+
+    // Clear and reset all mocks completely
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+
+    // Set up fresh mock implementations
+    mockSymlinkReactNativeHeaders.mockImplementation(() => {});
+    mockSymlinkThirdPartyDependenciesHeaders.mockImplementation(() => {});
+
+    // Mock path.join to return realistic paths
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+  });
+
+  it('should create hard links successfully', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    mockSymlinkReactNativeHeaders.mockImplementation(() => {});
+    mockSymlinkThirdPartyDependenciesHeaders.mockImplementation(() => {});
+
+    // Execute
+    await createHardlinks(reactNativePath);
+
+    // Assert
+    const expectedReactIncludesPath = '/path/to/react-native/React';
+
+    expect(mockSymlinkReactNativeHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      expectedReactIncludesPath,
+      'includes',
+    );
+    expect(mockSymlinkThirdPartyDependenciesHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      expectedReactIncludesPath,
+      'includes',
+    );
+
+    expect(mockSymlinkReactNativeHeaders).toHaveBeenCalledTimes(1);
+    expect(mockSymlinkThirdPartyDependenciesHeaders).toHaveBeenCalledTimes(1);
+
+    // Verify console output
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Creating hard links for React Native headers...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ React Native hard links created in React/includes',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Creating hard links for third-party dependencies...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ Third-party dependencies hard links created in React/includes',
+    );
+  });
+
+  it('should throw error when symlinkReactNativeHeaders fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const originalError = new Error('React Native headers linking failed');
+
+    mockSymlinkReactNativeHeaders.mockImplementation(() => {
+      throw originalError;
+    });
+
+    // Execute & Assert
+    await expect(createHardlinks(reactNativePath)).rejects.toThrow(
+      'Hard link creation failed: React Native headers linking failed',
+    );
+
+    const expectedReactIncludesPath = '/path/to/react-native/React';
+
+    expect(mockSymlinkReactNativeHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      expectedReactIncludesPath,
+      'includes',
+    );
+    expect(mockSymlinkThirdPartyDependenciesHeaders).not.toHaveBeenCalled();
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Creating hard links for React Native headers...',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      '✓ React Native hard links created in React/includes',
+    );
+  });
+
+  it('should throw error when symlinkThirdPartyDependenciesHeaders fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const originalError = new Error('Third-party dependencies linking failed');
+
+    mockSymlinkReactNativeHeaders.mockImplementation(() => {});
+    mockSymlinkThirdPartyDependenciesHeaders.mockImplementation(() => {
+      throw originalError;
+    });
+
+    // Execute & Assert
+    await expect(createHardlinks(reactNativePath)).rejects.toThrow(
+      'Hard link creation failed: Third-party dependencies linking failed',
+    );
+
+    const expectedReactIncludesPath = '/path/to/react-native/React';
+
+    expect(mockSymlinkReactNativeHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      expectedReactIncludesPath,
+      'includes',
+    );
+    expect(mockSymlinkThirdPartyDependenciesHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      expectedReactIncludesPath,
+      'includes',
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Creating hard links for React Native headers...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ React Native hard links created in React/includes',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Creating hard links for third-party dependencies...',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      '✓ Third-party dependencies hard links created in React/includes',
+    );
+  });
+
+  it('should handle different React Native paths correctly', async () => {
+    // Setup
+    const reactNativePath = '/Users/developer/custom-react-native-path';
+
+    mockSymlinkReactNativeHeaders.mockImplementation(() => {});
+    mockSymlinkThirdPartyDependenciesHeaders.mockImplementation(() => {});
+
+    // Execute
+    await createHardlinks(reactNativePath);
+
+    // Assert
+    const expectedReactIncludesPath =
+      '/Users/developer/custom-react-native-path/React';
+
+    expect(mockSymlinkReactNativeHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      expectedReactIncludesPath,
+      'includes',
+    );
+    expect(mockSymlinkThirdPartyDependenciesHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      expectedReactIncludesPath,
+      'includes',
+    );
+  });
+
+  it('should handle paths with spaces correctly', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react native project';
+
+    mockSymlinkReactNativeHeaders.mockImplementation(() => {});
+    mockSymlinkThirdPartyDependenciesHeaders.mockImplementation(() => {});
+
+    // Execute
+    await createHardlinks(reactNativePath);
+
+    // Assert
+    const expectedReactIncludesPath = '/path/to/react native project/React';
+
+    expect(mockSymlinkReactNativeHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      expectedReactIncludesPath,
+      'includes',
+    );
+    expect(mockSymlinkThirdPartyDependenciesHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      expectedReactIncludesPath,
+      'includes',
+    );
+  });
 });
 
 // Mock console methods - disable React Native's strict console checking
