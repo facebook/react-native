@@ -21,6 +21,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
@@ -247,7 +248,7 @@ public class ReactActivityDelegate {
 
   public void onRequestPermissionsResult(
       final int requestCode, final String[] permissions, final int[] grantResults) {
-    mPermissionsCallback =
+    Callback permissionsCallback =
         args -> {
           if (mPermissionListener != null
               && mPermissionListener.onRequestPermissionsResult(
@@ -255,6 +256,29 @@ public class ReactActivityDelegate {
             mPermissionListener = null;
           }
         };
+
+    LifecycleState lifecycle;
+    if (isFabricEnabled()) {
+      ReactHost reactHost = getReactHost();
+      lifecycle = reactHost != null ? reactHost.getLifecycleState() : LifecycleState.BEFORE_CREATE;
+    } else {
+      ReactNativeHost reactNativeHost = getReactNativeHost();
+      if (!reactNativeHost.hasInstance()) {
+        lifecycle = LifecycleState.BEFORE_CREATE;
+      } else {
+        lifecycle = reactNativeHost.getReactInstanceManager().getLifecycleState();
+      }
+    }
+
+    // If the permission request didn't show a dialog to the user, we can call the callback
+    // immediately.
+    // Otherwise, we need to wait until onResume to call it.
+    if (lifecycle == LifecycleState.RESUMED) {
+      permissionsCallback.invoke();
+      return;
+    }
+
+    mPermissionsCallback = permissionsCallback;
   }
 
   protected Context getContext() {
