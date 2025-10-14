@@ -1475,7 +1475,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
-    _eventEmitter->onAccessibilityAction(RCTStringFromNSString(action.name));
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+
+    emitter->experimental_flushSync([&emitter, &action]() {
+      emitter->onAccessibilityAction(RCTStringFromNSString(action.name));
+    });
     return YES;
   } else {
     return NO;
