@@ -546,8 +546,16 @@ public abstract class DevSupportManagerBase(
               super.getView(position, convertView, parent).apply {
                 isEnabled = isEnabled(position)
                 if (this is TextView) {
+                  val isDarkMode = context.resources.configuration.uiMode and
+                      android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
+                      android.content.res.Configuration.UI_MODE_NIGHT_YES
                   setTextColor(
-                      if (isEnabled) android.graphics.Color.WHITE else android.graphics.Color.GRAY
+                    if (isEnabled) {
+                      if (isDarkMode) android.graphics.Color.WHITE
+                      else android.graphics.Color.BLACK
+                    } else {
+                      android.graphics.Color.GRAY
+                    }
                   )
                 }
               }
