@@ -11,7 +11,6 @@
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <optional>
-#include <string>
 #include <variant>
 #include <vector>
 
@@ -22,19 +21,6 @@
 namespace facebook::react {
 
 enum class RadialGradientShape { Circle, Ellipse };
-
-#ifdef RN_SERIALIZABLE_STATE
-inline std::string toString(const RadialGradientShape& radialGradientShape) {
-  switch (radialGradientShape) {
-    case RadialGradientShape::Circle:
-      return "circle";
-    case RadialGradientShape::Ellipse:
-      return "ellipse";
-  }
-
-  return "";
-}
-#endif
 
 struct RadialGradientSize {
   enum class SizeKeyword {
@@ -56,12 +42,7 @@ struct RadialGradientSize {
     }
 
 #ifdef RN_SERIALIZABLE_STATE
-    folly::dynamic toDynamic() const {
-      folly::dynamic result = folly::dynamic::object();
-      result["x"] = x.toDynamic();
-      result["y"] = y.toDynamic();
-      return result;
-    }
+    folly::dynamic toDynamic() const;
 #endif
   };
 
@@ -84,24 +65,7 @@ struct RadialGradientSize {
   }
 
 #ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const {
-    if (std::holds_alternative<SizeKeyword>(value)) {
-      switch (std::get<SizeKeyword>(value)) {
-        case SizeKeyword::ClosestSide:
-          return "closest-side";
-        case SizeKeyword::FarthestSide:
-          return "farthest-side";
-        case SizeKeyword::ClosestCorner:
-          return "closest-corner";
-        case SizeKeyword::FarthestCorner:
-          return "farthest-corner";
-      }
-    } else if (std::holds_alternative<Dimensions>(value)) {
-      return std::get<Dimensions>(value).toDynamic();
-    }
-
-    return nullptr;
-  }
+  folly::dynamic toDynamic() const;
 #endif
 };
 
@@ -121,22 +85,7 @@ struct RadialGradientPosition {
   }
 
 #ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const {
-    folly::dynamic result = folly::dynamic::object();
-    if (top.has_value()) {
-      result["top"] = top.value().toDynamic();
-    }
-    if (left.has_value()) {
-      result["left"] = left.value().toDynamic();
-    }
-    if (right.has_value()) {
-      result["right"] = right.value().toDynamic();
-    }
-    if (bottom.has_value()) {
-      result["bottom"] = bottom.value().toDynamic();
-    }
-    return result;
-  }
+  folly::dynamic toDynamic() const;
 #endif
 };
 
@@ -155,21 +104,7 @@ struct RadialGradient {
   }
 
 #ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const {
-    folly::dynamic result = folly::dynamic::object();
-    result["type"] = "radial-gradient";
-    result["shape"] = toString(shape);
-    result["size"] = size.toDynamic();
-    result["position"] = position.toDynamic();
-
-    folly::dynamic colorStopsArray = folly::dynamic::array();
-    for (const auto& colorStop : colorStops) {
-      colorStopsArray.push_back(colorStop.toDynamic());
-    }
-    result["colorStops"] = colorStopsArray;
-
-    return result;
-  }
+  folly::dynamic toDynamic() const;
 #endif
 };
 
