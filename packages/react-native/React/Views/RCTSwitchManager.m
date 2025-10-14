@@ -8,9 +8,28 @@
 #import "RCTSwitchManager.h"
 
 #import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
 #import "RCTBridge.h"
+#import "RCTShadowView.h"
 #import "RCTSwitch.h"
 #import "UIView+React.h"
+
+@interface RCTSwitchShadowView : RCTShadowView
+
+@end
+
+@implementation RCTSwitchShadowView
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    self.intrinsicContentSize = RCTSwitchSize();
+  }
+
+  return self;
+}
+
+@end
 
 @implementation RCTSwitchManager
 
@@ -31,6 +50,11 @@ RCT_EXPORT_MODULE()
     }
     sender.wasOn = sender.on;
   }
+}
+
+- (RCTShadowView *)shadowView
+{
+  return [RCTSwitchShadowView new];
 }
 
 RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)

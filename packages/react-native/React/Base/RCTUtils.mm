@@ -432,7 +432,11 @@ CGSize RCTSwitchSize(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTUnsafeExecuteOnMainQueueSync(^{
-      rctSwitchSize = [UISwitch new].intrinsicContentSize;
+      CGSize switchSize = [UISwitch new].intrinsicContentSize;
+      // Apple does not take into account the thumb border when returning the
+      // width of the UISwitch component, so we are adding 2 pixels for the border
+      // which is not customizable and it is the same for legacy and liquid glass.
+      rctSwitchSize = CGSizeMake(switchSize.width + 2, switchSize.height);
     });
   });
   return rctSwitchSize;
