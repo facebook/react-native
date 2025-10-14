@@ -13,23 +13,29 @@
 
 #import "RCTNetworkPlugins.h"
 
-#import <string>
-#import <unordered_map>
+#import <string_view>
 
-Class RCTNetworkClassProvider(const char *name) {
-  // Intentionally leak to avoid crashing after static destructors are run.
-  static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
-    {"DataRequestHandler", RCTDataRequestHandlerCls},
-    {"FileRequestHandler", RCTFileRequestHandlerCls},
-    {"HTTPRequestHandler", RCTHTTPRequestHandlerCls},
-    {"Networking", RCTNetworkingCls},
-  };
+using namespace std::literals;
 
-  auto p = sCoreModuleClassMap->find(name);
-  if (p != sCoreModuleClassMap->end()) {
-    auto classFunc = p->second;
-    return classFunc();
+Class RCTNetworkClassProvider(const char *name)
+{
+
+  if (name == "DataRequestHandler"sv) {
+    return RCTDataRequestHandlerCls();
   }
+
+  if (name == "FileRequestHandler"sv) {
+    return RCTFileRequestHandlerCls();
+  }
+
+  if (name == "HTTPRequestHandler"sv) {
+    return RCTHTTPRequestHandlerCls();
+  }
+
+  if (name == "Networking"sv) {
+    return RCTNetworkingCls();
+  }
+
   return nil;
 }
 
