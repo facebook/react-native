@@ -38,11 +38,11 @@ class CallInvoker {
 
   // Backward compatibility only, prefer the CallFunc methods instead
   virtual void invokeAsync(std::function<void()>&& func) noexcept {
-    invokeAsync([func](jsi::Runtime&) { func(); });
+    invokeAsync([func = std::move(func)](jsi::Runtime&) { func(); });
   }
 
   virtual void invokeSync(std::function<void()>&& func) {
-    invokeSync([func](jsi::Runtime&) { func(); });
+    invokeSync([func = std::move(func)](jsi::Runtime&) { func(); });
   }
 
   virtual ~CallInvoker() = default;
