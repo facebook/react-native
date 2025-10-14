@@ -379,7 +379,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
       std::make_shared<AsyncEventEmitter<folly::dynamic>>();
   eventEmitterMap_["onSubmit"] =
       std::make_shared<AsyncEventEmitter<folly::dynamic>>();
-//  configureEventEmitterCallback();
+  configureEventEmitterCallback();
 }
 
 std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
