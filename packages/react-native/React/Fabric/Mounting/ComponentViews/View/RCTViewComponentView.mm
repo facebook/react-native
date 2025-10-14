@@ -1421,7 +1421,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)accessibilityActivate
 {
   if (_eventEmitter && _props->onAccessibilityTap) {
-    _eventEmitter->onAccessibilityTap();
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityTap();
+    });
     return YES;
   } else {
     return NO;
@@ -1431,7 +1435,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)accessibilityPerformMagicTap
 {
   if (_eventEmitter && _props->onAccessibilityMagicTap) {
-    _eventEmitter->onAccessibilityMagicTap();
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityMagicTap();
+    });
     return YES;
   } else {
     return NO;
@@ -1441,7 +1449,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)accessibilityPerformEscape
 {
   if (_eventEmitter && _props->onAccessibilityEscape) {
-    _eventEmitter->onAccessibilityEscape();
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityEscape();
+    });
     return YES;
   } else {
     return NO;
