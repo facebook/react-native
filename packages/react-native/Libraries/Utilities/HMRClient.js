@@ -233,6 +233,15 @@ Error: ${e.message}`;
       pendingUpdatesCount--;
       if (pendingUpdatesCount === 0) {
         DevLoadingView.hide();
+        performance.mark('Fast Refresh - Update done', {
+          detail: {
+            devtools: {
+              dataType: 'marker',
+              color: 'primary',
+              tooltipText: 'Fast Refresh \u269b',
+            },
+          },
+        });
       }
     });
 
