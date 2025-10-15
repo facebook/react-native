@@ -38,23 +38,32 @@
 {
   if (facebook::react::ReactNativeFeatureFlags::cxxNativeAnimatedEnabled()) {
     if (name == facebook::react::AnimatedModule::kModuleName) {
+      __weak RCTAnimatedModuleProvider *weakSelf = self;
       auto provider = std::make_shared<facebook::react::NativeAnimatedNodesManagerProvider>(
-          [self](std::function<void()> &&onRender) {
-            _onRender = onRender;
-            if (_displayLink == nil) {
+          [weakSelf](std::function<void()> &&onRender) {
+            RCTAnimatedModuleProvider *strongSelf = weakSelf;
+            if (strongSelf) {
+              strongSelf->_onRender = onRender;
+              if (strongSelf->_displayLink == nil) {
 #if TARGET_OS_OSX
-              _displayLink = [RCTPlatformDisplayLink displayLinkWithTarget:self selector:@selector(_onDisplayLinkTick)];
+                strongSelf->_displayLink = [RCTPlatformDisplayLink displayLinkWithTarget:strongSelf
+                                                                                selector:@selector(_onDisplayLinkTick)];
 #else
-              _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_onDisplayLinkTick)];
+                strongSelf->_displayLink = [CADisplayLink displayLinkWithTarget:strongSelf
+                                                                       selector:@selector(_onDisplayLinkTick)];
 #endif
-              [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+                [strongSelf->_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+              }
             }
           },
-          [self]() {
-            if (_displayLink != nil) {
-              [_displayLink invalidate];
-              _displayLink = nil;
-              _onRender = nullptr;
+          [weakSelf]() {
+            RCTAnimatedModuleProvider *strongSelf = weakSelf;
+            if (strongSelf) {
+              if (strongSelf->_displayLink != nil) {
+                [strongSelf->_displayLink invalidate];
+                strongSelf->_displayLink = nil;
+                strongSelf->_onRender = nullptr;
+              }
             }
           });
       return std::make_shared<facebook::react::AnimatedModule>(std::move(jsInvoker), std::move(provider));
