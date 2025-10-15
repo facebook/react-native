@@ -37,7 +37,7 @@ struct CSSLinearGradientDirection {
   // angle or keyword like "to bottom"
   std::variant<CSSAngle, CSSLinearGradientDirectionKeyword> value;
   
-  constexpr bool operator==(const CSSLinearGradientDirection& rhs) const = default;
+  bool operator==(const CSSLinearGradientDirection& rhs) const = default;
 };
 
 
@@ -54,12 +54,12 @@ struct CSSDataTypeParser<CSSLinearGradientDirection> {
     if (std::holds_alternative<CSSAngle>(angle)) {
       return CSSLinearGradientDirection{std::get<CSSAngle>(angle)};
     }
-    auto toResult = parser.consumeComponentValue<std::optional<std::string>>(
-        [](const CSSPreservedToken& token) -> std::optional<std::string> {
+    auto toResult = parser.consumeComponentValue<bool>(
+        [](const CSSPreservedToken& token) -> bool {
           if (token.type() == CSSTokenType::Ident && fnv1aLowercase(token.stringValue()) == fnv1a("to")) {
-            return std::string("to");
+            return true;
           }
-          return {};
+          return false;
         }
     );
     
@@ -290,7 +290,7 @@ struct CSSLinearGradientFunction {
   std::optional<CSSLinearGradientDirection> direction{};
   std::vector<std::variant<CSSColorStop, CSSColorHint>> items{}; // Color stops and color hints
   
-  constexpr bool operator==(const CSSLinearGradientFunction& rhs) const = default;
+  bool operator==(const CSSLinearGradientFunction& rhs) const = default;
 };
 
 enum class CSSRadialGradientShape {
@@ -349,7 +349,7 @@ struct CSSRadialGradientExplicitSize {
   std::variant<CSSLength, CSSPercentage> sizeX{};
   std::variant<CSSLength, CSSPercentage> sizeY{};
   
-  constexpr bool operator==(const CSSRadialGradientExplicitSize& rhs) const = default;
+  bool operator==(const CSSRadialGradientExplicitSize& rhs) const = default;
 };
 
 template <>
@@ -409,7 +409,7 @@ struct CSSRadialGradientFunction {
   std::optional<CSSRadialGradientPosition> position{};
   std::vector<std::variant<CSSColorStop, CSSColorHint>> items{}; // Color stops and color hints
 
-  constexpr bool operator==(const CSSRadialGradientFunction& rhs) const = default;
+  bool operator==(const CSSRadialGradientFunction& rhs) const = default;
 };
 
 template <>
@@ -499,12 +499,12 @@ struct CSSDataTypeParser<CSSRadialGradientFunction> {
       return {};
     }
     
-    auto atResult = parser.consumeComponentValue<std::optional<std::string>>(
-        [](const CSSPreservedToken& token) -> std::optional<std::string> {
+    auto atResult = parser.consumeComponentValue<bool>(
+        [](const CSSPreservedToken& token) -> bool {
           if (token.type() == CSSTokenType::Ident && fnv1aLowercase(token.stringValue()) == fnv1a("at")) {
-            return std::string("at");
+            return true;
           }
-          return {};
+          return false;
         }
     );
     
