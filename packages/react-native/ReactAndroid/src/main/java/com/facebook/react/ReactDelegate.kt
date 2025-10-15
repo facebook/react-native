@@ -393,7 +393,11 @@ public open class ReactDelegate {
   public fun shouldShowDevMenuOrReload(keyCode: Int, event: KeyEvent?): Boolean {
     val devSupportManager = devSupportManager
     // shouldShowDevMenuOrReload is a Dev API and not supported in RELEASE mode.
-    if (devSupportManager == null || devSupportManager is ReleaseDevSupportManager) {
+    if (
+        devSupportManager == null ||
+            !devSupportManager.keyboardShortcutsEnabled ||
+            devSupportManager is ReleaseDevSupportManager
+    ) {
       return false
     }
 

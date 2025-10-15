@@ -239,6 +239,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public abstract fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
+	public fun setDevMenuConfiguration (Lcom/facebook/react/devsupport/DevMenuConfiguration;)V
 	public abstract fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
 
@@ -1895,6 +1896,15 @@ public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementa
 	public final fun setDevLoadingEnabled (Z)V
 }
 
+public final class com/facebook/react/devsupport/DevMenuConfiguration {
+	public fun <init> ()V
+	public fun <init> (ZZZ)V
+	public synthetic fun <init> (ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDevMenuEnabled ()Z
+	public final fun getKeyboardShortcutsEnabled ()Z
+	public final fun getShakeGestureEnabled ()Z
+}
+
 public class com/facebook/react/devsupport/DevServerHelper {
 	public fun <init> (Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;Landroid/content/Context;Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;)V
 	public final fun closeInspectorConnection ()V
@@ -1936,17 +1946,20 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun getCurrentActivity ()Landroid/app/Activity;
 	public final fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	public final fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
+	public fun getDevMenuEnabled ()Z
 	public final fun getDevServerHelper ()Lcom/facebook/react/devsupport/DevServerHelper;
 	public final fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public final fun getDevSupportEnabled ()Z
 	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
 	public final fun getJSAppBundleName ()Ljava/lang/String;
+	public fun getKeyboardShortcutsEnabled ()Z
 	public final fun getLastErrorCookie ()I
 	public final fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public final fun getLastErrorTitle ()Ljava/lang/String;
 	public final fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public final fun getReactInstanceDevHelper ()Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
 	public fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
+	public final fun getShakeGestureEnabled ()Z
 	public fun getSourceMapUrl ()Ljava/lang/String;
 	public fun getSourceUrl ()Ljava/lang/String;
 	protected abstract fun getUniqueTag ()Ljava/lang/String;
@@ -1965,14 +1978,17 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun reloadSettings ()V
 	public fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun setDevLoadingViewManager (Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)V
+	public fun setDevMenuEnabled (Z)V
 	public final fun setDevSupportEnabled (Z)V
 	public fun setFpsDebugEnabled (Z)V
 	public fun setHotModuleReplacementEnabled (Z)V
+	public fun setKeyboardShortcutsEnabled (Z)V
 	public final fun setLastErrorCookie (I)V
 	public final fun setLastErrorStack ([Lcom/facebook/react/devsupport/interfaces/StackFrame;)V
 	public final fun setLastErrorTitle (Ljava/lang/String;)V
 	public final fun setLastErrorType (Lcom/facebook/react/devsupport/interfaces/ErrorType;)V
 	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
+	public final fun setShakeGestureEnabled (Z)V
 	protected final fun showDevLoadingViewForRemoteJSEnabled ()V
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
@@ -2029,14 +2045,17 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
 	public fun getCurrentActivity ()Landroid/app/Activity;
 	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public fun getDevMenuEnabled ()Z
 	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public fun getDevSupportEnabled ()Z
 	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
+	public fun getKeyboardShortcutsEnabled ()Z
 	public fun getLastErrorCookie ()I
 	public fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public fun getLastErrorTitle ()Ljava/lang/String;
 	public fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
+	public fun getShakeGestureEnabled ()Z
 	public fun getSourceMapUrl ()Ljava/lang/String;
 	public fun getSourceUrl ()Ljava/lang/String;
 	public fun handleException (Ljava/lang/Exception;)V
@@ -2053,10 +2072,13 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
 	public fun reloadSettings ()V
 	public fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
+	public fun setDevMenuEnabled (Z)V
 	public fun setDevSupportEnabled (Z)V
 	public fun setFpsDebugEnabled (Z)V
 	public fun setHotModuleReplacementEnabled (Z)V
+	public fun setKeyboardShortcutsEnabled (Z)V
 	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
+	public fun setShakeGestureEnabled (Z)V
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -2131,14 +2153,17 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
 	public abstract fun getCurrentActivity ()Landroid/app/Activity;
 	public abstract fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public fun getDevMenuEnabled ()Z
 	public abstract fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public abstract fun getDevSupportEnabled ()Z
 	public abstract fun getDownloadedJSBundleFile ()Ljava/lang/String;
+	public fun getKeyboardShortcutsEnabled ()Z
 	public abstract fun getLastErrorCookie ()I
 	public abstract fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public abstract fun getLastErrorTitle ()Ljava/lang/String;
 	public abstract fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public abstract fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
+	public fun getShakeGestureEnabled ()Z
 	public abstract fun getSourceMapUrl ()Ljava/lang/String;
 	public abstract fun getSourceUrl ()Ljava/lang/String;
 	public abstract fun handleReloadJS ()V
@@ -2155,10 +2180,13 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
 	public abstract fun reloadSettings ()V
 	public abstract fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
+	public fun setDevMenuEnabled (Z)V
 	public abstract fun setDevSupportEnabled (Z)V
 	public abstract fun setFpsDebugEnabled (Z)V
 	public abstract fun setHotModuleReplacementEnabled (Z)V
+	public fun setKeyboardShortcutsEnabled (Z)V
 	public abstract fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
+	public fun setShakeGestureEnabled (Z)V
 	public abstract fun showDevOptionsDialog ()V
 	public abstract fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public abstract fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -3071,6 +3099,7 @@ public final class com/facebook/react/runtime/ReactHostImpl : com/facebook/react
 	public fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
+	public fun setDevMenuConfiguration (Lcom/facebook/react/devsupport/DevMenuConfiguration;)V
 	public fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
 
