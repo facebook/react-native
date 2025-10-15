@@ -18,7 +18,7 @@ import kotlin.math.floor
  * LineHeightSpan.Standard which only effects space between the baselines of adjacent line boxes
  * (does not impact space before the first line or after the last).
  */
-internal class CustomLineHeightSpan(height: Float) : LineHeightSpan, ReactSpan {
+public class CustomLineHeightSpan(height: Float) : LineHeightSpan, ReactSpan {
   val lineHeight: Int = ceil(height.toDouble()).toInt()
 
   override fun chooseHeight(
