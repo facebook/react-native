@@ -66,16 +66,13 @@ class [[deprecated(
       jni::alias_ref<
           jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
           javaModules,
-      jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-          cxxModules,
       jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject>
           inspectorTarget);
 
   void extendNativeModules(
-      jni::alias_ref<jni::JCollection<
-          JavaModuleWrapper::javaobject>::javaobject> javaModules,
-      jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-          cxxModules);
+      jni::alias_ref<
+          jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
+          javaModules);
 
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.
