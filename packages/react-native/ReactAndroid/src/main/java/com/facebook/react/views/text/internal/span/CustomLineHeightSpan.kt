@@ -18,17 +18,17 @@ import kotlin.math.floor
  * LineHeightSpan.Standard which only effects space between the baselines of adjacent line boxes
  * (does not impact space before the first line or after the last).
  */
-public class CustomLineHeightSpan(height: Float) : LineHeightSpan, ReactSpan {
-  val lineHeight: Int = ceil(height.toDouble()).toInt()
+public class CustomLineHeightSpan public constructor(height: Float) : LineHeightSpan, ReactSpan {
+  public val lineHeight: Int = ceil(height.toDouble()).toInt()
 
-  override fun chooseHeight(
+  public override fun chooseHeight(
       text: CharSequence,
       start: Int,
       end: Int,
       spanstartv: Int,
       v: Int,
       fm: FontMetricsInt,
-  ) {
+  ): Unit {
     // https://www.w3.org/TR/css-inline-3/#inline-height
     // When its computed line-height is not normal, its layout bounds are derived solely from
     // metrics of its first available font (ignoring glyphs from other fonts), and leading is used
