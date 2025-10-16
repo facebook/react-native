@@ -38,7 +38,16 @@ HostPlatformScrollViewProps::HostPlatformScrollViewProps(
                     rawProps,
                     "nestedScrollEnabled",
                     sourceProps.nestedScrollEnabled,
-                    true))
+                    true)),
+      fadingEdgeLength(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.fadingEdgeLength
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "fadingEdgeLength",
+                    sourceProps.fadingEdgeLength,
+                    nullptr))
 
 {}
 
@@ -57,6 +66,7 @@ void HostPlatformScrollViewProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(sendMomentumEvents);
     RAW_SET_PROP_SWITCH_CASE_BASIC(nestedScrollEnabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(fadingEdgeLength);
   }
 }
 
@@ -346,6 +356,10 @@ folly::dynamic HostPlatformScrollViewProps::getDiffProps(
 
   if (nestedScrollEnabled != oldProps->nestedScrollEnabled) {
     result["nestedScrollEnabled"] = nestedScrollEnabled;
+  }
+
+  if (fadingEdgeLength != oldProps->fadingEdgeLength) {
+    result["fadingEdgeLength"] = fadingEdgeLength;
   }
 
   return result;

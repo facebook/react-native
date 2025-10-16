@@ -32,6 +32,7 @@ class HostPlatformScrollViewProps : public BaseScrollViewProps {
 
   bool sendMomentumEvents{};
   bool nestedScrollEnabled{};
+  folly::dynamic fadingEdgeLength{};
 
 #pragma mark - DebugStringConvertible
 
