@@ -23,17 +23,17 @@ function patchfile {
   printf "enerated <<S" >> /tmp/yogasync.tmp
   printf "ignedSource::*O*zOeWoEQle#+L" >> /tmp/yogasync.tmp
   printf "!plEphiEmie@IsG>>\n\n" >> /tmp/yogasync.tmp
-  tail -n +9 $1 >> /tmp/yogasync.tmp
-  mv /tmp/yogasync.tmp $1
+  tail -n +9 "$1" >> /tmp/yogasync.tmp
+  mv /tmp/yogasync.tmp "$1"
   "$ROOT"/tools/signedsource.py sign "$1"
 }
 
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
   usage
   exit 1
 fi
 
-if [ -z $2 ]; then
+if [ -z "$2" ]; then
   usage
   exit 1
 fi
@@ -44,7 +44,7 @@ ROOT=$2
 set -e # exit if any command fails
 
 echo "Making github project..."
-pushd $GITHUB
+pushd "$GITHUB"
 COMMIT_ID=$(git rev-parse HEAD)
 popd
 
@@ -56,21 +56,21 @@ FBA_TESTS=$ROOT/fbandroid/javatests/com/facebook/yoga/
 FBO_SRC=$ROOT/xplat/js/react-native-github/packages/react-native/React/Layout/
 
 echo "Copying fbandroid src files over..."
-cp $JAVA_SRC/*.java $FBA_SRC
+cp "$JAVA_SRC"/*.java "$FBA_SRC"
 echo "Copying fbandroid test files over..."
-cp $TESTS/*.java $FBA_TESTS
+cp "$TESTS"/*.java "$FBA_TESTS"
 echo "Copying fbobjc src files over..."
-cp $C_SRC/Layout.{c,h} $FBO_SRC
+cp "$C_SRC"/Layout.{c,h} "$FBO_SRC"
 
 echo "Patching files..."
-for sourcefile in $FBA_SRC/*.java; do
-  patchfile $sourcefile
+for sourcefile in "$FBA_SRC"/*.java; do
+  patchfile "$sourcefile"
 done
-for testfile in $FBA_TESTS/*.java; do
-  patchfile $testfile
+for testfile in "$FBA_TESTS"/*.java; do
+  patchfile "$testfile"
 done
 for sourcefile in $FBO_SRC/Layout.{c,h}; do
-  patchfile $sourcefile
+  patchfile "$sourcefile"
 done
 
 echo "Writing README"
