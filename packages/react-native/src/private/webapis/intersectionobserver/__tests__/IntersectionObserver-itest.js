@@ -129,7 +129,7 @@ describe('IntersectionObserver', () => {
       );
     });
 
-    it('should provide access to custom `root`', () => {
+    it('should provide access to explicit `root`', () => {
       const rootRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
@@ -1144,7 +1144,7 @@ describe('IntersectionObserver', () => {
       });
     });
 
-    describe('with custom root', () => {
+    describe('with explicit root', () => {
       it('should report partial non-intersecting initial state correctly', () => {
         const nodeRef = createRef<HostInstance>();
         const scrollNodeRef = createRef<HostInstance>();
@@ -1911,7 +1911,7 @@ describe('IntersectionObserver', () => {
       expect(entries.length).toBe(1);
       expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
       expect(entries[0].intersectionRatio).toBe(1);
-      // This is the ratio of intersection area / (custom) root area
+      // This is the ratio of intersection area / (explicit) root area
       expect(entries[0].rnRootIntersectionRatio).toBe(0.25);
       expect(entries[0].isIntersecting).toBe(true);
       expect(entries[0].target).toBe(node);
@@ -1976,7 +1976,7 @@ describe('IntersectionObserver', () => {
       expect(entries.length).toBe(1);
       expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
       expect(entries[0].intersectionRatio).toBe(0.5);
-      // This is the ratio of intersection area / (custom) root area
+      // This is the ratio of intersection area / (explicit) root area
       expect(entries[0].rnRootIntersectionRatio).toBe(0.5);
       expect(entries[0].isIntersecting).toBe(true);
       expect(entries[0].target).toBe(node);
