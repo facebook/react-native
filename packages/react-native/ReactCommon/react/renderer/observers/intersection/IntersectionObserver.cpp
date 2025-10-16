@@ -87,7 +87,7 @@ static Rect computeIntersection(
     const Rect& rootBoundingRect,
     const Rect& targetBoundingRect,
     const ShadowNodeFamily::AncestorList& targetToRootAncestors,
-    bool hasCustomRoot) {
+    bool hasExplicitRoot) {
   auto absoluteIntersectionRect =
       Rect::intersect(rootBoundingRect, targetBoundingRect);
 
@@ -109,7 +109,7 @@ static Rect computeIntersection(
   auto clippedTargetFromRoot =
       getClippedTargetBoundingRect(targetToRootAncestors);
 
-  auto clippedTargetBoundingRect = hasCustomRoot ? Rect{
+  auto clippedTargetBoundingRect = hasExplicitRoot ? Rect{
       .origin=rootBoundingRect.origin + clippedTargetFromRoot.origin,
       .size=clippedTargetFromRoot.size}
       : clippedTargetFromRoot;
@@ -135,14 +135,14 @@ std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservation(
     const RootShadowNode& rootShadowNode,
     HighResTimeStamp time) {
-  bool hasCustomRoot = observationRootShadowNodeFamily_.has_value();
+  bool hasExplicitRoot = observationRootShadowNodeFamily_.has_value();
 
-  auto rootAncestors = hasCustomRoot
+  auto rootAncestors = hasExplicitRoot
       ? observationRootShadowNodeFamily_.value()->getAncestors(rootShadowNode)
       : ShadowNodeFamily::AncestorList{};
 
   // Absolute coordinates of the root
-  auto rootBoundingRect = hasCustomRoot
+  auto rootBoundingRect = hasExplicitRoot
       ? getBoundingRect(rootAncestors)
       : getRootNodeBoundingRect(rootShadowNode);
 
@@ -151,13 +151,13 @@ IntersectionObserver::updateIntersectionObservation(
   // Absolute coordinates of the target
   auto targetBoundingRect = getBoundingRect(targetAncestors);
 
-  if ((hasCustomRoot && rootAncestors.empty()) || targetAncestors.empty()) {
+  if ((hasExplicitRoot && rootAncestors.empty()) || targetAncestors.empty()) {
     // If observation root or target is not a descendant of `rootShadowNode`
     return setNotIntersectingState(
         rootBoundingRect, targetBoundingRect, {}, time);
   }
 
-  auto targetToRootAncestors = hasCustomRoot
+  auto targetToRootAncestors = hasExplicitRoot
       ? targetShadowNodeFamily_->getAncestors(*getShadowNode(rootAncestors))
       : targetAncestors;
 
@@ -165,7 +165,7 @@ IntersectionObserver::updateIntersectionObservation(
       rootBoundingRect,
       targetBoundingRect,
       targetToRootAncestors,
-      hasCustomRoot);
+      hasExplicitRoot);
 
   Float targetBoundingRectArea =
       targetBoundingRect.size.width * targetBoundingRect.size.height;
