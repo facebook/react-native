@@ -34,4 +34,17 @@ class JavaOnlyArrayTest {
 
     assertThat(values.getLong(0)).isEqualTo(1125899906842623L)
   }
+
+  @Test
+  fun testToArrayList() {
+    val array = JavaOnlyArray.of(1, JavaOnlyArray.of(2), JavaOnlyMap.of("number", 3))
+
+    assertThat(array.toArrayList())
+        .hasSize(3)
+        .containsExactly(1.0, listOf(2.0), mapOf("number" to 3.0))
+
+    assertThat(array.toArrayListShallow())
+        .hasSize(3)
+        .containsExactly(1, JavaOnlyArray.of(2), JavaOnlyMap.of("number", 3))
+  }
 }
