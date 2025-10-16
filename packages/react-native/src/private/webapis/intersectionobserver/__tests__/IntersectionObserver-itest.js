@@ -1868,6 +1868,290 @@ describe('IntersectionObserver', () => {
     });
   });
 
+  describe('intersectionRect is relative to root', () => {
+    it('should report intersectionRect for implicit root', () => {
+      const node1Ref = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      Fantom.runTask(() => {
+        root.render(
+          <>
+            <View
+              style={{
+                position: 'absolute',
+                top: -50,
+                width: 100,
+                height: 100,
+              }}
+              ref={node1Ref}
+            />
+          </>,
+        );
+      });
+
+      const node1 = ensureReactNativeElement(node1Ref.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback);
+        observer.observe(node1);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].intersectionRatio).toBe(0.5);
+      expect(entries[0].target).toBe(node1);
+
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 50,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 0,
+        y: -50,
+        width: 100,
+        height: 100,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: 0,
+        y: 0,
+        width: 1000,
+        height: 1000,
+      });
+    });
+
+    it('should report intersectionRect for explicit root', () => {
+      const node1Ref = React.createRef<HostInstance>();
+      const node2Ref = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      Fantom.runTask(() => {
+        root.render(
+          <>
+            <View
+              style={{
+                position: 'relative',
+                marginTop: -50,
+                width: 500,
+                height: 500,
+              }}
+              ref={node1Ref}>
+              <View
+                style={{
+                  position: 'absolute',
+                  width: 100,
+                  height: 100,
+                  top: -50,
+                }}
+                ref={node2Ref}
+              />
+            </View>
+          </>,
+        );
+      });
+
+      const node1 = ensureReactNativeElement(node1Ref.current);
+      const node2 = ensureReactNativeElement(node2Ref.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback, {
+          root: node1,
+        });
+
+        observer.observe(node2);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 0,
+        y: -50,
+        width: 100,
+        height: 50,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 0,
+        y: -100,
+        width: 100,
+        height: 100,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: 0,
+        y: -50,
+        width: 500,
+        height: 500,
+      });
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].intersectionRatio).toBe(0.5);
+      expect(entries[0].target).toBe(node2);
+    });
+  });
+
+  describe('edge-adjacent intersection', () => {
+    it('should report edge intersect with implicit root', () => {
+      const node1Ref = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      Fantom.runTask(() => {
+        root.render(
+          <>
+            <View
+              style={{
+                position: 'absolute',
+                top: -100,
+                width: 100,
+                height: 100,
+              }}
+              ref={node1Ref}
+            />
+          </>,
+        );
+      });
+
+      const node1 = ensureReactNativeElement(node1Ref.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback);
+        observer.observe(node1);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].intersectionRatio).toBe(0);
+      expect(entries[0].target).toBe(node1);
+
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 0,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 0,
+        y: -100,
+        width: 100,
+        height: 100,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: 0,
+        y: 0,
+        width: 1000,
+        height: 1000,
+      });
+    });
+
+    it('should report edge-adjacent views with zero intersection area', () => {
+      const node1Ref = React.createRef<HostInstance>();
+      const node2Ref = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      Fantom.runTask(() => {
+        root.render(
+          <>
+            <View
+              style={{
+                position: 'relative',
+                marginTop: 100,
+                marginLeft: 100,
+                width: 100,
+                height: 100,
+              }}
+              ref={node1Ref}>
+              <View
+                style={{position: 'absolute', width: 50, height: 50, top: -50}}
+                ref={node2Ref}
+              />
+            </View>
+          </>,
+        );
+      });
+
+      const node1 = ensureReactNativeElement(node1Ref.current);
+      const node2 = ensureReactNativeElement(node2Ref.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback, {
+          root: node1,
+        });
+
+        observer.observe(node2);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].intersectionRatio).toBe(0);
+      expect(entries[0].target).toBe(node2);
+
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 100,
+        y: 100,
+        width: 50,
+        height: 0,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 100,
+        y: 50,
+        width: 50,
+        height: 50,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: 100,
+        y: 100,
+        width: 100,
+        height: 100,
+      });
+    });
+  });
+
   describe('clipping behavior', () => {
     it('should report intersection for clipping ancestor', () => {
       const nodeRef = React.createRef<HostInstance>();
