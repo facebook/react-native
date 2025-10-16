@@ -8,8 +8,6 @@
  * @format
  */
 
-import type {ExtendedError} from '../Core/ExtendedError';
-
 import getDevServer from '../Core/Devtools/getDevServer';
 import LogBox from '../LogBox/LogBox';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
