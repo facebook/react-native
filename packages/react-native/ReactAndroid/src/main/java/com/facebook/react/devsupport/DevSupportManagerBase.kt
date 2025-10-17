@@ -17,6 +17,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.hardware.SensorManager
 import android.os.Build
@@ -74,6 +75,8 @@ import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatur
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.RequestHandler
+import com.facebook.react.views.common.UiModeUtils
+import com.facebook.react.views.text.DefaultStyleValuesUtil
 import java.io.File
 import java.net.MalformedURLException
 import java.net.URL
@@ -547,7 +550,11 @@ public abstract class DevSupportManagerBase(
                 isEnabled = isEnabled(position)
                 if (this is TextView) {
                   setTextColor(
-                      if (isEnabled) android.graphics.Color.WHITE else android.graphics.Color.GRAY
+                      if (isEnabled) {
+                        safeGetDefaultTextColor(context)
+                      } else {
+                        safeGetTextColorSecondary(context)
+                      }
                   )
                 }
               }
@@ -1009,6 +1016,17 @@ public abstract class DevSupportManagerBase(
     } else {
       context.registerReceiver(receiver, filter)
     }
+  }
+
+  private fun safeGetDefaultTextColor(context: Context): ColorStateList {
+    return DefaultStyleValuesUtil.getDefaultTextColor(context)
+        ?: if (UiModeUtils.isDarkMode(context)) ColorStateList.valueOf(android.graphics.Color.WHITE)
+        else ColorStateList.valueOf(android.graphics.Color.BLACK)
+  }
+
+  private fun safeGetTextColorSecondary(context: Context): ColorStateList {
+    return DefaultStyleValuesUtil.getTextColorSecondary(context)
+        ?: ColorStateList.valueOf(android.graphics.Color.GRAY)
   }
 
   override fun openDebugger(panel: String?) {
