@@ -100,6 +100,10 @@ class NativeAnimatedNodesManager {
 
   void connectAnimatedNodeToView(Tag propsNodeTag, Tag viewTag) noexcept;
 
+  void connectAnimatedNodeToShadowNode(
+      Tag propsNodeTag,
+      ShadowNode::Shared node) noexcept;
+
   void disconnectAnimatedNodes(Tag parentTag, Tag childTag) noexcept;
 
   void disconnectAnimatedNodeFromView(Tag propsNodeTag, Tag viewTag) noexcept;
@@ -158,7 +162,8 @@ class NativeAnimatedNodesManager {
       Tag viewTag,
       const folly::dynamic& props,
       bool layoutStyleUpdated,
-      bool forceFabricCommit) noexcept;
+      bool forceFabricCommit,
+      ShadowNode::Shared shadowNode = nullptr) noexcept;
 
   /**
    * Commits all pending animated property updates to their respective views.
@@ -266,6 +271,7 @@ class NativeAnimatedNodesManager {
 
   std::unordered_map<Tag, folly::dynamic> updateViewProps_{};
   std::unordered_map<Tag, folly::dynamic> updateViewPropsDirect_{};
+  std::unordered_map<Tag, ShadowNode::Shared> tagToShadowNode_{};
 
   /*
    * Sometimes a view is not longer connected to a PropsAnimatedNode, but

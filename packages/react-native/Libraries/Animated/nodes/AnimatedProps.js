@@ -14,6 +14,7 @@ import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
+import {getInternalInstanceHandleFromPublicInstance} from '../../ReactPrivate/ReactNativePrivateInterface';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import {AnimatedEvent} from '../AnimatedEvent';
 import AnimatedNode from './AnimatedNode';
@@ -248,6 +249,7 @@ export default class AnimatedProps extends AnimatedNode {
 
       if (this._target != null) {
         this.#connectAnimatedView(this._target);
+        this.#connectShadowNode(this._target);
       }
     }
   }
@@ -259,6 +261,7 @@ export default class AnimatedProps extends AnimatedNode {
     this._target = {instance, connectedViewTag: null};
     if (this.__isNative) {
       this.#connectAnimatedView(this._target);
+      this.#connectShadowNode(this._target);
     }
   }
 
@@ -277,6 +280,17 @@ export default class AnimatedProps extends AnimatedNode {
       viewTag,
     );
     target.connectedViewTag = viewTag;
+  }
+
+  #connectShadowNode(target: TargetView): void {
+    invariant(this.__isNative, 'Expected node to be marked as "native"');
+    let shadowNode = getInternalInstanceHandleFromPublicInstance(
+      target.instance,
+    ).stateNode.node;
+    NativeAnimatedHelper.API.connectAnimatedNodeToShadowNode(
+      this.__getNativeTag(),
+      shadowNode,
+    );
   }
 
   #disconnectAnimatedView(target: TargetView): void {

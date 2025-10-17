@@ -167,6 +167,11 @@ RCT_EXPORT_METHOD(connectAnimatedNodeToView : (double)nodeTag viewTag : (double)
   }];
 }
 
+RCT_EXPORT_METHOD(connectAnimatedNodeToShadowNode:(double)nodeTag shadowNode:(NSDictionary *)shadowNode)
+{
+  
+}
+
 RCT_EXPORT_METHOD(disconnectAnimatedNodeFromView : (double)nodeTag viewTag : (double)viewTag)
 {
   [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {

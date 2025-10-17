@@ -158,6 +158,17 @@ void AnimatedModule::connectAnimatedNodeToView(
       ConnectAnimatedNodeToViewOp{.nodeTag = nodeTag, .viewTag = viewTag});
 }
 
+void AnimatedModule::connectAnimatedNodeToShadowNode(
+    jsi::Runtime& rt,
+    Tag nodeTag,
+    jsi::Object shadowNode) {
+  auto nativeState = shadowNode.getNativeState(rt);
+  auto shadowNodeWrapper =
+      std::dynamic_pointer_cast<ShadowNodeWrapper>(nativeState);
+  operations_.emplace_back(ConnectAnimatedNodeToShadowNodeOp{
+      .nodeTag = nodeTag, .shadowNode = shadowNodeWrapper->shadowNode});
+}
+
 void AnimatedModule::disconnectAnimatedNodeFromView(
     jsi::Runtime& /*rt*/,
     Tag nodeTag,
@@ -270,6 +281,11 @@ void AnimatedModule::executeOperation(const Operation& operation) {
           nodesManager_->extractAnimatedNodeOffsetOp(op.nodeTag);
         } else if constexpr (std::is_same_v<T, ConnectAnimatedNodeToViewOp>) {
           nodesManager_->connectAnimatedNodeToView(op.nodeTag, op.viewTag);
+        } else if constexpr (std::is_same_v<
+                                 T,
+                                 ConnectAnimatedNodeToShadowNodeOp>) {
+          nodesManager_->connectAnimatedNodeToShadowNode(
+              op.nodeTag, op.shadowNode);
         } else if constexpr (std::is_same_v<
                                  T,
                                  DisconnectAnimatedNodeFromViewOp>) {
