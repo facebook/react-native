@@ -81,26 +81,47 @@ static Rect getClippedTargetBoundingRect(
   return layoutMetrics == EmptyLayoutMetrics ? Rect{} : layoutMetrics.frame;
 }
 
+// Distinguishes between edge-adjacent vs. no intersection
+static std::optional<Rect> intersectOrNull(
+    const Rect& rect1,
+    const Rect& rect2) {
+  auto result = Rect::intersect(rect1, rect2);
+  // Check if the result has zero area (could be empty or degenerate)
+  if (result.size.width == 0 || result.size.height == 0) {
+    // Check if origin is within both rectangles (touching case)
+    bool originInRect1 = result.origin.x >= rect1.getMinX() &&
+        result.origin.x <= rect1.getMaxX() &&
+        result.origin.y >= rect1.getMinY() &&
+        result.origin.y <= rect1.getMaxY();
+
+    bool originInRect2 = result.origin.x >= rect2.getMinX() &&
+        result.origin.x <= rect2.getMaxX() &&
+        result.origin.y >= rect2.getMinY() &&
+        result.origin.y <= rect2.getMaxY();
+
+    if (!originInRect1 || !originInRect2) {
+      // No actual intersection - rectangles are separated
+      return std::nullopt;
+    }
+  }
+
+  // Valid intersection (including degenerate edge/corner cases)
+  return result;
+}
+
 // Partially equivalent to
-// https://w3c.github.io/IntersectionObserver/#compute-the-intersection
-static Rect computeIntersection(
+// https://w3c.github.io/IntersectionObserver/#calculate-intersection-rect-algo
+static std::optional<Rect> computeIntersection(
     const Rect& rootBoundingRect,
     const Rect& targetBoundingRect,
     const ShadowNodeFamily::AncestorList& targetToRootAncestors,
     bool hasExplicitRoot) {
+  // Use intersectOrNull to properly distinguish between edge-adjacent
+  // (valid intersection) and separated rectangles (no intersection)
   auto absoluteIntersectionRect =
-      Rect::intersect(rootBoundingRect, targetBoundingRect);
-
-  Float absoluteIntersectionRectArea = absoluteIntersectionRect.size.width *
-      absoluteIntersectionRect.size.height;
-
-  Float targetBoundingRectArea =
-      targetBoundingRect.size.width * targetBoundingRect.size.height;
-
-  // Finish early if there is not intersection between the root and the target
-  // before we do any clipping.
-  if (absoluteIntersectionRectArea == 0 || targetBoundingRectArea == 0) {
-    return {};
+      intersectOrNull(rootBoundingRect, targetBoundingRect);
+  if (!absoluteIntersectionRect.has_value()) {
+    return std::nullopt;
   }
 
   // Coordinates of the target after clipping the parts hidden by a parent,
@@ -114,7 +135,7 @@ static Rect computeIntersection(
       .size=clippedTargetFromRoot.size}
       : clippedTargetFromRoot;
 
-  return Rect::intersect(rootBoundingRect, clippedTargetBoundingRect);
+  return intersectOrNull(rootBoundingRect, clippedTargetBoundingRect);
 }
 
 static Float getHighestThresholdCrossed(
@@ -161,11 +182,14 @@ IntersectionObserver::updateIntersectionObservation(
       ? targetShadowNodeFamily_->getAncestors(*getShadowNode(rootAncestors))
       : targetAncestors;
 
-  auto intersectionRect = computeIntersection(
+  auto intersection = computeIntersection(
       rootBoundingRect,
       targetBoundingRect,
       targetToRootAncestors,
       hasExplicitRoot);
+
+  auto intersectionRect =
+      intersection.has_value() ? intersection.value() : Rect{};
 
   Float targetBoundingRectArea =
       targetBoundingRect.size.width * targetBoundingRect.size.height;
@@ -177,7 +201,7 @@ IntersectionObserver::updateIntersectionObservation(
       ? 0
       : intersectionRectArea / targetBoundingRectArea;
 
-  if (intersectionRatio == 0) {
+  if (!intersection.has_value()) {
     return setNotIntersectingState(
         rootBoundingRect, targetBoundingRect, intersectionRect, time);
   }
