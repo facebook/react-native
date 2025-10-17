@@ -168,8 +168,15 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                                callback(@[ @(localIndex) ]);
                                                              }
                                                            }];
-      if (isCancelButtonIndex) {
+      if (isCancelButtonIndex && cancelButtonTintColor != NULL) {
         [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
+      } else if (style != UIAlertActionStyleDestructive) {
+        // iOS 26 does not apply the tint color automatically to all the buttons.
+        // So we ca forcibly apply the tint color to all the buttons that are not
+        // destructive (which usually have a different tint color) nor they are
+        // cancel buttons (which might have a different tint color).
+        // This makes the Action Sheet behave as in iOS < 26.
+        [actionButton setValue:tintColor forKey:@"titleTextColor"];
       }
       [alertController addAction:actionButton];
 
