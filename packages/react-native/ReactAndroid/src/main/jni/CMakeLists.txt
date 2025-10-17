@@ -32,6 +32,13 @@ endif(CCACHE_FOUND)
 # Make sure every shared lib includes a .note.gnu.build-id header
 add_link_options(-Wl,--build-id)
 
+# Message whether RN_SERIALIZABLE_STATE is on
+if(RN_SERIALIZABLE_STATE)
+  message(STATUS "RN_SERIALIZABLE_STATE is on")
+else()
+  message(STATUS "RN_SERIALIZABLE_STATE is off")
+endif()
+
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
 endfunction()
