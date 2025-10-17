@@ -461,31 +461,31 @@ static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
 
   return BorderRadii{
       .topLeft =
-          {static_cast<float>(
+          {.vertical = static_cast<float>(
                radii.topLeft.vertical *
                std::min(topEdgeRadiiScale, leftEdgeRadiiScale)),
-           static_cast<float>(
+           .horizontal = static_cast<float>(
                radii.topLeft.horizontal *
                std::min(topEdgeRadiiScale, leftEdgeRadiiScale))},
       .topRight =
-          {static_cast<float>(
+          {.vertical = static_cast<float>(
                radii.topRight.vertical *
                std::min(topEdgeRadiiScale, rightEdgeRadiiScale)),
-           static_cast<float>(
+           .horizontal = static_cast<float>(
                radii.topRight.horizontal *
                std::min(topEdgeRadiiScale, rightEdgeRadiiScale))},
       .bottomLeft =
-          {static_cast<float>(
+          {.vertical = static_cast<float>(
                radii.bottomLeft.vertical *
                std::min(bottomEdgeRadiiScale, leftEdgeRadiiScale)),
-           static_cast<float>(
+           .horizontal = static_cast<float>(
                radii.bottomLeft.horizontal *
                std::min(bottomEdgeRadiiScale, leftEdgeRadiiScale))},
       .bottomRight =
-          {static_cast<float>(
+          {.vertical = static_cast<float>(
                radii.bottomRight.vertical *
                std::min(bottomEdgeRadiiScale, rightEdgeRadiiScale)),
-           static_cast<float>(
+           .horizontal = static_cast<float>(
                radii.bottomRight.horizontal *
                std::min(bottomEdgeRadiiScale, rightEdgeRadiiScale))},
   };
@@ -496,17 +496,17 @@ static BorderRadii radiiPercentToPoint(
     const Size& size) {
   return BorderRadii{
       .topLeft =
-          {radii.topLeft.resolve(size.height),
-           radii.topLeft.resolve(size.width)},
+          {.vertical = radii.topLeft.resolve(size.height),
+           .horizontal = radii.topLeft.resolve(size.width)},
       .topRight =
-          {radii.topRight.resolve(size.height),
-           radii.topRight.resolve(size.width)},
+          {.vertical = radii.topRight.resolve(size.height),
+           .horizontal = radii.topRight.resolve(size.width)},
       .bottomLeft =
-          {radii.bottomLeft.resolve(size.height),
-           radii.bottomLeft.resolve(size.width)},
+          {.vertical = radii.bottomLeft.resolve(size.height),
+           .horizontal = radii.bottomLeft.resolve(size.width)},
       .bottomRight =
-          {radii.bottomRight.resolve(size.height),
-           radii.bottomRight.resolve(size.width)},
+          {.vertical = radii.bottomRight.resolve(size.height),
+           .horizontal = radii.bottomRight.resolve(size.width)},
   };
 }
 
