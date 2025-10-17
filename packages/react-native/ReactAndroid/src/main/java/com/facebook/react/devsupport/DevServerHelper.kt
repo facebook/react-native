@@ -196,8 +196,9 @@ public open class DevServerHelper(
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
   }
 
-  public fun closePackagerConnection() {
-    object : AsyncTask<Void, Void, Void>() {
+  public fun closePackagerConnection(): AsyncTask<Void, Void, Void> {
+    val task =
+        object : AsyncTask<Void, Void, Void>() {
           @Deprecated("This class needs to be rewritten to don't use AsyncTasks")
           override fun doInBackground(vararg params: Void): Void? {
             packagerClient?.close()
@@ -205,7 +206,8 @@ public open class DevServerHelper(
             return null
           }
         }
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+    return task
   }
 
   public fun openInspectorConnection() {
@@ -280,7 +282,11 @@ public open class DevServerHelper(
   ): String {
     val dev = devMode
     val additionalOptionsBuilder = StringBuilder()
-    for ((key, value) in packagerConnectionSettings.additionalOptionsForPackager) {
+    val packagerOptions =
+        packagerConnectionSettings.updatePackagerOptions(
+            packagerConnectionSettings.additionalOptionsForPackager
+        )
+    for ((key, value) in packagerOptions) {
       if (value.isEmpty()) {
         continue
       }

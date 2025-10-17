@@ -82,7 +82,7 @@ import java.util.Locale
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
     public val reactInstanceDevHelper: ReactInstanceDevHelper,
-    @get:JvmName("getJSAppBundleName") public val jsAppBundleName: String?,
+    @get:JvmName("getJSAppBundleName") public var jsAppBundleName: String?,
     enableOnCreate: Boolean,
     public override val redBoxHandler: RedBoxHandler?,
     private val devBundleDownloadListener: DevBundleDownloadListener?,
@@ -91,6 +91,7 @@ public abstract class DevSupportManagerBase(
     private val surfaceDelegateFactory: SurfaceDelegateFactory?,
     public var devLoadingViewManager: DevLoadingViewManager?,
     private var pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
+    private var customBundleFilePathField: String? = null,
 ) : DevSupportManager {
 
   public interface CallbackWithBundleLoader {
@@ -127,6 +128,12 @@ public abstract class DevSupportManagerBase(
     set(isDevSupportEnabled) {
       this.isDevSupportEnabled = isDevSupportEnabled
       reloadSettings()
+    }
+
+  override var customBundleFilePath: String?
+    get() = customBundleFilePathField
+    set(value) {
+      customBundleFilePathField = value
     }
 
   override val sourceMapUrl: String
