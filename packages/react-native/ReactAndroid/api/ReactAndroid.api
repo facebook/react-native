@@ -6050,6 +6050,7 @@ public final class com/facebook/react/views/text/DefaultStyleValuesUtil {
 	public static final fun getDefaultTextColor (Landroid/content/Context;)Landroid/content/res/ColorStateList;
 	public static final fun getDefaultTextColorHighlight (Landroid/content/Context;)I
 	public static final fun getDefaultTextColorHint (Landroid/content/Context;)Landroid/content/res/ColorStateList;
+	public static final fun getTextColorSecondary (Landroid/content/Context;)Landroid/content/res/ColorStateList;
 }
 
 public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : com/facebook/react/uimanager/LayoutShadowNode {
