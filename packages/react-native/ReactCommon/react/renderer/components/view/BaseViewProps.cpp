@@ -612,6 +612,10 @@ SharedDebugStringConvertibleList BaseViewProps::getDebugProps() const {
               defaultBaseViewProps.pointerEvents),
           debugStringConvertibleItem(
               "transform", transform, defaultBaseViewProps.transform),
+          debugStringConvertibleItem(
+              "backgroundImage",
+              backgroundImage,
+              defaultBaseViewProps.backgroundImage),
       };
 }
 #endif

@@ -18,6 +18,7 @@
 #include <react/renderer/css/CSSNumber.h>
 #include <react/renderer/css/CSSPercentage.h>
 #include <react/renderer/css/CSSValueParser.h>
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/Isolation.h>
 #include <react/renderer/graphics/LinearGradient.h>
@@ -557,6 +558,18 @@ inline ValueUnit toValueUnit(const RawValue& value) {
   return {};
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+inline std::string toString(const ValueUnit& valueUnit) {
+  if (valueUnit.unit == UnitType::Percent) {
+    return toString(valueUnit.value) + "%";
+  } else if (valueUnit.unit == UnitType::Point) {
+    return toString(valueUnit.value) + "px";
+  } else {
+    return "undefined";
+  }
+}
+#endif
+
 inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
@@ -565,7 +578,7 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext& context,
+    const PropsParserContext& /*context*/,
     const RawValue& value,
     Transform& result) {
   auto transformMatrix = Transform{};
@@ -891,6 +904,7 @@ inline void fromRawValue(
   react_native_expect(false);
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 inline std::string toString(PointerEventsMode value) {
   switch (value) {
     case PointerEventsMode::Auto:
@@ -903,6 +917,7 @@ inline std::string toString(PointerEventsMode value) {
       return "box-only";
   }
 }
+#endif
 
 inline void fromRawValue(
     const PropsParserContext& context,
@@ -1225,6 +1240,7 @@ inline void fromRawValue(
   result = isolation.value();
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 template <size_t N>
 inline std::string toString(const std::array<float, N> vec) {
   std::string s;
@@ -1422,5 +1438,6 @@ inline std::string toString(const Transform& transform) {
   result += "]";
   return result;
 }
+#endif
 
 } // namespace facebook::react
