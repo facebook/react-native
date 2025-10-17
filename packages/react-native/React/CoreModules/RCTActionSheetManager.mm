@@ -58,8 +58,18 @@ RCT_EXPORT_MODULE()
   } else {
     alertController.popoverPresentationController.permittedArrowDirections = 0;
   }
-  alertController.popoverPresentationController.sourceView = sourceView;
-  alertController.popoverPresentationController.sourceRect = sourceView.bounds;
+
+  if ([UIDevice.currentDevice userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    // These information only make sense for iPad, where the action sheet needs
+    // to be presented from a specific anchor point.
+    // Before iOS 26, if these information were passed on an iOS app, the action sheet
+    // was ignoring them. after iOS 26, they are took into consideration and the
+    // sheet behavior changes, for example the user can interact with the background
+    // By applying these informations only to the iPad use case, we revert to the previous
+    // behavior.
+    alertController.popoverPresentationController.sourceView = sourceView;
+    alertController.popoverPresentationController.sourceRect = sourceView.bounds;
+  }
   [parentViewController presentViewController:alertController animated:YES completion:nil];
 }
 
