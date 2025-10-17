@@ -33,7 +33,9 @@ class NativeAnimatedNodesManagerProvider {
       NativeAnimatedNodesManager::StartOnRenderCallback startOnRenderCallback =
           nullptr,
       NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback =
-          nullptr);
+          nullptr,
+      NativeAnimatedNodesManager::FrameRateListenerCallback
+          frameRateListenerCallback = nullptr);
 
   std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
       jsi::Runtime& runtime,
@@ -58,6 +60,8 @@ class NativeAnimatedNodesManagerProvider {
 
   NativeAnimatedNodesManager::StartOnRenderCallback startOnRenderCallback_;
   NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback_;
+  NativeAnimatedNodesManager::FrameRateListenerCallback
+      frameRateListenerCallback_;
 
   std::unique_ptr<MergedValueDispatcher> mergedValueDispatcher_;
 };

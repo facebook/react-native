@@ -31,11 +31,19 @@ void UIManagerNativeAnimatedDelegateImpl::runAnimationFrame() {
 
 NativeAnimatedNodesManagerProvider::NativeAnimatedNodesManagerProvider(
     NativeAnimatedNodesManager::StartOnRenderCallback startOnRenderCallback,
-    NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback)
+    NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback,
+    NativeAnimatedNodesManager::FrameRateListenerCallback
+        frameRateListenerCallback)
     : eventEmitterListenerContainer_(
           std::make_shared<EventEmitterListenerContainer>()),
       startOnRenderCallback_(std::move(startOnRenderCallback)),
-      stopOnRenderCallback_(std::move(stopOnRenderCallback)) {}
+      stopOnRenderCallback_(std::move(stopOnRenderCallback))
+#if defined(WITH_PERFETTO) && WITH_PERFETTO == 1
+      ,
+      frameRateListenerCallback_(std::move(frameRateListenerCallback))
+#endif
+{
+}
 
 std::shared_ptr<NativeAnimatedNodesManager>
 NativeAnimatedNodesManagerProvider::getOrCreate(
@@ -89,7 +97,8 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
               std::move(directManipulationCallback),
               std::move(fabricCommitCallback),
               std::move(startOnRenderCallback_),
-              std::move(stopOnRenderCallback_));
+              std::move(stopOnRenderCallback_),
+              std::move(frameRateListenerCallback_));
     }
 
     addEventEmitterListener(
