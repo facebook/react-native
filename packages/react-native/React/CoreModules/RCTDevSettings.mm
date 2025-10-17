@@ -145,6 +145,13 @@ RCT_EXPORT_MODULE()
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
+
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
+
+  _packagerConnection = [RCTPackagerConnection new];
+
+#endif
+
   _isShakeGestureEnabled = true;
   return [self initWithDataSource:dataSource];
 }
@@ -179,17 +186,24 @@ RCT_EXPORT_MODULE()
 - (void)initialize
 {
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
+  [_packagerConnection startWithBundleManager:_bundleManager];
+
   if (numInitializedModules++ == 0) {
-    reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+    reloadToken = [_packagerConnection
         addNotificationHandler:^(id params) {
           RCTTriggerReloadCommandListeners(@"Global hotkey");
         }
                          queue:dispatch_get_main_queue()
                      forMethod:@"reload"];
 #if RCT_DEV_MENU
-    devMenuToken = [[RCTPackagerConnection sharedPackagerConnection]
+    __weak __typeof(self) weakSelf = self;
+    devMenuToken = [_packagerConnection
         addNotificationHandler:^(id params) {
-          [[self.moduleRegistry moduleForName:"DevMenu"] show];
+          __typeof(self) strongSelf = weakSelf;
+          if (!strongSelf) {
+            return;
+          }
+          [[strongSelf.moduleRegistry moduleForName:"DevMenu"] show];
         }
                          queue:dispatch_get_main_queue()
                      forMethod:@"devMenu"];
@@ -240,9 +254,9 @@ RCT_EXPORT_MODULE()
   [super invalidate];
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   if (--numInitializedModules == 0) {
-    [[RCTPackagerConnection sharedPackagerConnection] removeHandler:reloadToken];
+    [_packagerConnection removeHandler:reloadToken];
 #if RCT_DEV_MENU
-    [[RCTPackagerConnection sharedPackagerConnection] removeHandler:devMenuToken];
+    [_packagerConnection removeHandler:devMenuToken];
 #endif
   }
 #endif
@@ -425,7 +439,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
-  [[RCTPackagerConnection sharedPackagerConnection] addHandler:handler forMethod:name];
+  [_packagerConnection addHandler:handler forMethod:name];
 #endif
 }
 

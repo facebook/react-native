@@ -9,6 +9,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import <React/RCTBundleManager.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
