@@ -16,6 +16,7 @@ import {
   StyleSheet,
   Text,
   View,
+  type ViewStyle,
 } from 'react-native';
 
 const DATA = [
@@ -39,7 +40,7 @@ const DATA = [
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
-const Item = ({item, section, separators}) => {
+const Item = ({item, separators, style}) => {
   return (
     <Pressable
       onPressIn={() => {
@@ -54,6 +55,7 @@ const Item = ({item, section, separators}) => {
       }}
       style={({pressed}) => [
         styles.item,
+        style,
         {
           backgroundColor: pressed ? 'red' : 'pink',
         },
@@ -71,6 +73,7 @@ type Props = $ReadOnly<{
   testLabel?: ?string,
   testOutput?: ?string,
   children?: ?React.Node,
+  itemStyle?: ViewStyle,
 }>;
 
 const SectionListBaseExample: component(
@@ -109,7 +112,9 @@ const SectionListBaseExample: component(
         sections={DATA}
         keyExtractor={(item, index) => item + index}
         style={styles.list}
-        renderItem={Item}
+        renderItem={({item, separators}) => (
+          <Item style={props.itemStyle} item={item} separators={separators} />
+        )}
         /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
          * utility types */
         renderSectionHeader={({section: {title}}) => (
