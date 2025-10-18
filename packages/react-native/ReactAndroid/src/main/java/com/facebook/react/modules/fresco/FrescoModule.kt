@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.fresco
 
+import android.content.Context
 import com.facebook.common.logging.FLog
 import com.facebook.drawee.backends.pipeline.DraweeConfig
 import com.facebook.drawee.backends.pipeline.Fresco
@@ -17,7 +18,6 @@ import com.facebook.imagepipeline.core.ImagePipelineConfig
 import com.facebook.imagepipeline.listener.RequestListener
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
@@ -138,7 +138,7 @@ constructor(
      */
     @JvmStatic public fun hasBeenInitialized(): Boolean = hasBeenInitialized
 
-    private fun getDefaultConfig(context: ReactContext): ImagePipelineConfig =
+    private fun getDefaultConfig(context: Context): ImagePipelineConfig =
         getDefaultConfigBuilder(context).build()
 
     /**
@@ -149,7 +149,7 @@ constructor(
      *   initialized with default values
      */
     @JvmStatic
-    public fun getDefaultConfigBuilder(context: ReactContext): ImagePipelineConfig.Builder {
+    public fun getDefaultConfigBuilder(context: Context): ImagePipelineConfig.Builder {
       val requestListeners = HashSet<RequestListener>()
       requestListeners.add(SystraceRequestListener())
       val client = OkHttpClientProvider.createClient()
