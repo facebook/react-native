@@ -20,6 +20,7 @@ const publishPackageMock = jest.fn();
 const getNpmInfoMock = jest.fn();
 const generateAndroidArtifactsMock = jest.fn();
 const getPackagesMock = jest.fn();
+const updateHermesVersionsToNightlyMock = jest.fn();
 
 const {REPO_ROOT} = require('../../shared/consts');
 const {publishNpm} = require('../publish-npm');
@@ -53,6 +54,9 @@ describe('publish-npm', () => {
         ...jest.requireActual('../../releases/utils/npm-utils'),
         publishPackage: publishPackageMock,
         getNpmInfo: getNpmInfoMock,
+      }))
+      .mock('../../releases/utils/hermes-utils', () => ({
+        updateHermesVersionsToNightly: updateHermesVersionsToNightlyMock,
       }));
   });
 
@@ -98,6 +102,7 @@ describe('publish-npm', () => {
 
       await publishNpm('dry-run');
 
+      expect(updateHermesVersionsToNightlyMock).toHaveBeenCalled();
       expect(setVersionMock).not.toBeCalled();
       expect(updateReactNativeArtifactsMock).toBeCalledWith(version, 'dry-run');
 
@@ -154,6 +159,8 @@ describe('publish-npm', () => {
 
       // Generate Android artifacts is now delegate to build_android entirely
       expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
+      expect(updateHermesVersionsToNightlyMock).toHaveBeenCalled();
 
       expect(publishPackageMock.mock.calls).toEqual([
         [

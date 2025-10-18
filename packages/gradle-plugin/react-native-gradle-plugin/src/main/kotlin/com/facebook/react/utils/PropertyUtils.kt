@@ -81,8 +81,9 @@ object PropertyUtils {
   const val INTERNAL_VERSION_NAME = "VERSION_NAME"
 
   /**
-   * Internal property, shared with iOS, used to control the version name of Hermes Engine. This is
-   * stored in sdks/hermes-engine/version.properties
+   * Internal properties, shared with iOS, used to control the version name of Hermes Engine. They
+   * are stored in sdks/hermes-engine/version.properties
    */
+  const val INTERNAL_HERMES_VERSION_NAME = "HERMES_VERSION_NAME"
   const val INTERNAL_HERMES_V1_VERSION_NAME = "HERMES_V1_VERSION_NAME"
 }
