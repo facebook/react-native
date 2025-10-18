@@ -104,10 +104,6 @@ tasks.register("build") {
 tasks.register("publishAllToMavenTempLocal") {
   description = "Publish all the artifacts to be available inside a Maven Local repository on /tmp."
   dependsOn(":packages:react-native:ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
-  // We don't publish the external-artifacts to Maven Local as ci is using it via workspace.
-  dependsOn(
-      ":packages:react-native:ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository"
-  )
 }
 
 tasks.register("publishAndroidToSonatype") {
@@ -135,8 +131,7 @@ if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoole
     configurations.all {
       resolutionStrategy.dependencySubstitution {
         substitute(project(":packages:react-native:ReactAndroid:hermes-engine"))
-            // TODO: T237406039 update coordinates
-            .using(module("com.facebook.react:hermes-android:0.+"))
+            .using(module("com.facebook.hermes:hermes-android:0.+"))
             .because("Users opted to use hermes from nightly")
       }
     }
