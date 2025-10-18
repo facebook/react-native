@@ -14,7 +14,6 @@
 #include <deque>
 #include <memory>
 #include <optional>
-#include <ranges>
 #include <vector>
 
 namespace facebook::react {
