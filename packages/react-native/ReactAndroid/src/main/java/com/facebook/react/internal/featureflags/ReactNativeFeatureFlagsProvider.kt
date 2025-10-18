@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<901e5678bff081bcb6b8e2d46364b977>>
+ * @generated SignedSource<<5a9a51638a72bda657f312260bb1297a>>
  */
 
 /**
@@ -116,6 +116,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableViewRecyclingForText(): Boolean
 
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
+
+  @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
 
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
 
