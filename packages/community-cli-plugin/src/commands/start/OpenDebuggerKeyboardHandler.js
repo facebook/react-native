@@ -107,8 +107,8 @@ export default class OpenDebuggerKeyboardHandler {
           `Multiple debug targets available, please select:\n  ${targets
             .slice(0, 9)
             .map(
-              ({title}, i) =>
-                `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title}"`,
+              ({title, description}, i) =>
+                `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title} (${description})"`,
             )
             .join('\n  ')}`,
         );
