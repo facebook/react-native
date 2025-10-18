@@ -305,6 +305,62 @@ public open class ReactViewGroup public constructor(context: Context?) :
       return false
     }
 
+    // For accessibility (TalkBack), check if hover is within any child's hitSlop area
+    if (ev.isFromSource(android.view.InputDevice.SOURCE_CLASS_POINTER) &&
+        (ev.action == MotionEvent.ACTION_HOVER_ENTER || ev.action == MotionEvent.ACTION_HOVER_MOVE)) {
+      val x = ev.x
+      val y = ev.y
+
+      // Check each child in reverse order (front-to-back, matching touch behavior)
+      for (i in childCount - 1 downTo 0) {
+        val child = getChildAt(i)
+        if (child == null || child.visibility != VISIBLE) {
+          continue
+        }
+
+        // Check if child has hitSlop
+        if (child is ReactHitSlopView) {
+          val hitSlopRect = child.hitSlopRect
+          if (hitSlopRect != null) {
+            // Calculate child-relative coordinates
+            val childX = x - child.left
+            val childY = y - child.top
+
+            // Check if within hitSlop-extended bounds
+            if (childX >= -hitSlopRect.left &&
+                childX < child.width + hitSlopRect.right &&
+                childY >= -hitSlopRect.top &&
+                childY < child.height + hitSlopRect.bottom) {
+
+              // Only intercept if OUTSIDE normal bounds but WITHIN hitSlop
+              // This prevents interfering with normal child event handling
+              val inNormalBounds = childX >= 0 && childX < child.width &&
+                                   childY >= 0 && childY < child.height
+
+              if (!inNormalBounds) {
+                // For TalkBack accessibility, request focus on the child
+                if (ev.action == MotionEvent.ACTION_HOVER_ENTER) {
+                  child.performAccessibilityAction(
+                      android.view.accessibility.AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS,
+                      null
+                  )
+                  return true
+                }
+                // Transform event coordinates to child's coordinate system
+                ev.offsetLocation(-child.left.toFloat(), -child.top.toFloat())
+                val handled = child.dispatchGenericMotionEvent(ev)
+                // Restore original coordinates
+                ev.offsetLocation(child.left.toFloat(), child.top.toFloat())
+                if (handled) {
+                  return true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     return super.dispatchGenericMotionEvent(ev)
   }
 
