@@ -40,7 +40,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
 
   struct JSRuntimeFlags {
     bool isProfiling = false;
-    const std::string runtimeDiagnosticFlags;
+    const std::string runtimeDiagnosticFlags = {};
   };
 
   void initializeRuntime(
