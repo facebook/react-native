@@ -44,12 +44,12 @@ class HostTarget;
 class HostTargetTraceRecording;
 
 struct HostTargetMetadata {
-  std::optional<std::string> appDisplayName;
-  std::optional<std::string> appIdentifier;
-  std::optional<std::string> deviceName;
+  std::optional<std::string> appDisplayName{};
+  std::optional<std::string> appIdentifier{};
+  std::optional<std::string> deviceName{};
   std::optional<std::string> integrationName;
-  std::optional<std::string> platform;
-  std::optional<std::string> reactNativeVersion;
+  std::optional<std::string> platform{};
+  std::optional<std::string> reactNativeVersion{};
 };
 
 /**
