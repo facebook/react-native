@@ -24,26 +24,24 @@ public data class LengthPercentage(
 ) {
   public companion object {
     @JvmStatic
-    public fun setFromDynamic(dynamic: Dynamic): LengthPercentage? {
+    public fun setFromDynamic(dynamic: Dynamic, allowNegative: Boolean = false): LengthPercentage? {
       return when (dynamic.type) {
         ReadableType.Number -> {
           val value = dynamic.asDouble()
-          if (value >= 0f) {
-            LengthPercentage(value.toFloat(), LengthPercentageType.POINT)
-          } else {
-            null
+          if (value < 0 && !allowNegative) {
+            return null
           }
+          LengthPercentage(value.toFloat(), LengthPercentageType.POINT)
         }
         ReadableType.String -> {
           val s = dynamic.asString()
           if (s != null && s.endsWith("%")) {
             try {
               val value = s.substring(0, s.length - 1).toFloat()
-              if (value >= 0f) {
-                LengthPercentage(value, LengthPercentageType.PERCENT)
-              } else {
-                null
+              if (value < 0 && !allowNegative) {
+                return null
               }
+              LengthPercentage(value, LengthPercentageType.PERCENT)
             } catch (e: NumberFormatException) {
               FLog.w(ReactConstants.TAG, "Invalid percentage format: $s")
               null
