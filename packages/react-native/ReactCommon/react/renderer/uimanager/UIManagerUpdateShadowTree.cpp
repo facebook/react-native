@@ -26,7 +26,7 @@ struct ShadowNodeUpdateInfo {
   int depth;
   std::weak_ptr<const ShadowNode> node;
   // populate for node that needs props update
-  std::optional<folly::dynamic> changedProps;
+  std::optional<folly::dynamic> changedProps{};
   // populate for node that's also a ancestor node for updated nodes
   std::vector<int> updatedChildrenIndices{};
 };
