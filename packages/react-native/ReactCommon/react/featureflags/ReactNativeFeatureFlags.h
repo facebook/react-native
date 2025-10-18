@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<67cb9ad627e865b24b380be1ef6e0db7>>
+ * @generated SignedSource<<1067eff3cc68c8aa3177974dd13b7845>>
  */
 
 /**
@@ -273,6 +273,11 @@ class ReactNativeFeatureFlags {
    * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
    */
   RN_EXPORT static bool enableViewRecyclingForView();
+
+  /**
+   * Enables the experimental version of `VirtualViewContainerState`.
+   */
+  RN_EXPORT static bool enableVirtualViewContainerStateExperimental();
 
   /**
    * Enables VirtualView debug features such as logging and overlays.

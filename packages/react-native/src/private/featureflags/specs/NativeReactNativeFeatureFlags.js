@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5a4824857285ef91a4e2f4aeb589cc5d>>
+ * @generated SignedSource<<97c319551b68819a08ccd44c49b21978>>
  * @flow strict
  * @noformat
  */
@@ -72,6 +72,7 @@ export interface Spec extends TurboModule {
   +enableViewRecyclingForScrollView?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
+  +enableVirtualViewContainerStateExperimental?: () => boolean;
   +enableVirtualViewDebugFeatures?: () => boolean;
   +enableVirtualViewRenderState?: () => boolean;
   +enableVirtualViewWindowFocusDetection?: () => boolean;

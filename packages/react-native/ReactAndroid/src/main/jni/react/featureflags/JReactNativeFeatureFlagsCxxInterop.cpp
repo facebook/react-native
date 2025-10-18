@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<285ec8cc3b3e5f55c5c31106b6df8717>>
+ * @generated SignedSource<<d54fab7b1b7bfb99ed1ff6ba0141a013>>
  */
 
 /**
@@ -318,6 +318,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableViewRecyclingForView() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewRecyclingForView");
+    return method(javaProvider_);
+  }
+
+  bool enableVirtualViewContainerStateExperimental() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewContainerStateExperimental");
     return method(javaProvider_);
   }
 
@@ -758,6 +764,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
   return ReactNativeFeatureFlags::enableViewRecyclingForView();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
@@ -1095,6 +1106,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableViewRecyclingForView",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView),
+      makeNativeMethod(
+        "enableVirtualViewContainerStateExperimental",
+        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental),
       makeNativeMethod(
         "enableVirtualViewDebugFeatures",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures),
