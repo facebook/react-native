@@ -44,6 +44,7 @@ void IntersectionObserverManager::observe(
     const ShadowNodeFamily::Shared& shadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds,
+    std::optional<std::string> rootMargin,
     const UIManager& /*uiManager*/) {
   TraceSection s("IntersectionObserverManager::observe");
 
@@ -58,7 +59,8 @@ void IntersectionObserverManager::observe(
       observationRootShadowNodeFamily,
       shadowNodeFamily,
       std::move(thresholds),
-      std::move(rootThresholds)));
+      std::move(rootThresholds),
+      std::move(rootMargin)));
 
   observersPendingInitialization_.emplace_back(observers.back().get());
 }
