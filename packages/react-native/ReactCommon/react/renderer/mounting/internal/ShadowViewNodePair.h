@@ -18,7 +18,7 @@ namespace facebook::react {
  * This is not exposed to the mounting layer.
  */
 struct ShadowViewNodePair final {
-  ShadowView shadowView;
+  ShadowView shadowView{};
   const ShadowNode* shadowNode;
 
   /**
