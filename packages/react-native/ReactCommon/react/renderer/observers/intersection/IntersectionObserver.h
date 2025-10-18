@@ -41,7 +41,8 @@ class IntersectionObserver {
       std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily,
       ShadowNodeFamily::Shared targetShadowNodeFamily,
       std::vector<Float> thresholds,
-      std::optional<std::vector<Float>> rootThresholds = std::nullopt);
+      std::optional<std::vector<Float>> rootThresholds = std::nullopt,
+      std::optional<std::string> rootMargin = std::nullopt);
 
   // Partially equivalent to
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
@@ -84,6 +85,7 @@ class IntersectionObserver {
   ShadowNodeFamily::Shared targetShadowNodeFamily_;
   std::vector<Float> thresholds_;
   std::optional<std::vector<Float>> rootThresholds_;
+  std::optional<std::string> rootMargin_;
   mutable IntersectionObserverState state_ =
       IntersectionObserverState::Initial();
 };
