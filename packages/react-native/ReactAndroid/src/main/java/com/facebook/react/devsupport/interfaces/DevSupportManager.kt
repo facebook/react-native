@@ -36,6 +36,10 @@ public interface DevSupportManager : JSExceptionHandler {
   public val currentActivity: Activity?
   public val currentReactContext: ReactContext?
 
+  public var customBundleFilePath: String?
+    get() = null
+    set(_) = Unit
+
   public var devSupportEnabled: Boolean
 
   public fun showNewJavaError(message: String?, e: Throwable)

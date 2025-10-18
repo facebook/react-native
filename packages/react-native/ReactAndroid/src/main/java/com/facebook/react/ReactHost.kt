@@ -189,4 +189,21 @@ public interface ReactHost {
 
   /** Remove a listener previously added with [addReactInstanceEventListener]. */
   public fun removeReactInstanceEventListener(listener: ReactInstanceEventListener)
+
+  /** Sets the source of the bundle to be loaded from the file system. */
+  public fun setBundleSource(filePath: String)
+
+  /**
+   * Sets the source of the bundle to be loaded from the packager server and updates the packager
+   * connection.
+   *
+   * @param debugServerHost host and port of the server, for example "localhost:8081"
+   * @param moduleName the module name to load, for example "js/RNTesterApp.android"
+   * @param queryBuilder a function that takes current packager options and returns updated options
+   */
+  public fun setBundleSource(
+      debugServerHost: String,
+      moduleName: String,
+      queryBuilder: (Map<String, String>) -> Map<String, String> = { it },
+  )
 }
