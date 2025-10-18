@@ -97,6 +97,19 @@ NS_ASSUME_NONNULL_BEGIN
                               resourceExtension:(NSString *)extension
                                   offlineBundle:(NSBundle *)offlineBundle;
 
+- (NSArray<NSURLQueryItem *> *)createJSBundleURLQuery:(NSString *)packagerHost
+                                       packagerScheme:(NSString *__nullable)scheme;
+
++ (NSArray<NSURLQueryItem *> *)createJSBundleURLQuery:(NSString *)packagerHost
+                                       packagerScheme:(NSString *__nullable)scheme
+                                            enableDev:(BOOL)enableDev
+                                   enableMinification:(BOOL)enableMinification
+                                      inlineSourceMap:(BOOL)inlineSourceMap
+                                          modulesOnly:(BOOL)modulesOnly
+                                            runModule:(BOOL)runModule
+                                    additionalOptions:
+                                        (NSDictionary<NSString *, NSString *> *__nullable)additionalOptions;
+
 /**
  * The IP address or hostname of the packager.
  */

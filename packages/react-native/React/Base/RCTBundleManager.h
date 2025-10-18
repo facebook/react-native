@@ -9,19 +9,59 @@
 
 @class RCTBridge;
 
-typedef NSURL * (^RCTBridgelessBundleURLGetter)(void);
-typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
+typedef NSURL *_Nullable (^RCTBridgelessBundleURLGetter)(void);
+typedef void (^RCTBridgelessBundleURLSetter)(NSURL *_Nullable bundleURL);
+
+/**
+ * Configuration class for setting up custom bundle locations
+ */
+@interface RCTCustomBundleConfiguration : NSObject
+
+/**
+ * The URL of the bundle to load from the file system
+ */
+@property (nonatomic, readonly, nullable) NSURL *bundleFilePath;
+
+/**
+ * The server scheme (e.g. http or https) to use when loading from the packager
+ */
+@property (nonatomic, readonly, nullable) NSString *packagerServerScheme;
+
+/**
+ * The server host (e.g. localhost) to use when loading from the packager
+ */
+@property (nonatomic, readonly, nullable) NSString *packagerServerHost;
+
+/**
+ * The relative path to the bundle.
+ */
+@property (nonatomic, readonly, nullable) NSString *bundlePath;
+
+- (nonnull instancetype)initWithBundleFilePath:(nullable NSURL *)bundleFilePath;
+
+- (nonnull instancetype)initWithPackagerServerScheme:(nullable NSString *)packagerServerScheme
+                                  packagerServerHost:(nullable NSString *)packagerServerHost
+                                          bundlePath:(nullable NSString *)bundlePath;
+
+- (nullable NSURL *)getBundleURL:(NSURL *_Nullable (^_Nullable)(void))fallbackURLProvider;
+
+- (nullable NSString *)getPackagerServerScheme;
+
+- (nullable NSString *)getPackagerServerHost;
+
+@end
 
 /**
  * A class that allows NativeModules/TurboModules to read/write the bundleURL, with or without the bridge.
  */
 @interface RCTBundleManager : NSObject
 #ifndef RCT_REMOVE_LEGACY_ARCH
-- (void)setBridge:(RCTBridge *)bridge;
+- (void)setBridge:(nullable RCTBridge *)bridge;
 #endif // RCT_REMOVE_LEGACY_ARCH
-- (void)setBridgelessBundleURLGetter:(RCTBridgelessBundleURLGetter)getter
-                           andSetter:(RCTBridgelessBundleURLSetter)setter
-                    andDefaultGetter:(RCTBridgelessBundleURLGetter)defaultGetter;
+- (void)setBridgelessBundleURLGetter:(nullable RCTBridgelessBundleURLGetter)getter
+                           andSetter:(nullable RCTBridgelessBundleURLSetter)setter
+                    andDefaultGetter:(nullable RCTBridgelessBundleURLGetter)defaultGetter;
 - (void)resetBundleURL;
-@property NSURL *bundleURL;
+@property (nonatomic, nullable) NSURL *bundleURL;
+@property (nonatomic, nullable) RCTCustomBundleConfiguration *customBundleConfig;
 @end
