@@ -19,7 +19,15 @@ import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
 import {useCallback, useContext, useState} from 'react';
-import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
+import {
+  Modal,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 
 const animationTypes = ['slide', 'none', 'fade'] as const;
 const presentationStyles = [
@@ -37,6 +45,7 @@ const supportedOrientations = [
 ] as const;
 
 const backdropColors = ['red', 'blue', undefined];
+const detents = ['200', '500', 'large'];
 
 function ModalPresentation() {
   const onDismiss = useCallback(() => {
@@ -72,6 +81,7 @@ function ModalPresentation() {
     visible: false,
     backdropColor: undefined,
   });
+  const [useDetents, setUseDetents] = useState(false);
   const presentationStyle = props.presentationStyle;
   const hardwareAccelerated = props.hardwareAccelerated;
   const statusBarTranslucent = props.statusBarTranslucent;
@@ -147,6 +157,13 @@ function ModalPresentation() {
               allowSwipeDismissal: enabled,
             }))
           }
+        />
+      </View>
+      <View style={styles.inlineBlock}>
+        <RNTesterText style={styles.title}>Use Detents ⚫️</RNTesterText>
+        <Switch
+          value={useDetents}
+          onValueChange={enabled => setUseDetents(enabled)}
         />
       </View>
       <View style={styles.block}>
@@ -295,9 +312,12 @@ function ModalPresentation() {
       </RNTesterButton>
       <Modal
         {...props}
+        detents={useDetents ? detents : undefined}
         onRequestClose={onRequestClose}
         onOrientationChange={onOrientationChange}>
-        <View style={styles.modalContainer}>
+        <ScrollView
+          style={styles.modalContainer}
+          contentContainerStyle={{justifyContent: 'center'}}>
           <View style={[styles.modalInnerContainer, {backgroundColor}]}>
             <Text testID="modal_animationType_text">
               This modal was presented with animationType: '
@@ -314,6 +334,9 @@ function ModalPresentation() {
             </RNTesterButton>
             {controls}
           </View>
+        </ScrollView>
+        <View style={styles.footer}>
+          <Text>Footer position: absolute</Text>
         </View>
       </Modal>
       <View style={styles.block}>
@@ -367,7 +390,6 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
     padding: 20,
   },
   modalInnerContainer: {
@@ -378,6 +400,17 @@ const styles = StyleSheet.create({
     margin: 3,
     fontSize: 12,
     color: 'red',
+  },
+  footer: {
+    height: 60,
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

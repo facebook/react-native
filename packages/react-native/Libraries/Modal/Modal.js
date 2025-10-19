@@ -122,6 +122,15 @@ export type ModalPropsIOS = {
   ),
 
   /**
+   * The `detents` determines the height for modal,
+   * based on the detents value.
+   * It can be a combination of `large`, `medium` or
+   * any number.
+   * for eg: ['140', 'medium', 'large']
+   */
+  detents?: ?$ReadOnlyArray<string>,
+
+  /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    * On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field.
    */
@@ -206,6 +215,27 @@ function confirmProps(props: ModalProps) {
     ) {
       console.warn(
         'Modal requires the onRequestClose prop when used with `allowSwipeDismissal`. This is necessary to prevent state corruption.',
+      );
+    }
+
+    if (
+      Platform.OS === 'ios' &&
+      props.detents &&
+      !props.detents.every(detent => typeof detent === 'string')
+    ) {
+      console.warn(
+        'Modal detents should be a combination of `large`, `medium` or any number represented as a string.',
+      );
+    }
+
+    if (
+      Platform.OS === 'ios' &&
+      props.detents?.length > 0 &&
+      props.presentationStyle !== 'pageSheet' &&
+      props.presentationStyle !== 'formSheet'
+    ) {
+      console.warn(
+        'Modal detents are only supported with `pageSheet` or `formSheet` presentation styles.',
       );
     }
   }
@@ -344,6 +374,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}
         allowSwipeDismissal={this.props.allowSwipeDismissal}
+        detents={this.props.detents}
         testID={this.props.testID}>
         <VirtualizedListContextResetter>
           <ScrollView.Context.Provider value={null}>
