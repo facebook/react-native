@@ -53,8 +53,7 @@ inline void serializeImageRequestParams(
   builder.putInt(
       IS_KEY_RESIZE_MODE, to_underlying(imageRequestParams.resizeMode));
   builder.putString(IS_KEY_RESIZE_METHOD, imageRequestParams.resizeMethod);
-  builder.putInt(
-      IS_KEY_BLUR_RADIUS, static_cast<int32_t>(imageRequestParams.blurRadius));
+  builder.putDouble(IS_KEY_BLUR_RADIUS, imageRequestParams.blurRadius);
   builder.putDouble(
       IS_KEY_RESIZE_MULTIPLIER, imageRequestParams.resizeMultiplier);
   builder.putBool(
