@@ -36,6 +36,18 @@ public interface DevSupportManager : JSExceptionHandler {
   public val currentActivity: Activity?
   public val currentReactContext: ReactContext?
 
+  public var devMenuEnabled: Boolean
+    get() = true
+    set(value) = Unit
+
+  public var shakeGestureEnabled: Boolean
+    get() = true
+    set(value) = Unit
+
+  public var keyboardShortcutsEnabled: Boolean
+    get() = true
+    set(value) = Unit
+
   public var devSupportEnabled: Boolean
 
   public fun showNewJavaError(message: String?, e: Throwable)

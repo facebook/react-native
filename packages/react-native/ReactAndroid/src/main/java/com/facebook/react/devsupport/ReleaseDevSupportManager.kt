@@ -70,7 +70,19 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override var devSupportEnabled: Boolean
     get() = false
-    @Suppress("UNUSED_PARAMETER") set(isDevSupportEnabled: Boolean): Unit = Unit
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
+
+  public override var devMenuEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
+
+  public override var shakeGestureEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
+
+  public override var keyboardShortcutsEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(value): Unit = Unit
 
   public override val devSettings: DeveloperSettings?
     get() = null
