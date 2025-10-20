@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42fe3f524ad5d1e8a565ada8f9eebd24>>
+ * @generated SignedSource<<c91dbd1f5723fb1185b1bcc9ed1d85c1>>
  * @flow strict
  * @noformat
  */
@@ -97,6 +97,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecyclingForScrollView: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
+  enableVirtualViewContainerStateExperimental: Getter<boolean>,
   enableVirtualViewDebugFeatures: Getter<boolean>,
   enableVirtualViewRenderState: Getter<boolean>,
   enableVirtualViewWindowFocusDetection: Getter<boolean>,
@@ -399,6 +400,10 @@ export const enableViewRecyclingForText: Getter<boolean> = createNativeFlagGette
  * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
  */
 export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForView', true);
+/**
+ * Enables the experimental version of `VirtualViewContainerState`.
+ */
+export const enableVirtualViewContainerStateExperimental: Getter<boolean> = createNativeFlagGetter('enableVirtualViewContainerStateExperimental', false);
 /**
  * Enables VirtualView debug features such as logging and overlays.
  */
