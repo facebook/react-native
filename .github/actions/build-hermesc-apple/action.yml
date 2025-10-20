@@ -17,14 +17,23 @@ runs:
       with:
         path: ./packages/react-native/sdks/hermes/build_host_hermesc
         key: v2-hermesc-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+    - name: BEFORE - Check Cmake version
+      shell: bash
+      run: |
+        cmake --version
     - name: Downgrade CMake
       shell: bash
-      uses: jwlawson/actions-setup-cmake@v2
-      with:
-        cmake-version: '3.28.3'
-    - name: Use cmake
+      run: |
+        # Uninstall any existing CMake version
+        brew uninstall --ignore-dependencies cmake || true
+        # Install specific CMake version (e.g., 3.21.4)
+        brew install cmake@3.28
+        # Add the specific CMake version to PATH
+        echo 'export PATH="/usr/local/opt/cmake@3.28/bin:$PATH"' >> $GITHUB_ENV
+    - name: AFTER - Check Cmake version
       shell: bash
-      run: cmake --version
+      run: |
+        cmake --version
     - name: Build HermesC Apple
       shell: bash
       run: |
