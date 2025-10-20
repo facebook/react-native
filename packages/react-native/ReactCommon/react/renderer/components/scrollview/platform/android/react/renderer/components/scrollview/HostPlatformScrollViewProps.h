@@ -33,6 +33,7 @@ class HostPlatformScrollViewProps : public BaseScrollViewProps {
   bool sendMomentumEvents{};
   bool nestedScrollEnabled{};
   folly::dynamic fadingEdgeLength{};
+  std::string overScrollMode{"auto"};
 
 #pragma mark - DebugStringConvertible
 
