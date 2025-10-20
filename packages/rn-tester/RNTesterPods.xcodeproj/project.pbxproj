@@ -392,7 +392,7 @@
 			dependencies = (
 			);
 			name = RNTester;
-			productName = "Hello World";
+			productName = "RNTesterPods";
 			productReference = 13B07F961A680F5B00A75B9A /* RNTester.app */;
 			productType = "com.apple.product-type.application";
 		};
