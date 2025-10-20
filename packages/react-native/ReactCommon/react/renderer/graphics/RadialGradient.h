@@ -37,6 +37,7 @@ struct RadialGradientSize {
     bool operator==(const Dimensions& other) const {
       return x == other.x && y == other.y;
     }
+
     bool operator!=(const Dimensions& other) const {
       return !(*this == other);
     }
@@ -49,15 +50,7 @@ struct RadialGradientSize {
   std::variant<SizeKeyword, Dimensions> value;
 
   bool operator==(const RadialGradientSize& other) const {
-    if (std::holds_alternative<SizeKeyword>(value) &&
-        std::holds_alternative<SizeKeyword>(other.value)) {
-      return std::get<SizeKeyword>(value) == std::get<SizeKeyword>(other.value);
-    } else if (
-        std::holds_alternative<Dimensions>(value) &&
-        std::holds_alternative<Dimensions>(other.value)) {
-      return std::get<Dimensions>(value) == std::get<Dimensions>(other.value);
-    }
-    return false;
+    return value == other.value;
   }
 
   bool operator!=(const RadialGradientSize& other) const {
