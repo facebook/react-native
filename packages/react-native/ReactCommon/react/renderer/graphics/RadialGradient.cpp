@@ -7,6 +7,10 @@
 
 #include "RadialGradient.h"
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+#include <react/renderer/debug/DebugStringConvertible.h>
+#endif
+
 namespace facebook::react {
 
 #ifdef RN_SERIALIZABLE_STATE
@@ -80,4 +84,55 @@ folly::dynamic RadialGradient::toDynamic() const {
   return result;
 }
 #endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+void RadialGradient::toString(std::stringstream& ss) const {
+  ss << "radial-gradient("
+     << (shape == RadialGradientShape::Circle ? "circle" : "ellipse") << " ";
+
+  if (std::holds_alternative<RadialGradientSize::SizeKeyword>(size.value)) {
+    auto& keyword = std::get<RadialGradientSize::SizeKeyword>(size.value);
+    switch (keyword) {
+      case RadialGradientSize::SizeKeyword::ClosestSide:
+        ss << "closest-side";
+        break;
+      case RadialGradientSize::SizeKeyword::FarthestSide:
+        ss << "farthest-side";
+        break;
+      case RadialGradientSize::SizeKeyword::ClosestCorner:
+        ss << "closest-corner";
+        break;
+      case RadialGradientSize::SizeKeyword::FarthestCorner:
+        ss << "farthest-corner";
+        break;
+    }
+  } else {
+    auto& dimensions = std::get<RadialGradientSize::Dimensions>(size.value);
+    ss << react::toString(dimensions.x) << " " << react::toString(dimensions.y);
+  }
+
+  ss << " at ";
+
+  if (position.left.has_value()) {
+    ss << position.left->toString() << " ";
+  }
+  if (position.top.has_value()) {
+    ss << position.top->toString() << " ";
+  }
+  if (position.right.has_value()) {
+    ss << position.right->toString() << " ";
+  }
+  if (position.bottom.has_value()) {
+    ss << position.bottom->toString() << " ";
+  }
+
+  for (const auto& colorStop : colorStops) {
+    ss << ", ";
+    colorStop.toString(ss);
+  }
+
+  ss << ")";
+}
+#endif
+
 }; // namespace facebook::react

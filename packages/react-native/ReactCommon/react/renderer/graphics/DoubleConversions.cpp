@@ -29,7 +29,9 @@ std::string toString(double doubleValue, char suffix) {
     // Serialize infinite and NaN as 0
     builder.AddCharacter('0');
   }
-  builder.AddCharacter(suffix);
+  if (suffix != '\0') {
+    builder.AddCharacter(suffix);
+  }
   return builder.Finalize();
 }
 

@@ -46,17 +46,7 @@ inline int toAndroidRepr(const SharedColor& color) {
 #endif
 
 inline std::string toString(const SharedColor& value) {
-  ColorComponents components = colorComponentsFromColor(value);
-  std::array<char, 255> buffer{};
-  std::snprintf(
-      buffer.data(),
-      buffer.size(),
-      "rgba(%.0f, %.0f, %.0f, %g)",
-      components.red * 255.f,
-      components.green * 255.f,
-      components.blue * 255.f,
-      components.alpha);
-  return buffer.data();
+  return value.toString();
 }
 
 #pragma mark - Geometry

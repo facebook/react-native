@@ -7,14 +7,11 @@
 
 #include "ValueUnit.h"
 
-#ifdef RN_SERIALIZABLE_STATE
 #include "DoubleConversions.h"
-#endif
 
 namespace facebook::react {
 
 #ifdef RN_SERIALIZABLE_STATE
-
 folly::dynamic ValueUnit::toDynamic() const {
   switch (unit) {
     case UnitType::Undefined:
@@ -22,9 +19,21 @@ folly::dynamic ValueUnit::toDynamic() const {
     case UnitType::Point:
       return value;
     case UnitType::Percent:
-      return toString(value, '%');
+      return react::toString(value, '%');
     default:
       return nullptr;
+  }
+}
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+std::string ValueUnit::toString() const {
+  if (unit == UnitType::Percent) {
+    return react::toString(value, '%');
+  } else if (unit == UnitType::Point) {
+    return react::toString(value, '\0') + "px";
+  } else {
+    return "undefined";
   }
 }
 #endif
