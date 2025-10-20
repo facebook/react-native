@@ -63,6 +63,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.31.9'
       - name: Build HermesC Apple
         uses: ./.github/actions/build-hermesc-apple
         with:
@@ -87,6 +91,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.31.9'
       - name: Build Slice
         uses: ./.github/actions/build-apple-slices-hermes
         with:
