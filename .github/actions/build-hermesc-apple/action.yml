@@ -24,8 +24,6 @@ runs:
     - name: Downgrade CMake
       shell: bash
       run: |
-        # Uninstall any existing CMake version
-        brew uninstall --ignore-dependencies cmake || true
         # Install specific CMake version (e.g., 3.21.4)
         brew install cmake@3.28
         # Add the specific CMake version to PATH
