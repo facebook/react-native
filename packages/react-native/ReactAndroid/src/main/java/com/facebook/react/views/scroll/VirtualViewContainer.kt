@@ -111,6 +111,45 @@ internal abstract class VirtualViewContainerState {
     updateModes()
   }
 
+  /**
+   * Refreshes the coordinates for the Rects this class cares about (visibleRect, prerenderRect,
+   * hysteresisRect)
+   */
+  protected fun updateRects() {
+    scrollView.getDrawingRect(visibleRect)
+
+    // This happens because ScrollView content isn't ready yet. The danger here is if ScrollView
+    // intentionally goes but curently ScrollView and v1 Fling use this check to determine if
+    // "content ready"
+    if (visibleRect.isEmpty()) {
+      debugLog("updateRects", { "scrollView visibleRect is empty" })
+      // should set the other rects here in case scrollview is suddenly empty after the other rects
+      // are non-empty
+      prerenderRect.set(visibleRect)
+      hysteresisRect.set(prerenderRect)
+      return
+    }
+
+    prerenderRect.set(visibleRect)
+    prerenderRect.inset(
+        (-prerenderRect.width() * prerenderRatio).toInt(),
+        (-prerenderRect.height() * prerenderRatio).toInt(),
+    )
+
+    hysteresisRect.set(prerenderRect)
+    hysteresisRect.inset(
+        (-visibleRect.width() * hysteresisRatio).toInt(),
+        (-visibleRect.height() * hysteresisRatio).toInt(),
+    )
+
+    debugLog(
+        "updateRects",
+        {
+          "visibleRect ${visibleRect.toString()} prerenderRect ${prerenderRect.toString()} hysteresisRect ${hysteresisRect.toString()}"
+        },
+    )
+  }
+
   protected abstract fun updateModes(virtualView: VirtualView? = null)
 }
 
