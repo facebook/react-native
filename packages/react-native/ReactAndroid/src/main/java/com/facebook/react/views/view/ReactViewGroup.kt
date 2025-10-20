@@ -305,8 +305,12 @@ public open class ReactViewGroup public constructor(context: Context?) :
       return false
     }
 
-    // For accessibility (TalkBack), check if hover is within any child's hitSlop area
-    if (ev.isFromSource(android.view.InputDevice.SOURCE_CLASS_POINTER) &&
+    // For accessibility services (TalkBack), check if hover is within any child's hitSlop area.
+    // Only apply this logic when accessibility services are enabled to avoid interfering with
+    // other input methods (VR, mouse, stylus, etc.)
+    val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
+    if (accessibilityManager?.isTouchExplorationEnabled == true &&
+        ev.isFromSource(android.view.InputDevice.SOURCE_CLASS_POINTER) &&
         (ev.action == MotionEvent.ACTION_HOVER_ENTER || ev.action == MotionEvent.ACTION_HOVER_MOVE)) {
       val x = ev.x
       val y = ev.y
