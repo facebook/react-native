@@ -685,7 +685,15 @@ public class SurfaceMountingManager {
       return;
     }
 
-    ViewState viewState = getViewState(reactTag);
+    ViewState viewState = getNullableViewState(reactTag);
+
+    if (viewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          new ReactNoCrashSoftException(
+              "Unable to find viewState for tag: " + reactTag + " for updateProps"));
+      return;
+    }
     viewState.mCurrentProps = new ReactStylesDiffMap(props);
     View view = viewState.mView;
 
