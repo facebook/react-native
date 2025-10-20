@@ -164,6 +164,15 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
     }
   }
 
+  measureAsyncOnUI(callback: MeasureOnSuccessCallback) {
+    const node = getNativeElementReference(this);
+    if (node != null) {
+      console.log("ReactNativeElement node.measureAsyncOnUI()");
+      // TODO: this is only available on native mobile platforms - when using web, do we need to fallback to measure()?
+      NativeDOM.measureAsyncOnUI(node, callback);
+    }
+  }
+
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
     const node = getNativeElementReference(this);
     if (node != null) {
