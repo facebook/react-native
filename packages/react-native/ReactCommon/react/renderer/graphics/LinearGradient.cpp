@@ -56,4 +56,37 @@ folly::dynamic LinearGradient::toDynamic() const {
 }
 #endif
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+void LinearGradient::toString(std::stringstream& ss) const {
+  ss << "linear-gradient(";
+
+  if (direction.type == GradientDirectionType::Angle) {
+    ss << std::get<Float>(direction.value) << "deg";
+  } else {
+    auto keyword = std::get<GradientKeyword>(direction.value);
+    switch (keyword) {
+      case GradientKeyword::ToTopRight:
+        ss << "to top right";
+        break;
+      case GradientKeyword::ToBottomRight:
+        ss << "to bottom right";
+        break;
+      case GradientKeyword::ToTopLeft:
+        ss << "to top left";
+        break;
+      case GradientKeyword::ToBottomLeft:
+        ss << "to bottom left";
+        break;
+    }
+  }
+
+  for (const auto& colorStop : colorStops) {
+    ss << ", ";
+    colorStop.toString(ss);
+  }
+
+  ss << ")";
+}
+#endif
+
 }; // namespace facebook::react

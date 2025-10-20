@@ -18,6 +18,7 @@
 #include <react/renderer/css/CSSNumber.h>
 #include <react/renderer/css/CSSPercentage.h>
 #include <react/renderer/css/CSSValueParser.h>
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/Isolation.h>
 #include <react/renderer/graphics/LinearGradient.h>
@@ -565,7 +566,7 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext& context,
+    const PropsParserContext& /*context*/,
     const RawValue& value,
     Transform& result) {
   auto transformMatrix = Transform{};
@@ -1225,6 +1226,7 @@ inline void fromRawValue(
   result = isolation.value();
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 template <size_t N>
 inline std::string toString(const std::array<float, N> vec) {
   std::string s;
@@ -1422,5 +1424,6 @@ inline std::string toString(const Transform& transform) {
   result += "]";
   return result;
 }
+#endif
 
 } // namespace facebook::react

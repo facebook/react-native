@@ -12,8 +12,6 @@
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/BackgroundImage.h>
 
-#include <string>
-
 namespace facebook::react {
 
 void parseProcessedBackgroundImage(

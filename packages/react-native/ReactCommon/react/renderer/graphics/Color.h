@@ -7,10 +7,11 @@
 
 #pragma once
 
-#include <functional>
-
 #include <react/renderer/graphics/ColorComponents.h>
 #include <react/renderer/graphics/HostPlatformColor.h>
+
+#include <functional>
+#include <string>
 
 #ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
@@ -51,6 +52,8 @@ class SharedColor {
   operator bool() const {
     return color_ != HostPlatformColor::UndefinedColor;
   }
+
+  std::string toString() const noexcept;
 
  private:
   Color color_;
