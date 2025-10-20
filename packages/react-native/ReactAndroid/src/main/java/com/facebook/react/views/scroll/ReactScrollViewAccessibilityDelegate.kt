@@ -29,10 +29,10 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
       onInitializeAccessibilityEventInternal(host, event)
     } else {
       ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"
-          ),
+        TAG,
+        AssertionException(
+          "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"
+        ),
       )
     }
   }
@@ -43,17 +43,17 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
       onInitializeAccessibilityNodeInfoInternal(host, info)
     } else {
       ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"
-          ),
+        TAG,
+        AssertionException(
+          "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"
+        ),
       )
     }
   }
 
   private fun onInitializeAccessibilityEventInternal(view: View, event: AccessibilityEvent) {
     val accessibilityCollection =
-        view.getTag(R.id.accessibility_collection) as? ReadableMap ?: return
+      view.getTag(R.id.accessibility_collection) as? ReadableMap ?: return
 
     event.itemCount = accessibilityCollection.getInt("itemCount")
 
@@ -65,13 +65,13 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
     for (index in 0..<contentView.childCount) {
       val nextChild = contentView.getChildAt(index)
       val isVisible: Boolean =
-          if (view is ReactAccessibleScrollView) {
-            view.isPartiallyScrolledInView(nextChild)
-          } else {
-            return
-          }
+        if (view is ReactAccessibleScrollView) {
+          view.isPartiallyScrolledInView(nextChild)
+        } else {
+          return
+        }
       var accessibilityCollectionItem: ReadableMap? =
-          nextChild.getTag(R.id.accessibility_collection_item) as ReadableMap
+        nextChild.getTag(R.id.accessibility_collection_item) as? ReadableMap
 
       if (nextChild !is ViewGroup) {
         return
@@ -85,7 +85,7 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
         val nestedNextChild = nextChild.getChildAt(0)
         if (nestedNextChild != null) {
           val nestedChildAccessibility =
-              nestedNextChild.getTag(R.id.accessibility_collection_item) as? ReadableMap
+            nestedNextChild.getTag(R.id.accessibility_collection_item) as? ReadableMap
           if (nestedChildAccessibility != null) {
             accessibilityCollectionItem = nestedChildAccessibility
           }
@@ -107,8 +107,8 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
   }
 
   private fun onInitializeAccessibilityNodeInfoInternal(
-      view: View,
-      info: AccessibilityNodeInfoCompat,
+    view: View,
+    info: AccessibilityNodeInfoCompat,
   ) {
     val accessibilityRole = AccessibilityRole.fromViewTag(view)
 
@@ -124,11 +124,11 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
       val hierarchical = accessibilityCollection.getBoolean("hierarchical")
 
       val collectionInfoCompat =
-          AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(
-              rowCount,
-              columnCount,
-              hierarchical,
-          )
+        AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(
+          rowCount,
+          columnCount,
+          hierarchical,
+        )
       info.setCollectionInfo(collectionInfoCompat)
     }
 

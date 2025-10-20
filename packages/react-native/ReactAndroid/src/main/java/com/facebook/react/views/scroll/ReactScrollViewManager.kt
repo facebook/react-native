@@ -434,6 +434,11 @@ constructor(private val fpsListener: FpsListener? = null) :
     }
   }
 
+  @ReactProp(name = "scrollEventConfig")
+  public fun setScrollEventConfig(view: ReactScrollView, config: ReadableMap?) {
+    view.setScrollEventConfig(config)
+  }
+
   public companion object {
     public const val REACT_CLASS: String = "RCTScrollView"
 

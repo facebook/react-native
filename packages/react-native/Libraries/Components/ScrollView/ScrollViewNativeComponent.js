@@ -82,6 +82,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
             process: require('../../StyleSheet/processColor').default,
           },
           removeClippedSubviews: true,
+          scrollEventConfig: {
+            diff: require('../../Utilities/differ/deepDiffer').default,
+          },
           borderTopRightRadius: true,
           borderLeftColor: {
             process: require('../../StyleSheet/processColor').default,

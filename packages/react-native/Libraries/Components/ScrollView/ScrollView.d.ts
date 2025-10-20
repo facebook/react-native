@@ -586,6 +586,22 @@ export interface ScrollViewPropsAndroid {
    * Causes the scrollbars not to turn transparent when they are not in use. The default value is false.
    */
   persistentScrollbar?: boolean | undefined;
+
+  /**
+   * Configuration for making scroll events synchronous based on scroll position.
+   * This can improve performance when you need immediate response to scroll position changes.
+   * @platform android
+   */
+  scrollEventConfig?: {
+    /**
+     * Makes scroll events synchronous when scroll position (in DIP) is above this offset.
+     */
+    useSyncOnScrollAboveOffset?: number | undefined;
+    /**
+     * Makes scroll events synchronous when scroll position (in DIP) is below this offset.
+     */
+    useSyncOnScrollBelowOffset?: number | undefined;
+  } | undefined;
 }
 
 export interface ScrollViewProps

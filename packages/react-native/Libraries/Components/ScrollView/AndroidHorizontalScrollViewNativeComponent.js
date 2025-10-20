@@ -40,6 +40,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     snapToStart: true,
     snapToOffsets: true,
     contentOffset: true,
+    scrollEventConfig: {
+      diff: require('../../Utilities/differ/deepDiffer').default,
+    },
     borderBottomLeftRadius: true,
     borderBottomRightRadius: true,
     borderRadius: true,

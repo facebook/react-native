@@ -220,7 +220,11 @@ function ScrollViewScrollToExample(): React.Node {
           setScrolledToTop(true);
         }}
         scrollEventThrottle={200}
-        style={[styles.scrollView, {height: 200}]}
+        style={[styles.scrollView, {height: 500}]}
+        scrollEventConfig={{
+          useSyncOnScrollAboveOffset: 800,
+          useSyncOnScrollBelowOffset: 100
+        }}
         testID="scroll_vertical">
         {ITEMS.map(createItemRow)}
       </ScrollView>
@@ -1443,7 +1447,7 @@ class Item extends React.PureComponent<{
   }
 }
 
-const ITEMS = [...Array(12)].map((_, i) => `Item ${i}`);
+const ITEMS = [...Array(500)].map((_, i) => `Item ${i}`);
 
 const createItemRow = (msg: string, index: number) => (
   <Item key={index} msg={msg} />

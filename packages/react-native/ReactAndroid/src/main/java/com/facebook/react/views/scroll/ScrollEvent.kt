@@ -14,6 +14,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableMap
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.common.ViewUtil
@@ -31,6 +32,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
   private var scrollViewHeight = 0
   private var scrollEventType: ScrollEventType? = null
   private var timestamp: Long = 0
+  private var scrollEventConfig: ReadableMap? = null
 
   override fun onDispose() {
     try {
@@ -42,18 +44,21 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     }
   }
 
+
+
   private fun init(
-      surfaceId: Int,
-      viewTag: Int,
-      scrollEventType: ScrollEventType?,
-      scrollX: Float,
-      scrollY: Float,
-      xVelocity: Float,
-      yVelocity: Float,
-      contentWidth: Int,
-      contentHeight: Int,
-      scrollViewWidth: Int,
-      scrollViewHeight: Int,
+    surfaceId: Int,
+    viewTag: Int,
+    scrollEventType: ScrollEventType?,
+    scrollX: Float,
+    scrollY: Float,
+    xVelocity: Float,
+    yVelocity: Float,
+    contentWidth: Int,
+    contentHeight: Int,
+    scrollViewWidth: Int,
+    scrollViewHeight: Int,
+    scrollEventConfig: ReadableMap? = null,
   ) {
     val timestampMs = SystemClock.uptimeMillis()
     super.init(surfaceId, viewTag, timestampMs)
@@ -68,12 +73,36 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     this.scrollViewWidth = scrollViewWidth
     this.scrollViewHeight = scrollViewHeight
     this.timestamp = timestampMs
+    this.scrollEventConfig = scrollEventConfig
   }
 
   override fun getEventName(): String =
-      ScrollEventType.getJSEventName(Assertions.assertNotNull(scrollEventType))
+    ScrollEventType.getJSEventName(Assertions.assertNotNull(scrollEventType))
 
   override fun canCoalesce(): Boolean = scrollEventType == ScrollEventType.SCROLL
+
+  override fun experimental_isSynchronous(): Boolean {
+    if (scrollEventConfig == null) {
+      return false
+    }
+
+    val scrollY = toDIPFromPixel(scrollY)
+
+    val useSyncAbove = if (scrollEventConfig!!.hasKey("useSyncOnScrollAboveOffset"))
+      scrollEventConfig!!.getDouble("useSyncOnScrollAboveOffset") else null
+    val useSyncBelow = if (scrollEventConfig!!.hasKey("useSyncOnScrollBelowOffset"))
+      scrollEventConfig!!.getDouble("useSyncOnScrollBelowOffset") else null
+
+    if (useSyncAbove != null && scrollY >= useSyncAbove) {
+      return true
+    }
+
+    if (useSyncBelow != null && scrollY <= useSyncBelow) {
+      return true
+    }
+
+    return false
+  }
 
   override fun getEventData(): WritableMap {
     val contentInset = buildReadableMap {
@@ -112,8 +141,8 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     event.putInt("target", viewTag)
     event.putDouble("timestamp", timestamp.toDouble())
     event.putBoolean(
-        "responderIgnoreScroll",
-        !ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid(),
+      "responderIgnoreScroll",
+      !ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid(),
     )
     return event
   }
@@ -123,66 +152,72 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     private val EVENTS_POOL = SynchronizedPool<ScrollEvent>(3)
 
     @JvmStatic
+    @JvmOverloads
     public fun obtain(
-        surfaceId: Int,
-        viewTag: Int,
-        scrollEventType: ScrollEventType?,
-        scrollX: Float,
-        scrollY: Float,
-        xVelocity: Float,
-        yVelocity: Float,
-        contentWidth: Int,
-        contentHeight: Int,
-        scrollViewWidth: Int,
-        scrollViewHeight: Int,
+      surfaceId: Int,
+      viewTag: Int,
+      scrollEventType: ScrollEventType?,
+      scrollX: Float,
+      scrollY: Float,
+      xVelocity: Float,
+      yVelocity: Float,
+      contentWidth: Int,
+      contentHeight: Int,
+      scrollViewWidth: Int,
+      scrollViewHeight: Int,
+      scrollEventConfig: ReadableMap? = null,
     ): ScrollEvent =
-        (EVENTS_POOL.acquire() ?: ScrollEvent()).apply {
-          init(
-              surfaceId,
-              viewTag,
-              scrollEventType,
-              scrollX,
-              scrollY,
-              xVelocity,
-              yVelocity,
-              contentWidth,
-              contentHeight,
-              scrollViewWidth,
-              scrollViewHeight,
-          )
-        }
+      (EVENTS_POOL.acquire() ?: ScrollEvent()).apply {
+        init(
+          surfaceId,
+          viewTag,
+          scrollEventType,
+          scrollX,
+          scrollY,
+          xVelocity,
+          yVelocity,
+          contentWidth,
+          contentHeight,
+          scrollViewWidth,
+          scrollViewHeight,
+          scrollEventConfig,
+        )
+      }
 
     @Deprecated(
-        "Use the obtain version that explicitly takes surfaceId as an argument",
-        ReplaceWith(
-            "obtain(surfaceId, viewTag, scrollEventType, scrollX, scrollY, xVelocity, yVelocity, contentWidth, contentHeight, scrollViewWidth, scrollViewHeight)"
-        ),
+      "Use the obtain version that explicitly takes surfaceId as an argument",
+      ReplaceWith(
+        "obtain(surfaceId, viewTag, scrollEventType, scrollX, scrollY, xVelocity, yVelocity, contentWidth, contentHeight, scrollViewWidth, scrollViewHeight, scrollEventConfig)"
+      ),
     )
     @JvmStatic
+    @JvmOverloads
     public fun obtain(
-        viewTag: Int,
-        scrollEventType: ScrollEventType?,
-        scrollX: Float,
-        scrollY: Float,
-        xVelocity: Float,
-        yVelocity: Float,
-        contentWidth: Int,
-        contentHeight: Int,
-        scrollViewWidth: Int,
-        scrollViewHeight: Int,
+      viewTag: Int,
+      scrollEventType: ScrollEventType?,
+      scrollX: Float,
+      scrollY: Float,
+      xVelocity: Float,
+      yVelocity: Float,
+      contentWidth: Int,
+      contentHeight: Int,
+      scrollViewWidth: Int,
+      scrollViewHeight: Int,
+      scrollEventConfig: ReadableMap? = null,
     ): ScrollEvent =
-        obtain(
-            ViewUtil.NO_SURFACE_ID,
-            viewTag,
-            scrollEventType,
-            scrollX,
-            scrollY,
-            xVelocity,
-            yVelocity,
-            contentWidth,
-            contentHeight,
-            scrollViewWidth,
-            scrollViewHeight,
-        )
+      obtain(
+        ViewUtil.NO_SURFACE_ID,
+        viewTag,
+        scrollEventType,
+        scrollX,
+        scrollY,
+        xVelocity,
+        yVelocity,
+        contentWidth,
+        contentHeight,
+        scrollViewWidth,
+        scrollViewHeight,
+        scrollEventConfig,
+      )
   }
 }
