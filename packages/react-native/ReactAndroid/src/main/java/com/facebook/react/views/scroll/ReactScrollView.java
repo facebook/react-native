@@ -213,7 +213,7 @@ public class ReactScrollView extends ScrollView
   @Override
   public VirtualViewContainerState getVirtualViewContainerState() {
     if (mVirtualViewContainerState == null) {
-      mVirtualViewContainerState = new VirtualViewContainerState(this);
+      mVirtualViewContainerState = VirtualViewContainerState.create(this);
     }
 
     return mVirtualViewContainerState;
