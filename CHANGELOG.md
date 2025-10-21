@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.81.5
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Fixed switch ([4106d54a6d](https://github.com/facebook/react-native/commit/4106d54a6ddacbb784fc8335e9a82054f51a2d02) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+- Fix request permission not always resolving in Android 16 ([39ede95921](https://github.com/facebook/react-native/commit/39ede959211e10032f147d2b0b7af783cba049c8) by [@lukmccall](https://github.com/lukmccall))
+
+#### iOS specific
+
+- Fix RCTDeviceInfo crash when application.delegate.window is nil in modern iOS app architectures ([968909488a](https://github.com/facebook/react-native/commit/968909488a844c695a92ce000497840e577190dd) by [@25harsh](https://github.com/25harsh))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.81.5 ([57ff54492f](https://github.com/facebook/react-native/commit/57ff54492f4a5a0e9d331e880b3c2264a2bd81f7) by [@react-native-bot](https://github.com/react-native-bot))
+- Allow extending ReactTextViewManager ([34137a82ca](https://github.com/facebook/react-native/commit/34137a82caa42770849e3aee50cbaa7e355a8859) by [@janicduplessis](https://github.com/janicduplessis))
+- Release 0.81.4 ([5cb9187034](https://github.com/facebook/react-native/commit/5cb9187034ac9dc47476cb1680965aacf0312494) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+- Use REACT_NATIVE_BOT_GITHUB_TOKEN token for changelog and bump lockfiles ([e7e32f70b0](https://github.com/facebook/react-native/commit/e7e32f70b0f86c374981cb5989f7689285c3b18c) by [@cortinico](https://github.com/cortinico))
+
+
 ## v0.82.1
 
 ### Fixed
