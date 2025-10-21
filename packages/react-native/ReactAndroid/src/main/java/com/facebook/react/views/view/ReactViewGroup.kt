@@ -57,6 +57,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper.calculateClippi
 import com.facebook.react.uimanager.ReactOverflowViewWithInset
 import com.facebook.react.uimanager.ReactPointerEventsView
 import com.facebook.react.uimanager.ReactZIndexedViewGroup
+import com.facebook.react.uimanager.TouchTargetHelper
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
@@ -153,6 +154,10 @@ public open class ReactViewGroup public constructor(context: Context?) :
   private var accessibilityStateChangeListener:
       AccessibilityManager.AccessibilityStateChangeListener? =
       null
+  private var touchExplorationStateChangeListener:
+      AccessibilityManager.TouchExplorationStateChangeListener? =
+      null
+  private var isTouchExplorationEnabled = false
 
   init {
     initView()
@@ -181,6 +186,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
     backfaceOpacity = 1f
     backfaceVisible = true
     childrenRemovedWhileTransitioning = null
+    touchExplorationStateChangeListener = null
+    isTouchExplorationEnabled = false
   }
 
   internal open fun recycleView() {
@@ -308,8 +315,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
     // For accessibility services (TalkBack), check if hover is within any child's hitSlop area.
     // Only apply this logic when accessibility services are enabled to avoid interfering with
     // other input methods (VR, mouse, stylus, etc.)
-    val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
-    if (accessibilityManager?.isTouchExplorationEnabled == true &&
+    // Use cached value to avoid expensive Binder call per frame
+    if (isTouchExplorationEnabled &&
         ev.isFromSource(android.view.InputDevice.SOURCE_CLASS_POINTER) &&
         (ev.action == MotionEvent.ACTION_HOVER_ENTER || ev.action == MotionEvent.ACTION_HOVER_MOVE)) {
       val x = ev.x
@@ -330,34 +337,23 @@ public open class ReactViewGroup public constructor(context: Context?) :
             val childX = x - child.left
             val childY = y - child.top
 
-            // Check if within hitSlop-extended bounds
-            if (childX >= -hitSlopRect.left &&
-                childX < child.width + hitSlopRect.right &&
-                childY >= -hitSlopRect.top &&
-                childY < child.height + hitSlopRect.bottom) {
-
-              // Only intercept if OUTSIDE normal bounds but WITHIN hitSlop
-              // This prevents interfering with normal child event handling
-              val inNormalBounds = childX >= 0 && childX < child.width &&
-                                   childY >= 0 && childY < child.height
-
-              if (!inNormalBounds) {
-                // For TalkBack accessibility, request focus on the child
-                if (ev.action == MotionEvent.ACTION_HOVER_ENTER) {
-                  child.performAccessibilityAction(
-                      android.view.accessibility.AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS,
-                      null
-                  )
-                  return true
-                }
-                // Transform event coordinates to child's coordinate system
-                ev.offsetLocation(-child.left.toFloat(), -child.top.toFloat())
-                val handled = child.dispatchGenericMotionEvent(ev)
-                // Restore original coordinates
-                ev.offsetLocation(child.left.toFloat(), child.top.toFloat())
-                if (handled) {
-                  return true
-                }
+            // Use TouchTargetHelper to check if within hitSlop-extended bounds
+            if (TouchTargetHelper.isTouchPointInView(childX, childY, child)) {
+              // For TalkBack accessibility, request focus on the child
+              if (ev.action == MotionEvent.ACTION_HOVER_ENTER) {
+                child.performAccessibilityAction(
+                    android.view.accessibility.AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS,
+                    null
+                )
+                return true
+              }
+              // Transform event coordinates to child's coordinate system
+              ev.offsetLocation(-child.left.toFloat(), -child.top.toFloat())
+              val handled = child.dispatchGenericMotionEvent(ev)
+              // Restore original coordinates
+              ev.offsetLocation(child.left.toFloat(), child.top.toFloat())
+              if (handled) {
+                return true
               }
             }
           }
@@ -631,6 +627,35 @@ public open class ReactViewGroup public constructor(context: Context?) :
     super.onAttachedToWindow()
     if (_removeClippedSubviews) {
       updateClippingRect()
+    }
+
+    // Initialize touch exploration state and register listener
+    val accessibilityManager =
+        context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
+    if (accessibilityManager != null) {
+      // Query current state once and cache it
+      isTouchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
+
+      // Register listener for future changes
+      if (touchExplorationStateChangeListener == null) {
+        val listener =
+            AccessibilityManager.TouchExplorationStateChangeListener { enabled ->
+              isTouchExplorationEnabled = enabled
+            }
+        touchExplorationStateChangeListener = listener
+        accessibilityManager.addTouchExplorationStateChangeListener(listener)
+      }
+    }
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+
+    // Unregister touch exploration listener to avoid memory leaks
+    val accessibilityManager =
+        context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
+    touchExplorationStateChangeListener?.let {
+      accessibilityManager?.removeTouchExplorationStateChangeListener(it)
     }
   }
 
