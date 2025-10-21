@@ -45,11 +45,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.31.9'
       - name: Build HermesC Apple
         uses: ./.github/actions/build-hermesc-apple
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.output.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.output.react-native-version }}
+
   build_apple_slices_hermes:
     runs-on: macos-14
     needs: [build_hermesc_apple, prepare_hermes_workspace]
@@ -68,6 +73,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.31.9'
       - name: Build Slice
         uses: ./.github/actions/build-apple-slices-hermes
         with:
