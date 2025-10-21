@@ -63,4 +63,10 @@ void SchedulerDelegateImpl::schedulerDidUpdateShadowTree(
   mountingManager_->onUpdateShadowTree(tagToProps);
 }
 
+void SchedulerDelegateImpl::schedulerMeasureAsyncOnUI(
+    const ShadowView& shadowView,
+    const std::function<void(folly::dynamic)>& callback) {
+  // No-op implementation, can be overridden by subclasses if needed
+}
+
 } // namespace facebook::react
