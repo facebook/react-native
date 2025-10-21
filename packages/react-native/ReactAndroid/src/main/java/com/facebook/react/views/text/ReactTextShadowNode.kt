@@ -51,7 +51,7 @@ import kotlin.math.min
  * constructed in superclass.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
-public class ReactTextShadowNode
+public open class ReactTextShadowNode
 @JvmOverloads
 public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) :
     ReactBaseTextShadowNode(reactTextViewManagerCallback) {
