@@ -152,6 +152,7 @@ public class ReactTextView(context: Context) : AppCompatTextView(context), React
     updateView() // call after changing ellipsizeLocation in particular
   }
 
+  @Suppress("DEPRECATION")
   override fun onLayout(
       changed: Boolean, textViewLeft: Int, textViewTop: Int, textViewRight: Int, textViewBottom: Int) {
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
@@ -343,7 +344,7 @@ public class ReactTextView(context: Context) : AppCompatTextView(context), React
 
   public fun setText(update: ReactTextUpdate) {
     SystraceSection("ReactTextView.setText(ReactTextUpdate)").use {
-      mContainsImages = update.containsImages()
+      mContainsImages = update.containsImages
       // Android's TextView crashes when it tries to relayout if LayoutParams are
       // null; explicitly set the LayoutParams to prevent this crash. See:
       // https://github.com/facebook/react-native/pull/7011
