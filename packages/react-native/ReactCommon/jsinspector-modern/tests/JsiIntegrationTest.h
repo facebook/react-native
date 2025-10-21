@@ -16,8 +16,10 @@
 #include <jsinspector-modern/InspectorInterfaces.h>
 
 #include <memory>
+#include <source_location>
 
 #include "FollyDynamicMatchers.h"
+#include "GmockHelpers.h"
 #include "InspectorMocks.h"
 #include "UniquePtrFactory.h"
 #include "utils/InspectorFlagOverridesGuard.h"
@@ -88,13 +90,15 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
    */
   virtual void setupRuntimeBeforeRegistration(jsi::Runtime& /*runtime*/) {}
 
-  void connect() {
+  void connect(
+      std::source_location location = std::source_location::current()) {
     ASSERT_FALSE(toPage_) << "Can only connect once in a JSI integration test.";
     toPage_ = page_->connect(remoteConnections_.make_unique());
 
     using namespace ::testing;
     // Default to ignoring console messages originating inside the backend.
-    EXPECT_CALL(
+    EXPECT_CALL_WITH_SOURCE_LOCATION(
+        location,
         fromPage(),
         onMessage(JsonParsed(AllOf(
             AtJsonPtr("/method", "Runtime.consoleAPICalled"),
@@ -103,7 +107,8 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
 
     // We'll always get an onDisconnect call when we tear
     // down the test. Expect it in order to satisfy the strict mock.
-    EXPECT_CALL(*remoteConnections_[0], onDisconnect());
+    EXPECT_CALL_WITH_SOURCE_LOCATION(
+        location, *remoteConnections_[0], onDisconnect());
   }
 
   void reload() {
@@ -146,10 +151,13 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
    */
   template <typename Matcher>
   std::shared_ptr<const std::optional<folly::dynamic>> expectMessageFromPage(
-      Matcher&& matcher) {
+      Matcher&& matcher,
+      std::source_location location = std::source_location::current()) {
+    using namespace ::testing;
+    ScopedTrace scope(location.file_name(), location.line(), "");
     std::shared_ptr result =
         std::make_shared<std::optional<folly::dynamic>>(std::nullopt);
-    EXPECT_CALL(fromPage(), onMessage(matcher))
+    EXPECT_CALL_WITH_SOURCE_LOCATION(location, fromPage(), onMessage(matcher))
         .WillOnce(
             ([result](auto message) { *result = folly::parseJson(message); }))
         .RetiresOnSaturation();
@@ -188,7 +196,8 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
     JsiIntegrationPortableTestBase<EngineAdapter, Executor>& test_;
   };
 
-  SecondaryConnection connectSecondary() {
+  SecondaryConnection connectSecondary(
+      std::source_location location = std::source_location::current()) {
     auto toPage = page_->connect(remoteConnections_.make_unique());
 
     SecondaryConnection secondary{
@@ -196,7 +205,8 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
 
     using namespace ::testing;
     // Default to ignoring console messages originating inside the backend.
-    EXPECT_CALL(
+    EXPECT_CALL_WITH_SOURCE_LOCATION(
+        location,
         secondary.fromPage(),
         onMessage(JsonParsed(AllOf(
             AtJsonPtr("/method", "Runtime.consoleAPICalled"),
@@ -205,7 +215,8 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
 
     // We'll always get an onDisconnect call when we tear
     // down the test. Expect it in order to satisfy the strict mock.
-    EXPECT_CALL(secondary.fromPage(), onDisconnect());
+    EXPECT_CALL_WITH_SOURCE_LOCATION(
+        location, secondary.fromPage(), onDisconnect());
 
     return secondary;
   }
