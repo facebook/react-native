@@ -44,7 +44,7 @@ import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ReactCompoundView
-import com.facebook.react.uimanager.UIManagerModule
+import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.ViewDefaults
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
@@ -152,7 +152,6 @@ public class ReactTextView(context: Context) : AppCompatTextView(context), React
     updateView() // call after changing ellipsizeLocation in particular
   }
 
-  @Suppress("DEPRECATION")
   override fun onLayout(
       changed: Boolean, textViewLeft: Int, textViewTop: Int, textViewRight: Int, textViewBottom: Int) {
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
@@ -177,8 +176,8 @@ public class ReactTextView(context: Context) : AppCompatTextView(context), React
     }
 
     val reactContext = reactContext
-    val uiManager =
-        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule::class.java))
+    val uiManager = UIManagerHelper.getUIManager(reactContext, reactTag)
+
 
     val text = getText() as Spanned
     val layout = getLayout()
@@ -199,7 +198,7 @@ public class ReactTextView(context: Context) : AppCompatTextView(context), React
     val textViewHeight = textViewBottom - textViewTop
 
     for (placeholder in placeholders) {
-      val child = uiManager.resolveView(placeholder.reactTag)
+      val child = uiManager?.resolveView(placeholder.reactTag)
 
       val start = text.getSpanStart(placeholder)
       val line = layout.getLineForOffset(start)
@@ -630,10 +629,10 @@ public class ReactTextView(context: Context) : AppCompatTextView(context), React
 
   public fun setBorderWidth(position: Int, width: Float) {
     BackgroundStyleApplicator.setBorderWidth(
-        this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width))
+        this, LogicalEdge.entries[position], PixelUtil.toDIPFromPixel(width))
   }
 
-  public fun setBorderColor(position: Int, @Nullable color: Int?) {
+  public fun setBorderColor(position: Int, color: Int?) {
     BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color)
   }
 
@@ -692,14 +691,14 @@ public class ReactTextView(context: Context) : AppCompatTextView(context), React
    * generally, since we still need to register virtual views.
    */
   override fun onFocusChanged(
-      gainFocus: Boolean, direction: Int, @Nullable previouslyFocusedRect: Rect?) {
+      gainFocus: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
     val accessibilityDelegateCompat =
         ViewCompat.getAccessibilityDelegate(this)
     if (accessibilityDelegateCompat != null
         && accessibilityDelegateCompat is ReactTextViewAccessibilityDelegate
         && movementMethod == null) {
-      (accessibilityDelegateCompat as ReactTextViewAccessibilityDelegate)
+      accessibilityDelegateCompat
           .onFocusChanged(gainFocus, direction, previouslyFocusedRect)
     }
   }
@@ -710,7 +709,7 @@ public class ReactTextView(context: Context) : AppCompatTextView(context), React
     return (accessibilityDelegateCompat != null
             && movementMethod == null
             && accessibilityDelegateCompat is ReactTextViewAccessibilityDelegate
-            && (accessibilityDelegateCompat as ReactTextViewAccessibilityDelegate)
+            && accessibilityDelegateCompat
                 .dispatchKeyEvent(event))
         || super.dispatchKeyEvent(event)
   }
@@ -764,7 +763,7 @@ public class ReactTextView(context: Context) : AppCompatTextView(context), React
     get() {
       val context = getContext()
       return if (context is TintContextWrapper)
-          (context as TintContextWrapper).baseContext as ReactContext
+          context.baseContext as ReactContext
       else context as ReactContext
     }
 
