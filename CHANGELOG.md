@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.82.1
+
+### Fixed
+
+#### Android specific
+
+- Fixed representation of transforms when view is originally zero-sized ([a81e94a40c](https://github.com/facebook/react-native/commit/a81e94a40ca8dca9e57b562db21f8f235c5b25a0) by [@javache](https://github.com/javache))
+
+#### iOS specific
+
+- Fixed issue when using gnu coreutils cp command when using precompiled binaries causing compilation error ([068ec39aea](https://github.com/facebook/react-native/commit/068ec39aea543617e5159fe22274b294bfb29026) by [@chrfalch](https://github.com/chrfalch))
+
 ## v0.82.0
 
 ### Breaking
