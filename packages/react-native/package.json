@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.81.4",
+  "version": "0.81.5",
   "description": "A framework for building native apps using React",
   "license": "MIT",
   "repository": {
@@ -162,13 +162,13 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.7.0",
-    "@react-native/assets-registry": "0.81.4",
-    "@react-native/codegen": "0.81.4",
-    "@react-native/community-cli-plugin": "0.81.4",
-    "@react-native/gradle-plugin": "0.81.4",
-    "@react-native/js-polyfills": "0.81.4",
-    "@react-native/normalize-colors": "0.81.4",
-    "@react-native/virtualized-lists": "0.81.4",
+    "@react-native/assets-registry": "0.81.5",
+    "@react-native/codegen": "0.81.5",
+    "@react-native/community-cli-plugin": "0.81.5",
+    "@react-native/gradle-plugin": "0.81.5",
+    "@react-native/js-polyfills": "0.81.5",
+    "@react-native/normalize-colors": "0.81.5",
+    "@react-native/virtualized-lists": "0.81.5",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",

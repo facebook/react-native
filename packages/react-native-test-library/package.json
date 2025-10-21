@@ -26,8 +26,8 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@react-native/babel-preset": "0.81.4",
-    "react-native": "0.81.4"
+    "@react-native/babel-preset": "0.81.5",
+    "react-native": "0.81.5"
   },
   "peerDependencies": {
     "react": "*",

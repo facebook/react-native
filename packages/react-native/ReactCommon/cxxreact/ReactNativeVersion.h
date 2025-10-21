@@ -14,14 +14,14 @@
 
 #define REACT_NATIVE_VERSION_MAJOR 0
 #define REACT_NATIVE_VERSION_MINOR 81
-#define REACT_NATIVE_VERSION_PATCH 4
+#define REACT_NATIVE_VERSION_PATCH 5
 
 namespace facebook::react {
 
 constexpr struct {
   int32_t Major = 0;
   int32_t Minor = 81;
-  int32_t Patch = 4;
+  int32_t Patch = 5;
   std::string_view Prerelease = "";
 } ReactNativeVersion;
 
