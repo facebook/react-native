@@ -35,6 +35,12 @@ FabricMountingManager::FabricMountingManager(
     jni::global_ref<JFabricUIManager::javaobject>& javaUIManager)
     : javaUIManager_(javaUIManager) {}
 
+FabricMountingManager::~FabricMountingManager() {
+  // Manually reset `javaUIManager_` since FabricMountingManager may be retained
+  // from a GC thread (destroyUnmountedShadowNode)
+  jni::ThreadScope::WithClassLoader([&]() { javaUIManager_.reset(); });
+}
+
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
   allocatedViewRegistry_.emplace(
@@ -905,7 +911,7 @@ void FabricMountingManager::destroyUnmountedShadowNode(
 
   // ThreadScope::WithClassLoader is necessary because
   // destroyUnmountedShadowNode is being called from a destructor thread
-  facebook::jni::ThreadScope::WithClassLoader([&]() {
+  jni::ThreadScope::WithClassLoader([&]() {
     static auto destroyUnmountedView =
         JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint)>(
             "destroyUnmountedView");
