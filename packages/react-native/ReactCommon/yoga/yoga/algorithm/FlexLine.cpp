@@ -116,8 +116,8 @@ FlexLine calculateFlexLine(
       .sizeConsumed = sizeConsumed,
       .numberOfAutoMargins = numberOfAutoMargins,
       .layout = FlexLineRunningLayout{
-          totalFlexGrowFactors,
-          totalFlexShrinkScaledFactors,
+          .totalFlexGrowFactors = totalFlexGrowFactors,
+          .totalFlexShrinkScaledFactors = totalFlexShrinkScaledFactors,
       }};
 }
 
