@@ -30,7 +30,9 @@ using NativeIntersectionObserverObserveOptions =
         // thresholds
         std::vector<Float>,
         // rootThresholds
-        std::optional<std::vector<Float>>>;
+        std::optional<std::vector<Float>>,
+        // rootMargin
+        std::optional<std::string>>;
 
 template <>
 struct Bridging<NativeIntersectionObserverObserveOptions>
