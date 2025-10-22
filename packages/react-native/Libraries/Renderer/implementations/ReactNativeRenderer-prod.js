@@ -7,9 +7,9 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<14f9eca680f3065d18eda114fb4bea9f>>
  *
- * This file was sync'd from the facebook/react repository.
+ * This file is no longer sync'd from the facebook/react repository.
+ * The version compatability check is removed. Use at your own risk.
  */
 
 "use strict";
@@ -10918,13 +10918,6 @@ function updateContainer(element, container, parentComponent, callback) {
     entangleTransitions(element, parentComponent, lane));
   return lane;
 }
-var isomorphicReactPackageVersion = React.version;
-if ("19.2.0" !== isomorphicReactPackageVersion)
-  throw Error(
-    'Incompatible React versions: The "react" and "react-native-renderer" packages must have the exact same version. Instead got:\n  - react:                  ' +
-      (isomorphicReactPackageVersion +
-        "\n  - react-native-renderer:  19.2.0\nLearn more: https://react.dev/warnings/version-mismatch")
-  );
 if (
   "function" !==
   typeof ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog
