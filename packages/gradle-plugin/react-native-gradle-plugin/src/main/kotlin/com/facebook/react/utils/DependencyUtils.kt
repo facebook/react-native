@@ -14,6 +14,7 @@ import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY_DEFAULT
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_V1_VERSION_NAME
+import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_VERSION_NAME
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
@@ -139,11 +140,7 @@ internal object DependencyUtils {
           // Contributors only: The hermes-engine version is forced only if the user has
           // not opted into using nightlies for local development.
           configuration.resolutionStrategy.force(
-              // TODO: T237406039 update coordinates
-              if (hermesV1Enabled)
-                  "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
-              else
-                  "${coordinates.reactGroupString}:hermes-android:${coordinates.hermesVersionString}"
+              "${coordinates.hermesGroupString}:hermes-android:${if (hermesV1Enabled) coordinates.hermesV1VersionString else coordinates.hermesVersionString}"
           )
         }
       }
@@ -154,13 +151,10 @@ internal object DependencyUtils {
       coordinates: Coordinates,
       hermesV1Enabled: Boolean = false,
   ): List<Triple<String, String, String>> {
-    // TODO: T231755027 update coordinates and versioning
     val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
-    // TODO: T237406039 update coordinates
-    val hermesVersionString =
-        if (hermesV1Enabled)
-            "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
-        else "${coordinates.reactGroupString}:hermes-android:${coordinates.hermesVersionString}"
+    val hermesVersion =
+        if (hermesV1Enabled) coordinates.hermesV1VersionString else coordinates.hermesVersionString
+    val hermesVersionString = "${coordinates.hermesGroupString}:hermes-android:${hermesVersion}"
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:react-native",
@@ -175,6 +169,13 @@ internal object DependencyUtils {
             "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.",
         )
     )
+    dependencySubstitution.add(
+        Triple(
+            "com.facebook.react:hermes-android",
+            hermesVersionString,
+            "The hermes-android artifact was moved to com.facebook.hermes publishing group.",
+        )
+    )
     if (coordinates.reactGroupString != DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP) {
       dependencySubstitution.add(
           Triple(
@@ -183,7 +184,6 @@ internal object DependencyUtils {
               "The react-android dependency was modified to use the correct Maven group.",
           )
       )
-      // TODO: T237406039 update coordinates
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:hermes-android",
@@ -191,12 +191,13 @@ internal object DependencyUtils {
               "The hermes-android dependency was modified to use the correct Maven group.",
           )
       )
-    } else if (hermesV1Enabled) {
+    }
+    if (coordinates.hermesGroupString != DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP) {
       dependencySubstitution.add(
           Triple(
-              "com.facebook.react:hermes-android",
+              "com.facebook.hermes:hermes-android",
               hermesVersionString,
-              "The hermes-android dependency was modified to use Hermes V1.",
+              "The hermes-android dependency was modified to use the correct Maven group.",
           )
       )
     }
@@ -221,11 +222,19 @@ internal object DependencyUtils {
     val hermesGroupString =
         reactAndroidProperties[INTERNAL_HERMES_PUBLISHING_GROUP] as? String
             ?: DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP
-    // TODO: T237406039 read both versions from the same file
+
     val hermesVersionProperties = Properties()
     hermesVersionFile.inputStream().use { hermesVersionProperties.load(it) }
 
-    val hermesVersion = versionString
+    val hermesVersionString =
+        (hermesVersionProperties[INTERNAL_HERMES_VERSION_NAME] as? String).orEmpty()
+    val hermesVersion =
+        if (hermesVersionString.startsWith("0.0.0") || "-commitly-" in hermesVersionString) {
+          "$hermesVersionString-SNAPSHOT"
+        } else {
+          hermesVersionString
+        }
+
     val hermesV1Version =
         (hermesVersionProperties[INTERNAL_HERMES_V1_VERSION_NAME] as? String).orEmpty()
 
