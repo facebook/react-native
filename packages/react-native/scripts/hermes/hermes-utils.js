@@ -12,6 +12,8 @@
 
 const {execSync, spawnSync} = require('child_process');
 const fs = require('fs');
+// $FlowFixMe[untyped-import]
+const inquirer = require('inquirer');
 const os = require('os');
 const path = require('path');
 
@@ -22,6 +24,7 @@ type BuildType = 'dry-run' | 'release' | 'nightly';
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
 const HERMES_TAG_FILE_PATH = path.join(SDKS_DIR, '.hermesversion');
+const HERMES_V1_TAG_FILE_PATH = path.join(SDKS_DIR, '.hermesv1version');
 const HERMES_SOURCE_TARBALL_BASE_URL =
   'https://github.com/facebook/hermes/tarball/';
 const HERMES_TARBALL_DOWNLOAD_DIR = path.join(SDKS_DIR, 'download');
@@ -66,17 +69,66 @@ function readHermesTag() /*: string */ {
   return 'main';
 }
 
-function setHermesTag(hermesTag /*: string */) {
-  if (readHermesTag() === hermesTag) {
-    // No need to update.
-    return;
+function readHermesV1Tag() /*: string */ {
+  if (fs.existsSync(HERMES_V1_TAG_FILE_PATH)) {
+    const data = fs
+      .readFileSync(HERMES_V1_TAG_FILE_PATH, {
+        encoding: 'utf8',
+        flag: 'r',
+      })
+      .trim();
+
+    if (data.length > 0) {
+      return data;
+    } else {
+      throw new Error('[Hermes] .hermesv1version file is empty.');
+    }
   }
 
+  throw new Error('[Hermes] .hermesv1version does not exist.');
+}
+
+async function updateHermesTag(
+  tagFile /*: string */,
+  hermesTag /*: string */,
+  prompt /*: string */,
+) {
+  if (!fs.existsSync(tagFile)) {
+    fs.writeFileSync(tagFile, hermesTag.trim());
+  } else {
+    const previousHermesTag = fs.readFileSync(tagFile, {
+      encoding: 'utf8',
+      flag: 'r',
+    });
+
+    if (previousHermesTag.trim() !== hermesTag.trim()) {
+      const {confirmHermesTag} = await inquirer.prompt({
+        type: 'confirm',
+        name: 'confirmHermesTag',
+        message: `Do you want to use updtate release tag for ${prompt} from "${previousHermesTag}" to "${hermesTag}"?`,
+      });
+
+      if (confirmHermesTag) {
+        fs.writeFileSync(tagFile, hermesTag.trim());
+      } else {
+        console.log(`[${prompt}] .hermesversion file is unchanged.`);
+      }
+    } else {
+      console.log(`[${prompt}] .hermesversion file is unchanged.`);
+    }
+  }
+}
+
+async function setHermesTag(
+  hermesTag /*: string */,
+  hermesV1Tag /*: string */,
+) {
   if (!fs.existsSync(SDKS_DIR)) {
     fs.mkdirSync(SDKS_DIR, {recursive: true});
   }
-  fs.writeFileSync(HERMES_TAG_FILE_PATH, hermesTag.trim());
-  console.log('Hermes tag has been updated. Please commit your changes.');
+
+  await updateHermesTag(HERMES_TAG_FILE_PATH, hermesTag, 'Hermes');
+  await updateHermesTag(HERMES_V1_TAG_FILE_PATH, hermesV1Tag, 'Hermes V1');
 }
 
 function getHermesTagSHA(hermesTag /*: string */) /*: string */ {
@@ -337,6 +389,7 @@ module.exports = {
   getHermesTarballDownloadPath,
   getHermesPrebuiltArtifactsTarballName,
   readHermesTag,
+  readHermesV1Tag,
   setHermesTag,
   shouldBuildHermesFromSource,
   shouldUsePrebuiltHermesC,
