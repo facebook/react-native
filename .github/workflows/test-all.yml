@@ -120,6 +120,8 @@ jobs:
 
   prebuild_react_native_core:
     uses: ./.github/workflows/prebuild-ios-core.yml
+    with:
+      use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
     secrets: inherit
     needs: [prebuild_apple_dependencies, build_hermes_macos]
 
@@ -127,9 +129,6 @@ jobs:
     runs-on: macos-14
     needs:
       [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -145,9 +144,6 @@ jobs:
     runs-on: macos-14-large
     needs:
       [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     continue-on-error: true
     strategy:
       fail-fast: false
@@ -169,9 +165,6 @@ jobs:
     runs-on: macos-14-large
     needs:
       [test_ios_rntester]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     strategy:
       fail-fast: false
       matrix:
@@ -259,9 +252,6 @@ jobs:
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
           echo "React Native tgs is $REACT_NATIVE_PKG"
 
-          HERMES_PATH=$(find /tmp/react-native-tmp -type f -name "*.tar.gz")
-          echo "Hermes path is $HERMES_PATH"
-
           # For stable branches, we want to use the stable branch of the template
           # In all the other cases, we want to use "main"
           BRANCH=${{ github.ref_name }}
@@ -278,7 +268,7 @@ jobs:
           export RCT_USE_LOCAL_RN_DEP=/tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
           # Disable prebuilds for now, as they are causing issues with E2E tests for 0.82-stable branch
           # export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ matrix.flavor }}.xcframework.tar.gz"
-          HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
+          RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
 
           xcodebuild \
             -scheme "RNTestProject" \
@@ -534,6 +524,12 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run yarn install
+        uses: ./.github/actions/yarn-install
+      - name: Set nightly Hermes versions
+        shell: bash
+        run: |
+          node ./scripts/releases/use-hermes-nightly.js
+      - name: Run yarn install again, with the correct hermes version
         uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application
         shell: bash
