@@ -83,6 +83,7 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
     'removeAnimatedEventFromView', // 19
     'addListener', // 20
     'removeListener', // 21
+    'connectAnimatedNodeToShadowNode', // 22
   ];
   const nativeOperations: {
     [$Values<typeof methodNames>]: (...$ReadOnlyArray<mixed>) => void,
@@ -310,6 +311,10 @@ const API = {
 
   connectAnimatedNodeToView(nodeTag: number, viewTag: number): void {
     NativeOperations.connectAnimatedNodeToView(nodeTag, viewTag);
+  },
+
+  connectAnimatedNodeToShadowNode(nodeTag: number, shadowNode: {}): void {
+    NativeOperations.connectAnimatedNodeToShadowNode(nodeTag, shadowNode);
   },
 
   disconnectAnimatedNodeFromView(nodeTag: number, viewTag: number): void {

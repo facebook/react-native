@@ -14,6 +14,7 @@
 #include "AnimatedNode.h"
 
 #include <react/renderer/animated/internal/primitives.h>
+#include <react/renderer/core/ShadowNode.h>
 #include <mutex>
 
 namespace facebook::react {
@@ -24,6 +25,7 @@ class PropsAnimatedNode final : public AnimatedNode {
       const folly::dynamic& config,
       NativeAnimatedNodesManager& manager);
   void connectToView(Tag viewTag);
+  void connectToShadowNode(std::shared_ptr<const ShadowNode> shadowNode);
   void disconnectFromView(Tag viewTag);
   void restoreDefaultValues();
 
@@ -46,5 +48,6 @@ class PropsAnimatedNode final : public AnimatedNode {
   bool layoutStyleUpdated_{false};
 
   Tag connectedViewTag_{animated::undefinedAnimatedNodeIdentifier};
+  std::weak_ptr<const ShadowNode> viewShadowNode_{};
 };
 } // namespace facebook::react

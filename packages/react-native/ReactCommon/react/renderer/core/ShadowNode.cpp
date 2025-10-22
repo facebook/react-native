@@ -435,11 +435,7 @@ std::shared_ptr<ShadowNode> cloneMultipleRecursive(
     }
   }
 
-  ShadowNodeFragment fragment{.children = newChildren};
-  if (familiesToUpdate.contains(family)) {
-    return callback(shadowNode, fragment);
-  }
-  return shadowNode.clone(fragment);
+  return callback(shadowNode, {.children = newChildren});
 }
 
 } // namespace
