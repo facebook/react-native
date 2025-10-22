@@ -100,6 +100,11 @@ RCT_EXPORT_MODULE()
   return _bridge.uiManager.methodQueue;
 }
 
+- (void)setMethodQueue:(dispatch_queue_t)methodQueue
+{
+  // noop
+}
+
 RCT_EXPORT_METHOD(verifySnapshot : (RCTResponseSenderBlock)callback)
 {
   RCTAssert(_controller != nil, @"No snapshot controller configured.");
