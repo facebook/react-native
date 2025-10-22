@@ -13,27 +13,32 @@
 
 namespace facebook::react {
 
+class AnimatedMountingOverrideDelegate;
+
 class UIManagerNativeAnimatedDelegateImpl
     : public UIManagerNativeAnimatedDelegate {
  public:
-  explicit UIManagerNativeAnimatedDelegateImpl(
-      std::weak_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager);
+  explicit UIManagerNativeAnimatedDelegateImpl();
 
   void runAnimationFrame() override;
+
+  void setNativeAnimatedNodesManager(
+      std::weak_ptr<NativeAnimatedNodesManager> manager) {
+    nativeAnimatedNodesManager_ = manager;
+  }
 
  private:
   std::weak_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
 };
 
-class AnimatedMountingOverrideDelegate;
-
 class NativeAnimatedNodesManagerProvider {
  public:
+  using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
+  using StopOnRenderCallback = NativeAnimatedNodesManager::StopOnRenderCallback;
+
   NativeAnimatedNodesManagerProvider(
-      NativeAnimatedNodesManager::StartOnRenderCallback startOnRenderCallback =
-          nullptr,
-      NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback =
-          nullptr);
+      StartOnRenderCallback startOnRenderCallback = nullptr,
+      StopOnRenderCallback stopOnRenderCallback = nullptr);
 
   std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
       jsi::Runtime& runtime,
@@ -56,8 +61,8 @@ class NativeAnimatedNodesManagerProvider {
   std::shared_ptr<AnimatedMountingOverrideDelegate>
       animatedMountingOverrideDelegate_;
 
-  NativeAnimatedNodesManager::StartOnRenderCallback startOnRenderCallback_;
-  NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback_;
+  StartOnRenderCallback startOnRenderCallback_;
+  StopOnRenderCallback stopOnRenderCallback_;
 
   std::unique_ptr<MergedValueDispatcher> mergedValueDispatcher_;
 };

@@ -18,9 +18,7 @@
 
 namespace facebook::react {
 
-UIManagerNativeAnimatedDelegateImpl::UIManagerNativeAnimatedDelegateImpl(
-    std::weak_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager)
-    : nativeAnimatedNodesManager_(std::move(nativeAnimatedNodesManager)) {}
+UIManagerNativeAnimatedDelegateImpl::UIManagerNativeAnimatedDelegateImpl() {}
 
 void UIManagerNativeAnimatedDelegateImpl::runAnimationFrame() {
   if (auto nativeAnimatedNodesManagerStrong =
@@ -30,8 +28,8 @@ void UIManagerNativeAnimatedDelegateImpl::runAnimationFrame() {
 }
 
 NativeAnimatedNodesManagerProvider::NativeAnimatedNodesManagerProvider(
-    NativeAnimatedNodesManager::StartOnRenderCallback startOnRenderCallback,
-    NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback)
+    StartOnRenderCallback startOnRenderCallback,
+    StopOnRenderCallback stopOnRenderCallback)
     : eventEmitterListenerContainer_(
           std::make_shared<EventEmitterListenerContainer>()),
       startOnRenderCallback_(std::move(startOnRenderCallback)),
@@ -67,6 +65,9 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           uiManager->synchronouslyUpdateViewOnUIThread(viewTag, props);
         };
 
+    nativeAnimatedDelegate_ =
+        std::make_shared<UIManagerNativeAnimatedDelegateImpl>();
+
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
       // TODO: this should be initialized outside of animated, but for now it
@@ -84,13 +85,28 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
       uiManager->unstable_setAnimationBackend(animationBackend_);
     } else {
+      auto startOnRenderCallback = [this,
+                                    startOnRenderCallbackFn =
+                                        std::move(startOnRenderCallback_)]() {
+        if (startOnRenderCallbackFn) {
+          startOnRenderCallbackFn([this]() {
+            if (nativeAnimatedDelegate_) {
+              nativeAnimatedDelegate_->runAnimationFrame();
+            }
+          });
+        }
+      };
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(
               std::move(directManipulationCallback),
               std::move(fabricCommitCallback),
-              std::move(startOnRenderCallback_),
+              std::move(startOnRenderCallback),
               std::move(stopOnRenderCallback_));
     }
+
+    std::static_pointer_cast<UIManagerNativeAnimatedDelegateImpl>(
+        nativeAnimatedDelegate_)
+        ->setNativeAnimatedNodesManager(nativeAnimatedNodesManager_);
 
     addEventEmitterListener(
         nativeAnimatedNodesManager_->getEventEmitterListener());
@@ -111,10 +127,6 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           }
           return false;
         }));
-
-    nativeAnimatedDelegate_ =
-        std::make_shared<UIManagerNativeAnimatedDelegateImpl>(
-            nativeAnimatedNodesManager_);
 
     uiManager->setNativeAnimatedDelegate(nativeAnimatedDelegate_);
 

@@ -539,7 +539,7 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
   }
 
   if (startOnRenderCallback_) {
-    startOnRenderCallback_([this]() { onRender(); });
+    startOnRenderCallback_();
   }
 }
 
