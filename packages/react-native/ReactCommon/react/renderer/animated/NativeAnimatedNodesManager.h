@@ -61,7 +61,7 @@ class NativeAnimatedNodesManager {
       std::function<void(Tag, const folly::dynamic&)>;
   using FabricCommitCallback =
       std::function<void(std::unordered_map<Tag, folly::dynamic>&)>;
-  using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
+  using StartOnRenderCallback = std::function<void()>;
   using StopOnRenderCallback = std::function<void()>;
 
   explicit NativeAnimatedNodesManager(
