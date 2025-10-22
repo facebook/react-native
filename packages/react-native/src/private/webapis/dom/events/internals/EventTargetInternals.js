@@ -42,7 +42,7 @@ export const INTERNAL_DISPATCH_METHOD_KEY: symbol = Symbol(
  * JavaScript.
  */
 export function dispatchTrustedEvent(
-  eventTarget: EventTarget,
+  eventTarget: EventTarget<>,
   event: Event,
 ): void {
   setIsTrusted(event, true);
