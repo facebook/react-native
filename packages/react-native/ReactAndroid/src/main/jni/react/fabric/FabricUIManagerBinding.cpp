@@ -166,33 +166,38 @@ void FabricUIManagerBinding::startSurface(
     return;
   }
 
+  SurfaceHandler* surfaceHandler = nullptr;
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    auto [it, _] = surfaceHandlerRegistry_.try_emplace(
+        surfaceId,
+        std::in_place_index<0>,
+        moduleName->toStdString(),
+        surfaceId);
+    surfaceHandler = &std::get<SurfaceHandler>(it->second);
+  }
+
+  surfaceHandler->setContextContainer(scheduler->getContextContainer());
+  if (initialProps != nullptr) {
+    surfaceHandler->setProps(initialProps->consume());
+  }
+
   auto layoutContext = LayoutContext{};
   layoutContext.pointScaleFactor = pointScaleFactor_;
+  surfaceHandler->constraintLayout({}, layoutContext);
 
-  auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
-  surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler.setProps(initialProps->consume());
-  }
-  surfaceHandler.constraintLayout({}, layoutContext);
-
-  scheduler->registerSurface(surfaceHandler);
+  scheduler->registerSurface(*surfaceHandler);
 
   auto mountingManager = getMountingManager("startSurface");
   if (mountingManager != nullptr) {
     mountingManager->onSurfaceStart(surfaceId);
   }
 
-  surfaceHandler.start();
+  surfaceHandler->start();
 
   if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
-    surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+    surfaceHandler->getMountingCoordinator()->setMountingOverrideDelegate(
         animationDriver_);
-  }
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
 
@@ -338,30 +343,35 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
   constraints.layoutDirection =
       isRTL != 0 ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
-  auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
-  surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler.setProps(initialProps->consume());
+  SurfaceHandler* surfaceHandler = nullptr;
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    auto [it, _] = surfaceHandlerRegistry_.try_emplace(
+        surfaceId,
+        std::in_place_index<0>,
+        moduleName->toStdString(),
+        surfaceId);
+    surfaceHandler = &std::get<SurfaceHandler>(it->second);
   }
-  surfaceHandler.constraintLayout(constraints, context);
 
-  scheduler->registerSurface(surfaceHandler);
+  surfaceHandler->setContextContainer(scheduler->getContextContainer());
+  if (initialProps != nullptr) {
+    surfaceHandler->setProps(initialProps->consume());
+  }
+  surfaceHandler->constraintLayout(constraints, context);
+
+  scheduler->registerSurface(*surfaceHandler);
 
   auto mountingManager = getMountingManager("startSurfaceWithConstraints");
   if (mountingManager != nullptr) {
     mountingManager->onSurfaceStart(surfaceId);
   }
 
-  surfaceHandler.start();
+  surfaceHandler->start();
 
   if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
-    surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+    surfaceHandler->getMountingCoordinator()->setMountingOverrideDelegate(
         animationDriver_);
-  }
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
 
