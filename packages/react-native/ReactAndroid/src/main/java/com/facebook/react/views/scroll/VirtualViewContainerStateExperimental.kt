@@ -275,7 +275,7 @@ internal class IntervalTree(private val horizontal: Boolean) : MutableCollection
     if (bf < -1) {
       if (balanceFactor(node.right) > 0) {
         node.right =
-            rotateLeft(
+            rotateRight(
                 requireNotNull(node.right) {
                   "[IntervalTree] node.right must not be null when performing right rotation around it"
                 }
@@ -324,6 +324,7 @@ internal class IntervalTree(private val horizontal: Boolean) : MutableCollection
       return null
     }
 
+    var nodeToReturn: IntervalNode? = node
     when {
       compareIntervals(target.interval, node.interval) < 0 -> {
         node.left = delete(node.left, target)
@@ -333,26 +334,31 @@ internal class IntervalTree(private val horizontal: Boolean) : MutableCollection
       }
       else -> {
         // Node to delete found
-        return when {
-          node.left == null -> node.right
-          node.right == null -> node.left
-          else -> {
-            val successor =
-                findMin(
-                    requireNotNull(node.right) {
-                      "[IntervalTree] node.right must not be null when finding node's successor"
-                    }
-                )
-            node.virtualView = successor.virtualView
-            node.interval = successor.interval
-            node.right = delete(node.right, successor)
-            node
-          }
-        }
+        nodeToReturn =
+            when {
+              node.left == null -> node.right
+              node.right == null -> node.left
+              else -> {
+                val successor =
+                    findMin(
+                        requireNotNull(node.right) {
+                          "[IntervalTree] node.right must not be null when finding node's successor"
+                        }
+                    )
+                node.virtualView = successor.virtualView
+                node.interval = successor.interval
+                node.right = delete(node.right, successor)
+                node
+              }
+            }
       }
     }
 
-    return balance(node)
+    if (nodeToReturn == null) {
+      return null
+    } else {
+      return balance(nodeToReturn)
+    }
   }
 
   private fun queryHelper(
