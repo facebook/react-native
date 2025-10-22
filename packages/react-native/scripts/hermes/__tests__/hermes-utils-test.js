@@ -22,6 +22,7 @@ const {
   getHermesTagSHA,
   getHermesTarballDownloadPath,
   readHermesTag,
+  readHermesV1Tag,
   setHermesTag,
   shouldUsePrebuiltHermesC,
 } = require('../hermes-utils');
@@ -31,6 +32,7 @@ const os = require('os');
 
 const hermesTag =
   'hermes-2022-04-28-RNv0.69.0-15d07c2edd29a4ea0b8f15ab0588a0c1adb1200f';
+const hermesV1Tag = '250829098.0.0';
 const tarballContents = 'dummy string';
 const hermescContents = 'dummy string';
 const hermesTagSha = '5244f819b2f3949ca94a3a1bf75d54a8ed59d94a';
@@ -182,18 +184,26 @@ describe('hermes-utils', () => {
     });
 
     describe('setHermesTag', () => {
-      it('should write tag to .hermesversion file', () => {
-        setHermesTag(hermesTag);
+      it('should write tag to .hermesversion file', async () => {
+        await setHermesTag(hermesTag, hermesV1Tag);
         expect(
           fs.readFileSync(path.join(SDKS_DIR, '.hermesversion'), {
             encoding: 'utf8',
             flag: 'r',
           }),
         ).toEqual(hermesTag);
+
+        expect(
+          fs.readFileSync(path.join(SDKS_DIR, '.hermesv1version'), {
+            encoding: 'utf8',
+            flag: 'r',
+          }),
+        ).toEqual(hermesV1Tag);
       });
-      it('should set Hermes tag and read it back', () => {
-        setHermesTag(hermesTag);
+      it('should set Hermes tag and read it back', async () => {
+        await setHermesTag(hermesTag, hermesV1Tag);
         expect(readHermesTag()).toEqual(hermesTag);
+        expect(readHermesV1Tag()).toEqual(hermesV1Tag);
       });
     });
 
