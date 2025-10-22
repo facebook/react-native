@@ -19,6 +19,7 @@ import type {KeyboardEvent, KeyboardMetrics} from './Keyboard';
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
+import Dimensions from '../../Utilities/Dimensions';
 import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import AccessibilityInfo from '../AccessibilityInfo/AccessibilityInfo';
 import View from '../View/View';
@@ -70,6 +71,8 @@ class KeyboardAvoidingView extends React.Component<
   viewRef: {current: React.ElementRef<typeof View> | null, ...};
   _initialFrameHeight: number = 0;
   _bottom: number = 0;
+  _landscapeAndroidEndCoordinates: ?KeyboardMetrics = undefined;
+  _portraitAndroidEndCoordinates: ?KeyboardMetrics = undefined;
 
   constructor(props: KeyboardAvoidingViewProps) {
     super(props);
@@ -142,6 +145,25 @@ class KeyboardAvoidingView extends React.Component<
     }
   };
 
+  _onDimensionsChange = ({window}: DimensionsPayload) => {
+      // Set and cache the Android keyboard coordinates in case the view orientation was changed with the Keyboard visible
+      if (Keyboard.isVisible() && this._keyboardEvent) {
+        const orientation = window?.width > window?.height ? 'landscape' : 'portrait';
+        if (orientation === 'portrait') {
+          this._landscapeEndCoordinates = this._keyboardEvent.endCoordinates;
+          if (this._portraitEndCoordinates) {
+            this._keyboardEvent.endCoordinates = this._portraitEndCoordinates;
+          }
+        } else {
+          this._portraitEndCoordinates = this._keyboardEvent.endCoordinates;
+          if (this._landscapeEndCoordinates) {
+            this._keyboardEvent.endCoordinates = this._landscapeEndCoordinates;
+          }
+        }
+        this._updateBottomIfNecessary();
+      }
+  };
+
   // Avoid unnecessary renders if the KeyboardAvoidingView is disabled.
   _setBottom = (value: number) => {
     const enabled = this.props.enabled ?? true;
@@ -210,6 +232,7 @@ class KeyboardAvoidingView extends React.Component<
       this._subscriptions = [
         Keyboard.addListener('keyboardDidHide', this._onKeyboardChange),
         Keyboard.addListener('keyboardDidShow', this._onKeyboardChange),
+        Dimensions.addEventListener('change', this._onDimensionsChange),
       ];
     }
   }
