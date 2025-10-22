@@ -18,22 +18,42 @@
 
 namespace facebook::react {
 
-UIManagerNativeAnimatedDelegateImpl::UIManagerNativeAnimatedDelegateImpl() {}
+UIManagerNativeAnimatedDelegateImpl::UIManagerNativeAnimatedDelegateImpl(
+    NativeAnimatedNodesManagerProvider::FrameRateListenerCallback
+        frameRateListenerCallback)
+    : frameRateListenerCallback_(std::move(frameRateListenerCallback)) {}
 
 void UIManagerNativeAnimatedDelegateImpl::runAnimationFrame() {
   if (auto nativeAnimatedNodesManagerStrong =
           nativeAnimatedNodesManager_.lock()) {
+    if (frameRateListenerCallback_) {
+      frameRateListenerCallback_(true);
+    }
     nativeAnimatedNodesManagerStrong->onRender();
   }
 }
 
 NativeAnimatedNodesManagerProvider::NativeAnimatedNodesManagerProvider(
     StartOnRenderCallback startOnRenderCallback,
-    StopOnRenderCallback stopOnRenderCallback)
+    StopOnRenderCallback stopOnRenderCallback,
+    FrameRateListenerCallback frameRateListenerCallback)
     : eventEmitterListenerContainer_(
           std::make_shared<EventEmitterListenerContainer>()),
-      startOnRenderCallback_(std::move(startOnRenderCallback)),
-      stopOnRenderCallback_(std::move(stopOnRenderCallback)) {}
+      frameRateListenerCallback_(std::move(frameRateListenerCallback)),
+      startOnRenderCallback_(std::move(startOnRenderCallback)) {
+  if (frameRateListenerCallback_) {
+    stopOnRenderCallback_ = [this, stopOnRenderCallback]() {
+      if (stopOnRenderCallback) {
+        stopOnRenderCallback();
+      }
+      if (frameRateListenerCallback_) {
+        frameRateListenerCallback_(false);
+      }
+    };
+  } else {
+    stopOnRenderCallback_ = std::move(stopOnRenderCallback);
+  }
+}
 
 std::shared_ptr<NativeAnimatedNodesManager>
 NativeAnimatedNodesManagerProvider::getOrCreate(
@@ -66,7 +86,8 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
         };
 
     nativeAnimatedDelegate_ =
-        std::make_shared<UIManagerNativeAnimatedDelegateImpl>();
+        std::make_shared<UIManagerNativeAnimatedDelegateImpl>(
+            frameRateListenerCallback_);
 
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
