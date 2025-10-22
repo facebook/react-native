@@ -10,12 +10,6 @@ inputs:
   flavor:
     description: The flavor of the build. Must be one of "Debug", "Release".
     default: Debug
-  hermes-version:
-    description: The version of hermes
-    required: true
-  react-native-version:
-    description: The version of react-native
-    required: true
 runs:
   using: composite
   steps:
