@@ -15,30 +15,17 @@ namespace facebook::react {
 
 class AnimatedMountingOverrideDelegate;
 
-class UIManagerNativeAnimatedDelegateImpl
-    : public UIManagerNativeAnimatedDelegate {
- public:
-  explicit UIManagerNativeAnimatedDelegateImpl();
-
-  void runAnimationFrame() override;
-
-  void setNativeAnimatedNodesManager(
-      std::weak_ptr<NativeAnimatedNodesManager> manager) {
-    nativeAnimatedNodesManager_ = manager;
-  }
-
- private:
-  std::weak_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
-};
-
 class NativeAnimatedNodesManagerProvider {
  public:
+  using FrameRateListenerCallback =
+      std::function<void(bool /* shouldEnableListener */)>;
   using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
   using StopOnRenderCallback = NativeAnimatedNodesManager::StopOnRenderCallback;
 
   NativeAnimatedNodesManagerProvider(
       StartOnRenderCallback startOnRenderCallback = nullptr,
-      StopOnRenderCallback stopOnRenderCallback = nullptr);
+      StopOnRenderCallback stopOnRenderCallback = nullptr,
+      FrameRateListenerCallback frameRateListenerCallback = nullptr);
 
   std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
       jsi::Runtime& runtime,
@@ -61,10 +48,31 @@ class NativeAnimatedNodesManagerProvider {
   std::shared_ptr<AnimatedMountingOverrideDelegate>
       animatedMountingOverrideDelegate_;
 
+  FrameRateListenerCallback frameRateListenerCallback_;
   StartOnRenderCallback startOnRenderCallback_;
   StopOnRenderCallback stopOnRenderCallback_;
 
   std::unique_ptr<MergedValueDispatcher> mergedValueDispatcher_;
+};
+
+class UIManagerNativeAnimatedDelegateImpl
+    : public UIManagerNativeAnimatedDelegate {
+ public:
+  explicit UIManagerNativeAnimatedDelegateImpl(
+      NativeAnimatedNodesManagerProvider::FrameRateListenerCallback
+          frameRateListenerCallback);
+
+  void runAnimationFrame() override;
+
+  void setNativeAnimatedNodesManager(
+      std::weak_ptr<NativeAnimatedNodesManager> manager) {
+    nativeAnimatedNodesManager_ = manager;
+  }
+
+ private:
+  std::weak_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
+  NativeAnimatedNodesManagerProvider::FrameRateListenerCallback
+      frameRateListenerCallback_;
 };
 
 } // namespace facebook::react
