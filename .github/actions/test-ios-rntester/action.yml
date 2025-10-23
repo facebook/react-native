@@ -10,18 +10,9 @@ inputs:
   run-unit-tests:
     description: whether unit tests should run or not.
     default: "false"
-  hermes-tarball-artifacts-dir:
-    description: The directory where the hermes tarball artifacts are stored
-    default: /tmp/hermes/hermes-runtime-darwin
   flavor:
     description: The flavor of the build. Must be one of "Debug", "Release".
     default: Debug
-  hermes-version:
-    description: The version of hermes
-    required: true
-  react-native-version:
-    description: The version of react-native
-    required: true
   run-e2e-tests:
     description: Whether we want to run E2E tests or not
     required: false
@@ -36,56 +27,19 @@ runs:
       uses: ./.github/actions/setup-node
     - name: Run yarn
       uses: ./.github/actions/yarn-install
-    - name: Download Hermes
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-darwin-bin-${{ inputs.flavor }}
-        path: ${{ inputs.hermes-tarball-artifacts-dir }}
     - name: Setup ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ inputs.ruby-version }}
+    - name: Set nightly Hermes versions
+      shell: bash
+      run: |
+        node ./scripts/releases/use-hermes-nightly.js
+    - name: Run yarn install again, with the correct hermes version
+      uses: ./.github/actions/yarn-install
     - name: Prepare IOS Tests
       if: ${{ inputs.run-unit-tests == 'true' }}
       uses: ./.github/actions/prepare-ios-tests
-    - name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes tarball is present
-      shell: bash
-      run: |
-        HERMES_TARBALL_ARTIFACTS_DIR=${{ inputs.hermes-tarball-artifacts-dir }}
-        if [ ! -d $HERMES_TARBALL_ARTIFACTS_DIR ]; then
-          echo "Hermes tarball artifacts dir not present ($HERMES_TARBALL_ARTIFACTS_DIR). Build Hermes from source."
-          exit 0
-        fi
-
-        TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "${{ inputs.flavor }}")
-        TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
-
-        echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
-        echo "$TARBALL_PATH"
-
-        if [ ! -f $TARBALL_PATH ]; then
-          echo "Hermes tarball not present ($TARBALL_PATH). Build Hermes from source."
-          exit 0
-        fi
-
-        echo "Found Hermes tarball at $TARBALL_PATH"
-        echo "HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $GITHUB_ENV
-    - name: Print Hermes version
-      shell: bash
-      run: |
-        HERMES_TARBALL_ARTIFACTS_DIR=${{ inputs.hermes-tarball-artifacts-dir }}
-        TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "${{ inputs.flavor }}")
-        TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
-        if [[ -e $TARBALL_PATH ]]; then
-          tar -xf $TARBALL_PATH
-          echo 'print(HermesInternal?.getRuntimeProperties?.()["OSS Release Version"])' > test.js
-          chmod +x ./destroot/bin/hermes
-          ./destroot/bin/hermes test.js
-          rm test.js
-          rm -rf destroot
-        else
-          echo 'No Hermes tarball found.'
-        fi
     - name: Download ReactNativeDependencies
       uses: actions/download-artifact@v4
       with:
@@ -105,7 +59,6 @@ runs:
     - name: Install CocoaPods dependencies
       shell: bash
       run: |
-        export HERMES_ENGINE_TARBALL_PATH=$HERMES_ENGINE_TARBALL_PATH
         export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
         export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ inputs.flavor }}.xcframework.tar.gz"
 
@@ -116,7 +69,7 @@ runs:
         cd packages/rn-tester
 
         bundle install
-        bundle exec pod install
+        bundle exec pod update hermes-engine --no-repo-update
     - name: Build RNTester
       shell: bash
       run: |

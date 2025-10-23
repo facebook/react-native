@@ -18,6 +18,19 @@ namespace facebook::react {
 
 using IntersectionObserverObserverId = int32_t;
 
+// Structure to hold a margin value that can be either pixels or percentage
+struct MarginValue {
+  Float value;
+  bool isPercentage;
+};
+
+// Parse a normalized rootMargin string that's always in the format:
+// "top right bottom left" where each value is either "Npx" or "N%"
+// The string is already validated and normalized by JS.
+// Returns a vector of 4 MarginValue structures (top, right, bottom, left).
+std::vector<MarginValue> parseNormalizedRootMargin(
+    const std::string& marginStr);
+
 struct IntersectionObserverEntry {
   IntersectionObserverObserverId intersectionObserverId;
   ShadowNodeFamily::Shared shadowNodeFamily;
@@ -41,7 +54,8 @@ class IntersectionObserver {
       std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily,
       ShadowNodeFamily::Shared targetShadowNodeFamily,
       std::vector<Float> thresholds,
-      std::optional<std::vector<Float>> rootThresholds = std::nullopt);
+      std::optional<std::vector<Float>> rootThresholds,
+      std::vector<MarginValue> rootMargins);
 
   // Partially equivalent to
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
@@ -84,6 +98,8 @@ class IntersectionObserver {
   ShadowNodeFamily::Shared targetShadowNodeFamily_;
   std::vector<Float> thresholds_;
   std::optional<std::vector<Float>> rootThresholds_;
+  // Parsed and expanded rootMargin values (top, right, bottom, left)
+  std::vector<MarginValue> rootMargins_;
   mutable IntersectionObserverState state_ =
       IntersectionObserverState::Initial();
 };

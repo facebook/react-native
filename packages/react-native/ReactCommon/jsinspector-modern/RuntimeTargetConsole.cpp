@@ -526,30 +526,6 @@ void RuntimeTarget::installConsoleHandler() {
     auto state = std::make_shared<ConsoleState>();
 
     /**
-     * An executor that runs synchronously and provides a safe reference to our
-     * RuntimeTargetDelegate for use on the JS thread.
-     * \see RuntimeTargetDelegate for information on which methods are safe to
-     * call on the JS thread.
-     * \warning The callback will not run if the RuntimeTarget has been
-     * destroyed.
-     */
-    auto delegateExecutorSync =
-        [selfWeak,
-         selfExecutor](std::invocable<RuntimeTargetDelegate&> auto func) {
-          if (auto self = selfWeak.lock()) {
-            // Q: Why is it safe to use self->delegate_ here?
-            // A: Because the caller of InspectorTarget::registerRuntime
-            // is explicitly required to guarantee that the delegate not
-            // only outlives the target, but also outlives all JS code
-            // execution that occurs on the JS thread.
-            func(self->delegate_);
-            // To ensure we never destroy `self` on the JS thread, send
-            // our shared_ptr back to the inspector thread.
-            selfExecutor([self = std::move(self)](auto&) { (void)self; });
-          }
-        };
-
-    /**
      * Install a console method with the given name and body. The body receives
      * the usual JSI host function parameters plus a ConsoleState reference, a
      * reference to the RuntimeTargetDelegate for sending messages to the
@@ -569,20 +545,26 @@ void RuntimeTarget::installConsoleHandler() {
               forwardToOriginalConsole(
                   originalConsole,
                   methodName,
-                  [body = std::move(body), state, delegateExecutorSync](
+                  [body = std::move(body), state, selfWeak](
                       jsi::Runtime& runtime,
                       const jsi::Value& /*thisVal*/,
                       const jsi::Value* args,
                       size_t count) {
                     auto timestampMs = getTimestampMs();
-                    delegateExecutorSync([&](auto& runtimeTargetDelegate) {
-                      auto stackTrace = runtimeTargetDelegate.captureStackTrace(
+                    tryExecuteSync(selfWeak, [&](auto& self) {
+                      // Q: Why is it safe to use self->delegate_ here?
+                      // A: Because the caller of
+                      // InspectorTarget::registerRuntime is explicitly required
+                      // to guarantee that the delegate not only outlives the
+                      // target, but also outlives all JS code execution that
+                      // occurs on the JS thread.
+                      auto stackTrace = self.delegate_.captureStackTrace(
                           runtime, /* framesToSkip */ 1);
                       body(
                           runtime,
                           args,
                           count,
-                          runtimeTargetDelegate,
+                          self.delegate_,
                           *state,
                           timestampMs,
                           std::move(stackTrace));

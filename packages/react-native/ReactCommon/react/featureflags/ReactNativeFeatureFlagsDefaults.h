@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e8eb056e546c41e5863073e460362020>>
+ * @generated SignedSource<<0b0473f9301b18ed030398828d4cccc3>>
  */
 
 /**
@@ -40,6 +40,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool cxxNativeAnimatedRemoveJsSync() override {
+    return false;
+  }
+
+  bool disableEarlyViewCommandExecution() override {
     return false;
   }
 
@@ -211,6 +215,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool enableVirtualViewContainerStateExperimental() override {
+    return false;
+  }
+
   bool enableVirtualViewDebugFeatures() override {
     return false;
   }
@@ -263,6 +271,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool shouldTriggerResponderTransferOnScrollAndroid() override {
+    return false;
+  }
+
   bool skipActivityIdentityAssertionOnHostPause() override {
     return false;
   }
@@ -308,6 +320,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useShadowNodeStateOnClone() override {
+    return false;
+  }
+
+  bool useSharedAnimatedBackend() override {
+    return false;
+  }
+
+  bool useTraitHiddenOnAndroid() override {
     return false;
   }
 

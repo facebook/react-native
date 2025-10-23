@@ -18,6 +18,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -215,7 +216,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public VirtualViewContainerState getVirtualViewContainerState() {
     if (mVirtualViewContainerState == null) {
-      mVirtualViewContainerState = new VirtualViewContainerState(this);
+      mVirtualViewContainerState = VirtualViewContainerState.create(this);
     }
 
     return mVirtualViewContainerState;
@@ -710,7 +711,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   protected void handleInterceptedTouchEvent(MotionEvent ev) {
-    NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    if (!ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid()) {
+      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    }
     ReactScrollViewHelper.emitScrollBeginDragEvent(this);
     mDragging = true;
     enableFpsListener();
@@ -778,7 +781,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(this, velocityX, velocityY);
-      NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      if (!ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid()) {
+        NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      }
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
@@ -797,6 +802,38 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // We do not dispatch the motion event if its children are not supposed to receive it
     if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
       return false;
+    }
+
+    // Handle ACTION_SCROLL events (mouse wheel, trackpad, joystick)
+    if (ev.getActionMasked() == MotionEvent.ACTION_SCROLL) {
+      float hScroll = ev.getAxisValue(MotionEvent.AXIS_HSCROLL);
+      if (hScroll != 0) {
+        // Perform the scroll
+        boolean result = super.dispatchGenericMotionEvent(ev);
+        // Schedule snap alignment to run after scrolling stops
+        if (result
+            && (mPagingEnabled
+                || mSnapInterval != 0
+                || mSnapOffsets != null
+                || mSnapToAlignment != SNAP_ALIGNMENT_DISABLED)) {
+          // Cancel any pending runnable and reschedule
+          if (mPostTouchRunnable != null) {
+            removeCallbacks(mPostTouchRunnable);
+          }
+          mPostTouchRunnable =
+              new Runnable() {
+                @Override
+                public void run() {
+                  mPostTouchRunnable = null;
+                  // Trigger snap alignment now that scrolling has stopped
+                  handlePostTouchScrolling(0, 0);
+                }
+              };
+          ViewCompat.postOnAnimationDelayed(
+              this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+        }
+        return result;
+      }
     }
 
     return super.dispatchGenericMotionEvent(ev);
@@ -1647,6 +1684,20 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void setStateWrapper(StateWrapper stateWrapper) {
     mStateWrapper = stateWrapper;
+  }
+
+  @Override
+  public void setReactScrollViewScrollState(ReactScrollViewScrollState scrollState) {
+    mReactScrollViewScrollState = scrollState;
+    if (ReactNativeFeatureFlags.enableViewCulling()
+        || ReactNativeFeatureFlags.useTraitHiddenOnAndroid()) {
+      Point scrollPosition = scrollState.getLastStateUpdateScroll();
+      restoreScrollTo(scrollPosition.x, scrollPosition.y);
+    }
+  }
+
+  protected void restoreScrollTo(int x, int y) {
+    scrollTo(x, y);
   }
 
   @Override

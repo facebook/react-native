@@ -31,6 +31,7 @@ class IntersectionObserverManager final
       const ShadowNodeFamily::Shared& shadowNode,
       std::vector<Float> thresholds,
       std::optional<std::vector<Float>> rootThresholds,
+      std::optional<std::string> rootMargin,
       const UIManager& uiManager);
 
   void unobserve(

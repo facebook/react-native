@@ -149,8 +149,9 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * BackgroundImage
    */
-  experimental_backgroundImage: {process: processBackgroundImage},
-
+  experimental_backgroundImage: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? true
+    : {process: processBackgroundImage},
   /**
    * BackgroundSize
    */

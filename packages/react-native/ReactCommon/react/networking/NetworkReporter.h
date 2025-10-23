@@ -27,14 +27,14 @@ namespace facebook::react {
  * reporting.
  */
 struct ResourceTimingData {
-  std::string url;
-  HighResTimeStamp fetchStart;
-  HighResTimeStamp requestStart;
-  std::optional<HighResTimeStamp> connectStart;
-  std::optional<HighResTimeStamp> connectEnd;
-  std::optional<HighResTimeStamp> responseStart;
+  std::string url{};
+  HighResTimeStamp fetchStart{};
+  HighResTimeStamp requestStart{};
+  std::optional<HighResTimeStamp> connectStart{};
+  std::optional<HighResTimeStamp> connectEnd{};
+  std::optional<HighResTimeStamp> responseStart{};
   int responseStatus = 0;
-  std::string contentType;
+  std::string contentType{};
   int encodedBodySize = 0;
   int decodedBodySize = 0;
 };

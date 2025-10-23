@@ -7,9 +7,12 @@
 
 #pragma once
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/ValueUnit.h>
+#include <optional>
+#include <sstream>
 
 namespace facebook::react {
 
@@ -17,6 +20,20 @@ struct ColorStop {
   bool operator==(const ColorStop& other) const = default;
   SharedColor color;
   ValueUnit position;
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const;
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+  void toString(std::stringstream& ss) const {
+    ss << color.toString();
+    if (position.unit != UnitType::Undefined) {
+      ss << " ";
+      ss << position.toString();
+    }
+  }
+#endif
 };
 
 struct ProcessedColorStop {

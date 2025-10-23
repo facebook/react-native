@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<65e895433fc609bd7c2b5d7faa507f46>>
+ * @generated SignedSource<<5a9a51638a72bda657f312260bb1297a>>
  */
 
 /**
@@ -30,6 +30,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
+
+  @DoNotStrip public fun disableEarlyViewCommandExecution(): Boolean
 
   @DoNotStrip public fun disableFabricCommitInCXXAnimated(): Boolean
 
@@ -115,6 +117,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
+  @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
+
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
 
   @DoNotStrip public fun enableVirtualViewRenderState(): Boolean
@@ -141,6 +145,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 
+  @DoNotStrip public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
+
   @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
   @DoNotStrip public fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean
@@ -164,6 +170,10 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useRawPropsJsiValue(): Boolean
 
   @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
+
+  @DoNotStrip public fun useSharedAnimatedBackend(): Boolean
+
+  @DoNotStrip public fun useTraitHiddenOnAndroid(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

@@ -17,6 +17,8 @@
  * and to make it more accessible for other devs to play around with.
  */
 
+import {getPackageVersionStrByTag} from '../releases/utils/npm-utils';
+
 const {initNewProjectFromSource} = require('../e2e/init-project-e2e');
 const {REPO_ROOT} = require('../shared/consts');
 const {
@@ -248,7 +250,28 @@ async function testRNTestProject(
       ? path.join(ciArtifacts.baseTmpPath(), 'maven-local')
       : '/private/tmp/maven-local';
 
-  const {hermesPath, newLocalNodeTGZ} = await prepareArtifacts(
+  const latestHermesCommitly = await getPackageVersionStrByTag(
+    'hermes-compiler',
+    'nightly',
+  );
+  const latestHermesV1 = await getPackageVersionStrByTag(
+    'hermes-compiler',
+    'latest-v1',
+  );
+  sed(
+    '-i',
+    'HERMES_VERSION_NAME=.*',
+    `HERMES_VERSION_NAME=${latestHermesCommitly}`,
+    'sdks/hermes-engine/version.properties',
+  );
+  sed(
+    '-i',
+    'HERMES_V1_VERSION_NAME=.*',
+    `HERMES_V1_VERSION_NAME=${latestHermesV1}`,
+    'sdks/hermes-engine/version.properties',
+  );
+
+  const {newLocalNodeTGZ} = await prepareArtifacts(
     ciArtifacts,
     mavenLocalPath,
     localNodeTGZPath,
@@ -313,9 +336,7 @@ async function testRNTestProject(
     // doing the pod install here so that it's easier to play around RNTestProject
     cd('ios');
     exec('bundle install');
-    exec(
-      `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=1 bundle exec pod install --ansi`,
-    );
+    exec(`USE_HERMES=1 bundle exec pod install --ansi`);
 
     cd('..');
     exec('npm run ios');

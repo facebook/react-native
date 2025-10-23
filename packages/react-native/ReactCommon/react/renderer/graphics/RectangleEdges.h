@@ -77,9 +77,11 @@ using EdgeInsets = RectangleEdges<Float>;
  */
 inline Rect insetBy(const Rect& rect, const EdgeInsets& insets) noexcept {
   return Rect{
-      {rect.origin.x + insets.left, rect.origin.y + insets.top},
-      {rect.size.width - insets.left - insets.right,
-       rect.size.height - insets.top - insets.bottom}};
+      .origin =
+          {.x = rect.origin.x + insets.left, .y = rect.origin.y + insets.top},
+      .size = {
+          .width = rect.size.width - insets.left - insets.right,
+          .height = rect.size.height - insets.top - insets.bottom}};
 }
 
 /*
@@ -87,9 +89,11 @@ inline Rect insetBy(const Rect& rect, const EdgeInsets& insets) noexcept {
  */
 inline Rect outsetBy(const Rect& rect, const EdgeInsets& outsets) noexcept {
   return Rect{
-      {rect.origin.x - outsets.left, rect.origin.y - outsets.top},
-      {rect.size.width + outsets.left + outsets.right,
-       rect.size.height + outsets.top + outsets.bottom}};
+      .origin =
+          {.x = rect.origin.x - outsets.left, .y = rect.origin.y - outsets.top},
+      .size = {
+          .width = rect.size.width + outsets.left + outsets.right,
+          .height = rect.size.height + outsets.top + outsets.bottom}};
 }
 
 } // namespace facebook::react

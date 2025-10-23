@@ -22,7 +22,6 @@ internal interface VirtualViewContainer {
 
 public interface VirtualView {
   public val virtualViewID: String
-
   public val containerRelativeRect: Rect
 
   public fun onModeChange(newMode: VirtualViewMode, thresholdRect: Rect): Unit
@@ -35,7 +34,7 @@ public interface VirtualView {
  * considered to overlap with another Rect if the line or point is within the rect bounds. However,
  * two Rects are not considered to overlap if they only share a boundary.
  */
-private fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
+internal fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
   if (rect1.top >= rect2.bottom || rect2.top >= rect1.bottom) {
     // No overlap on the y-axis.
     return false
@@ -47,17 +46,15 @@ private fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
   return true
 }
 
-internal class VirtualViewContainerState {
-
-  private val prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
-  private val hysteresisRatio: Double = ReactNativeFeatureFlags.virtualViewHysteresisRatio()
-
-  private val virtualViews: MutableSet<VirtualView> = mutableSetOf()
-  private val emptyRect: Rect = Rect()
-  private val visibleRect: Rect = Rect()
-  private val prerenderRect: Rect = Rect()
-  private val hysteresisRect: Rect = Rect()
-  private val onWindowFocusChangeListener =
+internal abstract class VirtualViewContainerState {
+  protected val prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
+  protected val hysteresisRatio: Double = ReactNativeFeatureFlags.virtualViewHysteresisRatio()
+  protected abstract val virtualViews: MutableCollection<VirtualView>
+  protected val emptyRect: Rect = Rect()
+  protected val visibleRect: Rect = Rect()
+  protected val prerenderRect: Rect = Rect()
+  protected val hysteresisRect: Rect = Rect()
+  protected val onWindowFocusChangeListener =
       if (ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()) {
         ViewTreeObserver.OnWindowFocusChangeListener {
           debugLog("onWindowFocusChanged")
@@ -66,8 +63,18 @@ internal class VirtualViewContainerState {
       } else {
         null
       }
+  protected val scrollView: ViewGroup
 
-  private val scrollView: ViewGroup
+  companion object {
+    @JvmStatic
+    fun create(scrollView: ViewGroup): VirtualViewContainerState {
+      return if (ReactNativeFeatureFlags.enableVirtualViewContainerStateExperimental()) {
+        VirtualViewContainerStateExperimental(scrollView)
+      } else {
+        VirtualViewContainerStateClassic(scrollView)
+      }
+    }
+  }
 
   constructor(scrollView: ViewGroup) {
     this.scrollView = scrollView
@@ -76,13 +83,13 @@ internal class VirtualViewContainerState {
     }
   }
 
-  public fun cleanup() {
+  fun cleanup() {
     if (onWindowFocusChangeListener != null) {
       scrollView.viewTreeObserver.removeOnWindowFocusChangeListener(onWindowFocusChangeListener)
     }
   }
 
-  public fun onChange(virtualView: VirtualView) {
+  open fun onChange(virtualView: VirtualView) {
     if (virtualViews.add(virtualView)) {
       debugLog("add", { "virtualViewID=${virtualView.virtualViewID}" })
     } else {
@@ -91,7 +98,7 @@ internal class VirtualViewContainerState {
     updateModes(virtualView)
   }
 
-  public fun remove(virtualView: VirtualView) {
+  open fun remove(virtualView: VirtualView) {
     assert(virtualViews.remove(virtualView)) {
       "Attempting to remove non-existent VirtualView: ${virtualView.virtualViewID}"
     }
@@ -99,19 +106,27 @@ internal class VirtualViewContainerState {
   }
 
   // Called on ScrollView onLayout or onScroll
-  public fun updateState() {
+  fun updateState() {
     debugLog("updateState")
     updateModes()
   }
 
-  private fun updateModes(virtualView: VirtualView? = null) {
+  /**
+   * Refreshes the coordinates for the Rects this class cares about (visibleRect, prerenderRect,
+   * hysteresisRect)
+   */
+  protected fun updateRects() {
     scrollView.getDrawingRect(visibleRect)
 
     // This happens because ScrollView content isn't ready yet. The danger here is if ScrollView
     // intentionally goes but curently ScrollView and v1 Fling use this check to determine if
     // "content ready"
     if (visibleRect.isEmpty()) {
-      debugLog("updateModes", { "scrollView visibleRect is empty" })
+      debugLog("updateRects", { "scrollView visibleRect is empty" })
+      // should set the other rects here in case scrollview is suddenly empty after the other rects
+      // are non-empty
+      prerenderRect.set(visibleRect)
+      hysteresisRect.set(prerenderRect)
       return
     }
 
@@ -121,61 +136,28 @@ internal class VirtualViewContainerState {
         (-prerenderRect.height() * prerenderRatio).toInt(),
     )
 
-    if (hysteresisRatio > 0.0) {
-      hysteresisRect.set(prerenderRect)
-      hysteresisRect.inset(
-          (-visibleRect.width() * hysteresisRatio).toInt(),
-          (-visibleRect.height() * hysteresisRatio).toInt(),
-      )
-    }
+    hysteresisRect.set(prerenderRect)
+    hysteresisRect.inset(
+        (-visibleRect.width() * hysteresisRatio).toInt(),
+        (-visibleRect.height() * hysteresisRatio).toInt(),
+    )
 
-    val virtualViewsIt =
-        if (virtualView != null) listOf(virtualView) else virtualViews.toMutableSet()
-    virtualViewsIt.forEach { vv ->
-      val rect = vv.containerRelativeRect
-
-      var mode: VirtualViewMode? = VirtualViewMode.Hidden
-      var thresholdRect = emptyRect
-      when {
-        rectsOverlap(rect, visibleRect) -> {
-          thresholdRect = visibleRect
-          if (onWindowFocusChangeListener != null) {
-            if (scrollView.hasWindowFocus()) {
-              mode = VirtualViewMode.Visible
-            } else {
-              mode = VirtualViewMode.Prerender
-            }
-          } else {
-            mode = VirtualViewMode.Visible
-          }
-        }
-        rectsOverlap(rect, prerenderRect) -> {
-          mode = VirtualViewMode.Prerender
-          thresholdRect = prerenderRect
-        }
-        (hysteresisRatio > 0.0 && rectsOverlap(rect, hysteresisRect)) -> {
-          mode = null
-        }
-      }
-
-      if (mode != null) {
-        vv.onModeChange(mode, thresholdRect)
-        debugLog(
-            "updateModes",
-            {
-              "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect"
-            },
-        )
-      }
-    }
+    debugLog(
+        "updateRects",
+        {
+          "visibleRect ${visibleRect.toString()} prerenderRect ${prerenderRect.toString()} hysteresisRect ${hysteresisRect.toString()}"
+        },
+    )
   }
+
+  protected abstract fun updateModes(virtualView: VirtualView? = null)
 }
 
 private const val DEBUG_TAG: String = "VirtualViewContainerState"
-private val IS_DEBUG_BUILD =
+internal val IS_DEBUG_BUILD =
     ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD || ReactBuildConfig.ENABLE_PERFETTO
 
-internal inline fun debugLog(subtag: String, block: () -> String = { "" }) {
+private inline fun debugLog(subtag: String, block: () -> String = { "" }) {
   if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
     FLog.d("$DEBUG_TAG:$subtag", block())
   }

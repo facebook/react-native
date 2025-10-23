@@ -104,6 +104,11 @@ export function getBuckModesForPlatform(
   return ['@//xplat/mode/react-native/granite', osPlatform];
 }
 
+// TODO: T240293839 Remove when we get rid of RN_USE_ANIMATION_BACKEND preprocessor flag
+export function getConfigForAnimationBackend(): $ReadOnlyArray<string> {
+  return ['-c rn.use_animationbackend=true'];
+}
+
 export type AsyncCommandResult = {
   originalCommand: string,
   childProcess: ReturnType<typeof spawn>,

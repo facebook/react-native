@@ -25,6 +25,7 @@ class FabricMountingManager final {
   FabricMountingManager(
       jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
   FabricMountingManager(const FabricMountingManager&) = delete;
+  ~FabricMountingManager();
 
   void onSurfaceStart(SurfaceId surfaceId);
 

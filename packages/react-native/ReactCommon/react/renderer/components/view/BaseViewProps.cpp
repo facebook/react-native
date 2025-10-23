@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/view/BackgroundImagePropsConversions.h>
 #include <react/renderer/components/view/BoxShadowPropsConversions.h>
 #include <react/renderer/components/view/FilterPropsConversions.h>
 #include <react/renderer/components/view/conversions.h>
@@ -558,9 +559,6 @@ Transform BaseViewProps::resolveTransform(
     const Transform& transform,
     const TransformOrigin& transformOrigin) {
   auto transformMatrix = Transform{};
-  if (frameSize.width == 0 && frameSize.height == 0) {
-    return transformMatrix;
-  }
 
   // transform is matrix
   if (transform.operations.size() == 1 &&
@@ -614,6 +612,10 @@ SharedDebugStringConvertibleList BaseViewProps::getDebugProps() const {
               defaultBaseViewProps.pointerEvents),
           debugStringConvertibleItem(
               "transform", transform, defaultBaseViewProps.transform),
+          debugStringConvertibleItem(
+              "backgroundImage",
+              backgroundImage,
+              defaultBaseViewProps.backgroundImage),
       };
 }
 #endif

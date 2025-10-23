@@ -26,8 +26,10 @@ target_link_libraries(react_renderer_animated
       react_renderer_mounting
       react_renderer_uimanager
       react_renderer_scheduler
+      react_renderer_animationbackend
       glog
       folly_runtime
 )
 target_compile_reactnative_options(react_renderer_animated PRIVATE)
 target_compile_options(react_renderer_animated PRIVATE -Wpedantic)
+target_compile_definitions(react_renderer_animated PRIVATE RN_USE_ANIMATION_BACKEND)

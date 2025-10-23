@@ -188,8 +188,6 @@ public class NativeViewHierarchyManager {
     try {
       View viewToUpdate = resolveView(tag);
 
-      viewToUpdate.setLayoutDirection(LayoutDirectionUtil.toAndroidFromYoga(layoutDirection));
-
       // Even though we have exact dimensions, we still call measure because some platform views
       // (e.g.
       // Switch) assume that method will always be called before onLayout and onDraw. They use it to

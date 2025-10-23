@@ -10,12 +10,6 @@ inputs:
   flavor:
     description: The flavor of the build. Must be one of "Debug", "Release".
     default: Debug
-  hermes-version:
-    description: The version of hermes
-    required: true
-  react-native-version:
-    description: The version of react-native
-    required: true
 runs:
   using: composite
   steps:
@@ -25,21 +19,16 @@ runs:
       uses: ./.github/actions/setup-node
     - name: Run yarn install
       uses: ./.github/actions/yarn-install
-    - name: Create Hermes folder
-      shell: bash
-      run: mkdir -p "$HERMES_WS_DIR"
-    - name: Download Hermes
-      uses: actions/download-artifact@v4
-      with:
-        name: hermes-darwin-bin-${{ inputs.flavor }}
-        path: /tmp/hermes/hermes-runtime-darwin/
-    - name: Print Downloaded hermes
-      shell: bash
-      run: ls -lR "$HERMES_WS_DIR"
     - name: Setup ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ inputs.ruby-version }}
+    - name: Set nightly Hermes versions
+      shell: bash
+      run: |
+        node ./scripts/releases/use-hermes-nightly.js
+    - name: Run yarn install again, with the correct hermes version
+      uses: ./.github/actions/yarn-install
     - name: Download ReactNativeDependencies
       uses: actions/download-artifact@v4
       with:
@@ -66,20 +55,6 @@ runs:
           args+=(--frameworks dynamic)
         fi
 
-        # Tarball is restored with capital flavors suffix, but somehow the tarball name from JS at line 96 returns as lowercased.
-        # Let's ensure that the tarballs have the right names
-
-        if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" ]]; then
-          mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz"
-        fi
-
-        if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" ]]; then
-          mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz"
-        fi
-
-        BUILD_TYPE="${{ inputs.flavor }}"
-        TARBALL_FILENAME=$(node ../../packages/react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
-        export HERMES_ENGINE_TARBALL_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
         export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
         export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ inputs.flavor }}.xcframework.tar.gz"
 

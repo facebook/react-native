@@ -7,11 +7,6 @@ public abstract class com/facebook/react/BaseReactPackage : com/facebook/react/R
 	protected fun getViewManagers (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
 }
 
-public class com/facebook/react/CoreModulesPackage$$ReactModuleInfoProvider : com/facebook/react/module/model/ReactModuleInfoProvider {
-	public fun <init> ()V
-	public fun getReactModuleInfos ()Ljava/util/Map;
-}
-
 public final class com/facebook/react/DebugCorePackage : com/facebook/react/BaseReactPackage, com/facebook/react/ViewManagerOnDemandReactPackage {
 	public fun <init> ()V
 	public fun createViewManager (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/String;)Lcom/facebook/react/uimanager/ViewManager;
@@ -244,6 +239,7 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public abstract fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
+	public fun setDevMenuConfiguration (Lcom/facebook/react/devsupport/DevMenuConfiguration;)V
 	public abstract fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
 
@@ -1900,6 +1896,15 @@ public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementa
 	public final fun setDevLoadingEnabled (Z)V
 }
 
+public final class com/facebook/react/devsupport/DevMenuConfiguration {
+	public fun <init> ()V
+	public fun <init> (ZZZ)V
+	public synthetic fun <init> (ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDevMenuEnabled ()Z
+	public final fun getKeyboardShortcutsEnabled ()Z
+	public final fun getShakeGestureEnabled ()Z
+}
+
 public class com/facebook/react/devsupport/DevServerHelper {
 	public fun <init> (Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;Landroid/content/Context;Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;)V
 	public final fun closeInspectorConnection ()V
@@ -1941,17 +1946,20 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun getCurrentActivity ()Landroid/app/Activity;
 	public final fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	public final fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
+	public fun getDevMenuEnabled ()Z
 	public final fun getDevServerHelper ()Lcom/facebook/react/devsupport/DevServerHelper;
 	public final fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public final fun getDevSupportEnabled ()Z
 	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
 	public final fun getJSAppBundleName ()Ljava/lang/String;
+	public fun getKeyboardShortcutsEnabled ()Z
 	public final fun getLastErrorCookie ()I
 	public final fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public final fun getLastErrorTitle ()Ljava/lang/String;
 	public final fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public final fun getReactInstanceDevHelper ()Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
 	public fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
+	public final fun getShakeGestureEnabled ()Z
 	public fun getSourceMapUrl ()Ljava/lang/String;
 	public fun getSourceUrl ()Ljava/lang/String;
 	protected abstract fun getUniqueTag ()Ljava/lang/String;
@@ -1970,14 +1978,17 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun reloadSettings ()V
 	public fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun setDevLoadingViewManager (Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)V
+	public fun setDevMenuEnabled (Z)V
 	public final fun setDevSupportEnabled (Z)V
 	public fun setFpsDebugEnabled (Z)V
 	public fun setHotModuleReplacementEnabled (Z)V
+	public fun setKeyboardShortcutsEnabled (Z)V
 	public final fun setLastErrorCookie (I)V
 	public final fun setLastErrorStack ([Lcom/facebook/react/devsupport/interfaces/StackFrame;)V
 	public final fun setLastErrorTitle (Ljava/lang/String;)V
 	public final fun setLastErrorType (Lcom/facebook/react/devsupport/interfaces/ErrorType;)V
 	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
+	public final fun setShakeGestureEnabled (Z)V
 	protected final fun showDevLoadingViewForRemoteJSEnabled ()V
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
@@ -2034,14 +2045,17 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
 	public fun getCurrentActivity ()Landroid/app/Activity;
 	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public fun getDevMenuEnabled ()Z
 	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public fun getDevSupportEnabled ()Z
 	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
+	public fun getKeyboardShortcutsEnabled ()Z
 	public fun getLastErrorCookie ()I
 	public fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public fun getLastErrorTitle ()Ljava/lang/String;
 	public fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
+	public fun getShakeGestureEnabled ()Z
 	public fun getSourceMapUrl ()Ljava/lang/String;
 	public fun getSourceUrl ()Ljava/lang/String;
 	public fun handleException (Ljava/lang/Exception;)V
@@ -2058,10 +2072,13 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
 	public fun reloadSettings ()V
 	public fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
+	public fun setDevMenuEnabled (Z)V
 	public fun setDevSupportEnabled (Z)V
 	public fun setFpsDebugEnabled (Z)V
 	public fun setHotModuleReplacementEnabled (Z)V
+	public fun setKeyboardShortcutsEnabled (Z)V
 	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
+	public fun setShakeGestureEnabled (Z)V
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -2136,14 +2153,17 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
 	public abstract fun getCurrentActivity ()Landroid/app/Activity;
 	public abstract fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public fun getDevMenuEnabled ()Z
 	public abstract fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public abstract fun getDevSupportEnabled ()Z
 	public abstract fun getDownloadedJSBundleFile ()Ljava/lang/String;
+	public fun getKeyboardShortcutsEnabled ()Z
 	public abstract fun getLastErrorCookie ()I
 	public abstract fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public abstract fun getLastErrorTitle ()Ljava/lang/String;
 	public abstract fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
 	public abstract fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
+	public fun getShakeGestureEnabled ()Z
 	public abstract fun getSourceMapUrl ()Ljava/lang/String;
 	public abstract fun getSourceUrl ()Ljava/lang/String;
 	public abstract fun handleReloadJS ()V
@@ -2160,10 +2180,13 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
 	public abstract fun reloadSettings ()V
 	public abstract fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
+	public fun setDevMenuEnabled (Z)V
 	public abstract fun setDevSupportEnabled (Z)V
 	public abstract fun setFpsDebugEnabled (Z)V
 	public abstract fun setHotModuleReplacementEnabled (Z)V
+	public fun setKeyboardShortcutsEnabled (Z)V
 	public abstract fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
+	public fun setShakeGestureEnabled (Z)V
 	public abstract fun showDevOptionsDialog ()V
 	public abstract fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public abstract fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -2483,6 +2506,7 @@ public final class com/facebook/react/modules/appearance/AppearanceModule : com/
 	public fun addListener (Ljava/lang/String;)V
 	public final fun emitAppearanceChanged (Ljava/lang/String;)V
 	public fun getColorScheme ()Ljava/lang/String;
+	public final fun invalidatePlatformColorCache ()V
 	public final fun onConfigurationChanged (Landroid/content/Context;)V
 	public fun removeListeners (D)V
 	public fun setColorScheme (Ljava/lang/String;)V
@@ -3075,6 +3099,7 @@ public final class com/facebook/react/runtime/ReactHostImpl : com/facebook/react
 	public fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
+	public fun setDevMenuConfiguration (Lcom/facebook/react/devsupport/DevMenuConfiguration;)V
 	public fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
 
@@ -3806,6 +3831,7 @@ public abstract interface class com/facebook/react/uimanager/ReactPointerEventsV
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactRoot {
+	public static final field Companion Lcom/facebook/react/uimanager/ReactRoot$Companion;
 	public static final field STATE_STARTED I
 	public static final field STATE_STOPPED I
 	public abstract fun getAppProperties ()Landroid/os/Bundle;
@@ -3821,6 +3847,11 @@ public abstract interface class com/facebook/react/uimanager/ReactRoot {
 	public abstract fun runApplication ()V
 	public abstract fun setRootViewTag (I)V
 	public abstract fun setShouldLogContentAppeared (Z)V
+}
+
+public final class com/facebook/react/uimanager/ReactRoot$Companion {
+	public static final field STATE_STARTED I
+	public static final field STATE_STOPPED I
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
@@ -5616,6 +5647,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun pageScroll (I)Z
 	public fun reactSmoothScrollTo (II)V
 	public fun requestChildFocus (Landroid/view/View;Landroid/view/View;)V
+	protected fun restoreScrollTo (II)V
 	public fun scrollTo (II)V
 	public fun scrollToPreservingMomentum (II)V
 	public fun setBackgroundColor (I)V
@@ -5635,6 +5667,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun setOverflowInset (IIII)V
 	public fun setPagingEnabled (Z)V
 	public fun setPointerEvents (Lcom/facebook/react/uimanager/PointerEvents;)V
+	public fun setReactScrollViewScrollState (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;)V
 	public fun setRemoveClippedSubviews (Z)V
 	public fun setScrollEnabled (Z)V
 	public fun setScrollEventThrottle (I)V
@@ -5774,8 +5807,10 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun setOverflowInset (IIII)V
 	public fun setPagingEnabled (Z)V
 	public fun setPointerEvents (Lcom/facebook/react/uimanager/PointerEvents;)V
+	public fun setReactScrollViewScrollState (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;)V
 	public fun setRemoveClippedSubviews (Z)V
 	public fun setScrollAwayTopPaddingEnabledUnstable (I)V
+	public fun setScrollAwayTopPaddingEnabledUnstable (IZ)V
 	public fun setScrollEnabled (Z)V
 	public fun setScrollEventThrottle (I)V
 	public fun setScrollPerfTag (Ljava/lang/String;)V
@@ -5878,6 +5913,7 @@ public abstract interface class com/facebook/react/views/scroll/ReactScrollViewH
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollState {
 	public abstract fun getReactScrollViewScrollState ()Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
+	public abstract fun setReactScrollViewScrollState (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;)V
 }
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll {
@@ -5895,18 +5931,34 @@ public abstract interface class com/facebook/react/views/scroll/ReactScrollViewH
 
 public final class com/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState {
 	public fun <init> ()V
+	public fun <init> (Landroid/graphics/Point;ILandroid/graphics/Point;ZZFZ)V
+	public synthetic fun <init> (Landroid/graphics/Point;ILandroid/graphics/Point;ZZFZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Landroid/graphics/Point;
+	public final fun component2 ()I
+	public final fun component3 ()Landroid/graphics/Point;
+	public final fun component4 ()Z
+	public final fun component5 ()Z
+	public final fun component6 ()F
+	public final fun component7 ()Z
+	public final fun copy (Landroid/graphics/Point;ILandroid/graphics/Point;ZZFZ)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
+	public static synthetic fun copy$default (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;Landroid/graphics/Point;ILandroid/graphics/Point;ZZFZILjava/lang/Object;)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
+	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDecelerationRate ()F
 	public final fun getFinalAnimatedPositionScroll ()Landroid/graphics/Point;
 	public final fun getLastStateUpdateScroll ()Landroid/graphics/Point;
 	public final fun getScrollAwayPaddingTop ()I
+	public fun hashCode ()I
 	public final fun isCanceled ()Z
 	public final fun isFinished ()Z
+	public final fun isUpdatedByScroll ()Z
 	public final fun setCanceled (Z)V
 	public final fun setDecelerationRate (F)V
 	public final fun setFinalAnimatedPositionScroll (II)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
 	public final fun setFinished (Z)V
 	public final fun setLastStateUpdateScroll (II)Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
 	public final fun setScrollAwayPaddingTop (I)V
+	public final fun setUpdatedByScroll (Z)V
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener {
@@ -6027,6 +6079,7 @@ public final class com/facebook/react/views/text/DefaultStyleValuesUtil {
 	public static final fun getDefaultTextColor (Landroid/content/Context;)Landroid/content/res/ColorStateList;
 	public static final fun getDefaultTextColorHighlight (Landroid/content/Context;)I
 	public static final fun getDefaultTextColorHint (Landroid/content/Context;)Landroid/content/res/ColorStateList;
+	public static final fun getTextColorSecondary (Landroid/content/Context;)Landroid/content/res/ColorStateList;
 }
 
 public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : com/facebook/react/uimanager/LayoutShadowNode {

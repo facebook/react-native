@@ -29,6 +29,7 @@ export type NativeIntersectionObserverObserveOptions = {
   targetShadowNode: mixed,
   thresholds: $ReadOnlyArray<number>,
   rootThresholds?: ?$ReadOnlyArray<number>,
+  rootMargin?: ?string,
 };
 
 export opaque type NativeIntersectionObserverToken = mixed;

@@ -293,18 +293,31 @@ UIImage *__nullable RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloa
   // Calculate target size
   CGSize targetSize = RCTTargetSize(sourceSize, 1, destSize, destScale, resizeMode, NO);
   CGSize targetPixelSize = RCTSizeInPixels(targetSize, destScale);
-  CGFloat maxPixelSize =
-      fmax(fmin(sourceSize.width, targetPixelSize.width), fmin(sourceSize.height, targetPixelSize.height));
+  CGImageRef imageRef;
+  BOOL createThumbnail = targetPixelSize.width != 0 && targetPixelSize.height != 0 &&
+      (sourceSize.width > targetPixelSize.width || sourceSize.height > targetPixelSize.height);
 
-  NSDictionary<NSString *, NSNumber *> *options = @{
-    (id)kCGImageSourceShouldAllowFloat : @YES,
-    (id)kCGImageSourceCreateThumbnailWithTransform : @YES,
-    (id)kCGImageSourceCreateThumbnailFromImageAlways : @YES,
-    (id)kCGImageSourceThumbnailMaxPixelSize : @(maxPixelSize),
-  };
+  if (createThumbnail) {
+    CGFloat maxPixelSize = fmax(targetPixelSize.width, targetPixelSize.height);
 
-  // Get thumbnail
-  CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
+    // Get a thumbnail of the source image. This is usually slower than creating a full-sized image,
+    // but takes up less memory once it's done.
+    imageRef = CGImageSourceCreateThumbnailAtIndex(
+        sourceRef, 0, (__bridge CFDictionaryRef) @{
+          (id)kCGImageSourceShouldAllowFloat : @YES,
+          (id)kCGImageSourceCreateThumbnailWithTransform : @YES,
+          (id)kCGImageSourceCreateThumbnailFromImageAlways : @YES,
+          (id)kCGImageSourceThumbnailMaxPixelSize : @(maxPixelSize),
+        });
+  } else {
+    // Get an image in full size. This is faster than `CGImageSourceCreateThumbnailAtIndex`
+    // and consumes less memory if only the target size doesn't require downscaling.
+    imageRef = CGImageSourceCreateImageAtIndex(
+        sourceRef, 0, (__bridge CFDictionaryRef) @{
+          (id)kCGImageSourceShouldAllowFloat : @YES,
+        });
+  }
+
   CFRelease(sourceRef);
   if (!imageRef) {
     return nil;

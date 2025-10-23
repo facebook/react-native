@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fde4b531c2b0f19bef7bc69aaf3c5639>>
+ * @generated SignedSource<<473f0fb45b0a0dc7ee86c7415daae7e0>>
  */
 
 /**
@@ -29,6 +29,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool cdpInteractionMetricsEnabled() = 0;
   virtual bool cxxNativeAnimatedEnabled() = 0;
   virtual bool cxxNativeAnimatedRemoveJsSync() = 0;
+  virtual bool disableEarlyViewCommandExecution() = 0;
   virtual bool disableFabricCommitInCXXAnimated() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
   virtual bool disableOldAndroidAttachmentMetricsWorkarounds() = 0;
@@ -71,6 +72,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableViewRecyclingForScrollView() = 0;
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
+  virtual bool enableVirtualViewContainerStateExperimental() = 0;
   virtual bool enableVirtualViewDebugFeatures() = 0;
   virtual bool enableVirtualViewRenderState() = 0;
   virtual bool enableVirtualViewWindowFocusDetection() = 0;
@@ -84,6 +86,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual double preparedTextCacheSize() = 0;
   virtual bool preventShadowTreeCommitExhaustion() = 0;
   virtual bool shouldPressibilityUseW3CPointerEventsForHover() = 0;
+  virtual bool shouldTriggerResponderTransferOnScrollAndroid() = 0;
   virtual bool skipActivityIdentityAssertionOnHostPause() = 0;
   virtual bool sweepActiveTouchOnChildNativeGesturesAndroid() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
@@ -96,6 +99,8 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRawPropsJsiValue() = 0;
   virtual bool useShadowNodeStateOnClone() = 0;
+  virtual bool useSharedAnimatedBackend() = 0;
+  virtual bool useTraitHiddenOnAndroid() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
   virtual double viewCullingOutsetRatio() = 0;

@@ -190,7 +190,7 @@ std::optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name) {
     // no constants or methods
     return std::nullopt;
   } else {
-    return ModuleConfig{index, std::move(config)};
+    return ModuleConfig{.index = index, .config = std::move(config)};
   }
 }
 

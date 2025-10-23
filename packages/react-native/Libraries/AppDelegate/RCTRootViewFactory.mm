@@ -7,6 +7,7 @@
 
 #import "RCTRootViewFactory.h"
 #import <React/RCTCxxBridgeDelegate.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
@@ -133,29 +134,47 @@
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties
 {
-  return [self viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:nil];
+  return [self viewWithModuleName:moduleName
+                initialProperties:initialProperties
+                    launchOptions:nil
+             devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
 {
-  return [self viewWithModuleName:moduleName initialProperties:nil launchOptions:nil];
+  return [self viewWithModuleName:moduleName
+                initialProperties:nil
+                    launchOptions:nil
+             devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (void)initializeReactHostWithLaunchOptions:(NSDictionary *)launchOptions
+                        devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   // Enable TurboModule interop by default in Bridgeless mode
   RCTEnableTurboModuleInterop(YES);
   RCTEnableTurboModuleInteropBridgeProxy(YES);
 
-  [self createReactHostIfNeeded:launchOptions];
+  [self createReactHostIfNeeded:launchOptions devMenuConfiguration:devMenuConfiguration];
   return;
+}
+
+- (UIView *)viewWithModuleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
+                 launchOptions:(NSDictionary *)launchOptions
+{
+  return [self viewWithModuleName:moduleName
+                initialProperties:initialProperties
+                    launchOptions:launchOptions
+             devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initProps
                  launchOptions:(NSDictionary *)launchOptions
+          devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
-  [self initializeReactHostWithLaunchOptions:launchOptions];
+  [self initializeReactHostWithLaunchOptions:launchOptions devMenuConfiguration:devMenuConfiguration];
 
   RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName
                                                         initialProperties:initProps ? initProps : @{}];
@@ -226,14 +245,21 @@
 #pragma mark - New Arch Utilities
 
 - (void)createReactHostIfNeeded:(NSDictionary *)launchOptions
+           devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self.reactHost) {
     return;
   }
-  self.reactHost = [self createReactHost:launchOptions];
+  self.reactHost = [self createReactHost:launchOptions devMenuConfiguration:devMenuConfiguration];
 }
 
 - (RCTHost *)createReactHost:(NSDictionary *)launchOptions
+{
+  return [self createReactHost:launchOptions devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
+}
+
+- (RCTHost *)createReactHost:(NSDictionary *)launchOptions
+        devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   __weak __typeof(self) weakSelf = self;
   RCTHost *reactHost =
@@ -243,7 +269,8 @@
                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                   return [weakSelf createJSRuntimeFactory];
                                 }
-                                   launchOptions:launchOptions];
+                                   launchOptions:launchOptions
+                            devMenuConfiguration:devMenuConfiguration];
   [reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
   }];

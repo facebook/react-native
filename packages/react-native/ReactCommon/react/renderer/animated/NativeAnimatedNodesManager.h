@@ -7,13 +7,21 @@
 
 #pragma once
 
+#if __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#include "FBReactNativeSpecJSI.h"
+#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#endif
 #include <folly/dynamic.h>
 #include <react/bridging/Function.h>
 #include <react/debug/flags.h>
 #include <react/renderer/animated/EventEmitterListener.h>
 #include <react/renderer/animated/event_drivers/EventAnimationDriver.h>
+#ifdef RN_USE_ANIMATION_BACKEND
+#include <react/renderer/animationbackend/AnimationBackend.h>
+#endif
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <chrono>
 #include <memory>
 #include <mutex>
@@ -53,7 +61,7 @@ class NativeAnimatedNodesManager {
       std::function<void(Tag, const folly::dynamic&)>;
   using FabricCommitCallback =
       std::function<void(std::unordered_map<Tag, folly::dynamic>&)>;
-  using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
+  using StartOnRenderCallback = std::function<void()>;
   using StopOnRenderCallback = std::function<void()>;
 
   explicit NativeAnimatedNodesManager(
@@ -61,6 +69,9 @@ class NativeAnimatedNodesManager {
       FabricCommitCallback&& fabricCommitCallback,
       StartOnRenderCallback&& startOnRenderCallback = nullptr,
       StopOnRenderCallback&& stopOnRenderCallback = nullptr) noexcept;
+
+  explicit NativeAnimatedNodesManager(
+      std::shared_ptr<UIManagerAnimationBackend> animationBackend) noexcept;
 
   ~NativeAnimatedNodesManager() noexcept;
 
@@ -104,6 +115,10 @@ class NativeAnimatedNodesManager {
   void extractAnimatedNodeOffsetOp(Tag tag);
 
   void setAnimatedNodeOffset(Tag tag, double offset);
+
+#ifdef RN_USE_ANIMATION_BACKEND
+  AnimationMutations pullAnimationMutations();
+#endif
 
 #pragma mark - Drivers
 
@@ -201,6 +216,8 @@ class NativeAnimatedNodesManager {
       Tag tag,
       const std::string& eventName,
       const EventPayload& payload) noexcept;
+
+  std::weak_ptr<UIManagerAnimationBackend> animationBackend_;
 
   std::unique_ptr<AnimatedNode> animatedNode(
       Tag tag,

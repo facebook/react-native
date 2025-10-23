@@ -124,6 +124,13 @@ class NetworkHandler {
   std::optional<std::tuple<std::string, bool>> getResponseBody(
       const std::string& requestId);
 
+  /**
+   * Associate the given stack trace with the given request ID.
+   */
+  void recordRequestInitiatorStack(
+      const std::string& requestId,
+      folly::dynamic stackTrace);
+
  private:
   NetworkHandler() = default;
   NetworkHandler(const NetworkHandler&) = delete;
@@ -136,10 +143,14 @@ class NetworkHandler {
     return enabled_.load(std::memory_order_relaxed);
   }
 
+  std::optional<folly::dynamic> consumeStoredRequestInitiator(
+      const std::string& requestId);
+
   FrontendChannel frontendChannel_;
 
   std::map<std::string, std::string> resourceTypeMap_{};
-  std::mutex resourceTypeMapMutex_{};
+  std::map<std::string, folly::dynamic> requestInitiatorById_{};
+  std::mutex requestMetadataMutex_{};
 
   BoundedRequestBuffer responseBodyBuffer_{};
   std::mutex requestBodyMutex_;

@@ -7,6 +7,13 @@
 
 #pragma once
 
+#include <react/renderer/debug/flags.h>
+#include <string>
+
+#ifdef RN_SERIALIZABLE_STATE
+#include <folly/dynamic.h>
+#endif
+
 namespace facebook::react {
 
 enum class UnitType {
@@ -25,6 +32,7 @@ struct ValueUnit {
   bool operator==(const ValueUnit& other) const {
     return value == other.value && unit == other.unit;
   }
+
   bool operator!=(const ValueUnit& other) const {
     return !(*this == other);
   }
@@ -44,5 +52,13 @@ struct ValueUnit {
   constexpr operator bool() const {
     return unit != UnitType::Undefined;
   }
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const;
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+  std::string toString() const;
+#endif
 };
 } // namespace facebook::react

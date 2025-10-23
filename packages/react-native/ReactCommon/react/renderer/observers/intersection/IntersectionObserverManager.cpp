@@ -44,6 +44,7 @@ void IntersectionObserverManager::observe(
     const ShadowNodeFamily::Shared& shadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds,
+    std::optional<std::string> rootMargin,
     const UIManager& /*uiManager*/) {
   TraceSection s("IntersectionObserverManager::observe");
 
@@ -53,12 +54,19 @@ void IntersectionObserverManager::observe(
   std::unique_lock lock(observersMutex_);
 
   auto& observers = observersBySurfaceId_[surfaceId];
+
+  // Parse rootMargin string into MarginValue structures
+  // Default to "0px 0px 0px 0px" if not provided
+  auto parsedRootMargin =
+      parseNormalizedRootMargin(rootMargin.value_or("0px 0px 0px 0px"));
+
   observers.emplace_back(std::make_unique<IntersectionObserver>(
       intersectionObserverId,
       observationRootShadowNodeFamily,
       shadowNodeFamily,
       std::move(thresholds),
-      std::move(rootThresholds)));
+      std::move(rootThresholds),
+      std::move(parsedRootMargin)));
 
   observersPendingInitialization_.emplace_back(observers.back().get());
 }

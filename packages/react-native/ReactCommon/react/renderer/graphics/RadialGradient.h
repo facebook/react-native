@@ -7,13 +7,18 @@
 
 #pragma once
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/ColorStop.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <optional>
-#include <string>
+#include <sstream>
 #include <variant>
 #include <vector>
+
+#ifdef RN_SERIALIZABLE_STATE
+#include <folly/dynamic.h>
+#endif
 
 namespace facebook::react {
 
@@ -34,28 +39,29 @@ struct RadialGradientSize {
     bool operator==(const Dimensions& other) const {
       return x == other.x && y == other.y;
     }
+
     bool operator!=(const Dimensions& other) const {
       return !(*this == other);
     }
+
+#ifdef RN_SERIALIZABLE_STATE
+    folly::dynamic toDynamic() const;
+#endif
   };
 
   std::variant<SizeKeyword, Dimensions> value;
 
   bool operator==(const RadialGradientSize& other) const {
-    if (std::holds_alternative<SizeKeyword>(value) &&
-        std::holds_alternative<SizeKeyword>(other.value)) {
-      return std::get<SizeKeyword>(value) == std::get<SizeKeyword>(other.value);
-    } else if (
-        std::holds_alternative<Dimensions>(value) &&
-        std::holds_alternative<Dimensions>(other.value)) {
-      return std::get<Dimensions>(value) == std::get<Dimensions>(other.value);
-    }
-    return false;
+    return value == other.value;
   }
 
   bool operator!=(const RadialGradientSize& other) const {
     return !(*this == other);
   }
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const;
+#endif
 };
 
 struct RadialGradientPosition {
@@ -72,6 +78,10 @@ struct RadialGradientPosition {
   bool operator!=(const RadialGradientPosition& other) const {
     return !(*this == other);
   }
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const;
+#endif
 };
 
 struct RadialGradient {
@@ -87,6 +97,13 @@ struct RadialGradient {
   bool operator!=(const RadialGradient& other) const {
     return !(*this == other);
   }
-};
 
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const;
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+  void toString(std::stringstream& ss) const;
+#endif
+};
 }; // namespace facebook::react

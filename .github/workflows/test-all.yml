@@ -33,86 +33,6 @@ jobs:
 
           echo "Should I run E2E tests? ${{ inputs.run-e2e-tests }}"
 
-  prepare_hermes_workspace:
-    runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
-    outputs:
-      react-native-version: ${{ steps.prepare-hermes-workspace.outputs.react-native-version }}
-      hermes-version: ${{ steps.prepare-hermes-workspace.outputs.hermes-version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Prepare Hermes Workspace
-        id: prepare-hermes-workspace
-        uses: ./.github/actions/prepare-hermes-workspace
-        with:
-          hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
-          hermes-version-file: ${{ env.HERMES_VERSION_FILE }}
-
-  build_hermesc_apple:
-    runs-on: macos-14
-    needs: prepare_hermes_workspace
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build HermesC Apple
-        uses: ./.github/actions/build-hermesc-apple
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-
-  build_apple_slices_hermes:
-    runs-on: macos-14
-    needs: [build_hermesc_apple, prepare_hermes_workspace]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-      HERMES_OSXBIN_ARTIFACTS_DIR: /tmp/hermes/osx-bin
-      IOS_DEPLOYMENT_TARGET: "15.1"
-      XROS_DEPLOYMENT_TARGET: "1.0"
-      MAC_DEPLOYMENT_TARGET: "10.15"
-    strategy:
-      fail-fast: false
-      matrix:
-        flavor: [Debug, Release]
-        slice: [macosx, iphoneos, iphonesimulator, appletvos, appletvsimulator, catalyst, xros, xrsimulator]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build Slice
-        uses: ./.github/actions/build-apple-slices-hermes
-        with:
-          flavor: ${{ matrix.flavor }}
-          slice: ${{ matrix.slice}}
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-
-  build_hermes_macos:
-    runs-on: macos-14
-    needs: [build_apple_slices_hermes, prepare_hermes_workspace]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      matrix:
-        flavor: [Debug, Release]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build Hermes MacOS
-        uses: ./.github/actions/build-hermes-macos
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-          flavor: ${{ matrix.flavor }}
-
   prebuild_apple_dependencies:
     if: github.repository == 'facebook/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
@@ -120,16 +40,15 @@ jobs:
 
   prebuild_react_native_core:
     uses: ./.github/workflows/prebuild-ios-core.yml
+    with:
+      use-hermes-nightly: ${{ !endsWith(github.ref_name, '-stable') }}
     secrets: inherit
-    needs: [prebuild_apple_dependencies, build_hermes_macos]
+    needs: [prebuild_apple_dependencies]
 
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-14
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
+      [prebuild_apple_dependencies, prebuild_react_native_core]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -137,17 +56,12 @@ jobs:
         uses: ./.github/actions/test-ios-rntester
         with:
           ruby-version: "3.2.0"
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: Debug
 
   test_ios_rntester:
     runs-on: macos-14-large
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
+      [prebuild_apple_dependencies, prebuild_react_native_core]
     continue-on-error: true
     strategy:
       fail-fast: false
@@ -161,17 +75,12 @@ jobs:
         uses: ./.github/actions/test-ios-rntester
         with:
           use-frameworks: ${{ matrix.frameworks }}
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_rntester:
     runs-on: macos-14-large
     needs:
       [test_ios_rntester]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     strategy:
       fail-fast: false
       matrix:
@@ -201,9 +110,6 @@ jobs:
   test_e2e_ios_templateapp:
     runs-on: macos-14-large
     needs: [build_npm_package, prebuild_apple_dependencies]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     strategy:
       fail-fast: false
       matrix:
@@ -221,11 +127,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6.10
-      - name: Download Hermes
-        uses: actions/download-artifact@v4
-        with:
-          name: hermes-darwin-bin-${{matrix.flavor}}
-          path: /tmp/react-native-tmp
       - name: Download React Native Package
         uses: actions/download-artifact@v4
         with:
@@ -259,9 +160,6 @@ jobs:
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
           echo "React Native tgs is $REACT_NATIVE_PKG"
 
-          HERMES_PATH=$(find /tmp/react-native-tmp -type f -name "*.tar.gz")
-          echo "Hermes path is $HERMES_PATH"
-
           # For stable branches, we want to use the stable branch of the template
           # In all the other cases, we want to use "main"
           BRANCH=${{ github.ref_name }}
@@ -278,7 +176,7 @@ jobs:
           export RCT_USE_LOCAL_RN_DEP=/tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
           # Disable prebuilds for now, as they are causing issues with E2E tests for 0.82-stable branch
           # export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ matrix.flavor }}.xcframework.tar.gz"
-          HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
+          RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
 
           xcodebuild \
             -scheme "RNTestProject" \
@@ -364,21 +262,6 @@ jobs:
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
 
-  build_hermesc_linux:
-    runs-on: ubuntu-latest
-    needs: prepare_hermes_workspace
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build HermesC Linux
-        uses: ./.github/actions/build-hermesc-linux
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-
   run_fantom_tests:
     runs-on: 8-core-ubuntu
     needs: [set_release_type]
@@ -397,25 +280,6 @@ jobs:
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
-
-  build_hermesc_windows:
-    runs-on: windows-2025
-    needs: prepare_hermes_workspace
-    env:
-      HERMES_WS_DIR: 'C:\tmp\hermes'
-      HERMES_TARBALL_ARTIFACTS_DIR: 'C:\tmp\hermes\hermes-runtime-darwin'
-      HERMES_OSXBIN_ARTIFACTS_DIR: 'C:\tmp\hermes\osx-bin'
-      ICU_URL: "https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip"
-      MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
-      CMAKE_DIR: 'C:\Program Files\CMake\bin'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build HermesC Windows
-        uses: ./.github/actions/build-hermesc-windows
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_android:
     runs-on: 8-core-ubuntu
@@ -471,10 +335,6 @@ jobs:
     needs:
       [
         set_release_type,
-        prepare_hermes_workspace,
-        build_hermes_macos,
-        build_hermesc_linux,
-        build_hermesc_windows,
         build_android,
         prebuild_apple_dependencies,
         prebuild_react_native_core,
@@ -484,15 +344,12 @@ jobs:
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-    env:
-      HERMES_WS_DIR: /tmp/hermes
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build NPM Package
         uses: ./.github/actions/build-npm-package
         with:
-          hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
@@ -535,6 +392,12 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run yarn install
         uses: ./.github/actions/yarn-install
+      - name: Set nightly Hermes versions
+        shell: bash
+        run: |
+          node ./scripts/releases/use-hermes-nightly.js
+      - name: Run yarn install again, with the correct hermes version
+        uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application
         shell: bash
         run: node ./scripts/e2e/init-project-e2e.js --useHelloWorld --pathToLocalReactNative "$GITHUB_WORKSPACE/build/$(cat build/react-native-package-version)"
@@ -556,10 +419,9 @@ jobs:
 
   test_ios_helloworld_with_ruby_3_2_0:
     runs-on: macos-14
-    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prebuild_apple_dependencies, prebuild_react_native_core]
     env:
       PROJECT_NAME: iOSTemplateProject
-      HERMES_WS_DIR: /tmp/hermes
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - name: Checkout
@@ -568,12 +430,10 @@ jobs:
         with:
           ruby-version: 3.2.0
           flavor: Debug
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   test_ios_helloworld:
     runs-on: macos-14
-    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prebuild_apple_dependencies, prebuild_react_native_core]
     strategy:
       matrix:
         flavor: [Debug, Release]
@@ -584,7 +444,6 @@ jobs:
             use_frameworks: StaticLibraries
     env:
       PROJECT_NAME: iOSTemplateProject
-      HERMES_WS_DIR: /tmp/hermes
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - name: Checkout
@@ -593,8 +452,6 @@ jobs:
         with:
           flavor: ${{ matrix.flavor }}
           use-frameworks: ${{ matrix.use_frameworks }}
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   test_js:
     runs-on: ubuntu-latest

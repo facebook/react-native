@@ -36,7 +36,6 @@ const generateTests = require('./components/GenerateTests.js');
 const generateThirdPartyFabricComponentsProviderH = require('./components/GenerateThirdPartyFabricComponentsProviderH.js');
 const generateThirdPartyFabricComponentsProviderObjCpp = require('./components/GenerateThirdPartyFabricComponentsProviderObjCpp.js');
 const generateViewConfigJs = require('./components/GenerateViewConfigJs.js');
-const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
 const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleJavaSpec = require('./modules/GenerateModuleJavaSpec.js');
 const generateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
@@ -56,7 +55,6 @@ const ALL_GENERATORS = {
   generateStateCpp: generateStateCpp.generate,
   generateStateH: generateStateH.generate,
   generateModuleH: generateModuleH.generate,
-  generateModuleCpp: generateModuleCpp.generate,
   generateModuleObjCpp: generateModuleObjCpp.generate,
   generateModuleJavaSpec: generateModuleJavaSpec.generate,
   generateModuleJniCpp: generateModuleJniCpp.generate,
@@ -179,7 +177,7 @@ const LIBRARY_GENERATORS: LibraryGeneratorsFunctions = {
     generateModuleJniH.generate,
     generateModuleJavaSpec.generate,
   ],
-  modulesCxx: [generateModuleCpp.generate, generateModuleH.generate],
+  modulesCxx: [generateModuleH.generate],
   modulesIOS: [generateModuleObjCpp.generate],
   tests: [generateTests.generate],
   'shadow-nodes': [

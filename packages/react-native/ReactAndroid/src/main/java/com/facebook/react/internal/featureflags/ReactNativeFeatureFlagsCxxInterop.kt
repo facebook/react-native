@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3254fef626b10ef21d8d9ee1bdbb1880>>
+ * @generated SignedSource<<de0fe8d116ca48e918f67c4c32f1183f>>
  */
 
 /**
@@ -35,6 +35,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedRemoveJsSync(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun disableEarlyViewCommandExecution(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableFabricCommitInCXXAnimated(): Boolean
 
@@ -120,6 +122,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForView(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableVirtualViewContainerStateExperimental(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableVirtualViewDebugFeatures(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableVirtualViewRenderState(): Boolean
@@ -146,6 +150,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
   @DoNotStrip @JvmStatic public external fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean
@@ -169,6 +175,10 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useRawPropsJsiValue(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useShadowNodeStateOnClone(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useSharedAnimatedBackend(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useTraitHiddenOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 

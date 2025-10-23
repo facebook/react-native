@@ -7,7 +7,9 @@
  * @noformat
  * @nolint
  * @flow
- * @generated SignedSource<<8f46fdc9267fcc4fdc9e76842fe24066>>
+ *
+ * This file is no longer sync'd from the facebook/react repository.
+ * The version compatability check is removed. Use at your own risk.
  */
 'use strict';
 

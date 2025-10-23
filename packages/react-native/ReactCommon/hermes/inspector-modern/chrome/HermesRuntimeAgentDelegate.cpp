@@ -72,10 +72,9 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
   }
 
   bool handleRequest(const cdp::PreparsedRequest& req) override {
-    // TODO: Change to string::starts_with when we're on C++20.
-    if (req.method.rfind("Log.", 0) == 0) {
-      // Since we know Hermes doesn't do anything useful with Log messages,
-      // but our containing HostAgent will, bail out early.
+    if (req.method.starts_with("Log.") || req.method.starts_with("Network.")) {
+      // Since we know Hermes doesn't do anything useful with Log or Network
+      // messages, but our containing HostAgent will, bail out early.
       // TODO: We need a way to negotiate this more dynamically with Hermes
       // through the API.
       return false;

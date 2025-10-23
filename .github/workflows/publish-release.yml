@@ -19,85 +19,6 @@ jobs:
           echo "Setting release type to release"
           echo "RELEASE_TYPE=release" >> $GITHUB_OUTPUT
 
-  prepare_hermes_workspace:
-    runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
-    outputs:
-      react-native-version: ${{ steps.prepare-hermes-workspace.outputs.react-native-version }}
-      hermes-version: ${{ steps.prepare-hermes-workspace.outputs.hermes-version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Prepare Hermes Workspace
-        id: prepare-hermes-workspace
-        uses: ./.github/actions/prepare-hermes-workspace
-        with:
-          hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
-          hermes-version-file: ${{ env.HERMES_VERSION_FILE }}
-
-  build_hermesc_apple:
-    runs-on: macos-14
-    needs: prepare_hermes_workspace
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build HermesC Apple
-        uses: ./.github/actions/build-hermesc-apple
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.output.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.output.react-native-version }}
-  build_apple_slices_hermes:
-    runs-on: macos-14
-    needs: [build_hermesc_apple, prepare_hermes_workspace]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-      HERMES_OSXBIN_ARTIFACTS_DIR: /tmp/hermes/osx-bin
-      IOS_DEPLOYMENT_TARGET: "15.1"
-      XROS_DEPLOYMENT_TARGET: "1.0"
-      MAC_DEPLOYMENT_TARGET: "10.15"
-    strategy:
-      fail-fast: false
-      matrix:
-        flavor: [Debug, Release]
-        slice: [macosx, iphoneos, iphonesimulator, appletvos, appletvsimulator, catalyst, xros, xrsimulator]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build Slice
-        uses: ./.github/actions/build-apple-slices-hermes
-        with:
-          flavor: ${{ matrix.flavor }}
-          slice: ${{ matrix.slice}}
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-
-  build_hermes_macos:
-    runs-on: macos-14
-    needs: [build_apple_slices_hermes, prepare_hermes_workspace]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      matrix:
-        flavor: [Debug, Release]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build Hermes MacOS
-        uses: ./.github/actions/build-hermes-macos
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-          flavor: ${{ matrix.flavor }}
-
   prebuild_apple_dependencies:
     if: github.repository == 'facebook/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
@@ -106,51 +27,14 @@ jobs:
   prebuild_react_native_core:
     uses: ./.github/workflows/prebuild-ios-core.yml
     secrets: inherit
-    needs: [prebuild_apple_dependencies, build_hermes_macos]
-
-  build_hermesc_linux:
-    runs-on: ubuntu-latest
-    needs: prepare_hermes_workspace
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build HermesC Linux
-        uses: ./.github/actions/build-hermesc-linux
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-
-  build_hermesc_windows:
-    runs-on: windows-2025
-    needs: prepare_hermes_workspace
-    env:
-      HERMES_WS_DIR: 'C:\tmp\hermes'
-      HERMES_TARBALL_ARTIFACTS_DIR: 'C:\tmp\hermes\hermes-runtime-darwin'
-      HERMES_OSXBIN_ARTIFACTS_DIR: 'C:\tmp\hermes\osx-bin'
-      ICU_URL: "https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip"
-      MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
-      CMAKE_DIR: 'C:\Program Files\CMake\bin'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build HermesC Windows
-        uses: ./.github/actions/build-hermesc-windows
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+    needs: [prebuild_apple_dependencies]
 
   build_npm_package:
     runs-on: 8-core-ubuntu
     needs:
       [
         set_release_type,
-        prepare_hermes_workspace,
-        build_hermes_macos,
-        build_hermesc_linux,
-        build_hermesc_windows,
+        prepare_workspace,
         prebuild_apple_dependencies,
         prebuild_react_native_core,
       ]
@@ -162,7 +46,6 @@ jobs:
         # By default we only build ARM64 to save time/resources. For release/nightlies, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
     env:
-      HERMES_WS_DIR: /tmp/hermes
       GHA_NPM_TOKEN: ${{ secrets.GHA_NPM_TOKEN }}
       ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
       ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
@@ -178,7 +61,6 @@ jobs:
       - name: Build and Publish NPM Package
         uses: ./.github/actions/build-npm-package
         with:
-          hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gha-npm-token: ${{ env.GHA_NPM_TOKEN }}
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}

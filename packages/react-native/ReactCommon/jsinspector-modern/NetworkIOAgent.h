@@ -40,10 +40,10 @@ struct ReadStreamParams {
 
 struct NetworkResource {
   bool success{};
-  std::optional<std::string> stream;
-  std::optional<uint32_t> httpStatusCode;
-  std::optional<std::string> netErrorName;
-  std::optional<Headers> headers;
+  std::optional<std::string> stream{};
+  std::optional<uint32_t> httpStatusCode{};
+  std::optional<std::string> netErrorName{};
+  std::optional<Headers> headers{};
   folly::dynamic toDynamic() const {
     auto dynamicResource = folly::dynamic::object("success", success);
 
