@@ -54,6 +54,8 @@ RuntimeTarget::RuntimeTarget(
 void RuntimeTarget::installGlobals() {
   // NOTE: RuntimeTarget::installConsoleHandler is in RuntimeTargetConsole.cpp
   installConsoleHandler();
+  // NOTE: RuntimeTarget::stubConsoleCreateTask is in RuntimeTargetConsole.cpp
+  stubConsoleCreateTask();
   // NOTE: RuntimeTarget::installDebuggerSessionObserver is in
   // RuntimeTargetDebuggerSessionObserver.cpp
   installDebuggerSessionObserver();
@@ -215,9 +217,9 @@ void RuntimeTarget::notifyDomainStateChanged(
     }
     case Domain::ReactNativeApplication: {
       if (domainStateChangedGlobally && enabled) {
-        // installConsoleCreateTask();
+        installConsoleCreateTask();
       } else if (domainStateChangedGlobally) {
-        // stubConsoleCreateTask();
+        stubConsoleCreateTask();
       }
 
       break;

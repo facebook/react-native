@@ -314,6 +314,23 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    */
   void installConsoleHandler();
 
+  /*
+   * Installs console.createTask stub, which is essentially a no-op, but follows
+   * the semantics of actual API.
+   *
+   * The actual implementation is only installed when DevTools is opened or
+   * during tracing in the background. This aligns with Chromium's
+   * implementation.
+   */
+  void stubConsoleCreateTask();
+
+  /*
+   * Installs the actual console.createTask implementation. This should only
+   * happen when DevTools is opened or during tracing in the background to avoid
+   * paying the cost of capturing unnecessary stack traces.
+   */
+  void installConsoleCreateTask();
+
   /**
    * Installs __DEBUGGER_SESSION_OBSERVER__ object on the JavaScript's global
    * object, which later could be referenced from JavaScript side for

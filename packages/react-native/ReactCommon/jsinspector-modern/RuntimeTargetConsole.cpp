@@ -625,4 +625,8 @@ void RuntimeTarget::installConsoleHandler() {
   });
 }
 
+void RuntimeTarget::stubConsoleCreateTask() {}
+
+void RuntimeTarget::installConsoleCreateTask() {}
+
 } // namespace facebook::react::jsinspector_modern
