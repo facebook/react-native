@@ -208,7 +208,7 @@ class KeyboardAvoidingView extends React.Component<
       ];
     } else {
       this._subscriptions = [
-        Keyboard.addListener('keyboardDidHide', this._onKeyboardChange),
+        Keyboard.addListener('keyboardDidHide', this._onKeyboardHide),
         Keyboard.addListener('keyboardDidShow', this._onKeyboardChange),
       ];
     }
