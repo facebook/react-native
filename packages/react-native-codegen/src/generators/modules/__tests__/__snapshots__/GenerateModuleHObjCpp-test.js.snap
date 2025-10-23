@@ -207,13 +207,15 @@ namespace JS {
 
 - (NSDictionary *)difficult:(JS::NativeSampleTurboModule::SpecDifficultA &)A;
 - (void)optionals:(JS::NativeSampleTurboModule::SpecOptionalsA &)A;
-- (void)optionalMethod:(NSDictionary *)options
-              callback:(RCTResponseSenderBlock)callback
-                extras:(NSArray *)extras;
 - (void)getArrays:(JS::NativeSampleTurboModule::SpecGetArraysOptions &)options;
 - (NSDictionary * _Nullable)getNullableObject;
 - (NSDictionary * _Nullable)getNullableGenericObject;
 - (NSArray<id<NSObject>> * _Nullable)getNullableArray;
+
+@optional
+- (void)optionalMethod:(NSDictionary *)options
+              callback:(RCTResponseSenderBlock)callback
+                extras:(NSArray *)extras;
 
 @end
 
@@ -838,10 +840,12 @@ namespace JS {
 - (void)reportSoftException:(NSString *)message
                       stack:(NSArray *)stack
                 exceptionId:(double)exceptionId;
-- (void)reportException:(JS::NativeExceptionsManager::ExceptionData &)data;
 - (void)updateExceptionMessage:(NSString *)message
                          stack:(NSArray *)stack
                    exceptionId:(double)exceptionId;
+
+@optional
+- (void)reportException:(JS::NativeExceptionsManager::ExceptionData &)data;
 - (void)dismissRedbox;
 
 @end
