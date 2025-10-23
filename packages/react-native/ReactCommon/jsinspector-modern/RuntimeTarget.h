@@ -99,12 +99,10 @@ class RuntimeTargetDelegate {
    * Start sampling profiler.
    */
   virtual void enableSamplingProfiler() = 0;
-
   /**
    * Stop sampling profiler.
    */
   virtual void disableSamplingProfiler() = 0;
-
   /**
    * Return recorded sampling profile for the previous sampling session.
    */
@@ -148,12 +146,10 @@ class RuntimeTargetController {
    * Start sampling profiler for the corresponding RuntimeTarget.
    */
   void enableSamplingProfiler();
-
   /**
    * Stop sampling profiler for the corresponding RuntimeTarget.
    */
   void disableSamplingProfiler();
-
   /**
    * Return recorded sampling profile for the previous sampling session.
    */
@@ -227,12 +223,10 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * Start sampling profiler for a particular JavaScript runtime.
    */
   void enableSamplingProfiler();
-
   /**
    * Stop sampling profiler for a particular JavaScript runtime.
    */
   void disableSamplingProfiler();
-
   /**
    * Return recorded sampling profile for the previous sampling session.
    */
