@@ -166,4 +166,18 @@ class DisplayMetricsHolderTest {
     assertThat(decodedWidth).isEqualTo(width)
     assertThat(decodedHeight).isEqualTo(height)
   }
+
+  @Test
+  fun initDisplayMetrics_preservesScaledDensityForFontScale() {
+    val originalMetrics = context.resources.displayMetrics
+    val customScaledDensity = originalMetrics.density * 0.85f // fontScale = 0.85
+
+    originalMetrics.scaledDensity = customScaledDensity
+
+    DisplayMetricsHolder.initDisplayMetrics(context)
+
+    val screenMetrics = DisplayMetricsHolder.getScreenDisplayMetrics()
+
+    assertThat(screenMetrics.scaledDensity).isEqualTo(customScaledDensity)
+  }
 }
