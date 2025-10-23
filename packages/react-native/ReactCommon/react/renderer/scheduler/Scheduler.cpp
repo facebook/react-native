@@ -24,33 +24,6 @@
 
 namespace facebook::react {
 
-namespace {
-
-class UIManagerCommitHookManagerImpl : public UIManagerCommitHookManager {
- public:
-  explicit UIManagerCommitHookManagerImpl(std::weak_ptr<UIManager> uiManager)
-      : uiManager_(std::move(uiManager)) {}
-
-  ~UIManagerCommitHookManagerImpl() override = default;
-
-  void registerCommitHook(UIManagerCommitHook& commitHook) override {
-    if (auto uiManager = uiManager_.lock()) {
-      uiManager->registerCommitHook(commitHook);
-    }
-  }
-
-  void unregisterCommitHook(UIManagerCommitHook& commitHook) override {
-    if (auto uiManager = uiManager_.lock()) {
-      uiManager->unregisterCommitHook(commitHook);
-    }
-  }
-
- private:
-  std::weak_ptr<UIManager> uiManager_;
-};
-
-} // namespace
-
 Scheduler::Scheduler(
     const SchedulerToolbox& schedulerToolbox,
     UIManagerAnimationDelegate* animationDelegate,
@@ -76,11 +49,6 @@ Scheduler::Scheduler(
 
   auto uiManager =
       std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
-  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
-    contextContainer_->insert(
-        std::string(UIManagerCommitHookManagerKey),
-        std::make_shared<UIManagerCommitHookManagerImpl>(uiManager));
-  }
 
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
