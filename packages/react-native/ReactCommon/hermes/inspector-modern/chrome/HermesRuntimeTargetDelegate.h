@@ -55,9 +55,7 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
       size_t framesToSkip) override;
 
   void enableSamplingProfiler() override;
-
   void disableSamplingProfiler() override;
-
   tracing::RuntimeSamplingProfile collectSamplingProfile() override;
 
   std::optional<folly::dynamic> serializeStackTrace(
