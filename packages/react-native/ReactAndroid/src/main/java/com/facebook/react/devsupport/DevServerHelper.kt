@@ -280,7 +280,11 @@ public open class DevServerHelper(
   ): String {
     val dev = devMode
     val additionalOptionsBuilder = StringBuilder()
-    for ((key, value) in packagerConnectionSettings.additionalOptionsForPackager) {
+    val packagerOptions =
+        packagerConnectionSettings.updatePackagerOptions(
+            packagerConnectionSettings.additionalOptionsForPackager
+        )
+    for ((key, value) in packagerOptions) {
       if (value.isEmpty()) {
         continue
       }
