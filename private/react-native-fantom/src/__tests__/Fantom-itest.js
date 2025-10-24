@@ -548,7 +548,7 @@ describe('Fantom', () => {
             },
           ],
           props: {
-            foregroundColor: 'rgba(0, 0, 0, 0)',
+            foregroundColor: 'rgba(255, 255, 255, 0)',
           },
           type: 'Paragraph',
         });
