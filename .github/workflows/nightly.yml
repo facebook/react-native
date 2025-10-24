@@ -60,7 +60,6 @@ jobs:
     needs:
       [
         set_release_type,
-        prepare_workspace,
         build_android,
         prebuild_apple_dependencies,
         prebuild_react_native_core,
