@@ -53,4 +53,29 @@ class JavaOnlyMapTest {
 
     assertThat(values.getLong("long")).isEqualTo(1125899906842623L)
   }
+
+  @Test
+  fun testToHashMap() {
+    val array =
+        JavaOnlyMap.of(
+            "number",
+            1,
+            "array",
+            JavaOnlyArray.of(2),
+            "map",
+            JavaOnlyMap.of("number", 3),
+        )
+
+    assertThat(array.toHashMap())
+        .hasSize(3)
+        .containsEntry("number", 1.0)
+        .containsEntry("array", listOf(2.0))
+        .containsEntry("map", mapOf("number" to 3.0))
+
+    assertThat(array.toHashMapShallow())
+        .hasSize(3)
+        .containsEntry("number", 1.0)
+        .containsEntry("array", JavaOnlyArray.of(2))
+        .containsEntry("map", JavaOnlyMap.of("number", 3))
+  }
 }
