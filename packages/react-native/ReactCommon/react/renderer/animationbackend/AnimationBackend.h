@@ -29,8 +29,9 @@ using AnimationMutations = std::vector<AnimationMutation>;
 class AnimationBackend : public UIManagerAnimationBackend {
  public:
   using Callback = std::function<AnimationMutations(float)>;
-  using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
-  using StopOnRenderCallback = std::function<void()>;
+  using StartOnRenderCallback =
+      std::function<void(std::function<void()>&&, bool /* isAsync */)>;
+  using StopOnRenderCallback = std::function<void(bool /* isAsync */)>;
   using DirectManipulationCallback =
       std::function<void(Tag, const folly::dynamic&)>;
   using FabricCommitCallback =
@@ -56,7 +57,7 @@ class AnimationBackend : public UIManagerAnimationBackend {
       const std::unordered_map<Tag, AnimatedProps>& updates);
 
   void onAnimationFrame(double timestamp) override;
-  void start(const Callback& callback);
-  void stop() override;
+  void start(const Callback& callback, bool isAsync);
+  void stop(bool isAsync) override;
 };
 } // namespace facebook::react

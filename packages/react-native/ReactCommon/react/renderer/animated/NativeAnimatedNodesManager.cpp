@@ -100,7 +100,7 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     : animationBackend_(animationBackend) {}
 
 NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
-  stopRenderCallbackIfNeeded();
+  stopRenderCallbackIfNeeded(true);
 }
 
 std::optional<double> NativeAnimatedNodesManager::getValue(Tag tag) noexcept {
@@ -491,7 +491,7 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
     // when there are no active animations. Calling
     // `startRenderCallbackIfNeeded` will call platform specific code to
     // register UI tick listener.
-    startRenderCallbackIfNeeded();
+    startRenderCallbackIfNeeded(false);
     // Calling startOnRenderCallback_ will register a UI tick listener.
     // The UI ticker listener will not be called until the next frame.
     // That's why, in case this is called from the UI thread, we need to
@@ -516,12 +516,14 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
   return eventEmitterListener_;
 }
 
-void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
+void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
     if (auto animationBackend = animationBackend_.lock()) {
       std::static_pointer_cast<AnimationBackend>(animationBackend)
-          ->start([this](float /*f*/) { return pullAnimationMutations(); });
+          ->start(
+              [this](float /*f*/) { return pullAnimationMutations(); },
+              isAsync);
     }
 #endif
 
@@ -539,14 +541,15 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
   }
 
   if (startOnRenderCallback_) {
-    startOnRenderCallback_();
+    startOnRenderCallback_(isAsync);
   }
 }
 
-void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
+void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded(
+    bool isAsync) noexcept {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
     if (auto animationBackend = animationBackend_.lock()) {
-      animationBackend->stop();
+      animationBackend->stop(isAsync);
     }
     return;
   }
@@ -558,7 +561,7 @@ void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
 
   if (isRenderCallbackStarted) {
     if (stopOnRenderCallback_) {
-      stopOnRenderCallback_();
+      stopOnRenderCallback_(isAsync);
     }
   }
 }
@@ -1008,7 +1011,7 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
     }
   } else {
     // There is no active animation. Stop the render callback.
-    stopRenderCallbackIfNeeded();
+    stopRenderCallbackIfNeeded(false);
   }
   return mutations;
 }
@@ -1083,7 +1086,7 @@ void NativeAnimatedNodesManager::onRender() {
     }
   } else {
     // There is no active animation. Stop the render callback.
-    stopRenderCallbackIfNeeded();
+    stopRenderCallbackIfNeeded(false);
   }
 }
 
