@@ -179,12 +179,55 @@ void RuntimeTarget::notifyDomainStateChanged(
     Domain domain,
     bool enabled,
     const RuntimeAgent& notifyingAgent) {
-  bool runtimeAndLogStatusBefore = false, runtimeAndLogStatusAfter = false;
-  if (domain == Domain::Log || domain == Domain::Runtime) {
-    runtimeAndLogStatusBefore =
-        agentsByEnabledDomain_[Domain::Runtime].contains(&notifyingAgent) &&
-        agentsByEnabledDomain_[Domain::Log].contains(&notifyingAgent);
+  auto [domainStateChangedLocally, domainStateChangedGlobally] =
+      processDomainChange(domain, enabled, notifyingAgent);
+
+  switch (domain) {
+    case Domain::Log:
+    case Domain::Runtime: {
+      auto otherDomain = domain == Domain::Log ? Domain::Runtime : Domain::Log;
+      // There should be an agent that enables both Log and Runtime domains.
+      if (!agentsByEnabledDomain_[otherDomain].contains(&notifyingAgent)) {
+        break;
+      }
+
+      if (domainStateChangedGlobally && enabled) {
+        assert(agentsWithRuntimeAndLogDomainsEnabled_ == 0);
+        emitDebuggerSessionCreated();
+        ++agentsWithRuntimeAndLogDomainsEnabled_;
+      } else if (domainStateChangedGlobally) {
+        assert(agentsWithRuntimeAndLogDomainsEnabled_ == 1);
+        emitDebuggerSessionDestroyed();
+        --agentsWithRuntimeAndLogDomainsEnabled_;
+      } else if (domainStateChangedLocally && enabled) {
+        // This is a case when given domain was already enabled by other Agent,
+        // so global state didn't change.
+        if (++agentsWithRuntimeAndLogDomainsEnabled_ == 1) {
+          emitDebuggerSessionCreated();
+        }
+      } else if (domainStateChangedLocally) {
+        if (--agentsWithRuntimeAndLogDomainsEnabled_ == 0) {
+          emitDebuggerSessionDestroyed();
+        }
+      }
+
+      break;
+    }
+    case Domain::Network:
+      break;
+    case Domain::kMaxValue: {
+      throw std::logic_error("Unexpected kMaxValue domain value provided");
+    }
   }
+}
+
+std::pair<bool, bool> RuntimeTarget::processDomainChange(
+    Domain domain,
+    bool enabled,
+    const RuntimeAgent& notifyingAgent) {
+  bool domainHadAgentsBefore = !agentsByEnabledDomain_[domain].empty();
+  bool domainHasBeenEnabledBefore =
+      agentsByEnabledDomain_[domain].contains(&notifyingAgent);
 
   if (enabled) {
     agentsByEnabledDomain_[domain].insert(&notifyingAgent);
@@ -193,24 +236,12 @@ void RuntimeTarget::notifyDomainStateChanged(
   }
   threadSafeDomainStatus_[domain] = !agentsByEnabledDomain_[domain].empty();
 
-  if (domain == Domain::Log || domain == Domain::Runtime) {
-    runtimeAndLogStatusAfter =
-        agentsByEnabledDomain_[Domain::Runtime].contains(&notifyingAgent) &&
-        agentsByEnabledDomain_[Domain::Log].contains(&notifyingAgent);
+  bool domainHasAgentsAfter = !agentsByEnabledDomain_[domain].empty();
 
-    if (runtimeAndLogStatusBefore != runtimeAndLogStatusAfter) {
-      if (runtimeAndLogStatusAfter) {
-        if (++agentsWithRuntimeAndLogDomainsEnabled_ == 1) {
-          emitDebuggerSessionCreated();
-        }
-      } else {
-        assert(agentsWithRuntimeAndLogDomainsEnabled_ > 0);
-        if (--agentsWithRuntimeAndLogDomainsEnabled_ == 0) {
-          emitDebuggerSessionDestroyed();
-        }
-      }
-    }
-  }
+  return {
+      domainHasBeenEnabledBefore ^ enabled,
+      domainHadAgentsBefore ^ domainHasAgentsAfter,
+  };
 }
 
 bool RuntimeTarget::isDomainEnabled(Domain domain) const {
