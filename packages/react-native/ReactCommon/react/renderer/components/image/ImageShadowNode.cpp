@@ -74,6 +74,24 @@ void ImageShadowNode::updateStateIfNeeded() {
     return;
   }
 
+#ifdef ANDROID
+  // Check if we should skip prefetching based on shouldResize logic
+  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
+    const auto& resizeMethod = imageProps.resizeMethod;
+    const auto& uri = newImageSource.uri;
+    bool shouldResize = (resizeMethod == "resize") ||
+        // Only resize for local content/file URIs
+        (resizeMethod == "auto" &&
+         (uri.starts_with("content://") || uri.starts_with("file://")));
+    // If we would resize but have no dimensions, skip creating the request
+    if (shouldResize &&
+        (newImageSource.size.width == 0 || newImageSource.size.height == 0)) {
+      // Keep the old state - don't create a new image request
+      return;
+    }
+  }
+#endif
+
   ImageState state{
       newImageSource,
       imageManager_->requestImage(
