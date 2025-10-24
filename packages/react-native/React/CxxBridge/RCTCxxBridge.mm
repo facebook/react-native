@@ -19,7 +19,6 @@
 #import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTCxxBridgeDelegate.h>
-#import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
@@ -992,7 +991,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       // modules on the main thread in parallel with loading the JS code, so
       // they will already be available before they are ever required.
       dispatch_block_t block = ^{
-        if (self.valid && ![moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
+        if (self.valid) {
           [self->_performanceLogger appendStartForTag:RCTPLNativeModuleMainThread];
           (void)[moduleData instance];
           [moduleData gatherConstants];
