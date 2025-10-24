@@ -97,7 +97,8 @@ class PerformanceTracer {
       std::optional<ConsoleTimeStampEntry> end = std::nullopt,
       std::optional<std::string> trackName = std::nullopt,
       std::optional<std::string> trackGroup = std::nullopt,
-      std::optional<ConsoleTimeStampColor> color = std::nullopt);
+      std::optional<ConsoleTimeStampColor> color = std::nullopt,
+      std::optional<folly::dynamic> detail = std::nullopt);
 
   /**
    * Record an Event Loop tick, which will be represented as an Event Loop task
@@ -232,6 +233,7 @@ class PerformanceTracer {
     std::optional<std::string> trackName;
     std::optional<std::string> trackGroup;
     std::optional<ConsoleTimeStampColor> color;
+    std::optional<folly::dynamic> detail;
     ThreadId threadId;
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
