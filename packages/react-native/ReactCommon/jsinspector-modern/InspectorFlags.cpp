@@ -33,6 +33,10 @@ bool InspectorFlags::getNetworkInspectionEnabled() const {
   return loadFlagsAndAssertUnchanged().networkInspectionEnabled;
 }
 
+bool InspectorFlags::getPerfIssuesEnabled() const {
+  return loadFlagsAndAssertUnchanged().perfIssuesEnabled;
+}
+
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
 }
@@ -59,6 +63,7 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
       .networkInspectionEnabled =
           ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
           ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(),
+      .perfIssuesEnabled = ReactNativeFeatureFlags::perfIssuesEnabled(),
   };
 
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {

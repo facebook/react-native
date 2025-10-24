@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0554340092d31b5431e201f570599ab5>>
+ * @generated SignedSource<<8d5f7122ca675380250ae4bd95fb3751>>
  */
 
 /**
@@ -248,6 +248,10 @@ bool ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS() {
 
 bool ReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid() {
   return getAccessor().overrideBySynchronousMountPropsAtMountingAndroid();
+}
+
+bool ReactNativeFeatureFlags::perfIssuesEnabled() {
+  return getAccessor().perfIssuesEnabled();
 }
 
 bool ReactNativeFeatureFlags::perfMonitorV2Enabled() {

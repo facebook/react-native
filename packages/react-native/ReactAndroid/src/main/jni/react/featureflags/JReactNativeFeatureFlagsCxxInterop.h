@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e8bbe1de8eccb3ecea6b9f001de07fd2>>
+ * @generated SignedSource<<ec58172a1cf44747c32a6f9d9e34b1ce>>
  */
 
 /**
@@ -196,6 +196,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool overrideBySynchronousMountPropsAtMountingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool perfIssuesEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool perfMonitorV2Enabled(

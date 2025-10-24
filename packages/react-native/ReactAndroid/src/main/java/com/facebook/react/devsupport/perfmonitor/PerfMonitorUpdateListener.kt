@@ -12,4 +12,7 @@ import com.facebook.react.devsupport.interfaces.TracingState
 internal interface PerfMonitorUpdateListener {
   /** Called when the recording state of the background performance trace has changed. */
   fun onRecordingStateChanged(state: TracingState)
+
+  /** Called when a new Performance Issue is added. */
+  fun onPerfIssueAdded(message: String)
 }
