@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<48a05f5360c927150021af873e6d52b8>>
+ * @generated SignedSource<<c2025e0cf674d83e6af8d78d8f45b6a9>>
  */
 
 /**
@@ -372,6 +372,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool overrideBySynchronousMountPropsAtMountingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("overrideBySynchronousMountPropsAtMountingAndroid");
+    return method(javaProvider_);
+  }
+
+  bool perfIssuesEnabled() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("perfIssuesEnabled");
     return method(javaProvider_);
   }
 
@@ -803,6 +809,11 @@ bool JReactNativeFeatureFlagsCxxInterop::overrideBySynchronousMountPropsAtMounti
   return ReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::perfIssuesEnabled(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::perfIssuesEnabled();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::perfMonitorV2Enabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::perfMonitorV2Enabled();
@@ -1122,6 +1133,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "overrideBySynchronousMountPropsAtMountingAndroid",
         JReactNativeFeatureFlagsCxxInterop::overrideBySynchronousMountPropsAtMountingAndroid),
+      makeNativeMethod(
+        "perfIssuesEnabled",
+        JReactNativeFeatureFlagsCxxInterop::perfIssuesEnabled),
       makeNativeMethod(
         "perfMonitorV2Enabled",
         JReactNativeFeatureFlagsCxxInterop::perfMonitorV2Enabled),
