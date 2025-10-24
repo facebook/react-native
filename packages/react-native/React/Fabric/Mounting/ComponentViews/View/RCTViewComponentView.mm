@@ -1460,7 +1460,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)accessibilityActivate
 {
   if (_eventEmitter && _props->onAccessibilityTap) {
-    _eventEmitter->onAccessibilityTap();
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityTap();
+    });
     return YES;
   } else {
     return NO;
@@ -1470,7 +1474,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)accessibilityPerformMagicTap
 {
   if (_eventEmitter && _props->onAccessibilityMagicTap) {
-    _eventEmitter->onAccessibilityMagicTap();
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityMagicTap();
+    });
     return YES;
   } else {
     return NO;
@@ -1480,7 +1488,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)accessibilityPerformEscape
 {
   if (_eventEmitter && _props->onAccessibilityEscape) {
-    _eventEmitter->onAccessibilityEscape();
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityEscape();
+    });
     return YES;
   } else {
     return NO;
@@ -1490,21 +1501,35 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (void)accessibilityIncrement
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
-    _eventEmitter->onAccessibilityAction("increment");
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+    
+    // Dispatch the event synchronously - JS will run and update props immediately
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityAction("increment");
+    });
   }
 }
 
 - (void)accessibilityDecrement
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
-    _eventEmitter->onAccessibilityAction("decrement");
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+    
+    // Dispatch the event synchronously - JS will run and update props immediately
+    emitter->experimental_flushSync([&emitter]() {
+      emitter->onAccessibilityAction("decrement");
+    });
   }
 }
 
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
-    _eventEmitter->onAccessibilityAction(RCTStringFromNSString(action.name));
+    auto emitter = std::static_pointer_cast<const ViewEventEmitter>(_eventEmitter);
+
+    emitter->experimental_flushSync([&emitter, &action]() {
+      emitter->onAccessibilityAction(RCTStringFromNSString(action.name));
+    });
     return YES;
   } else {
     return NO;
