@@ -13,6 +13,9 @@ import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
 import processBackgroundImage from '../../StyleSheet/processBackgroundImage';
+import processBackgroundPosition from '../../StyleSheet/processBackgroundPosition';
+import processBackgroundRepeat from '../../StyleSheet/processBackgroundRepeat';
+import processBackgroundSize from '../../StyleSheet/processBackgroundSize';
 import processBoxShadow from '../../StyleSheet/processBoxShadow';
 import processColor from '../../StyleSheet/processColor';
 import processFilter from '../../StyleSheet/processFilter';
@@ -144,11 +147,25 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
     : {process: processBoxShadow},
 
   /**
-   * Linear Gradient
+   * BackgroundImage
    */
-  experimental_backgroundImage: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? true
-    : {process: processBackgroundImage},
+  experimental_backgroundImage: {process: processBackgroundImage},
+
+  /**
+   * BackgroundSize
+   */
+  experimental_backgroundSize: {process: processBackgroundSize},
+
+  /**
+   * BackgroundPosition
+   */
+  experimental_backgroundPosition: {process: processBackgroundPosition},
+
+  /**
+   * BackgroundRepeat
+   */
+  experimental_backgroundRepeat: {process: processBackgroundRepeat},
+
   /**
    * View
    */

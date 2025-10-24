@@ -182,6 +182,15 @@ const validAttributesForNonEventProps = {
   experimental_backgroundImage: ReactNativeFeatureFlags.enableNativeCSSParsing()
     ? (true as const)
     : {process: require('../StyleSheet/processBackgroundImage').default},
+  experimental_backgroundSize: {
+    process: require('../StyleSheet/processBackgroundSize').default,
+  },
+  experimental_backgroundPosition: {
+    process: require('../StyleSheet/processBackgroundPosition').default,
+  },
+  experimental_backgroundRepeat: {
+    process: require('../StyleSheet/processBackgroundRepeat').default,
+  },
   boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
     ? (true as const)
     : {process: require('../StyleSheet/processBoxShadow').default},
