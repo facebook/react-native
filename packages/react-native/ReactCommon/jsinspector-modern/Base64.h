@@ -15,16 +15,16 @@ namespace facebook::react::jsinspector_modern {
 namespace {
 // Vendored from Folly
 // https://github.com/facebook/folly/blob/v2024.07.08.00/folly/detail/base64_detail/Base64Scalar.h
-constexpr char kBase64Charset[] =
+constexpr std::string_view kBase64Charset =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-constexpr char kBase64URLCharset[] =
+constexpr std::string_view kBase64URLCharset =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
 template <bool isURL>
 struct Base64ScalarImpl {
   static constexpr const char* kCharset =
-      isURL ? kBase64URLCharset : kBase64Charset;
+      isURL ? kBase64URLCharset.data() : kBase64Charset.data();
 
   // 0, 1 or 2 bytes
   static constexpr char* encodeTail(const char* f, const char* l, char* o) {
