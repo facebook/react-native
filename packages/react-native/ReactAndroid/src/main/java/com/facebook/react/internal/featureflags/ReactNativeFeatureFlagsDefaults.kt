@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7987eba84c39c6e8cb6494092a94790e>>
+ * @generated SignedSource<<a8ea071d5392313bcc4f8c7e9dc3e29a>>
  */
 
 /**
@@ -134,6 +134,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
 
   override fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = false
+
+  override fun perfIssuesEnabled(): Boolean = false
 
   override fun perfMonitorV2Enabled(): Boolean = false
 
