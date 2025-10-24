@@ -59,6 +59,10 @@ class SchedulerDelegateImpl : public SchedulerDelegate {
   void schedulerDidUpdateShadowTree(
       const std::unordered_map<Tag, folly::dynamic>& tagToProps) override;
 
+  void schedulerMeasureAsyncOnUI(
+      const ShadowView& shadowView,
+      const std::function<void(folly::dynamic)>& callback) override;
+
   std::shared_ptr<IMountingManager> mountingManager_;
 };
 

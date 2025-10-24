@@ -120,6 +120,11 @@ export default class ReactFabricHostComponent implements NativeMethods {
     }
   }
 
+  measureAsyncOnUI(callback: MeasureOnSuccessCallback): void {
+    // Note: this is only implemented in ReactNativeElement with NativeDOM + enableAccessToHostTreeInFabric
+    this.measure(callback);
+  }
+
   unstable_getBoundingClientRect(): DOMRect {
     const node = getNodeFromInternalInstanceHandle(
       this.__internalInstanceHandle,
