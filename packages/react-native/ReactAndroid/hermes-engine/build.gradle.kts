@@ -286,6 +286,10 @@ android {
             "-DHERMES_ENABLE_INTL=True",
         )
 
+        if (hermesV1Enabled) {
+          arguments("-DHERMESVM_HEAP_HV_MODE=HEAP_HV_PREFER32")
+        }
+
         targets("hermesvm")
       }
     }
