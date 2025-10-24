@@ -74,6 +74,12 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
     }
   }
 
+  fun handleNativePerfIssueAdded(
+      message: String,
+  ) {
+    perfMonitorListeners.forEach { listener -> listener.onPerfIssueAdded(message) }
+  }
+
   override fun close() {
     mHybridData.resetNative()
   }
