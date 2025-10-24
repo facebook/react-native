@@ -56,11 +56,16 @@ internal class PerfMonitorOverlayView(
     if (state == TracingState.ENABLEDINBACKGROUNDMODE) {
       (statusIndicator.background as GradientDrawable).setColor(Color.RED)
       statusLabel.text = "Profiling Active"
-      tooltipLabel.text = "Press ☰ to open"
+      tooltipLabel.text =
+          if (context.packageManager.hasSystemFeature("android.hardware.touchscreen")) "Tap to open"
+          else "Press ☰ to open"
     } else {
       (statusIndicator.background as GradientDrawable).setColor(Color.GRAY)
       statusLabel.text = "Profiling Stopped"
-      tooltipLabel.text = "Press ☰ to restart"
+      tooltipLabel.text =
+          if (context.packageManager.hasSystemFeature("android.hardware.touchscreen"))
+              "Tap to restart"
+          else "Press ☰ to restart"
     }
     dialog.show()
   }
