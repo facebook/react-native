@@ -19,7 +19,10 @@ class NativeAnimatedNodesManagerProvider {
  public:
   using FrameRateListenerCallback =
       std::function<void(bool /* shouldEnableListener */)>;
-  using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
+  // when isAsync is true, it means StartOnRenderCallback is invoked from js
+  // thread, otherwise from main thread
+  using StartOnRenderCallback =
+      std::function<void(std::function<void()>&&, bool /* isAsync */)>;
   using StopOnRenderCallback = NativeAnimatedNodesManager::StopOnRenderCallback;
 
   NativeAnimatedNodesManagerProvider(
@@ -49,6 +52,7 @@ class NativeAnimatedNodesManagerProvider {
       animatedMountingOverrideDelegate_;
 
   FrameRateListenerCallback frameRateListenerCallback_;
+
   StartOnRenderCallback startOnRenderCallback_;
   StopOnRenderCallback stopOnRenderCallback_;
 

@@ -42,9 +42,9 @@ NativeAnimatedNodesManagerProvider::NativeAnimatedNodesManagerProvider(
       frameRateListenerCallback_(std::move(frameRateListenerCallback)),
       startOnRenderCallback_(std::move(startOnRenderCallback)) {
   if (frameRateListenerCallback_) {
-    stopOnRenderCallback_ = [this, stopOnRenderCallback]() {
+    stopOnRenderCallback_ = [this, stopOnRenderCallback](bool isAsync) {
       if (stopOnRenderCallback) {
-        stopOnRenderCallback();
+        stopOnRenderCallback(isAsync);
       }
       if (frameRateListenerCallback_) {
         frameRateListenerCallback_(false);
@@ -106,17 +106,19 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
       uiManager->unstable_setAnimationBackend(animationBackend_);
     } else {
-      auto startOnRenderCallback = [this,
-                                    startOnRenderCallbackFn =
-                                        std::move(startOnRenderCallback_)]() {
-        if (startOnRenderCallbackFn) {
-          startOnRenderCallbackFn([this]() {
-            if (nativeAnimatedDelegate_) {
-              nativeAnimatedDelegate_->runAnimationFrame();
+      auto startOnRenderCallback =
+          [this, startOnRenderCallbackFn = std::move(startOnRenderCallback_)](
+              bool isAsync) {
+            if (startOnRenderCallbackFn) {
+              startOnRenderCallbackFn(
+                  [this]() {
+                    if (nativeAnimatedDelegate_) {
+                      nativeAnimatedDelegate_->runAnimationFrame();
+                    }
+                  },
+                  isAsync);
             }
-          });
-        }
-      };
+          };
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(
               std::move(directManipulationCallback),

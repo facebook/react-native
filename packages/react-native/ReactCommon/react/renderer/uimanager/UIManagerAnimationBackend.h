@@ -18,7 +18,7 @@ class UIManagerAnimationBackend {
 
   virtual void onAnimationFrame(double timestamp) = 0;
   // TODO: T240293839 Move over start() function and mutation types
-  virtual void stop() = 0;
+  virtual void stop(bool isAsync) = 0;
 };
 
 } // namespace facebook::react

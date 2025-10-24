@@ -61,8 +61,8 @@ class NativeAnimatedNodesManager {
       std::function<void(Tag, const folly::dynamic&)>;
   using FabricCommitCallback =
       std::function<void(std::unordered_map<Tag, folly::dynamic>&)>;
-  using StartOnRenderCallback = std::function<void()>;
-  using StopOnRenderCallback = std::function<void()>;
+  using StartOnRenderCallback = std::function<void(bool isAsync)>;
+  using StopOnRenderCallback = std::function<void(bool isAsync)>;
 
   explicit NativeAnimatedNodesManager(
       DirectManipulationCallback&& directManipulationCallback,
@@ -183,12 +183,12 @@ class NativeAnimatedNodesManager {
     // Whenever a batch is flushed to the UI thread, start the onRender
     // callbacks to guarantee they run at least once. E.g., to execute
     // setValue calls.
-    startRenderCallbackIfNeeded();
+    startRenderCallbackIfNeeded(true);
   }
 
   void onRender();
 
-  void startRenderCallbackIfNeeded();
+  void startRenderCallbackIfNeeded(bool isAsync);
 
   void updateNodes(
       const std::set<int>& finishedAnimationValueNodes = {}) noexcept;
@@ -202,7 +202,7 @@ class NativeAnimatedNodesManager {
   bool isOnRenderThread() const noexcept;
 
  private:
-  void stopRenderCallbackIfNeeded() noexcept;
+  void stopRenderCallbackIfNeeded(bool isAsync) noexcept;
 
   bool onAnimationFrame(double timestamp);
 
