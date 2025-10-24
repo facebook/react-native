@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <jsi/JSIDynamic.h>
+#include <jsi/jsi.h>
 #include <react/timing/primitives.h>
 
 #include <cassert>
@@ -94,5 +96,9 @@ inline std::optional<ConsoleTimeStampColor> getConsoleTimeStampColorFromString(
     return std::nullopt;
   }
 };
+
+std::optional<folly::dynamic> getConsoleTimeStampDetailFromObject(
+    jsi::Runtime& runtime,
+    const jsi::Value& detailValue);
 
 }; // namespace facebook::react::jsinspector_modern::tracing
