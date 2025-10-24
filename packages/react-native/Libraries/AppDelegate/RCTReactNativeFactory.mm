@@ -6,6 +6,7 @@
  */
 
 #import "RCTReactNativeFactory.h"
+#import <React/RCTBundleManager.h>
 #import <React/RCTColorSpaceUtils.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTLog.h>
@@ -59,6 +60,8 @@ using namespace facebook::react;
     self.rootViewFactory = [self createRCTRootViewFactory];
 
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+
+    self.bundleConfiguration = [RCTBundleConfiguration new];
   }
 
   return self;
@@ -84,6 +87,7 @@ using namespace facebook::react;
   UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
                                             initialProperties:initialProperties
                                                 launchOptions:launchOptions
+                                          bundleConfiguration:self.bundleConfiguration
                                          devMenuConfiguration:self.devMenuConfiguration];
   UIViewController *rootViewController = [_delegate createRootViewController];
   [_delegate setRootView:rootView toRootViewController:rootViewController];
