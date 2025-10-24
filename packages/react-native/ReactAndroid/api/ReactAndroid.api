@@ -3457,12 +3457,13 @@ public final class com/facebook/react/uimanager/LengthPercentage {
 	public final fun getType ()Lcom/facebook/react/uimanager/LengthPercentageType;
 	public fun hashCode ()I
 	public final fun resolve (F)F
-	public static final fun setFromDynamic (Lcom/facebook/react/bridge/Dynamic;)Lcom/facebook/react/uimanager/LengthPercentage;
+	public static final fun setFromDynamic (Lcom/facebook/react/bridge/Dynamic;Z)Lcom/facebook/react/uimanager/LengthPercentage;
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/facebook/react/uimanager/LengthPercentage$Companion {
-	public final fun setFromDynamic (Lcom/facebook/react/bridge/Dynamic;)Lcom/facebook/react/uimanager/LengthPercentage;
+	public final fun setFromDynamic (Lcom/facebook/react/bridge/Dynamic;Z)Lcom/facebook/react/uimanager/LengthPercentage;
+	public static synthetic fun setFromDynamic$default (Lcom/facebook/react/uimanager/LengthPercentage$Companion;Lcom/facebook/react/bridge/Dynamic;ZILjava/lang/Object;)Lcom/facebook/react/uimanager/LengthPercentage;
 }
 
 public final class com/facebook/react/uimanager/LengthPercentageType : java/lang/Enum {
@@ -4613,6 +4614,9 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field AUTO Ljava/lang/String;
 	public static final field BACKGROUND_COLOR Ljava/lang/String;
 	public static final field BACKGROUND_IMAGE Ljava/lang/String;
+	public static final field BACKGROUND_POSITION Ljava/lang/String;
+	public static final field BACKGROUND_REPEAT Ljava/lang/String;
+	public static final field BACKGROUND_SIZE Ljava/lang/String;
 	public static final field BORDER_BLOCK_COLOR Ljava/lang/String;
 	public static final field BORDER_BLOCK_END_COLOR Ljava/lang/String;
 	public static final field BORDER_BLOCK_START_COLOR Ljava/lang/String;
@@ -4942,7 +4946,7 @@ public final class com/facebook/react/uimanager/style/BackgroundImageLayer {
 	public static final field Companion Lcom/facebook/react/uimanager/style/BackgroundImageLayer$Companion;
 	public fun <init> ()V
 	public synthetic fun <init> (Lcom/facebook/react/uimanager/style/Gradient;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getShader (Landroid/graphics/Rect;)Landroid/graphics/Shader;
+	public final fun getShader (FF)Landroid/graphics/Shader;
 }
 
 public final class com/facebook/react/uimanager/style/BackgroundImageLayer$Companion {
@@ -6701,6 +6705,9 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 	public fun setAccessible (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	public fun setBackfaceVisibility (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;)V
 	public fun setBackgroundImage (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableArray;)V
+	public fun setBackgroundPosition (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableArray;)V
+	public fun setBackgroundRepeat (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableArray;)V
+	public fun setBackgroundSize (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setBorderColor (Lcom/facebook/react/views/view/ReactViewGroup;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/view/ReactViewGroup;IF)V
 	public fun setBorderRadius (Lcom/facebook/react/views/view/ReactViewGroup;ILcom/facebook/react/bridge/Dynamic;)V
