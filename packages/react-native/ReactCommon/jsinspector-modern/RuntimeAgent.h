@@ -85,21 +85,6 @@ class RuntimeAgent final {
    */
   ExportedState getExportedState();
 
-  /**
-   * Start sampling profiler for the corresponding RuntimeTarget.
-   */
-  void enableSamplingProfiler();
-
-  /**
-   * Stop sampling profiler for the corresponding RuntimeTarget.
-   */
-  void disableSamplingProfiler();
-
-  /**
-   * Return recorded sampling profile for the previous sampling session.
-   */
-  tracing::RuntimeSamplingProfile collectSamplingProfile();
-
  private:
   FrontendChannel frontendChannel_;
   RuntimeTargetController& targetController_;
