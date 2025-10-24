@@ -21,6 +21,7 @@
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
 
 #include <memory>
+#include <utility>
 
 #ifndef JSINSPECTOR_EXPORT
 #ifdef _MSC_VER
@@ -122,7 +123,13 @@ class RuntimeTargetDelegate {
  */
 class RuntimeTargetController {
  public:
-  enum class Domain { Network, Runtime, Log, kMaxValue };
+  enum class Domain {
+    Log,
+    Network,
+    ReactNativeApplication,
+    Runtime,
+    kMaxValue
+  };
 
   explicit RuntimeTargetController(RuntimeTarget& target);
 
@@ -307,6 +314,23 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    */
   void installConsoleHandler();
 
+  /*
+   * Installs console.createTask stub, which is essentially a no-op, but follows
+   * the semantics of actual API.
+   *
+   * The actual implementation is only installed when DevTools is opened or
+   * during tracing in the background. This aligns with Chromium's
+   * implementation.
+   */
+  void stubConsoleCreateTask();
+
+  /*
+   * Installs the actual console.createTask implementation. This should only
+   * happen when DevTools is opened or during tracing in the background to avoid
+   * paying the cost of capturing unnecessary stack traces.
+   */
+  void installConsoleCreateTask();
+
   /**
    * Installs __DEBUGGER_SESSION_OBSERVER__ object on the JavaScript's global
    * object, which later could be referenced from JavaScript side for
@@ -343,6 +367,22 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * message for the given domain.
    */
   void notifyDomainStateChanged(
+      Domain domain,
+      bool enabled,
+      const RuntimeAgent& notifyingAgent);
+
+  /**
+   * Processes the changes to the state of a given domain.
+   *
+   * Returns a pair of booleans:
+   *   1. Returns true, if an only if the given domain state changed locally,
+   *   for a given session.
+   *   2. Returns true, if and only if the given domain state changed globally:
+   *   when the given Agent is the only Agent that enabled given domain across
+   *   sessions, or when the only Agent that had this domain enabled has
+   *   disconnected.
+   */
+  std::pair<bool, bool> processDomainChange(
       Domain domain,
       bool enabled,
       const RuntimeAgent& notifyingAgent);

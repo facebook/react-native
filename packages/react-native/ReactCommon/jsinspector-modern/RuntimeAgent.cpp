@@ -43,6 +43,11 @@ RuntimeAgent::RuntimeAgent(
     targetController_.notifyDomainStateChanged(
         RuntimeTargetController::Domain::Network, true, *this);
   }
+
+  if (sessionState_.isReactNativeApplicationDomainEnabled) {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::ReactNativeApplication, true, *this);
+  }
 }
 
 bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
@@ -82,6 +87,16 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
     targetController_.notifyDomainStateChanged(
         RuntimeTargetController::Domain::Network,
         sessionState_.isNetworkDomainEnabled,
+        *this);
+
+    // We are not responding to this request, just processing a side effect.
+    return false;
+  } else if (
+      req.method == "ReactNativeApplication.enable" ||
+      req.method == "ReactNativeApplication.disable") {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::ReactNativeApplication,
+        sessionState_.isReactNativeApplicationDomainEnabled,
         *this);
 
     // We are not responding to this request, just processing a side effect.
@@ -136,6 +151,10 @@ RuntimeAgent::~RuntimeAgent() {
   if (sessionState_.isNetworkDomainEnabled) {
     targetController_.notifyDomainStateChanged(
         RuntimeTargetController::Domain::Network, false, *this);
+  }
+  if (sessionState_.isReactNativeApplicationDomainEnabled) {
+    targetController_.notifyDomainStateChanged(
+        RuntimeTargetController::Domain::ReactNativeApplication, false, *this);
   }
 
   // TODO: Eventually, there may be more than one Runtime per Page, and we'll

@@ -224,16 +224,18 @@ class HostAgent::Impl final {
             std::move(stashedTraceRecording.value()));
       }
 
+      // Percolate down to the RuntimeAgent.
       return {
-          .isFinishedHandlingRequest = true,
+          .isFinishedHandlingRequest = false,
           .shouldSendOKResponse = true,
       };
     }
     if (req.method == "ReactNativeApplication.disable") {
       sessionState_.isReactNativeApplicationDomainEnabled = false;
 
+      // Percolate down to the RuntimeAgent.
       return {
-          .isFinishedHandlingRequest = true,
+          .isFinishedHandlingRequest = false,
           .shouldSendOKResponse = true,
       };
     }
