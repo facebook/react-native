@@ -252,7 +252,8 @@ public object TouchTargetHelper {
    * Checks whether a touch at {@code x} and {@code y} are within the bounds of the View. Both
    * {@code x} and {@code y} must be relative to the top-left corner of the view.
    */
-  private fun isTouchPointInView(x: Float, y: Float, view: View): Boolean {
+  @JvmStatic
+  public fun isTouchPointInView(x: Float, y: Float, view: View): Boolean {
     val hitSlopRect = (view as? ReactHitSlopView)?.hitSlopRect
     if (hitSlopRect != null) {
       if (
