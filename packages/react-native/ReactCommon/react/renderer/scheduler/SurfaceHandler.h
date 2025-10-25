@@ -158,11 +158,9 @@ class SurfaceHandler {
   void applyDisplayMode(DisplayMode displayMode) const;
 
   /*
-   * An utility for dirtying all measurable shadow nodes present in the tree.
+   * Marks all measurable shadow nodes in the given tree as dirty
    */
-  void dirtyMeasurableNodes(ShadowNode& root) const;
-  std::shared_ptr<const ShadowNode> dirtyMeasurableNodesRecursive(
-      std::shared_ptr<const ShadowNode> node) const;
+  void dirtyMeasurableNodes(std::shared_ptr<const ShadowNode> node) const;
 
 #pragma mark - Link & Parameters
 
