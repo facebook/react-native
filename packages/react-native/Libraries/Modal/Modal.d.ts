@@ -64,6 +64,15 @@ export interface ModalPropsIOS {
     | undefined;
 
   /**
+   * The `detents` determines the height for modal,
+   * based on the detents value.
+   * It can be a combination of `large`, `medium` or
+   * any number.
+   * for eg: ['140', 'medium', 'large']
+   */
+  detents?: Array<string> | undefined;
+
+  /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    * On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field.
    */

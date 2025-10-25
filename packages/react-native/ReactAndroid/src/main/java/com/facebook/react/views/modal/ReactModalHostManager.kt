@@ -69,6 +69,11 @@ internal class ReactModalHostManager :
     // iOS only
   }
 
+  @ReactProp(name = "detent")
+  override fun setDetent(view: ReactModalHostView, value: String?) {
+    // iOS only
+  }
+
   @ReactProp(name = "presentationStyle")
   override fun setPresentationStyle(view: ReactModalHostView, value: String?): Unit = Unit
 
