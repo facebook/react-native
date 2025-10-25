@@ -948,17 +948,17 @@ export type ModuleProps = $ReadOnly<{|
 type NativeType = HostComponent<ModuleProps>;
 
 interface NativeCommands {
-  +handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
-  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
+  +handleRootTag: (viewRef: React.ComponentRef<NativeType>, rootTag: RootTag) => void;
+  +hotspotUpdate: (viewRef: React.ComponentRef<NativeType>, x: Int32, y: Int32) => void;
   scrollTo(
-    viewRef: React.ElementRef<NativeType>,
+    viewRef: React.ComponentRef<NativeType>,
     x: Float,
     y: Int32,
     z: Double,
     animated: boolean,
   ): void;
   +arrayArgs: (
-    viewRef: React.ElementRef<NativeType>,
+    viewRef: React.ComponentRef<NativeType>,
     booleanArray: $ReadOnlyArray<boolean>,
     stringArray: $ReadOnlyArray<string>,
     floatArray: $ReadOnlyArray<Float>,
@@ -1012,7 +1012,7 @@ export type ModuleProps = $ReadOnly<{|
 type NativeType = HostComponent<ModuleProps>;
 
 export type ScrollTo = (
-  viewRef: React.ElementRef<NativeType>,
+  viewRef: React.ComponentRef<NativeType>,
   y: Int,
   animated: Boolean,
 ) => Void;
@@ -1020,7 +1020,7 @@ export type ScrollTo = (
 interface NativeCommands {
   +scrollTo: ScrollTo;
   +addOverlays: (
-    viewRef: React.ElementRef<NativeType>,
+    viewRef: React.ComponentRef<NativeType>,
     overlayColorsReadOnly: $ReadOnlyArray<string>,
     overlayColorsArray: Array<string>,
     overlayColorsArrayAnnotation: string[],
@@ -1081,7 +1081,7 @@ export type ModuleProps = $ReadOnly<{|
 
 type NativeType = HostComponent<ModuleProps>;
 
-export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void;
+export type ScrollTo = (viewRef: React.ComponentRef<NativeType>, y: Int, animated: Boolean) => Void;
 
 interface NativeCommands {
   +scrollTo: ScrollTo;
@@ -1903,17 +1903,17 @@ export type ModuleProps = $ReadOnly<{|
 type NativeType = HostComponent<ModuleProps>;
 
 interface NativeCommands {
-  +handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
-  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: CodegenTypes.Int32, y: CodegenTypes.Int32) => void;
+  +handleRootTag: (viewRef: React.ComponentRef<NativeType>, rootTag: RootTag) => void;
+  +hotspotUpdate: (viewRef: React.ComponentRef<NativeType>, x: CodegenTypes.Int32, y: CodegenTypes.Int32) => void;
   scrollTo(
-    viewRef: React.ElementRef<NativeType>,
+    viewRef: React.ComponentRef<NativeType>,
     x: CodegenTypes.Float,
     y: CodegenTypes.Int32,
     z: CodegenTypes.Double,
     animated: boolean,
   ): void;
   +arrayArgs: (
-    viewRef: React.ElementRef<NativeType>,
+    viewRef: React.ComponentRef<NativeType>,
     booleanArray: $ReadOnlyArray<boolean>,
     stringArray: $ReadOnlyArray<string>,
     floatArray: $ReadOnlyArray<CodegenTypes.Float>,
@@ -1966,7 +1966,7 @@ export type ModuleProps = $ReadOnly<{|
 type NativeType = HostComponent<ModuleProps>;
 
 export type ScrollTo = (
-  viewRef: React.ElementRef<NativeType>,
+  viewRef: React.ComponentRef<NativeType>,
   y: Int,
   animated: Boolean,
 ) => Void;
@@ -1974,7 +1974,7 @@ export type ScrollTo = (
 interface NativeCommands {
   +scrollTo: ScrollTo;
   +addOverlays: (
-    viewRef: React.ElementRef<NativeType>,
+    viewRef: React.ComponentRef<NativeType>,
     overlayColorsReadOnly: $ReadOnlyArray<string>,
     overlayColorsArray: Array<string>,
     overlayColorsArrayAnnotation: string[],
@@ -2031,7 +2031,7 @@ export type ModuleProps = $ReadOnly<{|
 
 type NativeType = HostComponent<ModuleProps>;
 
-export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void;
+export type ScrollTo = (viewRef: React.ComponentRef<NativeType>, y: Int, animated: Boolean) => Void;
 
 interface NativeCommands {
   +scrollTo: ScrollTo;

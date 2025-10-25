@@ -54,11 +54,12 @@ function buildCommandSchema(
       firstParam.id != null &&
       firstParam.id.type === 'QualifiedTypeIdentifier' &&
       firstParam.id.qualification.name === 'React' &&
-      firstParam.id.id.name === 'ElementRef'
+      (firstParam.id.id.name === 'ElementRef' ||
+        firstParam.id.id.name === 'ComponentRef')
     )
   ) {
     throw new Error(
-      `The first argument of method ${name} must be of type React.ElementRef<>`,
+      `The first argument of method ${name} must be of type React.ElementRef<> or React.ComponentRef<>`,
     );
   }
 
