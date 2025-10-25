@@ -605,6 +605,52 @@ const examples = [
       );
     },
   },
+  {
+    title: 'Nested Pressables with Accessibility Container (iOS)',
+    description: (
+      'Demonstrates accessibilityContainer prop for nested interactive elements': string
+    ),
+    render: function NestedPressablesWithAccessibilityContainer(): React.Node {
+      const [outerPressCount, setOuterPressCount] = useState(0);
+      const [innerPressCount, setInnerPressCount] = useState(0);
+
+      return (
+        <View>
+          <View style={styles.row}>
+            <Text style={styles.text}>
+              Outer: {outerPressCount} | Inner: {innerPressCount}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Pressable
+              accessibilityContainer={true}
+              accessibilityLabel="Outer card button"
+              accessibilityRole="button"
+              onPress={() => setOuterPressCount(outerPressCount + 1)}
+              style={{
+                backgroundColor: '#f9c2ff',
+                padding: 16,
+                borderRadius: 8,
+              }}>
+              <Text>Outer Pressable</Text>
+              <Pressable
+                accessibilityLabel="Inner button"
+                accessibilityRole="button"
+                onPress={() => setInnerPressCount(innerPressCount + 1)}
+                style={{
+                  backgroundColor: '#61dafb',
+                  padding: 12,
+                  marginTop: 8,
+                  borderRadius: 6,
+                }}>
+                <Text>Inner Pressable</Text>
+              </Pressable>
+            </Pressable>
+          </View>
+        </View>
+      );
+    },
+  },
   ...PressableExampleFbInternal.examples,
 ];
 

@@ -53,6 +53,7 @@ class AccessibilityProps {
   // C++ because if not, it will default to false before render which prevents
   // the view from being updated with the correct value.
   bool accessibilityRespondsToUserInteraction{true};
+  bool accessibilityContainer{false};
   bool onAccessibilityTap{};
   bool onAccessibilityMagicTap{};
   bool onAccessibilityEscape{};

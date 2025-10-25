@@ -53,6 +53,8 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   BOOL _useCustomContainerView;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
   RCTSwiftUIContainerViewWrapper *_swiftUIWrapper;
+  BOOL _isAccessibilityContainer;
+  NSArray *_accessibilityElements;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -341,6 +343,13 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   // `nativeId`
   if (oldViewProps.nativeId != newViewProps.nativeId) {
     self.nativeId = RCTNSStringFromStringNilIfEmpty(newViewProps.nativeId);
+  }
+
+  // `accessibilityContainer` - needs to be handled before `accessible` so the setter override works
+  if (oldViewProps.accessibilityContainer != newViewProps.accessibilityContainer) {
+    _isAccessibilityContainer = newViewProps.accessibilityContainer;
+    // Clear cached accessibility elements when this changes
+    _accessibilityElements = nil;
   }
 
   // `accessible`
@@ -1353,11 +1362,27 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (BOOL)isAccessibilityElement
 {
+  // If this view is an accessibility container, it should not itself be an accessibility element
+  // This allows the accessibilityElements array to be used instead
+  if (_isAccessibilityContainer) {
+    return NO;
+  }
+
   if (self.contentView != nil) {
     return self.contentView.isAccessibilityElement;
   }
 
   return [super isAccessibilityElement];
+}
+
+- (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
+{
+  // If this is an accessibility container, prevent setting isAccessibilityElement to YES
+  if (_isAccessibilityContainer) {
+    // Don't call super - we want to keep it as NO
+    return;
+  }
+  [super setIsAccessibilityElement:isAccessibilityElement];
 }
 
 - (NSString *)accessibilityValue
@@ -1635,6 +1660,77 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 
   return YES;
+}
+
+#pragma mark - UIAccessibilityContainer
+
+- (BOOL)isAccessibilityContainer
+{
+  return _isAccessibilityContainer;
+}
+
+- (NSArray *)accessibilityElements
+{
+  if (!_isAccessibilityContainer) {
+    return [super accessibilityElements];
+  }
+  [self updateAccessibilityElementsIfNeeded];
+  return _accessibilityElements;
+}
+
+- (void)setAccessibilityElements:(NSArray *)accessibilityElements
+{
+  // Allow setting accessibilityElements, but if we're managing it ourselves, ignore
+  if (!_isAccessibilityContainer) {
+    [super setAccessibilityElements:accessibilityElements];
+  }
+}
+
+
+- (void)updateAccessibilityElementsIfNeeded
+{
+  if (_accessibilityElements != nil) {
+    return;
+  }
+
+  NSMutableArray *elements = [NSMutableArray new];
+
+  // First, add an accessibility element for the container itself
+  // This allows VoiceOver to access the container's action (e.g., an outer Pressable's onPress)
+  if (super.accessibilityLabel || super.accessibilityTraits != UIAccessibilityTraitNone) {
+    UIAccessibilityElement *containerElement = [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self];
+    containerElement.accessibilityLabel = super.accessibilityLabel;
+    containerElement.accessibilityHint = super.accessibilityHint;
+    containerElement.accessibilityTraits = super.accessibilityTraits;
+    containerElement.accessibilityFrame = self.accessibilityFrame;
+    containerElement.accessibilityFrameInContainerSpace = self.bounds;
+    [elements addObject:containerElement];
+  }
+
+  // Then collect all accessible child elements
+  UIView *container = self.contentView ?: self;
+
+  for (UIView *subview in container.subviews) {
+    if (subview.isAccessibilityElement) {
+      [elements addObject:subview];
+    } else if ([subview respondsToSelector:@selector(accessibilityElements)] &&
+               [subview accessibilityElements]) {
+      // If the subview has its own accessibilityElements array, add those
+      NSArray *subElements = [subview accessibilityElements];
+      [elements addObjectsFromArray:subElements];
+    } else if ([subview respondsToSelector:@selector(accessibilityElementCount)] &&
+               [subview accessibilityElementCount] > 0) {
+      // Recursively collect accessibility elements from child containers
+      NSInteger count = [subview accessibilityElementCount];
+      for (NSInteger i = 0; i < count; i++) {
+        id element = [subview accessibilityElementAtIndex:i];
+        if (element) {
+          [elements addObject:element];
+        }
+      }
+    }
+  }
+  _accessibilityElements = [elements copy];
 }
 
 @end
