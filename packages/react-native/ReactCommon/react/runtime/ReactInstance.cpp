@@ -241,6 +241,8 @@ void ReactInstance::loadScript(
     if (hasLogger) {
       ReactMarker::logTaggedMarkerBridgeless(
           ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
+      ReactMarker::logMarkerBridgeless(ReactMarker::INIT_REACT_RUNTIME_START);
+      ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_START);
     }
 
     // Check if the shermes unit is avaliable.
