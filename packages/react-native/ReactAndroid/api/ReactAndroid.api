@@ -239,6 +239,9 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public abstract fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
+	public fun setBundleSource (Ljava/lang/String;)V
+	public fun setBundleSource (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun setBundleSource$default (Lcom/facebook/react/ReactHost;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
 	public fun setDevMenuConfiguration (Lcom/facebook/react/devsupport/DevMenuConfiguration;)V
 	public abstract fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
@@ -1943,6 +1946,7 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
 	public final fun fetchSplitBundleAndCreateBundleLoader (Ljava/lang/String;Lcom/facebook/react/devsupport/DevSupportManagerBase$CallbackWithBundleLoader;)V
 	protected final fun getApplicationContext ()Landroid/content/Context;
+	public fun getBundleFilePath ()Ljava/lang/String;
 	public fun getCurrentActivity ()Landroid/app/Activity;
 	public final fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	public final fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
@@ -1977,11 +1981,13 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
 	public fun reloadSettings ()V
 	public fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
+	public fun setBundleFilePath (Ljava/lang/String;)V
 	public final fun setDevLoadingViewManager (Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)V
 	public fun setDevMenuEnabled (Z)V
 	public final fun setDevSupportEnabled (Z)V
 	public fun setFpsDebugEnabled (Z)V
 	public fun setHotModuleReplacementEnabled (Z)V
+	public final fun setJsAppBundleName (Ljava/lang/String;)V
 	public fun setKeyboardShortcutsEnabled (Z)V
 	public final fun setLastErrorCookie (I)V
 	public final fun setLastErrorStack ([Lcom/facebook/react/devsupport/interfaces/StackFrame;)V
@@ -2151,6 +2157,7 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun createSurfaceDelegate (Ljava/lang/String;)Lcom/facebook/react/common/SurfaceDelegate;
 	public abstract fun destroyRootView (Landroid/view/View;)V
 	public abstract fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
+	public fun getBundleFilePath ()Ljava/lang/String;
 	public abstract fun getCurrentActivity ()Landroid/app/Activity;
 	public abstract fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	public fun getDevMenuEnabled ()Z
@@ -2180,6 +2187,7 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
 	public abstract fun reloadSettings ()V
 	public abstract fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
+	public fun setBundleFilePath (Ljava/lang/String;)V
 	public fun setDevMenuEnabled (Z)V
 	public abstract fun setDevSupportEnabled (Z)V
 	public abstract fun setFpsDebugEnabled (Z)V
@@ -3021,6 +3029,8 @@ public class com/facebook/react/packagerconnection/PackagerConnectionSettings {
 	public fun resetDebugServerHost ()V
 	public final fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
 	public fun setDebugServerHost (Ljava/lang/String;)V
+	public final fun setPackagerOptionsUpdater (Lkotlin/jvm/functions/Function1;)V
+	public final fun updatePackagerOptions (Ljava/util/Map;)Ljava/util/Map;
 }
 
 public final class com/facebook/react/packagerconnection/ReconnectingWebSocket : okhttp3/WebSocketListener {
@@ -3099,6 +3109,8 @@ public final class com/facebook/react/runtime/ReactHostImpl : com/facebook/react
 	public fun reload (Ljava/lang/String;)Lcom/facebook/react/interfaces/TaskInterface;
 	public fun removeBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
+	public fun setBundleSource (Ljava/lang/String;)V
+	public fun setBundleSource (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public fun setDevMenuConfiguration (Lcom/facebook/react/devsupport/DevMenuConfiguration;)V
 	public fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }

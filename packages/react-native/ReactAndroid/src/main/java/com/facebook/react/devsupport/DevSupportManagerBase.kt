@@ -85,7 +85,7 @@ import java.util.Locale
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
     public val reactInstanceDevHelper: ReactInstanceDevHelper,
-    @get:JvmName("getJSAppBundleName") public val jsAppBundleName: String?,
+    @get:JvmName("getJSAppBundleName") public var jsAppBundleName: String?,
     enableOnCreate: Boolean,
     public override val redBoxHandler: RedBoxHandler?,
     private val devBundleDownloadListener: DevBundleDownloadListener?,
@@ -145,6 +145,12 @@ public abstract class DevSupportManagerBase(
         stopShakeDetector()
       }
 
+      field = value
+    }
+
+  override var bundleFilePath: String? = null
+    get() = field
+    set(value) {
       field = value
     }
 
