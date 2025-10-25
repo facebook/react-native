@@ -11,7 +11,6 @@ import androidx.annotation.GuardedBy
 import com.facebook.common.logging.FLog
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.bridge.CxxModuleWrapper
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.common.annotations.FrameworkAPI
@@ -110,39 +109,7 @@ public class TurboModuleManager(
     }
 
     val module = getModule(moduleName)
-    return if (module !is CxxModuleWrapper && module !is TurboModule) module else null
-  }
-
-  // used from TurboModuleManager.cpp
-  @Suppress("unused")
-  @DoNotStrip
-  private fun getLegacyCxxModule(moduleName: String): CxxModuleWrapper? {
-    /*
-     * This API is invoked from global.nativeModuleProxy.
-     * Only call getModule if the native module is a legacy module.
-     */
-    if (!isLegacyModule(moduleName)) {
-      return null
-    }
-
-    val module = getModule(moduleName)
-    return if (module is CxxModuleWrapper && module !is TurboModule) module else null
-  }
-
-  // used from TurboModuleManager.cpp
-  @Suppress("unused")
-  @DoNotStrip
-  private fun getTurboLegacyCxxModule(moduleName: String): CxxModuleWrapper? {
-    /*
-     * This API is invoked from global.__turboModuleProxy.
-     * Only call getModule if the native module is a turbo module.
-     */
-    if (!isTurboModule(moduleName)) {
-      return null
-    }
-
-    val module = getModule(moduleName)
-    return if (module is CxxModuleWrapper && module is TurboModule) module else null
+    return if (module !is TurboModule) module else null
   }
 
   // used from TurboModuleManager.cpp
@@ -158,7 +125,7 @@ public class TurboModuleManager(
     }
 
     val module = getModule(moduleName)
-    return if (module !is CxxModuleWrapper && module is TurboModule) module else null
+    return if (module is TurboModule) module else null
   }
 
   /**

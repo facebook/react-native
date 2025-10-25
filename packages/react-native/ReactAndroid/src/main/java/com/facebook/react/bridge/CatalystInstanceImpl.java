@@ -157,7 +157,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mReactQueueConfiguration.getJSQueueThread(),
         mNativeModulesQueueThread,
         mNativeModuleRegistry.getJavaModules(this),
-        mNativeModuleRegistry.getCxxModules(),
         mInspectorTarget);
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
     Systrace.endSection(TRACE_TAG_REACT);
@@ -212,13 +211,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
     // Extend the Java-visible registry of modules
     mNativeModuleRegistry.registerModules(modules);
     Collection<JavaModuleWrapper> javaModules = modules.getJavaModules(this);
-    Collection<ModuleHolder> cxxModules = modules.getCxxModules();
     // Extend the Cxx-visible registry of modules wrapped in appropriate interfaces
-    jniExtendNativeModules(javaModules, cxxModules);
+    jniExtendNativeModules(javaModules);
   }
 
-  private native void jniExtendNativeModules(
-      Collection<JavaModuleWrapper> javaModules, Collection<ModuleHolder> cxxModules);
+  private native void jniExtendNativeModules(Collection<JavaModuleWrapper> javaModules);
 
   private native void initializeBridge(
       InstanceCallback callback,
@@ -226,7 +223,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       MessageQueueThread jsQueue,
       MessageQueueThread moduleQueue,
       Collection<JavaModuleWrapper> javaModules,
-      Collection<ModuleHolder> cxxModules,
       @Nullable ReactInstanceManagerInspectorTarget inspectorTarget);
 
   @Override
