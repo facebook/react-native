@@ -102,14 +102,19 @@ export default class OpenDebuggerKeyboardHandler {
             '10 or more debug targets available, showing the first 9.',
           );
         }
+        const firstNineTargets = targets.slice(0, 9);
+        const hasDuplicateTitles =
+          new Set(firstNineTargets.map(target => target.title)).size <
+          firstNineTargets.length;
 
         this.#setTerminalMenu(
-          `Multiple debug targets available, please select:\n  ${targets
-            .slice(0, 9)
-            .map(
-              ({title, description}, i) =>
-                `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title} (${description})"`,
-            )
+          `Multiple debug targets available, please select:\n  ${firstNineTargets
+            .map(({title, description}, i) => {
+              const descriptionSuffix = hasDuplicateTitles
+                ? ` (${description})`
+                : '';
+              return `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title}${descriptionSuffix}"`;
+            })
             .join('\n  ')}`,
         );
       }
