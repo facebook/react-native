@@ -454,8 +454,9 @@ static void jni_YGNodeCopyStyleJNI(
 #define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                            \
   static jlong jni_YGNodeStyleGet##name##JNI(                             \
       JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer, jint edge) { \
-    return YogaValue::asJavaLong(YGNodeStyleGet##name(                    \
-        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge)));     \
+    return YogaValue::asJavaLong(                                         \
+        YGNodeStyleGet##name(                                             \
+            _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge))); \
   }                                                                       \
                                                                           \
   static void jni_YGNodeStyleSet##name##JNI(                              \

@@ -511,8 +511,9 @@ void ObjCInteropTurboModule::setInvocationArg(
       return;
     }
 
-    const char *BLOCK_TYPE = @encode(__typeof__(^{
-    }));
+    const char *BLOCK_TYPE = @encode(
+        __typeof__(^{
+        }));
 
     if (objCArgType == BLOCK_TYPE) {
       /**

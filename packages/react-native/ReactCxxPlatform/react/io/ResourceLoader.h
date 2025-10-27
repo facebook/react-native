@@ -13,17 +13,16 @@
 namespace facebook::react {
 class ResourceLoader {
  public:
-  static bool isDirectory(const std::string& path);
-  static bool isFile(const std::string& path);
-  static bool isAbsolutePath(const std::string& path);
-  static std::string getFileContents(const std::string& path);
-  static std::filesystem::path getCacheDirectory(
-      const std::string& path = std::string());
+  static bool isDirectory(const std::string &path);
+  static bool isFile(const std::string &path);
+  static bool isAbsolutePath(const std::string &path);
+  static std::string getFileContents(const std::string &path);
+  static std::filesystem::path getCacheDirectory(const std::string &path = std::string());
 
  protected:
-  static bool isResourceDirectory(const std::string& path);
-  static bool isResourceFile(const std::string& path);
-  static std::string getResourceFileContents(const std::string& path);
+  static bool isResourceDirectory(const std::string &path);
+  static bool isResourceFile(const std::string &path);
+  static std::string getResourceFileContents(const std::string &path);
 
  private:
   static constexpr const auto CACHE_DIR = ".react-native-cxx-cache";

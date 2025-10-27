@@ -27,21 +27,21 @@ class RunLoopObserverManager;
 
 class TesterAppDelegate {
  public:
-  TesterAppDelegate(const ReactInstanceConfig& reactInstanceConfig);
+  TesterAppDelegate(const ReactInstanceConfig &reactInstanceConfig);
   ~TesterAppDelegate();
 
   // TesterAppDelegate is not copyable or movable.
-  TesterAppDelegate(const TesterAppDelegate&) = delete;
-  TesterAppDelegate& operator=(const TesterAppDelegate&) = delete;
-  TesterAppDelegate(TesterAppDelegate&&) = delete;
-  TesterAppDelegate& operator=(TesterAppDelegate&&) = delete;
+  TesterAppDelegate(const TesterAppDelegate &) = delete;
+  TesterAppDelegate &operator=(const TesterAppDelegate &) = delete;
+  TesterAppDelegate(TesterAppDelegate &&) = delete;
+  TesterAppDelegate &operator=(TesterAppDelegate &&) = delete;
 
-  void loadScript(const std::string& bundlePath, const std::string& sourcePath);
+  void loadScript(const std::string &bundlePath, const std::string &sourcePath);
 
   void openDebugger() const;
 
   void startSurface(
-      jsi::Runtime& runtime,
+      jsi::Runtime &runtime,
       float widthDp,
       float heightDp,
       SurfaceId surfaceId,
@@ -49,11 +49,7 @@ class TesterAppDelegate {
       float viewportOffsetX = 0.0f,
       float viewportOffsetY = 0.0f);
 
-  void updateSurfaceConstraints(
-      SurfaceId surfaceId,
-      float widthDp,
-      float heightDp,
-      float pointScaleFactor);
+  void updateSurfaceConstraints(SurfaceId surfaceId, float widthDp, float heightDp, float pointScaleFactor);
 
   void stopSurface(SurfaceId surfaceId);
 

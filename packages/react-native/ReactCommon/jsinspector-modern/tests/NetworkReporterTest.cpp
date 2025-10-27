@@ -450,15 +450,16 @@ TEST_P(NetworkReporterTest, testCompleteNetworkFlow) {
                                             "base64Encoded": false
                                           }
                                         })"));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 2,
           "method": "Network.getResponseBody",
           "params": {{
             "requestId": {0}
           }}
         }})",
-      folly::toJson(requestId)));
+          folly::toJson(requestId)));
 
   this->expectMessageFromPage(JsonEq(R"({
                                           "id": 3,
@@ -494,15 +495,16 @@ TEST_P(NetworkReporterTest, testGetResponseBodyWithBase64) {
                                             "base64Encoded": true
                                           }
                                         })"));
-  this->toPage_->sendMessage(fmt::format(
-      R"({{
+  this->toPage_->sendMessage(
+      fmt::format(
+          R"({{
           "id": 2,
           "method": "Network.getResponseBody",
           "params": {{
             "requestId": {0}
           }}
         }})",
-      folly::toJson(requestId)));
+          folly::toJson(requestId)));
 
   this->expectMessageFromPage(JsonEq(R"({
                                           "id": 3,

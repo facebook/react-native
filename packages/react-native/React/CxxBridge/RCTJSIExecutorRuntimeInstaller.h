@@ -18,8 +18,7 @@ namespace facebook::react {
  * Apple platforms, such as console logging, performance metrics, etc.
  */
 [[deprecated("This API will be removed along with the legacy architecture.")]]
-JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(
-    JSIExecutor::RuntimeInstaller runtimeInstallerToWrap);
+JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(JSIExecutor::RuntimeInstaller runtimeInstallerToWrap);
 
 } // namespace facebook::react
 

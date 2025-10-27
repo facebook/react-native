@@ -37,14 +37,11 @@ enum ReactMarkerId {
 };
 
 #ifdef __APPLE__
-using LogTaggedMarker =
-    std::function<void(const ReactMarkerId, const char* tag)>; // Bridge only
-using LogTaggedMarkerBridgeless =
-    std::function<void(const ReactMarkerId, const char* tag)>;
+using LogTaggedMarker = std::function<void(const ReactMarkerId, const char *tag)>; // Bridge only
+using LogTaggedMarkerBridgeless = std::function<void(const ReactMarkerId, const char *tag)>;
 #else
-typedef void (
-    *LogTaggedMarker)(const ReactMarkerId, const char* tag); // Bridge only
-typedef void (*LogTaggedMarkerBridgeless)(const ReactMarkerId, const char* tag);
+typedef void (*LogTaggedMarker)(const ReactMarkerId, const char *tag); // Bridge only
+typedef void (*LogTaggedMarkerBridgeless)(const ReactMarkerId, const char *tag);
 #endif
 
 #ifndef RN_EXPORT
@@ -58,23 +55,20 @@ extern RN_EXPORT LogTaggedMarker logTaggedMarkerImpl;
 extern RN_EXPORT LogTaggedMarker logTaggedMarkerBridgelessImpl;
 
 extern RN_EXPORT void logMarker(ReactMarkerId markerId); // Bridge only
-extern RN_EXPORT void logTaggedMarker(
-    ReactMarkerId markerId,
-    const char* tag); // Bridge only
+extern RN_EXPORT void logTaggedMarker(ReactMarkerId markerId,
+                                      const char *tag); // Bridge only
 extern RN_EXPORT void logMarkerBridgeless(ReactMarkerId markerId);
-extern RN_EXPORT void logTaggedMarkerBridgeless(
-    ReactMarkerId markerId,
-    const char* tag);
+extern RN_EXPORT void logTaggedMarkerBridgeless(ReactMarkerId markerId, const char *tag);
 
 struct ReactMarkerEvent {
   const ReactMarkerId markerId;
-  const char* tag;
+  const char *tag;
   double time;
 };
 
 class RN_EXPORT StartupLogger {
  public:
-  static StartupLogger& getInstance();
+  static StartupLogger &getInstance();
 
   void logStartupEvent(ReactMarkerId markerId, double markerTime);
   void reset();
@@ -87,8 +81,8 @@ class RN_EXPORT StartupLogger {
 
  private:
   StartupLogger() = default;
-  StartupLogger(const StartupLogger&) = delete;
-  StartupLogger& operator=(const StartupLogger&) = delete;
+  StartupLogger(const StartupLogger &) = delete;
+  StartupLogger &operator=(const StartupLogger &) = delete;
 
   double appStartupStartTime = std::nan("");
   double appStartupEndTime = std::nan("");

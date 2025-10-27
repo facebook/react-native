@@ -13,15 +13,14 @@
 namespace facebook::react {
 
 struct DynamicEventPayload : public EventPayload {
-  explicit DynamicEventPayload(folly::dynamic&& payload);
+  explicit DynamicEventPayload(folly::dynamic &&payload);
 
   /*
    * EventPayload implementations
    */
-  jsi::Value asJSIValue(jsi::Runtime& runtime) const override;
+  jsi::Value asJSIValue(jsi::Runtime &runtime) const override;
   EventPayloadType getType() const override;
-  std::optional<double> extractValue(
-      const std::vector<std::string>& path) const override;
+  std::optional<double> extractValue(const std::vector<std::string> &path) const override;
 
  private:
   folly::dynamic payload_;

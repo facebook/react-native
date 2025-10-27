@@ -29,26 +29,27 @@ TEST(BaseTextShadowNodeTest, fragmentsWithDifferentAttributes) {
   PropsParserContext parserContext{-1, contextContainer};
 
   auto builder = simpleComponentBuilder();
-  auto shadowNode = builder.build(Element<ParagraphShadowNode>().children({
-      Element<TextShadowNode>()
-          .props([]() {
-            auto props = std::make_shared<TextProps>();
-            props->textAttributes.fontSize = 12;
-            return props;
-          })
-          .children({
-              rawTextElement("First fragment. "),
-          }),
-      Element<TextShadowNode>()
-          .props([]() {
-            auto props = std::make_shared<TextProps>();
-            props->textAttributes.fontSize = 24;
-            return props;
-          })
-          .children({
-              rawTextElement("Second fragment"),
-          }),
-  }));
+  auto shadowNode = builder.build(
+      Element<ParagraphShadowNode>().children({
+          Element<TextShadowNode>()
+              .props([]() {
+                auto props = std::make_shared<TextProps>();
+                props->textAttributes.fontSize = 12;
+                return props;
+              })
+              .children({
+                  rawTextElement("First fragment. "),
+              }),
+          Element<TextShadowNode>()
+              .props([]() {
+                auto props = std::make_shared<TextProps>();
+                props->textAttributes.fontSize = 24;
+                return props;
+              })
+              .children({
+                  rawTextElement("Second fragment"),
+              }),
+      }));
 
   auto baseTextAttributes = TextAttributes::defaultTextAttributes();
   AttributedString output;
@@ -75,10 +76,11 @@ TEST(BaseTextShadowNodeTest, rawTextIsMerged) {
   PropsParserContext parserContext{-1, contextContainer};
 
   auto builder = simpleComponentBuilder();
-  auto shadowNode = builder.build(Element<TextShadowNode>().children({
-      rawTextElement("Hello "),
-      rawTextElement("World"),
-  }));
+  auto shadowNode = builder.build(
+      Element<TextShadowNode>().children({
+          rawTextElement("Hello "),
+          rawTextElement("World"),
+      }));
 
   auto baseTextAttributes = TextAttributes::defaultTextAttributes();
   AttributedString output;

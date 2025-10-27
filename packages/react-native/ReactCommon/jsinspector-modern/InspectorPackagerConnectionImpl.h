@@ -18,11 +18,10 @@ namespace facebook::react::jsinspector_modern {
 /**
  * Internals of InspectorPackagerConnection.
  */
-class InspectorPackagerConnection::Impl
-    : public IWebSocketDelegate,
-      public IPageStatusListener,
-      // Used to generate `weak_ptr`s we can pass around.
-      public std::enable_shared_from_this<InspectorPackagerConnection::Impl> {
+class InspectorPackagerConnection::Impl : public IWebSocketDelegate,
+                                          public IPageStatusListener,
+                                          // Used to generate `weak_ptr`s we can pass around.
+                                          public std::enable_shared_from_this<InspectorPackagerConnection::Impl> {
  public:
   using SessionId = uint32_t;
 
@@ -39,9 +38,8 @@ class InspectorPackagerConnection::Impl
   bool isConnected() const;
   void connect();
   void closeQuietly();
-  void sendEventToAllConnections(const std::string& event);
-  std::unique_ptr<ILocalConnection> removeConnectionForPage(
-      const std::string& pageId);
+  void sendEventToAllConnections(const std::string &event);
+  std::unique_ptr<ILocalConnection> removeConnectionForPage(const std::string &pageId);
 
   /**
    * Send a message to the packager as soon as possible. This method is safe
@@ -49,10 +47,7 @@ class InspectorPackagerConnection::Impl
    * is sent, in which case the message will be dropped. The message is also
    * dropped if the session is no longer valid.
    */
-  void scheduleSendToPackager(
-      folly::dynamic message,
-      SessionId sourceSessionId,
-      const std::string& sourcePageId);
+  void scheduleSendToPackager(folly::dynamic message, SessionId sourceSessionId, const std::string &sourcePageId);
 
  private:
   struct Session {
@@ -66,27 +61,23 @@ class InspectorPackagerConnection::Impl
       std::string deviceName,
       std::string appName,
       std::unique_ptr<InspectorPackagerConnectionDelegate> delegate);
-  Impl(const Impl&) = delete;
-  Impl& operator=(const Impl&) = delete;
+  Impl(const Impl &) = delete;
+  Impl &operator=(const Impl &) = delete;
 
-  void handleDisconnect(const folly::const_dynamic_view& payload);
-  void handleConnect(const folly::const_dynamic_view& payload);
-  void handleWrappedEvent(const folly::const_dynamic_view& payload);
-  void handleProxyMessage(const folly::const_dynamic_view& message);
+  void handleDisconnect(const folly::const_dynamic_view &payload);
+  void handleConnect(const folly::const_dynamic_view &payload);
+  void handleWrappedEvent(const folly::const_dynamic_view &payload);
+  void handleProxyMessage(const folly::const_dynamic_view &message);
   folly::dynamic pages();
   void reconnect();
   void closeAllConnections();
   void disposeWebSocket();
-  void sendToPackager(const folly::dynamic& message);
+  void sendToPackager(const folly::dynamic &message);
 
-  void abort(
-      std::optional<int> posixCode,
-      const std::string& message,
-      const std::string& cause);
+  void abort(std::optional<int> posixCode, const std::string &message, const std::string &cause);
 
   // IWebSocketDelegate methods
-  virtual void didFailWithError(std::optional<int> posixCode, std::string error)
-      override;
+  virtual void didFailWithError(std::optional<int> posixCode, std::string error) override;
   virtual void didReceiveMessage(std::string_view message) override;
   virtual void didOpen() override;
   virtual void didClose() override;
@@ -111,8 +102,7 @@ class InspectorPackagerConnection::Impl
   SessionId nextSessionId_{1};
 };
 
-class InspectorPackagerConnection::Impl::RemoteConnection
-    : public IRemoteConnection {
+class InspectorPackagerConnection::Impl::RemoteConnection : public IRemoteConnection {
  public:
   RemoteConnection(
       std::weak_ptr<InspectorPackagerConnection::Impl> owningPackagerConnection,
@@ -124,8 +114,7 @@ class InspectorPackagerConnection::Impl::RemoteConnection
   void onDisconnect() override;
 
  private:
-  const std::weak_ptr<InspectorPackagerConnection::Impl>
-      owningPackagerConnection_;
+  const std::weak_ptr<InspectorPackagerConnection::Impl> owningPackagerConnection_;
   const std::string pageId_;
   const SessionId sessionId_;
 };

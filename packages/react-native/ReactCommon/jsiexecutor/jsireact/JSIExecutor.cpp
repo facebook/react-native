@@ -74,8 +74,9 @@ JSIExecutor::JSIExecutor(
     RuntimeInstaller runtimeInstaller)
     : runtime_(runtime),
       delegate_(delegate),
-      nativeModules_(std::make_shared<JSINativeModules>(
-          delegate ? delegate->getModuleRegistry() : nullptr)),
+      nativeModules_(
+          std::make_shared<JSINativeModules>(
+              delegate ? delegate->getModuleRegistry() : nullptr)),
       moduleRegistry_(delegate ? delegate->getModuleRegistry() : nullptr),
       scopedTimeoutInvoker_(scopedTimeoutInvoker),
       runtimeInstaller_(runtimeInstaller) {
@@ -268,8 +269,9 @@ void JSIExecutor::invokeCallback(
     ret = invokeCallbackAndReturnFlushedQueue_->call(
         *runtime_, callbackId, valueFromDynamic(*runtime_, arguments));
   } catch (...) {
-    std::throw_with_nested(std::runtime_error(
-        "Error invoking callback " + std::to_string(callbackId)));
+    std::throw_with_nested(
+        std::runtime_error(
+            "Error invoking callback " + std::to_string(callbackId)));
   }
 
   callNativeModules(ret, true);

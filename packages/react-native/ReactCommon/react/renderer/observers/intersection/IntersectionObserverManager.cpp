@@ -60,13 +60,14 @@ void IntersectionObserverManager::observe(
   auto parsedRootMargin =
       parseNormalizedRootMargin(rootMargin.value_or("0px 0px 0px 0px"));
 
-  observers.emplace_back(std::make_unique<IntersectionObserver>(
-      intersectionObserverId,
-      observationRootShadowNodeFamily,
-      shadowNodeFamily,
-      std::move(thresholds),
-      std::move(rootThresholds),
-      std::move(parsedRootMargin)));
+  observers.emplace_back(
+      std::make_unique<IntersectionObserver>(
+          intersectionObserverId,
+          observationRootShadowNodeFamily,
+          shadowNodeFamily,
+          std::move(thresholds),
+          std::move(rootThresholds),
+          std::move(parsedRootMargin)));
 
   observersPendingInitialization_.emplace_back(observers.back().get());
 }

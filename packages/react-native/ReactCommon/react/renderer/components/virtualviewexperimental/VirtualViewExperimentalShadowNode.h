@@ -13,21 +13,20 @@
 
 namespace facebook::react {
 
-constexpr const char VirtualViewExperimentalComponentName[] =
-    "VirtualViewExperimental";
+constexpr const char VirtualViewExperimentalComponentName[] = "VirtualViewExperimental";
 
 /*
  * `ShadowNode` for <VirtualViewExperimental> component.
  */
-class VirtualViewExperimentalShadowNode final
-    : public ConcreteViewShadowNode<
-          VirtualViewExperimentalComponentName,
-          VirtualViewExperimentalProps,
-          VirtualViewEventEmitter> {
+class VirtualViewExperimentalShadowNode final : public ConcreteViewShadowNode<
+                                                    VirtualViewExperimentalComponentName,
+                                                    VirtualViewExperimentalProps,
+                                                    VirtualViewEventEmitter> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
-  static ShadowNodeTraits BaseTraits() {
+  static ShadowNodeTraits BaseTraits()
+  {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     // <VirtualView> has a side effect: it listens to scroll events.
     // It must not be culled, otherwise Fling will not work.

@@ -115,8 +115,9 @@ void InspectorPackagerConnection::Impl::handleConnect(
     // RemoteConnection::onDisconnect(), if the connection even calls it,  will
     // be a no op (because the session is not added to `inspectorSessions_`), so
     // let's always notify the remote client of the disconnection ourselves.
-    sendToPackager(folly::dynamic::object("event", "disconnect")(
-        "payload", folly::dynamic::object("pageId", pageId)));
+    sendToPackager(
+        folly::dynamic::object("event", "disconnect")(
+            "payload", folly::dynamic::object("pageId", pageId)));
     return;
   }
   inspectorSessions_.emplace(
@@ -369,11 +370,12 @@ InspectorPackagerConnection::InspectorPackagerConnection(
     std::string deviceName,
     std::string appName,
     std::unique_ptr<InspectorPackagerConnectionDelegate> delegate)
-    : impl_(Impl::create(
-          std::move(url),
-          std::move(deviceName),
-          std::move(appName),
-          std::move(delegate))) {}
+    : impl_(
+          Impl::create(
+              std::move(url),
+              std::move(deviceName),
+              std::move(appName),
+              std::move(delegate))) {}
 
 bool InspectorPackagerConnection::isConnected() const {
   return impl_->isConnected();

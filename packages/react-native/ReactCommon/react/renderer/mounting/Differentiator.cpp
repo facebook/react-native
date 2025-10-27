@@ -1381,8 +1381,9 @@ ShadowViewMutation::List calculateShadowViewMutations(
   auto newRootShadowView = ShadowView(newRootShadowNode);
 
   if (oldRootShadowView != newRootShadowView) {
-    mutations.push_back(ShadowViewMutation::UpdateMutation(
-        oldRootShadowView, newRootShadowView, {}));
+    mutations.push_back(
+        ShadowViewMutation::UpdateMutation(
+            oldRootShadowView, newRootShadowView, {}));
   }
 
   auto sliceOne = sliceChildShadowNodeViewPairs(

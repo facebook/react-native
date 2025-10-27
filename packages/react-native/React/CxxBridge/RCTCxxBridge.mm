@@ -179,7 +179,7 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 
 struct RCTInstanceCallback : public InstanceCallback {
   __weak RCTCxxBridge *bridge_;
-  RCTInstanceCallback(RCTCxxBridge *bridge) : bridge_(bridge){};
+  RCTInstanceCallback(RCTCxxBridge *bridge) : bridge_(bridge) {};
   void onBatchComplete() override
   {
     [bridge_ batchDidComplete];
@@ -1120,16 +1120,12 @@ struct RCTInstanceCallback : public InstanceCallback {
   });
 }
 
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithDelegate
-                    : (__unused id<RCTBridgeDelegate>)delegate bundleURL
-                    : (__unused NSURL *)bundleURL moduleProvider
-                    : (__unused RCTBridgeModuleListProvider)block launchOptions
-                    : (__unused NSDictionary *)launchOptions)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithDelegate : (__unused id<RCTBridgeDelegate>)delegate bundleURL : (
+    __unused NSURL *)bundleURL moduleProvider : (__unused RCTBridgeModuleListProvider)
+                        block launchOptions : (__unused NSDictionary *)launchOptions)
 
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
-                    : (__unused NSURL *)bundleURL moduleProvider
-                    : (__unused RCTBridgeModuleListProvider)block launchOptions
-                    : (__unused NSDictionary *)launchOptions)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL : (__unused NSURL *)bundleURL moduleProvider : (
+    __unused RCTBridgeModuleListProvider)block launchOptions : (__unused NSDictionary *)launchOptions)
 
 /**
  * Prevent super from calling setUp (that'd create another batchedBridge)

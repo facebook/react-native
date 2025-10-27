@@ -156,10 +156,9 @@ RCT_EXPORT_MODULE()
   });
 }
 
-RCT_EXPORT_METHOD(showMessage
-                  : (NSString *)message withColor
-                  : (NSNumber *__nonnull)color withBackgroundColor
-                  : (NSNumber *__nonnull)backgroundColor)
+RCT_EXPORT_METHOD(
+    showMessage : (NSString *)message withColor : (NSNumber *__nonnull)color withBackgroundColor : (NSNumber *__nonnull)
+        backgroundColor)
 {
   [self showMessage:message color:[RCTConvert UIColor:color] backgroundColor:[RCTConvert UIColor:backgroundColor]];
 }

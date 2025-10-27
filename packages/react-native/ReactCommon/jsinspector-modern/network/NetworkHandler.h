@@ -33,7 +33,7 @@ using Headers = std::map<std::string, std::string>;
  */
 class NetworkHandler {
  public:
-  static NetworkHandler& getInstance();
+  static NetworkHandler &getInstance();
 
   /**
    * Set the channel used to send CDP events to the frontend. This should be
@@ -58,7 +58,8 @@ class NetworkHandler {
   /**
    * Returns whether network debugging is currently enabled.
    */
-  inline bool isEnabled() const {
+  inline bool isEnabled() const
+  {
     return enabled_.load(std::memory_order_acquire);
   }
 
@@ -66,41 +67,34 @@ class NetworkHandler {
    * @cdp Network.requestWillBeSent
    */
   void onRequestWillBeSent(
-      const std::string& requestId,
-      const cdp::network::Request& request,
-      const std::optional<cdp::network::Response>& redirectResponse);
+      const std::string &requestId,
+      const cdp::network::Request &request,
+      const std::optional<cdp::network::Response> &redirectResponse);
 
   /**
    * @cdp Network.requestWillBeSentExtraInfo
    */
-  void onRequestWillBeSentExtraInfo(
-      const std::string& requestId,
-      const Headers& headers);
+  void onRequestWillBeSentExtraInfo(const std::string &requestId, const Headers &headers);
 
   /**
    * @cdp Network.responseReceived
    */
-  void onResponseReceived(
-      const std::string& requestId,
-      const cdp::network::Response& response);
+  void onResponseReceived(const std::string &requestId, const cdp::network::Response &response);
 
   /**
    * @cdp Network.dataReceived
    */
-  void onDataReceived(
-      const std::string& requestId,
-      int dataLength,
-      int encodedDataLength);
+  void onDataReceived(const std::string &requestId, int dataLength, int encodedDataLength);
 
   /**
    * @cdp Network.loadingFinished
    */
-  void onLoadingFinished(const std::string& requestId, int encodedDataLength);
+  void onLoadingFinished(const std::string &requestId, int encodedDataLength);
 
   /**
    * @cdp Network.loadingFailed
    */
-  void onLoadingFailed(const std::string& requestId, bool cancelled);
+  void onLoadingFailed(const std::string &requestId, bool cancelled);
 
   /**
    * Store the fetched response body for a text or image network response.
@@ -110,10 +104,7 @@ class NetworkHandler {
    *
    * Should be called after checking \ref NetworkHandler::isEnabled.
    */
-  void storeResponseBody(
-      const std::string& requestId,
-      std::string_view body,
-      bool base64Encoded);
+  void storeResponseBody(const std::string &requestId, std::string_view body, bool base64Encoded);
 
   /**
    * Retrieve a stored response body for a given request ID.
@@ -121,30 +112,27 @@ class NetworkHandler {
    * \returns An optional tuple of [responseBody, base64Encoded]. Returns
    * nullopt if no entry is found in the buffer.
    */
-  std::optional<std::tuple<std::string, bool>> getResponseBody(
-      const std::string& requestId);
+  std::optional<std::tuple<std::string, bool>> getResponseBody(const std::string &requestId);
 
   /**
    * Associate the given stack trace with the given request ID.
    */
-  void recordRequestInitiatorStack(
-      const std::string& requestId,
-      folly::dynamic stackTrace);
+  void recordRequestInitiatorStack(const std::string &requestId, folly::dynamic stackTrace);
 
  private:
   NetworkHandler() = default;
-  NetworkHandler(const NetworkHandler&) = delete;
-  NetworkHandler& operator=(const NetworkHandler&) = delete;
+  NetworkHandler(const NetworkHandler &) = delete;
+  NetworkHandler &operator=(const NetworkHandler &) = delete;
   ~NetworkHandler() = default;
 
   std::atomic<bool> enabled_{false};
 
-  inline bool isEnabledNoSync() const {
+  inline bool isEnabledNoSync() const
+  {
     return enabled_.load(std::memory_order_relaxed);
   }
 
-  std::optional<folly::dynamic> consumeStoredRequestInitiator(
-      const std::string& requestId);
+  std::optional<folly::dynamic> consumeStoredRequestInitiator(const std::string &requestId);
 
   FrontendChannel frontendChannel_;
 

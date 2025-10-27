@@ -21,10 +21,11 @@ ImageRequest ImageFetcher::requestImage(
     SurfaceId surfaceId,
     const ImageRequestParams& imageRequestParams,
     Tag tag) {
-  items_[surfaceId].emplace_back(ImageRequestItem{
-      .imageSource = imageSource,
-      .imageRequestParams = imageRequestParams,
-      .tag = tag});
+  items_[surfaceId].emplace_back(
+      ImageRequestItem{
+          .imageSource = imageSource,
+          .imageRequestParams = imageRequestParams,
+          .tag = tag});
 
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
 

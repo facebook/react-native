@@ -134,22 +134,24 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
     addEventEmitterListener(
         nativeAnimatedNodesManager_->getEventEmitterListener());
 
-    uiManager->addEventListener(std::make_shared<EventListener>(
-        [eventEmitterListenerContainerWeak =
-             std::weak_ptr<EventEmitterListenerContainer>(
-                 eventEmitterListenerContainer_)](const RawEvent& rawEvent) {
-          const auto& eventTarget = rawEvent.eventTarget;
-          const auto& eventPayload = rawEvent.eventPayload;
-          if (eventTarget && eventPayload) {
-            if (auto eventEmitterListenerContainer =
-                    eventEmitterListenerContainerWeak.lock();
-                eventEmitterListenerContainer != nullptr) {
-              return eventEmitterListenerContainer->willDispatchEvent(
-                  eventTarget->getTag(), rawEvent.type, *eventPayload);
-            }
-          }
-          return false;
-        }));
+    uiManager->addEventListener(
+        std::make_shared<EventListener>(
+            [eventEmitterListenerContainerWeak =
+                 std::weak_ptr<EventEmitterListenerContainer>(
+                     eventEmitterListenerContainer_)](
+                const RawEvent& rawEvent) {
+              const auto& eventTarget = rawEvent.eventTarget;
+              const auto& eventPayload = rawEvent.eventPayload;
+              if (eventTarget && eventPayload) {
+                if (auto eventEmitterListenerContainer =
+                        eventEmitterListenerContainerWeak.lock();
+                    eventEmitterListenerContainer != nullptr) {
+                  return eventEmitterListenerContainer->willDispatchEvent(
+                      eventTarget->getTag(), rawEvent.type, *eventPayload);
+                }
+              }
+              return false;
+            }));
 
     uiManager->setNativeAnimatedDelegate(nativeAnimatedDelegate_);
 

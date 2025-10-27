@@ -24,25 +24,21 @@ template <CSSDataType AllowedTypeT, CSSDelimiter Delim>
 struct CSSList<AllowedTypeT, Delim> : public std::vector<AllowedTypeT> {};
 
 template <CSSValidCompoundDataType AllowedTypesT, CSSDelimiter Delim>
-struct CSSList<AllowedTypesT, Delim>
-    : public std::vector<CSSVariantWithTypes<AllowedTypesT>> {};
+struct CSSList<AllowedTypesT, Delim> : public std::vector<CSSVariantWithTypes<AllowedTypesT>> {};
 
 template <CSSMaybeCompoundDataType AllowedTypeT, CSSDelimiter Delim>
 struct CSSDataTypeParser<CSSList<AllowedTypeT, Delim>> {
-  static inline auto consume(CSSSyntaxParser& parser)
-      -> std::optional<CSSList<AllowedTypeT, Delim>> {
+  static inline auto consume(CSSSyntaxParser &parser) -> std::optional<CSSList<AllowedTypeT, Delim>>
+  {
     CSSList<AllowedTypeT, Delim> result;
-    for (auto nextValue = parseNextCSSValue<AllowedTypeT>(parser);
-         !std::holds_alternative<std::monostate>(nextValue);
+    for (auto nextValue = parseNextCSSValue<AllowedTypeT>(parser); !std::holds_alternative<std::monostate>(nextValue);
          nextValue = parseNextCSSValue<AllowedTypeT>(parser, Delim)) {
       // Copy from the variant of possible values to the element (either the
       // concrete type, or a variant of compound types which exlcudes the
       // possibility of std::monostate for parse error)
       std::visit(
-          [&](auto&& v) {
-            if constexpr (!std::is_same_v<
-                              std::remove_cvref_t<decltype(v)>,
-                              std::monostate>) {
+          [&](auto &&v) {
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(v)>, std::monostate>) {
               result.push_back(std::forward<decltype(v)>(v));
             }
           },
@@ -71,7 +67,6 @@ using CSSCommaSeparatedList = CSSList<AllowedTypeT, CSSDelimiter::Comma>;
  * https://www.w3.org/TR/css-values-4/#component-combinators
  */
 template <CSSMaybeCompoundDataType AllowedTypeT>
-using CSSWhitespaceSeparatedList =
-    CSSList<AllowedTypeT, CSSDelimiter::Whitespace>;
+using CSSWhitespaceSeparatedList = CSSList<AllowedTypeT, CSSDelimiter::Whitespace>;
 
 } // namespace facebook::react

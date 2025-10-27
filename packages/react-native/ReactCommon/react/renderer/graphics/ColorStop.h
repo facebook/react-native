@@ -17,7 +17,7 @@
 namespace facebook::react {
 
 struct ColorStop {
-  bool operator==(const ColorStop& other) const = default;
+  bool operator==(const ColorStop &other) const = default;
   SharedColor color;
   ValueUnit position;
 
@@ -26,7 +26,8 @@ struct ColorStop {
 #endif
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-  void toString(std::stringstream& ss) const {
+  void toString(std::stringstream &ss) const
+  {
     ss << color.toString();
     if (position.unit != UnitType::Undefined) {
       ss << " ";
@@ -37,7 +38,7 @@ struct ColorStop {
 };
 
 struct ProcessedColorStop {
-  bool operator==(const ProcessedColorStop& other) const = default;
+  bool operator==(const ProcessedColorStop &other) const = default;
   SharedColor color;
   std::optional<Float> position;
 };

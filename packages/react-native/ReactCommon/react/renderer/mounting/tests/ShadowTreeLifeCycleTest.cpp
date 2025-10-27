@@ -79,12 +79,13 @@ static void testShadowNodeTreeLifeCycle(
 
     // Injecting a tree into the root node.
     auto currentRootNode = std::static_pointer_cast<const RootShadowNode>(
-        emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
-            .props = ShadowNodeFragment::propsPlaceholder(),
-            .children = std::make_shared<
-                std::vector<std::shared_ptr<const ShadowNode>>>(
-                std::vector<std::shared_ptr<const ShadowNode>>{
-                    singleRootChildNode})}));
+        emptyRootNode->ShadowNode::clone(
+            ShadowNodeFragment{
+                .props = ShadowNodeFragment::propsPlaceholder(),
+                .children = std::make_shared<
+                    std::vector<std::shared_ptr<const ShadowNode>>>(
+                    std::vector<std::shared_ptr<const ShadowNode>>{
+                        singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = StubViewTree(ShadowView(*emptyRootNode));
@@ -236,12 +237,13 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 
     // Injecting a tree into the root node.
     auto currentRootNode = std::static_pointer_cast<const RootShadowNode>(
-        emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
-            .props = ShadowNodeFragment::propsPlaceholder(),
-            .children = std::make_shared<
-                std::vector<std::shared_ptr<const ShadowNode>>>(
-                std::vector<std::shared_ptr<const ShadowNode>>{
-                    singleRootChildNode})}));
+        emptyRootNode->ShadowNode::clone(
+            ShadowNodeFragment{
+                .props = ShadowNodeFragment::propsPlaceholder(),
+                .children = std::make_shared<
+                    std::vector<std::shared_ptr<const ShadowNode>>>(
+                    std::vector<std::shared_ptr<const ShadowNode>>{
+                        singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);

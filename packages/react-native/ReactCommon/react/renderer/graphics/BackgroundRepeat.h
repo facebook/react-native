@@ -22,8 +22,8 @@ struct BackgroundRepeat {
 
   BackgroundRepeat() {}
 
-  bool operator==(const BackgroundRepeat& other) const = default;
-  bool operator!=(const BackgroundRepeat& other) const = default;
+  bool operator==(const BackgroundRepeat &other) const = default;
+  bool operator!=(const BackgroundRepeat &other) const = default;
 };
 
 } // namespace facebook::react

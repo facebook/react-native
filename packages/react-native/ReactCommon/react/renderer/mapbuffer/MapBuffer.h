@@ -85,8 +85,7 @@ class MapBuffer {
     uint16_t type;
     uint64_t data;
 
-    Bucket(Key key, uint16_t type, uint64_t data)
-        : key(key), type(type), data(data) {}
+    Bucket(Key key, uint16_t type, uint64_t data) : key(key), type(type), data(data) {}
   };
 #pragma pack(pop)
 
@@ -109,13 +108,13 @@ class MapBuffer {
 
   explicit MapBuffer(std::vector<uint8_t> data);
 
-  MapBuffer(const MapBuffer& buffer) = delete;
+  MapBuffer(const MapBuffer &buffer) = delete;
 
-  MapBuffer& operator=(const MapBuffer& other) = delete;
+  MapBuffer &operator=(const MapBuffer &other) = delete;
 
-  MapBuffer(MapBuffer&& buffer) = default;
+  MapBuffer(MapBuffer &&buffer) = default;
 
-  MapBuffer& operator=(MapBuffer&& other) = default;
+  MapBuffer &operator=(MapBuffer &&other) = default;
 
   int32_t getInt(MapBuffer::Key key) const;
 
@@ -134,7 +133,7 @@ class MapBuffer {
 
   size_t size() const;
 
-  const uint8_t* data() const;
+  const uint8_t *data() const;
 
   uint16_t count() const;
 

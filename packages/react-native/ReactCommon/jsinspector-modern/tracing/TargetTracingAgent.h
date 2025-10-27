@@ -22,12 +22,13 @@ namespace facebook::react::jsinspector_modern::tracing {
  */
 class TargetTracingAgent {
  public:
-  explicit TargetTracingAgent(TraceRecordingState& state) : state_(state) {
+  explicit TargetTracingAgent(TraceRecordingState &state) : state_(state)
+  {
     (void)state_;
   }
 
  protected:
-  TraceRecordingState& state_;
+  TraceRecordingState &state_;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

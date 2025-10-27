@@ -20,10 +20,7 @@ namespace facebook::react {
 
 class InterpolationAnimatedNode final : public ValueAnimatedNode {
  public:
-  InterpolationAnimatedNode(
-      Tag tag,
-      const folly::dynamic& config,
-      NativeAnimatedNodesManager& manager);
+  InterpolationAnimatedNode(Tag tag, const folly::dynamic &config, NativeAnimatedNodesManager &manager);
 
   void update() override;
   void onDetachedFromNode(Tag animatedNodeTag) override;

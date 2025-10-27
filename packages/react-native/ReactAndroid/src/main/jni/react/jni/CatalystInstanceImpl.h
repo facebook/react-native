@@ -29,26 +29,22 @@ class Instance;
 class JavaScriptExecutorHolder;
 class NativeArray;
 
-struct [[deprecated(
-    "This API will be removed along with the legacy architecture.")]] JInstanceCallback
+struct [[deprecated("This API will be removed along with the legacy architecture.")]] JInstanceCallback
     : public jni::JavaClass<JInstanceCallback> {
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/bridge/CatalystInstanceImpl$InstanceCallback;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/CatalystInstanceImpl$InstanceCallback;";
 };
 
-class [[deprecated(
-    "This API will be removed along with the legacy architecture.")]] CatalystInstanceImpl
+class [[deprecated("This API will be removed along with the legacy architecture.")]] CatalystInstanceImpl
     : public jni::HybridClass<CatalystInstanceImpl> {
  public:
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
 
-  static jni::local_ref<jhybriddata> initHybrid(
-      jni::alias_ref<jclass> /*unused*/);
+  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass> /*unused*/);
 
   static void registerNatives();
 
-  std::shared_ptr<Instance> getInstance() {
+  std::shared_ptr<Instance> getInstance()
+  {
     return instance_;
   }
 
@@ -60,53 +56,40 @@ class [[deprecated(
   void initializeBridge(
       jni::alias_ref<JInstanceCallback::javaobject> callback,
       // This executor is actually a factory holder.
-      JavaScriptExecutorHolder* jseh,
+      JavaScriptExecutorHolder *jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
-      jni::alias_ref<
-          jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
-          javaModules,
-      jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-          cxxModules,
-      jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject>
-          inspectorTarget);
+      jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+      jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules,
+      jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject> inspectorTarget);
 
   void extendNativeModules(
-      jni::alias_ref<jni::JCollection<
-          JavaModuleWrapper::javaobject>::javaobject> javaModules,
-      jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-          cxxModules);
+      jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+      jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
 
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.
    */
-  void jniSetSourceURL(const std::string& sourceURL);
+  void jniSetSourceURL(const std::string &sourceURL);
 
   /**
    * Registers the file path of an additional JS segment by its ID.
    *
    */
-  void jniRegisterSegment(int segmentId, const std::string& path);
+  void jniRegisterSegment(int segmentId, const std::string &path);
 
   void jniLoadScriptFromAssets(
       jni::alias_ref<JAssetManager::javaobject> assetManager,
-      const std::string& assetURL,
+      const std::string &assetURL,
       bool loadSynchronously);
-  void jniLoadScriptFromFile(
-      const std::string& fileName,
-      const std::string& sourceURL,
-      bool loadSynchronously);
-  void jniCallJSFunction(
-      std::string module,
-      std::string method,
-      NativeArray* arguments);
-  void jniCallJSCallback(jint callbackId, NativeArray* arguments);
+  void jniLoadScriptFromFile(const std::string &fileName, const std::string &sourceURL, bool loadSynchronously);
+  void jniCallJSFunction(std::string module, std::string method, NativeArray *arguments);
+  void jniCallJSCallback(jint callbackId, NativeArray *arguments);
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
-  jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
-  getNativeMethodCallInvokerHolder();
+  jni::alias_ref<NativeMethodCallInvokerHolder::javaobject> getNativeMethodCallInvokerHolder();
   jni::alias_ref<JRuntimeExecutor::javaobject> getRuntimeExecutor();
   jni::alias_ref<JRuntimeScheduler::javaobject> getRuntimeScheduler();
-  void setGlobalVariable(std::string propName, std::string&& jsonValue);
+  void setGlobalVariable(std::string propName, std::string &&jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
 
@@ -125,8 +108,7 @@ class [[deprecated(
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
   jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
-  jni::global_ref<NativeMethodCallInvokerHolder::javaobject>
-      nativeMethodCallInvokerHolder_;
+  jni::global_ref<NativeMethodCallInvokerHolder::javaobject> nativeMethodCallInvokerHolder_;
   jni::global_ref<JRuntimeExecutor::javaobject> runtimeExecutor_;
   jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
 };

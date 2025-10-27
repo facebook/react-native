@@ -15,10 +15,7 @@
 
 namespace facebook::react {
 
-std::unordered_map<
-    std::string,
-    std::function<
-        std::shared_ptr<TurboModule>(std::shared_ptr<CallInvoker> jsInvoker)>>&
+std::unordered_map<std::string, std::function<std::shared_ptr<TurboModule>(std::shared_ptr<CallInvoker> jsInvoker)>> &
 globalExportedCxxTurboModuleMap();
 
 /**
@@ -29,7 +26,6 @@ globalExportedCxxTurboModuleMap();
  */
 void registerCxxModuleToGlobalModuleMap(
     std::string name,
-    std::function<std::shared_ptr<TurboModule>(
-        std::shared_ptr<CallInvoker> jsInvoker)> moduleProviderFunc);
+    std::function<std::shared_ptr<TurboModule>(std::shared_ptr<CallInvoker> jsInvoker)> moduleProviderFunc);
 
 } // namespace facebook::react

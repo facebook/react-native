@@ -105,8 +105,9 @@ void NetworkHandler::onRequestWillBeSentExtraInfo(
       .connectTiming = {.requestTime = getCurrentUnixTimestampSeconds()},
   };
 
-  frontendChannel_(cdp::jsonNotification(
-      "Network.requestWillBeSentExtraInfo", params.toDynamic()));
+  frontendChannel_(
+      cdp::jsonNotification(
+          "Network.requestWillBeSentExtraInfo", params.toDynamic()));
 }
 
 void NetworkHandler::onResponseReceived(

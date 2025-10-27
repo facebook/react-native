@@ -20,15 +20,15 @@ class ImageFetcher {
  public:
   ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer);
   ~ImageFetcher() = default;
-  ImageFetcher(const ImageFetcher&) = delete;
-  ImageFetcher& operator=(const ImageFetcher&) = delete;
-  ImageFetcher(ImageFetcher&&) = delete;
-  ImageFetcher& operator=(ImageFetcher&&) = delete;
+  ImageFetcher(const ImageFetcher &) = delete;
+  ImageFetcher &operator=(const ImageFetcher &) = delete;
+  ImageFetcher(ImageFetcher &&) = delete;
+  ImageFetcher &operator=(ImageFetcher &&) = delete;
 
   ImageRequest requestImage(
-      const ImageSource& imageSource,
+      const ImageSource &imageSource,
       SurfaceId surfaceId,
-      const ImageRequestParams& imageRequestParams,
+      const ImageRequestParams &imageRequestParams,
       Tag tag);
 
  private:

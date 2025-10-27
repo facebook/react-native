@@ -28,11 +28,12 @@ createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const 
   std::vector<std::unique_ptr<NativeModule>> nativeModules;
   for (RCTModuleData *moduleData in modules) {
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
-      nativeModules.emplace_back(std::make_unique<CxxNativeModule>(
-          instance,
-          [moduleData.name UTF8String],
-          [moduleData] { return [(RCTCxxModule *)(moduleData.instance) createModule]; },
-          std::make_shared<DispatchMessageQueueThread>(moduleData)));
+      nativeModules.emplace_back(
+          std::make_unique<CxxNativeModule>(
+              instance,
+              [moduleData.name UTF8String],
+              [moduleData] { return [(RCTCxxModule *)(moduleData.instance) createModule]; },
+              std::make_shared<DispatchMessageQueueThread>(moduleData)));
     } else {
       nativeModules.emplace_back(std::make_unique<RCTNativeModule>(bridge, moduleData));
     }

@@ -11,11 +11,9 @@
 
 namespace facebook::react::jsinspector_modern {
 
-class JInspectorNetworkReporter
-    : public jni::HybridClass<JInspectorNetworkReporter> {
+class JInspectorNetworkReporter : public jni::HybridClass<JInspectorNetworkReporter> {
  public:
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/modules/network/InspectorNetworkReporter;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/modules/network/InspectorNetworkReporter;";
 
   static jboolean isDebuggingEnabled(jni::alias_ref<jclass> /*unused*/);
 
@@ -41,20 +39,14 @@ class JInspectorNetworkReporter
       jni::alias_ref<jni::JMap<jstring, jstring>> responseHeaders,
       jlong encodedDataLength);
 
-  static void reportDataReceivedImpl(
-      jni::alias_ref<jclass> /*unused*/,
-      jni::alias_ref<jstring> requestId,
-      jint dataLength);
+  static void
+  reportDataReceivedImpl(jni::alias_ref<jclass> /*unused*/, jni::alias_ref<jstring> requestId, jint dataLength);
 
-  static void reportResponseEnd(
-      jni::alias_ref<jclass> /*unused*/,
-      jni::alias_ref<jstring> requestId,
-      jlong encodedDataLength);
+  static void
+  reportResponseEnd(jni::alias_ref<jclass> /*unused*/, jni::alias_ref<jstring> requestId, jlong encodedDataLength);
 
-  static void reportRequestFailed(
-      jni::alias_ref<jclass> /*unused*/,
-      jni::alias_ref<jstring> requestId,
-      jboolean cancelled);
+  static void
+  reportRequestFailed(jni::alias_ref<jclass> /*unused*/, jni::alias_ref<jstring> requestId, jboolean cancelled);
 
   static void maybeStoreResponseBodyImpl(
       jni::alias_ref<jclass> /*unused*/,

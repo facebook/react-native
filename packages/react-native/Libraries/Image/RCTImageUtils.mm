@@ -101,12 +101,11 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize, CGFloat destScale, RCTR
         sourceSize.height = destSize.height;
         sourceSize.width = sourceSize.height * aspect;
       }
-      return (CGRect){
-          {
-              RCTFloorValue((destSize.width - sourceSize.width) / 2, destScale),
-              RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale),
-          },
-          RCTCeilSize(sourceSize, destScale)};
+      return (CGRect){{
+                          RCTFloorValue((destSize.width - sourceSize.width) / 2, destScale),
+                          RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale),
+                      },
+                      RCTCeilSize(sourceSize, destScale)};
 
     case RCTResizeModeCover:
 
@@ -115,17 +114,16 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize, CGFloat destScale, RCTR
         sourceSize.height = destSize.height;
         sourceSize.width = sourceSize.height * aspect;
         destSize.width = destSize.height * targetAspect;
-        return (CGRect){
-            {RCTFloorValue((destSize.width - sourceSize.width) / 2, destScale), 0}, RCTCeilSize(sourceSize, destScale)};
+        return (CGRect){{RCTFloorValue((destSize.width - sourceSize.width) / 2, destScale), 0},
+                        RCTCeilSize(sourceSize, destScale)};
 
       } else { // target is wider than content
 
         sourceSize.width = destSize.width;
         sourceSize.height = sourceSize.width / aspect;
         destSize.height = destSize.width / targetAspect;
-        return (CGRect){
-            {0, RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale)},
-            RCTCeilSize(sourceSize, destScale)};
+        return (CGRect){{0, RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale)},
+                        RCTCeilSize(sourceSize, destScale)};
       }
 
     case RCTResizeModeCenter:
@@ -140,12 +138,11 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize, CGFloat destScale, RCTR
         sourceSize.width = sourceSize.height * aspect;
       }
 
-      return (CGRect){
-          {
-              RCTFloorValue((destSize.width - sourceSize.width) / 2, destScale),
-              RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale),
-          },
-          RCTCeilSize(sourceSize, destScale)};
+      return (CGRect){{
+                          RCTFloorValue((destSize.width - sourceSize.width) / 2, destScale),
+                          RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale),
+                      },
+                      RCTCeilSize(sourceSize, destScale)};
   }
 }
 

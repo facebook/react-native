@@ -16,8 +16,7 @@ namespace facebook::react::jsinspector_modern {
  */
 class JInspectorFlags : public jni::JavaClass<JInspectorFlags> {
  public:
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/devsupport/InspectorFlags;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/InspectorFlags;";
 
   static bool getFuseboxEnabled(jni::alias_ref<jclass> /*unused*/);
   static bool getIsProfilingBuild(jni::alias_ref<jclass> /*unused*/);

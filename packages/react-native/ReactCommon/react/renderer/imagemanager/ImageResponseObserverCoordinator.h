@@ -24,41 +24,36 @@ namespace facebook::react {
  */
 class ImageResponseObserverCoordinator {
  public:
-  ImageResponseObserverCoordinator(
-      SharedFunction<> resumeFunction,
-      SharedFunction<> cancelationFunction);
+  ImageResponseObserverCoordinator(SharedFunction<> resumeFunction, SharedFunction<> cancelationFunction);
 
   /*
    * Interested parties may observe the image response.
    * If the current image request status is not equal to `Loading`, the observer
    * will be called immediately.
    */
-  void addObserver(const ImageResponseObserver& observer) const;
+  void addObserver(const ImageResponseObserver &observer) const;
 
   /*
    * Interested parties may stop observing the image response.
    */
-  void removeObserver(const ImageResponseObserver& observer) const;
+  void removeObserver(const ImageResponseObserver &observer) const;
 
   /*
    * Platform-specific image loader will call this method with progress updates.
    */
-  void nativeImageResponseProgress(
-      float progress,
-      int64_t loaded,
-      int64_t total) const;
+  void nativeImageResponseProgress(float progress, int64_t loaded, int64_t total) const;
 
   /*
    * Platform-specific image loader will call this method with a completed image
    * response.
    */
-  void nativeImageResponseComplete(const ImageResponse& imageResponse) const;
+  void nativeImageResponseComplete(const ImageResponse &imageResponse) const;
 
   /*
    * Platform-specific image loader will call this method in case of any
    * failures.
    */
-  void nativeImageResponseFailed(const ImageLoadError& loadError) const;
+  void nativeImageResponseFailed(const ImageLoadError &loadError) const;
 
  private:
   /*
@@ -70,7 +65,7 @@ class ImageResponseObserverCoordinator {
    * List of observers.
    * Mutable: protected by mutex_.
    */
-  mutable std::vector<const ImageResponseObserver*> observers_;
+  mutable std::vector<const ImageResponseObserver *> observers_;
 
   /*
    * Current status of image loading.

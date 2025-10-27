@@ -19,7 +19,7 @@ namespace facebook::react {
  */
 struct ShadowViewNodePair final {
   ShadowView shadowView{};
-  const ShadowNode* shadowNode;
+  const ShadowNode *shadowNode;
 
   /**
    * The ShadowNode does not form a stacking context, and the native views
@@ -41,20 +41,23 @@ struct ShadowViewNodePair final {
    * rely on this more heavily to simplify the diffing algorithm
    * overall?
    */
-  mutable const ShadowViewNodePair* otherTreePair{nullptr};
+  mutable const ShadowViewNodePair *otherTreePair{nullptr};
 
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.
    */
-  bool operator==(const ShadowViewNodePair& rhs) const {
+  bool operator==(const ShadowViewNodePair &rhs) const
+  {
     return this->shadowNode == rhs.shadowNode;
   }
 
-  bool operator!=(const ShadowViewNodePair& rhs) const {
+  bool operator!=(const ShadowViewNodePair &rhs) const
+  {
     return !(*this == rhs);
   }
 
-  bool inOtherTree() const {
+  bool inOtherTree() const
+  {
     return this->otherTreePair != nullptr;
   }
 };

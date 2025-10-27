@@ -256,15 +256,16 @@ RCT_EXTERN_C_END
   }
 
 #if RCT_DEBUG
-#define BLOCK_CASE(_block_args, _block)                                        \
-  RCT_RETAINED_ARG_BLOCK(if (json && ![json isKindOfClass:[NSNumber class]]) { \
-    RCTLogArgumentError(weakSelf, index, json, "should be a function");        \
-    return NO;                                                                 \
-  } __block BOOL didInvoke = NO;                                               \
-                         __COPY_BLOCK(^_block_args {                           \
-                           if (checkCallbackMultipleInvocations(&didInvoke))   \
-                             _block                                            \
-                         });)
+#define BLOCK_CASE(_block_args, _block)                                     \
+  RCT_RETAINED_ARG_BLOCK(                                                   \
+      if (json && ![json isKindOfClass:[NSNumber class]]) {                 \
+        RCTLogArgumentError(weakSelf, index, json, "should be a function"); \
+        return NO;                                                          \
+      } __block BOOL didInvoke = NO;                                        \
+      __COPY_BLOCK(^_block_args {                                           \
+        if (checkCallbackMultipleInvocations(&didInvoke))                   \
+          _block                                                            \
+      });)
 #else
 #define BLOCK_CASE(_block_args, _block)             \
   RCT_RETAINED_ARG_BLOCK(__COPY_BLOCK(^_block_args{ \
@@ -345,8 +346,9 @@ RCT_EXTERN_C_END
         }
 
         default: {
-          static const char *blockType = @encode(__typeof__(^{
-          }));
+          static const char *blockType = @encode(
+              __typeof__(^{
+              }));
           if (!strcmp(objcType, blockType)) {
             BLOCK_CASE((NSArray * args), { [bridge enqueueCallback:json args:args]; });
           } else {

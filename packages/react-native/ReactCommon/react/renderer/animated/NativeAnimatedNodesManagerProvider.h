@@ -17,12 +17,10 @@ class AnimatedMountingOverrideDelegate;
 
 class NativeAnimatedNodesManagerProvider {
  public:
-  using FrameRateListenerCallback =
-      std::function<void(bool /* shouldEnableListener */)>;
+  using FrameRateListenerCallback = std::function<void(bool /* shouldEnableListener */)>;
   // when isAsync is true, it means StartOnRenderCallback is invoked from js
   // thread, otherwise from main thread
-  using StartOnRenderCallback =
-      std::function<void(std::function<void()>&&, bool /* isAsync */)>;
+  using StartOnRenderCallback = std::function<void(std::function<void()> &&, bool /* isAsync */)>;
   using StopOnRenderCallback = NativeAnimatedNodesManager::StopOnRenderCallback;
 
   NativeAnimatedNodesManagerProvider(
@@ -31,12 +29,11 @@ class NativeAnimatedNodesManagerProvider {
       FrameRateListenerCallback frameRateListenerCallback = nullptr);
 
   std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
-      jsi::Runtime& runtime,
+      jsi::Runtime &runtime,
       std::shared_ptr<CallInvoker> jsInvoker);
 
   // Native Event Listeners
-  void addEventEmitterListener(
-      const std::shared_ptr<EventEmitterListener>& listener);
+  void addEventEmitterListener(const std::shared_ptr<EventEmitterListener> &listener);
 
   std::shared_ptr<EventEmitterListener> getEventEmitterListener();
 
@@ -48,8 +45,7 @@ class NativeAnimatedNodesManagerProvider {
   std::shared_ptr<EventEmitterListener> eventEmitterListener_;
 
   std::shared_ptr<UIManagerNativeAnimatedDelegate> nativeAnimatedDelegate_;
-  std::shared_ptr<AnimatedMountingOverrideDelegate>
-      animatedMountingOverrideDelegate_;
+  std::shared_ptr<AnimatedMountingOverrideDelegate> animatedMountingOverrideDelegate_;
 
   FrameRateListenerCallback frameRateListenerCallback_;
 
@@ -59,24 +55,21 @@ class NativeAnimatedNodesManagerProvider {
   std::unique_ptr<MergedValueDispatcher> mergedValueDispatcher_;
 };
 
-class UIManagerNativeAnimatedDelegateImpl
-    : public UIManagerNativeAnimatedDelegate {
+class UIManagerNativeAnimatedDelegateImpl : public UIManagerNativeAnimatedDelegate {
  public:
   explicit UIManagerNativeAnimatedDelegateImpl(
-      NativeAnimatedNodesManagerProvider::FrameRateListenerCallback
-          frameRateListenerCallback);
+      NativeAnimatedNodesManagerProvider::FrameRateListenerCallback frameRateListenerCallback);
 
   void runAnimationFrame() override;
 
-  void setNativeAnimatedNodesManager(
-      std::weak_ptr<NativeAnimatedNodesManager> manager) {
+  void setNativeAnimatedNodesManager(std::weak_ptr<NativeAnimatedNodesManager> manager)
+  {
     nativeAnimatedNodesManager_ = manager;
   }
 
  private:
   std::weak_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
-  NativeAnimatedNodesManagerProvider::FrameRateListenerCallback
-      frameRateListenerCallback_;
+  NativeAnimatedNodesManagerProvider::FrameRateListenerCallback frameRateListenerCallback_;
 };
 
 } // namespace facebook::react

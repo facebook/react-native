@@ -111,11 +111,12 @@ void RuntimeAgent::notifyBindingCalled(
     return;
   }
 
-  frontendChannel_(cdp::jsonNotification(
-      "Runtime.bindingCalled",
-      folly::dynamic::object(
-          "executionContextId", executionContextDescription_.id)(
-          "name", bindingName)("payload", payload)));
+  frontendChannel_(
+      cdp::jsonNotification(
+          "Runtime.bindingCalled",
+          folly::dynamic::object(
+              "executionContextId", executionContextDescription_.id)(
+              "name", bindingName)("payload", payload)));
 }
 
 RuntimeAgent::ExportedState RuntimeAgent::getExportedState() {

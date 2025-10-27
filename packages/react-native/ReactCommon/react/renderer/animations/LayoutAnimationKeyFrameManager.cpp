@@ -122,14 +122,15 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
   if (layoutAnimationConfig) {
     std::scoped_lock lock(currentAnimationMutex_);
 
-    uiManagerDidConfigureNextLayoutAnimation(LayoutAnimation{
-        .surfaceId = -1,
-        .startTime = 0,
-        .completed = false,
-        .layoutAnimationConfig = *layoutAnimationConfig,
-        .successCallback = successCallback,
-        .failureCallback = failureCallback,
-        .keyFrames = {}});
+    uiManagerDidConfigureNextLayoutAnimation(
+        LayoutAnimation{
+            .surfaceId = -1,
+            .startTime = 0,
+            .completed = false,
+            .layoutAnimationConfig = *layoutAnimationConfig,
+            .successCallback = successCallback,
+            .failureCallback = failureCallback,
+            .keyFrames = {}});
   } else {
     LOG(ERROR) << "Parsing LayoutAnimationConfig failed: "
                << (folly::dynamic)config;
@@ -1175,25 +1176,31 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           // For CREATE/INSERT this will contain CREATE, INSERT in that order.
           // For REMOVE/DELETE, same.
         case ShadowViewMutation::Type::Create:
-          mutationsList.push_back(ShadowViewMutation::CreateMutation(
-              finalMutation.newChildShadowView));
+          mutationsList.push_back(
+              ShadowViewMutation::CreateMutation(
+                  finalMutation.newChildShadowView));
           break;
         case ShadowViewMutation::Type::Delete:
           mutationsList.push_back(ShadowViewMutation::DeleteMutation(prev));
           break;
         case ShadowViewMutation::Type::Insert:
-          mutationsList.push_back(ShadowViewMutation::InsertMutation(
-              finalMutation.parentTag,
-              finalMutation.newChildShadowView,
-              finalMutation.index));
+          mutationsList.push_back(
+              ShadowViewMutation::InsertMutation(
+                  finalMutation.parentTag,
+                  finalMutation.newChildShadowView,
+                  finalMutation.index));
           break;
         case ShadowViewMutation::Type::Remove:
-          mutationsList.push_back(ShadowViewMutation::RemoveMutation(
-              finalMutation.parentTag, prev, finalMutation.index));
+          mutationsList.push_back(
+              ShadowViewMutation::RemoveMutation(
+                  finalMutation.parentTag, prev, finalMutation.index));
           break;
         case ShadowViewMutation::Type::Update:
-          mutationsList.push_back(ShadowViewMutation::UpdateMutation(
-              prev, finalMutation.newChildShadowView, finalMutation.parentTag));
+          mutationsList.push_back(
+              ShadowViewMutation::UpdateMutation(
+                  prev,
+                  finalMutation.newChildShadowView,
+                  finalMutation.parentTag));
           break;
       }
       if (finalMutation.newChildShadowView.tag > 0) {
