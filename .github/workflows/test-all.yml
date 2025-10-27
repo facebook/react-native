@@ -46,7 +46,7 @@ jobs:
     needs: [prebuild_apple_dependencies]
 
   test_ios_rntester_ruby_3_2_0:
-    runs-on: macos-14
+    runs-on: macos-15
     needs:
       [prebuild_apple_dependencies, prebuild_react_native_core]
     steps:
@@ -59,7 +59,7 @@ jobs:
           flavor: Debug
 
   test_ios_rntester:
-    runs-on: macos-14-large
+    runs-on: macos-15-large
     needs:
       [prebuild_apple_dependencies, prebuild_react_native_core]
     continue-on-error: true
@@ -78,7 +78,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_rntester:
-    runs-on: macos-14-large
+    runs-on: macos-15-large
     needs:
       [test_ios_rntester]
     strategy:
@@ -99,6 +99,8 @@ jobs:
         run: ls -lR /tmp/RNTesterBuild
       - name: Setup xcode
         uses: ./.github/actions/setup-xcode
+        with:
+          platform: ios
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
@@ -108,7 +110,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_templateapp:
-    runs-on: macos-14-large
+    runs-on: macos-15-large
     needs: [build_npm_package, prebuild_apple_dependencies]
     strategy:
       fail-fast: false
@@ -119,6 +121,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup xcode
         uses: ./.github/actions/setup-xcode
+        with:
+          platform: ios
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn
@@ -418,7 +422,7 @@ jobs:
           compression-level: 0
 
   test_ios_helloworld_with_ruby_3_2_0:
-    runs-on: macos-14
+    runs-on: macos-15
     needs: [prebuild_apple_dependencies, prebuild_react_native_core]
     env:
       PROJECT_NAME: iOSTemplateProject
@@ -432,7 +436,7 @@ jobs:
           flavor: Debug
 
   test_ios_helloworld:
-    runs-on: macos-14
+    runs-on: macos-15
     needs: [prebuild_apple_dependencies, prebuild_react_native_core]
     strategy:
       matrix:
