@@ -19,6 +19,10 @@
     "node": ">= 20.19.4"
   },
   "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./flat": "./flat.js"
+  },
   "dependencies": {
     "@babel/core": "^7.25.2",
     "@babel/eslint-parser": "^7.25.1",
@@ -34,7 +38,7 @@
     "eslint-plugin-react-native": "^4.0.0"
   },
   "peerDependencies": {
-    "eslint": ">=8",
+    "eslint": "^8.0.0 || ^9.0.0",
     "prettier": ">=2"
   },
   "devDependencies": {
