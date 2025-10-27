@@ -829,8 +829,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                   handlePostTouchScrolling(0, 0);
                 }
               };
-          ViewCompat.postOnAnimationDelayed(
-              this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+          postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
         }
         return result;
       }
@@ -1132,8 +1131,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
               // We are still scrolling.
               mActivelyScrolling = false;
               mStableFrames = 0;
-              ViewCompat.postOnAnimationDelayed(
-                  ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
+              ReactHorizontalScrollView.this.postOnAnimationDelayed(
+                  this, ReactScrollViewHelper.MOMENTUM_DELAY);
             } else {
               // There has not been a scroll update since the last time this Runnable executed.
               ReactScrollViewHelper.updateFabricScrollState(ReactHorizontalScrollView.this);
@@ -1162,14 +1161,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                   flingAndSnap(0);
                 }
                 // The scrollview has not "stabilized" so we just post to check again a frame later
-                ViewCompat.postOnAnimationDelayed(
-                    ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
+                ReactHorizontalScrollView.this.postOnAnimationDelayed(
+                    this, ReactScrollViewHelper.MOMENTUM_DELAY);
               }
             }
           }
         };
-    ViewCompat.postOnAnimationDelayed(
-        this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+    postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
   private void cancelPostTouchScrolling() {
