@@ -45,8 +45,10 @@ export default TurboModuleRegistry.get<Spec>('XYZ');
     filename: `${NATIVE_MODULES_DIR}/XYZ.js`,
     errors: [
       {
-        message:
-        rule.meta.messages.misnamedHasteModule.replace('{{hasteModuleName}}', 'XYZ'),
+        message: rule.meta.messages.misnamedHasteModule.replace(
+          '{{hasteModuleName}}',
+          'XYZ',
+        ),
       },
     ],
   },
