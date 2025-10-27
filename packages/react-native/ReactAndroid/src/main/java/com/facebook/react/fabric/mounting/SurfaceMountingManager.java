@@ -815,19 +815,20 @@ public class SurfaceMountingManager {
    * @param surfaceId surface ID
    * @param componentName
    * @param params prefetch request params defined in C++
+   * @param tag react tag of the component
    */
   @SuppressLint("FunctionName")
   @AnyThread
   @UnstableReactNativeAPI
-  public void experimental_prefetchResources(
-      int surfaceId, String componentName, MapBuffer params) {
+  public void experimental_prefetchResource(
+      int surfaceId, String componentName, MapBuffer params, int tag) {
     if (isStopped()) {
       return;
     }
     mViewManagerRegistry
         .get(componentName)
-        .experimental_prefetchResources(
-            surfaceId, Assertions.assertNotNull(mThemedReactContext), params);
+        .experimental_prefetchResource(
+            surfaceId, Assertions.assertNotNull(mThemedReactContext), params, tag);
   }
 
   @Deprecated
