@@ -53,6 +53,14 @@ import UIKit
     containerViewModel.saturationAmount = CGFloat(saturation.floatValue)
   }
 
+  @objc public func updateContrast(_ contrast: NSNumber) {
+    containerViewModel.contrastAmount = CGFloat(contrast.floatValue)
+  }
+
+  @objc public func updateInvert(_ invert: NSNumber) {
+    containerViewModel.invertAmount = CGFloat(invert.floatValue)
+  }
+
   @objc public func updateLayout(withBounds bounds: CGRect) {
     hostingController?.view.frame = bounds
     containerViewModel.contentView?.frame = bounds
@@ -66,6 +74,8 @@ import UIKit
     containerViewModel.shadowY = 0
     containerViewModel.shadowColor = Color.clear
     containerViewModel.saturationAmount = 1
+    containerViewModel.contrastAmount = 1
+    containerViewModel.invertAmount = 0
   }
 }
 
@@ -85,6 +95,12 @@ class ContainerViewModel: ObservableObject {
   // saturation filter properties
   @Published var saturationAmount: CGFloat = 1
 
+  // contrast filter properties
+  @Published var contrastAmount: CGFloat = 1
+  
+  // invert filter properties
+  @Published var invertAmount: CGFloat = 0
+  
   @Published var contentView: UIView?
 }
 
@@ -98,6 +114,8 @@ struct SwiftUIContainerView: View {
         .grayscale(viewModel.grayscale)
         .shadow(color: viewModel.shadowColor, radius: viewModel.shadowRadius, x: viewModel.shadowX, y: viewModel.shadowY)
         .saturation(viewModel.saturationAmount)
+        .contrast(viewModel.contrastAmount)
+        .cssInvert(viewModel.invertAmount)
     }
   }
 }
@@ -110,5 +128,21 @@ struct UIViewWrapper: UIViewRepresentable {
   }
 
   func updateUIView(_ uiView: UIView, context: Context) {
+  }
+}
+
+extension View {
+  @ViewBuilder
+  func cssInvert(_ amount: CGFloat) -> some View {
+    if amount > 0 {
+      self.overlay {
+        Rectangle()
+          .fill(Color.white)
+          .blendMode(.difference)
+          .opacity(amount)
+      }
+    } else {
+      self
+    }
   }
 }

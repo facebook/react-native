@@ -58,6 +58,16 @@
   [self.swiftContainerView updateSaturation:saturation];
 }
 
+- (void)updateContrast:(NSNumber *)contrast
+{
+  [self.swiftContainerView updateContrast:contrast];
+}
+
+- (void)updateInvert:(NSNumber *)invert
+{
+  [self.swiftContainerView updateInvert:invert];
+}
+
 - (void)updateDropShadow:(NSNumber *)standardDeviation x:(NSNumber *)x y:(NSNumber *)y color:(UIColor *)color
 {
   [self.swiftContainerView updateDropShadowWithStandardDeviation:standardDeviation x:x y:y color:color];

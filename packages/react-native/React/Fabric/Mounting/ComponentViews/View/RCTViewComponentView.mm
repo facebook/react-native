@@ -812,9 +812,9 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 // SwiftUI wrapper.
 - (UIView *)effectiveContentView
 {
-  if (!ReactNativeFeatureFlags::enableSwiftUIBasedFilters()) {
-    return self;
-  }
+  // if (!ReactNativeFeatureFlags::enableSwiftUIBasedFilters()) {
+  //   return self;
+  // }
 
   UIView *effectiveContentView = self;
 
@@ -1087,6 +1087,16 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           if (_swiftUIWrapper != nullptr) {
             Float saturation = std::get<Float>(primitive.parameters);
             [_swiftUIWrapper updateSaturation:@(saturation)];
+          }
+        } else if (primitive.type == FilterType::Contrast) {
+          if (_swiftUIWrapper != nullptr) {
+            Float contrast = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateContrast:@(contrast)];
+          }
+        } else if (primitive.type == FilterType::Invert) {
+          if (_swiftUIWrapper != nullptr) {
+            Float invert = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateInvert:@(invert)];
           }
         }
       }
@@ -1545,7 +1555,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   if (!_props->filter.empty()) {
     for (const auto &primitive : _props->filter) {
       if (primitive.type == FilterType::Blur || primitive.type == FilterType::Grayscale ||
-          primitive.type == FilterType::DropShadow || primitive.type == FilterType::Saturate) {
+          primitive.type == FilterType::DropShadow || primitive.type == FilterType::Saturate
+          || primitive.type == FilterType::Contrast || primitive.type == FilterType::Invert) {
         return YES;
       }
     }
