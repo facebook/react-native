@@ -124,7 +124,7 @@ struct SwiftUIContainerView: View {
         .saturation(viewModel.saturationAmount)
         .contrast(viewModel.contrastAmount)
         .cssInvert(viewModel.invertAmount)
-        .hueRotate(viewModel.hueRotationDegrees)
+        .hueRotation(.degrees(viewModel.hueRotationDegrees))
     }
   }
 }
