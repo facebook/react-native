@@ -120,7 +120,6 @@
     "ws": "^7.5.10"
   },
   "resolutions": {
-    "eslint-plugin-react-hooks": "6.1.0-canary-12bc60f5-20250613",
     "react-is": "19.2.0",
     "on-headers": "1.1.0",
     "compression": "1.8.1"
