@@ -24,26 +24,19 @@ module.exports = {
 
   overrides: {
     flow: {
-      files: ['*.js'],
       rules: {
         // Flow Plugin
         // The following rules are made available via `eslint-plugin-ft-flow`
-
         'ft-flow/define-flow-type': 1,
         'ft-flow/use-flow-type': 1,
       },
     },
-    jsx: {
-      files: ['*.jsx'],
-    },
     reactNative: {
-      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
       rules: {
         '@react-native/no-deep-imports': 1,
       },
     },
     typescript: {
-      files: ['*.ts', '*.tsx'],
       rules: {
         '@typescript-eslint/no-unused-vars': [
           'error',
@@ -59,10 +52,6 @@ module.exports = {
       },
     },
     jest: {
-      files: [
-        '*.{spec,test}.{js,ts,tsx}',
-        '**/__{mocks,tests}__/**/*.{js,ts,tsx}',
-      ],
       rules: {
         'react-native/no-inline-styles': 0,
       },

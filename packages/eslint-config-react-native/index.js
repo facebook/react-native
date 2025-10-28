@@ -33,23 +33,30 @@ module.exports = {
   overrides: [
     {
       ...sharedConfig.overrides.flow,
+      files: ['*.js'],
       parser: '@babel/eslint-parser',
       plugins: ['ft-flow'],
     },
     {
-      ...sharedConfig.overrides.jsx,
+      files: ['*.jsx'],
       parser: '@babel/eslint-parser',
     },
     {
       ...sharedConfig.overrides.reactNative,
+      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
     },
     {
       ...sharedConfig.overrides.typescript,
+      files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint/eslint-plugin'],
     },
     {
       ...sharedConfig.overrides.jest,
+      files: [
+        '*.{spec,test}.{js,ts,tsx}',
+        '**/__{mocks,tests}__/**/*.{js,ts,tsx}',
+      ],
       env: {
         jest: true,
         'jest/globals': true,

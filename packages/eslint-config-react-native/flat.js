@@ -58,6 +58,7 @@ module.exports = [
   // JavaScript files with Babel parser and Flow
   {
     ...sharedConfig.overrides.flow,
+    files: ['**/*.js'],
     languageOptions: {
       parser: babelParser,
     },
@@ -68,7 +69,7 @@ module.exports = [
 
   // JSX files with Babel parser
   {
-    ...sharedConfig.overrides.jsx,
+    files: ['**/*.jsx'],
     languageOptions: {
       parser: babelParser,
     },
@@ -77,11 +78,13 @@ module.exports = [
   // All JS/TS files - React Native specific rules
   {
     ...sharedConfig.overrides.reactNative,
+    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
   },
 
   // TypeScript files
   {
     ...sharedConfig.overrides.typescript,
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
@@ -98,6 +101,10 @@ module.exports = [
   // Test files
   {
     ...sharedConfig.overrides.jest,
+    files: [
+      '**/*.{spec,test}.{js,ts,tsx}',
+      '**/__{mocks,tests}__/**/*.{js,ts,tsx}',
+    ],
     languageOptions: {
       globals: {
         ...jestPlugin.environments.globals.globals,
