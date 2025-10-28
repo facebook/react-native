@@ -442,16 +442,18 @@ void fromCSSColorStop(
     if (colorStop.startPosition.has_value() &&
         colorStop.endPosition.has_value()) {
       // first stop with start position
-      colorStops.push_back(ColorStop{
-          .color = fromCSSColor(colorStop.color),
-          .position =
-              convertLengthPercentageToValueUnit(*colorStop.startPosition)});
+      colorStops.push_back(
+          ColorStop{
+              .color = fromCSSColor(colorStop.color),
+              .position = convertLengthPercentageToValueUnit(
+                  *colorStop.startPosition)});
 
       // second stop with end position (same color)
-      colorStops.push_back(ColorStop{
-          .color = fromCSSColor(colorStop.color),
-          .position =
-              convertLengthPercentageToValueUnit(*colorStop.endPosition)});
+      colorStops.push_back(
+          ColorStop{
+              .color = fromCSSColor(colorStop.color),
+              .position =
+                  convertLengthPercentageToValueUnit(*colorStop.endPosition)});
     } else {
       // single color stop
       ColorStop stop;

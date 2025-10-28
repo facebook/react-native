@@ -37,11 +37,9 @@ RCT_EXPORT_MODULE();
   self.valid = NO;
 }
 
-RCT_EXPORT_METHOD(test
-                  : (__unused NSString *)a
-                  : (__unused NSNumber *)b
-                  : (__unused RCTResponseSenderBlock)c
-                  : (__unused RCTResponseErrorBlock)d)
+RCT_EXPORT_METHOD(
+    test : (__unused NSString *)a : (__unused NSNumber *)b : (__unused RCTResponseSenderBlock)
+        c : (__unused RCTResponseErrorBlock)d)
 {
 }
 

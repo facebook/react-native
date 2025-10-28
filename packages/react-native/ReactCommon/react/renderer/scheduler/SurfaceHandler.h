@@ -62,25 +62,24 @@ class SurfaceHandler {
   /*
    * Can be constructed anytime with a `moduleName` and a `surfaceId`.
    */
-  SurfaceHandler(const std::string& moduleName, SurfaceId surfaceId) noexcept;
+  SurfaceHandler(const std::string &moduleName, SurfaceId surfaceId) noexcept;
 
   virtual ~SurfaceHandler() noexcept;
 
   /*
    * Movable-only.
    */
-  SurfaceHandler(SurfaceHandler&& other) noexcept;
-  SurfaceHandler(const SurfaceHandler& SurfaceHandler) noexcept = delete;
-  SurfaceHandler& operator=(SurfaceHandler&& other) noexcept;
-  SurfaceHandler& operator=(const SurfaceHandler& other) noexcept = delete;
+  SurfaceHandler(SurfaceHandler &&other) noexcept;
+  SurfaceHandler(const SurfaceHandler &SurfaceHandler) noexcept = delete;
+  SurfaceHandler &operator=(SurfaceHandler &&other) noexcept;
+  SurfaceHandler &operator=(const SurfaceHandler &other) noexcept = delete;
 
 #pragma mark - Surface Life-Cycle Management
 
   /*
    * Must be called before surface is started.
    */
-  void setContextContainer(
-      std::shared_ptr<const ContextContainer> contextContainer) const noexcept;
+  void setContextContainer(std::shared_ptr<const ContextContainer> contextContainer) const noexcept;
 
   /*
    * Returns a momentum value of the status.
@@ -113,7 +112,7 @@ class SurfaceHandler {
    * Provides access for surface props.
    * Props can be changed anytime (even for `Unregistered` surface).
    */
-  void setProps(const folly::dynamic& props) const noexcept;
+  void setProps(const folly::dynamic &props) const noexcept;
   folly::dynamic getProps() const noexcept;
 
   /*
@@ -121,8 +120,7 @@ class SurfaceHandler {
    * Can be not be called when the status is `Unregistered`.
    * The returning value cannot be `nullptr`.
    */
-  std::shared_ptr<const MountingCoordinator> getMountingCoordinator()
-      const noexcept;
+  std::shared_ptr<const MountingCoordinator> getMountingCoordinator() const noexcept;
 
 #pragma mark - Layout
 
@@ -130,16 +128,12 @@ class SurfaceHandler {
    * Measures the surface with given layout constraints and layout context.
    * Returns zero size if called on the stopped or unregistered surface.
    */
-  Size measure(
-      const LayoutConstraints& layoutConstraints,
-      const LayoutContext& layoutContext) const;
+  Size measure(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
 
   /*
    * Sets layout constraints and layout context for the surface.
    */
-  void constraintLayout(
-      const LayoutConstraints& layoutConstraints,
-      const LayoutContext& layoutContext) const;
+  void constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
 
   /*
    * Returns layout constraints and layout context associated with the surface.
@@ -153,16 +147,15 @@ class SurfaceHandler {
   /*
    * Must be called by `Scheduler` during registration process.
    */
-  void setUIManager(const UIManager* uiManager) const noexcept;
+  void setUIManager(const UIManager *uiManager) const noexcept;
 
   void applyDisplayMode(DisplayMode displayMode) const;
 
   /*
    * An utility for dirtying all measurable shadow nodes present in the tree.
    */
-  void dirtyMeasurableNodes(ShadowNode& root) const;
-  std::shared_ptr<const ShadowNode> dirtyMeasurableNodesRecursive(
-      std::shared_ptr<const ShadowNode> node) const;
+  void dirtyMeasurableNodes(ShadowNode &root) const;
+  std::shared_ptr<const ShadowNode> dirtyMeasurableNodesRecursive(std::shared_ptr<const ShadowNode> node) const;
 
 #pragma mark - Link & Parameters
 
@@ -197,8 +190,8 @@ class SurfaceHandler {
    */
   struct Link {
     Status status{Status::Unregistered};
-    const UIManager* uiManager{};
-    const ShadowTree* shadowTree{};
+    const UIManager *uiManager{};
+    const ShadowTree *shadowTree{};
   };
 
   /*

@@ -132,12 +132,7 @@ enum class LineBreakMode {
   Tail // Truncate at tail of line: "abcd..."
 };
 
-enum class TextDecorationLineType {
-  None,
-  Underline,
-  Strikethrough,
-  UnderlineStrikethrough
-};
+enum class TextDecorationLineType { None, Underline, Strikethrough, UnderlineStrikethrough };
 
 enum class TextDecorationStyle { Solid, Double, Dotted, Dashed };
 

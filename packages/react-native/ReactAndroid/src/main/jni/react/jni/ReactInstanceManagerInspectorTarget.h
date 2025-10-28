@@ -16,9 +16,8 @@
 
 namespace facebook::react {
 
-class ReactInstanceManagerInspectorTarget
-    : public jni::HybridClass<ReactInstanceManagerInspectorTarget>,
-      public jsinspector_modern::HostTargetDelegate {
+class ReactInstanceManagerInspectorTarget : public jni::HybridClass<ReactInstanceManagerInspectorTarget>,
+                                            public jsinspector_modern::HostTargetDelegate {
  private:
   struct TargetDelegate : public facebook::jni::JavaClass<TargetDelegate> {
     static constexpr auto kJavaDescriptor =
@@ -26,47 +25,38 @@ class ReactInstanceManagerInspectorTarget
 
     jni::local_ref<jni::JMap<jstring, jstring>> getMetadata() const;
     void onReload() const;
-    void onSetPausedInDebuggerMessage(
-        const OverlaySetPausedInDebuggerMessageRequest& request) const;
+    void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) const;
     void loadNetworkResource(
-        const std::string& url,
-        jni::local_ref<InspectorNetworkRequestListener::javaobject> listener)
-        const;
+        const std::string &url,
+        jni::local_ref<InspectorNetworkRequestListener::javaobject> listener) const;
   };
 
  public:
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget;";
 
-  ReactInstanceManagerInspectorTarget(
-      const ReactInstanceManagerInspectorTarget&) = delete;
-  ReactInstanceManagerInspectorTarget& operator=(
-      const ReactInstanceManagerInspectorTarget&) = delete;
+  ReactInstanceManagerInspectorTarget(const ReactInstanceManagerInspectorTarget &) = delete;
+  ReactInstanceManagerInspectorTarget &operator=(const ReactInstanceManagerInspectorTarget &) = delete;
 
   ~ReactInstanceManagerInspectorTarget() override;
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject> jobj,
       jni::alias_ref<JExecutor::javaobject> javaExecutor,
-      jni::alias_ref<
-          ReactInstanceManagerInspectorTarget::TargetDelegate::javaobject>
-          delegate);
+      jni::alias_ref<ReactInstanceManagerInspectorTarget::TargetDelegate::javaobject> delegate);
 
   void sendDebuggerResumeCommand();
 
   static void registerNatives();
 
-  jsinspector_modern::HostTarget* getInspectorTarget();
+  jsinspector_modern::HostTarget *getInspectorTarget();
 
   // HostTargetDelegate methods
   jsinspector_modern::HostTargetMetadata getMetadata() override;
-  void onReload(const PageReloadRequest& request) override;
-  void onSetPausedInDebuggerMessage(
-      const OverlaySetPausedInDebuggerMessageRequest& /*request*/) override;
+  void onReload(const PageReloadRequest &request) override;
+  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest & /*request*/) override;
   void loadNetworkResource(
-      const jsinspector_modern::LoadNetworkResourceRequest& params,
-      jsinspector_modern::ScopedExecutor<
-          jsinspector_modern::NetworkRequestListener> executor) override;
+      const jsinspector_modern::LoadNetworkResourceRequest &params,
+      jsinspector_modern::ScopedExecutor<jsinspector_modern::NetworkRequestListener> executor) override;
 
  private:
   friend HybridBase;
@@ -74,11 +64,9 @@ class ReactInstanceManagerInspectorTarget
   ReactInstanceManagerInspectorTarget(
       jni::alias_ref<ReactInstanceManagerInspectorTarget::jhybridobject> jobj,
       jni::alias_ref<JExecutor::javaobject> javaExecutor,
-      jni::alias_ref<ReactInstanceManagerInspectorTarget::TargetDelegate>
-          delegate);
+      jni::alias_ref<ReactInstanceManagerInspectorTarget::TargetDelegate> delegate);
 
-  jni::global_ref<ReactInstanceManagerInspectorTarget::TargetDelegate>
-      delegate_;
+  jni::global_ref<ReactInstanceManagerInspectorTarget::TargetDelegate> delegate_;
   jsinspector_modern::VoidExecutor inspectorExecutor_;
   std::shared_ptr<jsinspector_modern::HostTarget> inspectorTarget_;
   std::optional<int> inspectorPageId_;

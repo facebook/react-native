@@ -28,7 +28,9 @@ class TextInputState final {
       : attributedStringBox(std::move(attributedStringBox)),
         reactTreeAttributedString(std::move(reactTreeAttributedString)),
         paragraphAttributes(std::move(paragraphAttributes)),
-        mostRecentEventCount(mostRecentEventCount) {}
+        mostRecentEventCount(mostRecentEventCount)
+  {
+  }
 
   /*
    * All content of <TextInput> component.

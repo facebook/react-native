@@ -924,6 +924,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    configurePressabilityDuringInsertion: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-27',
+        description:
+          'Configure Pressability during insertion and no longer unmount when hidden.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     deferFlatListFocusChangeRenderUpdate: {
       defaultValue: false,
       metadata: {

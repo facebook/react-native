@@ -19,15 +19,12 @@ class AccessibilityProps {
  public:
   AccessibilityProps() = default;
   AccessibilityProps(
-      const PropsParserContext& context,
-      const AccessibilityProps& sourceProps,
-      const RawProps& rawProps);
+      const PropsParserContext &context,
+      const AccessibilityProps &sourceProps,
+      const RawProps &rawProps);
 
-  void setProp(
-      const PropsParserContext& context,
-      RawPropsPropNameHash hash,
-      const char* propName,
-      const RawValue& value);
+  void
+  setProp(const PropsParserContext &context, RawPropsPropNameHash hash, const char *propName, const RawValue &value);
 
 #pragma mark - Props
 
@@ -36,8 +33,7 @@ class AccessibilityProps {
   std::string accessibilityLabel;
   std::vector<std::string> accessibilityOrder{};
   AccessibilityLabelledBy accessibilityLabelledBy{};
-  AccessibilityLiveRegion accessibilityLiveRegion{
-      AccessibilityLiveRegion::None};
+  AccessibilityLiveRegion accessibilityLiveRegion{AccessibilityLiveRegion::None};
   AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
   std::string accessibilityRole;
   std::string accessibilityHint;
@@ -57,8 +53,7 @@ class AccessibilityProps {
   bool onAccessibilityMagicTap{};
   bool onAccessibilityEscape{};
   bool onAccessibilityAction{};
-  ImportantForAccessibility importantForAccessibility{
-      ImportantForAccessibility::Auto};
+  ImportantForAccessibility importantForAccessibility{ImportantForAccessibility::Auto};
   Role role{Role::None};
   std::string testId;
 

@@ -609,9 +609,10 @@ void NativeAnimatedNodesManager::updateNodes(
 #endif
         const auto connectedToFinishedAnimation =
             is_node_connected_to_finished_animation(node, nodeTag, false);
-        nodesQueue.emplace_back(NodesQueueItem{
-            .node = node,
-            .connectedToFinishedAnimation = connectedToFinishedAnimation});
+        nodesQueue.emplace_back(
+            NodesQueueItem{
+                .node = node,
+                .connectedToFinishedAnimation = connectedToFinishedAnimation});
       }
     }
   }
@@ -632,9 +633,10 @@ void NativeAnimatedNodesManager::updateNodes(
         const auto connectedToFinishedAnimation =
             is_node_connected_to_finished_animation(
                 child, childTag, nextNode.connectedToFinishedAnimation);
-        nodesQueue.emplace_back(NodesQueueItem{
-            .node = child,
-            .connectedToFinishedAnimation = connectedToFinishedAnimation});
+        nodesQueue.emplace_back(
+            NodesQueueItem{
+                .node = child,
+                .connectedToFinishedAnimation = connectedToFinishedAnimation});
       }
     }
   }
@@ -664,9 +666,10 @@ void NativeAnimatedNodesManager::updateNodes(
 #endif
         const auto connectedToFinishedAnimation =
             is_node_connected_to_finished_animation(node, nodeTag, false);
-        nodesQueue.emplace_back(NodesQueueItem{
-            .node = node,
-            .connectedToFinishedAnimation = connectedToFinishedAnimation});
+        nodesQueue.emplace_back(
+            NodesQueueItem{
+                .node = node,
+                .connectedToFinishedAnimation = connectedToFinishedAnimation});
       }
     }
   }
@@ -698,9 +701,10 @@ void NativeAnimatedNodesManager::updateNodes(
         const auto connectedToFinishedAnimation =
             is_node_connected_to_finished_animation(
                 child, childTag, nextNode.connectedToFinishedAnimation);
-        nodesQueue.emplace_back(NodesQueueItem{
-            .node = child,
-            .connectedToFinishedAnimation = connectedToFinishedAnimation});
+        nodesQueue.emplace_back(
+            NodesQueueItem{
+                .node = child,
+                .connectedToFinishedAnimation = connectedToFinishedAnimation});
       }
 #ifdef REACT_NATIVE_DEBUG
       else if (child->bfsColor == animatedGraphBFSColor_) {

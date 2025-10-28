@@ -25,12 +25,9 @@ namespace facebook::react::jsinspector_modern {
 
 class MockWebSocket : public IWebSocket {
  public:
-  MockWebSocket(
-      const std::string& url,
-      std::weak_ptr<IWebSocketDelegate> delegate)
-      : url{url}, delegate{delegate} {
-    EXPECT_TRUE(this->delegate.lock())
-        << "Delegate should exist when provided to createWebSocket";
+  MockWebSocket(const std::string &url, std::weak_ptr<IWebSocketDelegate> delegate) : url{url}, delegate{delegate}
+  {
+    EXPECT_TRUE(this->delegate.lock()) << "Delegate should exist when provided to createWebSocket";
   }
 
   const std::string url;
@@ -40,7 +37,8 @@ class MockWebSocket : public IWebSocket {
    * Convenience method to access the delegate from tests.
    * \pre The delegate has not been destroyed.
    */
-  IWebSocketDelegate& getDelegate() {
+  IWebSocketDelegate &getDelegate()
+  {
     auto delegateStrong = this->delegate.lock();
     EXPECT_TRUE(delegateStrong);
     return *delegateStrong;
@@ -61,15 +59,18 @@ class MockRemoteConnection : public IRemoteConnection {
 
 class MockLocalConnection : public ILocalConnection {
  public:
-  explicit MockLocalConnection(
-      std::unique_ptr<IRemoteConnection> remoteConnection)
-      : remoteConnection_{std::move(remoteConnection)} {}
+  explicit MockLocalConnection(std::unique_ptr<IRemoteConnection> remoteConnection)
+      : remoteConnection_{std::move(remoteConnection)}
+  {
+  }
 
-  IRemoteConnection& getRemoteConnection() {
+  IRemoteConnection &getRemoteConnection()
+  {
     return *remoteConnection_;
   }
 
-  std::unique_ptr<IRemoteConnection> dangerouslyReleaseRemoteConnection() {
+  std::unique_ptr<IRemoteConnection> dangerouslyReleaseRemoteConnection()
+  {
     return std::move(remoteConnection_);
   }
 
@@ -81,22 +82,18 @@ class MockLocalConnection : public ILocalConnection {
   std::unique_ptr<IRemoteConnection> remoteConnection_;
 };
 
-class MockInspectorPackagerConnectionDelegate
-    : public InspectorPackagerConnectionDelegate {
+class MockInspectorPackagerConnectionDelegate : public InspectorPackagerConnectionDelegate {
  public:
-  explicit MockInspectorPackagerConnectionDelegate(folly::Executor& executor)
-      : executor_(executor) {
+  explicit MockInspectorPackagerConnectionDelegate(folly::Executor &executor) : executor_(executor)
+  {
     using namespace testing;
-    ON_CALL(*this, scheduleCallback(_, _))
-        .WillByDefault(Invoke<>([this](auto callback, auto delay) {
-          if (auto scheduledExecutor =
-                  dynamic_cast<folly::ScheduledExecutor*>(&executor_)) {
-            scheduledExecutor->scheduleAt(
-                callback, scheduledExecutor->now() + delay);
-          } else {
-            executor_.add(callback);
-          }
-        }));
+    ON_CALL(*this, scheduleCallback(_, _)).WillByDefault(Invoke<>([this](auto callback, auto delay) {
+      if (auto scheduledExecutor = dynamic_cast<folly::ScheduledExecutor *>(&executor_)) {
+        scheduledExecutor->scheduleAt(callback, scheduledExecutor->now() + delay);
+      } else {
+        executor_.add(callback);
+      }
+    }));
     EXPECT_CALL(*this, scheduleCallback(_, _)).Times(AnyNumber());
   }
 
@@ -104,7 +101,7 @@ class MockInspectorPackagerConnectionDelegate
   MOCK_METHOD(
       std::unique_ptr<IWebSocket>,
       connectWebSocket,
-      (const std::string& url, std::weak_ptr<IWebSocketDelegate> delegate),
+      (const std::string &url, std::weak_ptr<IWebSocketDelegate> delegate),
       (override));
   MOCK_METHOD(
       void,
@@ -113,26 +110,26 @@ class MockInspectorPackagerConnectionDelegate
       (override));
 
  private:
-  folly::Executor& executor_;
+  folly::Executor &executor_;
 };
 
 class MockHostTargetDelegate : public HostTargetDelegate {
  public:
   // HostTargetDelegate methods
-  HostTargetMetadata getMetadata() override {
+  HostTargetMetadata getMetadata() override
+  {
     return {.integrationName = "MockHostTargetDelegate"};
   }
-  MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
+  MOCK_METHOD(void, onReload, (const PageReloadRequest &request), (override));
   MOCK_METHOD(
       void,
       onSetPausedInDebuggerMessage,
-      (const OverlaySetPausedInDebuggerMessageRequest& request),
+      (const OverlaySetPausedInDebuggerMessageRequest &request),
       (override));
   MOCK_METHOD(
       void,
       loadNetworkResource,
-      (const LoadNetworkResourceRequest& params,
-       ScopedExecutor<NetworkRequestListener> executor),
+      (const LoadNetworkResourceRequest &params, ScopedExecutor<NetworkRequestListener> executor),
       (override));
 };
 
@@ -145,17 +142,12 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
       std::unique_ptr<RuntimeAgentDelegate>,
       createAgentDelegate,
       (FrontendChannel channel,
-       SessionState& sessionState,
-       std::unique_ptr<RuntimeAgentDelegate::ExportedState>
-           previouslyExportedState,
-       const ExecutionContextDescription&,
+       SessionState &sessionState,
+       std::unique_ptr<RuntimeAgentDelegate::ExportedState> previouslyExportedState,
+       const ExecutionContextDescription &,
        RuntimeExecutor),
       (override));
-  MOCK_METHOD(
-      void,
-      addConsoleMessage,
-      (jsi::Runtime & runtime, ConsoleMessage message),
-      (override));
+  MOCK_METHOD(void, addConsoleMessage, (jsi::Runtime & runtime, ConsoleMessage message), (override));
   MOCK_METHOD(bool, supportsConsole, (), (override, const));
   MOCK_METHOD(
       std::unique_ptr<StackTrace>,
@@ -164,18 +156,11 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
       (override));
   MOCK_METHOD(void, enableSamplingProfiler, (), (override));
   MOCK_METHOD(void, disableSamplingProfiler, (), (override));
-  MOCK_METHOD(
-      tracing::RuntimeSamplingProfile,
-      collectSamplingProfile,
-      (),
-      (override));
-  MOCK_METHOD(
-      std::optional<folly::dynamic>,
-      serializeStackTrace,
-      (const StackTrace& stackTrace),
-      (override));
+  MOCK_METHOD(tracing::RuntimeSamplingProfile, collectSamplingProfile, (), (override));
+  MOCK_METHOD(std::optional<folly::dynamic>, serializeStackTrace, (const StackTrace &stackTrace), (override));
 
-  inline MockRuntimeTargetDelegate() {
+  inline MockRuntimeTargetDelegate()
+  {
     using namespace testing;
 
     // Silence "uninteresting mock function call" warnings for methods that
@@ -189,23 +174,21 @@ class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
  public:
   inline MockRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
-      SessionState& sessionState,
+      SessionState &sessionState,
       std::unique_ptr<RuntimeAgentDelegate::ExportedState> /*unused*/,
       ExecutionContextDescription executionContextDescription,
-      const RuntimeExecutor& /*runtimeExecutor*/)
+      const RuntimeExecutor & /*runtimeExecutor*/)
       : frontendChannel(std::move(frontendChannel)),
         sessionState(sessionState),
-        executionContextDescription(std::move(executionContextDescription)) {}
+        executionContextDescription(std::move(executionContextDescription))
+  {
+  }
 
   // RuntimeAgentDelegate methods
-  MOCK_METHOD(
-      bool,
-      handleRequest,
-      (const cdp::PreparsedRequest& req),
-      (override));
+  MOCK_METHOD(bool, handleRequest, (const cdp::PreparsedRequest &req), (override));
 
   const FrontendChannel frontendChannel;
-  SessionState& sessionState;
+  SessionState &sessionState;
   const ExecutionContextDescription executionContextDescription;
 };
 

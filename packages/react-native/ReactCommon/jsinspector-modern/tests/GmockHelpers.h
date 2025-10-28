@@ -13,10 +13,8 @@
  * A variant of GMOCK_ON_CALL_IMPL that allows specifying the source location as
  * a std::source_location parameter.
  */
-#define GMOCK_ON_CALL_WITH_SOURCE_LOCATION_IMPL_(         \
-    location, mock_expr, Setter, call)                    \
-  ((mock_expr).gmock_##call)(                             \
-      ::testing::internal::GetWithoutMatchers(), nullptr) \
+#define GMOCK_ON_CALL_WITH_SOURCE_LOCATION_IMPL_(location, mock_expr, Setter, call) \
+  ((mock_expr).gmock_##call)(::testing::internal::GetWithoutMatchers(), nullptr)    \
       .Setter((location).file_name(), (location).line(), #mock_expr, #call)
 
 /**
@@ -24,5 +22,4 @@
  * std::source_location parameter;
  */
 #define EXPECT_CALL_WITH_SOURCE_LOCATION(location, obj, call) \
-  GMOCK_ON_CALL_WITH_SOURCE_LOCATION_IMPL_(                   \
-      location, obj, InternalExpectedAt, call)
+  GMOCK_ON_CALL_WITH_SOURCE_LOCATION_IMPL_(location, obj, InternalExpectedAt, call)

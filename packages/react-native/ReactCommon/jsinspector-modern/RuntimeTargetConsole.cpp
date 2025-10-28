@@ -133,8 +133,9 @@ void consoleCount(
     it->second++;
   }
   std::vector<jsi::Value> vec;
-  vec.emplace_back(jsi::String::createFromUtf8(
-      runtime, label + ": "s + std::to_string(it->second)));
+  vec.emplace_back(
+      jsi::String::createFromUtf8(
+          runtime, label + ": "s + std::to_string(it->second)));
   runtimeTargetDelegate.addConsoleMessage(
       runtime,
       {timestampMs,
@@ -158,8 +159,9 @@ void consoleCountReset(
   auto it = state.countMap.find(label);
   if (it == state.countMap.end()) {
     std::vector<jsi::Value> vec;
-    vec.emplace_back(jsi::String::createFromUtf8(
-        runtime, "Count for '"s + label + "' does not exist"));
+    vec.emplace_back(
+        jsi::String::createFromUtf8(
+            runtime, "Count for '"s + label + "' does not exist"));
     runtimeTargetDelegate.addConsoleMessage(
         runtime,
         {timestampMs,
@@ -188,8 +190,9 @@ void consoleTime(
     state.timerTable.insert({label, timestampMs});
   } else {
     std::vector<jsi::Value> vec;
-    vec.emplace_back(jsi::String::createFromUtf8(
-        runtime, "Timer '"s + label + "' already exists"));
+    vec.emplace_back(
+        jsi::String::createFromUtf8(
+            runtime, "Timer '"s + label + "' already exists"));
     runtimeTargetDelegate.addConsoleMessage(
         runtime,
         {timestampMs,
@@ -214,8 +217,9 @@ void consoleTimeEnd(
   auto it = state.timerTable.find(label);
   if (it == state.timerTable.end()) {
     std::vector<jsi::Value> vec;
-    vec.emplace_back(jsi::String::createFromUtf8(
-        runtime, "Timer '"s + label + "' does not exist"));
+    vec.emplace_back(
+        jsi::String::createFromUtf8(
+            runtime, "Timer '"s + label + "' does not exist"));
     runtimeTargetDelegate.addConsoleMessage(
         runtime,
         {timestampMs,
@@ -224,9 +228,10 @@ void consoleTimeEnd(
          std::move(stackTrace)});
   } else {
     std::vector<jsi::Value> vec;
-    vec.emplace_back(jsi::String::createFromUtf8(
-        runtime,
-        label + ": "s + std::to_string(timestampMs - it->second) + " ms"));
+    vec.emplace_back(
+        jsi::String::createFromUtf8(
+            runtime,
+            label + ": "s + std::to_string(timestampMs - it->second) + " ms"));
     state.timerTable.erase(it);
     runtimeTargetDelegate.addConsoleMessage(
         runtime,
@@ -252,8 +257,9 @@ void consoleTimeLog(
   auto it = state.timerTable.find(label);
   if (it == state.timerTable.end()) {
     std::vector<jsi::Value> vec;
-    vec.emplace_back(jsi::String::createFromUtf8(
-        runtime, "Timer '"s + label + "' does not exist"));
+    vec.emplace_back(
+        jsi::String::createFromUtf8(
+            runtime, "Timer '"s + label + "' does not exist"));
     runtimeTargetDelegate.addConsoleMessage(
         runtime,
         {timestampMs,
@@ -262,9 +268,10 @@ void consoleTimeLog(
          std::move(stackTrace)});
   } else {
     std::vector<jsi::Value> vec;
-    vec.emplace_back(jsi::String::createFromUtf8(
-        runtime,
-        label + ": "s + std::to_string(timestampMs - it->second) + " ms"));
+    vec.emplace_back(
+        jsi::String::createFromUtf8(
+            runtime,
+            label + ": "s + std::to_string(timestampMs - it->second) + " ms"));
     if (count > 1) {
       for (size_t i = 1; i != count; ++i) {
         vec.emplace_back(runtime, args[i]);

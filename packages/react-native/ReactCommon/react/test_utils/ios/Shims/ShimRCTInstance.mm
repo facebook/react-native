@@ -22,9 +22,10 @@ static __weak ShimRCTInstance *weakShim = nil;
     RCTSwizzleInstanceSelector(
         [RCTInstance class],
         [ShimRCTInstance class],
-        @selector(initWithDelegate:
-                  jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget
-                                  :launchOptions:devMenuConfiguration:));
+        @selector
+        (initWithDelegate:
+            jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget:launchOptions
+                            :devMenuConfiguration:));
     RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
     RCTSwizzleInstanceSelector(
         [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
@@ -38,9 +39,10 @@ static __weak ShimRCTInstance *weakShim = nil;
   RCTSwizzleInstanceSelector(
       [RCTInstance class],
       [ShimRCTInstance class],
-      @selector(initWithDelegate:
-                jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget
-                                :launchOptions:devMenuConfiguration:));
+      @selector
+      (initWithDelegate:
+          jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget:launchOptions
+                          :devMenuConfiguration:));
   RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
   RCTSwizzleInstanceSelector(
       [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));

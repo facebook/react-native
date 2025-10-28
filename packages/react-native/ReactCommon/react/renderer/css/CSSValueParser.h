@@ -22,8 +22,7 @@ namespace detail {
 
 class CSSValueParser {
  public:
-  explicit constexpr CSSValueParser(CSSSyntaxParser& parser)
-      : parser_{parser} {}
+  explicit constexpr CSSValueParser(CSSSyntaxParser &parser) : parser_{parser} {}
 
   /*
    * Attempts to parse the characters starting at the current component value
@@ -34,12 +33,11 @@ class CSSValueParser {
   template <CSSDataType... AllowedTypesT>
   constexpr std::variant<std::monostate, AllowedTypesT...> consumeValue(
       CSSDelimiter delimeter,
-      CSSCompoundDataType<AllowedTypesT...> /*unused*/) {
+      CSSCompoundDataType<AllowedTypesT...> /*unused*/)
+  {
     using ReturnT = std::variant<std::monostate, AllowedTypesT...>;
 
-    auto consumedValue =
-        tryConsumeParser<ReturnT, CSSDataTypeParser<AllowedTypesT>...>(
-            delimeter);
+    auto consumedValue = tryConsumeParser<ReturnT, CSSDataTypeParser<AllowedTypesT>...>(delimeter);
 
     if (!std::holds_alternative<std::monostate>(consumedValue)) {
       return consumedValue;
@@ -47,43 +45,37 @@ class CSSValueParser {
 
     return parser_.consumeComponentValue<ReturnT>(
         delimeter,
-        [&](const CSSPreservedToken& token) {
-          return tryConsumePreservedToken<
-              ReturnT,
-              CSSDataTypeParser<AllowedTypesT>...>(token);
+        [&](const CSSPreservedToken &token) {
+          return tryConsumePreservedToken<ReturnT, CSSDataTypeParser<AllowedTypesT>...>(token);
         },
-        [&](const CSSSimpleBlock& block, CSSSyntaxParser& blockParser) {
-          return tryConsumeSimpleBlock<
-              ReturnT,
-              CSSDataTypeParser<AllowedTypesT>...>(block, blockParser);
+        [&](const CSSSimpleBlock &block, CSSSyntaxParser &blockParser) {
+          return tryConsumeSimpleBlock<ReturnT, CSSDataTypeParser<AllowedTypesT>...>(block, blockParser);
         },
-        [&](const CSSFunctionBlock& func, CSSSyntaxParser& blockParser) {
-          return tryConsumeFunctionBlock<
-              ReturnT,
-              CSSDataTypeParser<AllowedTypesT>...>(func, blockParser);
+        [&](const CSSFunctionBlock &func, CSSSyntaxParser &blockParser) {
+          return tryConsumeFunctionBlock<ReturnT, CSSDataTypeParser<AllowedTypesT>...>(func, blockParser);
         });
   }
 
-  constexpr bool isFinished() const {
+  constexpr bool isFinished() const
+  {
     return parser_.isFinished();
   }
 
-  constexpr void consumeWhitespace() {
+  constexpr void consumeWhitespace()
+  {
     parser_.consumeWhitespace();
   }
 
  private:
   template <typename ReturnT>
-  constexpr ReturnT tryConsumePreservedToken(
-      const CSSPreservedToken& /*token*/) {
+  constexpr ReturnT tryConsumePreservedToken(const CSSPreservedToken & /*token*/)
+  {
     return {};
   }
 
-  template <
-      typename ReturnT,
-      CSSValidDataTypeParser ParserT,
-      CSSValidDataTypeParser... RestParserT>
-  constexpr ReturnT tryConsumePreservedToken(const CSSPreservedToken& token) {
+  template <typename ReturnT, CSSValidDataTypeParser ParserT, CSSValidDataTypeParser... RestParserT>
+  constexpr ReturnT tryConsumePreservedToken(const CSSPreservedToken &token)
+  {
     if constexpr (CSSPreservedTokenSink<ParserT>) {
       if (auto ret = ParserT::consumePreservedToken(token)) {
         return *ret;
@@ -94,19 +86,14 @@ class CSSValueParser {
   }
 
   template <typename ReturnT>
-  constexpr ReturnT tryConsumeSimpleBlock(
-      const CSSSimpleBlock& /*token*/,
-      CSSSyntaxParser& /*blockParser*/) {
+  constexpr ReturnT tryConsumeSimpleBlock(const CSSSimpleBlock & /*token*/, CSSSyntaxParser & /*blockParser*/)
+  {
     return {};
   }
 
-  template <
-      typename ReturnT,
-      CSSValidDataTypeParser ParserT,
-      CSSValidDataTypeParser... RestParserT>
-  constexpr ReturnT tryConsumeSimpleBlock(
-      const CSSSimpleBlock& block,
-      CSSSyntaxParser& blockParser) {
+  template <typename ReturnT, CSSValidDataTypeParser ParserT, CSSValidDataTypeParser... RestParserT>
+  constexpr ReturnT tryConsumeSimpleBlock(const CSSSimpleBlock &block, CSSSyntaxParser &blockParser)
+  {
     if constexpr (CSSSimpleBlockSink<ParserT>) {
       auto currentParser = blockParser;
       if (auto ret = ParserT::consumeSimpleBlock(block, blockParser)) {
@@ -119,19 +106,14 @@ class CSSValueParser {
   }
 
   template <typename ReturnT>
-  constexpr ReturnT tryConsumeFunctionBlock(
-      const CSSFunctionBlock& /*func*/,
-      CSSSyntaxParser& /*blockParser*/) {
+  constexpr ReturnT tryConsumeFunctionBlock(const CSSFunctionBlock & /*func*/, CSSSyntaxParser & /*blockParser*/)
+  {
     return {};
   }
 
-  template <
-      typename ReturnT,
-      CSSValidDataTypeParser ParserT,
-      CSSValidDataTypeParser... RestParserT>
-  constexpr ReturnT tryConsumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& blockParser) {
+  template <typename ReturnT, CSSValidDataTypeParser ParserT, CSSValidDataTypeParser... RestParserT>
+  constexpr ReturnT tryConsumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &blockParser)
+  {
     if constexpr (CSSFunctionBlockSink<ParserT>) {
       auto currentParser = blockParser;
       if (auto ret = ParserT::consumeFunctionBlock(func, blockParser)) {
@@ -144,15 +126,14 @@ class CSSValueParser {
   }
 
   template <typename ReturnT>
-  constexpr ReturnT tryConsumeParser(CSSDelimiter /*delimeter*/) {
+  constexpr ReturnT tryConsumeParser(CSSDelimiter /*delimeter*/)
+  {
     return {};
   }
 
-  template <
-      typename ReturnT,
-      CSSValidDataTypeParser ParserT,
-      CSSValidDataTypeParser... RestParserT>
-  constexpr ReturnT tryConsumeParser(CSSDelimiter delimeter) {
+  template <typename ReturnT, CSSValidDataTypeParser ParserT, CSSValidDataTypeParser... RestParserT>
+  constexpr ReturnT tryConsumeParser(CSSDelimiter delimeter)
+  {
     if constexpr (CSSParserSink<ParserT>) {
       auto originalParser = parser_;
       if (parser_.consumeDelimiter(delimeter)) {
@@ -166,7 +147,7 @@ class CSSValueParser {
     return tryConsumeParser<ReturnT, RestParserT...>(delimeter);
   }
 
-  CSSSyntaxParser& parser_;
+  CSSSyntaxParser &parser_;
 };
 
 } // namespace detail
@@ -177,16 +158,13 @@ class CSSValueParser {
  */
 template <CSSMaybeCompoundDataType... AllowedTypesT>
 constexpr auto parseCSSProperty(std::string_view css)
-    -> CSSVariantWithTypes<
-        CSSMergedDataTypes<CSSWideKeyword, AllowedTypesT...>,
-        std::monostate> {
+    -> CSSVariantWithTypes<CSSMergedDataTypes<CSSWideKeyword, AllowedTypesT...>, std::monostate>
+{
   CSSSyntaxParser syntaxParser(css);
   detail::CSSValueParser parser(syntaxParser);
 
   parser.consumeWhitespace();
-  auto value = parser.consumeValue(
-      CSSDelimiter::None,
-      CSSMergedDataTypes<CSSWideKeyword, AllowedTypesT...>{});
+  auto value = parser.consumeValue(CSSDelimiter::None, CSSMergedDataTypes<CSSWideKeyword, AllowedTypesT...>{});
   parser.consumeWhitespace();
 
   if (parser.isFinished()) {
@@ -201,15 +179,11 @@ constexpr auto parseCSSProperty(std::string_view css)
  * current location of the syntax parser, advancing the syntax parser
  */
 template <CSSMaybeCompoundDataType... AllowedTypesT>
-constexpr auto parseNextCSSValue(
-    CSSSyntaxParser& syntaxParser,
-    CSSDelimiter delimeter = CSSDelimiter::None)
-    -> CSSVariantWithTypes<
-        CSSMergedDataTypes<AllowedTypesT...>,
-        std::monostate> {
+constexpr auto parseNextCSSValue(CSSSyntaxParser &syntaxParser, CSSDelimiter delimeter = CSSDelimiter::None)
+    -> CSSVariantWithTypes<CSSMergedDataTypes<AllowedTypesT...>, std::monostate>
+{
   detail::CSSValueParser valueParser(syntaxParser);
-  return valueParser.consumeValue(
-      delimeter, CSSMergedDataTypes<AllowedTypesT...>{});
+  return valueParser.consumeValue(delimeter, CSSMergedDataTypes<AllowedTypesT...>{});
 }
 
 /**
@@ -217,16 +191,12 @@ constexpr auto parseNextCSSValue(
  * current location of the syntax parser, without advancing the syntax parser
  */
 template <CSSMaybeCompoundDataType... AllowedTypesT>
-constexpr auto peekNextCSSValue(
-    CSSSyntaxParser& syntaxParser,
-    CSSDelimiter delimeter = CSSDelimiter::None)
-    -> CSSVariantWithTypes<
-        CSSMergedDataTypes<AllowedTypesT...>,
-        std::monostate> {
+constexpr auto peekNextCSSValue(CSSSyntaxParser &syntaxParser, CSSDelimiter delimeter = CSSDelimiter::None)
+    -> CSSVariantWithTypes<CSSMergedDataTypes<AllowedTypesT...>, std::monostate>
+{
   auto savedParser = syntaxParser;
   detail::CSSValueParser valueParser(syntaxParser);
-  auto ret = valueParser.consumeValue(
-      delimeter, CSSMergedDataTypes<AllowedTypesT...>{});
+  auto ret = valueParser.consumeValue(delimeter, CSSMergedDataTypes<AllowedTypesT...>{});
   syntaxParser = savedParser;
   return ret;
 }

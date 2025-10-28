@@ -21,10 +21,12 @@ TextMeasurement TextLayoutManager::measure(
   TextMeasurement::Attachments attachments;
   for (const auto& fragment : attributedStringBox.getValue().getFragments()) {
     if (fragment.isAttachment()) {
-      attachments.push_back(TextMeasurement::Attachment{
-          .frame =
-              {.origin = {.x = 0, .y = 0}, .size = {.width = 0, .height = 0}},
-          .isClipped = false});
+      attachments.push_back(
+          TextMeasurement::Attachment{
+              .frame =
+                  {.origin = {.x = 0, .y = 0},
+                   .size = {.width = 0, .height = 0}},
+              .isClipped = false});
     }
   }
   return TextMeasurement{

@@ -19,7 +19,7 @@ namespace facebook::react {
 State::State(StateData::Shared data, const State& previousState)
     : family_(previousState.family_),
       data_(std::move(data)),
-      revision_(previousState.revision_ + 1){};
+      revision_(previousState.revision_ + 1) {};
 
 State::State(StateData::Shared data, ShadowNodeFamily::Weak family)
     : family_(std::move(family)),

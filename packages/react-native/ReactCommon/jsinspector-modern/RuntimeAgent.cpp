@@ -111,11 +111,12 @@ void RuntimeAgent::notifyBindingCalled(
     return;
   }
 
-  frontendChannel_(cdp::jsonNotification(
-      "Runtime.bindingCalled",
-      folly::dynamic::object(
-          "executionContextId", executionContextDescription_.id)(
-          "name", bindingName)("payload", payload)));
+  frontendChannel_(
+      cdp::jsonNotification(
+          "Runtime.bindingCalled",
+          folly::dynamic::object(
+              "executionContextId", executionContextDescription_.id)(
+              "name", bindingName)("payload", payload)));
 }
 
 RuntimeAgent::ExportedState RuntimeAgent::getExportedState() {
@@ -143,18 +144,6 @@ RuntimeAgent::~RuntimeAgent() {
   // the simple thing and assume (as we do elsewhere) that only one Runtime
   // per Page can exist at a time.
   sessionState_.lastRuntimeAgentExportedState = getExportedState();
-}
-
-void RuntimeAgent::enableSamplingProfiler() {
-  targetController_.enableSamplingProfiler();
-}
-
-void RuntimeAgent::disableSamplingProfiler() {
-  targetController_.disableSamplingProfiler();
-}
-
-tracing::RuntimeSamplingProfile RuntimeAgent::collectSamplingProfile() {
-  return targetController_.collectSamplingProfile();
 }
 
 #pragma mark - Tracing

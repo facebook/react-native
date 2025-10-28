@@ -31,7 +31,8 @@ struct GradientDirection {
   GradientDirectionType type;
   std::variant<Float, GradientKeyword> value;
 
-  bool operator==(const GradientDirection& other) const {
+  bool operator==(const GradientDirection &other) const
+  {
     return type == other.type && value == other.value;
   }
 
@@ -44,7 +45,8 @@ struct LinearGradient {
   GradientDirection direction;
   std::vector<ColorStop> colorStops;
 
-  bool operator==(const LinearGradient& other) const {
+  bool operator==(const LinearGradient &other) const
+  {
     return direction == other.direction && colorStops == other.colorStops;
   }
 
@@ -53,7 +55,7 @@ struct LinearGradient {
 #endif
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-  void toString(std::stringstream& ss) const;
+  void toString(std::stringstream &ss) const;
 #endif
 };
 

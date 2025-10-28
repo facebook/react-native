@@ -13,11 +13,9 @@
 
 namespace facebook::react {
 
-class JNativeModulePerfLogger
-    : public jni::HybridClass<JNativeModulePerfLogger> {
+class JNativeModulePerfLogger : public jni::HybridClass<JNativeModulePerfLogger> {
  public:
-  static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/reactperflogger/NativeModulePerfLogger;";
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/reactperflogger/NativeModulePerfLogger;";
 
   virtual std::unique_ptr<facebook::react::NativeModulePerfLogger> get() = 0;
 

@@ -30,11 +30,12 @@ namespace facebook::react {
 /* static */ Transform Transform::Perspective(Float perspective) noexcept {
   auto transform = Transform{};
   auto Zero = ValueUnit(0, UnitType::Point);
-  transform.operations.push_back(TransformOperation{
-      .type = TransformOperationType::Perspective,
-      .x = ValueUnit(perspective, UnitType::Point),
-      .y = Zero,
-      .z = Zero});
+  transform.operations.push_back(
+      TransformOperation{
+          .type = TransformOperationType::Perspective,
+          .x = ValueUnit(perspective, UnitType::Point),
+          .y = Zero,
+          .z = Zero});
   transform.matrix[11] = -1 / perspective;
   return transform;
 }
@@ -45,11 +46,12 @@ namespace facebook::react {
   Float yprime = isZero(y) ? 0 : y;
   Float zprime = isZero(z) ? 0 : z;
   if (xprime != 1 || yprime != 1 || zprime != 1) {
-    transform.operations.push_back(TransformOperation{
-        .type = TransformOperationType::Scale,
-        .x = ValueUnit(xprime, UnitType::Point),
-        .y = ValueUnit(yprime, UnitType::Point),
-        .z = ValueUnit(zprime, UnitType::Point)});
+    transform.operations.push_back(
+        TransformOperation{
+            .type = TransformOperationType::Scale,
+            .x = ValueUnit(xprime, UnitType::Point),
+            .y = ValueUnit(yprime, UnitType::Point),
+            .z = ValueUnit(zprime, UnitType::Point)});
     transform.matrix[0] = xprime;
     transform.matrix[5] = yprime;
     transform.matrix[10] = zprime;
@@ -64,11 +66,12 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
   Float yprime = isZero(y) ? 0 : y;
   Float zprime = isZero(z) ? 0 : z;
   if (xprime != 0 || yprime != 0 || zprime != 0) {
-    transform.operations.push_back(TransformOperation{
-        .type = TransformOperationType::Translate,
-        .x = ValueUnit(xprime, UnitType::Point),
-        .y = ValueUnit(yprime, UnitType::Point),
-        .z = ValueUnit(zprime, UnitType::Point)});
+    transform.operations.push_back(
+        TransformOperation{
+            .type = TransformOperationType::Translate,
+            .x = ValueUnit(xprime, UnitType::Point),
+            .y = ValueUnit(yprime, UnitType::Point),
+            .z = ValueUnit(zprime, UnitType::Point)});
     transform.matrix[12] = xprime;
     transform.matrix[13] = yprime;
     transform.matrix[14] = zprime;
@@ -80,11 +83,12 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
   auto transform = Transform{};
   Float xprime = isZero(x) ? 0 : x;
   Float yprime = isZero(y) ? 0 : y;
-  transform.operations.push_back(TransformOperation{
-      .type = TransformOperationType::Skew,
-      .x = ValueUnit(xprime, UnitType::Point),
-      .y = ValueUnit(yprime, UnitType::Point),
-      .z = ValueUnit(0, UnitType::Point)});
+  transform.operations.push_back(
+      TransformOperation{
+          .type = TransformOperationType::Skew,
+          .x = ValueUnit(xprime, UnitType::Point),
+          .y = ValueUnit(yprime, UnitType::Point),
+          .z = ValueUnit(0, UnitType::Point)});
   transform.matrix[4] = std::tan(xprime);
   transform.matrix[1] = std::tan(yprime);
   return transform;
@@ -94,11 +98,12 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
   auto transform = Transform{};
   if (!isZero(radians)) {
     auto Zero = ValueUnit(0, UnitType::Point);
-    transform.operations.push_back(TransformOperation{
-        .type = TransformOperationType::Rotate,
-        .x = ValueUnit(radians, UnitType::Point),
-        .y = Zero,
-        .z = Zero});
+    transform.operations.push_back(
+        TransformOperation{
+            .type = TransformOperationType::Rotate,
+            .x = ValueUnit(radians, UnitType::Point),
+            .y = Zero,
+            .z = Zero});
     transform.matrix[5] = std::cos(radians);
     transform.matrix[6] = std::sin(radians);
     transform.matrix[9] = -std::sin(radians);
@@ -111,11 +116,12 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
   auto transform = Transform{};
   if (!isZero(radians)) {
     auto Zero = ValueUnit(0, UnitType::Point);
-    transform.operations.push_back(TransformOperation{
-        .type = TransformOperationType::Rotate,
-        .x = Zero,
-        .y = ValueUnit(radians, UnitType::Point),
-        .z = Zero});
+    transform.operations.push_back(
+        TransformOperation{
+            .type = TransformOperationType::Rotate,
+            .x = Zero,
+            .y = ValueUnit(radians, UnitType::Point),
+            .z = Zero});
     transform.matrix[0] = std::cos(radians);
     transform.matrix[2] = -std::sin(radians);
     transform.matrix[8] = std::sin(radians);
@@ -128,11 +134,12 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
   auto transform = Transform{};
   if (!isZero(radians)) {
     auto Zero = ValueUnit(0, UnitType::Point);
-    transform.operations.push_back(TransformOperation{
-        .type = TransformOperationType::Rotate,
-        .x = Zero,
-        .y = Zero,
-        .z = ValueUnit(radians, UnitType::Point)});
+    transform.operations.push_back(
+        TransformOperation{
+            .type = TransformOperationType::Rotate,
+            .x = Zero,
+            .y = Zero,
+            .z = ValueUnit(radians, UnitType::Point)});
     transform.matrix[0] = std::cos(radians);
     transform.matrix[1] = std::sin(radians);
     transform.matrix[4] = -std::sin(radians);

@@ -25,7 +25,7 @@ class AppSettings {
 
   static std::optional<folly::dynamic> dynamicFeatureFlags;
 
-  static void init(int argc, char* argv[]);
+  static void init(int argc, char *argv[]);
 
  private:
   static void initInternal();

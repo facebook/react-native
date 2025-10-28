@@ -50,19 +50,20 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
       HermesRuntime& runtime,
       HermesRuntimeTargetDelegate& runtimeTargetDelegate,
       const RuntimeExecutor& runtimeExecutor)
-      : hermes_(hermes::cdp::CDPAgent::create(
-            executionContextDescription.id,
-            runtimeTargetDelegate.getCDPDebugAPI(),
-            // RuntimeTask takes a HermesRuntime whereas our RuntimeExecutor
-            // takes a jsi::Runtime.
-            [runtimeExecutor,
-             &runtime](facebook::hermes::debugger::RuntimeTask fn) {
-              runtimeExecutor(
-                  [&runtime, fn = std::move(fn)](auto&) { fn(runtime); });
-            },
-            std::move(frontendChannel),
-            HermesStateWrapper::unwrapDestructively(
-                previouslyExportedState.get()))) {
+      : hermes_(
+            hermes::cdp::CDPAgent::create(
+                executionContextDescription.id,
+                runtimeTargetDelegate.getCDPDebugAPI(),
+                // RuntimeTask takes a HermesRuntime whereas our RuntimeExecutor
+                // takes a jsi::Runtime.
+                [runtimeExecutor,
+                 &runtime](facebook::hermes::debugger::RuntimeTask fn) {
+                  runtimeExecutor(
+                      [&runtime, fn = std::move(fn)](auto&) { fn(runtime); });
+                },
+                std::move(frontendChannel),
+                HermesStateWrapper::unwrapDestructively(
+                    previouslyExportedState.get()))) {
     if (sessionState.isRuntimeDomainEnabled) {
       hermes_->enableRuntimeDomain();
     }
@@ -103,14 +104,15 @@ HermesRuntimeAgentDelegate::HermesRuntimeAgentDelegate(
     HermesRuntime& runtime,
     HermesRuntimeTargetDelegate& runtimeTargetDelegate,
     RuntimeExecutor runtimeExecutor)
-    : impl_(std::make_unique<Impl>(
-          std::move(frontendChannel),
-          sessionState,
-          std::move(previouslyExportedState),
-          executionContextDescription,
-          runtime,
-          runtimeTargetDelegate,
-          std::move(runtimeExecutor))) {}
+    : impl_(
+          std::make_unique<Impl>(
+              std::move(frontendChannel),
+              sessionState,
+              std::move(previouslyExportedState),
+              executionContextDescription,
+              runtime,
+              runtimeTargetDelegate,
+              std::move(runtimeExecutor))) {}
 
 bool HermesRuntimeAgentDelegate::handleRequest(
     const cdp::PreparsedRequest& req) {

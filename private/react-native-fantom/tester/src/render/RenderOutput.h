@@ -15,26 +15,21 @@
 namespace facebook::react {
 class RenderOutput {
  public:
-  std::string render(
-      const StubViewTree& tree,
-      const RenderFormatOptions& options);
+  std::string render(const StubViewTree &tree, const RenderFormatOptions &options);
 
-  void markMutated(SurfaceId surfaceId) {
+  void markMutated(SurfaceId surfaceId)
+  {
     treesMutated_.insert(surfaceId);
   }
 
  private:
-  folly::dynamic renderView(
-      const StubView& view,
-      const RenderFormatOptions& options);
+  folly::dynamic renderView(const StubView &view, const RenderFormatOptions &options);
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-  folly::dynamic renderProps(const SharedDebugStringConvertibleList& propsList);
+  folly::dynamic renderProps(const SharedDebugStringConvertibleList &propsList);
 #endif
 
-  folly::dynamic renderAttributedString(
-      const Tag& selfTag,
-      const AttributedString& string);
+  folly::dynamic renderAttributedString(const Tag &selfTag, const AttributedString &string);
 
   std::unordered_map<Tag, folly::dynamic> renderedViews_{};
 

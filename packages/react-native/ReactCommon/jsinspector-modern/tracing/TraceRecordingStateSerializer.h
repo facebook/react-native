@@ -28,14 +28,14 @@ class TraceRecordingStateSerializer {
    * chunkCallback.
    */
   static void emitAsDataCollectedChunks(
-      TraceRecordingState&& recording,
-      const std::function<void(folly::dynamic&& chunk)>& chunkCallback,
+      TraceRecordingState &&recording,
+      const std::function<void(folly::dynamic &&chunk)> &chunkCallback,
       uint16_t performanceTraceEventsChunkSize,
       uint16_t profileTraceEventsChunkSize);
 
   static void emitPerformanceTraceEvents(
-      std::vector<TraceEvent>&& events,
-      const std::function<void(folly::dynamic&& chunk)>& chunkCallback,
+      std::vector<TraceEvent> &&events,
+      const std::function<void(folly::dynamic &&chunk)> &chunkCallback,
       uint16_t chunkSize);
 };
 

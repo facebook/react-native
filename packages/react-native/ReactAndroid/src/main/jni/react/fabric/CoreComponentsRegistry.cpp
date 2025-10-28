@@ -39,14 +39,18 @@ sharedProviderRegistry() {
 void addCoreComponents(
     std::shared_ptr<const ComponentDescriptorProviderRegistry>
         providerRegistry) {
-  providerRegistry->add(concreteComponentDescriptorProvider<
-                        AndroidProgressBarComponentDescriptor>());
-  providerRegistry->add(concreteComponentDescriptorProvider<
-                        AndroidSwipeRefreshLayoutComponentDescriptor>());
-  providerRegistry->add(concreteComponentDescriptorProvider<
-                        ActivityIndicatorViewComponentDescriptor>());
-  providerRegistry->add(concreteComponentDescriptorProvider<
-                        AndroidTextInputComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          AndroidProgressBarComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          AndroidSwipeRefreshLayoutComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          ActivityIndicatorViewComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          AndroidTextInputComponentDescriptor>());
   providerRegistry->add(
       concreteComponentDescriptorProvider<ViewComponentDescriptor>());
   providerRegistry->add(
@@ -68,16 +72,20 @@ void addCoreComponents(
           AndroidHorizontalScrollContentViewComponentDescriptor>());
   providerRegistry->add(
       concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
-  providerRegistry->add(concreteComponentDescriptorProvider<
-                        AndroidDrawerLayoutComponentDescriptor>());
-  providerRegistry->add(concreteComponentDescriptorProvider<
-                        DebuggingOverlayComponentDescriptor>());
-  providerRegistry->add(concreteComponentDescriptorProvider<
-                        LayoutConformanceComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          AndroidDrawerLayoutComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          DebuggingOverlayComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          LayoutConformanceComponentDescriptor>());
   providerRegistry->add(
       concreteComponentDescriptorProvider<VirtualViewComponentDescriptor>());
-  providerRegistry->add(concreteComponentDescriptorProvider<
-                        VirtualViewExperimentalComponentDescriptor>());
+  providerRegistry->add(
+      concreteComponentDescriptorProvider<
+          VirtualViewExperimentalComponentDescriptor>());
 }
 
 } // namespace facebook::react::CoreComponentsRegistry

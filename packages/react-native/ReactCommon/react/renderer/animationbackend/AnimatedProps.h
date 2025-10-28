@@ -24,13 +24,13 @@ template <typename T>
 struct AnimatedProp : AnimatedPropBase {
   T value;
   AnimatedProp() = default;
-  AnimatedProp(PropName propName, const T& value)
-      : AnimatedPropBase{propName}, value(std::move(value)) {}
+  AnimatedProp(PropName propName, const T &value) : AnimatedPropBase{propName}, value(std::move(value)) {}
 };
 
 template <typename T>
-T get(const std::unique_ptr<AnimatedPropBase>& animatedProp) {
-  return static_cast<AnimatedProp<T>*>(animatedProp.get())->value;
+T get(const std::unique_ptr<AnimatedPropBase> &animatedProp)
+{
+  return static_cast<AnimatedProp<T> *>(animatedProp.get())->value;
 }
 
 struct AnimatedProps {

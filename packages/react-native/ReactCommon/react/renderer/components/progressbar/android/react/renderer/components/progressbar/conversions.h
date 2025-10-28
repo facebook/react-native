@@ -14,7 +14,8 @@
 namespace facebook::react {
 
 #ifdef RN_SERIALIZABLE_STATE
-inline folly::dynamic toDynamic(const AndroidProgressBarProps& props) {
+inline folly::dynamic toDynamic(const AndroidProgressBarProps &props)
+{
   folly::dynamic serializedProps = folly::dynamic::object();
   serializedProps["styleAttr"] = props.styleAttr;
   serializedProps["typeAttr"] = props.typeAttr;

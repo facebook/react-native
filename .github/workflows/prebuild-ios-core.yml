@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-rn-slice:
-    runs-on: macos-14
+    runs-on: macos-15
     strategy:
       fail-fast: false
       matrix:
@@ -37,7 +37,7 @@ jobs:
         if: steps.restore-ios-slice.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup-xcode
         with:
-          xcode-version: '16.2.0'
+          platform: ${{ matrix.slice }}
       - name: Yarn Install
         if: steps.restore-ios-slice.outputs.cache-hit != 'true'
         uses: ./.github/actions/yarn-install
@@ -109,7 +109,7 @@ jobs:
             packages/react-native/.build/headers
 
   compose-xcframework:
-    runs-on: macos-14
+    runs-on: macos-15
     needs: [build-rn-slice]
     strategy:
       fail-fast: false

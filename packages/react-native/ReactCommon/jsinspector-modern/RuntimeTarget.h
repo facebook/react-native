@@ -21,6 +21,7 @@
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
 
 #include <memory>
+#include <utility>
 
 #ifndef JSINSPECTOR_EXPORT
 #ifdef _MSC_VER
@@ -52,10 +53,9 @@ class RuntimeTargetDelegate {
   virtual ~RuntimeTargetDelegate() = default;
   virtual std::unique_ptr<RuntimeAgentDelegate> createAgentDelegate(
       FrontendChannel channel,
-      SessionState& sessionState,
-      std::unique_ptr<RuntimeAgentDelegate::ExportedState>
-          previouslyExportedState,
-      const ExecutionContextDescription& executionContextDescription,
+      SessionState &sessionState,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState> previouslyExportedState,
+      const ExecutionContextDescription &executionContextDescription,
       RuntimeExecutor runtimeExecutor) = 0;
 
   /**
@@ -69,9 +69,7 @@ class RuntimeTargetDelegate {
    * Runtime reference, if it has one, without checking it for equivalence with
    * the one provided here.
    */
-  virtual void addConsoleMessage(
-      jsi::Runtime& runtime,
-      ConsoleMessage message) = 0;
+  virtual void addConsoleMessage(jsi::Runtime &runtime, ConsoleMessage message) = 0;
 
   /**
    * \returns true if the runtime supports reporting console API calls over CDP.
@@ -91,9 +89,7 @@ class RuntimeTargetDelegate {
    * Runtime reference, if it has one, without checking it for equivalence with
    * the one provided here.
    */
-  virtual std::unique_ptr<StackTrace> captureStackTrace(
-      jsi::Runtime& runtime,
-      size_t framesToSkip = 0) = 0;
+  virtual std::unique_ptr<StackTrace> captureStackTrace(jsi::Runtime &runtime, size_t framesToSkip = 0) = 0;
 
   /**
    * Start sampling profiler.
@@ -113,8 +109,7 @@ class RuntimeTargetDelegate {
    * @cdp Runtime.StackTrace type, if the runtime supports it. Otherwise,
    * returns std::nullopt.
    */
-  virtual std::optional<folly::dynamic> serializeStackTrace(
-      const StackTrace& stackTrace) = 0;
+  virtual std::optional<folly::dynamic> serializeStackTrace(const StackTrace &stackTrace) = 0;
 };
 
 /**
@@ -122,25 +117,22 @@ class RuntimeTargetDelegate {
  */
 class RuntimeTargetController {
  public:
-  enum class Domain { Network, Runtime, Log, kMaxValue };
+  enum class Domain { Log, Network, Runtime, kMaxValue };
 
-  explicit RuntimeTargetController(RuntimeTarget& target);
+  explicit RuntimeTargetController(RuntimeTarget &target);
 
   /**
    * Adds a function with the given name on the runtime's global object, that
    * when called will send a Runtime.bindingCalled event through all connected
    * sessions that have registered to receive binding events for that name.
    */
-  void installBindingHandler(const std::string& bindingName);
+  void installBindingHandler(const std::string &bindingName);
 
   /**
    * Notifies the target that an agent has received an enable or disable
    * message for the given domain.
    */
-  void notifyDomainStateChanged(
-      Domain domain,
-      bool enabled,
-      const RuntimeAgent& notifyingAgent);
+  void notifyDomainStateChanged(Domain domain, bool enabled, const RuntimeAgent &notifyingAgent);
 
   /**
    * Start sampling profiler for the corresponding RuntimeTarget.
@@ -156,14 +148,13 @@ class RuntimeTargetController {
   tracing::RuntimeSamplingProfile collectSamplingProfile();
 
  private:
-  RuntimeTarget& target_;
+  RuntimeTarget &target_;
 };
 
 /**
  * A Target corresponding to a JavaScript runtime.
  */
-class JSINSPECTOR_EXPORT RuntimeTarget
-    : public EnableExecutorFromThis<RuntimeTarget> {
+class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTarget> {
  public:
   /**
    * \param executionContextDescription A description of the execution context
@@ -184,15 +175,15 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * executor will not be called after the RuntimeTarget is destroyed.
    */
   static std::shared_ptr<RuntimeTarget> create(
-      const ExecutionContextDescription& executionContextDescription,
-      RuntimeTargetDelegate& delegate,
+      const ExecutionContextDescription &executionContextDescription,
+      RuntimeTargetDelegate &delegate,
       RuntimeExecutor jsExecutor,
       VoidExecutor selfExecutor);
 
-  RuntimeTarget(const RuntimeTarget&) = delete;
-  RuntimeTarget(RuntimeTarget&&) = delete;
-  RuntimeTarget& operator=(const RuntimeTarget&) = delete;
-  RuntimeTarget& operator=(RuntimeTarget&&) = delete;
+  RuntimeTarget(const RuntimeTarget &) = delete;
+  RuntimeTarget(RuntimeTarget &&) = delete;
+  RuntimeTarget &operator=(const RuntimeTarget &) = delete;
+  RuntimeTarget &operator=(RuntimeTarget &&) = delete;
   ~RuntimeTarget();
 
   /**
@@ -204,9 +195,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * frontend.
    * \returns The new agent, or nullptr if the runtime is not debuggable.
    */
-  std::shared_ptr<RuntimeAgent> createAgent(
-      const FrontendChannel& channel,
-      SessionState& sessionState);
+  std::shared_ptr<RuntimeAgent> createAgent(const FrontendChannel &channel, SessionState &sessionState);
 
   /**
    * Creates a new RuntimeTracingAgent.
@@ -216,8 +205,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    *
    * \param state A reference to the state of the active trace recording.
    */
-  std::shared_ptr<RuntimeTracingAgent> createTracingAgent(
-      tracing::TraceRecordingState& state);
+  std::shared_ptr<RuntimeTracingAgent> createTracingAgent(tracing::TraceRecordingState &state);
 
   /**
    * Start sampling profiler for a particular JavaScript runtime.
@@ -254,11 +242,11 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    */
   RuntimeTarget(
       ExecutionContextDescription executionContextDescription,
-      RuntimeTargetDelegate& delegate,
+      RuntimeTargetDelegate &delegate,
       RuntimeExecutor jsExecutor);
 
   const ExecutionContextDescription executionContextDescription_;
-  RuntimeTargetDelegate& delegate_;
+  RuntimeTargetDelegate &delegate_;
   RuntimeExecutor jsExecutor_;
   WeakList<RuntimeAgent> agents_;
   RuntimeTargetController controller_{*this};
@@ -266,8 +254,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   /**
    * Keeps track of the agents that have enabled various domains.
    */
-  EnumArray<Domain, std::unordered_set<const RuntimeAgent*>>
-      agentsByEnabledDomain_;
+  EnumArray<Domain, std::unordered_set<const RuntimeAgent *>> agentsByEnabledDomain_;
 
   /**
    * For each Domain, contains true if the domain has been enabled by any
@@ -294,7 +281,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * when called will send a Runtime.bindingCalled event through all connected
    * sessions that have registered to receive binding events for that name.
    */
-  void installBindingHandler(const std::string& bindingName);
+  void installBindingHandler(const std::string &bindingName);
 
   /**
    * Installs any global values we want to expose to framework/user JavaScript
@@ -342,7 +329,20 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * Notifies the target that an agent has received an enable or disable
    * message for the given domain.
    */
-  void notifyDomainStateChanged(
+  void notifyDomainStateChanged(Domain domain, bool enabled, const RuntimeAgent &notifyingAgent);
+
+  /**
+   * Processes the changes to the state of a given domain.
+   *
+   * Returns a pair of booleans:
+   *   1. Returns true, if an only if the given domain state changed locally,
+   *   for a given session.
+   *   2. Returns true, if and only if the given domain state changed globally:
+   *   when the given Agent is the only Agent that enabled given domain across
+   *   sessions, or when the only Agent that had this domain enabled has
+   *   disconnected.
+   */
+  std::pair<bool, bool> processDomainChange(
       Domain domain,
       bool enabled,
       const RuntimeAgent& notifyingAgent);

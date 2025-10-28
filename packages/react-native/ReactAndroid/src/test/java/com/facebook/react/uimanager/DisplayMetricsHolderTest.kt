@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// Suppress deprecation warnings for checking scaledDensity
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager
 
 import android.annotation.TargetApi
