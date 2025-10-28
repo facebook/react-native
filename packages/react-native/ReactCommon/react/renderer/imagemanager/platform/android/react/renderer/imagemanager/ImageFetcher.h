@@ -11,8 +11,6 @@
 #include <react/renderer/imagemanager/ImageRequestParams.h>
 #include <react/utils/ContextContainer.h>
 #include <memory>
-#include <unordered_map>
-#include <vector>
 
 namespace facebook::react {
 
@@ -32,9 +30,6 @@ class ImageFetcher {
       Tag tag);
 
  private:
-  void flushImageRequests();
-
-  std::unordered_map<SurfaceId, std::vector<ImageRequestItem>> items_;
   std::shared_ptr<const ContextContainer> contextContainer_;
 };
 } // namespace facebook::react
