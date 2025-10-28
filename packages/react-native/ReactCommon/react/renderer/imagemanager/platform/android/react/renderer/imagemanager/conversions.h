@@ -13,6 +13,7 @@
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #include <react/utils/to_underlying.h>
+#include <vector>
 
 namespace facebook::react {
 
@@ -33,6 +34,7 @@ constexpr MapBuffer::Key IS_KEY_FADE_DURATION = 11;
 constexpr MapBuffer::Key IS_KEY_PROGRESSIVE_RENDERING_ENABLED = 12;
 constexpr MapBuffer::Key IS_KEY_LOADING_INDICATOR_SRC = 13;
 constexpr MapBuffer::Key IS_KEY_ANALYTIC_TAG = 14;
+constexpr MapBuffer::Key IS_KEY_TAG = 15;
 
 inline void serializeImageSource(MapBufferBuilder &builder, const ImageSource &imageSource)
 {
@@ -61,13 +63,26 @@ inline void serializeImageRequestParams(MapBufferBuilder &builder, const ImageRe
   builder.putString(IS_KEY_ANALYTIC_TAG, imageRequestParams.analyticTag);
 }
 
-} // namespace
-
-inline MapBuffer serializeImageRequest(const ImageSource &imageSource, const ImageRequestParams &imageRequestParams)
+inline MapBuffer serializeImageRequest(const ImageRequestItem &item)
 {
   auto builder = MapBufferBuilder();
-  serializeImageSource(builder, imageSource);
-  serializeImageRequestParams(builder, imageRequestParams);
+  serializeImageSource(builder, item.imageSource);
+  serializeImageRequestParams(builder, item.imageRequestParams);
+  builder.putInt(IS_KEY_TAG, item.tag);
+  return builder.build();
+}
+
+} // namespace
+
+inline MapBuffer serializeImageRequests(const std::vector<ImageRequestItem> &items)
+{
+  std::vector<MapBuffer> mapBufferList;
+  mapBufferList.reserve(items.size());
+  for (const auto &item : items) {
+    mapBufferList.emplace_back(serializeImageRequest(item));
+  }
+  MapBufferBuilder builder;
+  builder.putMapBufferList(0, mapBufferList);
   return builder.build();
 }
 
