@@ -489,11 +489,10 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param surfaceId surface ID
    * @param reactContext {@link com.facebook.react.bridge.ReactContext} used for the view.
    * @param params {@link MapBuffer} prefetch request params defined in C++
-   * @param tag react tag of the component
    */
   @UnstableReactNativeAPI
-  public void experimental_prefetchResource(
-      int surfaceId, ThemedReactContext reactContext, MapBuffer params, int tag) {
+  public void experimental_prefetchResources(
+      int surfaceId, ThemedReactContext reactContext, MapBuffer params) {
     return;
   }
 

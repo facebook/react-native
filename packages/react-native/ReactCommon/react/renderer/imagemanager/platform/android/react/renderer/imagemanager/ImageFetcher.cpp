@@ -21,26 +21,40 @@ ImageRequest ImageFetcher::requestImage(
     SurfaceId surfaceId,
     const ImageRequestParams& imageRequestParams,
     Tag tag) {
+  items_[surfaceId].emplace_back(
+      ImageRequestItem{
+          .imageSource = imageSource,
+          .imageRequestParams = imageRequestParams,
+          .tag = tag});
+
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
+
+  flushImageRequests();
+
+  return {imageSource, telemetry};
+}
+
+void ImageFetcher::flushImageRequests() {
+  if (items_.empty()) {
+    return;
+  }
 
   auto fabricUIManager_ =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-  static auto prefetchResource =
+  static auto prefetchResources =
       fabricUIManager_->getClass()
           ->getMethod<void(
-              SurfaceId, std::string, JReadableMapBuffer::javaobject, Tag)>(
-              "experimental_prefetchResource");
+              SurfaceId, std::string, JReadableMapBuffer::javaobject)>(
+              "experimental_prefetchResources");
 
-  auto readableMapBuffer = JReadableMapBuffer::createWithContents(
-      serializeImageRequest(imageSource, imageRequestParams));
-  prefetchResource(
-      fabricUIManager_,
-      surfaceId,
-      "RCTImageView",
-      readableMapBuffer.get(),
-      tag);
+  for (auto& [surfaceId, surfaceImageRequests] : items_) {
+    auto readableMapBuffer = JReadableMapBuffer::createWithContents(
+        serializeImageRequests(surfaceImageRequests));
+    prefetchResources(
+        fabricUIManager_, surfaceId, "RCTImageView", readableMapBuffer.get());
+  }
 
-  return {imageSource, telemetry};
+  items_.clear();
 }
 
 } // namespace facebook::react

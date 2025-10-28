@@ -964,15 +964,15 @@ public class FabricUIManager
    * by an ImageView.
    */
   @UnstableReactNativeAPI
-  public void experimental_prefetchResource(
-      int surfaceId, String componentName, ReadableMapBuffer params, int tag) {
+  public void experimental_prefetchResources(
+      int surfaceId, String componentName, ReadableMapBuffer params) {
     if (ReactNativeFeatureFlags.enableImagePrefetchingOnUiThreadAndroid()) {
       mMountItemDispatcher.addMountItem(
-          new PrefetchResourcesMountItem(surfaceId, componentName, params, tag));
+          new PrefetchResourcesMountItem(surfaceId, componentName, params));
     } else {
       SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
       if (surfaceMountingManager != null) {
-        surfaceMountingManager.experimental_prefetchResource(surfaceId, componentName, params, tag);
+        surfaceMountingManager.experimental_prefetchResources(surfaceId, componentName, params);
       }
     }
   }
