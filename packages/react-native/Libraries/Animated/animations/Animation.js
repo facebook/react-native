@@ -170,7 +170,7 @@ export default class Animation {
       );
 
       return true;
-    } catch (e) {
+    } catch (e: mixed) {
       throw e;
     } finally {
       NativeAnimatedHelper.API.unsetWaitingForIdentifier(
