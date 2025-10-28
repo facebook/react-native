@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9bb9145e823dae3447fa8fbb31676b37>>
+ * @generated SignedSource<<d8ae80ae606b6cf56ea06866b5e5ac99>>
  * @flow strict
  * @noformat
  */
@@ -31,6 +31,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
+  configurePressabilityDuringInsertion: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   disableMaintainVisibleContentPosition: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
@@ -146,6 +147,11 @@ export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScrip
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.
  */
 export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
+
+/**
+ * Configure Pressability during insertion and no longer unmount when hidden.
+ */
+export const configurePressabilityDuringInsertion: Getter<boolean> = createJavaScriptFlagGetter('configurePressabilityDuringInsertion', false);
 
 /**
  * Use the deferred cell render update mechanism for focus change in FlatList.
