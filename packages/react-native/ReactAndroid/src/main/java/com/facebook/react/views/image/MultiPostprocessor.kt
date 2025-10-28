@@ -18,7 +18,7 @@ import java.util.LinkedList
 internal class MultiPostprocessor private constructor(postprocessors: List<Postprocessor>) :
     Postprocessor {
 
-  private val postprocessors: List<Postprocessor> = LinkedList(postprocessors)
+  internal val postprocessors: List<Postprocessor> = LinkedList(postprocessors)
 
   override fun getName(): String = "MultiPostProcessor (${postprocessors.joinToString(",")})"
 
