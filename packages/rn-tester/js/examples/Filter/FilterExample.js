@@ -193,6 +193,7 @@ exports.examples = [
     title: 'Invert',
     description: 'invert(0.7)',
     name: 'invert',
+    platform: 'android',
     render(): React.Node {
       return <StaticViewAndImageComparison style={{filter: [{invert: 0.7}]}} />;
     },

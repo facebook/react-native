@@ -63,11 +63,6 @@
   [self.swiftContainerView updateContrast:contrast];
 }
 
-- (void)updateInvert:(NSNumber *)invert
-{
-  [self.swiftContainerView updateInvert:invert];
-}
-
 - (void)updateHueRotate:(NSNumber *)degrees
 {
   [self.swiftContainerView updateHueRotate:degrees];
