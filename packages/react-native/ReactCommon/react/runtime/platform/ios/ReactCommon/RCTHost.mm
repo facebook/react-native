@@ -196,7 +196,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
         return nil;
       }
 
-      return strongSelf->_bundleURL;
+      return [strongSelf->_bundleManager.bundleConfig getBundleURL:^NSURL * {
+        return strongSelf->_bundleURL;
+      }];
     };
 
     auto bundleURLSetter = ^(NSURL *bundleURL_) {
@@ -209,7 +211,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
         return nil;
       }
 
-      return strongSelf->_bundleURLProvider();
+      return [strongSelf->_bundleManager.bundleConfig getBundleURL:^NSURL * {
+        return strongSelf->_bundleURLProvider();
+      }];
     };
 
     [_bundleManager setBridgelessBundleURLGetter:bundleURLGetter
