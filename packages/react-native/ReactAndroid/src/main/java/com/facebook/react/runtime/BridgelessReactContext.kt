@@ -10,7 +10,6 @@
 package com.facebook.react.runtime
 
 import android.content.Context
-import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.CatalystInstance
@@ -24,7 +23,6 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
@@ -71,17 +69,9 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
       "This method is deprecated in the New Architecture. You should not be invoking directly as we're going to remove it in the future."
   )
   override fun getCatalystInstance(): CatalystInstance {
-    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      throw UnsupportedOperationException(
-          "CatalystInstance is not supported when Bridgeless mode is enabled."
-      )
-    }
-    Log.w(
-        TAG,
-        "[WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of" +
-            " the new architecture is not encouraged usage.",
+    throw UnsupportedOperationException(
+        "CatalystInstance is not supported when Bridgeless mode is enabled."
     )
-    return BridgelessCatalystInstance(reactHost)
   }
 
   @Deprecated(
