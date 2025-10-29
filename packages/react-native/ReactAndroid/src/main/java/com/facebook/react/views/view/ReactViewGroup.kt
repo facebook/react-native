@@ -154,7 +154,6 @@ public open class ReactViewGroup public constructor(context: Context?) :
       AccessibilityManager.AccessibilityStateChangeListener? =
       null
   private var focusOnAttach = false
-  private var hasAttachedToWindowForFocus = false
 
   init {
     initView()
@@ -217,7 +216,6 @@ public open class ReactViewGroup public constructor(context: Context?) :
 
     // In case a focus was attempted but the view never attached, reset to false
     focusOnAttach = false
-    hasAttachedToWindowForFocus = false
   }
 
   private var _drawingOrderHelper: ViewGroupDrawingOrderHelper? = null
@@ -423,9 +421,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   internal fun requestFocusFromJS() {
-    // We need a local variable here as opposed to the View.isAttachedToWindow check
-    // since the value is not updated until after the Fabric commit.
-    if (hasAttachedToWindowForFocus) {
+    if (isAttachedToWindow) {
       super.requestFocus(FOCUS_DOWN, null)
     } else {
       focusOnAttach = true
@@ -586,7 +582,6 @@ public open class ReactViewGroup public constructor(context: Context?) :
       updateClippingRect()
     }
 
-    hasAttachedToWindowForFocus = true
     if (focusOnAttach) {
       requestFocusFromJS()
       focusOnAttach = false
