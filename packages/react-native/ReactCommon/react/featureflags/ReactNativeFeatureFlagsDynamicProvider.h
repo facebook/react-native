@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc71bfa62258ec91b00c4646441fa7fc>>
+ * @generated SignedSource<<adcd03f8f6bcdb8b8197d9b0085c9d77>>
  */
 
 /**
@@ -313,6 +313,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableInteropViewManagerClassLookUpOptimizationIOS();
+  }
+
+  bool enableKeyEvents() override {
+    auto value = values_["enableKeyEvents"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableKeyEvents();
   }
 
   bool enableLayoutAnimationsOnAndroid() override {

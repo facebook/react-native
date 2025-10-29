@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f43cde1ba2bef2300c077f35b168d31>>
+ * @generated SignedSource<<ebeb9b37b8d3d0e31f4d4966cbf42b3f>>
  */
 
 /**
@@ -54,6 +54,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableImperativeFocusCache: Boolean? = null
   private var enableInteropViewManagerClassLookUpOptimizationIOSCache: Boolean? = null
+  private var enableKeyEventsCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
@@ -401,6 +402,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableInteropViewManagerClassLookUpOptimizationIOS()
       accessedFeatureFlags.add("enableInteropViewManagerClassLookUpOptimizationIOS")
       enableInteropViewManagerClassLookUpOptimizationIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableKeyEvents(): Boolean {
+    var cached = enableKeyEventsCache
+    if (cached == null) {
+      cached = currentProvider.enableKeyEvents()
+      accessedFeatureFlags.add("enableKeyEvents")
+      enableKeyEventsCache = cached
     }
     return cached
   }

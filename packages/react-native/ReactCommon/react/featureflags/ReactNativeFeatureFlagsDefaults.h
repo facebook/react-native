@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2c21515e9a083d91c7ce798f967def86>>
+ * @generated SignedSource<<d3786de5c8669d29376f135536f7cbbc>>
  */
 
 /**
@@ -144,6 +144,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
+    return false;
+  }
+
+  bool enableKeyEvents() override {
     return false;
   }
 

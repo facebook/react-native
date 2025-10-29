@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<98a77cdecfd3e6d42f03b2b4ba3d8c88>>
+ * @generated SignedSource<<07b665ad842faafaf7520051f636d805>>
  */
 
 /**
@@ -188,6 +188,11 @@ class ReactNativeFeatureFlags {
    * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
    */
   RN_EXPORT static bool enableInteropViewManagerClassLookUpOptimizationIOS();
+
+  /**
+   * Enables key up/down/press events to be sent to JS from components
+   */
+  RN_EXPORT static bool enableKeyEvents();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
