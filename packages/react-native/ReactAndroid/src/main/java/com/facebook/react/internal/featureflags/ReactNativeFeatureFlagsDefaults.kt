@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7987eba84c39c6e8cb6494092a94790e>>
+ * @generated SignedSource<<3ab7c812090eec90ebb2bbaffd170729>>
  */
 
 /**
@@ -147,7 +147,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
 
-  override fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = false
+  override fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d8ae80ae606b6cf56ea06866b5e5ac99>>
+ * @generated SignedSource<<67997afcb69af22e40879f7b7923052b>>
  * @flow strict
  * @noformat
  */
@@ -468,7 +468,7 @@ export const skipActivityIdentityAssertionOnHostPause: Getter<boolean> = createN
 /**
  * A flag to tell Fabric to sweep active touches from JSTouchDispatcher in Android when a child native gesture is started.
  */
-export const sweepActiveTouchOnChildNativeGesturesAndroid: Getter<boolean> = createNativeFlagGetter('sweepActiveTouchOnChildNativeGesturesAndroid', false);
+export const sweepActiveTouchOnChildNativeGesturesAndroid: Getter<boolean> = createNativeFlagGetter('sweepActiveTouchOnChildNativeGesturesAndroid', true);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */
