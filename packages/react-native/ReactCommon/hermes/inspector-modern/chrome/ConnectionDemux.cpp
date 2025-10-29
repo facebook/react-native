@@ -89,8 +89,9 @@ DebugSessionToken ConnectionDemux::enableDebugging(
 
   auto waitForDebugger =
       (inspectedContexts_->find(title) != inspectedContexts_->end());
-  return addPage(hermes::inspector_modern::chrome::CDPHandler::create(
-      std::move(adapter), title, waitForDebugger));
+  return addPage(
+      hermes::inspector_modern::chrome::CDPHandler::create(
+          std::move(adapter), title, waitForDebugger));
 }
 
 void ConnectionDemux::disableDebugging(DebugSessionToken session) {

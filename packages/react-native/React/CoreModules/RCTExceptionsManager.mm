@@ -84,19 +84,17 @@ RCT_EXPORT_MODULE()
 }
 
 // TODO(T205456329): This method is deprecated in favour of reportException. Delete in v0.77
-RCT_EXPORT_METHOD(reportSoftException
-                  : (NSString *)message stack
-                  : (NSArray<NSDictionary *> *)stack exceptionId
-                  : (double)exceptionId)
+RCT_EXPORT_METHOD(
+    reportSoftException : (NSString *)message stack : (NSArray<NSDictionary *> *)stack exceptionId : (double)
+        exceptionId)
 {
   [self reportSoft:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
 // TODO(T205456329): This method is deprecated in favour of reportException. Delete in v0.77
-RCT_EXPORT_METHOD(reportFatalException
-                  : (NSString *)message stack
-                  : (NSArray<NSDictionary *> *)stack exceptionId
-                  : (double)exceptionId)
+RCT_EXPORT_METHOD(
+    reportFatalException : (NSString *)message stack : (NSArray<NSDictionary *> *)stack exceptionId : (double)
+        exceptionId)
 {
   [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }

@@ -150,7 +150,7 @@
   },
   "peerDependencies": {
     "@types/react": "^19.1.1",
-    "react": "^19.1.1"
+    "react": "^19.2.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -159,13 +159,13 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.7.0",
-    "@react-native/assets-registry": "0.82.0-main",
-    "@react-native/codegen": "0.82.0-main",
-    "@react-native/community-cli-plugin": "0.82.0-main",
-    "@react-native/gradle-plugin": "0.82.0-main",
-    "@react-native/js-polyfills": "0.82.0-main",
-    "@react-native/normalize-colors": "0.82.0-main",
-    "@react-native/virtualized-lists": "0.82.0-main",
+    "@react-native/assets-registry": "0.83.0-main",
+    "@react-native/codegen": "0.83.0-main",
+    "@react-native/community-cli-plugin": "0.83.0-main",
+    "@react-native/gradle-plugin": "0.83.0-main",
+    "@react-native/js-polyfills": "0.83.0-main",
+    "@react-native/normalize-colors": "0.83.0-main",
+    "@react-native/virtualized-lists": "0.83.0-main",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
@@ -179,15 +179,15 @@
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.7.0",
     "memoize-one": "^5.0.0",
-    "metro-runtime": "^0.83.1",
-    "metro-source-map": "^0.83.1",
+    "metro-runtime": "^0.83.3",
+    "metro-source-map": "^0.83.3",
     "nullthrows": "^1.1.1",
     "pretty-format": "^29.7.0",
     "promise": "^8.3.0",
     "react-devtools-core": "^6.1.5",
     "react-refresh": "^0.14.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "0.26.0",
+    "scheduler": "0.27.0",
     "semver": "^7.1.3",
     "stacktrace-parser": "^0.1.10",
     "whatwg-fetch": "^3.0.0",

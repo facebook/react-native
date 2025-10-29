@@ -7,7 +7,23 @@
 
 #include "Color.h"
 
+#include <array>
+
 namespace facebook::react {
+
+std::string SharedColor::toString() const noexcept {
+  ColorComponents components = colorComponentsFromColor(*this);
+  std::array<char, 255> buffer{};
+  std::snprintf(
+      buffer.data(),
+      buffer.size(),
+      "rgba(%.0f, %.0f, %.0f, %g)",
+      components.red * 255.f,
+      components.green * 255.f,
+      components.blue * 255.f,
+      components.alpha);
+  return buffer.data();
+}
 
 bool isColorMeaningful(const SharedColor& color) noexcept {
   if (!color) {
@@ -53,17 +69,20 @@ SharedColor colorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
 SharedColor clearColor() {
-  static SharedColor color = colorFromComponents(ColorComponents{0, 0, 0, 0});
+  static SharedColor color = colorFromComponents(
+      ColorComponents{.red = 0, .green = 0, .blue = 0, .alpha = 0});
   return color;
 }
 
 SharedColor blackColor() {
-  static SharedColor color = colorFromComponents(ColorComponents{0, 0, 0, 1});
+  static SharedColor color = colorFromComponents(
+      ColorComponents{.red = 0, .green = 0, .blue = 0, .alpha = 1});
   return color;
 }
 
 SharedColor whiteColor() {
-  static SharedColor color = colorFromComponents(ColorComponents{1, 1, 1, 1});
+  static SharedColor color = colorFromComponents(
+      ColorComponents{.red = 1, .green = 1, .blue = 1, .alpha = 1});
   return color;
 }
 

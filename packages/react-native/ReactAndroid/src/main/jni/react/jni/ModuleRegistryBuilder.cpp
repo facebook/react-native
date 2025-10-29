@@ -13,7 +13,7 @@
 
 #include <cxxreact/CxxNativeModule.h>
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 
@@ -52,18 +52,20 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
   std::vector<std::unique_ptr<NativeModule>> modules;
   if (javaModules) {
     for (const auto& jm : *javaModules) {
-      modules.emplace_back(std::make_unique<JavaNativeModule>(
-          winstance, jm, moduleMessageQueue));
+      modules.emplace_back(
+          std::make_unique<JavaNativeModule>(
+              winstance, jm, moduleMessageQueue));
     }
   }
   if (cxxModules) {
     for (const auto& cm : *cxxModules) {
       std::string moduleName = cm->getName();
-      modules.emplace_back(std::make_unique<CxxNativeModule>(
-          winstance,
-          moduleName,
-          cm->getProvider(moduleName),
-          moduleMessageQueue));
+      modules.emplace_back(
+          std::make_unique<CxxNativeModule>(
+              winstance,
+              moduleName,
+              cm->getProvider(moduleName),
+              moduleMessageQueue));
     }
   }
   return modules;

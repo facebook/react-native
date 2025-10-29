@@ -12,35 +12,28 @@
 #include <android/asset_manager.h>
 #include <cxxreact/JSModulesUnbundle.h>
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 
-class [[deprecated(
-    "This API will be removed along with the legacy architecture.")]] JniJSModulesUnbundle
+class [[deprecated("This API will be removed along with the legacy architecture.")]] JniJSModulesUnbundle
     : public JSModulesUnbundle {
   /**
    * This implementation reads modules as single file from the assets of an apk.
    */
  public:
   JniJSModulesUnbundle() = default;
-  JniJSModulesUnbundle(
-      AAssetManager* assetManager,
-      std::string moduleDirectory);
-  JniJSModulesUnbundle(JniJSModulesUnbundle&& other) = delete;
-  JniJSModulesUnbundle& operator=(JSModulesUnbundle&& other) = delete;
+  JniJSModulesUnbundle(AAssetManager *assetManager, std::string moduleDirectory);
+  JniJSModulesUnbundle(JniJSModulesUnbundle &&other) = delete;
+  JniJSModulesUnbundle &operator=(JSModulesUnbundle &&other) = delete;
 
-  static std::unique_ptr<JniJSModulesUnbundle> fromEntryFile(
-      AAssetManager* assetManager,
-      const std::string& entryFile);
+  static std::unique_ptr<JniJSModulesUnbundle> fromEntryFile(AAssetManager *assetManager, const std::string &entryFile);
 
-  static bool isUnbundle(
-      AAssetManager* assetManager,
-      const std::string& assetName);
+  static bool isUnbundle(AAssetManager *assetManager, const std::string &assetName);
   virtual Module getModule(uint32_t moduleId) const override;
 
  private:
-  AAssetManager* m_assetManager = nullptr;
+  AAssetManager *m_assetManager = nullptr;
   std::string m_moduleDirectory;
 };
 

@@ -48,42 +48,46 @@ struct LayoutMetrics {
 
   // Origin: the outer border of the node.
   // Size: includes content only.
-  Rect getContentFrame() const {
+  Rect getContentFrame() const
+  {
     return Rect{
-        Point{contentInsets.left, contentInsets.top},
-        Size{
-            frame.size.width - contentInsets.left - contentInsets.right,
-            frame.size.height - contentInsets.top - contentInsets.bottom}};
+        .origin = Point{.x = contentInsets.left, .y = contentInsets.top},
+        .size = Size{
+            .width = frame.size.width - contentInsets.left - contentInsets.right,
+            .height = frame.size.height - contentInsets.top - contentInsets.bottom}};
   }
 
   // Calculates the frame of the node including overflow insets.
   // If the frame was drawn on screen, it would include all the children of the
   // node (and their children, recursively).
-  Rect getOverflowInsetFrame() const {
+  Rect getOverflowInsetFrame() const
+  {
     return Rect{
-        Point{
-            frame.origin.x + std::min(Float{0}, overflowInset.left),
-            frame.origin.y + std::min(Float{0}, overflowInset.top)},
-        Size{
-            frame.size.width - std::min(Float{0}, overflowInset.left) +
-                -std::min(Float{0}, overflowInset.right),
-            frame.size.height - std::min(Float{0}, overflowInset.top) +
-                -std::min(Float{0}, overflowInset.bottom)}};
+        .origin =
+            Point{
+                .x = frame.origin.x + std::min(Float{0}, overflowInset.left),
+                .y = frame.origin.y + std::min(Float{0}, overflowInset.top)},
+        .size = Size{
+            .width =
+                frame.size.width - std::min(Float{0}, overflowInset.left) + -std::min(Float{0}, overflowInset.right),
+            .height =
+                frame.size.height - std::min(Float{0}, overflowInset.top) + -std::min(Float{0}, overflowInset.bottom)}};
   }
 
   // Origin: the outer border of the node.
   // Size: includes content and padding (but no borders).
-  Rect getPaddingFrame() const {
+  Rect getPaddingFrame() const
+  {
     return Rect{
-        Point{borderWidth.left, borderWidth.top},
-        Size{
-            frame.size.width - borderWidth.left - borderWidth.right,
-            frame.size.height - borderWidth.top - borderWidth.bottom}};
+        .origin = Point{.x = borderWidth.left, .y = borderWidth.top},
+        .size = Size{
+            .width = frame.size.width - borderWidth.left - borderWidth.right,
+            .height = frame.size.height - borderWidth.top - borderWidth.bottom}};
   }
 
-  bool operator==(const LayoutMetrics& rhs) const = default;
+  bool operator==(const LayoutMetrics &rhs) const = default;
 
-  bool operator!=(const LayoutMetrics& rhs) const = default;
+  bool operator!=(const LayoutMetrics &rhs) const = default;
 };
 
 /*
@@ -92,13 +96,13 @@ struct LayoutMetrics {
  * The value is comparable by equality with any other `LayoutMetrics` value.
  */
 static const LayoutMetrics EmptyLayoutMetrics = {
-    /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
+    /* .frame = */ .frame = {.origin = {.x = 0, .y = 0}, .size = {.width = -1.0, .height = -1.0}}};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(const LayoutMetrics& object);
+std::string getDebugName(const LayoutMetrics &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    const LayoutMetrics& object,
+    const LayoutMetrics &object,
     DebugStringConvertibleOptions options);
 
 #endif
@@ -109,7 +113,8 @@ namespace std {
 
 template <>
 struct hash<facebook::react::LayoutMetrics> {
-  size_t operator()(const facebook::react::LayoutMetrics& layoutMetrics) const {
+  size_t operator()(const facebook::react::LayoutMetrics &layoutMetrics) const
+  {
     return facebook::react::hash_combine(
         layoutMetrics.frame,
         layoutMetrics.contentInsets,

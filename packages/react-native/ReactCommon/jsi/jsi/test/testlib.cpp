@@ -44,19 +44,23 @@ TEST_P(JSITest, PropNameIDTest) {
   EXPECT_TRUE(PropNameID::compare(rt, movedQuux, copiedQuux));
 
   EXPECT_TRUE(PropNameID::compare(rt, movedQuux, movedQuux));
-  EXPECT_TRUE(PropNameID::compare(
-      rt, movedQuux, PropNameID::forAscii(rt, std::string("quux2"))));
-  EXPECT_FALSE(PropNameID::compare(
-      rt, movedQuux, PropNameID::forAscii(rt, std::string("foo"))));
+  EXPECT_TRUE(
+      PropNameID::compare(
+          rt, movedQuux, PropNameID::forAscii(rt, std::string("quux2"))));
+  EXPECT_FALSE(
+      PropNameID::compare(
+          rt, movedQuux, PropNameID::forAscii(rt, std::string("foo"))));
   uint8_t utf8[] = {0xF0, 0x9F, 0x86, 0x97};
   PropNameID utf8PropNameID = PropNameID::forUtf8(rt, utf8, sizeof(utf8));
   EXPECT_EQ(
       utf8PropNameID.utf8(rt), reinterpret_cast<const char*>(u8"\U0001F197"));
-  EXPECT_TRUE(PropNameID::compare(
-      rt, utf8PropNameID, PropNameID::forUtf8(rt, utf8, sizeof(utf8))));
+  EXPECT_TRUE(
+      PropNameID::compare(
+          rt, utf8PropNameID, PropNameID::forUtf8(rt, utf8, sizeof(utf8))));
   PropNameID nonUtf8PropNameID = PropNameID::forUtf8(rt, "meow");
-  EXPECT_TRUE(PropNameID::compare(
-      rt, nonUtf8PropNameID, PropNameID::forAscii(rt, "meow")));
+  EXPECT_TRUE(
+      PropNameID::compare(
+          rt, nonUtf8PropNameID, PropNameID::forAscii(rt, "meow")));
   EXPECT_EQ(nonUtf8PropNameID.utf8(rt), "meow");
   PropNameID strPropNameID =
       PropNameID::forString(rt, String::createFromAscii(rt, "meow"));
@@ -149,11 +153,12 @@ TEST_P(JSITest, ObjectTest) {
   obj.setProperty(rt, "oprop", oprop);
   obj.setProperty(rt, "aprop", Array(rt, 1));
 
-  EXPECT_TRUE(function("function (obj) { return "
-                       "obj.roses == 'red' && "
-                       "obj['violets'] == 'blue' && "
-                       "typeof obj.oprop == 'object' && "
-                       "Array.isArray(obj.aprop); }")
+  EXPECT_TRUE(function(
+                  "function (obj) { return "
+                  "obj.roses == 'red' && "
+                  "obj['violets'] == 'blue' && "
+                  "typeof obj.oprop == 'object' && "
+                  "Array.isArray(obj.aprop); }")
                   .call(rt, obj)
                   .getBool());
 
@@ -247,7 +252,7 @@ TEST_P(JSITest, HostObjectTest) {
   EXPECT_TRUE(cho.getHostObject<ConstantHostObject>(rt).get() != nullptr);
 
   struct SameRuntimeHostObject : HostObject {
-    SameRuntimeHostObject(Runtime& rt) : rt_(rt){};
+    SameRuntimeHostObject(Runtime& rt) : rt_(rt) {};
 
     Value get(Runtime& rt, const PropNameID& sym) override {
       EXPECT_EQ(&rt, &rt_);
@@ -731,14 +736,15 @@ TEST_P(JSITest, HostFunctionTest) {
   EXPECT_TRUE(eval("cons.length == 2").getBool());
   EXPECT_TRUE(eval("cons instanceof Function").getBool());
 
-  EXPECT_TRUE(eval("(function() {"
-                   "  try {"
-                   "    cons('fail'); return false;"
-                   "  } catch (e) {"
-                   "    return ((e instanceof Error) &&"
-                   "            (e.message == 'Exception in HostFunction: ' +"
-                   "                          'expected 2 args'));"
-                   "  }})()")
+  EXPECT_TRUE(eval(
+                  "(function() {"
+                  "  try {"
+                  "    cons('fail'); return false;"
+                  "  } catch (e) {"
+                  "    return ((e instanceof Error) &&"
+                  "            (e.message == 'Exception in HostFunction: ' +"
+                  "                          'expected 2 args'));"
+                  "  }})()")
                   .getBool());
 
   Function coolify = Function::createFromHostFunction(
@@ -755,10 +761,11 @@ TEST_P(JSITest, HostFunctionTest) {
   EXPECT_TRUE(eval("coolify.name == 'coolify'").getBool());
   EXPECT_TRUE(eval("coolify.length == 0").getBool());
   EXPECT_TRUE(eval("coolify.bind('R&M')() == 'R&M is cool'").getBool());
-  EXPECT_TRUE(eval("(function() {"
-                   "  var s = coolify.bind(function(){})();"
-                   "  return s.lastIndexOf(' is cool') == (s.length - 8);"
-                   "})()")
+  EXPECT_TRUE(eval(
+                  "(function() {"
+                  "  var s = coolify.bind(function(){})();"
+                  "  return s.lastIndexOf(' is cool') == (s.length - 8);"
+                  "})()")
                   .getBool());
 
   Function lookAtMe = Function::createFromHostFunction(
@@ -887,14 +894,15 @@ TEST_P(JSITest, ValueTest) {
   uint8_t utf8[] = "[null, 2, \"c\", \"emoji: \xf0\x9f\x86\x97\", {}]";
 
   EXPECT_TRUE(
-      function("function (arr) { return "
-               "Array.isArray(arr) && "
-               "arr.length == 5 && "
-               "arr[0] === null && "
-               "arr[1] == 2 && "
-               "arr[2] == 'c' && "
-               "arr[3] == 'emoji: \\uD83C\\uDD97' && "
-               "typeof arr[4] == 'object'; }")
+      function(
+          "function (arr) { return "
+          "Array.isArray(arr) && "
+          "arr.length == 5 && "
+          "arr[0] === null && "
+          "arr[1] == 2 && "
+          "arr[2] == 'c' && "
+          "arr[3] == 'emoji: \\uD83C\\uDD97' && "
+          "typeof arr[4] == 'object'; }")
           .call(rt, Value::createFromJsonUtf8(rt, utf8, sizeof(utf8) - 1))
           .getBool());
 
@@ -936,14 +944,16 @@ TEST_P(JSITest, EqualsTest) {
   EXPECT_TRUE(Value::strictEquals(rt, nullptr, nullptr));
   EXPECT_TRUE(Value::strictEquals(rt, Value::undefined(), Value()));
   EXPECT_TRUE(Value::strictEquals(rt, rt.global(), Value(rt.global())));
-  EXPECT_FALSE(Value::strictEquals(
-      rt,
-      std::numeric_limits<double>::quiet_NaN(),
-      std::numeric_limits<double>::quiet_NaN()));
-  EXPECT_FALSE(Value::strictEquals(
-      rt,
-      std::numeric_limits<double>::signaling_NaN(),
-      std::numeric_limits<double>::signaling_NaN()));
+  EXPECT_FALSE(
+      Value::strictEquals(
+          rt,
+          std::numeric_limits<double>::quiet_NaN(),
+          std::numeric_limits<double>::quiet_NaN()));
+  EXPECT_FALSE(
+      Value::strictEquals(
+          rt,
+          std::numeric_limits<double>::signaling_NaN(),
+          std::numeric_limits<double>::signaling_NaN()));
   EXPECT_TRUE(Value::strictEquals(rt, +0.0, -0.0));
   EXPECT_TRUE(Value::strictEquals(rt, -0.0, +0.0));
 
@@ -1089,8 +1099,9 @@ TEST_P(JSITest, JSErrorDoesNotInfinitelyRecurse) {
     return rt.global().getPropertyAsObject(rt, "NotAProperty");
   };
   EXPECT_EQ(
-      function("function (f) { try { f(); return 'undefined'; }"
-               "catch (e) { return typeof e; } }")
+      function(
+          "function (f) { try { f(); return 'undefined'; }"
+          "catch (e) { return typeof e; } }")
           .call(
               rt,
               Function::createFromHostFunction(
@@ -1330,18 +1341,21 @@ TEST_P(JSITest, SymbolTest) {
   EXPECT_EQ(eval("Symbol('sym')").getSymbol(rt).toString(rt), "Symbol(sym)");
 
   // EqualsTest
-  EXPECT_FALSE(Symbol::strictEquals(
-      rt,
-      eval("Symbol('a')").getSymbol(rt),
-      eval("Symbol('a')").getSymbol(rt)));
-  EXPECT_TRUE(Symbol::strictEquals(
-      rt,
-      eval("Symbol.for('a')").getSymbol(rt),
-      eval("Symbol.for('a')").getSymbol(rt)));
+  EXPECT_FALSE(
+      Symbol::strictEquals(
+          rt,
+          eval("Symbol('a')").getSymbol(rt),
+          eval("Symbol('a')").getSymbol(rt)));
+  EXPECT_TRUE(
+      Symbol::strictEquals(
+          rt,
+          eval("Symbol.for('a')").getSymbol(rt),
+          eval("Symbol.for('a')").getSymbol(rt)));
   EXPECT_FALSE(
       Value::strictEquals(rt, eval("Symbol('a')"), eval("Symbol('a')")));
-  EXPECT_TRUE(Value::strictEquals(
-      rt, eval("Symbol.for('a')"), eval("Symbol.for('a')")));
+  EXPECT_TRUE(
+      Value::strictEquals(
+          rt, eval("Symbol.for('a')"), eval("Symbol.for('a')")));
   EXPECT_FALSE(Value::strictEquals(rt, eval("Symbol('a')"), eval("'a'")));
 }
 
@@ -1352,13 +1366,15 @@ TEST_P(JSITest, JSErrorTest) {
   // Getting message property can throw
 
   EXPECT_THROW(
-      eval("var GetMessageThrows = {get message() { throw Error('ex'); }};"
-           "throw GetMessageThrows;"),
+      eval(
+          "var GetMessageThrows = {get message() { throw Error('ex'); }};"
+          "throw GetMessageThrows;"),
       JSIException);
 
   EXPECT_THROW(
-      eval("var GetMessageThrows = {get message() { throw GetMessageThrows; }};"
-           "throw GetMessageThrows;"),
+      eval(
+          "var GetMessageThrows = {get message() { throw GetMessageThrows; }};"
+          "throw GetMessageThrows;"),
       JSIException);
 
   // Converting exception message to String can throw
@@ -1381,18 +1397,20 @@ TEST_P(JSITest, JSErrorTest) {
       JSIException);
 
   EXPECT_THROW(
-      eval("var e = Error();"
-           "String = function() { throw Error('ctor'); };"
-           "throw e;"),
+      eval(
+          "var e = Error();"
+          "String = function() { throw Error('ctor'); };"
+          "throw e;"),
       JSIException);
 
   // Converting an exception message to String can return a non-String
 
   EXPECT_THROW(
-      eval("String = function() { return 42; };"
-           "var e = Error();"
-           "e.message = 17;"
-           "throw e;"),
+      eval(
+          "String = function() { return 42; };"
+          "var e = Error();"
+          "e.message = 17;"
+          "throw e;"),
       JSIException);
 
   // Exception can be non-Object
@@ -1404,8 +1422,9 @@ TEST_P(JSITest, JSErrorTest) {
   // Converting exception with no message or stack property to String can throw
 
   EXPECT_THROW(
-      eval("var e = {toString() { throw new Error('errstr'); }};"
-           "throw e;"),
+      eval(
+          "var e = {toString() { throw new Error('errstr'); }};"
+          "throw e;"),
       JSIException);
 }
 

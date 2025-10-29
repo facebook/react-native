@@ -70,7 +70,7 @@ RCT_EXTERN_C_END
  * will be used as the JS module name. If omitted, the JS module name will
  * match the Objective-C class name.
  */
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_DISABLE_STATIC_MODULE_REGISTRATION
 #define RCT_EXPORT_MODULE(js_name)          \
   RCT_EXTERN void RCTRegisterModule(Class); \
   +(NSString *)moduleName                   \
@@ -91,7 +91,7 @@ RCT_EXTERN_C_END
     return @ #js_name;                      \
   }
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_DISABLE_STATIC_MODULE_REGISTRATION
 
 /**
  * Same as RCT_EXPORT_MODULE, but uses __attribute__((constructor)) for module
@@ -306,10 +306,12 @@ RCT_EXTERN_C_END
 /**
  * Like RCT_EXTERN_MODULE, but allows setting a custom JavaScript name.
  */
-#define RCT_EXTERN_REMAP_MODULE(js_name, objc_name, objc_supername)                      \
-  objc_name : objc_supername @end @interface objc_name(RCTExternModule)<RCTBridgeModule> \
-  @end                                                                                   \
-  @implementation objc_name (RCTExternModule)                                            \
+#define RCT_EXTERN_REMAP_MODULE(js_name, objc_name, objc_supername) \
+  objc_name:                                                        \
+  objc_supername @                                                  \
+  end @interface objc_name(RCTExternModule)<RCTBridgeModule>        \
+  @end                                                              \
+  @implementation objc_name (RCTExternModule)                       \
   RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name)
 
 /**
@@ -377,9 +379,9 @@ RCT_EXTERN_C_END
  * A class that allows NativeModules and TurboModules to look up one another.
  */
 @interface RCTModuleRegistry : NSObject
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 - (void)setBridge:(RCTBridge *)bridge;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 - (void)setTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
 
 - (id)moduleForName:(const char *)moduleName;
@@ -398,9 +400,9 @@ typedef void (^RCTViewRegistryUIBlock)(RCTViewRegistry *viewRegistry);
  * A class that allows NativeModules to query for views, given React Tags.
  */
 @interface RCTViewRegistry : NSObject
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 - (void)setBridge:(RCTBridge *)bridge;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 - (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)bridgelessComponentViewProvider;
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
@@ -418,9 +420,9 @@ typedef void (^RCTBridgelessJSModuleMethodInvoker)(
  * as callable with React Native.
  */
 @interface RCTCallableJSModules : NSObject
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 - (void)setBridge:(RCTBridge *)bridge;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 - (void)setBridgelessJSModuleMethodInvoker:(RCTBridgelessJSModuleMethodInvoker)bridgelessJSModuleMethodInvoker;
 
 - (void)invokeModule:(NSString *)moduleName method:(NSString *)methodName withArgs:(NSArray *)args;

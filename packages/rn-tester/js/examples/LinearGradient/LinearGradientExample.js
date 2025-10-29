@@ -57,7 +57,7 @@ exports.examples = [
       return (
         <GradientBox
           style={{
-            experimental_backgroundImage: 'linear-gradient(#e66465, #9198e5);',
+            experimental_backgroundImage: 'linear-gradient(#e66465, #9198e5)',
           }}
           testID="linear-gradient-basic">
           <RNTesterText style={styles.text}>Linear Gradient</RNTesterText>
@@ -73,7 +73,7 @@ exports.examples = [
       return (
         <GradientBox
           style={{
-            experimental_backgroundImage: 'linear-gradient(45deg, red, blue);',
+            experimental_backgroundImage: 'linear-gradient(45deg, red, blue)',
             height: 300,
             width: 140,
           }}
@@ -94,7 +94,7 @@ exports.examples = [
     linear-gradient(45deg, white, rgba(243, 119, 54, 0.8), rgba(243, 119, 54, 0) 70%),
     linear-gradient(90deg, white, rgba(253, 244, 152, 0.8), rgba(253, 244, 152, 0) 70%),
     linear-gradient(135deg, white, rgba(123, 192, 67, 0.8), rgba(123, 192, 67, 0) 70%),
-    linear-gradient(180deg, white, rgba(3, 146, 207, 0.8), rgba(3, 146, 207, 0) 70%);
+    linear-gradient(180deg, white, rgba(3, 146, 207, 0.8), rgba(3, 146, 207, 0) 70%)
 
             `,
             borderRadius: 16,
@@ -182,7 +182,7 @@ exports.examples = [
         <GradientBox
           style={{
             experimental_backgroundImage:
-              'linear-gradient(to bottom right, yellow, green);',
+              'linear-gradient(to bottom right, yellow, green)',
             borderRadius: 16,
           }}
           testID="linear-gradient-uniform-borders"
@@ -198,7 +198,7 @@ exports.examples = [
         <GradientBox
           style={{
             experimental_backgroundImage:
-              'linear-gradient(to bottom right, yellow, green);',
+              'linear-gradient(to bottom right, yellow, green)',
             borderTopRightRadius: 8,
             borderTopLeftRadius: 80,
           }}
@@ -267,7 +267,7 @@ exports.examples = [
               #29abe2 65%,
               180px,
               #2e3192 100%
-            );`,
+            )`,
           }}
           testID="linear-gradient-px-and-percentage"
         />

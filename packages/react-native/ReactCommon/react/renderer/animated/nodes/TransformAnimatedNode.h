@@ -24,11 +24,8 @@ struct TransformConfig {
 
 class TransformAnimatedNode final : public AnimatedNode {
  public:
-  TransformAnimatedNode(
-      Tag tag,
-      const folly::dynamic& config,
-      NativeAnimatedNodesManager& manager);
+  TransformAnimatedNode(Tag tag, const folly::dynamic &config, NativeAnimatedNodesManager &manager);
 
-  void collectViewUpdates(folly::dynamic& props);
+  void collectViewUpdates(folly::dynamic &props);
 };
 } // namespace facebook::react

@@ -38,7 +38,7 @@ const codegenLog = (text /*: string */, info /*: boolean */ = false) => {
 function readPkgJsonInDirectory(dir /*: string */) /*: $FlowFixMe */ {
   const pkgJsonPath = path.join(dir, 'package.json');
   if (!fs.existsSync(pkgJsonPath)) {
-    throw `[Codegen] Error: ${pkgJsonPath} does not exist.`;
+    throw new Error(`[Codegen] Error: ${pkgJsonPath} does not exist.`);
   }
   return JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
 }
@@ -174,7 +174,7 @@ function findProjectRootLibraries(
   }
 
   if (typeof pkgJson.codegenConfig !== 'object') {
-    throw 'The "codegenConfig" field must be an Object.';
+    throw new Error('The "codegenConfig" field must be an Object.');
   }
 
   return extractLibrariesFromJSON(pkgJson, projectRoot);

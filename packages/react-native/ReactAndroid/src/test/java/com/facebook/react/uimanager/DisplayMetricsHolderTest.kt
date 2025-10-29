@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// Suppress deprecation warnings for checking scaledDensity
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager
 
 import android.annotation.TargetApi
@@ -165,5 +168,19 @@ class DisplayMetricsHolderTest {
     val decodedHeight = Float.fromBits(encoded.toInt())
     assertThat(decodedWidth).isEqualTo(width)
     assertThat(decodedHeight).isEqualTo(height)
+  }
+
+  @Test
+  fun initDisplayMetrics_preservesScaledDensityForFontScale() {
+    val originalMetrics = context.resources.displayMetrics
+    val customScaledDensity = originalMetrics.density * 0.85f // fontScale = 0.85
+
+    originalMetrics.scaledDensity = customScaledDensity
+
+    DisplayMetricsHolder.initDisplayMetrics(context)
+
+    val screenMetrics = DisplayMetricsHolder.getScreenDisplayMetrics()
+
+    assertThat(screenMetrics.scaledDensity).isEqualTo(customScaledDensity)
   }
 }

@@ -19,12 +19,10 @@ namespace facebook::react {
 class PlatformTimerRegistryImpl : public PlatformTimerRegistry {
  public:
   PlatformTimerRegistryImpl() noexcept = default;
-  PlatformTimerRegistryImpl(const PlatformTimerRegistryImpl&) = delete;
-  PlatformTimerRegistryImpl& operator=(const PlatformTimerRegistryImpl&) =
-      delete;
-  PlatformTimerRegistryImpl(PlatformTimerRegistryImpl&&) noexcept = delete;
-  PlatformTimerRegistryImpl& operator=(PlatformTimerRegistryImpl&&) noexcept =
-      delete;
+  PlatformTimerRegistryImpl(const PlatformTimerRegistryImpl &) = delete;
+  PlatformTimerRegistryImpl &operator=(const PlatformTimerRegistryImpl &) = delete;
+  PlatformTimerRegistryImpl(PlatformTimerRegistryImpl &&) noexcept = delete;
+  PlatformTimerRegistryImpl &operator=(PlatformTimerRegistryImpl &&) noexcept = delete;
   ~PlatformTimerRegistryImpl() noexcept override;
 
   void createTimer(uint32_t timerId, double delayMs) override;
@@ -47,10 +45,7 @@ class PlatformTimerRegistryImpl : public PlatformTimerRegistry {
   std::unordered_map<uint32_t, Timer> timers_;
   std::mutex timersMutex_;
 
-  void createTimerInternal(
-      uint32_t timerID,
-      double delayMs,
-      bool isRecurring = false);
+  void createTimerInternal(uint32_t timerID, double delayMs, bool isRecurring = false);
 
   void startTimer(uint32_t timerId, double delayMs);
 };

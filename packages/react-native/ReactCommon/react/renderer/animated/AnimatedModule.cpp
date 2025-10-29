@@ -111,11 +111,12 @@ void AnimatedModule::startAnimatingNode(
     jsi::Object config,
     AnimationEndCallback endCallback) {
   auto configDynamic = dynamicFromValue(rt, jsi::Value(rt, config));
-  operations_.emplace_back(StartAnimatingNodeOp{
-      .animationId = animationId,
-      .nodeTag = nodeTag,
-      .config = std::move(configDynamic),
-      .endCallback = std::move(endCallback)});
+  operations_.emplace_back(
+      StartAnimatingNodeOp{
+          .animationId = animationId,
+          .nodeTag = nodeTag,
+          .config = std::move(configDynamic),
+          .endCallback = std::move(endCallback)});
 }
 
 void AnimatedModule::stopAnimation(jsi::Runtime& /*rt*/, int animationId) {
@@ -180,10 +181,11 @@ void AnimatedModule::addAnimatedEventToView(
     std::string eventName,
     jsi::Object eventMapping) {
   auto eventMappingDynamic = dynamicFromValue(rt, jsi::Value(rt, eventMapping));
-  operations_.emplace_back(AddAnimatedEventToViewOp{
-      .viewTag = viewTag,
-      .eventName = std::move(eventName),
-      .eventMapping = std::move(eventMappingDynamic)});
+  operations_.emplace_back(
+      AddAnimatedEventToViewOp{
+          .viewTag = viewTag,
+          .eventName = std::move(eventName),
+          .eventMapping = std::move(eventMappingDynamic)});
 }
 
 void AnimatedModule::removeAnimatedEventFromView(
@@ -191,10 +193,11 @@ void AnimatedModule::removeAnimatedEventFromView(
     Tag viewTag,
     std::string eventName,
     Tag animatedNodeTag) {
-  operations_.emplace_back(RemoveAnimatedEventFromViewOp{
-      .viewTag = viewTag,
-      .eventName = std::move(eventName),
-      .animatedNodeTag = animatedNodeTag});
+  operations_.emplace_back(
+      RemoveAnimatedEventFromViewOp{
+          .viewTag = viewTag,
+          .eventName = std::move(eventName),
+          .animatedNodeTag = animatedNodeTag});
 }
 
 void AnimatedModule::addListener(

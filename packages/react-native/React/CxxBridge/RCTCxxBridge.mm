@@ -54,15 +54,11 @@
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
 
-#ifdef WITH_FBSYSTRACE
-#import <React/RCTFBSystrace.h>
-#endif
-
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
 #import <React/RCTDevLoadingViewProtocol.h>
 #endif
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
@@ -183,7 +179,7 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 
 struct RCTInstanceCallback : public InstanceCallback {
   __weak RCTCxxBridge *bridge_;
-  RCTInstanceCallback(RCTCxxBridge *bridge) : bridge_(bridge){};
+  RCTInstanceCallback(RCTCxxBridge *bridge) : bridge_(bridge) {};
   void onBatchComplete() override
   {
     [bridge_ batchDidComplete];
@@ -1128,16 +1124,12 @@ struct RCTInstanceCallback : public InstanceCallback {
   });
 }
 
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithDelegate
-                    : (__unused id<RCTBridgeDelegate>)delegate bundleURL
-                    : (__unused NSURL *)bundleURL moduleProvider
-                    : (__unused RCTBridgeModuleListProvider)block launchOptions
-                    : (__unused NSDictionary *)launchOptions)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithDelegate : (__unused id<RCTBridgeDelegate>)delegate bundleURL : (
+    __unused NSURL *)bundleURL moduleProvider : (__unused RCTBridgeModuleListProvider)
+                        block launchOptions : (__unused NSDictionary *)launchOptions)
 
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
-                    : (__unused NSURL *)bundleURL moduleProvider
-                    : (__unused RCTBridgeModuleListProvider)block launchOptions
-                    : (__unused NSDictionary *)launchOptions)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL : (__unused NSURL *)bundleURL moduleProvider : (
+    __unused RCTBridgeModuleListProvider)block launchOptions : (__unused NSDictionary *)launchOptions)
 
 /**
  * Prevent super from calling setUp (that'd create another batchedBridge)
@@ -1511,9 +1503,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   RCTAssertMainQueue();
 
   [self ensureOnJavaScriptThread:^{
-#if WITH_FBSYSTRACE
-    [RCTFBSystrace registerCallbacks];
-#endif
     RCTProfileInit(self);
 
     [self enqueueJSCall:@"Systrace" method:@"setEnabled" args:@[ @YES ] completion:NULL];
@@ -1529,14 +1518,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);
-#if WITH_FBSYSTRACE
-      if (![RCTFBSystrace verifyTraceSize:logData.length]) {
-        RCTLogWarn(
-            @"Your FBSystrace trace might be truncated, try to bump up the buffer size"
-             " in RCTFBSystrace.m or capture a shorter trace");
-      }
-      [RCTFBSystrace unregisterCallbacks];
-#endif
     });
   }];
 }
@@ -1590,7 +1571,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 
 @end
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 @implementation RCTCxxBridge
 @end
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

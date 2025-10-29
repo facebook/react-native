@@ -37,8 +37,13 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
   do {                            \
   } while (false)
 #endif
-RCT_EXTERN void _RCTAssertFormat(const char *, const char *, int, const char *, NSString *, ...)
-    NS_FORMAT_FUNCTION(5, 6);
+RCT_EXTERN void _RCTAssertFormat(
+    const char * /*condition*/,
+    const char * /*fileName*/,
+    int /*lineNumber*/,
+    const char * /*function*/,
+    NSString * /*format*/,
+    ...) NS_FORMAT_FUNCTION(5, 6);
 
 /**
  * Report a fatal condition when executing. These calls will _NOT_ be compiled out
@@ -174,43 +179,3 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
   } while (0)
 
 #endif
-
-// MARK: - New Architecture Validation
-
-typedef enum {
-  RCTNotAllowedInBridgeless = 1,
-  RCTNotAllowedInFabricWithoutLegacy = 2,
-  RCTNotAllowedValidationDisabled = 3,
-} RCTNotAllowedValidation;
-
-/**
- * // TODO: (T125626909) Only validate legacy architecture usages in Bridgeless mode, not Bridged Fabric mode
- *
- * Ensure runtime assumptions holds for the new architecture by reporting when assumptions are violated.
- * Note: this is work in progress.
- *
- * When level is RCTNotAllowedInFabricWithoutLegacy, validate Fabric assumptions.
- * i.e. Report legacy pre-Fabric call sites that should not be used while Fabric is enabled on all surfaces.
- *
- * When level is RCTNotAllowedInBridgeless, validate Fabric or Bridgeless assumptions.
- * i.e. Report Bridge call sites that should not be used while Bridgeless mode is enabled.
- *
- * Note: enabling this at runtime is not early enough to report issues within ObjC class +load execution.
- */
-__attribute__((used)) RCT_EXTERN void RCTNewArchitectureSetMinValidationLevel(RCTNotAllowedValidation level);
-
-// When new architecture validation reporting is enabled, trigger an assertion and crash.
-__attribute__((used)) RCT_EXTERN void
-RCTEnforceNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra);
-// When new architecture validation reporting is enabled, trigger an error but do not crash.
-// When ready, switch to stricter variant above.
-__attribute__((used)) RCT_EXTERN void
-RCTErrorNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra);
-// When new architecture validation reporting is enabled, log an message.
-// When ready, switch to stricter variant above.
-__attribute__((used)) RCT_EXTERN void
-RCTLogNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra);
-// A placeholder for callsites that frequently fail validation.
-// When ready, switch to stricter variant above.
-__attribute__((used)) RCT_EXTERN void
-RCTNewArchitectureValidationPlaceholder(RCTNotAllowedValidation type, id context, NSString *extra);

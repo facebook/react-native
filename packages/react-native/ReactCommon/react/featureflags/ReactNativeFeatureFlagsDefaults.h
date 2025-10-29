@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e6ee2118acc15edb9da813bb43978f3>>
+ * @generated SignedSource<<21049b33fc72200390c6dd6d0ca27c19>>
  */
 
 /**
@@ -40,6 +40,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool cxxNativeAnimatedRemoveJsSync() override {
+    return false;
+  }
+
+  bool disableEarlyViewCommandExecution() override {
     return false;
   }
 
@@ -127,10 +131,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableImagePrefetchingJNIBatchingAndroid() override {
-    return false;
-  }
-
   bool enableImagePrefetchingOnUiThreadAndroid() override {
     return false;
   }
@@ -211,6 +211,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool enableVirtualViewContainerStateExperimental() override {
+    return false;
+  }
+
   bool enableVirtualViewDebugFeatures() override {
     return false;
   }
@@ -263,6 +267,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool shouldTriggerResponderTransferOnScrollAndroid() override {
+    return false;
+  }
+
   bool skipActivityIdentityAssertionOnHostPause() override {
     return false;
   }
@@ -311,12 +319,24 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool useSharedAnimatedBackend() override {
+    return false;
+  }
+
+  bool useTraitHiddenOnAndroid() override {
+    return false;
+  }
+
   bool useTurboModuleInterop() override {
     return false;
   }
 
   bool useTurboModules() override {
     return false;
+  }
+
+  double viewCullingOutsetRatio() override {
+    return 0.0;
   }
 
   double virtualViewHysteresisRatio() override {

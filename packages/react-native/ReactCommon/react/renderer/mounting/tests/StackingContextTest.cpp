@@ -164,7 +164,8 @@ class StackingContextTest : public ::testing::Test {
             node->getFamily(), [&](const ShadowNode& oldShadowNode) {
               auto viewProps = std::make_shared<ViewShadowNodeProps>();
               callback(*viewProps);
-              return oldShadowNode.clone(ShadowNodeFragment{viewProps});
+              return oldShadowNode.clone(
+                  ShadowNodeFragment{.props = viewProps});
             }));
   }
 
@@ -260,7 +261,7 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
     yogaStyle.setMargin(yoga::Edge::All, yoga::StyleLength::points(42));
     yogaStyle.setPositionType(yoga::PositionType::Absolute);
     props.shadowRadius = 42;
-    props.shadowOffset = Size{42, 42};
+    props.shadowOffset = Size{.width = 42, .height = 42};
     props.backgroundColor = clearColor();
   });
 

@@ -13,7 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTBridgeDelegate <NSObject>
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 /**
  * The location of the JavaScript source file. When running from the packager
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge
     __deprecated_msg("This API will be removed along with the legacy architecture.");
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 @end
 
 NS_ASSUME_NONNULL_END

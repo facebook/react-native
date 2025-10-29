@@ -92,6 +92,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableEarlyViewCommandExecution: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-07',
+        description: 'Dispatch view commands in mount item order.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableFabricCommitInCXXAnimated: {
       defaultValue: false,
       metadata: {
@@ -314,17 +324,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableImagePrefetchingJNIBatchingAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-09-19',
-        description:
-          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableImagePrefetchingOnUiThreadAndroid: {
       defaultValue: false,
       metadata: {
@@ -539,6 +538,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableVirtualViewContainerStateExperimental: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-09',
+        description:
+          'Enables the experimental version of `VirtualViewContainerState`.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableVirtualViewDebugFeatures: {
       defaultValue: false,
       metadata: {
@@ -677,6 +687,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    shouldTriggerResponderTransferOnScrollAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-30',
+        description:
+          'Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     skipActivityIdentityAssertionOnHostPause: {
       defaultValue: false,
       metadata: {
@@ -804,6 +825,26 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useSharedAnimatedBackend: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-2',
+        description: 'Use shared animation backend in C++ Animated',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    useTraitHiddenOnAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-9',
+        description: 'Use Trait::hidden on Android',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {
@@ -824,6 +865,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
+    },
+    viewCullingOutsetRatio: {
+      defaultValue: 0,
+      metadata: {
+        dateAdded: '2025-09-18',
+        description:
+          'Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.',
+        expectedReleaseValue: 0,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     virtualViewHysteresisRatio: {
       defaultValue: 0,
@@ -867,6 +919,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-02-05',
         description:
           'Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    configurePressabilityDuringInsertion: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-27',
+        description:
+          'Configure Pressability during insertion and no longer unmount when hidden.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

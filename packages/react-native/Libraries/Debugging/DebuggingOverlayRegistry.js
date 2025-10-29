@@ -332,7 +332,9 @@ class DebuggingOverlayRegistry {
         instance.measure((x, y, width, height, left, top) => {
           // measure can execute callback without any values provided to signal error.
           if (left == null || top == null || width == null || height == null) {
-            reject('Unexpectedly failed to call measure on an instance.');
+            reject(
+              new Error('Unexpectedly failed to call measure on an instance.'),
+            );
           }
 
           resolve({
@@ -480,7 +482,11 @@ class DebuggingOverlayRegistry {
                 width == null ||
                 height == null
               ) {
-                reject('Unexpectedly failed to call measure on an instance.');
+                reject(
+                  new Error(
+                    'Unexpectedly failed to call measure on an instance.',
+                  ),
+                );
               }
 
               resolve({x: left, y: top, width, height});

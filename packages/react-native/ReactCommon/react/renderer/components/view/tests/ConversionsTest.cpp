@@ -64,8 +64,9 @@ TEST(ConversionsTest, unprocessed_box_shadow_objects) {
 }
 
 TEST(ConversionsTest, unprocessed_box_object_invalid_color) {
-  RawValue value{folly::dynamic::array(folly::dynamic::object("offsetX", 10)(
-      "offsetY", 2)("blurRadius", 3)("spreadDistance", 5)("color", "hello"))};
+  RawValue value{folly::dynamic::array(
+      folly::dynamic::object("offsetX", 10)("offsetY", 2)("blurRadius", 3)(
+          "spreadDistance", 5)("color", "hello"))};
 
   std::vector<BoxShadow> boxShadows;
   parseUnprocessedBoxShadow(
@@ -75,8 +76,9 @@ TEST(ConversionsTest, unprocessed_box_object_invalid_color) {
 }
 
 TEST(ConversionsTest, unprocessed_box_object_negative_blur) {
-  RawValue value{folly::dynamic::array(folly::dynamic::object("offsetX", 10)(
-      "offsetY", 2)("blurRadius", -3)("spreadDistance", 5))};
+  RawValue value{folly::dynamic::array(
+      folly::dynamic::object("offsetX", 10)("offsetY", 2)("blurRadius", -3)(
+          "spreadDistance", 5))};
 
   std::vector<BoxShadow> boxShadows;
   parseUnprocessedBoxShadow(
@@ -177,10 +179,11 @@ TEST(ConversionsTest, unprocessed_filter_objects) {
 }
 
 TEST(ConversionsTest, unprocessed_filter_objects_negative_shadow_blur) {
-  RawValue value{folly::dynamic::array(folly::dynamic::object(
-      "drop-shadow",
-      folly::dynamic::object("offsetX", 10)("offsetY", "-2px")(
-          "standardDeviation", -0.5)))};
+  RawValue value{folly::dynamic::array(
+      folly::dynamic::object(
+          "drop-shadow",
+          folly::dynamic::object("offsetX", 10)("offsetY", "-2px")(
+              "standardDeviation", -0.5)))};
 
   std::vector<FilterFunction> filters;
   parseUnprocessedFilter(

@@ -13,10 +13,8 @@
 
 namespace facebook::react {
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    AutocapitalizationType& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, AutocapitalizationType &result)
+{
   auto string = (std::string)value;
   if (string == "none") {
     result = AutocapitalizationType::None;
@@ -37,10 +35,8 @@ inline void fromRawValue(
   result = AutocapitalizationType::None;
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    KeyboardAppearance& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, KeyboardAppearance &result)
+{
   auto string = (std::string)value;
   if (string == "default") {
     result = KeyboardAppearance::Default;
@@ -57,10 +53,8 @@ inline void fromRawValue(
   result = KeyboardAppearance::Default;
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    ReturnKeyType& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, ReturnKeyType &result)
+{
   auto string = (std::string)value;
   if (string == "default") {
     result = ReturnKeyType::Default;
@@ -125,10 +119,9 @@ inline void fromRawValue(
   result = ReturnKeyType::Default;
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    TextInputAccessoryVisibilityMode& result) {
+inline void
+fromRawValue(const PropsParserContext &context, const RawValue &value, TextInputAccessoryVisibilityMode &result)
+{
   auto string = (std::string)value;
   if (string == "never") {
     result = TextInputAccessoryVisibilityMode::Never;
@@ -149,10 +142,8 @@ inline void fromRawValue(
   result = TextInputAccessoryVisibilityMode::Never;
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    KeyboardType& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, KeyboardType &result)
+{
   auto string = (std::string)value;
   if (string == "default") {
     result = KeyboardType::Default;

@@ -16,61 +16,49 @@
 namespace facebook::react {
 
 struct JTaskInterface : public jni::JavaClass<JTaskInterface> {
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/interfaces/TaskInterface;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/interfaces/TaskInterface;";
 };
 
 struct JTracingState : public jni::JavaClass<JTracingState> {
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/devsupport/TracingState;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/TracingState;";
 };
 
 struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/runtime/ReactHostImpl;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/runtime/ReactHostImpl;";
 
-  jni::local_ref<JTaskInterface::javaobject> reload(const std::string& reason) {
-    static auto method =
-        javaClassStatic()->getMethod<JTaskInterface::javaobject(std::string)>(
-            "reload");
+  jni::local_ref<JTaskInterface::javaobject> reload(const std::string &reason)
+  {
+    static auto method = javaClassStatic()->getMethod<JTaskInterface::javaobject(std::string)>("reload");
     return method(self(), reason);
   }
 
-  void setPausedInDebuggerMessage(std::optional<std::string> message) {
-    static auto method =
-        javaClassStatic()->getMethod<void(jni::local_ref<jni::JString>)>(
-            "setPausedInDebuggerMessage");
+  void setPausedInDebuggerMessage(std::optional<std::string> message)
+  {
+    static auto method = javaClassStatic()->getMethod<void(jni::local_ref<jni::JString>)>("setPausedInDebuggerMessage");
     method(self(), message ? jni::make_jstring(*message) : nullptr);
   }
 
-  jni::local_ref<jni::JMap<jstring, jstring>> getHostMetadata() const {
-    static auto method =
-        javaClassStatic()
-            ->getMethod<jni::local_ref<jni::JMap<jstring, jstring>>()>(
-                "getHostMetadata");
+  jni::local_ref<jni::JMap<jstring, jstring>> getHostMetadata() const
+  {
+    static auto method = javaClassStatic()->getMethod<jni::local_ref<jni::JMap<jstring, jstring>>()>("getHostMetadata");
     return method(self());
   }
 
-  void loadNetworkResource(
-      const std::string& url,
-      jni::local_ref<InspectorNetworkRequestListener::javaobject> listener)
-      const {
-    auto method =
-        javaClassStatic()
-            ->getMethod<void(
-                jni::local_ref<jni::JString>,
-                jni::local_ref<InspectorNetworkRequestListener::javaobject>)>(
-                "loadNetworkResource");
+  void loadNetworkResource(const std::string &url, jni::local_ref<InspectorNetworkRequestListener::javaobject> listener)
+      const
+  {
+    auto method = javaClassStatic()
+                      ->getMethod<void(
+                          jni::local_ref<jni::JString>, jni::local_ref<InspectorNetworkRequestListener::javaobject>)>(
+                          "loadNetworkResource");
     return method(self(), jni::make_jstring(url), listener);
   }
 };
 
-class JReactHostInspectorTarget
-    : public jni::HybridClass<JReactHostInspectorTarget>,
-      public jsinspector_modern::HostTargetDelegate {
+class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTarget>,
+                                  public jsinspector_modern::HostTargetDelegate {
  public:
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/runtime/ReactHostInspectorTarget;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/runtime/ReactHostInspectorTarget;";
 
   ~JReactHostInspectorTarget() override;
 
@@ -109,17 +97,15 @@ class JReactHostInspectorTarget
    */
   void stopAndDiscardBackgroundTrace();
 
-  jsinspector_modern::HostTarget* getInspectorTarget();
+  jsinspector_modern::HostTarget *getInspectorTarget();
 
   // HostTargetDelegate methods
   jsinspector_modern::HostTargetMetadata getMetadata() override;
-  void onReload(const PageReloadRequest& request) override;
-  void onSetPausedInDebuggerMessage(
-      const OverlaySetPausedInDebuggerMessageRequest& request) override;
+  void onReload(const PageReloadRequest &request) override;
+  void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) override;
   void loadNetworkResource(
-      const jsinspector_modern::LoadNetworkResourceRequest& params,
-      jsinspector_modern::ScopedExecutor<
-          jsinspector_modern::NetworkRequestListener> executor) override;
+      const jsinspector_modern::LoadNetworkResourceRequest &params,
+      jsinspector_modern::ScopedExecutor<jsinspector_modern::NetworkRequestListener> executor) override;
   std::optional<jsinspector_modern::tracing::TraceRecordingState>
   unstable_getTraceRecordingThatWillBeEmittedOnInitialization() override;
 
@@ -147,14 +133,12 @@ class JReactHostInspectorTarget
    * CDP session is created. Once emitted, the value will be cleared from this
    * instance.
    */
-  void stashTraceRecordingState(
-      jsinspector_modern::tracing::TraceRecordingState&& state);
+  void stashTraceRecordingState(jsinspector_modern::tracing::TraceRecordingState &&state);
   /**
    * Previously recorded trace recording state that will be emitted when
    * CDP session is created.
    */
-  std::optional<jsinspector_modern::tracing::TraceRecordingState>
-      stashedTraceRecordingState_;
+  std::optional<jsinspector_modern::tracing::TraceRecordingState> stashedTraceRecordingState_;
 
   friend HybridBase;
 };

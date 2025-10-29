@@ -46,11 +46,12 @@ void NativeExceptionsManager::reportException(
     std::vector<JsErrorHandler::ProcessedError::StackFrame> frames;
     frames.reserve(data.stack.size());
     for (const auto& frame : data.stack) {
-      frames.push_back(JsErrorHandler::ProcessedError::StackFrame{
-          .file = frame.file,
-          .methodName = frame.methodName,
-          .lineNumber = frame.lineNumber,
-          .column = frame.column});
+      frames.push_back(
+          JsErrorHandler::ProcessedError::StackFrame{
+              .file = frame.file,
+              .methodName = frame.methodName,
+              .lineNumber = frame.lineNumber,
+              .column = frame.column});
     }
     JsErrorHandler::ProcessedError processedError{
         .message = data.message,

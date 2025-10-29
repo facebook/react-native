@@ -388,9 +388,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
     size.height = enumeratedLinesHeight;
   }
 
-  size = (CGSize){
-      ceil(size.width * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor,
-      ceil(size.height * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor};
+  size = (CGSize){ceil(size.width * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor,
+                  ceil(size.height * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor};
 
   __block auto attachments = TextMeasurement::Attachments{};
 

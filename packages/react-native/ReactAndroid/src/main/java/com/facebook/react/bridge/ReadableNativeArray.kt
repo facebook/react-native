@@ -20,20 +20,48 @@ import kotlin.jvm.JvmStatic
 @DoNotStrip
 public open class ReadableNativeArray protected constructor() : NativeArray(), ReadableArray {
 
-  private val localArray: Array<Any?> by
-      lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        jniPassCounter++
-        importArray()
+  private var localArrayStorage: Array<Any?>? = null
+  private val localArray: Array<Any?>
+    get() {
+      var localArray = localArrayStorage
+      if (localArray != null) {
+        return localArray
       }
+
+      synchronized(this) {
+        // Check again with the lock held to prevent duplicate construction
+        localArray = localArrayStorage
+        if (localArray == null) {
+          localArray = importArray()
+          localArrayStorage = localArray
+          jniPassCounter++
+        }
+        return localArray
+      }
+    }
 
   private external fun importArray(): Array<Any?>
 
-  private val localTypeArray: Array<ReadableType> by
-      lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        jniPassCounter++
-        val tempArray = importTypeArray()
-        Arrays.copyOf(tempArray, tempArray.size, Array<ReadableType>::class.java)
+  private var localTypeArrayStorage: Array<ReadableType>? = null
+  private val localTypeArray: Array<ReadableType>
+    get() {
+      var localTypeArray = localTypeArrayStorage
+      if (localTypeArray != null) {
+        return localTypeArray
       }
+
+      synchronized(this) {
+        // Check again with the lock held to prevent duplicate construction
+        localTypeArray = localTypeArrayStorage
+        if (localTypeArray == null) {
+          val tempArray = importTypeArray()
+          localTypeArray = Arrays.copyOf(tempArray, tempArray.size, Array<ReadableType>::class.java)
+          localTypeArrayStorage = localTypeArray
+          jniPassCounter++
+        }
+        return localTypeArray
+      }
+    }
 
   private external fun importTypeArray(): Array<Any>
 

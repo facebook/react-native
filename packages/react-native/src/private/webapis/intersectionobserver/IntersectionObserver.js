@@ -24,7 +24,7 @@ export type IntersectionObserverCallback = (
 
 export interface IntersectionObserverInit {
   root?: ?ReactNativeElement;
-  // rootMargin?: string, // This option exists on the Web but it's not currently supported in React Native.
+  rootMargin?: string;
   threshold?: number | $ReadOnlyArray<number>;
 
   /**
@@ -56,9 +56,8 @@ export interface IntersectionObserverInit {
  * changes in degree of visibility; however, you can watch multiple target
  * elements with the same observer.
  *
- * This implementation only supports the `threshold` option at the moment
- * (`root` and `rootMargin` are not supported) and provides a React Native specific
- * option `rnRootThreshold`.
+ * This implementation supports `threshold`, `root`, and `rootMargin` options and
+ * provides a React Native specific option `rnRootThreshold`.
  *
  */
 export default class IntersectionObserver {
@@ -68,6 +67,7 @@ export default class IntersectionObserver {
   _intersectionObserverId: ?IntersectionObserverId;
   _rootThresholds: $ReadOnlyArray<number> | null;
   _root: ReactNativeElement | null;
+  _rootMargin: string;
 
   constructor(
     callback: IntersectionObserverCallback,
@@ -82,13 +82,6 @@ export default class IntersectionObserver {
     if (typeof callback !== 'function') {
       throw new TypeError(
         "Failed to construct 'IntersectionObserver': parameter 1 is not of type 'Function'.",
-      );
-    }
-
-    // $FlowExpectedError[prop-missing] it's not typed in React Native but exists on Web.
-    if (options?.rootMargin != null) {
-      throw new TypeError(
-        "Failed to construct 'IntersectionObserver': rootMargin is not supported",
       );
     }
 
@@ -109,6 +102,7 @@ export default class IntersectionObserver {
       this._rootThresholds != null, // only provide default if no rootThreshold
     );
     this._root = options?.root ?? null;
+    this._rootMargin = normalizeRootMargin(options?.rootMargin);
   }
 
   /**
@@ -128,12 +122,9 @@ export default class IntersectionObserver {
    * Each side of the rectangle represented by `rootMargin` is added to the
    * corresponding side in the root element's bounding box before the
    * intersection test is performed.
-   *
-   * NOTE: This cannot currently be configured and `rootMargin` is always
-   * `null`.
    */
   get rootMargin(): string {
-    return '0px 0px 0px 0px';
+    return this._rootMargin;
   }
 
   /**
@@ -350,4 +341,74 @@ function normalizeThresholdValue(
   }
 
   return thresholdAsNumber;
+}
+
+/**
+ * Validates and normalizes the rootMargin value.
+ * Accepts CSS margin syntax (e.g., "10px", "10px 20px", "10px 20px 30px 40px").
+ * Returns the normalized string or throws an error if invalid.
+ *
+ * Per W3C spec, rootMargin must be specified in pixels or percent.
+ * This implementation validates the basic format.
+ */
+function normalizeRootMargin(rootMargin: mixed): string {
+  if (rootMargin == null || rootMargin === '') {
+    return '0px 0px 0px 0px';
+  }
+
+  if (typeof rootMargin !== 'string') {
+    throw new TypeError(
+      "Failed to construct 'IntersectionObserver': Failed to read the 'rootMargin' property from 'IntersectionObserverInit': The provided value is not of type 'string'.",
+    );
+  }
+
+  const marginStr = rootMargin.trim();
+  if (marginStr === '') {
+    return '0px 0px 0px 0px';
+  }
+
+  // Split by whitespace and validate each value
+  const parts = marginStr.split(/\s+/);
+  if (parts.length > 4) {
+    throw new SyntaxError(
+      "Failed to construct 'IntersectionObserver': Failed to parse rootMargin: Too many values (expected 1-4).",
+    );
+  }
+
+  // Validate each part matches the pattern: optional minus, digits, and unit (px or %)
+  const validPattern = /^-?\d+(\.\d+)?(px|%)$/;
+  for (const part of parts) {
+    if (!validPattern.test(part)) {
+      throw new SyntaxError(
+        `Failed to construct 'IntersectionObserver': Failed to parse rootMargin: '${part}' is not a valid length. Only 'px' and '%' units are allowed.`,
+      );
+    }
+  }
+
+  // Normalize to 4 values following CSS margin shorthand rules
+  let normalized: Array<string>;
+  switch (parts.length) {
+    case 1:
+      // All sides the same
+      normalized = [parts[0], parts[0], parts[0], parts[0]];
+      break;
+    case 2:
+      // Vertical | Horizontal
+      normalized = [parts[0], parts[1], parts[0], parts[1]];
+      break;
+    case 3:
+      // Top | Horizontal | Bottom
+      normalized = [parts[0], parts[1], parts[2], parts[1]];
+      break;
+    case 4:
+      // Top | Right | Bottom | Left
+      normalized = parts;
+      break;
+    default:
+      throw new SyntaxError(
+        "Failed to construct 'IntersectionObserver': Failed to parse rootMargin.",
+      );
+  }
+
+  return normalized.join(' ');
 }

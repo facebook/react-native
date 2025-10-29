@@ -7,7 +7,7 @@
 
 #import "RCTModuleData.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <objc/runtime.h>
 #import <atomic>
@@ -492,7 +492,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 @end
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 @implementation RCTModuleData
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -525,4 +525,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

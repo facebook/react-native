@@ -63,8 +63,9 @@ class HostTargetSession {
           cdp::jsonError(std::nullopt, cdp::ErrorCode::ParseError, e.what()));
       return;
     } catch (const cdp::TypeError& e) {
-      frontendChannel_(cdp::jsonError(
-          std::nullopt, cdp::ErrorCode::InvalidRequest, e.what()));
+      frontendChannel_(
+          cdp::jsonError(
+              std::nullopt, cdp::ErrorCode::InvalidRequest, e.what()));
       return;
     }
 
@@ -170,28 +171,30 @@ class HostRuntimeBinding {
       HostTarget& target,
       std::string name,
       std::function<void(std::string)> callback)
-      : connection_(target.connect(std::make_unique<CallbackRemoteConnection>(
-            [callback = std::move(callback)](const std::string& message) {
-              auto parsedMessage = folly::parseJson(message);
+      : connection_(target.connect(
+            std::make_unique<CallbackRemoteConnection>(
+                [callback = std::move(callback)](const std::string& message) {
+                  auto parsedMessage = folly::parseJson(message);
 
-              // Ignore initial Runtime.addBinding response
-              if (parsedMessage["id"] == 0 &&
-                  parsedMessage["result"].isObject() &&
-                  parsedMessage["result"].empty()) {
-                return;
-              }
+                  // Ignore initial Runtime.addBinding response
+                  if (parsedMessage["id"] == 0 &&
+                      parsedMessage["result"].isObject() &&
+                      parsedMessage["result"].empty()) {
+                    return;
+                  }
 
-              // Assert that we only intercept bindingCalled responses
-              assert(
-                  parsedMessage["method"].asString() ==
-                  "Runtime.bindingCalled");
-              callback(parsedMessage["params"]["payload"].asString());
-            }))) {
+                  // Assert that we only intercept bindingCalled responses
+                  assert(
+                      parsedMessage["method"].asString() ==
+                      "Runtime.bindingCalled");
+                  callback(parsedMessage["params"]["payload"].asString());
+                }))) {
     // Install runtime binding
-    connection_->sendMessage(cdp::jsonRequest(
-        0,
-        "Runtime.addBinding",
-        folly::dynamic::object("name", std::move(name))));
+    connection_->sendMessage(
+        cdp::jsonRequest(
+            0,
+            "Runtime.addBinding",
+            folly::dynamic::object("name", std::move(name))));
   }
 
  private:

@@ -150,11 +150,11 @@ class ProjectUtilsTest {
       writeText(
           // language=json
           """
-      {
-        "name": "a-library",
-        "codegenConfig": {}
-      }
-      """
+          {
+            "name": "a-library",
+            "codegenConfig": {}
+          }
+          """
               .trimIndent()
       )
     }
@@ -170,10 +170,10 @@ class ProjectUtilsTest {
       writeText(
           // language=json
           """
-      {
-        "name": "a-library"
-      }
-      """
+          {
+            "name": "a-library"
+          }
+          """
               .trimIndent()
       )
     }

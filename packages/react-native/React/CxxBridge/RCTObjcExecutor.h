@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <functional>
 #include <memory>
@@ -16,13 +16,10 @@
 
 namespace facebook::react {
 
-class [[deprecated(
-    "This API will be removed along with the legacy architecture.")]] RCTObjcExecutorFactory
+class [[deprecated("This API will be removed along with the legacy architecture.")]] RCTObjcExecutorFactory
     : public JSExecutorFactory {
  public:
-  RCTObjcExecutorFactory(
-      id<RCTJavaScriptExecutor> jse,
-      RCTJavaScriptCompleteBlock errorBlock);
+  RCTObjcExecutorFactory(id<RCTJavaScriptExecutor> jse, RCTJavaScriptCompleteBlock errorBlock);
   std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue) override;
@@ -34,4 +31,4 @@ class [[deprecated(
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

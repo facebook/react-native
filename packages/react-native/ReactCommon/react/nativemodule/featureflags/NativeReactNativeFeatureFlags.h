@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2dcd8b3add6f1fdc1bf378714deb41d7>>
+ * @generated SignedSource<<2ac15ead28cac3a969854f339d625dca>>
  */
 
 /**
@@ -28,7 +28,7 @@
 namespace facebook::react {
 
 class NativeReactNativeFeatureFlags
-    : public NativeReactNativeFeatureFlagsCxxSpecJSI {
+    : public NativeReactNativeFeatureFlagsCxxSpec<NativeReactNativeFeatureFlags> {
  public:
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -43,6 +43,8 @@ class NativeReactNativeFeatureFlags
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
   bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
+
+  bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
 
   bool disableFabricCommitInCXXAnimated(jsi::Runtime& runtime);
 
@@ -86,8 +88,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
 
-  bool enableImagePrefetchingJNIBatchingAndroid(jsi::Runtime& runtime);
-
   bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
 
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
@@ -128,6 +128,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
+  bool enableVirtualViewContainerStateExperimental(jsi::Runtime& runtime);
+
   bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
 
   bool enableVirtualViewRenderState(jsi::Runtime& runtime);
@@ -154,6 +156,8 @@ class NativeReactNativeFeatureFlags
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
+  bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
+
   bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
 
   bool sweepActiveTouchOnChildNativeGesturesAndroid(jsi::Runtime& runtime);
@@ -178,9 +182,15 @@ class NativeReactNativeFeatureFlags
 
   bool useShadowNodeStateOnClone(jsi::Runtime& runtime);
 
+  bool useSharedAnimatedBackend(jsi::Runtime& runtime);
+
+  bool useTraitHiddenOnAndroid(jsi::Runtime& runtime);
+
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 
   bool useTurboModules(jsi::Runtime& runtime);
+
+  double viewCullingOutsetRatio(jsi::Runtime& runtime);
 
   double virtualViewHysteresisRatio(jsi::Runtime& runtime);
 

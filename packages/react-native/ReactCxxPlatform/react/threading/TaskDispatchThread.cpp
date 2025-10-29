@@ -50,6 +50,10 @@ TaskDispatchThread::TaskDispatchThread(
 
 TaskDispatchThread::~TaskDispatchThread() noexcept {
   quit();
+
+  if (thread_.joinable()) {
+    thread_.join();
+  }
 }
 
 bool TaskDispatchThread::isOnThread() noexcept {
@@ -87,17 +91,14 @@ void TaskDispatchThread::runSync(TaskFn&& task) noexcept {
 }
 
 void TaskDispatchThread::quit() noexcept {
-  if (!running_) {
+  bool expected = true;
+  if (!running_.compare_exchange_strong(expected, false)) {
     return;
   }
-  running_ = false;
+
   loopCv_.notify_one();
-  if (thread_.joinable()) {
-    if (!isOnThread()) {
-      thread_.join();
-    } else {
-      thread_.detach();
-    }
+  if (!isOnThread()) {
+    loopStoppedPromise_.get_future().wait();
   }
 }
 
@@ -108,6 +109,7 @@ void TaskDispatchThread::loop() noexcept {
   while (running_) {
     std::unique_lock<std::mutex> lock(queueLock_);
     loopCv_.wait(lock, [&]() { return !running_ || !queue_.empty(); });
+
     while (!queue_.empty()) {
       auto task = queue_.top();
       auto now = std::chrono::system_clock::now();
@@ -116,15 +118,16 @@ void TaskDispatchThread::loop() noexcept {
         if (task.dispatchTime > now) {
           // Wait until the scheduled task time, if delayed
           loopCv_.wait_until(lock, task.dispatchTime);
+          continue;
         }
       } else {
         // Shutting down, skip all the remaining tasks
         queue_ = {};
-        return;
+        break;
       }
 
-      // We should check whether the task thread is still running at this point
-      // (which may not anymore be the case since the previous check)
+      // We should check whether the task thread is still running at this
+      // point (which may not anymore be the case since the previous check)
       if (running_) {
         lock.unlock();
         task.fn();
@@ -133,6 +136,8 @@ void TaskDispatchThread::loop() noexcept {
       queue_.pop();
     }
   }
+
+  loopStoppedPromise_.set_value();
 }
 
 } //  namespace facebook::react

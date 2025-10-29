@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<11051ece1b61fd4bf4ca003a3b7fc4f9>>
+ * @generated SignedSource<<7987eba84c39c6e8cb6494092a94790e>>
  */
 
 /**
@@ -30,6 +30,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
   override fun cxxNativeAnimatedRemoveJsSync(): Boolean = false
+
+  override fun disableEarlyViewCommandExecution(): Boolean = false
 
   override fun disableFabricCommitInCXXAnimated(): Boolean = false
 
@@ -73,8 +75,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
 
-  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = false
-
   override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
 
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
@@ -115,6 +115,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableViewRecyclingForView(): Boolean = true
 
+  override fun enableVirtualViewContainerStateExperimental(): Boolean = false
+
   override fun enableVirtualViewDebugFeatures(): Boolean = false
 
   override fun enableVirtualViewRenderState(): Boolean = true
@@ -141,6 +143,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
 
+  override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
+
   override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
 
   override fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = false
@@ -165,9 +169,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useShadowNodeStateOnClone(): Boolean = false
 
+  override fun useSharedAnimatedBackend(): Boolean = false
+
+  override fun useTraitHiddenOnAndroid(): Boolean = false
+
   override fun useTurboModuleInterop(): Boolean = false
 
   override fun useTurboModules(): Boolean = false
+
+  override fun viewCullingOutsetRatio(): Double = 0.0
 
   override fun virtualViewHysteresisRatio(): Double = 0.0
 

@@ -92,12 +92,12 @@ ImageProps::ImageProps(
                     {})),
       resizeMethod(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
-              ? sourceProps.internal_analyticTag
+              ? sourceProps.resizeMethod
               : convertRawProp(
                     context,
                     rawProps,
                     "resizeMethod",
-                    sourceProps.internal_analyticTag,
+                    sourceProps.resizeMethod,
                     {})),
       resizeMultiplier(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()

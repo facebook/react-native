@@ -116,16 +116,12 @@ async function unstable_prepareDebuggerShell(
   flavor: DebuggerShellFlavor,
   {prebuiltBinaryPath}: {prebuiltBinaryPath?: string} = {},
 ): Promise<DebuggerShellPreparationResult> {
-  const [binaryPath, baseArgs] = getShellBinaryAndArgs(
-    flavor,
-    prebuiltBinaryPath,
-  );
-
   try {
     switch (flavor) {
       case 'prebuilt':
-        const prebuiltResult =
-          await prepareDebuggerShellFromDotSlashFile(binaryPath);
+        const prebuiltResult = await prepareDebuggerShellFromDotSlashFile(
+          prebuiltBinaryPath ?? DEVTOOLS_BINARY_DOTSLASH_FILE,
+        );
         if (prebuiltResult.code !== 'success') {
           return prebuiltResult;
         }
@@ -136,6 +132,11 @@ async function unstable_prepareDebuggerShell(
         flavor as empty;
         throw new Error(`Unknown flavor: ${flavor}`);
     }
+
+    const [binaryPath, baseArgs] = getShellBinaryAndArgs(
+      flavor,
+      prebuiltBinaryPath,
+    );
     const {code, stderr} = await spawnAndGetStderr(binaryPath, [
       ...baseArgs,
       '--version',

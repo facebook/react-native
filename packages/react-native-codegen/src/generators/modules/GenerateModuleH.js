@@ -9,17 +9,17 @@
  */
 
 'use strict';
+
 import type {
   NamedShape,
-  NativeModuleBaseTypeAnnotation,
-} from '../../CodegenSchema';
-import type {
   NativeModuleAliasMap,
+  NativeModuleBaseTypeAnnotation,
   NativeModuleEnumMap,
   NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleEventEmitterShape,
   NativeModuleFunctionTypeAnnotation,
+  NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
   Nullable,
@@ -30,7 +30,6 @@ import type {AliasResolver} from './Utils';
 const {unwrapNullable} = require('../../parsers/parsers-commons');
 const {wrapOptional} = require('../TypeUtils/Cxx');
 const {getEnumName, toPascalCase, toSafeCppString} = require('../Utils');
-const {indent} = require('../Utils');
 const {
   createAliasResolver,
   getModules,
@@ -40,74 +39,151 @@ const {
 
 type FilesOutput = Map<string, string>;
 
-const ModuleClassDeclarationTemplate = ({
-  hasteModuleName,
-  moduleProperties,
-  structs,
-  enums,
-}: $ReadOnly<{
-  hasteModuleName: string,
-  moduleProperties: string[],
-  structs: string,
-  enums: string,
-}>) => {
-  return `${enums}
-  ${structs}class JSI_EXPORT ${hasteModuleName}CxxSpecJSI : public TurboModule {
-protected:
-  ${hasteModuleName}CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
 
-public:
-  ${indent(moduleProperties.join('\n'), 2)}
+function serializeArg(
+  moduleName: string,
+  arg: Param,
+  index: number,
+  resolveAlias: AliasResolver,
+  enumMap: NativeModuleEnumMap,
+): string {
+  const {typeAnnotation: nullableTypeAnnotation, optional} = arg;
+  const [typeAnnotation, nullable] =
+    unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
 
-};`;
-};
+  let realTypeAnnotation = typeAnnotation;
+  if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
+  function wrap(callback: (val: string) => string) {
+    const val = `args[${index}]`;
+    const expression = callback(val);
+
+    // param?: T
+    if (optional && !nullable) {
+      // throw new Error('are we hitting this case? ' + moduleName);
+      return `count <= ${index} || ${val}.isUndefined() ? std::nullopt : std::make_optional(${expression})`;
+    }
+
+    // param: ?T
+    // param?: ?T
+    if (nullable || optional) {
+      return `count <= ${index} || ${val}.isNull() || ${val}.isUndefined() ? std::nullopt : std::make_optional(${expression})`;
+    }
+
+    // param: T
+    return `count <= ${index} ? throw jsi::JSError(rt, "Expected argument in position ${index} to be passed") : ${expression}`;
+  }
+
+  switch (realTypeAnnotation.type) {
+    case 'ReservedTypeAnnotation':
+      switch (realTypeAnnotation.name) {
+        case 'RootTag':
+          return wrap(val => `${val}.asNumber()`);
+        default:
+          (realTypeAnnotation.name: empty);
+          throw new Error(
+            `Unknown prop type for "${arg.name}, found: ${realTypeAnnotation.name}"`,
+          );
+      }
+    case 'StringTypeAnnotation':
+      return wrap(val => `${val}.asString(rt)`);
+    case 'StringLiteralTypeAnnotation':
+      return wrap(val => `${val}.asString(rt)`);
+    case 'StringLiteralUnionTypeAnnotation':
+      return wrap(val => `${val}.asString(rt)`);
+    case 'BooleanTypeAnnotation':
+      return wrap(val => `${val}.asBool()`);
+    case 'EnumDeclaration':
+      switch (realTypeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrap(val => `${val}.asNumber()`);
+        case 'StringTypeAnnotation':
+          return wrap(val => `${val}.asString(rt)`);
+        default:
+          throw new Error(
+            `Unknown enum type for "${arg.name}, found: ${realTypeAnnotation.type}"`,
+          );
+      }
+    case 'NumberTypeAnnotation':
+      return wrap(val => `${val}.asNumber()`);
+    case 'FloatTypeAnnotation':
+      return wrap(val => `${val}.asNumber()`);
+    case 'DoubleTypeAnnotation':
+      return wrap(val => `${val}.asNumber()`);
+    case 'Int32TypeAnnotation':
+      return wrap(val => `${val}.asNumber()`);
+    case 'NumberLiteralTypeAnnotation':
+      return wrap(val => `${val}.asNumber()`);
+    case 'ArrayTypeAnnotation':
+      return wrap(val => `${val}.asObject(rt).asArray(rt)`);
+    case 'FunctionTypeAnnotation':
+      return wrap(val => `${val}.asObject(rt).asFunction(rt)`);
+    case 'GenericObjectTypeAnnotation':
+      return wrap(val => `${val}.asObject(rt)`);
+    case 'UnionTypeAnnotation':
+      switch (typeAnnotation.memberType) {
+        case 'NumberTypeAnnotation':
+          return wrap(val => `${val}.asNumber()`);
+        case 'ObjectTypeAnnotation':
+          return wrap(val => `${val}.asObject(rt)`);
+        case 'StringTypeAnnotation':
+          return wrap(val => `${val}.asString(rt)`);
+        default:
+          throw new Error(
+            `Unsupported union member type for param  "${arg.name}, found: ${realTypeAnnotation.memberType}"`,
+          );
+      }
+    case 'ObjectTypeAnnotation':
+      return wrap(val => `${val}.asObject(rt)`);
+    case 'MixedTypeAnnotation':
+      return wrap(val => `jsi::Value(rt, ${val})`);
+    default:
+      (realTypeAnnotation.type: empty);
+      throw new Error(
+        `Unknown prop type for "${arg.name}, found: ${realTypeAnnotation.type}"`,
+      );
+  }
+}
 
 const ModuleSpecClassDeclarationTemplate = ({
   hasteModuleName,
   moduleName,
+  structs,
+  enums,
   moduleEventEmitters,
-  moduleProperties,
+  moduleFunctions,
+  methods,
 }: $ReadOnly<{
   hasteModuleName: string,
   moduleName: string,
+  structs: string,
+  enums: string,
   moduleEventEmitters: EventEmitterCpp[],
-  moduleProperties: string[],
+  moduleFunctions: string[],
+  methods: $ReadOnlyArray<$ReadOnly<{methodName: string, paramCount: number}>>,
 }>) => {
-  return `template <typename T>
+  return `${enums}${structs}
+template <typename T>
 class JSI_EXPORT ${hasteModuleName}CxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "${moduleName}";
 
 protected:
-  ${hasteModuleName}CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{${hasteModuleName}CxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-${moduleEventEmitters.map(e => e.emitFunction).join('\n')}
-
+  ${hasteModuleName}CxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{${hasteModuleName}CxxSpec::kModuleName}, jsInvoker) {
+${methods
+  .map(({methodName, paramCount}) => {
+    return `    methodMap_["${methodName}"] = MethodMetadata {.argCount = ${paramCount}, .invoker = __${methodName}};`;
+  })
+  .join(
+    '\n',
+  )}${moduleEventEmitters.length > 0 ? '\n' : ''}${moduleEventEmitters.map(e => e.registerEventEmitter).join('\n')}
+  }
+  ${moduleEventEmitters.map(e => e.emitFunction).join('\n')}
 private:
-  class Delegate : public ${hasteModuleName}CxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      ${hasteModuleName}CxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
-${moduleEventEmitters.map(e => e.registerEventEmitter).join('\n')}
-    }
-
-    ${indent(moduleProperties.join('\n'), 4)}
-
-  private:
-    friend class ${hasteModuleName}CxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+${moduleFunctions.join('\n\n')}
 };`;
 };
 
@@ -292,7 +368,7 @@ function createStructsString(
     return bridging::toJs(rt, value);
   }`,
         )
-        .join('\n\n');
+        .join('\n');
       return `
 #pragma mark - ${structName}
 
@@ -476,19 +552,19 @@ function createEnums(
     .join('\n');
 }
 
-function translatePropertyToCpp(
+function translateFunctionToCpp(
   hasteModuleName: string,
   prop: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
   enumMap: NativeModuleEnumMap,
-  abstract: boolean = false,
+  args: Array<string>,
+  returnTypeAnnotation: Nullable<NativeModuleTypeAnnotation>,
 ): string {
   const [propTypeAnnotation] =
     unwrapNullable<NativeModuleFunctionTypeAnnotation>(prop.typeAnnotation);
 
-  const params = propTypeAnnotation.params.map(
-    param => `std::move(${param.name})`,
-  );
+  const isNullable = returnTypeAnnotation.type === 'NullableTypeAnnotation';
+  const isVoid = returnTypeAnnotation.type === 'VoidTypeAnnotation';
 
   const paramTypes = propTypeAnnotation.params.map(param => {
     const translatedParam = translatePrimitiveJSTypeToCpp(
@@ -503,6 +579,7 @@ function translatePropertyToCpp(
     );
     return `${translatedParam} ${param.name}`;
   });
+  paramTypes.unshift('jsi::Runtime &rt');
 
   const returnType = translatePrimitiveJSTypeToCpp(
     hasteModuleName,
@@ -514,23 +591,16 @@ function translatePropertyToCpp(
     enumMap,
   );
 
-  // The first param will always be the runtime reference.
-  paramTypes.unshift('jsi::Runtime &rt');
-
-  const method = `${returnType} ${prop.name}(${paramTypes.join(', ')})`;
-
-  if (abstract) {
-    return `virtual ${method} = 0;`;
+  let methodCallArgs = [...args].join(',\n      ');
+  if (methodCallArgs.length > 0) {
+    methodCallArgs = `,\n      ${methodCallArgs}`;
   }
 
-  return `${method} override {
-  static_assert(
+  return `  static jsi::Value __${prop.name}(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* ${args.length > 0 ? 'args' : '/*args*/'}, size_t ${args.length > 0 ? 'count' : '/*count*/'}) {
+    static_assert(
       bridging::getParameterCount(&T::${prop.name}) == ${paramTypes.length},
       "Expected ${prop.name}(...) to have ${paramTypes.length} parameters");
-
-  return bridging::callFromJs<${returnType}>(
-      rt, &T::${prop.name}, jsInvoker_, ${['instance_', ...params].join(', ')});
-}`;
+    ${!isVoid ? (!isNullable ? 'return ' : 'auto result = ') : ''}bridging::callFromJs<${returnType}>(rt, &T::${prop.name},  static_cast<${hasteModuleName}CxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule)${methodCallArgs});${!isVoid ? (!isNullable ? '' : 'return result ? jsi::Value(std::move(*result)) : jsi::Value::null();') : 'return jsi::Value::undefined();'}\n  }`;
 }
 
 type EventEmitterCpp = {
@@ -563,7 +633,7 @@ function translateEventEmitterToCpp(
   return {
     isVoidTypeAnnotation: isVoidTypeAnnotation,
     templateName: isVoidTypeAnnotation ? `/*${templateName}*/` : templateName,
-    registerEventEmitter: `      eventEmitterMap_["${
+    registerEventEmitter: `    eventEmitterMap_["${
       eventEmitter.name
     }"] = std::make_shared<AsyncEventEmitter<${
       isVoidTypeAnnotation ? '' : 'jsi::Value'
@@ -585,7 +655,7 @@ function translateEventEmitterToCpp(
   }
     static_cast<AsyncEventEmitter<${
       isVoidTypeAnnotation ? '' : 'jsi::Value'
-    }>&>(*delegate_.eventEmitterMap_["${eventEmitter.name}"]).emit(${
+    }>&>(*eventEmitterMap_["${eventEmitter.name}"]).emit(${
       isVoidTypeAnnotation
         ? ''
         : `[jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
@@ -607,8 +677,14 @@ module.exports = {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules).flatMap(hasteModuleName => {
-      const {aliasMap, enumMap, spec, moduleName} =
-        nativeModules[hasteModuleName];
+      const nativeModule = nativeModules[hasteModuleName];
+      const {
+        aliasMap,
+        enumMap,
+        spec: {methods},
+        spec,
+        moduleName,
+      } = nativeModule;
       const resolveAlias = createAliasResolver(aliasMap);
       const structs = createStructsString(
         hasteModuleName,
@@ -617,25 +693,12 @@ module.exports = {
         enumMap,
       );
       const enums = createEnums(hasteModuleName, enumMap, resolveAlias);
-
       return [
-        ModuleClassDeclarationTemplate({
-          hasteModuleName,
-          moduleProperties: spec.methods.map(prop =>
-            translatePropertyToCpp(
-              hasteModuleName,
-              prop,
-              resolveAlias,
-              enumMap,
-              true,
-            ),
-          ),
-          structs,
-          enums,
-        }),
         ModuleSpecClassDeclarationTemplate({
           hasteModuleName,
           moduleName,
+          structs,
+          enums,
           moduleEventEmitters: spec.eventEmitters.map(eventEmitter =>
             translateEventEmitterToCpp(
               moduleName,
@@ -644,13 +707,30 @@ module.exports = {
               enumMap,
             ),
           ),
-          moduleProperties: spec.methods.map(prop =>
-            translatePropertyToCpp(
+          moduleFunctions: spec.methods.map(property => {
+            const [propertyTypeAnnotation] =
+              unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+                property.typeAnnotation,
+              );
+            return translateFunctionToCpp(
               hasteModuleName,
-              prop,
+              property,
               resolveAlias,
               enumMap,
-            ),
+              propertyTypeAnnotation.params.map((p, i) =>
+                serializeArg(moduleName, p, i, resolveAlias, enumMap),
+              ),
+              propertyTypeAnnotation.returnTypeAnnotation,
+            );
+          }),
+          methods: methods.map(
+            ({name: propertyName, typeAnnotation: nullableTypeAnnotation}) => {
+              const [{params}] = unwrapNullable(nullableTypeAnnotation);
+              return {
+                methodName: propertyName,
+                paramCount: params.length,
+              };
+            },
           ),
         }),
       ];

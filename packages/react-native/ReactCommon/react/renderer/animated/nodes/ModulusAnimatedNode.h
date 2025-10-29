@@ -17,10 +17,7 @@ namespace facebook::react {
 
 class ModulusAnimatedNode final : public ValueAnimatedNode {
  public:
-  ModulusAnimatedNode(
-      Tag tag,
-      const folly::dynamic& config,
-      NativeAnimatedNodesManager& manager);
+  ModulusAnimatedNode(Tag tag, const folly::dynamic &config, NativeAnimatedNodesManager &manager);
 
   void update() override;
 

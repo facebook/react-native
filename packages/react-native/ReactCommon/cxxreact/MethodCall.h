@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <map>
 #include <string>
@@ -17,24 +17,22 @@
 
 namespace facebook::react {
 
-struct [[deprecated(
-    "This API will be removed along with the legacy architecture.")]] MethodCall {
+struct [[deprecated("This API will be removed along with the legacy architecture.")]] MethodCall {
   int moduleId;
   int methodId;
   folly::dynamic arguments;
   int callId;
 
-  MethodCall(int mod, int meth, folly::dynamic&& args, int cid)
-      : moduleId(mod),
-        methodId(meth),
-        arguments(std::move(args)),
-        callId(cid) {}
+  MethodCall(int mod, int meth, folly::dynamic &&args, int cid)
+      : moduleId(mod), methodId(meth), arguments(std::move(args)), callId(cid)
+  {
+  }
 };
 
 /// \throws std::invalid_argument
 [[deprecated("This API will be removed along with the legacy architecture.")]]
-std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData);
+std::vector<MethodCall> parseMethodCalls(folly::dynamic &&jsonData);
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

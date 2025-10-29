@@ -55,10 +55,11 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
     // @cdp Tracing.start support is experimental.
     if (sessionState_.isDebuggerDomainEnabled) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Debugger domain is expected to be disabled before starting Tracing"));
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "Debugger domain is expected to be disabled before starting Tracing"));
 
       return true;
     }
@@ -66,10 +67,11 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     bool didNotHaveAlreadyRunningRecording =
         hostTargetController_.startTracing(tracing::Mode::CDP);
     if (!didNotHaveAlreadyRunningRecording) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InvalidRequest,
-          "Tracing has already been started"));
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidRequest,
+              "Tracing has already been started"));
 
       return true;
     }
@@ -103,9 +105,10 @@ void TracingAgent::emitExternalTraceRecording(
 void TracingAgent::emitTraceRecording(
     tracing::TraceRecordingState traceRecording) const {
   auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
-    frontendChannel_(cdp::jsonNotification(
-        "Tracing.dataCollected",
-        folly::dynamic::object("value", std::move(eventsChunk))));
+    frontendChannel_(
+        cdp::jsonNotification(
+            "Tracing.dataCollected",
+            folly::dynamic::object("value", std::move(eventsChunk))));
   };
   tracing::TraceRecordingStateSerializer::emitAsDataCollectedChunks(
       std::move(traceRecording),
@@ -113,9 +116,10 @@ void TracingAgent::emitTraceRecording(
       TRACE_EVENT_CHUNK_SIZE,
       PROFILE_TRACE_EVENT_CHUNK_SIZE);
 
-  frontendChannel_(cdp::jsonNotification(
-      "Tracing.tracingComplete",
-      folly::dynamic::object("dataLossOccurred", false)));
+  frontendChannel_(
+      cdp::jsonNotification(
+          "Tracing.tracingComplete",
+          folly::dynamic::object("dataLossOccurred", false)));
 }
 
 } // namespace facebook::react::jsinspector_modern

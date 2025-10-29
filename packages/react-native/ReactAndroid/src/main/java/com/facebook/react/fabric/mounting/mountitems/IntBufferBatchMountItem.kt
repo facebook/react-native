@@ -8,7 +8,6 @@
 package com.facebook.react.fabric.mounting.mountitems
 
 import com.facebook.common.logging.FLog
-import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.bridge.ReadableMap
@@ -31,7 +30,8 @@ import java.util.Locale
  * The purpose of encapsulating the array of MountItems this way, is to reduce the amount of
  * allocations in C++ and JNI round-trips.
  */
-@DoNotStripAny
+private const val TAG = "IntBufferBatchMountItem"
+
 internal class IntBufferBatchMountItem(
     private val surfaceId: Int,
     private val intBuffer: IntArray,
@@ -341,8 +341,6 @@ internal class IntBufferBatchMountItem(
   }
 
   companion object {
-    val TAG: String = IntBufferBatchMountItem::class.java.simpleName
-
     const val INSTRUCTION_FLAG_MULTIPLE: Int = 1
 
     const val INSTRUCTION_CREATE: Int = 2

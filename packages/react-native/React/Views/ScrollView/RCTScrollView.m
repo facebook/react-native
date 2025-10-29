@@ -7,7 +7,7 @@
 
 #import "RCTScrollView.h"
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <UIKit/UIKit.h>
 
@@ -860,10 +860,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     @"targetContentOffset" : @{@"x" : @(targetContentOffset->x), @"y" : @(targetContentOffset->y)}
   };
   RCT_SEND_SCROLL_EVENT(onScrollEndDrag, userData);
-  RCT_FORWARD_SCROLL_EVENT(scrollViewWillEndDragging
-                           : scrollView withVelocity
-                           : velocity targetContentOffset
-                           : targetContentOffset);
+  RCT_FORWARD_SCROLL_EVENT(
+      scrollViewWillEndDragging : scrollView withVelocity : velocity targetContentOffset : targetContentOffset);
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
@@ -1167,4 +1165,4 @@ void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNu
   [eventDispatcher sendEvent:fakeScrollEvent];
 }
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

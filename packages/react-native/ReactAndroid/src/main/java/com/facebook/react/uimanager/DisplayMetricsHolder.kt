@@ -61,6 +61,7 @@ public object DisplayMetricsHolder {
   }
 
   @JvmStatic
+  @Suppress("DEPRECATION")
   public fun initDisplayMetrics(context: Context) {
     val displayMetrics = context.resources.displayMetrics
     windowDisplayMetrics = displayMetrics
@@ -72,7 +73,11 @@ public object DisplayMetricsHolder {
     //
     // See:
     // http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    @Suppress("DEPRECATION") wm.defaultDisplay.getRealMetrics(screenDisplayMetrics)
+    wm.defaultDisplay.getRealMetrics(screenDisplayMetrics)
+    // Preserve fontScale from the configuration because getRealMetrics() returns
+    // physical display metrics without the system font scale setting.
+    // This is needed for proper text scaling when fontScale < 1.0
+    screenDisplayMetrics.scaledDensity = displayMetrics.scaledDensity
     DisplayMetricsHolder.screenDisplayMetrics = screenDisplayMetrics
   }
 

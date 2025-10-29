@@ -31,8 +31,8 @@ enum class BlendMode {
   Luminosity,
 };
 
-inline std::optional<BlendMode> blendModeFromString(
-    std::string_view blendModeName) {
+inline std::optional<BlendMode> blendModeFromString(std::string_view blendModeName)
+{
   if (blendModeName == "normal") {
     return BlendMode::Normal;
   } else if (blendModeName == "multiply") {
@@ -70,7 +70,8 @@ inline std::optional<BlendMode> blendModeFromString(
   }
 }
 
-inline std::string toString(const BlendMode& blendMode) {
+inline std::string toString(const BlendMode &blendMode)
+{
   switch (blendMode) {
     case BlendMode::Normal:
       return "normal";

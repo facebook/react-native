@@ -110,10 +110,10 @@ TesterAppDelegate::TesterAppDelegate(
   g_setNativeAnimatedNowTimestampFunction(StubClock::now);
 
   auto provider = std::make_shared<NativeAnimatedNodesManagerProvider>(
-      [this](std::function<void()>&& onRender) {
+      [this](std::function<void()>&& onRender, bool /*isAsync*/) {
         onAnimationRender_ = std::move(onRender);
       },
-      [this]() { onAnimationRender_ = nullptr; });
+      [this](bool /*isAsync*/) { onAnimationRender_ = nullptr; });
 
   reactHost_ = std::make_unique<ReactHost>(
       reactInstanceConfig,
