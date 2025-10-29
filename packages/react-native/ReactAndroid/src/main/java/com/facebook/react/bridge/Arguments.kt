@@ -25,8 +25,8 @@ public object Arguments {
         value is List<*> -> makeNativeArray(value)
         value is Map<*, *> -> makeNativeMap(value as Map<String, Any?>)
         value is Bundle -> makeNativeMap(value)
-        value is JavaOnlyMap -> makeNativeMap(value.toHashMap())
-        value is JavaOnlyArray -> makeNativeArray(value.toArrayList())
+        value is JavaOnlyMap -> makeNativeMap(value.toHashMapShallow())
+        value is JavaOnlyArray -> makeNativeArray(value.toArrayListShallow())
         else -> value // Boolean, Integer, Double, String, WritableNativeArray, WritableNativeMap
       }
 
