@@ -368,6 +368,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableKeyEvents: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-17',
+        description:
+          'Enables key up/down/press events to be sent to JS from components',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableLayoutAnimationsOnAndroid: {
       defaultValue: false,
       metadata: {

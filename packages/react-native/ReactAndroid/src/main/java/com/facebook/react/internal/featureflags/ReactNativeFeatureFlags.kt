@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28000f9d4a36207875619060f2fa5713>>
+ * @generated SignedSource<<3ea1ee77358d99334a7c40bed44f2d90>>
  */
 
 /**
@@ -209,6 +209,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = accessor.enableInteropViewManagerClassLookUpOptimizationIOS()
+
+  /**
+   * Enables key up/down/press events to be sent to JS from components
+   */
+  @JvmStatic
+  public fun enableKeyEvents(): Boolean = accessor.enableKeyEvents()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.

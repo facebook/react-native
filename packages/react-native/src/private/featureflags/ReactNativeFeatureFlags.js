@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d8ae80ae606b6cf56ea06866b5e5ac99>>
+ * @generated SignedSource<<b3526ad381811a8c5181e037e4e09fb3>>
  * @flow strict
  * @noformat
  */
@@ -81,6 +81,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean>,
   enableImperativeFocus: Getter<boolean>,
   enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
+  enableKeyEvents: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueCoordinatorOnIOS: Getter<boolean>,
@@ -337,6 +338,10 @@ export const enableImperativeFocus: Getter<boolean> = createNativeFlagGetter('en
  * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
  */
 export const enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean> = createNativeFlagGetter('enableInteropViewManagerClassLookUpOptimizationIOS', false);
+/**
+ * Enables key up/down/press events to be sent to JS from components
+ */
+export const enableKeyEvents: Getter<boolean> = createNativeFlagGetter('enableKeyEvents', false);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
