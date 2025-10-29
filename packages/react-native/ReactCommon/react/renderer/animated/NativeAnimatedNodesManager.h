@@ -55,14 +55,16 @@ class NativeAnimatedNodesManager {
  public:
   using DirectManipulationCallback = std::function<void(Tag, const folly::dynamic &)>;
   using FabricCommitCallback = std::function<void(std::unordered_map<Tag, folly::dynamic> &)>;
-  using StartOnRenderCallback = std::function<void(bool isAsync)>;
+  using StartOnRenderCallback = std::function<void(std::function<void()> &&, bool isAsync)>;
   using StopOnRenderCallback = std::function<void(bool isAsync)>;
+  using FrameRateListenerCallback = std::function<void(bool /* shouldEnableListener */)>;
 
   explicit NativeAnimatedNodesManager(
       DirectManipulationCallback &&directManipulationCallback,
       FabricCommitCallback &&fabricCommitCallback,
       StartOnRenderCallback &&startOnRenderCallback = nullptr,
-      StopOnRenderCallback &&stopOnRenderCallback = nullptr) noexcept;
+      StopOnRenderCallback &&stopOnRenderCallback = nullptr,
+      FrameRateListenerCallback &&frameRateListenerCallback = nullptr) noexcept;
 
   explicit NativeAnimatedNodesManager(std::shared_ptr<UIManagerAnimationBackend> animationBackend) noexcept;
 
@@ -237,6 +239,7 @@ class NativeAnimatedNodesManager {
   std::atomic_bool isRenderCallbackStarted_{false};
   const StartOnRenderCallback startOnRenderCallback_;
   const StopOnRenderCallback stopOnRenderCallback_;
+  const FrameRateListenerCallback frameRateListenerCallback_;
 
   std::shared_ptr<EventEmitterListener> eventEmitterListener_{nullptr};
 

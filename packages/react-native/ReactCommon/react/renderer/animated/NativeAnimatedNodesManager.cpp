@@ -74,11 +74,13 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     DirectManipulationCallback&& directManipulationCallback,
     FabricCommitCallback&& fabricCommitCallback,
     StartOnRenderCallback&& startOnRenderCallback,
-    StopOnRenderCallback&& stopOnRenderCallback) noexcept
+    StopOnRenderCallback&& stopOnRenderCallback,
+    FrameRateListenerCallback&& frameRateListenerCallback) noexcept
     : directManipulationCallback_(std::move(directManipulationCallback)),
       fabricCommitCallback_(std::move(fabricCommitCallback)),
       startOnRenderCallback_(std::move(startOnRenderCallback)),
-      stopOnRenderCallback_(std::move(stopOnRenderCallback)) {
+      stopOnRenderCallback_(std::move(stopOnRenderCallback)),
+      frameRateListenerCallback_(std::move(frameRateListenerCallback)) {
   if (!fabricCommitCallback_) {
     LOG(WARNING)
         << "C++ Animated was setup without commit callback. This may lead to issue where buttons are not tappable when animation is driven by onScroll event.";
@@ -541,7 +543,7 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
   }
 
   if (startOnRenderCallback_) {
-    startOnRenderCallback_(isAsync);
+    startOnRenderCallback_([this]() { onRender(); }, isAsync);
   }
 }
 
@@ -562,6 +564,10 @@ void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded(
   if (isRenderCallbackStarted) {
     if (stopOnRenderCallback_) {
       stopOnRenderCallback_(isAsync);
+    }
+
+    if (frameRateListenerCallback_) {
+      frameRateListenerCallback_(false);
     }
   }
 }
@@ -1029,6 +1035,10 @@ void NativeAnimatedNodesManager::onRender() {
       "NativeAnimatedNodesManager::onRender",
       "numActiveAnimations",
       activeAnimations_.size());
+
+  if (frameRateListenerCallback_) {
+    frameRateListenerCallback_(true);
+  }
 
   isOnRenderThread_ = true;
 
