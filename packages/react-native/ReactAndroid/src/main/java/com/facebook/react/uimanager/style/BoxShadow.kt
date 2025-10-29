@@ -18,7 +18,7 @@ import com.facebook.react.bridge.ReadableType
 public data class BoxShadow(
     val offsetX: Float,
     val offsetY: Float,
-    @ColorInt val color: Int? = null,
+    @param:ColorInt val color: Int? = null,
     val blurRadius: Float? = null,
     val spreadDistance: Float? = null,
     val inset: Boolean? = null,
