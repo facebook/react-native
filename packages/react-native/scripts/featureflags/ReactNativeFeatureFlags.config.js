@@ -710,7 +710,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     sweepActiveTouchOnChildNativeGesturesAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-07-30',
         description:
