@@ -19,6 +19,28 @@ jobs:
           echo "Setting release type to release"
           echo "RELEASE_TYPE=release" >> $GITHUB_OUTPUT
 
+  set_hermes_versions:
+    runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
+    outputs:
+      HERMES_VERSION: ${{ steps.set_hermes_versions.outputs.HERMES_VERSION }}
+      HERMES_V1_VERSION: ${{ steps.set_hermes_versions.outputs.HERMES_V1_VERSION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - id: set_hermes_versions
+        run: |
+          echo "Setting hermes versions to latest"
+          hermes_version=$(grep -oE 'HERMES_VERSION_NAME=([0-9]+\.[0-9]+\.[0-9]+)' packages/react-native/sdks/hermes-engine/version.properties | cut -d'=' -f2)
+          hermes_v1_version=$(grep -oE 'HERMES_V1_VERSION_NAME=([0-9]+\.[0-9]+\.[0-9]+)' packages/react-native/sdks/hermes-engine/version.properties | cut -d'=' -f2)
+
+          echo "HERMES_VERSION=$hermes_version" >> $GITHUB_OUTPUT
+          echo "HERMES_V1_VERSION=$hermes_v1_version" >> $GITHUB_OUTPUT
+      - name: Print hermes versions
+        run: |
+          echo "HERMES_VERSION=${{ steps.set_hermes_versions.outputs.HERMES_VERSION }}"
+          echo "HERMES_V1_VERSION=${{ steps.set_hermes_versions.outputs.HERMES_V1_VERSION }}"
+
   prebuild_apple_dependencies:
     if: github.repository == 'facebook/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
@@ -117,6 +139,9 @@ jobs:
     secrets: inherit
 
   create_draft_release:
-    needs: generate_changelog
+    needs: [generate_changelog, set_hermes_versions]
     uses: ./.github/workflows/create-draft-release.yml
     secrets: inherit
+    with:
+      hermesVersion: ${{ needs.set_hermes_versions.outputs.HERMES_VERSION }}
+      hermesV1Version: ${{ needs.set_hermes_versions.outputs.HERMES_V1_VERSION }}
