@@ -31,7 +31,7 @@ internal object MultiSourceHelper {
       width: Int,
       height: Int,
       sources: List<ImageSource>,
-      multiplier: Double
+      multiplier: Double,
   ): MultiSourceResult {
     // no sources
     if (sources.isEmpty()) {
@@ -60,12 +60,15 @@ internal object MultiSourceHelper {
         bestPrecision = precision
         best = source
       }
-      if (precision < bestCachePrecision &&
-          source.cacheControl != ImageCacheControl.RELOAD &&
-          (imagePipeline.isInBitmapMemoryCache(source.uri) ||
-              // TODO: T206445115 isInDiskCacheSync is a blocking operation, we should move this to
-              // a separate thread
-              imagePipeline.isInDiskCacheSync(source.uri))) {
+      if (
+          precision < bestCachePrecision &&
+              source.cacheControl != ImageCacheControl.RELOAD &&
+              (imagePipeline.isInBitmapMemoryCache(source.uri) ||
+                  // TODO: T206445115 isInDiskCacheSync is a blocking operation, we should move this
+                  // to
+                  // a separate thread
+                  imagePipeline.isInDiskCacheSync(source.uri))
+      ) {
         bestCachePrecision = precision
         bestCached = source
       }
@@ -86,6 +89,6 @@ internal object MultiSourceHelper {
        * Get the best result (closest in size to the view's size) that is also in cache. If this
        * would be the same as the source from [getBestResult], this will return `null` instead.
        */
-      @JvmField val bestResultInCache: ImageSource?
+      @JvmField val bestResultInCache: ImageSource?,
   )
 }

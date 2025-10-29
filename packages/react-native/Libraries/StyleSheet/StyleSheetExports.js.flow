@@ -13,6 +13,14 @@ import type {____Styles_Internal} from './StyleSheetTypes';
 import composeStyles from '../../src/private/styles/composeStyles';
 import flattenStyle from './flattenStyle';
 
+type AbsoluteFillStyle = $ReadOnly<{
+  position: 'absolute',
+  left: 0,
+  right: 0,
+  top: 0,
+  bottom: 0,
+}>;
+
 /**
  * This is defined as the width of a thin line on the platform. It can be
  * used as the thickness of a border or division between two elements.
@@ -37,27 +45,12 @@ declare export const hairlineWidth: number;
  * so `absoluteFill` can be used for convenience and to reduce duplication of these repeated
  * styles.
  */
-declare export const absoluteFill: any;
+declare export const absoluteFill: AbsoluteFillStyle;
 
 /**
- * Sometimes you may want `absoluteFill` but with a couple tweaks - `absoluteFillObject` can be
- * used to create a customized entry in a `StyleSheet`, e.g.:
- *
- *   const styles = StyleSheet.create({
- *     wrapper: {
- *       ...StyleSheet.absoluteFillObject,
- *       top: 10,
- *       backgroundColor: 'transparent',
- *     },
- *   });
+ * @deprecated Use `StyleSheet.absoluteFill`.
  */
-declare export const absoluteFillObject: {
-  +bottom: 0,
-  +left: 0,
-  +position: 'absolute',
-  +right: 0,
-  +top: 0,
-};
+declare export const absoluteFillObject: AbsoluteFillStyle;
 
 /**
  * Combines two styles such that style2 will override any styles in style1.

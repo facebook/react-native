@@ -640,12 +640,12 @@ describe('expect', () => {
 
     // Should always throw if the expected value isn't a number
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(1).toBeLessThan('string value');
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(1).not.toBeLessThan('string value');
     }).toThrow();
   });
@@ -675,12 +675,12 @@ describe('expect', () => {
 
     // Should always throw if the expected value isn't a number
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(1).toBeLessThanOrEqual('string value');
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(1).not.toBeLessThanOrEqual('string value');
     }).toThrow();
   });
@@ -711,12 +711,12 @@ describe('expect', () => {
 
     // Should always throw if the expected value isn't a number
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(1).toBeGreaterThan('string value');
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(1).not.toBeGreaterThan('string value');
     }).toThrow();
   });
@@ -746,12 +746,12 @@ describe('expect', () => {
 
     // Should always throw if the expected value isn't a number
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(1).toBeGreaterThanOrEqual('string value');
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(1).not.toBeGreaterThanOrEqual('string value');
     }).toThrow();
   });

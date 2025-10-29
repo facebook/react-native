@@ -22,10 +22,11 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
 /** Java wrapper around a C++ InspectorPackagerConnection. */
+@DoNotStripAny
 internal class CxxInspectorPackagerConnection(
     url: String,
     deviceName: String,
-    packageName: String
+    packageName: String,
 ) : IInspectorPackagerConnection {
   @DoNotStrip private val mHybridData: HybridData
 
@@ -84,7 +85,7 @@ internal class CxxInspectorPackagerConnection(
             .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
             .build()
 
-    private val mHandler = Handler(Looper.getMainLooper())
+    private val handler = Handler(Looper.getMainLooper())
 
     @Suppress("unused")
     @DoNotStrip
@@ -104,7 +105,8 @@ internal class CxxInspectorPackagerConnection(
                         // WebSocketListener.onFailure
                         delegate.close()
                       },
-                      delayMs = 0)
+                      delayMs = 0,
+                  )
                 }
 
                 override fun onMessage(webSocket: WebSocket, text: String) {
@@ -123,9 +125,11 @@ internal class CxxInspectorPackagerConnection(
                         // WebSocketListener.onClosed
                         delegate.close()
                       },
-                      delayMs = 0)
+                      delayMs = 0,
+                  )
                 }
-              })
+              },
+          )
       return object : IWebSocket {
         override fun send(message: String) {
           webSocket.send(message)
@@ -139,7 +143,7 @@ internal class CxxInspectorPackagerConnection(
 
     @DoNotStrip
     fun scheduleCallback(runnable: Runnable, delayMs: Long) {
-      mHandler.postDelayed(runnable, delayMs)
+      handler.postDelayed(runnable, delayMs)
     }
   }
 
@@ -153,7 +157,7 @@ internal class CxxInspectorPackagerConnection(
         url: String,
         deviceName: String,
         packageName: String,
-        delegate: DelegateImpl
+        delegate: DelegateImpl,
     ): HybridData
   }
 }

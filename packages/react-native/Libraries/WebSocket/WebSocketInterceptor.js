@@ -232,6 +232,8 @@ const WebSocketInterceptor = {
 
   _arrayBufferToString(data: string): ArrayBuffer | string {
     const value = base64.toByteArray(data).buffer;
+    /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+     * roll out. See https://fburl.com/workplace/5whu3i34. */
     if (value === undefined || value === null) {
       return '(no value)';
     }

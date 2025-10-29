@@ -15,6 +15,7 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
+import com.facebook.react.devsupport.interfaces.TracingState
 import com.facebook.react.packagerconnection.RequestHandler
 
 /**
@@ -37,7 +38,7 @@ internal class BridgelessDevSupportManager(
     customPackagerCommandHandlers: Map<String, RequestHandler>?,
     surfaceDelegateFactory: SurfaceDelegateFactory?,
     devLoadingViewManager: DevLoadingViewManager?,
-    pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
+    pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
 ) :
     DevSupportManagerBase(
         applicationContext,
@@ -50,12 +51,13 @@ internal class BridgelessDevSupportManager(
         customPackagerCommandHandlers,
         surfaceDelegateFactory,
         devLoadingViewManager,
-        pausedInDebuggerOverlayManager) {
+        pausedInDebuggerOverlayManager,
+    ) {
 
   constructor(
       context: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
-      packagerPathForJSBundleName: String?
+      packagerPathForJSBundleName: String?,
   ) : this(
       applicationContext = context.applicationContext,
       reactInstanceManagerHelper = reactInstanceManagerHelper,
@@ -67,7 +69,8 @@ internal class BridgelessDevSupportManager(
       customPackagerCommandHandlers = null,
       surfaceDelegateFactory = null,
       devLoadingViewManager = null,
-      pausedInDebuggerOverlayManager = null)
+      pausedInDebuggerOverlayManager = null,
+  )
 
   override val uniqueTag: String
     get() = "Bridgeless"
@@ -77,5 +80,9 @@ internal class BridgelessDevSupportManager(
     // dismiss redbox if exists
     hideRedboxDialog()
     reactInstanceDevHelper.reload("BridgelessDevSupportManager.handleReloadJS()")
+  }
+
+  fun tracingState(): TracingState {
+    return TracingState.ENABLEDINCDPMODE
   }
 }

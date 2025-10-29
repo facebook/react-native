@@ -22,7 +22,7 @@ RCTAssertFunction RCTCurrentAssertFunction = nil;
 RCTFatalHandler RCTCurrentFatalHandler = nil;
 RCTFatalExceptionHandler RCTCurrentFatalExceptionHandler = nil;
 
-NSException *_RCTNotImplementedException(SEL, Class);
+NSException *_RCTNotImplementedException(SEL /*cmd*/, Class /*cls*/);
 NSException *_RCTNotImplementedException(SEL cmd, Class cls)
 {
   NSString *msg = [NSString stringWithFormat:
@@ -230,116 +230,4 @@ void RCTSetFatalExceptionHandler(RCTFatalExceptionHandler fatalExceptionHandler)
 RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 {
   return RCTCurrentFatalExceptionHandler;
-}
-
-// MARK: - New Architecture Validation - Enable Reporting
-
-#if RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
-static RCTNotAllowedValidation minValidationLevel = RCTNotAllowedInBridgeless;
-#else
-static RCTNotAllowedValidation minValidationLevel = RCTNotAllowedValidationDisabled;
-#endif
-
-__attribute__((used)) RCT_EXTERN void RCTNewArchitectureSetMinValidationLevel(RCTNotAllowedValidation level)
-{
-#if RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
-  // Cannot disable the reporting in this mode.
-#else
-  minValidationLevel = level;
-#endif
-}
-
-// MARK: - New Architecture Validation - Private
-
-static BOOL shouldEnforceValidation(RCTNotAllowedValidation type)
-{
-  return type >= minValidationLevel;
-}
-
-static NSString *stringDescribingContext(id context)
-{
-  if ([context isKindOfClass:NSString.class]) {
-    return context;
-  } else if (context) {
-    Class klass = [context class];
-    if (klass) {
-      return NSStringFromClass(klass);
-    }
-  }
-  return @"uncategorized";
-}
-
-static NSString *validationMessage(RCTNotAllowedValidation type, id context, NSString *extra)
-{
-  NSString *notAllowedType;
-  switch (type) {
-    case RCTNotAllowedValidationDisabled:
-      RCTAssert(0, @"RCTNotAllowedValidationDisabled not a validation type.");
-      return nil;
-    case RCTNotAllowedInFabricWithoutLegacy:
-      notAllowedType = @"Fabric";
-      break;
-    case RCTNotAllowedInBridgeless:
-      notAllowedType = @"Bridgeless";
-      break;
-  }
-
-  return
-      [NSString stringWithFormat:@"[ReactNative Architecture][NotAllowedIn%@] Unexpectedly reached code path in %@. %@",
-                                 notAllowedType,
-                                 stringDescribingContext(context),
-                                 extra ?: @""];
-}
-
-static void
-newArchitectureValidationInternal(RCTLogLevel level, RCTNotAllowedValidation type, id context, NSString *extra)
-{
-  if (!shouldEnforceValidation(type)) {
-    return;
-  }
-
-  NSString *msg = validationMessage(type, context, extra);
-  if (msg) {
-    switch (level) {
-      case RCTLogLevelInfo:
-        RCTLogInfo(@"%@", msg);
-        break;
-      case RCTLogLevelError:
-        RCTLogError(@"%@", msg);
-        break;
-      case RCTLogLevelFatal:
-        RCTAssert(0, @"%@", msg);
-        break;
-      default:
-        RCTAssert(0, @"New architecture validation is only for info, error, and fatal levels.");
-    }
-  }
-}
-
-// MARK: - New Architecture Validation - Public
-
-void RCTEnforceNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
-{
-  newArchitectureValidationInternal(RCTLogLevelFatal, type, context, extra);
-}
-
-void RCTErrorNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
-{
-#if RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
-  newArchitectureValidationInternal(RCTLogLevelFatal, type, context, extra);
-#else
-  newArchitectureValidationInternal(RCTLogLevelError, type, context, extra);
-#endif
-}
-
-void RCTLogNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
-{
-  newArchitectureValidationInternal(RCTLogLevelInfo, type, context, extra);
-}
-
-void RCTNewArchitectureValidationPlaceholder(RCTNotAllowedValidation type, id context, NSString *extra)
-{
-#if RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
-  newArchitectureValidationInternal(RCTLogLevelInfo, type, context, extra);
-#endif
 }

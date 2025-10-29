@@ -96,7 +96,7 @@ class ViewabilityHelper {
    * Cleanup, e.g. on unmount. Clears any pending timers.
    */
   dispose() {
-    /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
+    /* $FlowFixMe[incompatible-type] (>=0.63.0 site=react_native_fb) This
      * comment suppresses an error found when Flow v0.63 was deployed. To see
      * the error delete this comment and run Flow. */
     this._timers.forEach(clearTimeout);
@@ -227,7 +227,7 @@ class ViewabilityHelper {
     this._viewableIndices = viewableIndices;
     if (this._config.minimumViewTime) {
       const handle: TimeoutID = setTimeout(() => {
-        /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
+        /* $FlowFixMe[incompatible-type] (>=0.63.0 site=react_native_fb) This
          * comment suppresses an error found when Flow v0.63 was deployed. To
          * see the error delete this comment and run Flow. */
         this._timers.delete(handle);
@@ -238,7 +238,7 @@ class ViewabilityHelper {
           createViewToken,
         );
       }, this._config.minimumViewTime);
-      /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
+      /* $FlowFixMe[incompatible-type] (>=0.63.0 site=react_native_fb) This
        * comment suppresses an error found when Flow v0.63 was deployed. To see
        * the error delete this comment and run Flow. */
       this._timers.add(handle);

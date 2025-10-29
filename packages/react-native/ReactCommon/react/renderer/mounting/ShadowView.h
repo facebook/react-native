@@ -23,19 +23,19 @@ namespace facebook::react {
  */
 struct ShadowView final {
   ShadowView() = default;
-  ShadowView(const ShadowView& shadowView) = default;
-  ShadowView(ShadowView&& shadowView) noexcept = default;
+  ShadowView(const ShadowView &shadowView) = default;
+  ShadowView(ShadowView &&shadowView) noexcept = default;
 
   /*
    * Constructs a `ShadowView` from given `ShadowNode`.
    */
-  explicit ShadowView(const ShadowNode& shadowNode);
+  explicit ShadowView(const ShadowNode &shadowNode);
 
-  ShadowView& operator=(const ShadowView& other) = default;
-  ShadowView& operator=(ShadowView&& other) = default;
+  ShadowView &operator=(const ShadowView &other) = default;
+  ShadowView &operator=(ShadowView &&other) = default;
 
-  bool operator==(const ShadowView& rhs) const;
-  bool operator!=(const ShadowView& rhs) const;
+  bool operator==(const ShadowView &rhs) const;
+  bool operator!=(const ShadowView &rhs) const;
 
   ComponentName componentName{};
   ComponentHandle componentHandle{};
@@ -50,9 +50,9 @@ struct ShadowView final {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(const ShadowView& object);
+std::string getDebugName(const ShadowView &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    const ShadowView& object,
+    const ShadowView &object,
     DebugStringConvertibleOptions options);
 
 #endif
@@ -63,7 +63,8 @@ namespace std {
 
 template <>
 struct hash<facebook::react::ShadowView> {
-  size_t operator()(const facebook::react::ShadowView& shadowView) const {
+  size_t operator()(const facebook::react::ShadowView &shadowView) const
+  {
     return facebook::react::hash_combine(
         0,
         shadowView.surfaceId,

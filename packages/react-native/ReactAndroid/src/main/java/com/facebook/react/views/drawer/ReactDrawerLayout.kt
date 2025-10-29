@@ -39,7 +39,7 @@ public class ReactDrawerLayout(reactContext: ReactContext) : DrawerLayout(reactC
         object : AccessibilityDelegateCompat() {
           override fun onInitializeAccessibilityNodeInfo(
               host: View,
-              info: AccessibilityNodeInfoCompat
+              info: AccessibilityNodeInfoCompat,
           ) {
             super.onInitializeAccessibilityNodeInfo(host, info)
 
@@ -56,7 +56,8 @@ public class ReactDrawerLayout(reactContext: ReactContext) : DrawerLayout(reactC
               event.className = AccessibilityRole.getValue(accessibilityRole)
             }
           }
-        })
+        },
+    )
   }
 
   override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {

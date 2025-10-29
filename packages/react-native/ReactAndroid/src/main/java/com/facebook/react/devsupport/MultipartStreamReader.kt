@@ -18,7 +18,7 @@ import okio.ByteString
 /** Utility class to parse the body of a response of type multipart/mixed. */
 internal class MultipartStreamReader(
     private val source: BufferedSource,
-    private val boundary: String
+    private val boundary: String,
 ) {
   private var lastProgressEvent: Long = 0
 
@@ -147,7 +147,7 @@ internal class MultipartStreamReader(
       headers: Map<String, String>?,
       contentLength: Long,
       isFinal: Boolean,
-      listener: ChunkListener?
+      listener: ChunkListener?,
   ) {
     if (listener == null || headers == null) {
       return

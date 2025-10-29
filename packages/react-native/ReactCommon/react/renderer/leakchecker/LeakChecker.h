@@ -21,8 +21,7 @@ class LeakChecker final {
  public:
   LeakChecker(RuntimeExecutor runtimeExecutor);
 
-  void uiManagerDidCreateShadowNodeFamily(
-      const ShadowNodeFamily::Shared& shadowNodeFamily) const;
+  void uiManagerDidCreateShadowNodeFamily(const ShadowNodeFamily::Shared &shadowNodeFamily) const;
   void stopSurface(SurfaceId surfaceId);
 
  private:

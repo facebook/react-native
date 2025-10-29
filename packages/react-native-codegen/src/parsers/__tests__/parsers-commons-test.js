@@ -95,7 +95,7 @@ describe('wrapNullable', () => {
 describe('unwrapNullable', () => {
   describe('when type annotation is nullable', () => {
     it('returns original type annotation', () => {
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       const result = unwrapNullable<{
         type: 'NullableTypeAnnotation',
         typeAnnotation: {type: 'BooleanTypeAnnotation'},
@@ -422,7 +422,7 @@ describe('buildSchemaFromConfigType', () => {
       astMock,
       wrapComponentSchemaMock,
       buildComponentSchemaMock,
-      /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+      /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
        * https://fburl.com/workplace/6291gfvu */
       buildModuleSchemaMock,
       parser,
@@ -487,7 +487,7 @@ describe('buildSchemaFromConfigType', () => {
 
       describe('when buildModuleSchema returns null', () => {
         it('throws an error', () => {
-          // $FlowFixMe[incompatible-call] - This is to test an invariant
+          // $FlowFixMe[incompatible-type] - This is to test an invariant
           buildModuleSchemaMock.mockReturnValueOnce(null);
 
           expect(() =>

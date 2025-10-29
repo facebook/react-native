@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTFabricSurface;
 @class RCTHost;
 @class RCTModuleRegistry;
+@class RCTDevMenuConfiguration;
 
 @protocol RCTTurboModuleManagerDelegate;
 
@@ -63,7 +64,15 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
                              hostDelegate:(id<RCTHostDelegate>)hostDelegate
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
-                            launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+                            launchOptions:(nullable NSDictionary *)launchOptions
+                     devMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
+                             hostDelegate:(id<RCTHostDelegate>)hostDelegate
+               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                         jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                            launchOptions:(nullable NSDictionary *)launchOptions;
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate

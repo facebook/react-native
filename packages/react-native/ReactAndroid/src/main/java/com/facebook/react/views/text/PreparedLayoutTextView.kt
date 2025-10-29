@@ -50,7 +50,10 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
         if (lastSelection != null) {
           if (value != null && field?.layout?.text.toString() == value.layout.text.toString()) {
             value.layout.getSelectionPath(
-                lastSelection.start, lastSelection.end, lastSelection.path)
+                lastSelection.start,
+                lastSelection.end,
+                lastSelection.path,
+            )
           } else {
             clearSelection()
           }
@@ -105,7 +108,9 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
     super.onDraw(canvas)
     canvas.translate(
-        paddingLeft.toFloat(), paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f))
+        paddingLeft.toFloat(),
+        paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f),
+    )
 
     val layout = preparedLayout?.layout
     if (layout != null) {
@@ -130,7 +135,8 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     val layout = checkNotNull(preparedLayout).layout
     if (start < 0 || end > layout.text.length || start >= end) {
       throw IllegalArgumentException(
-          "setSelection start and end are not in valid range. start: $start, end: $end, text length: ${layout.text.length}")
+          "setSelection start and end are not in valid range. start: $start, end: $end, text length: ${layout.text.length}"
+      )
     }
 
     val textSelection = selection
@@ -205,15 +211,19 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     for (span in spans) {
       val spanFlags = spanned.getSpanFlags(span)
       val inclusiveStart =
-          if ((spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
-              (spanFlags and Spanned.SPAN_INCLUSIVE_EXCLUSIVE) != 0) {
+          if (
+              (spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
+                  (spanFlags and Spanned.SPAN_INCLUSIVE_EXCLUSIVE) != 0
+          ) {
             spanned.getSpanStart(span)
           } else {
             spanned.getSpanStart(span) + 1
           }
       val inclusiveEnd =
-          if ((spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
-              (spanFlags and Spanned.SPAN_EXCLUSIVE_INCLUSIVE) != 0) {
+          if (
+              (spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
+                  (spanFlags and Spanned.SPAN_EXCLUSIVE_INCLUSIVE) != 0
+          ) {
             spanned.getSpanEnd(span)
           } else {
             spanned.getSpanEnd(span) - 1
@@ -282,15 +292,17 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   public override fun onFocusChanged(
       gainFocus: Boolean,
       direction: Int,
-      previouslyFocusedRect: Rect?
+      previouslyFocusedRect: Rect?,
   ) {
     if (clickableSpans.isNotEmpty() && !gainFocus) {
       clearSelection()
     }
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
     val accessibilityDelegateCompat = ViewCompat.getAccessibilityDelegate(this)
-    if (accessibilityDelegateCompat != null &&
-        accessibilityDelegateCompat is ReactTextViewAccessibilityDelegate) {
+    if (
+        accessibilityDelegateCompat != null &&
+            accessibilityDelegateCompat is ReactTextViewAccessibilityDelegate
+    ) {
       accessibilityDelegateCompat.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
     }
   }

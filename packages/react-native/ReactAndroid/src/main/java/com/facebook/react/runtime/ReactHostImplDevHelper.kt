@@ -16,6 +16,10 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.ReactInstanceDevHelper
+import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.interfaces.TracingStateProvider
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTarget
 import com.facebook.react.interfaces.TaskInterface
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
@@ -28,7 +32,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 @UnstableReactNativeAPI
 @OptIn(FrameworkAPI::class)
 internal class ReactHostImplDevHelper(private val delegate: ReactHostImpl) :
-    ReactInstanceDevHelper {
+    ReactInstanceDevHelper, PerfMonitorDevHelper, TracingStateProvider {
 
   override val currentActivity: Activity?
     get() = delegate.lastUsedActivity
@@ -38,6 +42,9 @@ internal class ReactHostImplDevHelper(private val delegate: ReactHostImpl) :
 
   override val currentReactContext: ReactContext?
     get() = delegate.currentReactContext
+
+  override val inspectorTarget: PerfMonitorInspectorTarget?
+    get() = delegate.reactHostInspectorTarget
 
   override fun onJSBundleLoadedFromServer() {
     // Not implemented, only referenced by BridgeDevSupportManager
@@ -72,4 +79,8 @@ internal class ReactHostImplDevHelper(private val delegate: ReactHostImpl) :
 
   override fun loadBundle(bundleLoader: JSBundleLoader): TaskInterface<Boolean> =
       delegate.loadBundle(bundleLoader)
+
+  override fun getTracingState(): TracingState {
+    return delegate.reactHostInspectorTarget?.getTracingState() ?: TracingState.ENABLEDINCDPMODE
+  }
 }

@@ -8,7 +8,7 @@
  * @format
  */
 
-import typeof VirtualizedListT from './VirtualizedList';
+import type VirtualizedList from './VirtualizedList';
 
 import * as React from 'react';
 import {createContext, useContext, useMemo} from 'react';
@@ -26,12 +26,9 @@ type Context = $ReadOnly<{
     zoomScale: number,
   },
   horizontal: ?boolean,
-  getOutermostParentListRef: () => React.ElementRef<VirtualizedListT>,
-  registerAsNestedChild: ({
-    cellKey: string,
-    ref: React.ElementRef<VirtualizedListT>,
-  }) => void,
-  unregisterAsNestedChild: ({ref: React.ElementRef<VirtualizedListT>}) => void,
+  getOutermostParentListRef: () => VirtualizedList,
+  registerAsNestedChild: ({cellKey: string, ref: VirtualizedList}) => void,
+  unregisterAsNestedChild: ({ref: VirtualizedList}) => void,
 }>;
 
 export const VirtualizedListContext: React.Context<?Context> =

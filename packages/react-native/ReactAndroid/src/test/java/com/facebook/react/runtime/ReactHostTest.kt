@@ -76,7 +76,8 @@ class ReactHostTest {
                 Task.IMMEDIATE_EXECUTOR,
                 false /* allowPackagerServerAccess */,
                 false /* useDevSupport */,
-            ))
+            )
+        )
     doReturn(null).whenever(reactHost).getOrCreateReactHostInspectorTarget()
     doNothing().whenever(reactHost).unregisterInstanceFromInspector(any())
   }
@@ -118,7 +119,8 @@ class ReactHostTest {
             Task.IMMEDIATE_EXECUTOR,
             Task.IMMEDIATE_EXECUTOR,
             false /* allowPackagerServerAccess */,
-            true /* useDevSupport */)
+            true, /* useDevSupport */
+        )
     assertThat(reactHost.devSupportManager).isNotInstanceOf(ReleaseDevSupportManager::class.java)
   }
 

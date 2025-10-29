@@ -13,8 +13,7 @@ namespace facebook::react {
 
 class TransformHelper : public jni::JavaClass<TransformHelper> {
  public:
-  static auto constexpr* kJavaDescriptor =
-      "Lcom/facebook/react/uimanager/TransformHelper;";
+  static auto constexpr *kJavaDescriptor = "Lcom/facebook/react/uimanager/TransformHelper;";
 
   static void registerNatives();
 };

@@ -10,6 +10,7 @@ package com.facebook.react.fabric.mounting;
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 
+import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -26,11 +27,17 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -50,7 +57,10 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -92,6 +102,11 @@ public class SurfaceMountingManager {
 
   // This is null *until* StopSurface is called.
   private SparseArrayCompat<Object> mTagSetForStoppedSurface;
+
+  // This is to make sure direct manipulation result will not be overridden by React update.
+  @ThreadConfined(UI)
+  private final SparseArrayCompat<Map<String, Object>> mTagToSynchronousMountProps =
+      new SparseArrayCompat<>();
 
   private final int mSurfaceId;
 
@@ -679,13 +694,110 @@ public class SurfaceMountingManager {
     }
   }
 
+  private static void overridePropsReadableMap(
+      Map<String, Object> patchMap, WritableMap outputReadableMap) {
+    for (Map.Entry<String, Object> entry : patchMap.entrySet()) {
+      String propKey = entry.getKey();
+      if (outputReadableMap.hasKey(propKey)) {
+        Object propValue = entry.getValue();
+        if (propKey.equals("transform")) {
+          assert (outputReadableMap.getType(propKey) == ReadableType.Array
+              && propValue instanceof ArrayList);
+          WritableArray array = new WritableNativeArray();
+          for (Object item : (ArrayList<?>) propValue) {
+            if (item instanceof HashMap) {
+              WritableNativeMap itemMap = new WritableNativeMap();
+              for (Map.Entry<String, Object> itemEntry :
+                  ((HashMap<String, Object>) item).entrySet()) {
+                if (itemEntry.getValue() instanceof String) {
+                  itemMap.putString(itemEntry.getKey(), (String) itemEntry.getValue());
+                } else if (itemEntry.getValue() instanceof Number) {
+                  itemMap.putDouble(
+                      itemEntry.getKey(), ((Number) itemEntry.getValue()).doubleValue());
+                }
+              }
+              array.pushMap(itemMap);
+            }
+          }
+          outputReadableMap.putArray(propKey, array);
+        } else if (propKey.equals("opacity")) {
+          assert (outputReadableMap.getType(propKey) == ReadableType.Number
+              && propValue instanceof Number);
+          outputReadableMap.putDouble(propKey, ((Number) propValue).doubleValue());
+        }
+      }
+    }
+  }
+
+  private static Map<String, Object> getHashMapFromPropsReadableMap(ReadableMap readableMap) {
+    HashMap<String, Object> outputMap = new HashMap<>();
+
+    Iterator<Map.Entry<String, Object>> iter = readableMap.getEntryIterator();
+    while (iter.hasNext()) {
+      Map.Entry<String, Object> entry = iter.next();
+      String propKey = entry.getKey();
+      Object propValue = entry.getValue();
+      if (propKey.equals("transform") && propValue instanceof ReadableArray) {
+        ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>();
+        for (int i = 0; i < ((ReadableArray) propValue).size(); i++) {
+          ReadableMap map = ((ReadableArray) propValue).getMap(i);
+          if (map != null) {
+            arrayList.add(map.toHashMap());
+          }
+        }
+        outputMap.put(propKey, arrayList);
+      } else if (propKey.equals("opacity") && propValue instanceof Number) {
+        outputMap.put(propKey, ((Number) propValue).doubleValue());
+      }
+    }
+
+    return outputMap;
+  }
+
+  public void storeSynchronousMountPropsOverride(int reactTag, ReadableMap props) {
+    if (ReactNativeFeatureFlags.overrideBySynchronousMountPropsAtMountingAndroid()) {
+      Map<String, Object> propsMap = getHashMapFromPropsReadableMap(props);
+      if (mTagToSynchronousMountProps.containsKey(reactTag)) {
+        Map<String, Object> mergedPropsMap =
+            Assertions.assertNotNull(mTagToSynchronousMountProps.get(reactTag));
+        mergedPropsMap.putAll(propsMap);
+        mTagToSynchronousMountProps.put(reactTag, mergedPropsMap);
+      } else {
+        mTagToSynchronousMountProps.put(reactTag, propsMap);
+      }
+    }
+  }
+
+  public void updatePropsSynchronously(int reactTag, ReadableMap props) {
+    updateProps(reactTag, props, true);
+  }
+
   public void updateProps(int reactTag, ReadableMap props) {
+    updateProps(reactTag, props, false);
+  }
+
+  @UiThread
+  private void updateProps(
+      int reactTag, ReadableMap props, Boolean shouldSkipSynchronousMountPropsOverride) {
     if (isStopped()) {
       return;
     }
 
     ViewState viewState = getViewState(reactTag);
-    viewState.mCurrentProps = new ReactStylesDiffMap(props);
+
+    if (ReactNativeFeatureFlags.overrideBySynchronousMountPropsAtMountingAndroid()
+        && !shouldSkipSynchronousMountPropsOverride
+        && mTagToSynchronousMountProps.containsKey(reactTag)) {
+      WritableMap modifiedProps = new WritableNativeMap();
+      modifiedProps.merge(props);
+      Map<String, Object> directPropsMap =
+          Assertions.assertNotNull(mTagToSynchronousMountProps.get(reactTag));
+      overridePropsReadableMap(directPropsMap, modifiedProps);
+      viewState.mCurrentProps = new ReactStylesDiffMap(modifiedProps);
+    } else {
+      viewState.mCurrentProps = new ReactStylesDiffMap(props);
+    }
+
     View view = viewState.mView;
 
     if (view == null) {
@@ -694,6 +806,28 @@ public class SurfaceMountingManager {
 
     Assertions.assertNotNull(viewState.mViewManager)
         .updateProperties(view, viewState.mCurrentProps);
+  }
+
+  /**
+   * This prefetch method is experimental, do not use it for production code. it will most likely
+   * change or be removed in the future.
+   *
+   * @param surfaceId surface ID
+   * @param componentName
+   * @param params prefetch request params defined in C++
+   */
+  @SuppressLint("FunctionName")
+  @AnyThread
+  @UnstableReactNativeAPI
+  public void experimental_prefetchResources(
+      int surfaceId, String componentName, MapBuffer params) {
+    if (isStopped()) {
+      return;
+    }
+    mViewManagerRegistry
+        .get(componentName)
+        .experimental_prefetchResources(
+            surfaceId, Assertions.assertNotNull(mThemedReactContext), params);
   }
 
   @Deprecated
@@ -1033,6 +1167,11 @@ public class SurfaceMountingManager {
     UiThreadUtil.assertOnUiThread();
     if (isStopped()) {
       return;
+    }
+
+    if (ReactNativeFeatureFlags.overrideBySynchronousMountPropsAtMountingAndroid()
+        && mTagToSynchronousMountProps.containsKey(reactTag)) {
+      mTagToSynchronousMountProps.remove(reactTag);
     }
 
     ViewState viewState = getNullableViewState(reactTag);

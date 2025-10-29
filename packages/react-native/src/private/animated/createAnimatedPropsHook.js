@@ -108,7 +108,7 @@ export default function createAnimatedPropsHook(
       (instance: TInstance) => {
         // NOTE: This may be called more often than necessary (e.g. when `props`
         // changes), but `setNativeView` already optimizes for that.
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         node.setNativeView(instance);
 
         // NOTE: When using the JS animation driver, this callback is called on
@@ -125,13 +125,11 @@ export default function createAnimatedPropsHook(
           if (node.__isNative) {
             // Check 2: this is an animation driven by native.
             // In native driven animations, this callback is only called once the animation completes.
-            if (
-              isFabricNode &&
-              !(
-                ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
-                ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()
-              )
-            ) {
+            const shouldRemoveJsSync =
+              ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
+              !ReactNativeFeatureFlags.disableFabricCommitInCXXAnimated() &&
+              ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync();
+            if (isFabricNode && !shouldRemoveJsSync) {
               // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
               // Must not be called in Paper.
               scheduleUpdate();
@@ -190,7 +188,7 @@ export default function createAnimatedPropsHook(
 
         for (const [propName, propValue] of eventTuples) {
           propValue.__attach(target, propName);
-          // $FlowFixMe[incompatible-call] - the `addListenersToPropsValue` drills down the propValue.
+          // $FlowFixMe[incompatible-type] - the `addListenersToPropsValue` drills down the propValue.
           addListenersToPropsValue(propValue, animatedValueListeners);
         }
 

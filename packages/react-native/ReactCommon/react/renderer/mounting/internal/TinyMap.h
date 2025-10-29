@@ -36,12 +36,13 @@ template <typename KeyT, typename ValueT>
 class TinyMap final {
  public:
   using Pair = std::pair<KeyT, ValueT>;
-  using Iterator = Pair*;
+  using Iterator = Pair *;
 
   /**
    * This must strictly only be called from outside of this class.
    */
-  inline Iterator begin() {
+  inline Iterator begin()
+  {
     // Force a clean so that iterating over this TinyMap doesn't iterate over
     // erased elements. If all elements erased are at the front of the vector,
     // then we don't need to clean.
@@ -56,7 +57,8 @@ class TinyMap final {
     return nullptr;
   }
 
-  inline Iterator end() {
+  inline Iterator end()
+  {
     // `back()` asserts on the vector being non-empty
     if (vector_.empty() || numErased_ == vector_.size()) {
       return nullptr;
@@ -65,7 +67,8 @@ class TinyMap final {
     return &vector_.back() + 1;
   }
 
-  inline Iterator find(KeyT key) {
+  inline Iterator find(KeyT key)
+  {
     cleanVector();
 
     react_native_assert(key != 0);
@@ -83,12 +86,14 @@ class TinyMap final {
     return end();
   }
 
-  inline void insert(Pair pair) {
+  inline void insert(Pair pair)
+  {
     react_native_assert(pair.first != 0);
     vector_.push_back(pair);
   }
 
-  inline void erase(Iterator iterator) {
+  inline void erase(Iterator iterator)
+  {
     // Invalidate tag.
     iterator->first = 0;
 
@@ -103,7 +108,8 @@ class TinyMap final {
   /**
    * Same as begin() but doesn't call cleanVector at the beginning.
    */
-  inline Iterator begin_() {
+  inline Iterator begin_()
+  {
     // `front()` asserts on the vector being non-empty
     if (vector_.empty() || vector_.size() == numErased_) {
       return nullptr;
@@ -117,9 +123,10 @@ class TinyMap final {
    * We only modify the vector if erased elements are at least half of the
    * vector.
    */
-  inline void cleanVector(bool forceClean = false) {
-    if ((numErased_ < (vector_.size() / 2) && !forceClean) || vector_.empty() ||
-        numErased_ == 0 || numErased_ == erasedAtFront_) {
+  inline void cleanVector(bool forceClean = false)
+  {
+    if ((numErased_ < (vector_.size() / 2) && !forceClean) || vector_.empty() || numErased_ == 0 ||
+        numErased_ == erasedAtFront_) {
       return;
     }
 
@@ -127,10 +134,7 @@ class TinyMap final {
       vector_.clear();
     } else {
       vector_.erase(
-          std::remove_if(
-              vector_.begin(),
-              vector_.end(),
-              [](const auto& item) { return item.first == 0; }),
+          std::remove_if(vector_.begin(), vector_.end(), [](const auto &item) { return item.first == 0; }),
           vector_.end());
     }
     numErased_ = 0;

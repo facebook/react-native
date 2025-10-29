@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {PlatformSelectSpec} from '../PlatformTypes';
+
 // $FlowFixMe[missing-platform-support]
 import PlatformAndroid from '../Platform.android';
 // $FlowFixMe[missing-platform-support]
@@ -23,19 +25,22 @@ describe('Platform', () => {
 
   describe('select', () => {
     it('should return platform specific value', () => {
-      const obj = {ios: 'ios', android: 'android'};
+      const obj: PlatformSelectSpec<string> = {ios: 'ios', android: 'android'};
       expect(PlatformIOS.select(obj)).toEqual(obj.ios);
       expect(PlatformAndroid.select(obj)).toEqual(obj.android);
     });
 
     it('should return native value if no specific value was found', () => {
-      const obj = {native: 'native', default: 'default'};
+      const obj: PlatformSelectSpec<string> = {
+        native: 'native',
+        default: 'default',
+      };
       expect(PlatformIOS.select(obj)).toEqual(obj.native);
       expect(PlatformAndroid.select(obj)).toEqual(obj.native);
     });
 
     it('should return default value if no specific value was found', () => {
-      const obj = {default: 'default'};
+      const obj: PlatformSelectSpec<string> = {default: 'default'};
       expect(PlatformIOS.select(obj)).toEqual(obj.default);
       expect(PlatformAndroid.select(obj)).toEqual(obj.default);
     });

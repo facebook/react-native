@@ -119,7 +119,8 @@ val prepareNlohmannJson by
       include(
           "json-${NLOHMANNJSON_VERSION}/src/**/*",
           "json-${NLOHMANNJSON_VERSION}/include/**/*",
-          "CMakeLists.txt")
+          "CMakeLists.txt",
+      )
       eachFile { path = path.substringAfter("/") }
       includeEmptyDirs = false
       into("$thirdParty/nlohmann_json")
@@ -186,7 +187,8 @@ val configureFantomTester by
               "-DREACT_ANDROID_DIR=$reactAndroidDir",
               "-DREACT_COMMON_DIR=$reactNativeDir/ReactCommon",
               "-DREACT_CXX_PLATFORM_DIR=$reactNativeDir/ReactCxxPlatform",
-              "-DREACT_THIRD_PARTY_NDK_DIR=$reactAndroidBuildDir/third-party-ndk")
+              "-DREACT_THIRD_PARTY_NDK_DIR=$reactAndroidBuildDir/third-party-ndk",
+          )
       commandLine(cmdArgs)
       standardOutputFile.set(project.file("$buildDir/reports/configure-fantom_tester.log"))
       errorOutputFile.set(project.file("$buildDir/reports/configure-fantom_tester.error.log"))

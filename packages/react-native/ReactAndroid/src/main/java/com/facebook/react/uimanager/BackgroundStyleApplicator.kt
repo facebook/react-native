@@ -19,14 +19,13 @@ import android.widget.ImageView
 import androidx.annotation.ColorInt
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.drawable.BackgroundDrawable
+import com.facebook.react.uimanager.drawable.BackgroundImageDrawable
 import com.facebook.react.uimanager.drawable.BorderDrawable
-import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
 import com.facebook.react.uimanager.drawable.CompositeBackgroundDrawable
 import com.facebook.react.uimanager.drawable.InsetBoxShadowDrawable
 import com.facebook.react.uimanager.drawable.MIN_INSET_BOX_SHADOW_SDK_VERSION
@@ -34,6 +33,9 @@ import com.facebook.react.uimanager.drawable.MIN_OUTSET_BOX_SHADOW_SDK_VERSION
 import com.facebook.react.uimanager.drawable.OutlineDrawable
 import com.facebook.react.uimanager.drawable.OutsetBoxShadowDrawable
 import com.facebook.react.uimanager.style.BackgroundImageLayer
+import com.facebook.react.uimanager.style.BackgroundPosition
+import com.facebook.react.uimanager.style.BackgroundRepeat
+import com.facebook.react.uimanager.style.BackgroundSize
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
@@ -52,38 +54,46 @@ public object BackgroundStyleApplicator {
   @JvmStatic
   public fun setBackgroundColor(view: View, @ColorInt color: Int?): Unit {
     // No color to set, and no color already set
-    if ((color == null || color == Color.TRANSPARENT) &&
-        view.background !is CompositeBackgroundDrawable) {
+    if (
+        (color == null || color == Color.TRANSPARENT) &&
+            view.background !is CompositeBackgroundDrawable
+    ) {
       return
     }
 
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      ensureBackgroundDrawable(view).backgroundColor = color ?: Color.TRANSPARENT
-    } else {
-      ensureCSSBackground(view).color = color ?: Color.TRANSPARENT
-    }
+    ensureBackgroundDrawable(view).backgroundColor = color ?: Color.TRANSPARENT
   }
 
   @JvmStatic
   public fun setBackgroundImage(
       view: View,
-      backgroundImageLayers: List<BackgroundImageLayer>?
+      backgroundImageLayers: List<BackgroundImageLayer>?,
   ): Unit {
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      ensureBackgroundDrawable(view).backgroundImageLayers = backgroundImageLayers
-    } else {
-      ensureCSSBackground(view).setBackgroundImage(backgroundImageLayers)
-    }
+    ensureBackgroundImageDrawable(view).backgroundImageLayers = backgroundImageLayers
+  }
+
+  @JvmStatic
+  internal fun setBackgroundSize(view: View, backgroundSizes: List<BackgroundSize>?): Unit {
+    ensureBackgroundImageDrawable(view).backgroundSize = backgroundSizes
+  }
+
+  @JvmStatic
+  internal fun setBackgroundPosition(
+      view: View,
+      backgroundPositions: List<BackgroundPosition>?,
+  ): Unit {
+    ensureBackgroundImageDrawable(view).backgroundPosition = backgroundPositions
+  }
+
+  @JvmStatic
+  internal fun setBackgroundRepeat(view: View, backgroundRepeats: List<BackgroundRepeat>?): Unit {
+    ensureBackgroundImageDrawable(view).backgroundRepeat = backgroundRepeats
   }
 
   @JvmStatic
   @ColorInt
   public fun getBackgroundColor(view: View): Int? {
-    return if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      getBackground(view)?.backgroundColor
-    } else {
-      getCSSBackground(view)?.color
-    }
+    return getBackground(view)?.backgroundColor
   }
 
   @JvmStatic
@@ -92,16 +102,14 @@ public object BackgroundStyleApplicator {
     composite.borderInsets = composite.borderInsets ?: BorderInsets()
     composite.borderInsets?.setBorderWidth(edge, width)
 
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      ensureBorderDrawable(view).setBorderWidth(edge.toSpacingType(), width?.dpToPx() ?: Float.NaN)
-      composite.background?.borderInsets = composite.borderInsets
-      composite.border?.borderInsets = composite.borderInsets
+    ensureBorderDrawable(view).setBorderWidth(edge.toSpacingType(), width?.dpToPx() ?: Float.NaN)
+    composite.background?.borderInsets = composite.borderInsets
+    composite.backgroundImage?.borderInsets = composite.borderInsets
+    composite.border?.borderInsets = composite.borderInsets
 
-      composite.background?.invalidateSelf()
-      composite.border?.invalidateSelf()
-    } else {
-      ensureCSSBackground(view).setBorderWidth(edge.toSpacingType(), width?.dpToPx() ?: Float.NaN)
-    }
+    composite.background?.invalidateSelf()
+    composite.backgroundImage?.invalidateSelf()
+    composite.border?.invalidateSelf()
 
     composite.borderInsets = composite.borderInsets ?: BorderInsets()
     composite.borderInsets?.setBorderWidth(edge, width)
@@ -115,58 +123,47 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun getBorderWidth(view: View, edge: LogicalEdge): Float? {
-    return if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      val width = getBorder(view)?.borderWidth?.getRaw(edge.toSpacingType())
-      if (width == null || width.isNaN()) null else width.pxToDp()
+    val width = getBorder(view)?.borderWidth?.getRaw(edge.toSpacingType())
+    if (width == null || width.isNaN()) {
+      return null
     } else {
-      val width = getCSSBackground(view)?.getBorderWidth(edge.toSpacingType())
-      if (width == null || width.isNaN()) null else width.pxToDp()
+      return width.pxToDp()
     }
   }
 
   @JvmStatic
   public fun setBorderColor(view: View, edge: LogicalEdge, @ColorInt color: Int?): Unit {
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      ensureBorderDrawable(view).setBorderColor(edge, color)
-    } else {
-      ensureCSSBackground(view).setBorderColor(edge.toSpacingType(), color)
-    }
+    ensureBorderDrawable(view).setBorderColor(edge, color)
   }
 
   @JvmStatic
   @ColorInt
   public fun getBorderColor(view: View, edge: LogicalEdge): Int? {
-    return if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      getBorder(view)?.getBorderColor(edge)
-    } else {
-      getCSSBackground(view)?.getBorderColor(edge.toSpacingType())
-    }
+    return getBorder(view)?.getBorderColor(edge)
   }
 
   @JvmStatic
   public fun setBorderRadius(
       view: View,
       corner: BorderRadiusProp,
-      radius: LengthPercentage?
+      radius: LengthPercentage?,
   ): Unit {
     val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
     compositeBackgroundDrawable.borderRadius =
         compositeBackgroundDrawable.borderRadius ?: BorderRadiusStyle()
     compositeBackgroundDrawable.borderRadius?.set(corner, radius)
 
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      if (view is ImageView) {
-        ensureBackgroundDrawable(view)
-      }
-      compositeBackgroundDrawable.background?.borderRadius =
-          compositeBackgroundDrawable.borderRadius
-      compositeBackgroundDrawable.border?.borderRadius = compositeBackgroundDrawable.borderRadius
-
-      compositeBackgroundDrawable.background?.invalidateSelf()
-      compositeBackgroundDrawable.border?.invalidateSelf()
-    } else {
-      ensureCSSBackground(view).setBorderRadius(corner, radius)
+    if (view is ImageView) {
+      ensureBackgroundDrawable(view)
     }
+    compositeBackgroundDrawable.background?.borderRadius = compositeBackgroundDrawable.borderRadius
+    compositeBackgroundDrawable.backgroundImage?.borderRadius =
+        compositeBackgroundDrawable.borderRadius
+    compositeBackgroundDrawable.border?.borderRadius = compositeBackgroundDrawable.borderRadius
+
+    compositeBackgroundDrawable.background?.invalidateSelf()
+    compositeBackgroundDrawable.backgroundImage?.invalidateSelf()
+    compositeBackgroundDrawable.border?.invalidateSelf()
 
     if (Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
       for (shadow in
@@ -189,29 +186,17 @@ public object BackgroundStyleApplicator {
   @JvmStatic
   public fun getBorderRadius(view: View, corner: BorderRadiusProp): LengthPercentage? {
 
-    return if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      getCompositeBackgroundDrawable(view)?.borderRadius?.get(corner)
-    } else {
-      getCSSBackground(view)?.borderRadius?.get(corner)
-    }
+    return getCompositeBackgroundDrawable(view)?.borderRadius?.get(corner)
   }
 
   @JvmStatic
   public fun setBorderStyle(view: View, borderStyle: BorderStyle?) {
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      ensureBorderDrawable(view).borderStyle = borderStyle
-    } else {
-      ensureCSSBackground(view).borderStyle = borderStyle
-    }
+    ensureBorderDrawable(view).borderStyle = borderStyle
   }
 
   @JvmStatic
   public fun getBorderStyle(view: View): BorderStyle? {
-    return if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      getBorder(view)?.borderStyle
-    } else {
-      getCSSBackground(view)?.borderStyle
-    }
+    return getBorder(view)?.borderStyle
   }
 
   @JvmStatic
@@ -301,7 +286,9 @@ public object BackgroundStyleApplicator {
                 offsetX = offsetX,
                 offsetY = offsetY,
                 blurRadius = blurRadius,
-                spread = spreadDistance))
+                spread = spreadDistance,
+            )
+        )
       } else if (!inset && Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
         outerShadows.add(
             OutsetBoxShadowDrawable(
@@ -311,7 +298,9 @@ public object BackgroundStyleApplicator {
                 offsetX = offsetX,
                 offsetY = offsetY,
                 blurRadius = blurRadius,
-                spread = spreadDistance))
+                spread = spreadDistance,
+            )
+        )
       }
     }
 
@@ -336,71 +325,44 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun setFeedbackUnderlay(view: View, drawable: Drawable?) {
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-
-      ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
-    } else {
-      view.background = ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
-    }
+    ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
   }
 
   @JvmStatic
   public fun clipToPaddingBox(view: View, canvas: Canvas) {
-    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-      val drawingRect = Rect()
-      view.getDrawingRect(drawingRect)
+    val drawingRect = Rect()
+    view.getDrawingRect(drawingRect)
 
-      val composite = getCompositeBackgroundDrawable(view)
-      if (composite == null) {
-        canvas.clipRect(drawingRect)
-        return
-      }
+    val composite = getCompositeBackgroundDrawable(view)
+    if (composite == null) {
+      canvas.clipRect(drawingRect)
+      return
+    }
 
-      val paddingBoxRect = RectF()
+    val paddingBoxRect = RectF()
 
-      val computedBorderInsets =
-          composite.borderInsets?.resolve(composite.layoutDirection, view.context)
+    val computedBorderInsets =
+        composite.borderInsets?.resolve(composite.layoutDirection, view.context)
 
-      paddingBoxRect.left = composite.bounds.left + (computedBorderInsets?.left?.dpToPx() ?: 0f)
-      paddingBoxRect.top = composite.bounds.top + (computedBorderInsets?.top?.dpToPx() ?: 0f)
-      paddingBoxRect.right = composite.bounds.right - (computedBorderInsets?.right?.dpToPx() ?: 0f)
-      paddingBoxRect.bottom =
-          composite.bounds.bottom - (computedBorderInsets?.bottom?.dpToPx() ?: 0f)
+    paddingBoxRect.left = composite.bounds.left + (computedBorderInsets?.left?.dpToPx() ?: 0f)
+    paddingBoxRect.top = composite.bounds.top + (computedBorderInsets?.top?.dpToPx() ?: 0f)
+    paddingBoxRect.right = composite.bounds.right - (computedBorderInsets?.right?.dpToPx() ?: 0f)
+    paddingBoxRect.bottom = composite.bounds.bottom - (computedBorderInsets?.bottom?.dpToPx() ?: 0f)
 
-      if (composite.borderRadius?.hasRoundedBorders() == true) {
-        val paddingBoxPath =
-            createPaddingBoxPath(
-                view,
-                composite,
-                paddingBoxRect,
-                computedBorderInsets,
-            )
+    if (composite.borderRadius?.hasRoundedBorders() == true) {
+      val paddingBoxPath =
+          createPaddingBoxPath(
+              view,
+              composite,
+              paddingBoxRect,
+              computedBorderInsets,
+          )
 
-        paddingBoxPath.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
-        canvas.clipPath(paddingBoxPath)
-      } else {
-        paddingBoxRect.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
-        canvas.clipRect(paddingBoxRect)
-      }
+      paddingBoxPath.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
+      canvas.clipPath(paddingBoxPath)
     } else {
-      val drawingRect = Rect()
-      view.getDrawingRect(drawingRect)
-
-      val cssBackground = getCSSBackground(view)
-      if (cssBackground == null) {
-        canvas.clipRect(drawingRect)
-        return
-      }
-
-      val paddingBoxPath = cssBackground.paddingBoxPath
-      if (paddingBoxPath != null) {
-        paddingBoxPath.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
-        canvas.clipPath(paddingBoxPath)
-      } else {
-        val paddingBoxRect = cssBackground.paddingBoxRect
-        paddingBoxRect.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
-        canvas.clipRect(paddingBoxRect)
-      }
+      paddingBoxRect.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
+      canvas.clipRect(paddingBoxRect)
     }
   }
 
@@ -425,19 +387,6 @@ public object BackgroundStyleApplicator {
   private fun getCompositeBackgroundDrawable(view: View): CompositeBackgroundDrawable? =
       view.background as? CompositeBackgroundDrawable
 
-  private fun ensureCSSBackground(view: View): CSSBackgroundDrawable {
-    val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
-    var cssBackground = compositeBackgroundDrawable.cssBackground
-
-    return if (cssBackground != null) {
-      return cssBackground
-    } else {
-      cssBackground = CSSBackgroundDrawable(view.context)
-      view.background = compositeBackgroundDrawable.withNewCssBackground(cssBackground)
-      cssBackground
-    }
-  }
-
   private fun ensureBackgroundDrawable(view: View): BackgroundDrawable {
     val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
     var background = compositeBackgroundDrawable.background
@@ -449,17 +398,36 @@ public object BackgroundStyleApplicator {
           BackgroundDrawable(
               view.context,
               compositeBackgroundDrawable.borderRadius,
-              compositeBackgroundDrawable.borderInsets)
+              compositeBackgroundDrawable.borderInsets,
+          )
       view.background = compositeBackgroundDrawable.withNewBackground(background)
       background
     }
   }
 
-  private fun getCSSBackground(view: View): CSSBackgroundDrawable? =
-      getCompositeBackgroundDrawable(view)?.cssBackground
-
   private fun getBackground(view: View): BackgroundDrawable? =
       getCompositeBackgroundDrawable(view)?.background
+
+  private fun ensureBackgroundImageDrawable(view: View): BackgroundImageDrawable {
+    val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
+    var backgroundImage = compositeBackgroundDrawable.backgroundImage
+
+    return if (backgroundImage != null) {
+      backgroundImage
+    } else {
+      backgroundImage =
+          BackgroundImageDrawable(
+              view.context,
+              compositeBackgroundDrawable.borderRadius,
+              compositeBackgroundDrawable.borderInsets,
+          )
+      view.background = compositeBackgroundDrawable.withNewBackgroundImage(backgroundImage)
+      backgroundImage
+    }
+  }
+
+  private fun getBackgroundImage(view: View): BackgroundImageDrawable? =
+      getCompositeBackgroundDrawable(view)?.backgroundImage
 
   private fun getBorder(view: View): BorderDrawable? = getCompositeBackgroundDrawable(view)?.border
 
@@ -485,12 +453,7 @@ public object BackgroundStyleApplicator {
     val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
     var outline = compositeBackgroundDrawable.outline
     if (outline == null) {
-      val borderRadius =
-          if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
-            compositeBackgroundDrawable.borderRadius
-          } else {
-            ensureCSSBackground(view).borderRadius
-          }
+      val borderRadius = compositeBackgroundDrawable.borderRadius
 
       outline =
           OutlineDrawable(
@@ -523,7 +486,7 @@ public object BackgroundStyleApplicator {
       view: View,
       composite: CompositeBackgroundDrawable,
       paddingBoxRect: RectF,
-      computedBorderInsets: RectF?
+      computedBorderInsets: RectF?,
   ): Path {
     val computedBorderRadius =
         composite.borderRadius?.resolve(
@@ -538,33 +501,43 @@ public object BackgroundStyleApplicator {
     val innerTopLeftRadiusX =
         getInnerBorderRadius(
             computedBorderRadius?.topLeft?.horizontal?.dpToPx(),
-            computedBorderInsets?.left?.dpToPx())
+            computedBorderInsets?.left?.dpToPx(),
+        )
     val innerTopLeftRadiusY =
         getInnerBorderRadius(
-            computedBorderRadius?.topLeft?.vertical?.dpToPx(), computedBorderInsets?.top?.dpToPx())
+            computedBorderRadius?.topLeft?.vertical?.dpToPx(),
+            computedBorderInsets?.top?.dpToPx(),
+        )
     val innerTopRightRadiusX =
         getInnerBorderRadius(
             computedBorderRadius?.topRight?.horizontal?.dpToPx(),
-            computedBorderInsets?.right?.dpToPx())
+            computedBorderInsets?.right?.dpToPx(),
+        )
     val innerTopRightRadiusY =
         getInnerBorderRadius(
-            computedBorderRadius?.topRight?.vertical?.dpToPx(), computedBorderInsets?.top?.dpToPx())
+            computedBorderRadius?.topRight?.vertical?.dpToPx(),
+            computedBorderInsets?.top?.dpToPx(),
+        )
     val innerBottomRightRadiusX =
         getInnerBorderRadius(
             computedBorderRadius?.bottomRight?.horizontal?.dpToPx(),
-            computedBorderInsets?.right?.dpToPx())
+            computedBorderInsets?.right?.dpToPx(),
+        )
     val innerBottomRightRadiusY =
         getInnerBorderRadius(
             computedBorderRadius?.bottomRight?.vertical?.dpToPx(),
-            computedBorderInsets?.bottom?.dpToPx())
+            computedBorderInsets?.bottom?.dpToPx(),
+        )
     val innerBottomLeftRadiusX =
         getInnerBorderRadius(
             computedBorderRadius?.bottomLeft?.horizontal?.dpToPx(),
-            computedBorderInsets?.left?.dpToPx())
+            computedBorderInsets?.left?.dpToPx(),
+        )
     val innerBottomLeftRadiusY =
         getInnerBorderRadius(
             computedBorderRadius?.bottomLeft?.vertical?.dpToPx(),
-            computedBorderInsets?.bottom?.dpToPx())
+            computedBorderInsets?.bottom?.dpToPx(),
+        )
 
     paddingBoxPath.addRoundRect(
         paddingBoxRect,
@@ -578,7 +551,8 @@ public object BackgroundStyleApplicator {
             innerBottomLeftRadiusX,
             innerBottomLeftRadiusY,
         ),
-        Path.Direction.CW)
+        Path.Direction.CW,
+    )
     return paddingBoxPath
   }
 }

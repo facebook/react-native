@@ -22,12 +22,14 @@ type TComponentType = React.ComponentType<{...}>;
  */
 export default function mockComponent<
   TComponentModule: Modulish<TComponentType>,
+  TIsESModule: boolean,
 >(
   moduleName: string,
   instanceMethods: ?interface {},
-  isESModule: boolean,
-): typeof isESModule extends true
-  ? ModuleDefault<TComponentModule & typeof instanceMethods>
+  isESModule: TIsESModule,
+): TIsESModule extends true
+  ? // $FlowFixMe[incompatible-use]
+    ModuleDefault<TComponentModule & typeof instanceMethods>
   : TComponentModule & typeof instanceMethods {
   const RealComponent: TComponentType = isESModule
     ? // $FlowFixMe[prop-missing]
@@ -35,9 +37,7 @@ export default function mockComponent<
     : // $FlowFixMe[incompatible-type]
       jest.requireActual<TComponentModule>(moduleName);
 
-  const SuperClass: typeof React.Component<
-    React.ElementProps<typeof RealComponent>,
-  > =
+  const SuperClass: typeof React.Component<{...}> =
     typeof RealComponent === 'function' &&
     RealComponent.prototype.constructor instanceof React.Component
       ? RealComponent
@@ -99,6 +99,6 @@ export default function mockComponent<
     Object.assign(Component.prototype, instanceMethods);
   }
 
-  // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   return Component;
 }

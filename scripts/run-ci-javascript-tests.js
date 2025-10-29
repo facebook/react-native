@@ -26,7 +26,9 @@ const argv /*:$ReadOnly<{
   flowBinary?: string,
   yarnBinary?: string,
 }> */ =
-  // $FlowFixMe
+  // $FlowFixMe[incompatible-type]
+  // $FlowFixMe[incompatible-exact]
+  // $FlowFixMe[incompatible-indexer]
   require('yargs').argv;
 
 const numberOfMaxWorkers = argv.maxWorkers ?? 1;

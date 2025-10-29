@@ -28,6 +28,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     reactNativeDelegate = delegate
     reactNativeFactory = factory
 
+    #if DEBUG
+    let devMenuConfiguration = RCTDevMenuConfiguration(
+      devMenuEnabled: true,
+      shakeGestureEnabled: true,
+      keyboardShortcutsEnabled: true
+    )
+    reactNativeFactory?.devMenuConfiguration = devMenuConfiguration
+    #endif
+
     window = UIWindow(frame: UIScreen.main.bounds)
 
     factory.startReactNative(

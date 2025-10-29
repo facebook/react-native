@@ -144,7 +144,7 @@ class ShareModuleTest {
         code: String?,
         message: String?,
         throwable: Throwable?,
-        userInfo: WritableMap?
+        userInfo: WritableMap?,
     ) {
       rejected++
 

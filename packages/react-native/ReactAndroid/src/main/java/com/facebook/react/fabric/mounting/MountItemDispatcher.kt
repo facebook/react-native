@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 internal class MountItemDispatcher(
     private val mountingManager: MountingManager,
-    private val itemDispatchListener: ItemDispatchListener
+    private val itemDispatchListener: ItemDispatchListener,
 ) {
   private val viewCommandMountItems: Queue<DispatchCommandMountItem> = ConcurrentLinkedQueue()
   private val mountItems: Queue<MountItem> = ConcurrentLinkedQueue()
@@ -43,7 +43,11 @@ internal class MountItemDispatcher(
   private var lastFrameTimeNanos: Long = 0L
 
   fun addViewCommandMountItem(mountItem: DispatchCommandMountItem) {
-    viewCommandMountItems.add(mountItem)
+    if (!ReactNativeFeatureFlags.disableEarlyViewCommandExecution()) {
+      viewCommandMountItems.add(mountItem)
+    } else {
+      mountItems.add(mountItem)
+    }
   }
 
   fun addMountItem(mountItem: MountItem) {
@@ -62,7 +66,8 @@ internal class MountItemDispatcher(
           TAG,
           "Not queueing PreAllocateMountItem: surfaceId stopped: [%d] - %s",
           mountItem.getSurfaceId(),
-          mountItem.toString())
+          mountItem.toString(),
+      )
     }
   }
 
@@ -146,48 +151,58 @@ internal class MountItemDispatcher(
 
     itemDispatchListener.willMountItems(mountItemsToDispatch)
 
+    val dispatchViewCommand: (command: DispatchCommandMountItem) -> Unit = { command ->
+      if (ReactNativeFeatureFlags.enableFabricLogs()) {
+        printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem")
+      }
+      try {
+        executeOrEnqueue(command)
+      } catch (e: RetryableMountingLayerException) {
+        // If the exception is marked as Retryable, we retry the viewcommand exactly once, after
+        // the current batch of mount items has finished executing.
+        if (command.getRetries() == 0) {
+          command.incrementRetries()
+          addViewCommandMountItem(command)
+        } else {
+          // It's very common for commands to be executed on views that no longer exist - for
+          // example, a blur event on TextInput being fired because of a navigation event away
+          // from the current screen. If the exception is marked as Retryable, we log a soft
+          // exception but never crash in debug.
+          // It's not clear that logging this is even useful, because these events are very
+          // common, mundane, and there's not much we can do about them currently.
+          ReactSoftExceptionLogger.logSoftException(
+              TAG,
+              ReactNoCrashSoftException("Caught exception executing ViewCommand: $command", e),
+          )
+        }
+      } catch (e: Throwable) {
+        // Non-retryable exceptions are logged as soft exceptions in prod, but crash in Debug.
+        ReactSoftExceptionLogger.logSoftException(
+            TAG,
+            RuntimeException("Caught exception executing ViewCommand: $command", e),
+        )
+      }
+    }
+
     // As an optimization, execute all ViewCommands first
     // This should be:
     // 1) Performant: ViewCommands are often a replacement for SetNativeProps, which we've always
     // wanted to be as "synchronous" as possible.
     // 2) Safer: ViewCommands are inherently disconnected from the tree commit/diff/mount process.
     // JS imperatively queues these commands.
-    //    If JS has queued a command, it's reasonable to assume that the more time passes, the more
+    //    If JS has queued a command, it's reasonable to assume that the more time passes, the
+    // more
     // likely it is that the view disappears.
     //    Thus, by executing ViewCommands early, we should actually avoid a category of
     // errors/glitches.
     viewCommandMountItemsToDispatch?.let { commands ->
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews viewCommandMountItems")
+          Systrace.TRACE_TAG_REACT,
+          "MountItemDispatcher::mountViews viewCommandMountItems",
+      )
 
       for (command in commands) {
-        if (ReactNativeFeatureFlags.enableFabricLogs()) {
-          printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem")
-        }
-        try {
-          executeOrEnqueue(command)
-        } catch (e: RetryableMountingLayerException) {
-          // If the exception is marked as Retryable, we retry the viewcommand exactly once, after
-          // the current batch of mount items has finished executing.
-          if (command.getRetries() == 0) {
-            command.incrementRetries()
-            addViewCommandMountItem(command)
-          } else {
-            // It's very common for commands to be executed on views that no longer exist - for
-            // example, a blur event on TextInput being fired because of a navigation event away
-            // from the current screen. If the exception is marked as Retryable, we log a soft
-            // exception but never crash in debug.
-            // It's not clear that logging this is even useful, because these events are very
-            // common, mundane, and there's not much we can do about them currently.
-            ReactSoftExceptionLogger.logSoftException(
-                TAG,
-                ReactNoCrashSoftException("Caught exception executing ViewCommand: $command", e))
-          }
-        } catch (e: Throwable) {
-          // Non-retryable exceptions are logged as soft exceptions in prod, but crash in Debug.
-          ReactSoftExceptionLogger.logSoftException(
-              TAG, RuntimeException("Caught exception executing ViewCommand: $command", e))
-        }
+        dispatchViewCommand(command)
       }
 
       Systrace.endSection(Systrace.TRACE_TAG_REACT)
@@ -197,7 +212,9 @@ internal class MountItemDispatcher(
     // first
     getAndResetPreMountItems()?.let { preMountItems ->
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews preMountItems")
+          Systrace.TRACE_TAG_REACT,
+          "MountItemDispatcher::mountViews preMountItems",
+      )
       for (preMountItem in preMountItems) {
         if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(preMountItem, "dispatchMountItems: Executing preMountItem")
@@ -209,12 +226,20 @@ internal class MountItemDispatcher(
 
     mountItemsToDispatch?.let { items ->
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews mountItems to execute")
+          Systrace.TRACE_TAG_REACT,
+          "MountItemDispatcher::mountViews mountItems to execute",
+      )
       val batchedExecutionStartTime = SystemClock.uptimeMillis()
 
       for (mountItem in items) {
         if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(mountItem, "dispatchMountItems: Executing mountItem")
+        }
+
+        val command = mountItem as? DispatchCommandMountItem
+        if (command != null) {
+          dispatchViewCommand(command)
+          continue
         }
 
         try {
@@ -302,11 +327,14 @@ internal class MountItemDispatcher(
         FLog.e(
             TAG,
             "executeOrEnqueue: Item execution delayed, surface %s is not ready yet",
-            item.getSurfaceId())
+            item.getSurfaceId(),
+        )
       }
       val surfaceMountingManager: SurfaceMountingManager =
           mountingManager.getSurfaceManagerEnforced(
-              item.getSurfaceId(), "MountItemDispatcher::executeOrEnqueue")
+              item.getSurfaceId(),
+              "MountItemDispatcher::executeOrEnqueue",
+          )
       surfaceMountingManager.scheduleMountItemOnViewAttach(item)
     } else {
       item.execute(mountingManager)

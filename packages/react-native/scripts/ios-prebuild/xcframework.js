@@ -185,22 +185,66 @@ function buildXCFrameworks(
   );
 
   // Copy Symbols to symbols folder
-  const symbolPaths = frameworkFolders.map(framework =>
-    path.join(framework, `..`, `..`, `React.framework.dSYM`),
-  );
-
-  frameworkLog('Copying symbols to symbols folder...');
-  const symbolOutput = path.join(outputPath, '..', 'Symbols');
-  symbolPaths.forEach(symbol => {
-    const destination = extractDestinationFromPath(symbol);
-    const outputFolder = path.join(symbolOutput, destination);
-    fs.mkdirSync(outputFolder, {recursive: true});
-    execSync(`cp -r ${symbol} ${outputFolder}`);
-  });
+  copySymbols(outputPath, frameworkFolders);
 
   if (identity) {
     signXCFramework(identity, outputPath);
   }
+}
+
+function copySymbols(
+  outputPath /*:string*/,
+  frameworkFolders /*:Array<string>*/,
+) {
+  frameworkLog('Copying symbols to symbols folder...');
+  const targetArchFolders = fs
+    .readdirSync(outputPath)
+    .map(p => path.join(outputPath, p))
+    .filter(folder => {
+      return (
+        fs.statSync(folder).isDirectory() &&
+        !folder.endsWith('Headers') &&
+        !folder.endsWith('Modules')
+      );
+    });
+
+  const symbolOutput = path.join(outputPath, '..', 'Symbols');
+  frameworkFolders.forEach(frameworkFolder => {
+    // Get archs for current symbol slice
+    const frameworkPlatforms = getArchsFromFramework(
+      path.join(frameworkFolder, 'React'),
+    );
+    if (frameworkPlatforms) {
+      const targetFolder = targetArchFolders.find(
+        targetArchFolder =>
+          getArchsFromFramework(
+            path.join(targetArchFolder, 'React.framework', 'React'),
+          ) === frameworkPlatforms,
+      );
+      if (!targetFolder) {
+        frameworkLog(
+          `No target folder found for symbol slice: ${frameworkFolder}`,
+          'error',
+        );
+        return;
+      }
+      const targetSymbolPath = path.join(
+        symbolOutput,
+        path.basename(targetFolder),
+      );
+      const sourceSymbolPath = path.join(
+        frameworkFolder,
+        '..',
+        '..',
+        'React.framework.dSYM',
+      );
+      console.log(
+        `  ${path.relative(outputPath, sourceSymbolPath)} → ${path.basename(targetFolder)}`,
+      );
+      fs.mkdirSync(targetSymbolPath, {recursive: true});
+      execSync(`cp -r ${sourceSymbolPath} ${targetSymbolPath}`);
+    }
+  });
 }
 
 function linkArchFolders(
@@ -319,22 +363,17 @@ function createModuleMapFile(outputPath /*: string */) {
   }
 }
 
-function extractDestinationFromPath(symbolPath /*: string */) /*: string */ {
-  if (symbolPath.includes('iphoneos')) {
-    return 'iphoneos';
+function getArchsFromFramework(frameworkPath /*:string*/) {
+  try {
+    return execSync(`vtool -show-build ${frameworkPath}|grep platform`)
+      .toString()
+      .split('\n')
+      .map(p => p.trim().split(' ')[1])
+      .sort((a, b) => a.localeCompare(b))
+      .join(' ');
+  } catch (error) {
+    return '';
   }
-
-  if (symbolPath.includes('iphonesimulator')) {
-    return 'iphonesimulator';
-  }
-
-  if (symbolPath.includes('maccatalyst')) {
-    return 'catalyst';
-  }
-
-  throw new Error(
-    `Impossible to extract destination from ${symbolPath}. Valid destinations are iphoneos, iphonesimulator and catalyst.`,
-  );
 }
 
 function signXCFramework(

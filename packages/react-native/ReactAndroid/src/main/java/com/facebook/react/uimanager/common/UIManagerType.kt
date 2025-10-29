@@ -15,7 +15,8 @@ import androidx.annotation.IntDef
 public annotation class UIManagerType {
   public companion object {
     @Deprecated(
-        "UIManagerType.DEFAULT will be deleted in the next release of React Native. Use [LEGACY] instead.")
+        "UIManagerType.DEFAULT will be deleted in the next release of React Native. Use [LEGACY] instead."
+    )
     public const val DEFAULT: Int = 1
     public const val LEGACY: Int = 1
     public const val FABRIC: Int = 2

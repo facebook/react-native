@@ -10,8 +10,6 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -37,8 +35,10 @@ static void testShadowNodeTreeLifeCycle(
 
   auto eventDispatcher = EventDispatcher::Shared{};
   auto contextContainer = std::make_shared<ContextContainer>();
-  auto componentDescriptorParameters =
-      ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
+  auto componentDescriptorParameters = ComponentDescriptorParameters{
+      .eventDispatcher = eventDispatcher,
+      .contextContainer = contextContainer,
+      .flavor = nullptr};
   auto viewComponentDescriptor =
       ViewComponentDescriptor(componentDescriptorParameters);
   auto rootComponentDescriptor =
@@ -51,21 +51,26 @@ static void testShadowNodeTreeLifeCycle(
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();
 
-    auto family =
-        rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
+    auto family = rootComponentDescriptor.createFamily(
+        {.tag = Tag(1), .surfaceId = SurfaceId(1), .instanceHandle = nullptr});
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
         std::static_pointer_cast<const RootShadowNode>(
             rootComponentDescriptor.createShadowNode(
-                ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
+                ShadowNodeFragment{
+                    .props = RootShadowNode::defaultSharedProps()},
                 family)));
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
         parserContext,
         LayoutConstraints{
-            Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
+            .minimumSize = Size{.width = 512, .height = 0},
+            .maximumSize =
+                Size{
+                    .width = 512,
+                    .height = std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
 
     // Generation of a random tree.
@@ -74,11 +79,13 @@ static void testShadowNodeTreeLifeCycle(
 
     // Injecting a tree into the root node.
     auto currentRootNode = std::static_pointer_cast<const RootShadowNode>(
-        emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
-            ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
-                std::vector<std::shared_ptr<const ShadowNode>>{
-                    singleRootChildNode})}));
+        emptyRootNode->ShadowNode::clone(
+            ShadowNodeFragment{
+                .props = ShadowNodeFragment::propsPlaceholder(),
+                .children = std::make_shared<
+                    std::vector<std::shared_ptr<const ShadowNode>>>(
+                    std::vector<std::shared_ptr<const ShadowNode>>{
+                        singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = StubViewTree(ShadowView(*emptyRootNode));
@@ -186,8 +193,10 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
   auto eventDispatcher = EventDispatcher::Shared{};
   auto contextContainer = std::make_shared<ContextContainer>();
 
-  auto componentDescriptorParameters =
-      ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
+  auto componentDescriptorParameters = ComponentDescriptorParameters{
+      .eventDispatcher = eventDispatcher,
+      .contextContainer = contextContainer,
+      .flavor = nullptr};
   auto viewComponentDescriptor =
       ViewComponentDescriptor(componentDescriptorParameters);
   auto rootComponentDescriptor =
@@ -200,21 +209,26 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();
 
-    auto family =
-        rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
+    auto family = rootComponentDescriptor.createFamily(
+        {.tag = Tag(1), .surfaceId = SurfaceId(1), .instanceHandle = nullptr});
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
         std::static_pointer_cast<const RootShadowNode>(
             rootComponentDescriptor.createShadowNode(
-                ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
+                ShadowNodeFragment{
+                    .props = RootShadowNode::defaultSharedProps()},
                 family)));
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
         parserContext,
         LayoutConstraints{
-            Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
+            .minimumSize = Size{.width = 512, .height = 0},
+            .maximumSize =
+                Size{
+                    .width = 512,
+                    .height = std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
 
     // Generation of a random tree.
@@ -223,11 +237,13 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 
     // Injecting a tree into the root node.
     auto currentRootNode = std::static_pointer_cast<const RootShadowNode>(
-        emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
-            ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
-                std::vector<std::shared_ptr<const ShadowNode>>{
-                    singleRootChildNode})}));
+        emptyRootNode->ShadowNode::clone(
+            ShadowNodeFragment{
+                .props = ShadowNodeFragment::propsPlaceholder(),
+                .children = std::make_shared<
+                    std::vector<std::shared_ptr<const ShadowNode>>>(
+                    std::vector<std::shared_ptr<const ShadowNode>>{
+                        singleRootChildNode})}));
 
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
@@ -329,34 +345,8 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 } // namespace facebook::react
 
 using namespace facebook::react;
-class ShadowTreeLifecycleFeatureFlags : public ReactNativeFeatureFlagsDefaults {
- public:
-  explicit ShadowTreeLifecycleFeatureFlags(
-      bool enableFixForParentTagDuringReparenting)
-      : enableFixForParentTagDuringReparenting_(
-            enableFixForParentTagDuringReparenting) {}
 
-  bool enableFixForParentTagDuringReparenting() override {
-    return enableFixForParentTagDuringReparenting_;
-  }
-
- private:
-  bool enableFixForParentTagDuringReparenting_;
-};
-
-class ShadowTreeLifecycleTest : public testing::TestWithParam<bool> {
- protected:
-  void SetUp() override {
-    ReactNativeFeatureFlags::override(
-        std::make_unique<ShadowTreeLifecycleFeatureFlags>(GetParam()));
-  }
-
-  void TearDown() override {
-    ReactNativeFeatureFlags::dangerouslyReset();
-  }
-};
-
-TEST_P(
+TEST(
     ShadowTreeLifecycleTest,
     stableBiggerTreeFewerIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
@@ -366,7 +356,7 @@ TEST_P(
       /* stages */ 32);
 }
 
-TEST_P(
+TEST(
     ShadowTreeLifecycleTest,
     stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
   testShadowNodeTreeLifeCycle(
@@ -376,7 +366,7 @@ TEST_P(
       /* stages */ 32);
 }
 
-TEST_P(
+TEST(
     ShadowTreeLifecycleTest,
     stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
@@ -386,7 +376,7 @@ TEST_P(
       /* stages */ 32);
 }
 
-TEST_P(
+TEST(
     ShadowTreeLifecycleTest,
     unstableSmallerTreeFewerIterationsExtensiveFlatteningUnflattening) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
@@ -396,7 +386,7 @@ TEST_P(
       /* stages */ 32);
 }
 
-TEST_P(
+TEST(
     ShadowTreeLifecycleTest,
     unstableBiggerTreeFewerIterationsExtensiveFlatteningUnflattening) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
@@ -406,7 +396,7 @@ TEST_P(
       /* stages */ 32);
 }
 
-TEST_P(
+TEST(
     ShadowTreeLifecycleTest,
     unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflattening) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
@@ -445,8 +435,3 @@ TEST_P(
 //         /* stages */ 32);
 //   }
 // }
-
-INSTANTIATE_TEST_SUITE_P(
-    enableFixForParentTagDuringReparenting,
-    ShadowTreeLifecycleTest,
-    testing::Values(false, true));

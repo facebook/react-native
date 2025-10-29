@@ -127,6 +127,8 @@ export {default as Switch} from './Libraries/Components/Switch/Switch';
 
 export type {TextProps} from './Libraries/Text/Text';
 export {default as Text} from './Libraries/Text/Text';
+export type {NativeTextProps as unstable_NativeTextProps} from './Libraries/Text/TextNativeComponent';
+export {NativeText as unstable_NativeText} from './Libraries/Text/TextNativeComponent';
 export {default as unstable_TextAncestorContext} from './Libraries/Text/TextAncestorContext';
 
 export type {
@@ -180,10 +182,12 @@ export type {
   ViewPropsIOS,
 } from './Libraries/Components/View/ViewPropTypes';
 export {default as View} from './Libraries/Components/View/View';
+export {default as unstable_NativeView} from './Libraries/Components/View/ViewNativeComponent';
 
 export type {
   ListRenderItemInfo,
   ListRenderItem,
+  ListViewToken,
   Separators,
   VirtualizedListProps,
 } from './Libraries/Lists/VirtualizedList';
@@ -310,6 +314,8 @@ export type {
 export {default as LogBox} from './Libraries/LogBox/LogBox';
 
 export {default as NativeAppEventEmitter} from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
+
+export * as NativeComponentRegistry from './Libraries/NativeComponent/NativeComponentRegistry';
 
 export {default as NativeDialogManagerAndroid} from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 

@@ -153,7 +153,7 @@ inline CATransform3D RCTCATransform3DFromTransformMatrix(const facebook::react::
 
 inline facebook::react::Point RCTPointFromCGPoint(const CGPoint &point)
 {
-  return {point.x, point.y};
+  return {.x = point.x, .y = point.y};
 }
 
 inline facebook::react::Float RCTFloatFromCGFloat(CGFloat value)
@@ -166,12 +166,12 @@ inline facebook::react::Float RCTFloatFromCGFloat(CGFloat value)
 
 inline facebook::react::Size RCTSizeFromCGSize(const CGSize &size)
 {
-  return {RCTFloatFromCGFloat(size.width), RCTFloatFromCGFloat(size.height)};
+  return {.width = RCTFloatFromCGFloat(size.width), .height = RCTFloatFromCGFloat(size.height)};
 }
 
 inline facebook::react::Rect RCTRectFromCGRect(const CGRect &rect)
 {
-  return {RCTPointFromCGPoint(rect.origin), RCTSizeFromCGSize(rect.size)};
+  return {.origin = RCTPointFromCGPoint(rect.origin), .size = RCTSizeFromCGSize(rect.size)};
 }
 
 inline facebook::react::EdgeInsets RCTEdgeInsetsFromUIEdgeInsets(const UIEdgeInsets &edgeInsets)

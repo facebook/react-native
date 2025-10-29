@@ -18,6 +18,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
 
 void AndroidTextInputShadowNode::setTextLayoutManager(
@@ -150,11 +151,12 @@ void AndroidTextInputShadowNode::updateStateIfNeeded(
       : props.mostRecentEventCount;
   auto newAttributedString = getMostRecentAttributedString(layoutContext);
 
-  setStateData(AndroidTextInputState{
-      AttributedStringBox(newAttributedString),
-      reactTreeAttributedString,
-      props.paragraphAttributes,
-      newEventCount});
+  setStateData(
+      AndroidTextInputState{
+          AttributedStringBox(newAttributedString),
+          reactTreeAttributedString,
+          props.paragraphAttributes,
+          newEventCount});
 }
 
 AttributedString AndroidTextInputShadowNode::getAttributedString(

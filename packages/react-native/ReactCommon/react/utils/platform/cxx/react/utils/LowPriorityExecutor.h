@@ -11,7 +11,8 @@
 
 namespace facebook::react::LowPriorityExecutor {
 
-inline void execute(std::function<void()>&& workItem) {
+inline void execute(std::function<void()> &&workItem)
+{
   workItem();
 }
 

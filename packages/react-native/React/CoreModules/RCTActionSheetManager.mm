@@ -31,7 +31,7 @@ using namespace facebook::react;
 - (instancetype)init
 {
   self = [super init];
-  if (self) {
+  if (self != nullptr) {
     _alertControllers = [NSMutableArray new];
   }
   return self;
@@ -53,19 +53,29 @@ RCT_EXPORT_MODULE()
   alertController.modalPresentationStyle = UIModalPresentationPopover;
   UIView *sourceView = parentViewController.view;
 
-  if (anchorViewTag) {
+  if (anchorViewTag != nullptr) {
     sourceView = [self.viewRegistry_DEPRECATED viewForReactTag:anchorViewTag];
   } else {
     alertController.popoverPresentationController.permittedArrowDirections = 0;
   }
-  alertController.popoverPresentationController.sourceView = sourceView;
-  alertController.popoverPresentationController.sourceRect = sourceView.bounds;
+
+  if ([UIDevice.currentDevice userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    // These information only make sense for iPad, where the action sheet needs
+    // to be presented from a specific anchor point.
+    // Before iOS 26, if these information were passed on an iOS app, the action sheet
+    // was ignoring them. after iOS 26, they are took into consideration and the
+    // sheet behavior changes, for example the user can interact with the background
+    // By applying these informations only to the iPad use case, we revert to the previous
+    // behavior.
+    alertController.popoverPresentationController.sourceView = sourceView;
+    alertController.popoverPresentationController.sourceRect = sourceView.bounds;
+  }
   [parentViewController presentViewController:alertController animated:YES completion:nil];
 }
 
-RCT_EXPORT_METHOD(showActionSheetWithOptions
-                  : (JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options callback
-                  : (RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(
+    showActionSheetWithOptions : (JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)
+        options callback : (RCTResponseSenderBlock)callback)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");
@@ -158,20 +168,27 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                                callback(@[ @(localIndex) ]);
                                                              }
                                                            }];
-      if (isCancelButtonIndex) {
+      if (isCancelButtonIndex && cancelButtonTintColor != NULL) {
         [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
+      } else if (style != UIAlertActionStyleDestructive) {
+        // iOS 26 does not apply the tint color automatically to all the buttons.
+        // So we ca forcibly apply the tint color to all the buttons that are not
+        // destructive (which usually have a different tint color) nor they are
+        // cancel buttons (which might have a different tint color).
+        // This makes the Action Sheet behave as in iOS < 26.
+        [actionButton setValue:tintColor forKey:@"titleTextColor"];
       }
       [alertController addAction:actionButton];
 
       index++;
     }
 
-    if (disabledButtonIndices) {
+    if (disabledButtonIndices != nullptr) {
       for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
         if ([disabledButtonIndex integerValue] < buttons.count) {
           UIAlertAction *action = alertController.actions[[disabledButtonIndex integerValue]];
           [action setEnabled:false];
-          if (disabledButtonTintColor) {
+          if (disabledButtonTintColor != nullptr) {
             [action setValue:disabledButtonTintColor forKey:@"titleTextColor"];
           }
         } else {
@@ -212,10 +229,10 @@ RCT_EXPORT_METHOD(dismissActionSheet)
   });
 }
 
-RCT_EXPORT_METHOD(showShareActionSheetWithOptions
-                  : (JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options failureCallback
-                  : (RCTResponseSenderBlock)failureCallback successCallback
-                  : (RCTResponseSenderBlock)successCallback)
+RCT_EXPORT_METHOD(
+    showShareActionSheetWithOptions : (JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)
+        options failureCallback : (RCTResponseSenderBlock)failureCallback successCallback : (RCTResponseSenderBlock)
+            successCallback)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");
@@ -235,14 +252,14 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (message) {
+    if (message != nullptr) {
       [items addObject:message];
     }
-    if (URL) {
+    if (URL != nullptr) {
       if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
         NSError *error;
         NSData *data = [NSData dataWithContentsOfURL:URL options:(NSDataReadingOptions)0 error:&error];
-        if (!data) {
+        if (data == nullptr) {
           failureCallback(@[ RCTJSErrorFromNSError(error) ]);
           return;
         }
@@ -258,17 +275,17 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
 
     UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items
                                                                                   applicationActivities:nil];
-    if (subject) {
+    if (subject != nullptr) {
       [shareController setValue:subject forKey:@"subject"];
     }
-    if (excludedActivityTypes) {
+    if (excludedActivityTypes != nullptr) {
       shareController.excludedActivityTypes = excludedActivityTypes;
     }
 
     UIViewController *controller = RCTPresentedViewController();
     shareController.completionWithItemsHandler =
         ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
-          if (activityError) {
+          if (activityError != nullptr) {
             failureCallback(@[ RCTJSErrorFromNSError(activityError) ]);
           } else if (completed || activityType == nil) {
             successCallback(@[ @(completed), RCTNullIfNil(activityType) ]);

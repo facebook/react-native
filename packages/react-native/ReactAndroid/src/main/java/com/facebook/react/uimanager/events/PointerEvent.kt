@@ -36,7 +36,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
       targetTag: Int,
       eventState: PointerEventState,
       motionEventToCopy: MotionEvent,
-      coalescingKey: Short
+      coalescingKey: Short,
   ) {
     super.init(eventState.getSurfaceId(), targetTag, motionEventToCopy.eventTime)
     this._eventName = eventName
@@ -58,7 +58,9 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
           TAG,
           IllegalStateException(
               "Cannot dispatch a Pointer that has no MotionEvent; the PointerEvent has been" +
-                  " recycled"))
+                  " recycled"
+          ),
+      )
       return
     }
     if (pointersEventData == null) {
@@ -195,7 +197,9 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
 
     val buttonState = motionEvent.buttonState
     pointerEvent.putInt(
-        "button", getButtonChange(pointerType, eventState.lastButtonState, buttonState))
+        "button",
+        getButtonChange(pointerType, eventState.lastButtonState, buttonState),
+    )
     pointerEvent.putInt("buttons", getButtons(_eventName, pointerType, buttonState))
 
     val pressure =
@@ -241,7 +245,9 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
       logSoftException(
           TAG,
           IllegalStateException(
-              "Cannot dispatch a Pointer that has no MotionEvent; the PointerEvent has been recycled"))
+              "Cannot dispatch a Pointer that has no MotionEvent; the PointerEvent has been recycled"
+          ),
+      )
       return
     }
 
@@ -265,7 +271,8 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
           coalescingKey != UNSET_COALESCING_KEY,
           coalescingKey.toInt(),
           eventData,
-          getEventCategory(_eventName))
+          getEventCategory(_eventName),
+      )
     }
   }
 
@@ -278,7 +285,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
       val hitPathByPointerId: Map<Int, List<ViewTarget>>,
       val eventCoordinatesByPointerId: Map<Int, FloatArray>,
       val screenCoordinatesByPointerId: Map<Int, FloatArray>,
-      hoveringPointerIds: Set<Int>
+      hoveringPointerIds: Set<Int>,
   ) {
     val hoveringPointerIds: Set<Int> = HashSet(hoveringPointerIds)
 
@@ -301,7 +308,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
         eventName: String,
         targetTag: Int,
         eventState: PointerEventState,
-        motionEventToCopy: MotionEvent?
+        motionEventToCopy: MotionEvent?,
     ): PointerEvent {
       var event = EVENTS_POOL.acquire()
       if (event == null) {
@@ -312,7 +319,8 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
           targetTag,
           eventState,
           Assertions.assertNotNull(motionEventToCopy),
-          0.toShort())
+          0.toShort(),
+      )
       return event
     }
 
@@ -322,7 +330,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
         targetTag: Int,
         eventState: PointerEventState,
         motionEventToCopy: MotionEvent?,
-        coalescingKey: Short
+        coalescingKey: Short,
     ): PointerEvent {
       var event = EVENTS_POOL.acquire()
       if (event == null) {
@@ -333,7 +341,8 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
           targetTag,
           eventState,
           Assertions.assertNotNull(motionEventToCopy),
-          coalescingKey)
+          coalescingKey,
+      )
       return event
     }
   }

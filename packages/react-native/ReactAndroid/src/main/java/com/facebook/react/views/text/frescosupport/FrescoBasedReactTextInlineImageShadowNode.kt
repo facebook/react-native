@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.text.frescosupport
 
 import android.content.Context
@@ -30,9 +32,13 @@ import java.util.Locale
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal class FrescoBasedReactTextInlineImageShadowNode(
     private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, ImageRequest, *, *>,
-    private val callerContext: Any?
+    private val callerContext: Any?,
 ) : ReactTextInlineImageShadowNode() {
 
   private var uri: Uri? = null
@@ -121,7 +127,8 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
         getHeaders(),
         getDraweeControllerBuilder(),
         getCallerContext(),
-        resizeMode)
+        resizeMode,
+    )
   }
 
   fun getDraweeControllerBuilder() = draweeControllerBuilder
@@ -141,7 +148,9 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "FrescoBasedReactTextInlineImageShadowNode", LegacyArchitectureLogLevel.ERROR)
+          "FrescoBasedReactTextInlineImageShadowNode",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

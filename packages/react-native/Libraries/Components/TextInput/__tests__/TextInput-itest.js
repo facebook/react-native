@@ -12,7 +12,6 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {TextInputInstance} from '../TextInput.flow';
 
-import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
@@ -60,10 +59,8 @@ describe('<TextInput>', () => {
           );
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
         Fantom.runOnUIThread(() => {
-          Fantom.enqueueNativeEvent(element, 'change', {
+          Fantom.enqueueNativeEvent(nodeRef, 'change', {
             text: 'Hello World',
           });
         });
@@ -86,10 +83,8 @@ describe('<TextInput>', () => {
           root.render(<TextInput onChangeText={onChangeText} ref={nodeRef} />);
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
         Fantom.runOnUIThread(() => {
-          Fantom.enqueueNativeEvent(element, 'change', {
+          Fantom.enqueueNativeEvent(nodeRef, 'change', {
             text: 'Hello World',
           });
         });
@@ -113,12 +108,10 @@ describe('<TextInput>', () => {
           root.render(<TextInput onFocus={focusEvent} ref={nodeRef} />);
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
         expect(focusEvent).toHaveBeenCalledTimes(0);
 
         Fantom.runOnUIThread(() => {
-          Fantom.enqueueNativeEvent(element, 'focus');
+          Fantom.enqueueNativeEvent(nodeRef, 'focus');
         });
 
         // The tasks have not run.
@@ -141,12 +134,10 @@ describe('<TextInput>', () => {
           root.render(<TextInput onBlur={blurEvent} ref={nodeRef} />);
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
-
         expect(blurEvent).toHaveBeenCalledTimes(0);
 
         Fantom.runOnUIThread(() => {
-          Fantom.enqueueNativeEvent(element, 'blur');
+          Fantom.enqueueNativeEvent(nodeRef, 'blur');
         });
 
         // The tasks have not run.

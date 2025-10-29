@@ -49,6 +49,7 @@ Scheduler::Scheduler(
 
   auto uiManager =
       std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
+
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 

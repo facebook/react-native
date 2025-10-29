@@ -32,10 +32,7 @@ Pod::Spec.new do |s|
                             "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "DEFINES_MODULE" => "YES" }
 
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.header_mappings_dir     = './'
-    s.module_name             = 'React_Fabric'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "./", module_name: "React_Fabric")
 
   s.dependency "React-jsiexecutor"
   s.dependency "RCTRequired"
@@ -57,11 +54,22 @@ Pod::Spec.new do |s|
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
+  
+  s.subspec "animated" do |ss|
+    ss.source_files         = podspec_sources("react/renderer/animated/**/*.{m,mm,cpp,h}", "react/renderer/animated/**/*.{h}")
+    ss.exclude_files        = "react/renderer/animated/tests"
+    ss.header_dir           = "react/renderer/animated"
+  end
 
   s.subspec "animations" do |ss|
     ss.source_files         = podspec_sources("react/renderer/animations/**/*.{m,mm,cpp,h}", "react/renderer/animations/**/*.{h}")
     ss.exclude_files        = "react/renderer/animations/tests"
     ss.header_dir           = "react/renderer/animations"
+  end
+  
+  s.subspec "animationbackend" do |ss|
+    ss.source_files         = podspec_sources("react/renderer/animationbackend/**/*.{m,mm,cpp,h}", "react/renderer/animationbackend/**/*.{h}")
+    ss.header_dir           = "react/renderer/animationbackend"
   end
 
   s.subspec "attributedstring" do |ss|

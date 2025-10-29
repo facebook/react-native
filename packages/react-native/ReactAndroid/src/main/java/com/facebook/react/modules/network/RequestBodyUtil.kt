@@ -67,7 +67,8 @@ internal object RequestBodyUtil {
                     .split(",".toRegex())
                     .dropLastWhile { it.isEmpty() }
                     .toTypedArray()[1],
-                Base64.DEFAULT)
+                Base64.DEFAULT,
+            )
         return ByteArrayInputStream(decodedDataUrString)
       }
 
@@ -162,7 +163,7 @@ internal object RequestBodyUtil {
   @JvmStatic
   fun createProgressRequest(
       requestBody: RequestBody,
-      listener: ProgressListener
+      listener: ProgressListener,
   ): ProgressRequestBody {
     return ProgressRequestBody(requestBody, listener)
   }

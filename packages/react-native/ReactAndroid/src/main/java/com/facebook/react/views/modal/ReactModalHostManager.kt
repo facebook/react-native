@@ -95,7 +95,8 @@ internal class ReactModalHostManager :
     if (dispatcher != null) {
       view.onRequestCloseListener = OnRequestCloseListener {
         dispatcher.dispatchEvent(
-            RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.id))
+            RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.id)
+        )
       }
       view.onShowListener = OnShowListener {
         dispatcher.dispatchEvent(ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.id))
@@ -120,7 +121,7 @@ internal class ReactModalHostManager :
   override fun updateState(
       view: ReactModalHostView,
       props: ReactStylesDiffMap,
-      stateWrapper: StateWrapper
+      stateWrapper: StateWrapper,
   ): Any? {
     view.stateWrapper = stateWrapper
     return null

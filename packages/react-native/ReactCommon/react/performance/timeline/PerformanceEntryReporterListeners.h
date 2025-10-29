@@ -18,7 +18,7 @@ class PerformanceEntryReporterEventTimingListener {
  public:
   virtual ~PerformanceEntryReporterEventTimingListener() = default;
 
-  virtual void onEventTimingEntry(const PerformanceEventTiming& entry) = 0;
+  virtual void onEventTimingEntry(const PerformanceEventTiming & /*entry*/) {}
 };
 
 } // namespace facebook::react

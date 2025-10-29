@@ -20,6 +20,10 @@ const EXCLUDED_FIRST_PARTY_PATHS = [
   /[/\\]private[/\\]react-native-fantom[/\\]/,
 ];
 
+// customTransformOptions may be strings from URL params, or booleans passed
+// programatically. For strings, handle them as Metro does when parsing URLs.
+const TRUE_VALS = new Set([true, 'true', '1']);
+
 function isTypeScriptSource(fileName) {
   return !!fileName && fileName.endsWith('.ts');
 }
@@ -55,6 +59,9 @@ const getPreset = (src, options) => {
 
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
+  const preserveClasses = TRUE_VALS.has(
+    options?.customTransformOptions?.unstable_preserveClasses,
+  );
 
   const extraPlugins = [];
   const firstPartyPlugins = [];
@@ -91,7 +98,7 @@ const getPreset = (src, options) => {
     );
   }
 
-  if (hasClass) {
+  if (hasClass && !preserveClasses) {
     extraPlugins.push([require('@babel/plugin-transform-classes')]);
   }
 
@@ -235,7 +242,9 @@ const getPreset = (src, options) => {
           ],
           [require('babel-plugin-transform-flow-enums')],
           [require('@babel/plugin-transform-block-scoping')],
-          [require('@babel/plugin-transform-class-properties'), {loose}],
+          ...(preserveClasses
+            ? []
+            : [[require('@babel/plugin-transform-class-properties'), {loose}]]),
           [require('@babel/plugin-transform-private-methods'), {loose}],
           [
             require('@babel/plugin-transform-private-property-in-object'),

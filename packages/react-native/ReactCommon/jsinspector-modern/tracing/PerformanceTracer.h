@@ -15,6 +15,7 @@
 
 #include <folly/dynamic.h>
 #include <atomic>
+#include <map>
 #include <mutex>
 #include <optional>
 #include <vector>
@@ -24,13 +25,15 @@ namespace facebook::react::jsinspector_modern::tracing {
 // TODO: Review how this API is integrated into jsinspector_modern (singleton
 // design is copied from earlier FuseboxTracer prototype).
 
+using Headers = std::map<std::string, std::string>;
+
 /**
  * [Experimental] An interface for logging performance trace events to the
  * modern debugger server.
  */
 class PerformanceTracer {
  public:
-  static PerformanceTracer& getInstance();
+  static PerformanceTracer &getInstance();
 
   /**
    * Starts a tracing session. Returns `false` if already tracing.
@@ -54,7 +57,8 @@ class PerformanceTracer {
    * avoid doing expensive work (like formatting strings) if tracing is not
    * enabled.
    */
-  inline bool isTracing() const {
+  inline bool isTracing() const
+  {
     return tracingAtomic_;
   }
 
@@ -64,10 +68,7 @@ class PerformanceTracer {
    *
    * See https://w3c.github.io/user-timing/#mark-method.
    */
-  void reportMark(
-      const std::string_view& name,
-      HighResTimeStamp start,
-      folly::dynamic&& detail = nullptr);
+  void reportMark(const std::string &name, HighResTimeStamp start, folly::dynamic &&detail = nullptr);
 
   /**
    * Record a `Performance.measure()` event - a labelled duration. If not
@@ -76,10 +77,10 @@ class PerformanceTracer {
    * See https://w3c.github.io/user-timing/#measure-method.
    */
   void reportMeasure(
-      const std::string_view& name,
+      const std::string &name,
       HighResTimeStamp start,
       HighResDuration duration,
-      folly::dynamic&& detail = nullptr);
+      folly::dynamic &&detail = nullptr);
 
   /**
    * Record a "TimeStamp" Trace Event - a labelled entry on Performance
@@ -89,7 +90,7 @@ class PerformanceTracer {
    https://developer.chrome.com/docs/devtools/performance/extension#inject_your_data_with_consoletimestamp
    */
   void reportTimeStamp(
-      std::string name,
+      const std::string &name,
       std::optional<ConsoleTimeStampEntry> start = std::nullopt,
       std::optional<ConsoleTimeStampEntry> end = std::nullopt,
       std::optional<std::string> trackName = std::nullopt,
@@ -107,6 +108,56 @@ class PerformanceTracer {
    * "Run Microtasks" block under a task.
    */
   void reportEventLoopMicrotasks(HighResTimeStamp start, HighResTimeStamp end);
+
+  /**
+   * Record a "ResourceWillSendRequest" event. Paired with other "Resource*"
+   * events, renders a network request timeline in the Performance panel Network
+   * track.
+   *
+   * If not currently tracing, this is a no-op.
+   */
+  void reportResourceWillSendRequest(const std::string &devtoolsRequestId, HighResTimeStamp start);
+
+  /**
+   * Record a "ResourceSendRequest" event. Paired with other "Resource*"
+   * events, renders a network request timeline in the Performance panel Network
+   * track.
+   *
+   * If not currently tracing, this is a no-op.
+   */
+  void reportResourceSendRequest(
+      const std::string &devtoolsRequestId,
+      HighResTimeStamp start,
+      const std::string &url,
+      const std::string &requestMethod,
+      const Headers &headers);
+
+  /**
+   * Record a "ResourceReceiveResponse" event. Paired with other "Resource*"
+   * events, renders a network request timeline in the Performance panel Network
+   * track.
+   *
+   * If not currently tracing, this is a no-op.
+   */
+  void reportResourceReceiveResponse(
+      const std::string &devtoolsRequestId,
+      HighResTimeStamp start,
+      int statusCode,
+      const Headers &headers,
+      int encodedDataLength,
+      folly::dynamic timingData);
+
+  /**
+   * Record a "ResourceFinish" event. Paired with other "Resource*" events,
+   * renders a network request timeline in the Performance panel Network track.
+   *
+   * If not currently tracing, this is a no-op.
+   */
+  void reportResourceFinish(
+      const std::string &devtoolsRequestId,
+      HighResTimeStamp start,
+      int encodedDataLength,
+      int decodedBodyLength);
 
   /**
    * Creates "Profile" Trace Event.
@@ -129,13 +180,101 @@ class PerformanceTracer {
       ProcessId processId,
       ProcessId threadId,
       HighResTimeStamp chunkTimestamp,
-      TraceEventProfileChunk&& traceEventProfileChunk);
+      TraceEventProfileChunk &&traceEventProfileChunk);
 
  private:
   PerformanceTracer();
-  PerformanceTracer(const PerformanceTracer&) = delete;
-  PerformanceTracer& operator=(const PerformanceTracer&) = delete;
+  PerformanceTracer(const PerformanceTracer &) = delete;
+  PerformanceTracer &operator=(const PerformanceTracer &) = delete;
   ~PerformanceTracer() = default;
+
+#pragma mark - Internal trace event types
+
+  struct PerformanceTracerEventEventLoopTask {
+    HighResTimeStamp start;
+    HighResTimeStamp end;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerEventEventLoopMicrotask {
+    HighResTimeStamp start;
+    HighResTimeStamp end;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerEventMark {
+    std::string name;
+    HighResTimeStamp start;
+    folly::dynamic detail;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerEventMeasure {
+    std::string name;
+    HighResTimeStamp start;
+    HighResDuration duration;
+    folly::dynamic detail;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerEventTimeStamp {
+    std::string name;
+    std::optional<ConsoleTimeStampEntry> start;
+    std::optional<ConsoleTimeStampEntry> end;
+    std::optional<std::string> trackName;
+    std::optional<std::string> trackGroup;
+    std::optional<ConsoleTimeStampColor> color;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerResourceSendRequest {
+    std::string requestId;
+    std::string url;
+    HighResTimeStamp start;
+    std::string requestMethod;
+    std::string resourceType;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerResourceFinish {
+    std::string requestId;
+    HighResTimeStamp start;
+    int encodedDataLength;
+    int decodedBodyLength;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerResourceReceiveResponse {
+    std::string requestId;
+    HighResTimeStamp start;
+    int encodedDataLength;
+    Headers headers;
+    std::string mimeType;
+    std::string protocol;
+    int statusCode;
+    folly::dynamic timing;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  using PerformanceTracerEvent = std::variant<
+      PerformanceTracerEventTimeStamp,
+      PerformanceTracerEventEventLoopTask,
+      PerformanceTracerEventEventLoopMicrotask,
+      PerformanceTracerEventMark,
+      PerformanceTracerEventMeasure,
+      PerformanceTracerResourceSendRequest,
+      PerformanceTracerResourceReceiveResponse,
+      PerformanceTracerResourceFinish>;
+
+#pragma mark - Private fields and methods
 
   const ProcessId processId_;
 
@@ -159,13 +298,17 @@ class PerformanceTracer {
 
   std::optional<HighResDuration> currentTraceMaxDuration_;
 
-  std::vector<TraceEvent> buffer_;
+  std::vector<PerformanceTracerEvent> buffer_;
 
   // These fields are only used when setting a max duration on the trace.
-  std::vector<TraceEvent> altBuffer_;
-  std::vector<TraceEvent>* currentBuffer_ = &buffer_;
-  std::vector<TraceEvent>* previousBuffer_{};
+  std::vector<PerformanceTracerEvent> altBuffer_;
+  std::vector<PerformanceTracerEvent> *currentBuffer_ = &buffer_;
+  std::vector<PerformanceTracerEvent> *previousBuffer_{};
   HighResTimeStamp currentBufferStartTime_;
+
+  // A flag that is used to ensure we only emit one auxiliary entry for the
+  // ordering of Scheduler / Component tracks.
+  bool alreadyEmittedEntryForComponentsTrackOrdering_ = false;
 
   /**
    * Protects data members of this class for concurrent access, including
@@ -173,19 +316,19 @@ class PerformanceTracer {
    */
   std::mutex mutex_;
 
-  bool startTracingImpl(
-      std::optional<HighResDuration> maxDuration = std::nullopt);
+  bool startTracingImpl(std::optional<HighResDuration> maxDuration = std::nullopt);
 
-  std::vector<TraceEvent> collectEventsAndClearBuffers(
-      HighResTimeStamp currentTraceEndTime);
+  std::vector<TraceEvent> collectEventsAndClearBuffers(HighResTimeStamp currentTraceEndTime);
   void collectEventsAndClearBuffer(
-      std::vector<TraceEvent>& events,
-      std::vector<TraceEvent>& buffer,
+      std::vector<TraceEvent> &events,
+      std::vector<PerformanceTracerEvent> &buffer,
       HighResTimeStamp currentTraceEndTime);
-  bool isInTracingWindow(
-      HighResTimeStamp now,
-      HighResTimeStamp timeStampToCheck) const;
-  void enqueueEvent(TraceEvent&& event);
+  bool isInTracingWindow(HighResTimeStamp now, HighResTimeStamp timeStampToCheck) const;
+  void enqueueEvent(PerformanceTracerEvent &&event);
+
+  HighResTimeStamp getCreatedAt(const PerformanceTracerEvent &event) const;
+
+  void enqueueTraceEventsFromPerformanceTracerEvent(std::vector<TraceEvent> &events, PerformanceTracerEvent &&event);
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

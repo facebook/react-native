@@ -75,12 +75,12 @@ RCTFormatLog(NSDate *timestamp, RCTLogLevel level, NSString *fileName, NSNumber 
 /**
  * A method to generate a string RCTLogLevel
  */
-RCT_EXTERN NSString *RCTFormatLogLevel(RCTLogLevel);
+RCT_EXTERN NSString *RCTFormatLogLevel(RCTLogLevel /*level*/);
 
 /**
  * A method to generate a string from a RCTLogSource
  */
-RCT_EXTERN NSString *RCTFormatLogSource(RCTLogSource);
+RCT_EXTERN NSString *RCTFormatLogSource(RCTLogSource /*source*/);
 
 /**
  * The default logging function used by RCTLogXX.
@@ -149,5 +149,7 @@ RCT_EXTERN void RCTLogSetBridgelessCallableJSModules(RCTCallableJSModules *calla
   } while (0)
 #endif
 
-RCT_EXTERN void _RCTLogNativeInternal(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4, 5);
-RCT_EXTERN void _RCTLogJavaScriptInternal(RCTLogLevel, NSString *);
+RCT_EXTERN void
+_RCTLogNativeInternal(RCTLogLevel /*level*/, const char * /*fileName*/, int /*lineNumber*/, NSString * /*format*/, ...)
+    NS_FORMAT_FUNCTION(4, 5);
+RCT_EXTERN void _RCTLogJavaScriptInternal(RCTLogLevel /*level*/, NSString * /*message*/);

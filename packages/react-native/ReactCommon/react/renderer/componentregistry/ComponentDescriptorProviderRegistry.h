@@ -16,8 +16,7 @@
 
 namespace facebook::react {
 
-using ComponentDescriptorProviderRequest =
-    std::function<void(ComponentName componentName)>;
+using ComponentDescriptorProviderRequest = std::function<void(ComponentName componentName)>;
 
 /*
  * Registry of `ComponentDescriptorProvider`s (and managed
@@ -32,7 +31,7 @@ class ComponentDescriptorProviderRegistry final {
    * `ComponentDescriptorRegistry`s accordingly.
    * The methods can be called on any thread.
    */
-  void add(const ComponentDescriptorProvider& provider) const;
+  void add(const ComponentDescriptorProvider &provider) const;
 
   /*
    * ComponenDescriptorRegistry will call the `request` in case if a component
@@ -42,8 +41,7 @@ class ComponentDescriptorProviderRegistry final {
    * The request can be called on any thread.
    * The methods can be called on any thread.
    */
-  void setComponentDescriptorProviderRequest(
-      ComponentDescriptorProviderRequest request) const;
+  void setComponentDescriptorProviderRequest(ComponentDescriptorProviderRequest request) const;
 
   /*
    * Creates managed `ComponentDescriptorRegistry` based on a stored list of
@@ -51,7 +49,7 @@ class ComponentDescriptorProviderRegistry final {
    * The methods can be called on any thread.
    */
   ComponentDescriptorRegistry::Shared createComponentDescriptorRegistry(
-      const ComponentDescriptorParameters& parameters) const;
+      const ComponentDescriptorParameters &parameters) const;
 
  private:
   friend class ComponentDescriptorRegistry;
@@ -59,12 +57,9 @@ class ComponentDescriptorProviderRegistry final {
   void request(ComponentName componentName) const;
 
   mutable std::shared_mutex mutex_;
-  mutable std::vector<std::weak_ptr<const ComponentDescriptorRegistry>>
-      componentDescriptorRegistries_;
-  mutable std::unordered_map<ComponentHandle, const ComponentDescriptorProvider>
-      componentDescriptorProviders_;
-  mutable ComponentDescriptorProviderRequest
-      componentDescriptorProviderRequest_{};
+  mutable std::vector<std::weak_ptr<const ComponentDescriptorRegistry>> componentDescriptorRegistries_;
+  mutable std::unordered_map<ComponentHandle, const ComponentDescriptorProvider> componentDescriptorProviders_;
+  mutable ComponentDescriptorProviderRequest componentDescriptorProviderRequest_{};
 };
 
 } // namespace facebook::react

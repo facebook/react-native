@@ -215,7 +215,7 @@ Size SurfaceHandler::measure(
   std::shared_lock lock(linkMutex_);
 
   if (link_.status != Status::Running) {
-    return layoutConstraints.clamp({0, 0});
+    return layoutConstraints.clamp({.width = 0, .height = 0});
   }
 
   react_native_assert(
@@ -225,7 +225,7 @@ Size SurfaceHandler::measure(
       link_.shadowTree->getCurrentRevision().rootShadowNode;
 
   PropsParserContext propsParserContext{
-      parameters_.surfaceId, *parameters_.contextContainer.get()};
+      parameters_.surfaceId, *parameters_.contextContainer};
 
   auto rootShadowNode = currentRootShadowNode->clone(
       propsParserContext, layoutConstraints, layoutContext);
@@ -329,7 +329,7 @@ void SurfaceHandler::constraintLayout(
     }
 
     PropsParserContext propsParserContext{
-        parameters_.surfaceId, *parameters_.contextContainer.get()};
+        parameters_.surfaceId, *parameters_.contextContainer};
 
     react_native_assert(
         link_.shadowTree && "`link_.shadowTree` must not be null.");

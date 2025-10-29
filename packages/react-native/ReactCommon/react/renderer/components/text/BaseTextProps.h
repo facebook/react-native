@@ -21,16 +21,10 @@ namespace facebook::react {
 class BaseTextProps {
  public:
   BaseTextProps() = default;
-  BaseTextProps(
-      const PropsParserContext& context,
-      const BaseTextProps& sourceProps,
-      const RawProps& rawProps);
+  BaseTextProps(const PropsParserContext &context, const BaseTextProps &sourceProps, const RawProps &rawProps);
 
-  void setProp(
-      const PropsParserContext& context,
-      RawPropsPropNameHash hash,
-      const char* propName,
-      const RawValue& value);
+  void
+  setProp(const PropsParserContext &context, RawPropsPropNameHash hash, const char *propName, const RawValue &value);
 
 #pragma mark - Props
 
@@ -43,9 +37,7 @@ class BaseTextProps {
 #endif
 
 #ifdef RN_SERIALIZABLE_STATE
-  void appendTextAttributesProps(
-      folly::dynamic& result,
-      const BaseTextProps* prevProps) const;
+  void appendTextAttributesProps(folly::dynamic &result, const BaseTextProps *prevProps) const;
 #endif
 };
 

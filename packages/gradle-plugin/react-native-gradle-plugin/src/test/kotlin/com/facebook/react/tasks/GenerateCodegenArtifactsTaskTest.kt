@@ -138,17 +138,18 @@ class GenerateCodegenArtifactsTaskTest {
           // language=JSON
           writeText(
               """
-        {
-            "name": "@a/library",
-            "codegenConfig": {
-                "name": "an-awesome-library",
-                "android": {
-                  "javaPackageName": "com.awesome.package"
-                }
-            }
-        }
-        """
-                  .trimIndent())
+              {
+                  "name": "@a/library",
+                  "codegenConfig": {
+                      "name": "an-awesome-library",
+                      "android": {
+                        "javaPackageName": "com.awesome.package"
+                      }
+                  }
+              }
+              """
+                  .trimIndent()
+          )
         }
 
     val task =
@@ -171,13 +172,14 @@ class GenerateCodegenArtifactsTaskTest {
           // language=JSON
           writeText(
               """
-        {
-            "name": "@a/library",
-            "codegenConfig": {
-            }
-        }
-        """
-                  .trimIndent())
+              {
+                  "name": "@a/library",
+                  "codegenConfig": {
+                  }
+              }
+              """
+                  .trimIndent()
+          )
         }
 
     val task =
@@ -196,10 +198,10 @@ class GenerateCodegenArtifactsTaskTest {
   @Test
   fun resolveTaskParameters_withMissingPackageJson_usesGradleOne() {
     val task =
-        createTestTask<GenerateCodegenArtifactsTask> {
-          it.packageJsonFile.set(File(tempFolder.root, "package.json"))
-          it.codegenJavaPackageName.set("com.example.test")
-          it.libraryName.set("a-library-name-from-gradle")
+        createTestTask<GenerateCodegenArtifactsTask> { task ->
+          task.packageJsonFile.set(File(tempFolder.root, "package.json"))
+          task.codegenJavaPackageName.set("com.example.test")
+          task.libraryName.set("a-library-name-from-gradle")
         }
 
     val (libraryName, javaPackageName) = task.resolveTaskParameters()

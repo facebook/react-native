@@ -143,6 +143,8 @@ import java.util.Set;
  */
 @ThreadSafe
 @LegacyArchitecture
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class ReactInstanceManager {
 
   static {
@@ -229,6 +231,9 @@ public class ReactInstanceManager {
     return new ReactInstanceManagerBuilder();
   }
 
+  /**
+   * @noinspection deprecation
+   */
   /* package */ ReactInstanceManager(
       Context applicationContext,
       @Nullable Activity currentActivity,
@@ -295,17 +300,6 @@ public class ReactInstanceManager {
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
-      mPackages.add(
-          new CoreModulesPackage(
-              this,
-              new DefaultHardwareBackBtnHandler() {
-                @Override
-                public void invokeDefaultOnBackPressed() {
-                  ReactInstanceManager.this.invokeDefaultOnBackPressed();
-                }
-              },
-              lazyViewManagersEnabled,
-              minTimeLeftInFrameForNonBatchedOperationMs));
       if (mUseDeveloperSupport) {
         mPackages.add(new DebugCorePackage());
       }
@@ -323,6 +317,15 @@ public class ReactInstanceManager {
     }
 
     registerCxxErrorHandlerFunc();
+
+    // Using `if (true)` just to prevent tests / lint errors.
+    if (true) {
+      // Legacy architecture of React Native is deprecated and can't be initialized anymore.
+      // More details on:
+      // https://github.com/react-native-community/discussions-and-proposals/blob/nc/legacy-arch-removal/proposals/0929-legacy-architecture-removal.md
+      throw new UnsupportedOperationException(
+          "ReactInstanceManager.createReactContext is unsupported.");
+    }
   }
 
   private ReactInstanceDevHelper createDevHelperInterface() {
@@ -1441,6 +1444,7 @@ public class ReactInstanceManager {
    */
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
+
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
 
@@ -1565,14 +1569,7 @@ public class ReactInstanceManager {
     SystraceMessage.beginSection(TRACE_TAG_REACT, "processPackage")
         .arg("className", reactPackage.getClass().getSimpleName())
         .flush();
-    if (reactPackage instanceof ReactPackageLogger) {
-      ((ReactPackageLogger) reactPackage).startProcessPackage();
-    }
     nativeModuleRegistryBuilder.processPackage(reactPackage);
-
-    if (reactPackage instanceof ReactPackageLogger) {
-      ((ReactPackageLogger) reactPackage).endProcessPackage();
-    }
     SystraceMessage.endSection(TRACE_TAG_REACT).flush();
   }
 

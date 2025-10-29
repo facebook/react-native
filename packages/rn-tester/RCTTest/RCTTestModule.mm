@@ -137,16 +137,16 @@ RCT_EXPORT_METHOD(sendAppEvent : (NSString *)name body : (nullable id)body)
 #pragma clang diagnostic pop
 }
 
-RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve
-                 : (RCTPromiseResolveBlock)resolve reject
-                 : (RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(
+    shouldResolve,
+    shouldResolve_resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   resolve(@1);
 }
 
-RCT_REMAP_METHOD(shouldReject, shouldReject_resolve
-                 : (RCTPromiseResolveBlock)resolve reject
-                 : (RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(
+    shouldReject,
+    shouldReject_resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   reject(nil, nil, nil);
 }

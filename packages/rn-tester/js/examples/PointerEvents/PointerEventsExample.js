@@ -31,7 +31,7 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
   };
 
   handleLog = (msg: string) => {
-    // $FlowFixMe
+    // $FlowFixMe[cannot-write]
     this.state.log = this.state.log.concat([msg]);
   };
 
@@ -44,7 +44,7 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
    * happens.
    */
   handleTouchCapture = () => {
-    // $FlowFixMe
+    // $FlowFixMe[cannot-write]
     this.state.log = this.state.log.concat(['---']);
   };
 

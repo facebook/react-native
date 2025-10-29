@@ -49,7 +49,7 @@ internal class ToastModule(reactContext: ReactApplicationContext) :
       durationDouble: Double,
       gravityDouble: Double,
       xOffsetDouble: Double,
-      yOffsetDouble: Double
+      yOffsetDouble: Double,
   ) {
     val duration = durationDouble.toInt()
     val gravity = gravityDouble.toInt()

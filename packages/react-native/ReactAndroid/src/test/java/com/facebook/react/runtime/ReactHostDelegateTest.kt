@@ -41,7 +41,8 @@ class ReactHostDelegateTest {
             jsMainModulePath = jsMainModulePathMocked,
             jsBundleLoader = jsBundleLoader,
             jsRuntimeFactory = hermesInstance,
-            turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock)
+            turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock,
+        )
 
     assertThat(delegate.jsMainModulePath).isEqualTo(jsMainModulePathMocked)
   }

@@ -83,6 +83,7 @@ internal object InspectorNetworkHelper {
               listener.onError(e.message)
             }
           }
-        })
+        }
+    )
   }
 }

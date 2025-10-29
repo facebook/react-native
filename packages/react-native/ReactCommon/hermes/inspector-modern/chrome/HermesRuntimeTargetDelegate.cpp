@@ -78,6 +78,14 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
       return &hermesStackTrace_;
     }
 
+    const HermesStackTrace& operator*() const {
+      return hermesStackTrace_;
+    }
+
+    const HermesStackTrace* operator->() const {
+      return &hermesStackTrace_;
+    }
+
    private:
     HermesStackTrace hermesStackTrace_;
   };
@@ -216,6 +224,47 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
     return samplingProfileDelegate_->collectSamplingProfile();
   }
 
+  std::optional<folly::dynamic> serializeStackTrace(
+      const StackTrace& stackTrace) override {
+    if (auto* hermesStackTraceWrapper =
+            dynamic_cast<const HermesStackTraceWrapper*>(&stackTrace)) {
+      // The logic below is duplicated from
+      // facebook::hermes::cdp::message::makeCallFrames in
+      // hermes/cdp/MessageConverters.cpp (and rewritten to use Folly).
+      // TODO: Use a suitable Hermes API (D83560910 / D83560972 / D83562078) to
+      // serialize the stack trace to CDP-formatted JSON.
+      folly::dynamic cdpStackTrace = folly::dynamic::object();
+      auto& hermesStackTrace = **hermesStackTraceWrapper;
+      if (hermesStackTrace.callFrameCount() > 0) {
+        folly::dynamic callFrames = folly::dynamic::array();
+        callFrames.reserve(hermesStackTrace.callFrameCount());
+        for (int i = 0, n = hermesStackTrace.callFrameCount(); i != n; i++) {
+          auto callFrame = hermesStackTrace.callFrameForIndex(i);
+          if (callFrame.location.fileId ==
+              facebook::hermes::debugger::kInvalidLocation) {
+            continue;
+          }
+          folly::dynamic callFrameObj = folly::dynamic::object();
+          callFrameObj["functionName"] = callFrame.functionName;
+          callFrameObj["scriptId"] = std::to_string(callFrame.location.fileId);
+          callFrameObj["url"] = callFrame.location.fileName;
+          if (callFrame.location.line !=
+              facebook::hermes::debugger::kInvalidLocation) {
+            callFrameObj["lineNumber"] = callFrame.location.line - 1;
+          }
+          if (callFrame.location.column !=
+              facebook::hermes::debugger::kInvalidLocation) {
+            callFrameObj["columnNumber"] = callFrame.location.column - 1;
+          }
+          callFrames.push_back(std::move(callFrameObj));
+        }
+        cdpStackTrace["callFrames"] = std::move(callFrames);
+      }
+      return cdpStackTrace;
+    }
+    return std::nullopt;
+  }
+
  private:
   HermesRuntimeTargetDelegate& delegate_;
   std::shared_ptr<HermesRuntime> runtime_;
@@ -309,6 +358,11 @@ void HermesRuntimeTargetDelegate::disableSamplingProfiler() {
 tracing::RuntimeSamplingProfile
 HermesRuntimeTargetDelegate::collectSamplingProfile() {
   return impl_->collectSamplingProfile();
+}
+
+std::optional<folly::dynamic> HermesRuntimeTargetDelegate::serializeStackTrace(
+    const StackTrace& stackTrace) {
+  return impl_->serializeStackTrace(stackTrace);
 }
 
 #ifdef HERMES_ENABLE_DEBUGGER

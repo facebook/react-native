@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9583365cd9d7786ee9be03ff34b0766f>>
+ * @generated SignedSource<<7987eba84c39c6e8cb6494092a94790e>>
  */
 
 /**
@@ -31,6 +31,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun cxxNativeAnimatedRemoveJsSync(): Boolean = false
 
+  override fun disableEarlyViewCommandExecution(): Boolean = false
+
   override fun disableFabricCommitInCXXAnimated(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
@@ -42,6 +44,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableAccessibilityOrder(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
+
+  override fun enableAndroidLinearText(): Boolean = false
 
   override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 
@@ -63,9 +67,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricRenderer(): Boolean = false
 
-  override fun enableFixForParentTagDuringReparenting(): Boolean = false
-
-  override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean = true
 
   override fun enableIOSTextBaselineOffsetPerLine(): Boolean = false
 
@@ -73,7 +75,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
 
+  override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
+
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
+
+  override fun enableImperativeFocus(): Boolean = false
 
   override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
 
@@ -89,27 +95,35 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableNetworkEventReporting(): Boolean = false
 
-  override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
-
   override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
   override fun enableResourceTimingAPI(): Boolean = false
 
+  override fun enableSwiftUIBasedFilters(): Boolean = false
+
   override fun enableViewCulling(): Boolean = false
 
   override fun enableViewRecycling(): Boolean = false
 
+  override fun enableViewRecyclingForImage(): Boolean = true
+
+  override fun enableViewRecyclingForScrollView(): Boolean = false
+
   override fun enableViewRecyclingForText(): Boolean = true
 
   override fun enableViewRecyclingForView(): Boolean = true
+
+  override fun enableVirtualViewContainerStateExperimental(): Boolean = false
 
   override fun enableVirtualViewDebugFeatures(): Boolean = false
 
   override fun enableVirtualViewRenderState(): Boolean = true
 
   override fun enableVirtualViewWindowFocusDetection(): Boolean = false
+
+  override fun enableWebPerformanceAPIsByDefault(): Boolean = false
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
@@ -119,15 +133,17 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
 
+  override fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = false
+
   override fun perfMonitorV2Enabled(): Boolean = false
 
   override fun preparedTextCacheSize(): Double = 200.0
 
   override fun preventShadowTreeCommitExhaustion(): Boolean = false
 
-  override fun releaseImageDataWhenConsumed(): Boolean = false
-
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
+
+  override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 
   override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
 
@@ -141,21 +157,29 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useFabricInterop(): Boolean = true
 
-  override fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean = false
+  override fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean = true
 
-  override fun useNativeTransformHelperAndroid(): Boolean = false
+  override fun useNativeTransformHelperAndroid(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
-  override fun useRawPropsJsiValue(): Boolean = false
+  override fun useRawPropsJsiValue(): Boolean = true
 
   override fun useShadowNodeStateOnClone(): Boolean = false
+
+  override fun useSharedAnimatedBackend(): Boolean = false
+
+  override fun useTraitHiddenOnAndroid(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 
   override fun useTurboModules(): Boolean = false
+
+  override fun viewCullingOutsetRatio(): Double = 0.0
+
+  override fun virtualViewHysteresisRatio(): Double = 0.0
 
   override fun virtualViewPrerenderRatio(): Double = 5.0
 }

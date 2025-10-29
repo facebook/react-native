@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class TransformAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private val transformConfigs: List<TransformConfig>
 
@@ -60,7 +60,8 @@ internal class TransformAnimatedNode(
                   throw IllegalArgumentException(
                       "Unsupported type of node used as a transform child " +
                           "node " +
-                          node.javaClass)
+                          node.javaClass
+                  )
                 }
               } else {
                 (transformConfig as StaticTransformConfig).value

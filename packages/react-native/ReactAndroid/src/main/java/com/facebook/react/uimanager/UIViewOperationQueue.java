@@ -49,6 +49,8 @@ import java.util.Map;
  * for operations queue to save on allocations
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class UIViewOperationQueue {
 
   static {
@@ -416,7 +418,7 @@ public class UIViewOperationQueue {
     public void execute() {
       try {
         mNativeViewHierarchyManager.measure(mReactTag, mMeasureBuffer);
-      } catch (NoSuchNativeViewException e) {
+      } catch (IllegalViewOperationException e) {
         // Invoke with no args to signal failure and to allow JS to clean up the callback
         // handle.
         mCallback.invoke();
@@ -446,7 +448,7 @@ public class UIViewOperationQueue {
     public void execute() {
       try {
         mNativeViewHierarchyManager.measureInWindow(mReactTag, mMeasureBuffer);
-      } catch (NoSuchNativeViewException e) {
+      } catch (IllegalViewOperationException e) {
         // Invoke with no args to signal failure and to allow JS to clean up the callback
         // handle.
         mCallback.invoke();

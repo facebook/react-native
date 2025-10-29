@@ -36,18 +36,21 @@ internal object UIManagerModuleConstantsHelper {
       UIManagerModuleConstants.constants.plus(
           mapOf(
               "ViewManagerNames" to ArrayList<String?>(resolver.getViewManagerNames()),
-              "LazyViewManagersEnabled" to true))
+              "LazyViewManagersEnabled" to true,
+          )
+      )
 
   @JvmStatic
   val defaultExportableEventTypes: Map<String, Any>
     get() =
         mapOf(
             BUBBLING_EVENTS_KEY to UIManagerModuleConstants.bubblingEventTypeConstants,
-            DIRECT_EVENTS_KEY to UIManagerModuleConstants.directEventTypeConstants)
+            DIRECT_EVENTS_KEY to UIManagerModuleConstants.directEventTypeConstants,
+        )
 
   private fun validateDirectEventNames(
       viewManagerName: String,
-      directEvents: MutableMap<String, Any>?
+      directEvents: MutableMap<String, Any>?,
   ) {
     if (!ReactBuildConfig.DEBUG || directEvents == null) {
       return
@@ -56,14 +59,17 @@ internal object UIManagerModuleConstantsHelper {
     for ((key, value) in directEvents) {
       if (value is MutableMap<*, *>) {
         val regName = value["registrationName"] as String?
-        if (regName != null &&
-            key.startsWith("top") &&
-            regName.startsWith("on") &&
-            (key.substring(3) != regName.substring(2))) {
+        if (
+            regName != null &&
+                key.startsWith("top") &&
+                regName.startsWith("on") &&
+                (key.substring(3) != regName.substring(2))
+        ) {
           FLog.e(
               TAG,
               "Direct event name for '$viewManagerName' doesn't correspond to the naming convention," +
-                  " expected 'topEventName'->'onEventName', got '$key'->'$regName'")
+                  " expected 'topEventName'->'onEventName', got '$key'->'$regName'",
+          )
         }
       }
     }
@@ -85,7 +91,7 @@ internal object UIManagerModuleConstantsHelper {
   internal fun createConstants(
       viewManagers: List<ViewManager<in Nothing, in Nothing>>,
       allBubblingEventTypes: MutableMap<String, Any>?,
-      allDirectEventTypes: MutableMap<String, Any>?
+      allDirectEventTypes: MutableMap<String, Any>?,
   ): MutableMap<String, Any> {
     val constants: MutableMap<String, Any> = UIManagerModuleConstants.constants.toMutableMap()
 
@@ -108,7 +114,12 @@ internal object UIManagerModuleConstantsHelper {
 
       val viewManagerConstants: MutableMap<*, *> =
           createConstantsForViewManager(
-              viewManager, null, null, allBubblingEventTypes, allDirectEventTypes)
+              viewManager,
+              null,
+              null,
+              allBubblingEventTypes,
+              allDirectEventTypes,
+          )
       if (!viewManagerConstants.isEmpty()) {
         constants[viewManagerName] = viewManagerConstants
       }
@@ -126,7 +137,7 @@ internal object UIManagerModuleConstantsHelper {
       defaultBubblingEvents: MutableMap<String, Any>?,
       defaultDirectEvents: MutableMap<String, Any>?,
       cumulativeBubblingEventTypes: MutableMap<String, Any>?,
-      cumulativeDirectEventTypes: MutableMap<String, Any>?
+      cumulativeDirectEventTypes: MutableMap<String, Any>?,
   ): MutableMap<String, Any> {
     val viewManagerConstants: MutableMap<String, Any> = mutableMapOf()
 
@@ -220,9 +231,9 @@ internal object UIManagerModuleConstantsHelper {
 
     for ((key, sourceValue) in source) {
       var destValue = dest[key]
-      if (destValue != null &&
-          (sourceValue is MutableMap<*, *>) &&
-          (destValue is MutableMap<*, *>)) {
+      if (
+          destValue != null && (sourceValue is MutableMap<*, *>) && (destValue is MutableMap<*, *>)
+      ) {
         // Since event maps are client based Map interface, it could be immutable
         if (destValue !is HashMap<*, *>) {
           destValue = HashMap(destValue)

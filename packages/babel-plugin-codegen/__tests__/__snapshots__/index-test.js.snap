@@ -1,5 +1,77 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Babel plugin inline view configs can inline config for CommandsWithComplexCoverageNativeComponent.js 1`] = `
+"// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+import type { ViewProps } from 'ViewPropTypes';
+import type { NativeComponentType } from 'codegenNativeComponent';
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps
+|}>;
+type NativeType = NativeComponentType<ModuleProps>;
+interface NativeCommands {
+  +seek: (viewRef: React.ElementRef<NativeType>, position: number) => void,
+  +stop: (viewRef: React.ElementRef<NativeType>) => void,
+}
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+let nativeComponentName = 'Module';
+export const __INTERNAL_VIEW_CONFIG = {
+  uiViewClassName: \\"Module\\",
+  validAttributes: {}
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);"
+`;
+
+exports[`Babel plugin inline view configs can inline config for CommandsWithSimpleCoverageNativeComponent.js 1`] = `
+"// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+import type { ViewProps } from 'ViewPropTypes';
+import type { NativeComponentType } from 'codegenNativeComponent';
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps
+|}>;
+type NativeType = NativeComponentType<ModuleProps>;
+interface NativeCommands {
+  +pause: (viewRef: React.ElementRef<NativeType>) => void,
+  +play: (viewRef: React.ElementRef<NativeType>) => void,
+}
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+let nativeComponentName = 'Module';
+export const __INTERNAL_VIEW_CONFIG = {
+  uiViewClassName: \\"Module\\",
+  validAttributes: {}
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);"
+`;
+
+exports[`Babel plugin inline view configs can inline config for CommandsWithTypeCastCoverageNativeComponent.js 1`] = `
+"// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+import type { ViewProps } from 'ViewPropTypes';
+import type { NativeComponentType } from 'codegenNativeComponent';
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps
+|}>;
+type NativeType = NativeComponentType<ModuleProps>;
+interface NativeCommands {
+  +mute: (viewRef: React.ElementRef<NativeType>) => void,
+  +unmute: (viewRef: React.ElementRef<NativeType>) => void,
+}
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+let nativeComponentName = 'Module';
+export const __INTERNAL_VIEW_CONFIG = {
+  uiViewClassName: \\"Module\\",
+  validAttributes: {}
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);"
+`;
+
 exports[`Babel plugin inline view configs can inline config for FullNativeComponent.js 1`] = `
 "// @flow
 
@@ -151,6 +223,61 @@ exports[`Babel plugin inline view configs fails on inline config for CommandsExp
   22 |
   23 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
   24 |"
+`;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsWithComplexCoverageInvalidNativeComponent.js 1`] = `
+"/CommandsWithComplexCoverageInvalidNativeComponent.js: 'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.
+  14 |
+  15 | // Complex coverage instrumentation with invalid nested structure - should fail
+> 16 | export const Commands = (
+     | ^
+  17 |   cov_xyz789().f[1]++,
+  18 |   cov_xyz789().s[2]++,
+  19 |   {"
+`;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsWithCoverageInvalidNativeComponent.js 1`] = `
+"/CommandsWithCoverageInvalidNativeComponent.js: 'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.
+  14 |
+  15 | // Coverage instrumentation of invalid Commands export - should still fail
+> 16 | export const Commands = (cov_1234567890().s[0]++, {
+     | ^
+  17 |   hotspotUpdate: () => {},
+  18 |   scrollTo: () => {},
+  19 | });"
+`;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsWithCoverageTypeCastInvalidNativeComponent.js 1`] = `
+"/CommandsWithCoverageTypeCastInvalidNativeComponent.js: 'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.
+  19 |
+  20 | // Coverage instrumentation with type cast but wrong function - should fail
+> 21 | export const Commands: NativeCommands = (cov_cast123().s[0]++, invalidFunction({
+     | ^
+  22 |   supportedCommands: ['pause', 'play'],
+  23 | }));
+  24 |"
+`;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsWithCoverageWrongFunctionNativeComponent.js 1`] = `
+"/CommandsWithCoverageWrongFunctionNativeComponent.js: 'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.
+  14 |
+  15 | // Coverage instrumentation of wrong function call - should fail
+> 16 | export const Commands = (cov_abcdef123().s[0]++, someOtherFunction({
+     | ^
+  17 |   supportedCommands: ['pause', 'play'],
+  18 | }));
+  19 |"
+`;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsWithCoverageWrongNameNativeComponent.js 1`] = `
+"/CommandsWithCoverageWrongNameNativeComponent.js: Native commands must be exported with the name 'Commands'
+  20 |
+  21 | // Coverage instrumentation with correct function but wrong export name - should fail
+> 22 | export const WrongName = (cov_wrong123().s[0]++, codegenNativeCommands<NativeCommands>({
+     | ^
+  23 |   supportedCommands: ['pause', 'play'],
+  24 | }));
+  25 |"
 `;
 
 exports[`Babel plugin inline view configs fails on inline config for OtherCommandsExportNativeComponent.js 1`] = `

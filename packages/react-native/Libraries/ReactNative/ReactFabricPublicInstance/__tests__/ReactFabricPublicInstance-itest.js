@@ -14,7 +14,7 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import type {HostInstance} from 'react-native';
 
 import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import {getRawNativeDOMForTests} from '../../../../src/private/webapis/dom/nodes/specs/NativeDOM';
+import TextInput from '../../../Components/TextInput/TextInput';
 import TextInputState from '../../../Components/TextInput/TextInputState';
 import View from '../../../Components/View/View';
 import ReactFabricHostComponent from '../ReactFabricHostComponent';
@@ -49,7 +49,7 @@ describe('ReactFabricPublicInstance', () => {
       const nodeRef = createRef<HostInstance>();
 
       Fantom.runTask(() => {
-        root.render(<View ref={nodeRef} />);
+        root.render(<TextInput ref={nodeRef} />);
       });
 
       const node = nullthrows(nodeRef.current);
@@ -74,7 +74,7 @@ describe('ReactFabricPublicInstance', () => {
       const ref = createRef<HostInstance>();
 
       Fantom.runTask(() => {
-        root.render(<View ref={ref} />);
+        root.render(<TextInput ref={ref} />);
       });
 
       const node = nullthrows(ref.current);
@@ -349,58 +349,5 @@ describe('ReactFabricPublicInstance', () => {
           .toJSX(),
       ).toEqual(<rn-view testID={'second test id'} />);
     });
-
-    // TODO: delete when NativeDOM.setNativeProps is NOT nullable.
-    // This logic is to ensure compatibility with old app versions without the native module method.
-    if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
-      let RawNativeDOM;
-      let originalSetNativeProps;
-
-      beforeAll(() => {
-        RawNativeDOM = nullthrows(getRawNativeDOMForTests());
-        originalSetNativeProps = RawNativeDOM.setNativeProps;
-      });
-
-      beforeEach(() => {
-        // $FlowExpectedError[cannot-write]
-        RawNativeDOM.setNativeProps = originalSetNativeProps;
-      });
-
-      it('should propagate changes to the host component (when NativeDOM.setNativeProps is not available)', () => {
-        // $FlowExpectedError[cannot-write]
-        RawNativeDOM.setNativeProps = null;
-
-        expect(RawNativeDOM.setNativeProps).toBeNull();
-
-        const root = Fantom.createRoot();
-        const nodeRef = createRef<HostInstance>();
-
-        Fantom.runTask(() => {
-          root.render(<View ref={nodeRef} testID="first test id" />);
-        });
-
-        expect(
-          root
-            .getRenderedOutput({
-              props: ['testID'],
-            })
-            .toJSX(),
-        ).toEqual(<rn-view testID={'first test id'} />);
-
-        const element = nullthrows(nodeRef.current);
-
-        Fantom.runTask(() => {
-          element.setNativeProps({testID: 'second test id'});
-        });
-
-        expect(
-          root
-            .getRenderedOutput({
-              props: ['testID'],
-            })
-            .toJSX(),
-        ).toEqual(<rn-view testID={'second test id'} />);
-      });
-    }
   });
 });

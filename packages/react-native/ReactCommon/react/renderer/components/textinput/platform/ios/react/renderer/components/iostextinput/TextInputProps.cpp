@@ -50,6 +50,6 @@ TextInputProps::TextInputProps(
           rawProps,
           "onChangeSync",
           sourceProps.onChangeSync,
-          {})){};
+          {})) {};
 
 } // namespace facebook::react

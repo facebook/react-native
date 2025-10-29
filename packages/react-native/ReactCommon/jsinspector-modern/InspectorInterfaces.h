@@ -39,8 +39,7 @@ struct InspectorTargetCapabilities {
   bool prefersFuseboxFrontend = false;
 };
 
-folly::dynamic targetCapabilitiesToDynamic(
-    const InspectorTargetCapabilities& capabilities);
+folly::dynamic targetCapabilitiesToDynamic(const InspectorTargetCapabilities &capabilities);
 
 struct InspectorPageDescription {
   const int id;
@@ -85,8 +84,7 @@ class JSINSPECTOR_EXPORT IPageStatusListener : public IDestructible {
 /// IInspector tracks debuggable JavaScript targets (pages).
 class JSINSPECTOR_EXPORT IInspector : public IDestructible {
  public:
-  using ConnectFunc = std::function<std::unique_ptr<ILocalConnection>(
-      std::unique_ptr<IRemoteConnection>)>;
+  using ConnectFunc = std::function<std::unique_ptr<ILocalConnection>(std::unique_ptr<IRemoteConnection>)>;
 
   virtual ~IInspector() = 0;
 
@@ -100,8 +98,8 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
    * \returns the ID assigned to the new page.
    */
   virtual int addPage(
-      const std::string& description,
-      const std::string& vm,
+      const std::string &description,
+      const std::string &vm,
       ConnectFunc connectFunc,
       InspectorTargetCapabilities capabilities = {}) = 0;
 
@@ -122,24 +120,21 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
    * \returns an ILocalConnection that can be used to send messages to the
    * page, or nullptr if the connection has been rejected.
    */
-  virtual std::unique_ptr<ILocalConnection> connect(
-      int pageId,
-      std::unique_ptr<IRemoteConnection> remote) = 0;
+  virtual std::unique_ptr<ILocalConnection> connect(int pageId, std::unique_ptr<IRemoteConnection> remote) = 0;
 
   /**
    * registerPageStatusListener registers a listener that will receive events
    * when pages are removed.
    */
-  virtual void registerPageStatusListener(
-      std::weak_ptr<IPageStatusListener> listener) = 0;
+  virtual void registerPageStatusListener(std::weak_ptr<IPageStatusListener> listener) = 0;
 };
 
 class NotImplementedException : public std::exception {
  public:
-  explicit NotImplementedException(std::string message)
-      : msg_(std::move(message)) {}
+  explicit NotImplementedException(std::string message) : msg_(std::move(message)) {}
 
-  const char* what() const noexcept override {
+  const char *what() const noexcept override
+  {
     return msg_.c_str();
   }
 
@@ -149,7 +144,7 @@ class NotImplementedException : public std::exception {
 
 /// getInspectorInstance retrieves the singleton inspector that tracks all
 /// debuggable pages in this process.
-extern IInspector& getInspectorInstance();
+extern IInspector &getInspectorInstance();
 
 /// makeTestInspectorInstance creates an independent inspector instance that
 /// should only be used in tests.

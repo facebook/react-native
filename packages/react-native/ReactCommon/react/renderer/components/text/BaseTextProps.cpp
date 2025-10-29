@@ -237,7 +237,7 @@ BaseTextProps::BaseTextProps(
                     context,
                     rawProps,
                     sourceProps.textAttributes,
-                    TextAttributes{})){};
+                    TextAttributes{})) {};
 
 void BaseTextProps::setProp(
     const PropsParserContext& context,

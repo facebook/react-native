@@ -19,21 +19,20 @@ extern const char TextLayoutManagerKey[];
 /*
  * Descriptor for <Paragraph> component.
  */
-class ParagraphComponentDescriptor final
-    : public ConcreteComponentDescriptor<ParagraphShadowNode> {
+class ParagraphComponentDescriptor final : public ConcreteComponentDescriptor<ParagraphShadowNode> {
  public:
-  explicit ParagraphComponentDescriptor(
-      const ComponentDescriptorParameters& parameters)
+  explicit ParagraphComponentDescriptor(const ComponentDescriptorParameters &parameters)
       : ConcreteComponentDescriptor<ParagraphShadowNode>(parameters),
-        textLayoutManager_(getManagerByName<TextLayoutManager>(
-            contextContainer_,
-            TextLayoutManagerKey)) {}
+        textLayoutManager_(getManagerByName<TextLayoutManager>(contextContainer_, TextLayoutManagerKey))
+  {
+  }
 
  protected:
-  void adopt(ShadowNode& shadowNode) const override {
+  void adopt(ShadowNode &shadowNode) const override
+  {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto& paragraphShadowNode = static_cast<ParagraphShadowNode&>(shadowNode);
+    auto &paragraphShadowNode = static_cast<ParagraphShadowNode &>(shadowNode);
 
     // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.

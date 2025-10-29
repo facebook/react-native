@@ -75,7 +75,6 @@ class ReactNativeDependenciesUtils
 
         if ENV["RCT_USE_RN_DEP"] && ENV["RCT_USE_RN_DEP"] == "1"
             if @@use_nightly
-                rndeps_log("Using nightly tarball")
                 begin
                     return self.podspec_source_download_prebuilt_nightly_tarball(@@react_native_version)
                 rescue => e
@@ -84,7 +83,6 @@ class ReactNativeDependenciesUtils
                 end
             end
 
-            rndeps_log("Using release tarball")
             begin
                 return self.podspec_source_download_prebuild_release_tarball()
             rescue => e
@@ -160,9 +158,10 @@ class ReactNativeDependenciesUtils
 
         url = release_tarball_url(@@react_native_version, :debug)
         rndeps_log("Using tarball from URL: #{url}")
-        download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
+        destinationDebug = download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
         download_stable_rndeps(@@react_native_path, @@react_native_version, :release)
-        return {:http => url}
+
+        return {:http => URI::File.build(path: destinationDebug).to_s }
     end
 
     def self.release_tarball_url(version, build_type)
@@ -204,7 +203,6 @@ class ReactNativeDependenciesUtils
 
     def self.podspec_source_download_prebuilt_nightly_tarball(version)
         url = nightly_tarball_url(version)
-        rndeps_log("Using nightly tarball from URL: #{url}")
         return {:http => url}
     end
 
@@ -245,14 +243,13 @@ class ReactNativeDependenciesUtils
         if !Object.const_defined?("Pod::UI")
             return
         end
-        log_message = '[ReactNativeDependencies] ' + message
         case level
         when :info
-            Pod::UI.puts log_message.green
+            Pod::UI.puts '[ReactNativeDependencies] '.green + message
         when :error
-            Pod::UI.puts log_message.red
+            Pod::UI.puts '[ReactNativeDependencies] '.red + message
         else
-            Pod::UI.puts log_message.yellow
+            Pod::UI.puts '[ReactNativeDependencies] '.yellow + message
         end
     end
 

@@ -16,7 +16,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class MultiplicationAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
   private var inputNodes: IntArray
 
@@ -39,7 +39,8 @@ internal class MultiplicationAnimatedNode(
             animatedNode.getValue()
           } else {
             throw JSApplicationCausedNativeException(
-                "Illegal node ID set as an input for Animated.multiply node")
+                "Illegal node ID set as an input for Animated.multiply node"
+            )
           }
       nodeValue *= multiplier
     }

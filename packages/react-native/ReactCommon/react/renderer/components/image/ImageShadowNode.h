@@ -22,15 +22,13 @@ extern const char ImageComponentName[];
 /*
  * `ShadowNode` for <Image> component.
  */
-class ImageShadowNode final : public ConcreteViewShadowNode<
-                                  ImageComponentName,
-                                  ImageProps,
-                                  ImageEventEmitter,
-                                  ImageState> {
+class ImageShadowNode final
+    : public ConcreteViewShadowNode<ImageComponentName, ImageProps, ImageEventEmitter, ImageState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
-  static ShadowNodeTraits BaseTraits() {
+  static ShadowNodeTraits BaseTraits()
+  {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
     return traits;
@@ -39,12 +37,13 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
   /*
    * Associates a shared `ImageManager` with the node.
    */
-  void setImageManager(const std::shared_ptr<ImageManager>& imageManager);
+  void setImageManager(const std::shared_ptr<ImageManager> &imageManager);
 
   static ImageState initialStateData(
-      const Props::Shared& props,
-      const ShadowNodeFamily::Shared& /*family*/,
-      const ComponentDescriptor& componentDescriptor) {
+      const Props::Shared &props,
+      const ShadowNodeFamily::Shared & /*family*/,
+      const ComponentDescriptor &componentDescriptor)
+  {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
     return {imageSource, {imageSource, nullptr}, {}};
   }

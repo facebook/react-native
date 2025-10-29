@@ -116,13 +116,19 @@ class TimingModuleTest {
 
     whenever(
             reactChoreographerMock.postFrameCallback(
-                MockCompat.eq(CallbackType.TIMERS_EVENTS), MockCompat.any<FrameCallback>()))
+                MockCompat.eq(CallbackType.TIMERS_EVENTS),
+                MockCompat.any<FrameCallback>(),
+            )
+        )
         .thenAnswer {
           return@thenAnswer postFrameCallbackHandler.answer(it)
         }
     whenever(
             reactChoreographerMock.postFrameCallback(
-                MockCompat.eq(CallbackType.IDLE_EVENT), MockCompat.any<FrameCallback>()))
+                MockCompat.eq(CallbackType.IDLE_EVENT),
+                MockCompat.any<FrameCallback>(),
+            )
+        )
         .thenAnswer {
           return@thenAnswer idlePostFrameCallbackHandler.answer(it)
         }

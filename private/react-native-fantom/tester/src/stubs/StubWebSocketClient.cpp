@@ -11,7 +11,7 @@
 
 namespace facebook::react {
 
-WebSocketClientFactory getWebSocketClientFactory() {
+WebSocketClientFactory getStubWebSocketClientFactory() {
   return []() { return std::make_unique<StubWebSocketClient>(); };
 }
 

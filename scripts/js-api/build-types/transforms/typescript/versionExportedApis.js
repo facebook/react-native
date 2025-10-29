@@ -79,7 +79,7 @@ function createVersionExportedApis(
           if (t.isTSModuleDeclaration(node) && node.body) {
             const namespaceName = node.id.name;
 
-            // $FlowFixMe[prop-missing]
+            // $FlowFixMe[incompatible-type]
             for (const item of node.body.body) {
               if (t.isExportNamedDeclaration(item) && item.specifiers) {
                 for (const specifier of item.specifiers) {
@@ -363,6 +363,8 @@ function createVersionExportedApis(
       const value = node[key];
       if (Array.isArray(value)) {
         value.forEach(item => getTypeReferencesForNode(item, refs));
+        /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+         * roll out. See https://fburl.com/workplace/4oq3zi07. */
       } else if (typeof value === 'object' && value !== null) {
         getTypeReferencesForNode(value, refs);
       }

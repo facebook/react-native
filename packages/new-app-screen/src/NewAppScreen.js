@@ -123,7 +123,8 @@ function getHermesLabel(): React.Node {
 
   return (
     <ThemedText color="secondary" style={styles.label}>
-      JS Engine: Hermes
+      JS Engine: Hermes (
+      {global.HermesInternal.getRuntimeProperties?.()['OSS Release Version']})
     </ThemedText>
   );
 }

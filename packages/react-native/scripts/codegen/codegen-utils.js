@@ -30,7 +30,7 @@ function getCodegen() /*: $FlowFixMe */ {
     RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen.js');
   }
   if (!RNCodegen) {
-    throw 'RNCodegen not found.';
+    throw new Error('RNCodegen not found.');
   }
   return RNCodegen;
 }
@@ -45,7 +45,7 @@ function getCombineJSToSchema() /*: $FlowFixMe */ {
     combineJSToSchema = require('@react-native/codegen/lib/cli/combine/combine-js-to-schema.js');
   }
   if (!combineJSToSchema) {
-    throw 'combine-js-to-schema not found.';
+    throw new Error('combine-js-to-schema not found.');
   }
   return combineJSToSchema;
 }

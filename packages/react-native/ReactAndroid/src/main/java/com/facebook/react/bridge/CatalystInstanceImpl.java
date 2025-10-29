@@ -48,9 +48,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @DoNotStrip
 @LegacyArchitecture
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class CatalystInstanceImpl implements CatalystInstance {
   static {
-    BridgeSoLoader.staticInit();
+    ReactNativeJNISoLoader.staticInit();
     LegacyArchitectureLogger.assertLegacyArchitecture(
         "CatalystInstanceImpl", LegacyArchitectureLogLevel.WARNING);
   }
@@ -94,7 +96,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
-  private final ArrayList<PendingJSCall> mJSCallsPendingInit = new ArrayList<PendingJSCall>();
+  private final ArrayList<PendingJSCall> mJSCallsPendingInit = new ArrayList<>();
   private final Object mJSCallsPendingInitLock = new Object();
 
   private final NativeModuleRegistry mNativeModuleRegistry;

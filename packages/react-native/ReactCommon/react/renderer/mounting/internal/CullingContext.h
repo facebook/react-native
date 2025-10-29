@@ -20,10 +20,9 @@ struct CullingContext {
 
   bool shouldConsiderCulling() const;
 
-  CullingContext adjustCullingContextIfNeeded(
-      const ShadowViewNodePair& pair) const;
+  CullingContext adjustCullingContextIfNeeded(const ShadowViewNodePair &pair) const;
 
-  bool operator==(const CullingContext& rhs) const = default;
+  bool operator==(const CullingContext &rhs) const = default;
 };
 
 } // namespace facebook::react

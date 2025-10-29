@@ -76,7 +76,7 @@ public class WebSocketModule(context: ReactApplicationContext) :
       url: String,
       protocols: ReadableArray?,
       options: ReadableMap?,
-      socketID: Double
+      socketID: Double,
   ) {
     val id = socketID.toInt()
     val okHttpBuilder =
@@ -196,7 +196,8 @@ public class WebSocketModule(context: ReactApplicationContext) :
 
             sendEvent("websocketMessage", params)
           }
-        })
+        },
+    )
 
     // Trigger shutdown of the dispatcher's executor so this process can exit cleanly
     client.dispatcher().executorService().shutdown()

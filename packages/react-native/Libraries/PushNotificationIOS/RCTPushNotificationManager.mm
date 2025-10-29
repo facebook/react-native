@@ -327,10 +327,9 @@ RCT_EXPORT_METHOD(getApplicationIconBadgeNumber : (RCTResponseSenderBlock)callba
   callback(@[ @(RCTSharedApplication().applicationIconBadgeNumber) ]);
 }
 
-RCT_EXPORT_METHOD(requestPermissions
-                  : (JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permissions resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    requestPermissions : (JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)
+        permissions resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   if (RCTRunningInAppExtension()) {
     reject(
@@ -506,9 +505,8 @@ RCT_EXPORT_METHOD(cancelLocalNotifications : (NSDictionary<NSString *, id> *)use
   }];
 }
 
-RCT_EXPORT_METHOD(getInitialNotification
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (__unused RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    getInitialNotification : (RCTPromiseResolveBlock)resolve reject : (__unused RCTPromiseRejectBlock)reject)
 {
   // The user actioned a local or remote notification to launch the app. Notification is represented by UNNotification.
   // Set this property in the implementation of

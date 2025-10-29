@@ -13,9 +13,7 @@
 
 namespace facebook::react {
 
-using JavaScriptModuleCallback = std::function<void(
-    const std::string& moduleName,
-    const std::string& methodName,
-    folly::dynamic&& args)>;
+using JavaScriptModuleCallback =
+    std::function<void(const std::string &moduleName, const std::string &methodName, folly::dynamic &&args)>;
 
 } // namespace facebook::react

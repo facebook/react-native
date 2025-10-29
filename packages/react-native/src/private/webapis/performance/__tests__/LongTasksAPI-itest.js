@@ -10,17 +10,9 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type {
-  PerformanceObserverCallbackOptions,
-  PerformanceObserverEntryList,
-} from 'react-native/src/private/webapis/performance/PerformanceObserver';
+import type {PerformanceObserverCallbackOptions} from '../PerformanceObserver';
 
 import * as Fantom from '@react-native/fantom';
-import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
-import {PerformanceLongTaskTiming} from 'react-native/src/private/webapis/performance/LongTasks';
-import {PerformanceObserver} from 'react-native/src/private/webapis/performance/PerformanceObserver';
-
-setUpPerformanceObserver();
 
 function ensurePerformanceLongTaskTiming(
   value: mixed,
@@ -195,5 +187,21 @@ describe('LongTasks API', () => {
       expect(entry.duration).toBe(131);
       expect(entry.attribution).toEqual([]);
     });
+  });
+
+  it('does NOT allow creating instances of PerformanceLongTaskTiming directly', () => {
+    expect(() => {
+      return new PerformanceLongTaskTiming();
+    }).toThrow(
+      "Failed to construct 'PerformanceLongTaskTiming': Illegal constructor",
+    );
+  });
+
+  it('does NOT allow creating instances of TaskAttributionTiming directly', () => {
+    expect(() => {
+      return new TaskAttributionTiming();
+    }).toThrow(
+      "Failed to construct 'TaskAttributionTiming': Illegal constructor",
+    );
   });
 });

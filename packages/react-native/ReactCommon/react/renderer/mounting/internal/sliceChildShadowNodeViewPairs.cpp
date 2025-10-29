@@ -56,13 +56,15 @@ static void sliceChildShadowNodeViewPairsRecursively(
     const CullingContext& cullingContext) {
   for (const auto& sharedChildShadowNode : shadowNode.getChildren()) {
     auto& childShadowNode = *sharedChildShadowNode;
-#ifndef ANDROID
     // T153547836: Disabled on Android because the mounting infrastructure
     // is not fully ready yet.
-    if (childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
+    if (
+#ifdef ANDROID
+        ReactNativeFeatureFlags::useTraitHiddenOnAndroid() &&
+#endif
+        childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
       continue;
     }
-#endif
     auto shadowView = ShadowView(childShadowNode);
 
     if (ReactNativeFeatureFlags::enableViewCulling()) {
@@ -80,9 +82,16 @@ static void sliceChildShadowNodeViewPairsRecursively(
           overflowInsetFrame =
               overflowInsetFrame * layoutableShadowNode->getTransform();
         }
+
+        // Embedded Text components can have an empty layout, while these still
+        // need to be mounted to set the correct react tags on the text
+        // fragments. These should not be culled.
+        auto hasLayout = overflowInsetFrame.size.width > 0 ||
+            overflowInsetFrame.size.height > 0;
+
         auto doesIntersect =
             Rect::intersect(cullingContext.frame, overflowInsetFrame) != Rect{};
-        if (!doesIntersect) {
+        if (hasLayout && !doesIntersect) {
           continue; // Culling.
         }
       }

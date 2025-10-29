@@ -275,7 +275,7 @@ export function formatNativeSpecErrorStore(
 export function formatDiffSet(summary: DiffSummary): FormattedDiffSummary {
   const summaryStatus = summary.status;
   if (summaryStatus === 'ok' || summaryStatus === 'patchable') {
-    // $FlowFixMe I don't think we can ever get in this branch
+    // $FlowFixMe[incompatible-type] I don't think we can ever get in this branch
     return summary;
   }
   const hasteModules = Object.keys(summary.incompatibilityReport);

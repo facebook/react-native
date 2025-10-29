@@ -247,6 +247,7 @@ void PerformanceEntryReporter::reportEvent(
     HighResDuration duration,
     HighResTimeStamp processingStart,
     HighResTimeStamp processingEnd,
+    HighResTimeStamp taskEndTime,
     uint32_t interactionId) {
   eventCounts_[name]++;
 
@@ -260,6 +261,7 @@ void PerformanceEntryReporter::reportEvent(
       {.name = name, .startTime = startTime, .duration = duration},
       processingStart,
       processingEnd,
+      taskEndTime,
       interactionId};
 
   {
@@ -305,7 +307,10 @@ void PerformanceEntryReporter::reportResourceTiming(
     std::optional<HighResTimeStamp> connectEnd,
     HighResTimeStamp responseStart,
     HighResTimeStamp responseEnd,
-    const std::optional<int>& responseStatus) {
+    int responseStatus,
+    const std::string& contentType,
+    int encodedBodySize,
+    int decodedBodySize) {
   const auto entry = PerformanceResourceTiming{
       {.name = url, .startTime = fetchStart},
       fetchStart,
@@ -315,6 +320,9 @@ void PerformanceEntryReporter::reportResourceTiming(
       responseStart,
       responseEnd,
       responseStatus,
+      contentType,
+      encodedBodySize,
+      decodedBodySize,
   };
 
   // Add to buffers & notify observers

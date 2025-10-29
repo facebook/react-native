@@ -49,10 +49,7 @@ Pod::Spec.new do |s|
                             "HEADER_SEARCH_PATHS" => header_search_path.join(" "),
                           }
 
-  if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
-    s.module_name             = 'React_FabricComponents'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "./", module_name: "React_FabricComponents")
 
   s.dependency "React-jsiexecutor"
   s.dependency "RCTRequired"
@@ -125,6 +122,14 @@ Pod::Spec.new do |s|
                                   ["react/renderer/components/textinput/*.h",
                                   "react/renderer/components/textinput/platform/ios/**/*.h"])
       sss.header_dir           = "react/renderer/components/iostextinput"
+    end
+
+    ss.subspec "switch" do |sss|
+      sss.source_files         = podspec_sources(
+                                  ["react/renderer/components/switch/iosswitch/**/*.{m,mm,cpp,h}"],
+                                  ["react/renderer/components/switch/iosswitch/**/*.h"])
+      sss.exclude_files        = "react/renderer/components/switch/iosswitch/**/MacOS*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/components/switch/"
     end
 
     ss.subspec "textinput" do |sss|

@@ -37,8 +37,7 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
                                public SchedulerDelegate,
                                public LayoutAnimationStatusDelegate {
  public:
-  constexpr static const char* const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/FabricUIManagerBinding;";
+  constexpr static const char *const kJavaDescriptor = "Lcom/facebook/react/fabric/FabricUIManagerBinding;";
 
   static void registerNatives();
 
@@ -65,18 +64,15 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
       jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
       jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
-      EventBeatManager* eventBeatManager,
-      ComponentFactory* componentsRegistry);
+      EventBeatManager *eventBeatManager,
+      ComponentFactory *componentsRegistry);
 
-  void startSurface(
-      jint surfaceId,
-      jni::alias_ref<jstring> moduleName,
-      NativeMap* initialProps);
+  void startSurface(jint surfaceId, jni::alias_ref<jstring> moduleName, NativeMap *initialProps);
 
   void startSurfaceWithConstraints(
       jint surfaceId,
       jni::alias_ref<jstring> moduleName,
-      NativeMap* initialProps,
+      NativeMap *initialProps,
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
@@ -90,44 +86,31 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void startSurfaceWithSurfaceHandler(
       jint surfaceId,
-      jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
-          surfaceHandlerBinding,
+      jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandlerBinding,
       jboolean isMountable);
 
-  void stopSurfaceWithSurfaceHandler(
-      jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);
+  void stopSurfaceWithSurfaceHandler(jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);
 
-  void schedulerDidFinishTransaction(
-      const std::shared_ptr<const MountingCoordinator>& mountingCoordinator)
-      override;
+  void schedulerDidFinishTransaction(const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override;
 
   void schedulerShouldRenderTransactions(
-      const std::shared_ptr<const MountingCoordinator>& mountingCoordinator)
-      override;
+      const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override;
 
-  void schedulerDidRequestPreliminaryViewAllocation(
-      const ShadowNode& shadowNode) override;
+  void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) override;
 
   void schedulerDidDispatchCommand(
-      const ShadowView& shadowView,
-      const std::string& commandName,
-      const folly::dynamic& args) override;
+      const ShadowView &shadowView,
+      const std::string &commandName,
+      const folly::dynamic &args) override;
 
-  void schedulerDidSendAccessibilityEvent(
-      const ShadowView& shadowView,
-      const std::string& eventType) override;
+  void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, const std::string &eventType) override;
 
-  void schedulerDidSetIsJSResponder(
-      const ShadowView& shadowView,
-      bool isJSResponder,
-      bool blockNativeResponder) override;
+  void schedulerDidSetIsJSResponder(const ShadowView &shadowView, bool isJSResponder, bool blockNativeResponder)
+      override;
 
-  void schedulerShouldSynchronouslyUpdateViewOnUIThread(
-      Tag tag,
-      const folly::dynamic& props) override;
+  void schedulerShouldSynchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic &props) override;
 
-  void schedulerDidUpdateShadowTree(
-      const std::unordered_map<Tag, folly::dynamic>& tagToProps) override;
+  void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
 
   void setPixelDensity(float pointScaleFactor);
 
@@ -137,8 +120,7 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void reportMount(SurfaceId surfaceId);
 
-  jint
-  findNextFocusableElement(jint parentTag, jint focusedTag, jint direction);
+  jint findNextFocusableElement(jint parentTag, jint focusedTag, jint direction);
 
   jintArray getRelativeAncestorList(jint rootTag, jint childTag);
 
@@ -149,8 +131,7 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
-  std::shared_ptr<FabricMountingManager> getMountingManager(
-      const char* locationHint);
+  std::shared_ptr<FabricMountingManager> getMountingManager(const char *locationHint);
 
   // LayoutAnimations
   void onAnimationStarted() override;
@@ -161,14 +142,9 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   // Roots not created through ReactSurface (non-bridgeless) will store their
   // SurfaceHandler here, for other roots we keep a weak reference to the Java
   // owner
-  std::unordered_map<
-      SurfaceId,
-      std::variant<
-          SurfaceHandler,
-          jni::weak_ref<SurfaceHandlerBinding::jhybridobject>>>
+  std::unordered_map<SurfaceId, std::variant<SurfaceHandler, jni::weak_ref<SurfaceHandlerBinding::jhybridobject>>>
       surfaceHandlerRegistry_{};
-  std::shared_mutex
-      surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
+  std::shared_mutex surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
 
   // Track pending transactions, one per surfaceId
   std::mutex pendingTransactionsMutex_;

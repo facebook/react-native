@@ -20,9 +20,11 @@ package com.facebook.react.internal.featureflags
  * When the new architecture is enabled, we want to set the default values of the flags for Fabric,
  * TurboModules and Bridgeless as enabled by default.
  */
-public open class ReactNativeNewArchitectureFeatureFlagsDefaults(
-    private val newArchitectureEnabled: Boolean = true
-) : ReactNativeFeatureFlagsDefaults() {
+public open class ReactNativeNewArchitectureFeatureFlagsDefaults() :
+    ReactNativeFeatureFlagsDefaults() {
+
+  private val newArchitectureEnabled: Boolean = true
+
   override fun enableBridgelessArchitecture(): Boolean = newArchitectureEnabled
 
   override fun enableFabricRenderer(): Boolean = newArchitectureEnabled

@@ -37,7 +37,8 @@ enum class ConsoleTimeStampColor {
   Error,
 };
 
-inline std::string consoleTimeStampColorToString(ConsoleTimeStampColor color) {
+inline std::string consoleTimeStampColorToString(ConsoleTimeStampColor color)
+{
   switch (color) {
     case ConsoleTimeStampColor::Primary:
       return "primary";
@@ -66,8 +67,8 @@ inline std::string consoleTimeStampColorToString(ConsoleTimeStampColor color) {
   }
 };
 
-inline std::optional<ConsoleTimeStampColor> getConsoleTimeStampColorFromString(
-    const std::string& str) {
+inline std::optional<ConsoleTimeStampColor> getConsoleTimeStampColorFromString(const std::string &str)
+{
   if (str == "primary") {
     return ConsoleTimeStampColor::Primary;
   } else if (str == "primary-light") {

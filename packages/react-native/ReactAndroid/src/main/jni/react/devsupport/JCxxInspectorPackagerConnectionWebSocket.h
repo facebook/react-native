@@ -22,11 +22,9 @@ namespace facebook::react::jsinspector_modern {
  * usable IWebSocket instance from this object, call
  * wrapInUniquePtr().
  */
-class JCxxInspectorPackagerConnectionWebSocket
-    : public jni::JavaClass<JCxxInspectorPackagerConnectionWebSocket> {
+class JCxxInspectorPackagerConnectionWebSocket : public jni::JavaClass<JCxxInspectorPackagerConnectionWebSocket> {
  public:
-  static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/devsupport/CxxInspectorPackagerConnection$IWebSocket;";
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/devsupport/CxxInspectorPackagerConnection$IWebSocket;";
 
   ~JCxxInspectorPackagerConnectionWebSocket();
 

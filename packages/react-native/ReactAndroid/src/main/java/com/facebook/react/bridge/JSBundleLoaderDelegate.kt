@@ -21,7 +21,7 @@ public interface JSBundleLoaderDelegate {
   public fun loadScriptFromAssets(
       assetManager: AssetManager,
       assetURL: String,
-      loadSynchronously: Boolean
+      loadSynchronously: Boolean,
   )
 
   /**

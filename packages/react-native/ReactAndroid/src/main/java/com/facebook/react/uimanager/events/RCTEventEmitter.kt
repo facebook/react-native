@@ -41,6 +41,6 @@ public interface RCTEventEmitter : JavaScriptModule {
   public fun receiveTouches(
       eventName: String,
       touches: WritableArray,
-      changedIndices: WritableArray
+      changedIndices: WritableArray,
   )
 }

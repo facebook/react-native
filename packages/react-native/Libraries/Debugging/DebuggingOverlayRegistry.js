@@ -98,13 +98,13 @@ class DebuggingOverlayRegistry {
     // `canonical.publicInstance` => Fabric
     // $FlowExpectedError[prop-missing]
     if (instanceHandle.canonical?.publicInstance != null) {
-      // $FlowExpectedError[incompatible-return]
+      // $FlowExpectedError[incompatible-type]
       return instanceHandle.canonical?.publicInstance;
     }
 
     // `canonical` => Legacy Fabric
     if (instanceHandle.canonical != null) {
-      // $FlowFixMe[incompatible-return]
+      // $FlowFixMe[incompatible-type]
       return instanceHandle.canonical;
     }
 
@@ -124,6 +124,8 @@ class DebuggingOverlayRegistry {
     let iterator: ?ReadOnlyElement = instance;
     while (iterator != null) {
       for (const subscriber of this.#registry) {
+        /* $FlowFixMe[invalid-compare] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
         if (subscriber.rootViewRef.current === iterator) {
           return subscriber;
         }
@@ -182,7 +184,7 @@ class DebuggingOverlayRegistry {
 
         if (
           isChildPublicInstance(
-            // $FlowFixMe[incompatible-call] There is a lot of stuff to untangle to make types for refs work.
+            // $FlowFixMe[incompatible-type] There is a lot of stuff to untangle to make types for refs work.
             potentialParent.rootViewRef.current,
             // $FlowFixMe[incompatible-call] There is a lot of stuff to untangle to make types for refs work.
             potentialChild.rootViewRef.current,
@@ -330,7 +332,9 @@ class DebuggingOverlayRegistry {
         instance.measure((x, y, width, height, left, top) => {
           // measure can execute callback without any values provided to signal error.
           if (left == null || top == null || width == null || height == null) {
-            reject('Unexpectedly failed to call measure on an instance.');
+            reject(
+              new Error('Unexpectedly failed to call measure on an instance.'),
+            );
           }
 
           resolve({
@@ -478,7 +482,11 @@ class DebuggingOverlayRegistry {
                 width == null ||
                 height == null
               ) {
-                reject('Unexpectedly failed to call measure on an instance.');
+                reject(
+                  new Error(
+                    'Unexpectedly failed to call measure on an instance.',
+                  ),
+                );
               }
 
               resolve({x: left, y: top, width, height});

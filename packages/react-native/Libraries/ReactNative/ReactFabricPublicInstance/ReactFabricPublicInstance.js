@@ -132,7 +132,7 @@ export function getNodeFromPublicInstance(
     RendererProxy = require('../../ReactNative/RendererProxy');
   }
   return RendererProxy.getNodeFromInternalInstanceHandle(
-    // $FlowExpectedError[incompatible-call] __internalInstanceHandle is always an InternalInstanceHandle from React when we get here.
+    // $FlowExpectedError[incompatible-type] __internalInstanceHandle is always an InternalInstanceHandle from React when we get here.
     publicInstance.__internalInstanceHandle,
   );
 }
@@ -143,10 +143,10 @@ export function getInternalInstanceHandleFromPublicInstance(
   // TODO(T174762768): Remove this once OSS versions of renderers will be synced.
   // $FlowExpectedError[prop-missing] Keeping this for backwards-compatibility with the renderers versions in open source.
   if (publicInstance._internalInstanceHandle != null) {
-    // $FlowExpectedError[incompatible-return] Keeping this for backwards-compatibility with the renderers versions in open source.
+    // $FlowExpectedError[incompatible-type] Keeping this for backwards-compatibility with the renderers versions in open source.
     return publicInstance._internalInstanceHandle;
   }
 
-  // $FlowExpectedError[incompatible-return] __internalInstanceHandle is always an InternalInstanceHandle from React when we get here.
+  // $FlowExpectedError[incompatible-type] __internalInstanceHandle is always an InternalInstanceHandle from React when we get here.
   return publicInstance.__internalInstanceHandle;
 }

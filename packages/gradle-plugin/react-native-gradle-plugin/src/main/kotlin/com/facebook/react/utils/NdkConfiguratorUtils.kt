@@ -30,7 +30,8 @@ internal object NdkConfiguratorUtils {
           ext.externalNativeBuild.cmake.path =
               File(
                   extension.reactNativeDir.get().asFile,
-                  "ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt")
+                  "ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+              )
         }
 
         // Parameters should be provided in an additive manner (do not override what
@@ -44,7 +45,8 @@ internal object NdkConfiguratorUtils {
         }
         if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
           cmakeArgs.add(
-              "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}")
+              "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}"
+          )
         }
         if (cmakeArgs.none { it.startsWith("-DANDROID_STL") }) {
           cmakeArgs.add("-DANDROID_STL=c++_shared")
@@ -71,7 +73,7 @@ internal object NdkConfiguratorUtils {
   fun configureNewArchPackagingOptions(
       project: Project,
       extension: ReactExtension,
-      variant: Variant
+      variant: Variant,
   ) {
     // We set some packagingOptions { pickFirst ... } for our users for libraries we own.
     variant.packaging.jniLibs.pickFirsts.addAll(
@@ -85,7 +87,8 @@ internal object NdkConfiguratorUtils {
             "**/libjsi.so",
             // AGP will give priority of libc++_shared coming from App modules.
             "**/libc++_shared.so",
-        ))
+        )
+    )
   }
 
   /**
@@ -107,7 +110,7 @@ internal object NdkConfiguratorUtils {
 
   fun getPackagingOptionsForVariant(
       hermesEnabled: Boolean,
-      useThirdPartyJSC: Boolean
+      useThirdPartyJSC: Boolean,
   ): Pair<List<String>, List<String>> {
     val excludes = mutableListOf<String>()
     val includes = mutableListOf<String>()
@@ -117,17 +120,17 @@ internal object NdkConfiguratorUtils {
       hermesEnabled -> {
         excludes.add("**/libjsc.so")
         excludes.add("**/libjsctooling.so")
-        includes.add("**/libhermes.so")
+        includes.add("**/libhermesvm.so")
         includes.add("**/libhermestooling.so")
       }
       useThirdPartyJSC -> {
-        excludes.add("**/libhermes.so")
+        excludes.add("**/libhermesvm.so")
         excludes.add("**/libhermestooling.so")
         excludes.add("**/libjsctooling.so")
         includes.add("**/libjsc.so")
       }
       else -> {
-        excludes.add("**/libhermes.so")
+        excludes.add("**/libhermesvm.so")
         excludes.add("**/libhermestooling.so")
         includes.add("**/libjsc.so")
         includes.add("**/libjsctooling.so")

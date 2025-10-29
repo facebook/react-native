@@ -7,7 +7,7 @@
 
 #import <UIKit/UIScrollView.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTAutoInsetsProtocol.h>
 #import <React/RCTDefines.h>
@@ -17,7 +17,8 @@
 
 @protocol UIScrollViewDelegate;
 
-@interface RCTScrollView : RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
+@interface RCTScrollView : RCTView<UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
 
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
@@ -81,4 +82,4 @@
 
 RCT_EXTERN void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNumber *reactTag);
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

@@ -19,7 +19,7 @@ namespace facebook::react {
 
 class AssetManagerString : public JSBigString {
  public:
-  AssetManagerString(AAsset* asset) : asset_(asset){};
+  AssetManagerString(AAsset* asset) : asset_(asset) {};
 
   ~AssetManagerString() override {
     AAsset_close(asset_);

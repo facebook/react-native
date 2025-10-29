@@ -28,22 +28,22 @@ namespace facebook::react::jsinspector_modern {
  */
 class HostTargetTraceRecording {
  public:
-  explicit HostTargetTraceRecording(
-      tracing::Mode tracingMode,
-      HostTarget& hostTarget);
+  explicit HostTargetTraceRecording(tracing::Mode tracingMode, HostTarget &hostTarget);
 
-  inline bool isBackgroundInitiated() const {
+  inline bool isBackgroundInitiated() const
+  {
     return tracingMode_ == tracing::Mode::Background;
   }
 
-  inline bool isUserInitiated() const {
+  inline bool isUserInitiated() const
+  {
     return tracingMode_ == tracing::Mode::CDP;
   }
 
   /**
    * Updates the current traced Instance for this recording.
    */
-  void setTracedInstance(InstanceTarget* instanceTarget);
+  void setTracedInstance(InstanceTarget *instanceTarget);
 
   /**
    * Starts the recording.
@@ -68,7 +68,7 @@ class HostTargetTraceRecording {
   /**
    * The Host for which this Trace Recording is going to happen.
    */
-  HostTarget& hostTarget_;
+  HostTarget &hostTarget_;
 
   /**
    * The state of the current Trace Recording.

@@ -24,15 +24,9 @@ function requireModule<T: TurboModule>(name: string): ?T {
     }
   }
 
-  if (
-    global.RN$Bridgeless !== true ||
-    global.RN$TurboInterop === true ||
-    global.RN$UnifiedNativeModuleProxy === true
-  ) {
-    const legacyModule: ?T = NativeModules[name];
-    if (legacyModule != null) {
-      return legacyModule;
-    }
+  const legacyModule: ?T = NativeModules[name];
+  if (legacyModule != null) {
+    return legacyModule;
   }
 
   return null;

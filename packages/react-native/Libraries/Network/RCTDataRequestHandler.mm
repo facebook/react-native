@@ -25,7 +25,7 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
-  if (_queue) {
+  if (_queue != nullptr) {
     for (NSOperation *operation in _queue.operations) {
       if (!operation.isCancelled && !operation.isFinished) {
         [operation cancel];
@@ -44,7 +44,7 @@ RCT_EXPORT_MODULE()
 {
   std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
   // Lazy setup
-  if (!_queue) {
+  if (_queue == nullptr) {
     _queue = [NSOperationQueue new];
     _queue.maxConcurrentOperationCount = 2;
   }
@@ -59,7 +59,7 @@ RCT_EXPORT_MODULE()
     // Get mime type
     NSRange firstSemicolon = [request.URL.resourceSpecifier rangeOfString:@";"];
     NSString *mimeType =
-        firstSemicolon.length ? [request.URL.resourceSpecifier substringToIndex:firstSemicolon.location] : nil;
+        (firstSemicolon.length != 0u) ? [request.URL.resourceSpecifier substringToIndex:firstSemicolon.location] : nil;
 
     // Send response
     NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
@@ -72,7 +72,7 @@ RCT_EXPORT_MODULE()
     // Load data
     NSError *error;
     NSData *data = [NSData dataWithContentsOfURL:request.URL options:NSDataReadingMappedIfSafe error:&error];
-    if (data) {
+    if (data != nullptr) {
       [delegate URLRequest:strongOp didReceiveData:data];
     }
     [delegate URLRequest:strongOp didCompleteWithError:error];

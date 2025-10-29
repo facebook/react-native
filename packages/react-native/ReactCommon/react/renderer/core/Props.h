@@ -30,11 +30,10 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
 
   Props() = default;
   Props(
-      const PropsParserContext& context,
-      const Props& sourceProps,
-      const RawProps& rawProps,
-      const std::function<bool(const std::string&)>& filterObjectKeys =
-          nullptr);
+      const PropsParserContext &context,
+      const Props &sourceProps,
+      const RawProps &rawProps,
+      const std::function<bool(const std::string &)> &filterObjectKeys = nullptr);
 
 #if RN_DEBUG_STRING_CONVERTIBLE
   virtual ~Props() override = default;
@@ -42,8 +41,8 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   virtual ~Props() = default;
 #endif
 
-  Props(const Props& other) = delete;
-  Props& operator=(const Props& other) = delete;
+  Props(const Props &other) = delete;
+  Props &operator=(const Props &other) = delete;
 
   /**
    * Set a prop value via iteration (see enableIterator above).
@@ -55,22 +54,21 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
    * multiple times for different values in the hierarchy. For example, if
    * ViewProps uses "propX", Props may also use "propX".
    */
-  void setProp(
-      const PropsParserContext& context,
-      RawPropsPropNameHash hash,
-      const char* propName,
-      const RawValue& value);
+  void
+  setProp(const PropsParserContext &context, RawPropsPropNameHash hash, const char *propName, const RawValue &value);
 
   std::string nativeId;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic rawProps = folly::dynamic::object();
 
-  virtual ComponentName getDiffPropsImplementationTarget() const {
+  virtual ComponentName getDiffPropsImplementationTarget() const
+  {
     return "";
   }
 
-  virtual folly::dynamic getDiffProps(const Props* prevProps) const {
+  virtual folly::dynamic getDiffProps(const Props *prevProps) const
+  {
     return folly::dynamic::object();
   }
 #endif
@@ -86,15 +84,14 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
  protected:
   /** Initialize member variables of Props instance */
   void initialize(
-      const PropsParserContext& context,
-      const Props& sourceProps,
-      const RawProps& rawProps,
+      const PropsParserContext &context,
+      const Props &sourceProps,
+      const RawProps &rawProps,
       /**
        * Filter object keys to be excluded when converting the RawProps to
        * folly::dynamic (android only)
        */
-      const std::function<bool(const std::string&)>& filterObjectKeys =
-          nullptr);
+      const std::function<bool(const std::string &)> &filterObjectKeys = nullptr);
 };
 
 } // namespace facebook::react

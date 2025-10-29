@@ -36,7 +36,8 @@ private constructor(
 
   override fun initHybrid(): HybridData {
     throw UnsupportedOperationException(
-        "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!")
+        "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!"
+    )
   }
 
   public class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
@@ -57,10 +58,13 @@ private constructor(
 
     override fun build(
         context: ReactApplicationContext,
-        packages: List<ReactPackage>
+        packages: List<ReactPackage>,
     ): DefaultTurboModuleManagerDelegate =
         DefaultTurboModuleManagerDelegate(
-            context, packages, cxxReactPackageProviders.flatMap { provider -> provider(context) })
+            context,
+            packages,
+            cxxReactPackageProviders.flatMap { provider -> provider(context) },
+        )
   }
 
   private companion object {

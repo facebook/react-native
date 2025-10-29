@@ -119,7 +119,6 @@ async function runServer(
     watchFolders,
   });
   const {middleware, websocketEndpoints} = createDevMiddleware({
-    projectRoot,
     serverBaseUrl: devServerUrl,
     logger: createDevMiddlewareLogger(terminalReporter),
   });

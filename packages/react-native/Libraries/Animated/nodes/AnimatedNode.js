@@ -17,6 +17,7 @@ type ValueListenerCallback = (state: {value: number, ...}) => mixed;
 
 export type AnimatedNodeConfig = $ReadOnly<{
   debugID?: string,
+  unstable_disableBatchingForNativeCreate?: boolean,
 }>;
 
 let _uniqueId = 1;
@@ -42,6 +43,8 @@ export default class AnimatedNode {
     if (__DEV__) {
       this.__debugID = config?.debugID;
     }
+    this.__disableBatchingForNativeCreate =
+      config?.unstable_disableBatchingForNativeCreate;
   }
 
   __attach(): void {}
@@ -65,6 +68,7 @@ export default class AnimatedNode {
   /* Methods and props used by native Animated impl */
   __isNative: boolean = false;
   __nativeTag: ?number = undefined;
+  __disableBatchingForNativeCreate: ?boolean = undefined;
 
   __makeNative(platformConfig: ?PlatformConfig): void {
     // Subclasses are expected to set `__isNative` to true before this.
@@ -141,6 +145,9 @@ export default class AnimatedNode {
       const config = this.__getNativeConfig();
       if (this._platformConfig) {
         config.platformConfig = this._platformConfig;
+      }
+      if (this.__disableBatchingForNativeCreate) {
+        config.disableBatchingForNativeCreate = true;
       }
       NativeAnimatedHelper.API.createAnimatedNode(nativeTag, config);
     }

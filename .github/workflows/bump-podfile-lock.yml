@@ -21,7 +21,7 @@ jobs:
       - name: Setup xcode
         uses: ./.github/actions/setup-xcode
         with:
-          xcode-version: '16.2.0'
+          platform: 'ios'
       - name: Extract branch name
         run: |
           TAG="${{ github.ref_name }}";

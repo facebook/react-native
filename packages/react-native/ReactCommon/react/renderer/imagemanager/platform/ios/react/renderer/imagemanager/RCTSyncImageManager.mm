@@ -85,7 +85,7 @@ using namespace facebook::react;
                                          priority:RCTImageLoaderPriorityImmediate
                                       attribution:{
                                                       .surfaceId = surfaceId,
-                                                  }
+  }
                                     progressBlock:progressBlock
                                  partialLoadBlock:nil
                                   completionBlock:completionBlock];

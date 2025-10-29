@@ -121,13 +121,17 @@ internal open class SwipeRefreshLayoutManager :
       mutableMapOf(
           "SIZE" to
               mutableMapOf(
-                  "DEFAULT" to SwipeRefreshLayout.DEFAULT, "LARGE" to SwipeRefreshLayout.LARGE))
+                  "DEFAULT" to SwipeRefreshLayout.DEFAULT,
+                  "LARGE" to SwipeRefreshLayout.LARGE,
+              )
+      )
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
     val eventTypeConstants: MutableMap<String, Any> = baseEventTypeConstants ?: HashMap()
     eventTypeConstants.putAll(
-        mutableMapOf("topRefresh" to mutableMapOf("registrationName" to "onRefresh")))
+        mutableMapOf("topRefresh" to mutableMapOf("registrationName" to "onRefresh"))
+    )
     return eventTypeConstants
   }
 

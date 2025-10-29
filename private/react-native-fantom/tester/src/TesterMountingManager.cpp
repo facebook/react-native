@@ -11,6 +11,7 @@
 #include <glog/logging.h>
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
+#include <react/renderer/scheduler/Scheduler.h>
 
 namespace facebook::react {
 
@@ -18,7 +19,9 @@ using namespace std::string_literals;
 
 TesterMountingManager::TesterMountingManager(
     std::function<void(SurfaceId)>&& onAfterMount)
-    : onAfterMount_(onAfterMount) {}
+    : onAfterMount_(onAfterMount), renderer_(std::make_unique<RenderOutput>()) {
+  imageLoader_ = std::make_shared<FantomImageLoader>();
+}
 
 void TesterMountingManager::executeMount(
     SurfaceId surfaceId,
@@ -26,8 +29,9 @@ void TesterMountingManager::executeMount(
   const auto& mutations = mountingTransaction.getMutations();
   LOG(INFO) << "executeMount: surfaceId = " << surfaceId;
 
-  if (viewTrees_.find(surfaceId) != viewTrees_.end()) {
-    viewTrees_[surfaceId].mutate(mutations);
+  if (auto it = viewTrees_.find(surfaceId); it != viewTrees_.end()) {
+    it->second.mutate(mutations);
+    renderer_->markMutated(surfaceId);
   } else {
     LOG(ERROR) << "Can't aplly mutations, missing view tree surfaceId = "
                << surfaceId;

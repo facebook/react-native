@@ -38,7 +38,7 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
   @OptIn(UnstableReactNativeAPI::class)
   public fun onChildStartedNativeGesture(
       androidEvent: MotionEvent,
-      eventDispatcher: EventDispatcher
+      eventDispatcher: EventDispatcher,
   ) {
     onChildStartedNativeGesture(androidEvent, eventDispatcher, null)
   }
@@ -70,7 +70,7 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
   @Suppress("UNUSED_PARAMETER")
   public fun onChildEndedNativeGesture(
       androidEvent: MotionEvent,
-      eventDispatcher: EventDispatcher
+      eventDispatcher: EventDispatcher,
   ) {
     // There should be only one child gesture at any given time. We can safely turn off the flag.
     childIsHandlingNativeGesture = false
@@ -91,7 +91,7 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
   public fun handleTouchEvent(
       ev: MotionEvent,
       eventDispatcher: EventDispatcher,
-      reactContext: ReactContext?
+      reactContext: ReactContext?,
   ) {
     val action = ev.action and MotionEvent.ACTION_MASK
     if (action == MotionEvent.ACTION_DOWN) {
@@ -118,7 +118,9 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
               gestureStartTime,
               targetCoordinates[0],
               targetCoordinates[1],
-              touchEventCoalescingKeyHelper))
+              touchEventCoalescingKeyHelper,
+          )
+      )
     } else if (childIsHandlingNativeGesture) {
       // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
       // gesture, so we shouldn't send any more touches related to it.
@@ -129,7 +131,8 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
       FLog.e(
           ReactConstants.TAG,
           "Unexpected state: received touch event but didn't get starting ACTION_DOWN for this " +
-              "gesture before")
+              "gesture before",
+      )
     } else if (action == MotionEvent.ACTION_UP) {
       // End of the gesture. We reset target tag to -1 and expect no further event associated with
       // this gesture.
@@ -144,7 +147,9 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
               gestureStartTime,
               targetCoordinates[0],
               targetCoordinates[1],
-              touchEventCoalescingKeyHelper))
+              touchEventCoalescingKeyHelper,
+          )
+      )
       sweepActiveTouchForTag(surfaceId, targetTag, reactContext)
       targetTag = -1
       gestureStartTime = TouchEvent.UNSET
@@ -160,7 +165,9 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
               gestureStartTime,
               targetCoordinates[0],
               targetCoordinates[1],
-              touchEventCoalescingKeyHelper))
+              touchEventCoalescingKeyHelper,
+          )
+      )
     } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
@@ -172,7 +179,9 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
               gestureStartTime,
               targetCoordinates[0],
               targetCoordinates[1],
-              touchEventCoalescingKeyHelper))
+              touchEventCoalescingKeyHelper,
+          )
+      )
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
       // Exactly one of the pointers goes up
       eventDispatcher.dispatchEvent(
@@ -184,14 +193,17 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
               gestureStartTime,
               targetCoordinates[0],
               targetCoordinates[1],
-              touchEventCoalescingKeyHelper))
+              touchEventCoalescingKeyHelper,
+          )
+      )
     } else if (action == MotionEvent.ACTION_CANCEL) {
       if (touchEventCoalescingKeyHelper.hasCoalescingKey(ev.downTime)) {
         dispatchCancelEvent(ev, eventDispatcher)
       } else {
         FLog.e(
             ReactConstants.TAG,
-            "Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN")
+            "Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN",
+        )
       }
       val surfaceId = UIManagerHelper.getSurfaceId(viewGroup)
       sweepActiveTouchForTag(surfaceId, targetTag, reactContext)
@@ -200,7 +212,9 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
       gestureStartTime = TouchEvent.UNSET
     } else {
       FLog.w(
-          ReactConstants.TAG, "Warning : touch event was ignored. Action=$action Target=$targetTag")
+          ReactConstants.TAG,
+          "Warning : touch event was ignored. Action=$action Target=$targetTag",
+      )
     }
   }
 
@@ -223,7 +237,12 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
   private fun findTargetTagAndSetCoordinates(ev: MotionEvent): Int {
     // This method updates `targetCoordinates` with coordinates for the motion event.
     return TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
-        ev.x, ev.y, viewGroup, targetCoordinates, null)
+        ev.x,
+        ev.y,
+        viewGroup,
+        targetCoordinates,
+        null,
+    )
   }
 
   private fun dispatchCancelEvent(androidEvent: MotionEvent, eventDispatcher: EventDispatcher) {
@@ -234,13 +253,15 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
       FLog.w(
           ReactConstants.TAG,
           "Can't cancel already finished gesture. Is a child View trying to start a gesture from " +
-              "an UP/CANCEL event?")
+              "an UP/CANCEL event?",
+      )
       return
     }
 
     Assertions.assertCondition(
         !childIsHandlingNativeGesture,
-        "Expected to not have already sent a cancel for this gesture")
+        "Expected to not have already sent a cancel for this gesture",
+    )
     Assertions.assertNotNull(eventDispatcher)
         .dispatchEvent(
             TouchEvent.obtain(
@@ -251,6 +272,8 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
                 gestureStartTime,
                 targetCoordinates[0],
                 targetCoordinates[1],
-                touchEventCoalescingKeyHelper))
+                touchEventCoalescingKeyHelper,
+            )
+        )
   }
 }

@@ -35,7 +35,7 @@ internal fun createProject(projectDir: File? = null): Project {
 internal inline fun <reified T : Task> createTestTask(
     project: Project = createProject(),
     taskName: String = T::class.java.simpleName,
-    crossinline block: (T) -> Unit = {}
+    crossinline block: (T) -> Unit = {},
 ): T = project.tasks.register(taskName, T::class.java) { block(it) }.get()
 
 /** A util function to zip a list of files from [contents] inside the zipfile at [destination]. */
@@ -59,8 +59,8 @@ internal fun createZip(dest: File, paths: List<String>) {
   val uri = URI.create("jar:file:$dest")
 
   FileSystems.newFileSystem(uri, env).use { zipfs ->
-    paths.forEach {
-      val zipEntryPath = zipfs.getPath(it)
+    paths.forEach { path ->
+      val zipEntryPath = zipfs.getPath(path)
       val zipEntryFolder = zipEntryPath.subpath(0, zipEntryPath.nameCount - 1)
       Files.createDirectories(zipEntryFolder)
       Files.createFile(zipEntryPath)

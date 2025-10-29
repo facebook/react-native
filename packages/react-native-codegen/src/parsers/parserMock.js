@@ -116,19 +116,19 @@ export class MockedParser implements Parser {
   }
 
   parseFile(filename: string): SchemaType {
-    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return schemaMock;
   }
 
   parseString(contents: string, filename: ?string): SchemaType {
-    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return schemaMock;
   }
 
   parseModuleFixture(filename: string): SchemaType {
-    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return schemaMock;
   }

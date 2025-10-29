@@ -83,6 +83,8 @@ class Share {
     options?: ShareOptions = {},
   ): Promise<{action: string, activityType: ?string}> {
     invariant(
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       typeof content === 'object' && content !== null,
       'Content to share must be a valid object',
     );
@@ -91,6 +93,8 @@ class Share {
       'At least one of URL or message is required',
     );
     invariant(
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       typeof options === 'object' && options !== null,
       'Options must be a valid object',
     );

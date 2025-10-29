@@ -59,6 +59,11 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
         !projectPath.includes('/Pods/') && // exclude Pods/Pods.xcodeproj
         !projectPath.includes('/node_modules/'), // exclude all the xcodeproj in node_modules of libraries
     )[0];
+  if (!xcodeproj) {
+    throw new Error(
+      `Cannot find .xcodeproj file inside ${appPath}. This is required to determine codegen spec paths relative to native project.`,
+    );
+  }
   const jsFiles = '-name "Native*.js" -or -name "*NativeComponent.js"';
   const tsFiles = '-name "Native*.ts" -or -name "*NativeComponent.ts"';
   const findCommand = `find ${path.join(appPath, jsSrcsDir)} -type f -not -path "*/__mocks__/*" -and \\( ${jsFiles} -or ${tsFiles} \\)`;
@@ -83,9 +88,9 @@ export RCT_SCRIPT_APP_PATH="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${relativeAppPath.
 export RCT_SCRIPT_OUTPUT_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT"
 export RCT_SCRIPT_TYPE="withCodegenDiscovery"
 
-SCRIPT_PHASES_SCRIPT="$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh"
-WITH_ENVIRONMENT="$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh"
-/bin/sh -c "$WITH_ENVIRONMENT $SCRIPT_PHASES_SCRIPT"
+export SCRIPT_PHASES_SCRIPT="$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh"
+export WITH_ENVIRONMENT="$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh"
+/bin/sh -c '"$WITH_ENVIRONMENT" "$SCRIPT_PHASES_SCRIPT"'
 SCRIPT`;
 }
 

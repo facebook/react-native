@@ -134,7 +134,7 @@ RCT_EXPORT_MODULE()
 #if __has_include(<React/RCTDevMenu.h>)
 - (RCTDevMenuItem *)devMenuItem
 {
-  if (!_devMenuItem) {
+  if (_devMenuItem == nullptr) {
     __weak __typeof__(self) weakSelf = self;
     __weak RCTDevSettings *devSettings = [self->_moduleRegistry moduleForName:"DevSettings"];
     if (devSettings.isPerfMonitorShown) {
@@ -161,7 +161,7 @@ RCT_EXPORT_MODULE()
 
 - (UIPanGestureRecognizer *)gestureRecognizer
 {
-  if (!_gestureRecognizer) {
+  if (_gestureRecognizer == nullptr) {
     _gestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesture:)];
   }
 
@@ -170,7 +170,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)container
 {
-  if (!_container) {
+  if (_container == nullptr) {
     UIEdgeInsets safeInsets = RCTKeyWindow().safeAreaInsets;
 
     _container =
@@ -188,7 +188,7 @@ RCT_EXPORT_MODULE()
 
 - (UILabel *)memory
 {
-  if (!_memory) {
+  if (_memory == nullptr) {
     _memory = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 44, RCTPerfMonitorBarHeight)];
     _memory.font = [UIFont systemFontOfSize:12];
     _memory.numberOfLines = 3;
@@ -200,7 +200,7 @@ RCT_EXPORT_MODULE()
 
 - (UILabel *)heap
 {
-  if (!_heap) {
+  if (_heap == nullptr) {
     _heap = [[UILabel alloc] initWithFrame:CGRectMake(44, 0, 44, RCTPerfMonitorBarHeight)];
     _heap.font = [UIFont systemFontOfSize:12];
     _heap.numberOfLines = 3;
@@ -212,7 +212,7 @@ RCT_EXPORT_MODULE()
 
 - (UILabel *)views
 {
-  if (!_views) {
+  if (_views == nullptr) {
     _views = [[UILabel alloc] initWithFrame:CGRectMake(88, 0, 44, RCTPerfMonitorBarHeight)];
     _views.font = [UIFont systemFontOfSize:12];
     _views.numberOfLines = 3;
@@ -224,7 +224,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTFPSGraph *)uiGraph
 {
-  if (!_uiGraph) {
+  if (_uiGraph == nullptr) {
     _uiGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(134, 14, 40, 30) color:[UIColor lightGrayColor]];
   }
   return _uiGraph;
@@ -232,7 +232,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTFPSGraph *)jsGraph
 {
-  if (!_jsGraph) {
+  if (_jsGraph == nullptr) {
     _jsGraph = [[RCTFPSGraph alloc] initWithFrame:CGRectMake(178, 14, 40, 30) color:[UIColor lightGrayColor]];
   }
   return _jsGraph;
@@ -240,7 +240,7 @@ RCT_EXPORT_MODULE()
 
 - (UILabel *)uiGraphLabel
 {
-  if (!_uiGraphLabel) {
+  if (_uiGraphLabel == nullptr) {
     _uiGraphLabel = [[UILabel alloc] initWithFrame:CGRectMake(134, 3, 40, 10)];
     _uiGraphLabel.font = [UIFont systemFontOfSize:11];
     _uiGraphLabel.textAlignment = NSTextAlignmentCenter;
@@ -252,7 +252,7 @@ RCT_EXPORT_MODULE()
 
 - (UILabel *)jsGraphLabel
 {
-  if (!_jsGraphLabel) {
+  if (_jsGraphLabel == nullptr) {
     _jsGraphLabel = [[UILabel alloc] initWithFrame:CGRectMake(178, 3, 38, 10)];
     _jsGraphLabel.font = [UIFont systemFontOfSize:11];
     _jsGraphLabel.textAlignment = NSTextAlignmentCenter;
@@ -264,7 +264,7 @@ RCT_EXPORT_MODULE()
 
 - (UITableView *)metrics
 {
-  if (!_metrics) {
+  if (_metrics == nullptr) {
     _metrics = [[UITableView alloc] initWithFrame:CGRectMake(
                                                       0,
                                                       RCTPerfMonitorBarHeight,
@@ -281,7 +281,7 @@ RCT_EXPORT_MODULE()
 
 - (void)show
 {
-  if (_container) {
+  if (_container != nullptr) {
     return;
   }
 
@@ -317,7 +317,7 @@ RCT_EXPORT_MODULE()
 
 - (void)hide
 {
-  if (!_container) {
+  if (_container == nullptr) {
     return;
   }
 
@@ -360,7 +360,7 @@ RCT_EXPORT_MODULE()
   dispatch_io_set_low_water(_io, 20);
 
   dispatch_io_read(_io, 0, SIZE_MAX, _queue, ^(__unused bool done, dispatch_data_t data, __unused int error) {
-    if (!data) {
+    if (data == nullptr) {
       return;
     }
 
@@ -391,7 +391,7 @@ RCT_EXPORT_MODULE()
     GCRegex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
   });
 
-  if (_remaining) {
+  if (_remaining != nullptr) {
     log = [_remaining stringByAppendingString:log];
     _remaining = nil;
   }
@@ -404,7 +404,7 @@ RCT_EXPORT_MODULE()
 
   for (NSString *line in lines) {
     NSTextCheckingResult *match = [GCRegex firstMatchInString:line options:0 range:NSMakeRange(0, line.length)];
-    if (match) {
+    if (match != nullptr) {
       NSString *heapSizeStr = [line substringWithRange:[match rangeAtIndex:2]];
       _heapSize = [heapSizeStr integerValue];
     }
@@ -417,7 +417,7 @@ RCT_EXPORT_MODULE()
   NSUInteger viewCount = views.count;
   NSUInteger visibleViewCount = 0;
   for (UIView *view in views.allValues) {
-    if (view.window || view.superview.window) {
+    if ((view.window != nullptr) || (view.superview.window != nullptr)) {
       visibleViewCount++;
     }
   }
@@ -436,7 +436,7 @@ RCT_EXPORT_MODULE()
   __weak __typeof__(self) weakSelf = self;
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
     __strong __typeof__(weakSelf) strongSelf = weakSelf;
-    if (strongSelf && strongSelf->_container.superview) {
+    if ((strongSelf != nullptr) && (strongSelf->_container.superview != nullptr)) {
       [strongSelf updateStats];
     }
   });
@@ -512,7 +512,7 @@ RCT_EXPORT_MODULE()
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:RCTPerfMonitorCellIdentifier
                                                           forIndexPath:indexPath];
 
-  if (!cell) {
+  if (cell == nullptr) {
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                   reuseIdentifier:RCTPerfMonitorCellIdentifier];
   }

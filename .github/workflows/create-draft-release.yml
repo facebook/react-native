@@ -21,9 +21,24 @@ jobs:
           git config --local user.name "React Native Bot"
       - name: Create draft release
         uses: actions/github-script@v6
+        id: create-draft-release
         with:
           script: |
             const {createDraftRelease} = require('./.github/workflow-scripts/createDraftRelease.js');
             const version = '${{ github.ref_name }}';
             const {isLatest} = require('./.github/workflow-scripts/publishTemplate.js');
-            await createDraftRelease(version, isLatest(), '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}');
+            return (await createDraftRelease(version, isLatest(), '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}')).id;
+          result-encoding: string
+      - name: Upload release assets for DotSlash
+        uses: actions/github-script@v6
+        env:
+          RELEASE_ID: ${{ steps.create-draft-release.outputs.result }}
+        with:
+          script: |
+            const {uploadReleaseAssetsForDotSlashFiles} = require('./scripts/releases/upload-release-assets-for-dotslash.js');
+            const version = '${{ github.ref_name }}';
+            await uploadReleaseAssetsForDotSlashFiles({
+              version,
+              token: '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}',
+              releaseId: process.env.RELEASE_ID,
+            });

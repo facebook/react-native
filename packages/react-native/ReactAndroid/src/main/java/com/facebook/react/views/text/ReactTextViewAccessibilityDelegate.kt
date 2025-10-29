@@ -24,7 +24,7 @@ import com.facebook.react.views.text.internal.span.ReactClickableSpan
 internal class ReactTextViewAccessibilityDelegate(
     view: View,
     originalFocus: Boolean,
-    originalImportantForAccessibility: Int
+    originalImportantForAccessibility: Int,
 ) : ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility) {
   private var accessibilityLinks: AccessibilityLinks? = null
 
@@ -36,18 +36,24 @@ internal class ReactTextViewAccessibilityDelegate(
     fun setDelegate(view: View, originalFocus: Boolean, originalImportantForAccessibility: Int) {
       // if a view already has an accessibility delegate, replacing it could cause
       // problems,so leave it alone.
-      if (!ViewCompat.hasAccessibilityDelegate(view) &&
-          (view.getTag(R.id.accessibility_role) != null ||
-              view.getTag(R.id.accessibility_state) != null ||
-              view.getTag(R.id.accessibility_actions) != null ||
-              view.getTag(R.id.react_test_id) != null ||
-              view.getTag(R.id.accessibility_collection_item) != null ||
-              view.getTag(R.id.accessibility_links) != null ||
-              view.getTag(R.id.role) != null)) {
+      if (
+          !ViewCompat.hasAccessibilityDelegate(view) &&
+              (view.getTag(R.id.accessibility_role) != null ||
+                  view.getTag(R.id.accessibility_state) != null ||
+                  view.getTag(R.id.accessibility_actions) != null ||
+                  view.getTag(R.id.react_test_id) != null ||
+                  view.getTag(R.id.accessibility_collection_item) != null ||
+                  view.getTag(R.id.accessibility_links) != null ||
+                  view.getTag(R.id.role) != null)
+      ) {
         ViewCompat.setAccessibilityDelegate(
             view,
             ReactTextViewAccessibilityDelegate(
-                view, originalFocus, originalImportantForAccessibility))
+                view,
+                originalFocus,
+                originalImportantForAccessibility,
+            ),
+        )
       }
     }
 
@@ -55,7 +61,11 @@ internal class ReactTextViewAccessibilityDelegate(
       ViewCompat.setAccessibilityDelegate(
           view,
           ReactTextViewAccessibilityDelegate(
-              view, originalFocus, originalImportantForAccessibility))
+              view,
+              originalFocus,
+              originalImportantForAccessibility,
+          ),
+      )
     }
   }
 
@@ -84,7 +94,7 @@ internal class ReactTextViewAccessibilityDelegate(
   override fun onPerformActionForVirtualView(
       virtualViewId: Int,
       action: Int,
-      arguments: Bundle?
+      arguments: Bundle?,
   ): Boolean {
     if (accessibilityLinks == null) {
       return false
@@ -102,7 +112,7 @@ internal class ReactTextViewAccessibilityDelegate(
     return false
   }
 
-  override fun getVisibleVirtualViews(virtualViewIds: MutableList<Int?>) {
+  override fun getVisibleVirtualViews(virtualViewIds: MutableList<Int>) {
     val accessibilityLinks = accessibilityLinks ?: return
 
     for (i in 0 until accessibilityLinks.size()) {
@@ -112,8 +122,10 @@ internal class ReactTextViewAccessibilityDelegate(
 
   override fun getVirtualViewAt(x: Float, y: Float): Int {
     val accessibilityLinks = accessibilityLinks ?: return INVALID_ID
-    if (accessibilityLinks.size() == 0 ||
-        (hostView !is TextView && hostView !is PreparedLayoutTextView)) {
+    if (
+        accessibilityLinks.size() == 0 ||
+            (hostView !is TextView && hostView !is PreparedLayoutTextView)
+    ) {
       return INVALID_ID
     }
 

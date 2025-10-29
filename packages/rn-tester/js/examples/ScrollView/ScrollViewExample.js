@@ -693,9 +693,13 @@ const SnapToOptions = () => {
       />
       <Button
         label={
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           snapToOffsets === [] ? 'setSnapToOffsets' : 'reset snapToOffsets'
         }
         onPress={() =>
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           snapToOffsets === []
             ? setSnapToOffsets([2, 4, 6, 8, 10])
             : setSnapToOffsets([])

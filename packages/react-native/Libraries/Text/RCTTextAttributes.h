@@ -11,19 +11,22 @@
 #import <React/RCTTextDecorationLineType.h>
 #import <React/RCTTextTransform.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const RCTTextAttributesIsHighlightedAttributeName;
-extern NSString *const RCTTextAttributesTagAttributeName;
+extern NSString *const RCTTextAttributesIsHighlightedAttributeName
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+extern NSString *const RCTTextAttributesTagAttributeName
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 /**
  * Represents knowledge about all supported *text* attributes
  * assigned to some text component such as <Text>, <VirtualText>,
  * and <TextInput>.
  */
-@interface RCTTextAttributes : NSObject <NSCopying>
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
+@interface RCTTextAttributes : NSObject<NSCopying>
 
 // Color
 @property (nonatomic, strong, nullable) UIColor *foregroundColor;
@@ -101,4 +104,4 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 
 NS_ASSUME_NONNULL_END
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

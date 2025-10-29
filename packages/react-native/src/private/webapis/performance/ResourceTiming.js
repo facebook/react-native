@@ -25,9 +25,28 @@ export type PerformanceResourceTimingJSON = {
   connectEnd: DOMHighResTimeStamp,
   responseStart: DOMHighResTimeStamp,
   responseEnd: DOMHighResTimeStamp,
-  responseStatus: ?number,
+  responseStatus: number,
+  contentType: string,
+  encodedBodySize: number,
+  decodedBodySize: number,
   ...
 };
+
+export interface PerformanceResourceTimingInit {
+  +name: string;
+  +startTime: DOMHighResTimeStamp;
+  +duration: DOMHighResTimeStamp;
+  +fetchStart: DOMHighResTimeStamp;
+  +requestStart: DOMHighResTimeStamp;
+  +connectStart: DOMHighResTimeStamp;
+  +connectEnd: DOMHighResTimeStamp;
+  +responseStart: DOMHighResTimeStamp;
+  +responseEnd: DOMHighResTimeStamp;
+  +responseStatus: number;
+  +contentType: string;
+  +encodedBodySize: number;
+  +decodedBodySize: number;
+}
 
 export class PerformanceResourceTiming extends PerformanceEntry {
   #fetchStart: DOMHighResTimeStamp;
@@ -36,26 +55,14 @@ export class PerformanceResourceTiming extends PerformanceEntry {
   #connectEnd: DOMHighResTimeStamp;
   #responseStart: DOMHighResTimeStamp;
   #responseEnd: DOMHighResTimeStamp;
-  #responseStatus: ?number;
+  #responseStatus: number;
+  #contentType: string;
+  #encodedBodySize: number;
+  #decodedBodySize: number;
 
-  constructor(init: {
-    name: string,
-    startTime: DOMHighResTimeStamp,
-    duration: DOMHighResTimeStamp,
-    fetchStart: DOMHighResTimeStamp,
-    requestStart: DOMHighResTimeStamp,
-    connectStart: DOMHighResTimeStamp,
-    connectEnd: DOMHighResTimeStamp,
-    responseStart: DOMHighResTimeStamp,
-    responseEnd: DOMHighResTimeStamp,
-    responseStatus?: number,
-  }) {
-    super({
-      name: init.name,
-      entryType: 'resource',
-      startTime: init.startTime,
-      duration: init.duration,
-    });
+  constructor(init: PerformanceResourceTimingInit) {
+    super('resource', init);
+
     this.#fetchStart = init.fetchStart;
     this.#requestStart = init.requestStart;
     this.#connectStart = init.connectStart;
@@ -63,6 +70,9 @@ export class PerformanceResourceTiming extends PerformanceEntry {
     this.#responseStart = init.responseStart;
     this.#responseEnd = init.responseEnd;
     this.#responseStatus = init.responseStatus;
+    this.#contentType = init.contentType;
+    this.#encodedBodySize = init.encodedBodySize;
+    this.#decodedBodySize = init.decodedBodySize;
   }
 
   get fetchStart(): DOMHighResTimeStamp {
@@ -89,8 +99,20 @@ export class PerformanceResourceTiming extends PerformanceEntry {
     return this.#responseEnd;
   }
 
-  get responseStatus(): ?number {
+  get responseStatus(): number {
     return this.#responseStatus;
+  }
+
+  get contentType(): string {
+    return this.#contentType;
+  }
+
+  get encodedBodySize(): number {
+    return this.#encodedBodySize;
+  }
+
+  get decodedBodySize(): number {
+    return this.#decodedBodySize;
   }
 
   toJSON(): PerformanceResourceTimingJSON {
@@ -103,6 +125,22 @@ export class PerformanceResourceTiming extends PerformanceEntry {
       responseStart: this.#responseStart,
       responseEnd: this.#responseEnd,
       responseStatus: this.#responseStatus,
+      contentType: this.contentType,
+      encodedBodySize: this.encodedBodySize,
+      decodedBodySize: this.decodedBodySize,
     };
   }
 }
+
+export const PerformanceResourceTiming_public: typeof PerformanceResourceTiming =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceResourceTiming() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceResourceTiming': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceResourceTiming_public.prototype =
+  PerformanceResourceTiming.prototype;

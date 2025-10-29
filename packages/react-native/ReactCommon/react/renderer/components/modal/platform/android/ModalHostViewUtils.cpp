@@ -7,12 +7,11 @@
 
 #include <react/renderer/components/modal/ModalHostViewUtils.h>
 #include <react/renderer/graphics/Size.h>
-#include "JReactModalHostView.h"
 
 namespace facebook::react {
 
 Size ModalHostViewScreenSize() {
-  return JReactModalHostView::getDisplayMetrics();
+  return Size{.width = 0, .height = 0};
 }
 
 } // namespace facebook::react

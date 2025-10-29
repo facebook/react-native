@@ -15,31 +15,30 @@ namespace facebook::react {
 
 class IWebSocketClient {
  public:
-  using OnConnectCallback = std::function<void(bool, const std::string&)>;
-  using OnClosedCallback = std::function<void(const std::string&)>;
-  using OnMessageCallback = std::function<void(const std::string&)>;
+  using OnConnectCallback = std::function<void(bool, const std::string &)>;
+  using OnClosedCallback = std::function<void(const std::string &)>;
+  using OnMessageCallback = std::function<void(const std::string &)>;
 
   virtual ~IWebSocketClient() = default;
 
-  virtual void setOnClosedCallback(OnClosedCallback&& callback) noexcept = 0;
+  virtual void setOnClosedCallback(OnClosedCallback &&callback) noexcept = 0;
 
-  virtual void setOnMessageCallback(OnMessageCallback&& callback) noexcept = 0;
+  virtual void setOnMessageCallback(OnMessageCallback &&callback) noexcept = 0;
 
-  virtual void connect(
-      const std::string& url,
-      OnConnectCallback&& = nullptr) = 0;
+  virtual void connect(const std::string &url, OnConnectCallback && = nullptr) = 0;
 
-  virtual void close(const std::string& reason) = 0;
+  virtual void close(const std::string &reason) = 0;
 
-  virtual void send(const std::string& message) = 0;
+  virtual void send(const std::string &message) = 0;
 
   virtual void ping() = 0;
 };
 
 extern const char WebSocketClientFactoryKey[];
 
-using WebSocketClientFactory =
-    std::function<std::unique_ptr<IWebSocketClient>()>;
+extern const char DevToolsWebSocketClientFactoryKey[];
+
+using WebSocketClientFactory = std::function<std::unique_ptr<IWebSocketClient>()>;
 
 WebSocketClientFactory getWebSocketClientFactory();
 

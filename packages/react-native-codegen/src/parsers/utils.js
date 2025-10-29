@@ -52,14 +52,14 @@ function createParserErrorCapturer(): [
       if (!(error instanceof ParserError)) {
         throw error;
       }
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       errors.push(error);
 
       return null;
     }
   }
 
-  // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   return [errors, guard];
 }
 

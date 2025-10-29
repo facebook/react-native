@@ -24,7 +24,7 @@ public class JavaScriptModuleRegistry {
   @Synchronized
   public fun <T : JavaScriptModule> getJavaScriptModule(
       @Suppress("DEPRECATION") instance: CatalystInstance,
-      moduleInterface: Class<T>
+      moduleInterface: Class<T>,
   ): T {
     val module = moduleInstances[moduleInterface]
     if (module != null) {
@@ -36,7 +36,8 @@ public class JavaScriptModuleRegistry {
         Proxy.newProxyInstance(
             moduleInterface.classLoader,
             arrayOf<Class<*>>(moduleInterface),
-            JavaScriptModuleInvocationHandler(instance, moduleInterface)) as JavaScriptModule
+            JavaScriptModuleInvocationHandler(instance, moduleInterface),
+        ) as JavaScriptModule
 
     moduleInstances[moduleInterface] = proxy
     @Suppress("UNCHECKED_CAST")
@@ -45,7 +46,7 @@ public class JavaScriptModuleRegistry {
 
   private class JavaScriptModuleInvocationHandler(
       @Suppress("DEPRECATION") private val catalystInstance: CatalystInstance,
-      private val moduleInterface: Class<out JavaScriptModule>
+      private val moduleInterface: Class<out JavaScriptModule>,
   ) : InvocationHandler {
 
     private var name: String? = null
@@ -56,7 +57,8 @@ public class JavaScriptModuleRegistry {
         for (method in moduleInterface.declaredMethods) {
           if (!methodNames.add(method.name)) {
             throw AssertionError(
-                "Method overloading is unsupported: ${moduleInterface.name}#${method.name}")
+                "Method overloading is unsupported: ${moduleInterface.name}#${method.name}"
+            )
           }
         }
       }

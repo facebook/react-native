@@ -19,11 +19,6 @@ JsiIntegrationTestGenericEngineAdapter::JsiIntegrationTestGenericEngineAdapter(
       runtimeTargetDelegate_{
           "Generic engine (" + runtime_->description() + ")"} {}
 
-/* static */ InspectorFlagOverrides
-JsiIntegrationTestGenericEngineAdapter::getInspectorFlagOverrides() noexcept {
-  return {};
-}
-
 RuntimeTargetDelegate&
 JsiIntegrationTestGenericEngineAdapter::getRuntimeTargetDelegate() {
   return runtimeTargetDelegate_;

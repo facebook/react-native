@@ -29,7 +29,8 @@ enum class FilterType {
   DropShadow
 };
 
-inline FilterType filterTypeFromString(std::string_view filterName) {
+inline FilterType filterTypeFromString(std::string_view filterName)
+{
   if (filterName == "blur") {
     return FilterType::Blur;
   } else if (filterName == "brightness") {
@@ -55,7 +56,8 @@ inline FilterType filterTypeFromString(std::string_view filterName) {
   }
 }
 
-inline std::string toString(const FilterType& filterType) {
+inline std::string toString(const FilterType &filterType)
+{
   switch (filterType) {
     case FilterType::Blur:
       return "blur";
@@ -81,7 +83,7 @@ inline std::string toString(const FilterType& filterType) {
 }
 
 struct DropShadowParams {
-  bool operator==(const DropShadowParams& other) const = default;
+  bool operator==(const DropShadowParams &other) const = default;
 
   Float offsetX{};
   Float offsetY{};
@@ -89,7 +91,8 @@ struct DropShadowParams {
   SharedColor color{};
 
 #ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const {
+  folly::dynamic toDynamic() const
+  {
     folly::dynamic result = folly::dynamic::object();
     result["offsetX"] = offsetX;
     result["offsetY"] = offsetY;
@@ -101,19 +104,20 @@ struct DropShadowParams {
 };
 
 struct FilterFunction {
-  bool operator==(const FilterFunction& other) const = default;
+  bool operator==(const FilterFunction &other) const = default;
 
   FilterType type{};
   std::variant<Float, DropShadowParams> parameters{};
 
 #ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const {
+  folly::dynamic toDynamic() const
+  {
     folly::dynamic result = folly::dynamic::object();
     std::string typeKey = toString(type);
     if (std::holds_alternative<Float>(parameters)) {
       result[typeKey] = std::get<Float>(parameters);
     } else if (std::holds_alternative<DropShadowParams>(parameters)) {
-      const auto& dropShadowParams = std::get<DropShadowParams>(parameters);
+      const auto &dropShadowParams = std::get<DropShadowParams>(parameters);
       result[typeKey] = dropShadowParams.toDynamic();
     }
     return result;
@@ -122,7 +126,8 @@ struct FilterFunction {
 };
 
 #ifdef RN_SERIALIZABLE_STATE
-inline folly::dynamic toDynamic(const FilterFunction& filterFunction) {
+inline folly::dynamic toDynamic(const FilterFunction &filterFunction)
+{
   return filterFunction.toDynamic();
 }
 #endif

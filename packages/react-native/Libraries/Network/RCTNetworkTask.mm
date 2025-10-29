@@ -27,12 +27,25 @@ static auto currentRequestId = std::atomic<NSUInteger>(0);
                         handler:(id<RCTURLRequestHandler>)handler
                   callbackQueue:(dispatch_queue_t)callbackQueue
 {
+  self = [self initWithDevToolsRequestId:nil request:request handler:handler callbackQueue:callbackQueue];
+  return self;
+}
+
+- (instancetype)initWithDevToolsRequestId:(NSString *)devToolsRequestId
+                                  request:(NSURLRequest *)request
+                                  handler:(id<RCTURLRequestHandler>)handler
+                            callbackQueue:(dispatch_queue_t)callbackQueue
+{
   RCTAssertParam(request);
   RCTAssertParam(handler);
   RCTAssertParam(callbackQueue);
 
   if ((self = [super init])) {
     _requestID = @(currentRequestId++);
+    _devToolsRequestId = devToolsRequestId;
+    if (_devToolsRequestId == nil) {
+      _devToolsRequestId = [[NSUUID UUID] UUIDString];
+    }
     _request = request;
     _handler = handler;
     _callbackQueue = callbackQueue;

@@ -60,7 +60,7 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(100),
-        // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+        // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
         {getCellMetricsApprox},
         1,
       ),
@@ -79,7 +79,7 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(frames.length),
-        // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+        // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
         {getCellMetricsApprox: ii => frames[ii]},
         1,
       ),
@@ -97,7 +97,7 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(100),
-        // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+        // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
         {getCellMetricsApprox},
         1,
       ),
@@ -114,7 +114,7 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(frames.length),
-        // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+        // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
         {getCellMetricsApprox: ii => frames[ii]},
         1,
       ),
@@ -157,7 +157,7 @@ describe('computeWindowedRenderLimits', function () {
       getItemCount: () => 3,
     };
     const result = computeWindowedRenderLimits(
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       props,
       5,
       10,
@@ -190,7 +190,7 @@ describe('computeWindowedRenderLimits', function () {
 
     expect(
       computeWindowedRenderLimits(
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         {
           ...defaultProps,
           getItemCount: () => 8,
@@ -202,7 +202,7 @@ describe('computeWindowedRenderLimits', function () {
         31,
         {first: 0, last: 5},
         listMetricsAggregator,
-        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-type]
         {
           dt: 949,
           dOffset: 879.2000732421875,
@@ -228,7 +228,7 @@ describe('computeWindowedRenderLimits', function () {
 
     expect(
       computeWindowedRenderLimits(
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         {
           ...defaultProps,
           getItemLayout: (_, index) => offsets[index],
@@ -237,7 +237,7 @@ describe('computeWindowedRenderLimits', function () {
         5,
         {first: 5, last: 9},
         listMetricsAggregator,
-        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-type]
         {
           dt: 100,
           dOffset: 100,
@@ -259,7 +259,7 @@ describe('computeWindowedRenderLimits', function () {
     };
     const prev = {first: 0, last: 2};
     const result = computeWindowedRenderLimits(
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       defaultProps,
       2, // maxToRenderPerBatch
       5, // windowSize
@@ -281,7 +281,7 @@ describe('computeWindowedRenderLimits', function () {
       visibleLength: 1000,
     };
     const result = computeWindowedRenderLimits(
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       props,
       5,
       10, // windowSize large enough to cover entire list

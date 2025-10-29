@@ -35,6 +35,12 @@ FabricMountingManager::FabricMountingManager(
     jni::global_ref<JFabricUIManager::javaobject>& javaUIManager)
     : javaUIManager_(javaUIManager) {}
 
+FabricMountingManager::~FabricMountingManager() {
+  // Manually reset `javaUIManager_` since FabricMountingManager may be retained
+  // from a GC thread (destroyUnmountedShadowNode)
+  jni::ThreadScope::WithClassLoader([&]() { javaUIManager_.reset(); });
+}
+
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
   allocatedViewRegistry_.emplace(
@@ -280,9 +286,10 @@ inline void writeMountItemPreamble(
   if (numItems == 1) {
     buffer.writeInt(mountItemType);
   } else {
-    buffer.writeIntArray(std::array<int, 2>{
-        mountItemType | CppMountItem::Type::Multiple,
-        static_cast<int>(numItems)});
+    buffer.writeIntArray(
+        std::array<int, 2>{
+            mountItemType | CppMountItem::Type::Multiple,
+            static_cast<int>(numItems)});
   }
 }
 
@@ -313,11 +320,12 @@ inline void writeCreateMountItem(
   auto javaEventEmitter = EventEmitterWrapper::newObjectCxxArgs(
       mountItem.newChildShadowView.eventEmitter);
 
-  buffer.writeObjectsArray(std::array<jobject, 4>{
-      componentName.get(),
-      props.get(),
-      javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr,
-      javaEventEmitter.get()});
+  buffer.writeObjectsArray(
+      std::array<jobject, 4>{
+          componentName.get(),
+          props.get(),
+          javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr,
+          javaEventEmitter.get()});
 }
 
 inline void writeDeleteMountItem(
@@ -329,15 +337,21 @@ inline void writeDeleteMountItem(
 inline void writeInsertMountItem(
     InstructionBuffer& buffer,
     const CppMountItem& mountItem) {
-  buffer.writeIntArray(std::array<int, 3>{
-      mountItem.newChildShadowView.tag, mountItem.parentTag, mountItem.index});
+  buffer.writeIntArray(
+      std::array<int, 3>{
+          mountItem.newChildShadowView.tag,
+          mountItem.parentTag,
+          mountItem.index});
 }
 
 inline void writeRemoveMountItem(
     InstructionBuffer& buffer,
     const CppMountItem& mountItem) {
-  buffer.writeIntArray(std::array<int, 3>{
-      mountItem.oldChildShadowView.tag, mountItem.parentTag, mountItem.index});
+  buffer.writeIntArray(
+      std::array<int, 3>{
+          mountItem.oldChildShadowView.tag,
+          mountItem.parentTag,
+          mountItem.index});
 }
 
 inline void writeUpdatePropsMountItem(
@@ -381,15 +395,16 @@ inline void writeUpdateLayoutMountItem(
   int w = round(scale(frame.size.width, pointScaleFactor));
   int h = round(scale(frame.size.height, pointScaleFactor));
 
-  buffer.writeIntArray(std::array<int, 8>{
-      mountItem.newChildShadowView.tag,
-      mountItem.parentTag,
-      x,
-      y,
-      w,
-      h,
-      toInt(layoutMetrics.displayType),
-      toInt(layoutMetrics.layoutDirection)});
+  buffer.writeIntArray(
+      std::array<int, 8>{
+          mountItem.newChildShadowView.tag,
+          mountItem.parentTag,
+          x,
+          y,
+          w,
+          h,
+          toInt(layoutMetrics.displayType),
+          toInt(layoutMetrics.layoutDirection)});
 }
 
 inline void writeUpdateEventEmitterMountItem(
@@ -415,12 +430,13 @@ inline void writeUpdatePaddingMountItem(
   int insetRight = floor(scale(contentInsets.right, pointScaleFactor));
   int insetBottom = floor(scale(contentInsets.bottom, pointScaleFactor));
 
-  buffer.writeIntArray(std::array<int, 5>{
-      mountItem.newChildShadowView.tag,
-      insetLeft,
-      insetTop,
-      insetRight,
-      insetBottom});
+  buffer.writeIntArray(
+      std::array<int, 5>{
+          mountItem.newChildShadowView.tag,
+          insetLeft,
+          insetTop,
+          insetRight,
+          insetBottom});
 }
 
 inline void writeUpdateOverflowInsetMountItem(
@@ -436,12 +452,13 @@ inline void writeUpdateOverflowInsetMountItem(
   int overflowInsetBottom =
       round(scale(overflowInset.bottom, pointScaleFactor));
 
-  buffer.writeIntArray(std::array<int, 5>{
-      mountItem.newChildShadowView.tag,
-      overflowInsetLeft,
-      overflowInsetTop,
-      overflowInsetRight,
-      overflowInsetBottom});
+  buffer.writeIntArray(
+      std::array<int, 5>{
+          mountItem.newChildShadowView.tag,
+          overflowInsetLeft,
+          overflowInsetTop,
+          overflowInsetRight,
+          overflowInsetBottom});
 }
 
 } // namespace
@@ -514,8 +531,9 @@ void FabricMountingManager::executeMount(
         }
         case ShadowViewMutation::Remove: {
           if (!isVirtual) {
-            cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
-                parentTag, oldChildShadowView, index));
+            cppCommonMountItems.push_back(
+                CppMountItem::RemoveMountItem(
+                    parentTag, oldChildShadowView, index));
           }
           break;
         }
@@ -538,8 +556,9 @@ void FabricMountingManager::executeMount(
             if (oldChildShadowView.props != newChildShadowView.props) {
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdatePropsMountItems)
-                  .push_back(CppMountItem::UpdatePropsMountItem(
-                      oldChildShadowView, newChildShadowView));
+                  .push_back(
+                      CppMountItem::UpdatePropsMountItem(
+                          oldChildShadowView, newChildShadowView));
             }
             if (oldChildShadowView.state != newChildShadowView.state) {
               (maintainMutationOrder ? cppCommonMountItems
@@ -564,8 +583,9 @@ void FabricMountingManager::executeMount(
                 newChildShadowView.layoutMetrics) {
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdateLayoutMountItems)
-                  .push_back(CppMountItem::UpdateLayoutMountItem(
-                      mutation.newChildShadowView, parentTag));
+                  .push_back(
+                      CppMountItem::UpdateLayoutMountItem(
+                          mutation.newChildShadowView, parentTag));
             }
 
             // OverflowInset: This is the values indicating boundaries including
@@ -576,8 +596,9 @@ void FabricMountingManager::executeMount(
                  newChildShadowView.layoutMetrics.overflowInset)) {
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdateOverflowInsetMountItems)
-                  .push_back(CppMountItem::UpdateOverflowInsetMountItem(
-                      newChildShadowView));
+                  .push_back(
+                      CppMountItem::UpdateOverflowInsetMountItem(
+                          newChildShadowView));
             }
           }
 
@@ -585,16 +606,18 @@ void FabricMountingManager::executeMount(
               newChildShadowView.eventEmitter) {
             (maintainMutationOrder ? cppCommonMountItems
                                    : cppUpdatePropsMountItems)
-                .push_back(CppMountItem::UpdateEventEmitterMountItem(
-                    mutation.newChildShadowView));
+                .push_back(
+                    CppMountItem::UpdateEventEmitterMountItem(
+                        mutation.newChildShadowView));
           }
           break;
         }
         case ShadowViewMutation::Insert: {
           if (!isVirtual) {
             // Insert item
-            cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
-                parentTag, newChildShadowView, index));
+            cppCommonMountItems.push_back(
+                CppMountItem::InsertMountItem(
+                    parentTag, newChildShadowView, index));
 
             bool shouldCreateView =
                 !allocatedViewTags.contains(newChildShadowView.tag);
@@ -606,16 +629,18 @@ void FabricMountingManager::executeMount(
               }
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdatePropsMountItems)
-                  .push_back(CppMountItem::UpdatePropsMountItem(
-                      {}, newChildShadowView));
+                  .push_back(
+                      CppMountItem::UpdatePropsMountItem(
+                          {}, newChildShadowView));
             } else {
               if (shouldCreateView) {
                 LOG(ERROR) << "Emitting insert for unallocated view "
                            << newChildShadowView.tag;
                 (maintainMutationOrder ? cppCommonMountItems
                                        : cppUpdatePropsMountItems)
-                    .push_back(CppMountItem::UpdatePropsMountItem(
-                        {}, newChildShadowView));
+                    .push_back(
+                        CppMountItem::UpdatePropsMountItem(
+                            {}, newChildShadowView));
               }
             }
 
@@ -642,8 +667,9 @@ void FabricMountingManager::executeMount(
             // Layout
             (maintainMutationOrder ? cppCommonMountItems
                                    : cppUpdateLayoutMountItems)
-                .push_back(CppMountItem::UpdateLayoutMountItem(
-                    newChildShadowView, parentTag));
+                .push_back(
+                    CppMountItem::UpdateLayoutMountItem(
+                        newChildShadowView, parentTag));
 
             // OverflowInset: This is the values indicating boundaries including
             // children of the current view. The layout of current view may not
@@ -653,8 +679,9 @@ void FabricMountingManager::executeMount(
                 EdgeInsets::ZERO) {
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdateOverflowInsetMountItems)
-                  .push_back(CppMountItem::UpdateOverflowInsetMountItem(
-                      newChildShadowView));
+                  .push_back(
+                      CppMountItem::UpdateOverflowInsetMountItem(
+                          newChildShadowView));
             }
           }
 
@@ -663,8 +690,9 @@ void FabricMountingManager::executeMount(
           // it in when preallocating views
           (maintainMutationOrder ? cppCommonMountItems
                                  : cppUpdateEventEmitterMountItems)
-              .push_back(CppMountItem::UpdateEventEmitterMountItem(
-                  mutation.newChildShadowView));
+              .push_back(
+                  CppMountItem::UpdateEventEmitterMountItem(
+                      mutation.newChildShadowView));
 
           break;
         }
@@ -905,7 +933,7 @@ void FabricMountingManager::destroyUnmountedShadowNode(
 
   // ThreadScope::WithClassLoader is necessary because
   // destroyUnmountedShadowNode is being called from a destructor thread
-  facebook::jni::ThreadScope::WithClassLoader([&]() {
+  jni::ThreadScope::WithClassLoader([&]() {
     static auto destroyUnmountedView =
         JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint)>(
             "destroyUnmountedView");
@@ -1004,8 +1032,9 @@ void FabricMountingManager::dispatchCommand(
           ->getMethod<void(jint, jint, jstring, ReadableArray::javaobject)>(
               "dispatchCommand");
   auto command = jni::make_jstring(commandName);
-  auto argsArray = jni::adopt_local(reinterpret_cast<ReadableArray::javaobject>(
-      ReadableNativeArray::newObjectCxxArgs(args).release()));
+  auto argsArray = jni::adopt_local(
+      reinterpret_cast<ReadableArray::javaobject>(
+          ReadableNativeArray::newObjectCxxArgs(args).release()));
   dispatchCommand(
       javaUIManager_,
       shadowView.surfaceId,

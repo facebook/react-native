@@ -540,7 +540,7 @@ function buildEventEmitterSchema(
 
   return {
     name: eventemitterName,
-    optional: false,
+    optional: Boolean(property.optional),
     typeAnnotation: {
       type: 'EventEmitterTypeAnnotation',
       typeAnnotation: eventTypeAnnotation,

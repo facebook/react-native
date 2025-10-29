@@ -90,7 +90,8 @@ internal class InsetBoxShadowDrawable(
             bounds.left + (computedBorderInsets?.left ?: 0f),
             bounds.top + (computedBorderInsets?.top ?: 0f),
             bounds.right - (computedBorderInsets?.right ?: 0f),
-            bounds.bottom - (computedBorderInsets?.bottom ?: 0f))
+            bounds.bottom - (computedBorderInsets?.bottom ?: 0f),
+        )
     val paddingBoxRadii =
         computedBorderRadii?.let {
           floatArrayOf(
@@ -101,7 +102,8 @@ internal class InsetBoxShadowDrawable(
               innerRadius(it.bottomRight.horizontal, computedBorderInsets?.right),
               innerRadius(it.bottomRight.vertical, computedBorderInsets?.bottom),
               innerRadius(it.bottomLeft.horizontal, computedBorderInsets?.left),
-              innerRadius(it.bottomLeft.vertical, computedBorderInsets?.bottom))
+              innerRadius(it.bottomLeft.vertical, computedBorderInsets?.bottom),
+          )
         }
 
     val x = offsetX.dpToPx()
@@ -130,7 +132,8 @@ internal class InsetBoxShadowDrawable(
     canvas.save().let { saveCount ->
       if (paddingBoxRadii != null) {
         canvas.clipPath(
-            Path().apply { addRoundRect(paddingBoxRect, paddingBoxRadii, Path.Direction.CW) })
+            Path().apply { addRoundRect(paddingBoxRect, paddingBoxRadii, Path.Direction.CW) }
+        )
 
         val innerRadii =
             paddingBoxRadii.map { adjustRadiusForSpread(it, -spreadExtent) }.toFloatArray()
@@ -151,26 +154,31 @@ internal class InsetBoxShadowDrawable(
             layoutDirection,
             context,
             bounds.width().toFloat().pxToDp(),
-            bounds.height().toFloat().pxToDp())
+            bounds.height().toFloat().pxToDp(),
+        )
 
     return if (resolvedBorderRadii?.hasRoundedBorders() == true) {
       ComputedBorderRadius(
           topLeft =
               CornerRadii(
                   resolvedBorderRadii.topLeft.horizontal.dpToPx(),
-                  resolvedBorderRadii.topLeft.vertical.dpToPx()),
+                  resolvedBorderRadii.topLeft.vertical.dpToPx(),
+              ),
           topRight =
               CornerRadii(
                   resolvedBorderRadii.topRight.horizontal.dpToPx(),
-                  resolvedBorderRadii.topRight.vertical.dpToPx()),
+                  resolvedBorderRadii.topRight.vertical.dpToPx(),
+              ),
           bottomLeft =
               CornerRadii(
                   resolvedBorderRadii.bottomLeft.horizontal.dpToPx(),
-                  resolvedBorderRadii.bottomLeft.vertical.dpToPx()),
+                  resolvedBorderRadii.bottomLeft.vertical.dpToPx(),
+              ),
           bottomRight =
               CornerRadii(
                   resolvedBorderRadii.bottomRight.horizontal.dpToPx(),
-                  resolvedBorderRadii.bottomRight.vertical.dpToPx()),
+                  resolvedBorderRadii.bottomRight.vertical.dpToPx(),
+              ),
       )
     } else {
       null

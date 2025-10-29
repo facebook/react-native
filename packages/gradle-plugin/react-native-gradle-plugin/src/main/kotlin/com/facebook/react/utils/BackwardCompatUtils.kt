@@ -21,25 +21,26 @@ internal object BackwardCompatUtils {
       if (reactMap.isNotEmpty()) {
         project.logger.error(
             """
-          ********************************************************************************
- 
-          ERROR: Using old project.ext.react configuration.
-          We identified that your project is using a old configuration block as:
-          
-          project.ext.react = [
-              // ...
-          ]
-          
-          You should migrate to the new configuration:
-          
-          react {
-              // ...
-          }
-          You can find documentation inside `android/app/build.gradle` on how to use it.
-        
-          ********************************************************************************
-          """
-                .trimIndent())
+            ********************************************************************************
+
+            ERROR: Using old project.ext.react configuration.
+            We identified that your project is using a old configuration block as:
+
+            project.ext.react = [
+                // ...
+            ]
+
+            You should migrate to the new configuration:
+
+            react {
+                // ...
+            }
+            You can find documentation inside `android/app/build.gradle` on how to use it.
+
+            ********************************************************************************
+            """
+                .trimIndent()
+        )
       }
     }
 
@@ -55,14 +56,14 @@ internal object BackwardCompatUtils {
     val message =
         """
 
-=============== JavaScriptCore is being moved ===============
-JavaScriptCore has been extracted from react-native core
-and will be removed in a future release. It can now be
-installed from `@react-native-community/javascriptcore`
-See: https://github.com/react-native-community/javascriptcore
-=============================================================
+        =============== JavaScriptCore is being moved ===============
+        JavaScriptCore has been extracted from react-native core
+        and will be removed in a future release. It can now be
+        installed from `@react-native-community/javascriptcore`
+        See: https://github.com/react-native-community/javascriptcore
+        =============================================================
 
-"""
+        """
             .trimIndent()
     project.logger.warn(message)
     hasShownJSCRemovalMessage = true

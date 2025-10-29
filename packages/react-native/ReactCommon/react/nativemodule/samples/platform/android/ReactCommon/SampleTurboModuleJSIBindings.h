@@ -13,11 +13,9 @@
 
 namespace facebook::react {
 
-class SampleTurboModuleJSIBindings
-    : public jni::JavaClass<SampleTurboModuleJSIBindings> {
+class SampleTurboModuleJSIBindings : public jni::JavaClass<SampleTurboModuleJSIBindings> {
  public:
-  static constexpr const char* kJavaDescriptor =
-      "Lcom/facebook/fbreact/specs/SampleTurboModule;";
+  static constexpr const char *kJavaDescriptor = "Lcom/facebook/fbreact/specs/SampleTurboModule;";
 
   SampleTurboModuleJSIBindings() = default;
 
@@ -25,8 +23,8 @@ class SampleTurboModuleJSIBindings
 
  private:
   // Using static function as a simple demonstration
-  static jni::local_ref<BindingsInstallerHolder::javaobject>
-  getBindingsInstaller(jni::alias_ref<SampleTurboModuleJSIBindings> jobj);
+  static jni::local_ref<BindingsInstallerHolder::javaobject> getBindingsInstaller(
+      jni::alias_ref<SampleTurboModuleJSIBindings> jobj);
 };
 
 } // namespace facebook::react

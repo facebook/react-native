@@ -47,7 +47,7 @@ function combineSchemas(
       }
       return merged;
     },
-    {modules: {}},
+    {modules: {} /*:: as SchemaType['modules'] */},
   );
 
   return {

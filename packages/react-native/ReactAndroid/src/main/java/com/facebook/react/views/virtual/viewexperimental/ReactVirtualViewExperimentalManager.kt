@@ -13,12 +13,12 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.viewmanagers.VirtualViewExperimentalManagerDelegate
 import com.facebook.react.viewmanagers.VirtualViewExperimentalManagerInterface
+import com.facebook.react.views.view.ReactClippingViewManager
 import com.facebook.react.views.virtual.VirtualViewMode
 import com.facebook.react.views.virtual.VirtualViewModeChangeEmitter
 import com.facebook.react.views.virtual.VirtualViewModeChangeEvent
@@ -26,7 +26,7 @@ import com.facebook.react.views.virtual.VirtualViewRenderState
 
 @ReactModule(name = ReactVirtualViewExperimentalManager.REACT_CLASS)
 public class ReactVirtualViewExperimentalManager :
-    ViewGroupManager<ReactVirtualViewExperimental>(),
+    ReactClippingViewManager<ReactVirtualViewExperimental>(),
     VirtualViewExperimentalManagerInterface<ReactVirtualViewExperimental> {
 
   private val _delegate = VirtualViewExperimentalManagerDelegate(this)
@@ -64,7 +64,7 @@ public class ReactVirtualViewExperimentalManager :
 
   override fun addEventEmitters(
       reactContext: ThemedReactContext,
-      view: ReactVirtualViewExperimental
+      view: ReactVirtualViewExperimental,
   ) {
     val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id) ?: return
     view.modeChangeEmitter =
@@ -88,7 +88,7 @@ public class ReactVirtualViewExperimentalManager :
 public class VirtualViewEventEmitter(
     private val viewId: Int,
     private val surfaceId: Int,
-    private val dispatcher: EventDispatcher
+    private val dispatcher: EventDispatcher,
 ) : VirtualViewModeChangeEmitter {
   override fun emitModeChange(
       mode: VirtualViewMode,
@@ -104,6 +104,7 @@ public class VirtualViewEventEmitter(
             targetRect,
             thresholdRect,
             synchronous,
-        ))
+        )
+    )
   }
 }

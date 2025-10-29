@@ -137,11 +137,12 @@ SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
     auto propsList =
         fragment.textAttributes.DebugStringConvertible::getDebugProps();
 
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(
-        "Fragment",
-        fragment.string,
-        SharedDebugStringConvertibleList(),
-        propsList));
+    list.push_back(
+        std::make_shared<DebugStringConvertibleItem>(
+            "Fragment",
+            fragment.string,
+            SharedDebugStringConvertibleList(),
+            propsList));
   }
 
   return list;

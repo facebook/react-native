@@ -27,7 +27,7 @@
  * - Corresponds to `PerformanceResourceTiming.requestStart` (specifically,
  *   marking when the native request was initiated).
  */
-+ (void)reportRequestStart:(NSNumber *)requestId
++ (void)reportRequestStart:(NSString *)requestId
                    request:(NSURLRequest *)request
          encodedDataLength:(int)encodedDataLength;
 
@@ -40,7 +40,7 @@
  *   `PerformanceResourceTiming.connectStart`. Defined as "immediately before
  *   the browser starts to establish the connection to the server".
  */
-+ (void)reportConnectionTiming:(NSNumber *)requestId request:(NSURLRequest *)request;
++ (void)reportConnectionTiming:(NSString *)requestId request:(NSURLRequest *)request;
 
 /**
  * Report when HTTP response headers have been received, corresponding to
@@ -49,7 +49,7 @@
  * - Corresponds to `Network.responseReceived` in CDP.
  * - Corresponds to `PerformanceResourceTiming.responseStart`.
  */
-+ (void)reportResponseStart:(NSNumber *)requestId
++ (void)reportResponseStart:(NSString *)requestId
                    response:(NSURLResponse *)response
                  statusCode:(int)statusCode
                     headers:(NSDictionary<NSString *, NSString *> *)headers;
@@ -59,7 +59,7 @@
  *
  * Corresponds to `Network.dataReceived` in CDP.
  */
-+ (void)reportDataReceived:(NSNumber *)requestId data:(NSData *)data;
++ (void)reportDataReceived:(NSString *)requestId data:(NSData *)data;
 
 /**
  * Report when a network request is complete and we are no longer receiving
@@ -68,20 +68,20 @@
  * - Corresponds to `Network.loadingFinished` in CDP.
  * - Corresponds to `PerformanceResourceTiming.responseEnd`.
  */
-+ (void)reportResponseEnd:(NSNumber *)requestId encodedDataLength:(int)encodedDataLength;
++ (void)reportResponseEnd:(NSString *)requestId encodedDataLength:(int)encodedDataLength;
 
 /**
  * Report when a network request has failed.
  *
  * - Corresponds to `Network.loadingFailed` in CDP.
  */
-+ (void)reportRequestFailed:(NSNumber *)requestId cancelled:(BOOL)cancelled;
++ (void)reportRequestFailed:(NSString *)requestId cancelled:(BOOL)cancelled;
 
 /**
  * Store response body preview. This is an optional reporting method, and is a
  * no-op if CDP debugging is disabled.
  */
-+ (void)maybeStoreResponseBody:(NSNumber *)requestId data:(NSData *)data base64Encoded:(bool)base64Encoded;
++ (void)maybeStoreResponseBody:(NSString *)requestId data:(NSData *)data base64Encoded:(bool)base64Encoded;
 
 /**
  * Incrementally store a response body preview, when a string response is
@@ -91,6 +91,6 @@
  * As with `maybeStoreResponseBody`, calling this method is optional and a
  * no-op if CDP debugging is disabled.
  */
-+ (void)maybeStoreResponseBodyIncremental:(NSNumber *)requestId data:(NSString *)data;
++ (void)maybeStoreResponseBodyIncremental:(NSString *)requestId data:(NSString *)data;
 
 @end

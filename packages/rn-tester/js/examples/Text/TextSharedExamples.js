@@ -28,11 +28,15 @@ function InlineView(props: {
         <RNTesterText style={{fontWeight: 'bold'}}>Child</RNTesterText>
         <View style={{width: 30, height: 30, backgroundColor: 'red'}} />
         <RNTesterText style={{fontWeight: 'bold'}}>Child</RNTesterText>
-        {props !== null && props.long === true && (
-          <RNTesterText style={{fontWeight: 'bold'}}>
-            aaaa a aaaa aaaaaa aaa a a a aaaaa sdsds dsdSAD asd ASDasd ASDas
-          </RNTesterText>
-        )}
+        {
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/5whu3i34. */
+          props !== null && props.long === true && (
+            <RNTesterText style={{fontWeight: 'bold'}}>
+              aaaa a aaaa aaaaaa aaa a a a aaaaa sdsds dsdSAD asd ASDasd ASDas
+            </RNTesterText>
+          )
+        }
       </RNTesterText>
     </View>
   );

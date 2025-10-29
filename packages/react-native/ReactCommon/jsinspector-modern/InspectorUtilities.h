@@ -34,6 +34,25 @@ class CallbackLocalConnection : public ILocalConnection {
 };
 
 /**
+ * Wraps a callback function in IRemoteConnection.
+ */
+class CallbackRemoteConnection : public IRemoteConnection {
+ public:
+  /**
+   * Creates a new Connection that uses the given callback to receive messages
+   * from the backend.
+   */
+  explicit CallbackRemoteConnection(std::function<void(std::string)> handler);
+
+  void onMessage(std::string message) override;
+
+  void onDisconnect() override {}
+
+ private:
+  std::function<void(std::string)> handler_;
+};
+
+/**
  * Wraps an IRemoteConnection in a simpler interface that calls `onDisconnect`
  * implicitly upon destruction.
  */

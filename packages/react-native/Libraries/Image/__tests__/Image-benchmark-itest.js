@@ -6,6 +6,7 @@
  *
  * @flow strict-local
  * @format
+ * @fantom_flags reduceDefaultPropsInImage:*
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
@@ -20,35 +21,61 @@ const IMAGE2 = require('./img/img2.png');
 let root;
 let testElements: React.MixedElement;
 
-Fantom.unstable_benchmark.suite('Image').test.each(
-  [100, 1000],
-  n => `render ${n.toString()} image component instances`,
-  () => {
-    Fantom.runTask(() => root.render(testElements));
-  },
-  n => ({
-    beforeAll: () => {
-      testElements = (
-        <>
-          {Array.from({length: n}, (_, i) => (
-            <Image
-              id={String(i)}
-              nativeID={String(i)}
-              source={i % 2 === 0 ? IMAGE1 : IMAGE2}
-              style={{
-                width: i + 1,
-                height: i + 1,
-              }}
-            />
-          ))}
-        </>
-      );
+Fantom.unstable_benchmark
+  .suite('Image')
+  .test.each(
+    [100, 1000],
+    n => `render ${n.toString()} images with no explicit props`,
+    () => {
+      Fantom.runTask(() => root.render(testElements));
     },
-    beforeEach: () => {
-      root = Fantom.createRoot();
+    n => ({
+      beforeAll: () => {
+        testElements = (
+          <>
+            {[...Array(n).keys()].map(i => (
+              <Image />
+            ))}
+          </>
+        );
+      },
+      beforeEach: () => {
+        root = Fantom.createRoot();
+      },
+      afterEach: () => {
+        root.destroy();
+      },
+    }),
+  )
+  .test.each(
+    [100, 1000],
+    n => `render ${n.toString()} images`,
+    () => {
+      Fantom.runTask(() => root.render(testElements));
     },
-    afterEach: () => {
-      root.destroy();
-    },
-  }),
-);
+    n => ({
+      beforeAll: () => {
+        testElements = (
+          <>
+            {Array.from({length: n}, (_, i) => (
+              <Image
+                id={String(i)}
+                nativeID={String(i)}
+                source={i % 2 === 0 ? IMAGE1 : IMAGE2}
+                style={{
+                  width: i + 1,
+                  height: i + 1,
+                }}
+              />
+            ))}
+          </>
+        );
+      },
+      beforeEach: () => {
+        root = Fantom.createRoot();
+      },
+      afterEach: () => {
+        root.destroy();
+      },
+    }),
+  );

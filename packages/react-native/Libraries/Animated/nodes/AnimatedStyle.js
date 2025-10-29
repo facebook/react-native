@@ -43,7 +43,7 @@ function createAnimatedStyle(
       if (value != null && key === 'transform') {
         node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
           ? AnimatedObject.from(value)
-          : // $FlowFixMe[incompatible-call] - `value` is mixed.
+          : // $FlowFixMe[incompatible-type] - `value` is mixed.
             AnimatedTransform.from(value);
       } else if (value instanceof AnimatedNode) {
         node = value;
@@ -102,6 +102,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     const [nodeKeys, nodes, style] = createAnimatedStyle(
       flatStyle,
       allowlist,
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       Platform.OS !== 'web',
     );
     if (nodes.length === 0) {

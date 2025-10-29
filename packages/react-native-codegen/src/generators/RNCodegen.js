@@ -36,7 +36,6 @@ const generateTests = require('./components/GenerateTests.js');
 const generateThirdPartyFabricComponentsProviderH = require('./components/GenerateThirdPartyFabricComponentsProviderH.js');
 const generateThirdPartyFabricComponentsProviderObjCpp = require('./components/GenerateThirdPartyFabricComponentsProviderObjCpp.js');
 const generateViewConfigJs = require('./components/GenerateViewConfigJs.js');
-const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
 const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleJavaSpec = require('./modules/GenerateModuleJavaSpec.js');
 const generateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
@@ -56,7 +55,6 @@ const ALL_GENERATORS = {
   generateStateCpp: generateStateCpp.generate,
   generateStateH: generateStateH.generate,
   generateModuleH: generateModuleH.generate,
-  generateModuleCpp: generateModuleCpp.generate,
   generateModuleObjCpp: generateModuleObjCpp.generate,
   generateModuleJavaSpec: generateModuleJavaSpec.generate,
   generateModuleJniCpp: generateModuleJniCpp.generate,
@@ -81,6 +79,7 @@ export type GenerateFunction = (
   packageName?: string,
   assumeNonnull: boolean,
   headerPrefix?: string,
+  includeGetDebugPropsImplementation?: boolean,
 ) => FilesOutput;
 
 export type LibraryGeneratorsFunctions = $ReadOnly<{
@@ -94,6 +93,7 @@ export type LibraryOptions = $ReadOnly<{
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
   assumeNonnull: boolean,
   useLocalIncludePaths?: boolean,
+  includeGetDebugPropsImplementation?: boolean,
   libraryGenerators?: LibraryGeneratorsFunctions,
 }>;
 
@@ -177,7 +177,7 @@ const LIBRARY_GENERATORS: LibraryGeneratorsFunctions = {
     generateModuleJniH.generate,
     generateModuleJavaSpec.generate,
   ],
-  modulesCxx: [generateModuleCpp.generate, generateModuleH.generate],
+  modulesCxx: [generateModuleH.generate],
   modulesIOS: [generateModuleObjCpp.generate],
   tests: [generateTests.generate],
   'shadow-nodes': [
@@ -255,6 +255,7 @@ module.exports = {
       packageName,
       assumeNonnull,
       useLocalIncludePaths,
+      includeGetDebugPropsImplementation = false,
       libraryGenerators = LIBRARY_GENERATORS,
     }: LibraryOptions,
     {generators, test}: LibraryConfig,
@@ -299,6 +300,7 @@ module.exports = {
           packageName,
           assumeNonnull,
           headerPrefix,
+          includeGetDebugPropsImplementation,
         ).forEach((contents: string, fileName: string) => {
           generatedFiles.push({
             name: fileName,

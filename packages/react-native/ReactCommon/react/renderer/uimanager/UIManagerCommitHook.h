@@ -23,9 +23,8 @@ class UIManagerCommitHook {
   /*
    * Called right after the commit hook is registered or unregistered.
    */
-  virtual void commitHookWasRegistered(const UIManager& uiManager) noexcept = 0;
-  virtual void commitHookWasUnregistered(
-      const UIManager& uiManager) noexcept = 0;
+  virtual void commitHookWasRegistered(const UIManager &uiManager) noexcept = 0;
+  virtual void commitHookWasUnregistered(const UIManager &uiManager) noexcept = 0;
 
   /*
    * Called right before a `ShadowTree` commits a new tree.
@@ -33,12 +32,12 @@ class UIManagerCommitHook {
    * from `ShadowTreeDelegate`.
    */
   virtual RootShadowNode::Unshared shadowTreeWillCommit(
-      const ShadowTree& shadowTree,
-      const RootShadowNode::Shared& oldRootShadowNode,
-      const RootShadowNode::Unshared& newRootShadowNode,
-      const ShadowTreeCommitOptions& /*commitOptions*/) noexcept {
-    return shadowTreeWillCommit(
-        shadowTree, oldRootShadowNode, newRootShadowNode);
+      const ShadowTree &shadowTree,
+      const RootShadowNode::Shared &oldRootShadowNode,
+      const RootShadowNode::Unshared &newRootShadowNode,
+      const ShadowTreeCommitOptions & /*commitOptions*/) noexcept
+  {
+    return shadowTreeWillCommit(shadowTree, oldRootShadowNode, newRootShadowNode);
   }
 
   /*
@@ -46,9 +45,10 @@ class UIManagerCommitHook {
    * backward compatibility.
    */
   virtual RootShadowNode::Unshared shadowTreeWillCommit(
-      const ShadowTree& /*shadowTree*/,
-      const RootShadowNode::Shared& /*oldRootShadowNode*/,
-      const RootShadowNode::Unshared& newRootShadowNode) noexcept {
+      const ShadowTree & /*shadowTree*/,
+      const RootShadowNode::Shared & /*oldRootShadowNode*/,
+      const RootShadowNode::Unshared &newRootShadowNode) noexcept
+  {
     // No longer a pure method as subclasses are expected to implement the other
     // flavor instead.
     return newRootShadowNode;

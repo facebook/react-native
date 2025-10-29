@@ -55,10 +55,11 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
     // @cdp Tracing.start support is experimental.
     if (sessionState_.isDebuggerDomainEnabled) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Debugger domain is expected to be disabled before starting Tracing"));
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "Debugger domain is expected to be disabled before starting Tracing"));
 
       return true;
     }
@@ -66,10 +67,11 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     bool didNotHaveAlreadyRunningRecording =
         hostTargetController_.startTracing(tracing::Mode::CDP);
     if (!didNotHaveAlreadyRunningRecording) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InvalidRequest,
-          "Tracing has already been started"));
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidRequest,
+              "Tracing has already been started"));
 
       return true;
     }
@@ -86,25 +88,38 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
 
-    auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
-      frontendChannel_(cdp::jsonNotification(
-          "Tracing.dataCollected",
-          folly::dynamic::object("value", std::move(eventsChunk))));
-    };
-    tracing::TraceRecordingStateSerializer::emitAsDataCollectedChunks(
-        std::move(state),
-        dataCollectedCallback,
-        TRACE_EVENT_CHUNK_SIZE,
-        PROFILE_TRACE_EVENT_CHUNK_SIZE);
-
-    frontendChannel_(cdp::jsonNotification(
-        "Tracing.tracingComplete",
-        folly::dynamic::object("dataLossOccurred", false)));
-
+    emitTraceRecording(std::move(state));
     return true;
   }
 
   return false;
+}
+
+void TracingAgent::emitExternalTraceRecording(
+    tracing::TraceRecordingState traceRecording) const {
+  frontendChannel_(
+      cdp::jsonNotification("ReactNativeApplication.traceRequested"));
+  emitTraceRecording(std::move(traceRecording));
+}
+
+void TracingAgent::emitTraceRecording(
+    tracing::TraceRecordingState traceRecording) const {
+  auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
+    frontendChannel_(
+        cdp::jsonNotification(
+            "Tracing.dataCollected",
+            folly::dynamic::object("value", std::move(eventsChunk))));
+  };
+  tracing::TraceRecordingStateSerializer::emitAsDataCollectedChunks(
+      std::move(traceRecording),
+      dataCollectedCallback,
+      TRACE_EVENT_CHUNK_SIZE,
+      PROFILE_TRACE_EVENT_CHUNK_SIZE);
+
+  frontendChannel_(
+      cdp::jsonNotification(
+          "Tracing.tracingComplete",
+          folly::dynamic::object("dataLossOccurred", false)));
 }
 
 } // namespace facebook::react::jsinspector_modern

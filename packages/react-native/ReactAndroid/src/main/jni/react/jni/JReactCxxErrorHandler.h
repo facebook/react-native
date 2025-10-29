@@ -14,8 +14,7 @@ namespace facebook::react {
 
 class JReactCxxErrorHandler : public jni::JavaClass<JReactCxxErrorHandler> {
  public:
-  static constexpr const char* kJavaDescriptor =
-      "Lcom/facebook/react/bridge/ReactCxxErrorHandler;";
+  static constexpr const char *kJavaDescriptor = "Lcom/facebook/react/bridge/ReactCxxErrorHandler;";
 
   static void handleError(std::string message);
 };

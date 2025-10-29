@@ -63,7 +63,8 @@ public class I18nUtil private constructor() {
   private val isDevicePreferredLanguageRTL: Boolean
     // Check if the current device language is RTL
     get() {
-      val directionality = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
+      val directionality =
+          TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getAvailableLocales()[0])
       return directionality == View.LAYOUT_DIRECTION_RTL
     }
 
@@ -94,9 +95,12 @@ public class I18nUtil private constructor() {
      * @deprecated Use instance instead
      */
     @Deprecated(
-        "Use .instance instead, this API is only for backward compat", ReplaceWith("instance"))
+        "Use .instance instead, this API is only for backward compat",
+        ReplaceWith("instance"),
+    )
     @JvmName(
-        "DEPRECATED\$getInstance") // We intentionally don't want to expose this accessor to Java.
+        "DEPRECATED\$getInstance"
+    ) // We intentionally don't want to expose this accessor to Java.
     public fun getInstance(): I18nUtil = instance
   }
 }

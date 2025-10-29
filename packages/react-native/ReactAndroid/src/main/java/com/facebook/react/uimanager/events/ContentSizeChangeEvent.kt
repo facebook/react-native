@@ -19,11 +19,12 @@ public class ContentSizeChangeEvent(
     surfaceId: Int,
     viewTag: Int,
     private val width: Int,
-    private val height: Int
+    private val height: Int,
 ) : Event<ContentSizeChangeEvent>(surfaceId, viewTag) {
   @Deprecated(
       "Please specify surfaceId explicitly in the constructor.",
-      ReplaceWith("constructor(surfaceId, viewTag, width, height)"))
+      ReplaceWith("constructor(surfaceId, viewTag, width, height)"),
+  )
   public constructor(viewTag: Int, width: Int, height: Int) : this(-1, viewTag, width, height)
 
   public override fun getEventName(): String = "topContentSizeChange"

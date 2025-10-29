@@ -13,7 +13,8 @@ public interface ReactApplication {
   @Suppress("DEPRECATION")
   @Deprecated(
       "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
-      ReplaceWith("reactHost"))
+      ReplaceWith("reactHost"),
+  )
   public val reactNativeHost: ReactNativeHost
     get() {
       throw RuntimeException("You should not use ReactNativeHost directly in the New Architecture")

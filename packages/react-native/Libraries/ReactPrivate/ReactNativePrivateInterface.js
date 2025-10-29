@@ -86,7 +86,7 @@ module.exports = {
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {
     // $FlowFixMe[underconstrained-implicit-instantiation]
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     return require('../StyleSheet/flattenStyle').default;
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {

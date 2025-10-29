@@ -568,6 +568,43 @@ const examples = [
       return <PressableAriaLabel />;
     },
   },
+  {
+    title: 'Pressable with box-shadow',
+    description: ('Pressables with box-shadow': string),
+    render: function PressableWithBoxShadow(): React.Node {
+      const [parentColor, setParentColor] = useState('red');
+      const [childColor, setChildColor] = useState('blue');
+      return (
+        <Pressable
+          pointerEvents="box-none"
+          style={{
+            width: 300,
+            height: 300,
+            overflow: 'hidden',
+            transform: [{scale: 0.5}],
+            boxShadow: '0 0 100px 0 rgba(0, 0, 0, 0.5)',
+            backgroundColor: parentColor,
+          }}
+          onPress={() => {
+            setParentColor(parentColor === 'red' ? 'orange' : 'red');
+          }}>
+          <Pressable
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              backgroundColor: childColor,
+              height: 50,
+              width: 100,
+            }}
+            onPress={() => {
+              setChildColor(childColor === 'blue' ? 'green' : 'blue');
+            }}
+          />
+        </Pressable>
+      );
+    },
+  },
   ...PressableExampleFbInternal.examples,
 ];
 
@@ -577,7 +614,7 @@ module.exports = ({
   category: 'UI',
   description: 'Component for making views pressable.',
   displayName: 'Pressable',
-  /* $FlowFixMe[incompatible-cast] Natural Inference rollout. See
+  /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
    * https://fburl.com/workplace/6291gfvu */
   examples,
 }: RNTesterModule);

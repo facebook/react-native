@@ -49,6 +49,8 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
  * depending on where the views being added/removed are attached in the optimized hierarchy
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class NativeViewHierarchyOptimizer {
 
   static {

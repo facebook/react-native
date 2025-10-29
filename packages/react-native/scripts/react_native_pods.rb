@@ -24,7 +24,8 @@ require_relative './cocoapods/rncore.rb'
 # Importing to expose use_native_modules!
 require_relative './cocoapods/autolinking.rb'
 
-$CODEGEN_OUTPUT_DIR = 'build/generated/ios'
+$CODEGEN_OUTPUT_DIR = 'build/generated/ios/ReactCodegen'
+$APP_DEPENDENCY_PROVIDER_OUTPUT_DIR = 'build/generated/ios/ReactAppDependencyProvider'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
 
@@ -142,6 +143,7 @@ def use_react_native! (
   pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
   pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
   pod 'React-idlecallbacksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/idlecallbacks"
+  pod 'React-webperformancenativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/webperformance"
   pod 'React-domnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/dom"
   pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
@@ -149,6 +151,8 @@ def use_react_native! (
   pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   pod 'React-RCTFBReactNativeSpec', :path => "#{prefix}/React"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
+  pod 'RCTSwiftUI', :path => "#{prefix}/ReactApple/RCTSwiftUI"
+  pod 'RCTSwiftUIWrapper', :path => "#{prefix}/ReactApple/RCTSwiftUIWrapper"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix)
@@ -162,6 +166,7 @@ def use_react_native! (
   pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
+  pod 'React-networking', :path => "#{prefix}/ReactCommon/react/networking"
   pod 'React-performancecdpmetrics', :path => "#{prefix}/ReactCommon/react/performance/cdpmetrics"
   pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
   pod 'React-timing', :path => "#{prefix}/ReactCommon/react/timing"
@@ -198,7 +203,7 @@ def use_react_native! (
   end
 
   pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
-  pod 'ReactAppDependencyProvider', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  pod 'ReactAppDependencyProvider', :path => $APP_DEPENDENCY_PROVIDER_OUTPUT_DIR, :modular_headers => true
   # Not needed, but run_codegen expects this to be set.
   folly_config = get_folly_config()
   run_codegen!(
@@ -229,6 +234,20 @@ end
 # Returns: the folly compiler flags
 def folly_flags()
   return NewArchitectureHelper.folly_compiler_flags
+end
+
+# Resolve the spec for use with the USE_FRAMEWORKS environment variable. To avoid each podspec
+# to manually specify the header mappings and module name, we can use this helper function.
+# This helper will also resolve header mappings if we're building from source. Precompiled
+# React-Core will not generate frameworks since their podspec files only contains the
+# header files and no source code - so header_mappings should be the same as for without USE_FRAMEWORKS
+#
+# Parameters:
+# - s: the spec to modify
+# - header_mappings_dir: the directory to map headers when building Pod header structure
+# - module_name: the name of the module when exposed to swift
+def resolve_use_frameworks(spec, header_mappings_dir: nil, module_name: nil)
+  ReactNativePodsUtils.resolve_use_frameworks(spec, :header_mappings_dir => header_mappings_dir, :module_name => module_name)
 end
 
 # Add a dependency to a spec, making sure that the HEADER_SERACH_PATHS are set properly.
@@ -377,7 +396,7 @@ end
 
 # This method can be used to set the fast_float config
 # that can be used to configure libraries.
-def set_fast_float_config(fmt_config)
+def set_fast_float_config(fast_float_config)
   Helpers::Constants.set_fast_float_config(fast_float_config)
 end
 
@@ -499,10 +518,23 @@ def react_native_post_install(
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", "..", react_native_path))
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
 
+  if (ENV['RCT_REMOVE_LEGACY_ARCH'] == '1')
+    ReactNativePodsUtils.add_compiler_flag_to_project(installer, "-DRCT_REMOVE_LEGACY_ARCH=1")
+  else
+    ReactNativePodsUtils.remove_compiler_flag_from_project(installer, "-DRCT_REMOVE_LEGACY_ARCH=1")
+  end
+
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+
+  if !ReactNativeCoreUtils.build_rncore_from_source()
+    # In XCode 26 we need to revert the new setting SWIFT_ENABLE_EXPLICIT_MODULES when building
+    # with precompiled binaries.
+    ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ENABLE_EXPLICIT_MODULES", value: "NO")
+  end
+
   SPM.apply_on_post_install(installer)
 
   if privacy_file_aggregation_enabled

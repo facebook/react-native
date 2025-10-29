@@ -125,7 +125,8 @@ internal object TouchesHelper {
   fun sendTouchEvent(eventEmitter: RCTModernEventEmitter, event: TouchEvent) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT,
-        "TouchesHelper.sentTouchEventModern(" + event.getEventName() + ")")
+        "TouchesHelper.sentTouchEventModern(" + event.getEventName() + ")",
+    )
     try {
       val type = event.getTouchEventType()
       val motionEvent = event.getMotionEvent()
@@ -181,7 +182,8 @@ internal object TouchesHelper {
             event.canCoalesce(),
             0,
             eventData,
-            event.getEventCategory())
+            event.getEventCategory(),
+        )
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT)

@@ -9,12 +9,13 @@
  */
 
 import type {
+  CoverageMap,
   FailureDetail,
   TestCaseResult,
   TestSuiteResult,
 } from '../runtime/setup';
 import type {TestSnapshotResults} from '../runtime/snapshotContext';
-import type {BenchmarkTestArtifact} from './benchmarkUtils';
+import type {BenchmarkResult} from '../src/Benchmark';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
@@ -23,6 +24,7 @@ import type {
 
 import {printBenchmarkResultsRanking} from './benchmarkUtils';
 import {createBundle, createSourceMap} from './bundling';
+import {shouldCollectCoverage} from './coverageUtils';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import {run as runHermesCompiler} from './executables/hermesc';
@@ -80,7 +82,7 @@ function buildError(
 
 async function processRNTesterCommandResult(
   result: AsyncCommandResult,
-): Promise<TestSuiteResult> {
+): Promise<[TestSuiteResult, ?BenchmarkResult]> {
   const stdoutChunks = [];
   const stderrChunks = [];
 
@@ -92,7 +94,7 @@ async function processRNTesterCommandResult(
     stderrChunks.push(chunk);
   });
 
-  let testResult;
+  let testResult, benchmarkResult;
 
   const rl = readline.createInterface({input: result.childProcess.stdout});
   rl.on('line', (rawLine: string) => {
@@ -115,6 +117,9 @@ async function processRNTesterCommandResult(
     switch (parsed?.type) {
       case 'test-result':
         testResult = parsed;
+        break;
+      case 'benchmark-result':
+        benchmarkResult = parsed;
         break;
       case 'console-log':
         printConsoleLog(parsed);
@@ -152,7 +157,7 @@ async function processRNTesterCommandResult(
     );
   }
 
-  return testResult;
+  return [testResult, benchmarkResult];
 }
 
 function generateBytecodeBundle({
@@ -190,6 +195,7 @@ function generateBytecodeBundle({
 module.exports = async function runTest(
   globalConfig: {
     updateSnapshot: 'all' | 'new' | 'none',
+    collectCoverage: boolean,
     ...
   },
   config: {
@@ -202,6 +208,7 @@ module.exports = async function runTest(
   runtime: {...},
   testPath: string,
 ): mixed {
+  let coverageMap: CoverageMap | void;
   const snapshotResolver = await buildSnapshotResolver(config);
   const snapshotPath = snapshotResolver.resolveSnapshotPath(testPath);
   const snapshotState = new SnapshotState(snapshotPath, {
@@ -223,6 +230,7 @@ module.exports = async function runTest(
   );
 
   const testResultsByConfig = [];
+  const benchmarkResults = [];
 
   const skippedTestResults = ({
     ancestorTitles,
@@ -241,7 +249,6 @@ module.exports = async function runTest(
       snapshotResults: {} as TestSnapshotResults,
       status: 'pending' as TestCaseResult['status'],
       testFilePath: testPath,
-      testArtifact: {} as mixed,
       title,
     },
   ];
@@ -336,6 +343,13 @@ module.exports = async function runTest(
       dev: !testConfig.isJsOptimized,
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
+      customTransformOptions: {
+        collectCoverage: shouldCollectCoverage(
+          testPath,
+          testContents,
+          globalConfig,
+        ),
+      },
     };
 
     await createBundle({
@@ -361,6 +375,13 @@ module.exports = async function runTest(
       EnvironmentOptions.printCLIOutput ? 'info' : 'error',
     ];
 
+    if (EnvironmentOptions.debugJS) {
+      rnTesterCommandArgs.push(
+        '--inspectorPort',
+        nullthrows(process.env.__FANTOM_METRO_PORT__),
+      );
+    }
+
     const rnTesterCommandResult = EnvironmentOptions.isOSS
       ? runCommand(
           path.join(__dirname, '..', 'build', 'tester', 'fantom_tester'),
@@ -371,9 +392,8 @@ module.exports = async function runTest(
           hermesVariant: testConfig.hermesVariant,
         });
 
-    const processedResult = await processRNTesterCommandResult(
-      rnTesterCommandResult,
-    );
+    const [processedResult, benchmarkResult] =
+      await processRNTesterCommandResult(rnTesterCommandResult);
 
     if (containsError(processedResult) || EnvironmentOptions.profileJS) {
       await createSourceMap({
@@ -439,7 +459,16 @@ module.exports = async function runTest(
       });
     }
 
+    if (benchmarkResult != null) {
+      benchmarkResults.push({
+        title: testResults[0]?.ancestorTitles?.[0] ?? maybeCommonAncestor,
+        result: benchmarkResult,
+      });
+    }
+
     testResultsByConfig.push(testResults);
+
+    coverageMap = processedResult.coverageMap;
   }
 
   const endTime = Date.now();
@@ -455,17 +484,7 @@ module.exports = async function runTest(
     snapshotResults,
   );
 
-  printBenchmarkResultsRanking(
-    testResults.map(testResult => {
-      // $FlowExpectedError[incompatible-cast]
-      const testArtifact = testResult.testArtifact as ?BenchmarkTestArtifact;
-      const title = testResult.ancestorTitles[0];
-      return {
-        title,
-        testArtifact,
-      };
-    }),
-  );
+  printBenchmarkResultsRanking(benchmarkResults);
 
   return {
     testFilePath: testPath,
@@ -475,6 +494,7 @@ module.exports = async function runTest(
       globalConfig,
       testPath,
     ),
+    coverage: coverageMap,
     leaks: false,
     openHandles: [],
     perfStats: {

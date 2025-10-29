@@ -13,7 +13,7 @@ namespace facebook::react {
 
 ComponentBuilder::ComponentBuilder(
     ComponentDescriptorRegistry::Shared componentDescriptorRegistry)
-    : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)){};
+    : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)) {};
 
 std::shared_ptr<ShadowNode> ComponentBuilder::build(
     const ElementFragment& elementFragment) const {
@@ -26,18 +26,21 @@ std::shared_ptr<ShadowNode> ComponentBuilder::build(
     children.push_back(build(childFragment));
   }
 
-  auto family = componentDescriptor.createFamily(ShadowNodeFamilyFragment{
-      elementFragment.tag, elementFragment.surfaceId, nullptr});
+  auto family = componentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{
+          .tag = elementFragment.tag,
+          .surfaceId = elementFragment.surfaceId,
+          .instanceHandle = nullptr});
 
   auto initialState =
       componentDescriptor.createInitialState(elementFragment.props, family);
 
   auto constShadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
-          elementFragment.props,
-          std::make_shared<
+          .props = elementFragment.props,
+          .children = std::make_shared<
               const std::vector<std::shared_ptr<const ShadowNode>>>(children),
-          initialState},
+          .state = initialState},
       family);
 
   if (elementFragment.stateCallback) {
@@ -46,9 +49,9 @@ std::shared_ptr<ShadowNode> ComponentBuilder::build(
     constShadowNode = componentDescriptor.cloneShadowNode(
         *constShadowNode,
         ShadowNodeFragment{
-            ShadowNodeFragment::propsPlaceholder(),
-            ShadowNodeFragment::childrenPlaceholder(),
-            newState});
+            .props = ShadowNodeFragment::propsPlaceholder(),
+            .children = ShadowNodeFragment::childrenPlaceholder(),
+            .state = newState});
   }
 
   auto shadowNode = std::const_pointer_cast<ShadowNode>(constShadowNode);

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict-local
+ * @fantom_flags enableNativeCSSParsing:*
  * @format
  */
 
@@ -229,6 +230,56 @@ describe('<View>', () => {
           });
         });
       });
+
+      describe('background-image', () => {
+        it('it parses CSS and object syntax', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <>
+                <View
+                  style={{
+                    experimental_backgroundImage:
+                      'radial-gradient(#e66465, #9198e5)',
+                  }}
+                />
+                <View
+                  style={{
+                    experimental_backgroundImage: [
+                      {
+                        type: 'radial-gradient',
+                        shape: 'ellipse',
+                        position: {top: '50%', right: '50%'},
+                        size: 'farthest-corner',
+                        colorStops: [{color: '#e66465'}, {color: '#9198e5'}],
+                      },
+                    ],
+                  }}
+                />
+              </>,
+            );
+          });
+
+          const expectedProps = {
+            backgroundImage:
+              '[radial-gradient(ellipse farthest-corner at 50% 50% , rgba(230, 100, 101, 1), rgba(145, 152, 229, 1))]',
+          };
+
+          expect(root.getRenderedOutput().toJSON()).toEqual([
+            {
+              children: [],
+              props: expectedProps,
+              type: 'View',
+            },
+            {
+              children: [],
+              props: expectedProps,
+              type: 'View',
+            },
+          ]);
+        });
+      });
     });
 
     describe('pointerEvents', () => {
@@ -339,18 +390,30 @@ describe('<View>', () => {
       });
 
       describe('accessibilityElementsHidden', () => {
-        it('is not propagated to mounting layer, it is iOS only prop', () => {
+        it("is an iOS-only prop and ignored by Fantom (Android)'s BaseViewConfig", () => {
           const root = Fantom.createRoot();
 
           Fantom.runTask(() => {
-            root.render(<View accessibilityElementsHidden={true} />);
+            root.render(
+              <View accessibilityElementsHidden={true} collapsable={false} />,
+            );
           });
 
-          expect(
-            root
-              .getRenderedOutput({props: ['accessibilityElementsHidden']})
-              .toJSX(),
-          ).toEqual(null);
+          expect(root.getRenderedOutput().toJSX()).toEqual(<rn-view />);
+        });
+      });
+
+      describe('aria-hidden', () => {
+        it('is mapped to importantForAccessibility', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<View aria-hidden={true} collapsable={false} />);
+          });
+
+          expect(root.getRenderedOutput().toJSX()).toEqual(
+            <rn-view importantForAccessibility="no-hide-descendants" />,
+          );
         });
       });
 

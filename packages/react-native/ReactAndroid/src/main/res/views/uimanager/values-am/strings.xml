@@ -3,4 +3,5 @@
 <!-- @generated -->
 <!-- FB Locale: am_ET -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">አገናኝ</string>
 </resources>

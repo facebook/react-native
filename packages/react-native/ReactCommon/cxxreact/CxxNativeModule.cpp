@@ -7,7 +7,7 @@
 
 #include "CxxNativeModule.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include "Instance.h"
 
@@ -200,7 +200,7 @@ void CxxNativeModule::invoke(
         "CxxMethodCallDispatch", "module", moduleName, "method", method.name);
     try {
       method.func(params, first, second);
-    } catch (const facebook::xplat::JsArgumentException& ex) {
+    } catch (const facebook::xplat::JsArgumentException&) {
       throw;
     } catch (std::exception& e) {
       LOG(ERROR) << "std::exception. Method call " << method.name.c_str()
@@ -255,4 +255,4 @@ void CxxNativeModule::lazyInit() {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

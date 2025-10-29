@@ -37,7 +37,7 @@
 #include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 using namespace facebook::jni;
 
@@ -45,7 +45,9 @@ namespace facebook::react {
 
 namespace {
 
-class InstanceCallbackImpl : public InstanceCallback {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]]
+InstanceCallbackImpl : public InstanceCallback {
  public:
   explicit InstanceCallbackImpl(alias_ref<JInstanceCallback::javaobject> jobj)
       : jobj_(make_global(jobj)) {}
@@ -378,8 +380,8 @@ CatalystInstanceImpl::getNativeMethodCallInvokerHolder() {
     std::shared_ptr<NativeMethodCallInvoker> decoratedNativeMethodCallInvoker =
         instance_->getDecoratedNativeMethodCallInvoker(nativeMethodCallInvoker);
 
-    nativeMethodCallInvokerHolder_ =
-        jni::make_global(NativeMethodCallInvokerHolder::newObjectCxxArgs(
+    nativeMethodCallInvokerHolder_ = jni::make_global(
+        NativeMethodCallInvokerHolder::newObjectCxxArgs(
             decoratedNativeMethodCallInvoker));
   }
 

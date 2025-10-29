@@ -79,14 +79,14 @@ using namespace facebook::react;
         newIntVectorVector.push_back({val, val, val});
       }
       RNTMyNativeViewEventEmitter::OnIntArrayChanged value = {
-          newVector,
-          newBoolVector,
-          newFloatVector,
-          newDoubleVector,
-          newYesNoVector,
-          newStringVector,
-          newLatLonVector,
-          newIntVectorVector};
+          .values = newVector,
+          .boolValues = newBoolVector,
+          .floats = newFloatVector,
+          .doubles = newDoubleVector,
+          .yesNos = newYesNoVector,
+          .strings = newStringVector,
+          .latLons = newLatLonVector,
+          .multiArrays = newIntVectorVector};
       std::static_pointer_cast<const RNTMyNativeViewEventEmitter>(_eventEmitter)->onIntArrayChanged(value);
     }
   }

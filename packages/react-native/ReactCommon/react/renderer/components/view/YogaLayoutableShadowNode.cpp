@@ -97,8 +97,9 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     const ShadowNodeFragment& fragment)
     : LayoutableShadowNode(sourceShadowNode, fragment),
       yogaConfig_(FabricDefaultYogaLog),
-      yogaNode_(static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
-                    .yogaNode_) {
+      yogaNode_(
+          static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
+              .yogaNode_) {
 // Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
 // dirty flag, measure function, and other properties being set originally in
 // the `YogaLayoutableShadowNode` constructor above.
@@ -531,9 +532,9 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
   // TODO: Why does this not use `ShadowNodeFragment::statePlaceholder()` like
   // `adoptYogaChild()`?
   auto clonedChildNode = childNode.clone(
-      {ShadowNodeFragment::propsPlaceholder(),
-       ShadowNodeFragment::childrenPlaceholder(),
-       childNode.getState()});
+      {.props = ShadowNodeFragment::propsPlaceholder(),
+       .children = ShadowNodeFragment::childrenPlaceholder(),
+       .state = childNode.getState()});
 
   replaceChild(childNode, clonedChildNode, layoutableChildIndex);
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
@@ -814,10 +815,10 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
   auto& shadowNode = shadowNodeFromContext(yogaNode);
 
-  auto minimumSize = Size{0, 0};
+  auto minimumSize = Size{.width = 0, .height = 0};
   auto maximumSize = Size{
-      std::numeric_limits<Float>::infinity(),
-      std::numeric_limits<Float>::infinity()};
+      .width = std::numeric_limits<Float>::infinity(),
+      .height = std::numeric_limits<Float>::infinity()};
 
   switch (widthMode) {
     case YGMeasureModeUndefined:
@@ -844,7 +845,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
   }
 
   auto size = shadowNode.measureContent(
-      threadLocalLayoutContext, {minimumSize, maximumSize});
+      threadLocalLayoutContext,
+      {.minimumSize = minimumSize, .maximumSize = maximumSize});
 
 #ifdef REACT_NATIVE_DEBUG
   bool widthInBounds = size.width + kDefaultEpsilon >= minimumSize.width &&

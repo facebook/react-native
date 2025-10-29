@@ -51,7 +51,7 @@ const InteractionTypesMap& getInteractionTypes() {
   return INTERACTION_TYPES;
 }
 
-const std::string_view getInteractionTypeForEvent(std::string_view eventName) {
+std::string_view getInteractionTypeForEvent(std::string_view eventName) {
   const auto& interactionTypes = getInteractionTypes();
   auto it = interactionTypes.find(eventName);
   if (it != interactionTypes.end()) {

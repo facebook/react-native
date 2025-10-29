@@ -45,10 +45,7 @@ Pod::Spec.new do |s|
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
 
-  if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir  = 'FBReactNativeSpec'
-    s.module_name          = 'React_RCTFBReactNativeSpec'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: 'FBReactNativeSpec', module_name: "React_RCTFBReactNativeSpec")
 
   s.dependency "React-jsi"
   s.dependency "RCTRequired"

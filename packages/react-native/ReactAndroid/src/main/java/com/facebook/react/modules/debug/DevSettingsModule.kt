@@ -20,7 +20,7 @@ import com.facebook.react.module.annotations.ReactModule
 @ReactModule(name = NativeDevSettingsSpec.NAME)
 public class DevSettingsModule(
     reactContext: ReactApplicationContext?,
-    private val devSupportManager: DevSupportManager
+    private val devSupportManager: DevSupportManager,
 ) : NativeDevSettingsSpec(reactContext) {
   override fun reload() {
     if (devSupportManager.devSupportEnabled) {

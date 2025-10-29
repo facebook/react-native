@@ -6,6 +6,7 @@
  */
 
 #import "RCTAppDelegate.h"
+#import <React/RCTBridgeDelegate.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>

@@ -47,15 +47,14 @@ class TouchableBounce extends React.Component<
 
   _createPressabilityConfig(): PressabilityConfig {
     return {
+      android_disableSound: this.props.touchSoundDisabled,
       cancelable: !this.props.rejectResponderTermination,
-      disabled: this.props.disabled,
-      hitSlop: this.props.hitSlop,
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
       delayPressOut: this.props.delayPressOut,
+      disabled: this.props.disabled,
+      hitSlop: this.props.hitSlop,
       minPressDuration: 0,
-      pressRectOffset: this.props.pressRetentionOffset,
-      android_disableSound: this.props.touchSoundDisabled,
       onBlur: event => {
         if (Platform.isTV) {
           this._bounceTo(1, 0.4, 0);
@@ -113,6 +112,7 @@ class TouchableBounce extends React.Component<
           this.props.onPressOut(event);
         }
       },
+      pressRectOffset: this.props.pressRetentionOffset,
     };
   }
 
@@ -123,10 +123,10 @@ class TouchableBounce extends React.Component<
     callback?: ?() => void,
   ) {
     Animated.spring(this.state.scale, {
-      toValue,
-      velocity,
       bounciness,
+      toValue,
       useNativeDriver: true,
+      velocity,
     }).start(callback);
   }
 
@@ -230,6 +230,6 @@ export default (function TouchableBounceWrapper({
 }) {
   return <TouchableBounce {...props} hostRef={hostRef} />;
 } as component(
-  ref: React.RefSetter<mixed>,
+  ref?: React.RefSetter<mixed>,
   ...props: $ReadOnly<Omit<TouchableBounceProps, 'hostRef'>>
 ));

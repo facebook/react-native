@@ -330,6 +330,11 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/RadialGradient/RadialGradientExample'),
   },
   {
+    key: 'BackgroundImageExample',
+    category: 'UI',
+    module: require('../examples/BackgroundImage/BackgroundImageExample'),
+  },
+  {
     key: 'MixBlendModeExample',
     category: 'UI',
     module: require('../examples/MixBlendMode/MixBlendModeExample'),
@@ -363,6 +368,16 @@ const APIs: Array<RNTesterModuleInfo> = ([
     category: 'Basic',
     module: require('../examples/TurboModule/TurboCxxModuleExample'),
   },
+  // Basic check to detect the availability of the modern Performance API.
+  ...(typeof performance.getEntries === 'function'
+    ? [
+        {
+          key: 'PerformanceApiExample',
+          category: 'Basic',
+          module: require('../examples/Performance/PerformanceApiExample'),
+        },
+      ]
+    : []),
   ...RNTesterListFbInternal.APIs,
 ]: Array<?RNTesterModuleInfo>).filter(Boolean);
 

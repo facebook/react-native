@@ -92,7 +92,7 @@ class TextAttributes : public DebugStringConvertible {
 
 #pragma mark - Operators
 
-  bool operator==(const TextAttributes& rhs) const;
+  bool operator==(const TextAttributes &rhs) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -107,8 +107,8 @@ namespace std {
 
 template <>
 struct hash<facebook::react::TextAttributes> {
-  size_t operator()(
-      const facebook::react::TextAttributes& textAttributes) const {
+  size_t operator()(const facebook::react::TextAttributes &textAttributes) const
+  {
     return facebook::react::hash_combine(
         textAttributes.foregroundColor,
         textAttributes.backgroundColor,

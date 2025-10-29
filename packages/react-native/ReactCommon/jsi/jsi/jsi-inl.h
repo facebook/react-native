@@ -115,6 +115,10 @@ inline Value Object::getProperty(Runtime& runtime, const PropNameID& name)
   return runtime.getProperty(*this, name);
 }
 
+inline Value Object::getProperty(Runtime& runtime, const Value& name) const {
+  return runtime.getProperty(*this, name);
+}
+
 inline bool Object::hasProperty(Runtime& runtime, const char* name) const {
   return hasProperty(runtime, String::createFromAscii(runtime, name));
 }
@@ -125,6 +129,10 @@ inline bool Object::hasProperty(Runtime& runtime, const String& name) const {
 
 inline bool Object::hasProperty(Runtime& runtime, const PropNameID& name)
     const {
+  return runtime.hasProperty(*this, name);
+}
+
+inline bool Object::hasProperty(Runtime& runtime, const Value& name) const {
   return runtime.hasProperty(*this, name);
 }
 
@@ -146,6 +154,29 @@ void Object::setProperty(Runtime& runtime, const PropNameID& name, T&& value)
     const {
   setPropertyValue(
       runtime, name, detail::toValue(runtime, std::forward<T>(value)));
+}
+
+template <typename T>
+void Object::setProperty(Runtime& runtime, const Value& name, T&& value) const {
+  setPropertyValue(
+      runtime, name, detail::toValue(runtime, std::forward<T>(value)));
+}
+
+inline void Object::deleteProperty(Runtime& runtime, const char* name) const {
+  deleteProperty(runtime, String::createFromAscii(runtime, name));
+}
+
+inline void Object::deleteProperty(Runtime& runtime, const String& name) const {
+  runtime.deleteProperty(*this, name);
+}
+
+inline void Object::deleteProperty(Runtime& runtime, const PropNameID& name)
+    const {
+  runtime.deleteProperty(*this, name);
+}
+
+inline void Object::deleteProperty(Runtime& runtime, const Value& name) const {
+  runtime.deleteProperty(*this, name);
 }
 
 inline Array Object::getArray(Runtime& runtime) const& {

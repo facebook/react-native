@@ -15,6 +15,7 @@ import {NATIVE_BUILD_OUTPUT_PATH} from '../paths';
 import {
   getBuckModesForPlatform,
   getBuckOptionsForHermes,
+  getConfigForAnimationBackend,
   getDebugInfoFromCommandResult,
   runBuck2,
   runBuck2Sync,
@@ -54,6 +55,7 @@ export function build(options: TesterOptions): void {
       'build',
       ...getBuckModesForPlatform(options.isOptimizedMode),
       ...getBuckOptionsForHermes(options.hermesVariant),
+      ...getConfigForAnimationBackend(),
       FANTOM_TESTER_BUCK_TARGET,
       '--out',
       tmpPath,
@@ -94,6 +96,7 @@ export function run(
         'run',
         ...getBuckModesForPlatform(options.isOptimizedMode),
         ...getBuckOptionsForHermes(options.hermesVariant),
+        ...getConfigForAnimationBackend(),
         FANTOM_TESTER_BUCK_TARGET,
         '--',
         ...args,

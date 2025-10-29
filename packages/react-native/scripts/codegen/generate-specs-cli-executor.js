@@ -79,6 +79,8 @@ function generateSpecFromInMemorySchema(
 ) {
   validateLibraryType(libraryType);
   createOutputDirectoryIfNeeded(outputDirectory, libraryName);
+  const includeGetDebugPropsImplementation =
+    libraryName.includes('FBReactNativeSpec'); //only generate getDebugString for React Native Core Components
   utils.getCodegen().generate(
     {
       libraryName,
@@ -87,6 +89,7 @@ function generateSpecFromInMemorySchema(
       packageName,
       assumeNonnull: platform === 'ios',
       useLocalIncludePaths,
+      includeGetDebugPropsImplementation,
     },
     {
       generators: GENERATORS[libraryType][platform],
@@ -117,7 +120,7 @@ function generateSpec(
   packageName /*: string */,
   libraryType /*: string */,
 ) {
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   generateSpecFromInMemorySchema(
     platform,
     readAndParseSchema(schemaPath),

@@ -102,7 +102,7 @@ public object ReactTypefaceUtils {
       style: Int,
       weight: Int,
       fontFamilyName: String?,
-      assetManager: AssetManager
+      assetManager: AssetManager,
   ): Typeface {
     val typefaceStyle = ReactFontManager.TypefaceStyle(style, weight)
     return if (fontFamilyName == null) {

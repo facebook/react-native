@@ -33,9 +33,9 @@ void ComponentDescriptorRegistry::add(
   std::unique_lock lock(mutex_);
 
   auto componentDescriptor = componentDescriptorProvider.constructor(
-      {parameters_.eventDispatcher,
-       parameters_.contextContainer,
-       componentDescriptorProvider.flavor});
+      {.eventDispatcher = parameters_.eventDispatcher,
+       .contextContainer = parameters_.contextContainer,
+       .flavor = componentDescriptorProvider.flavor});
   react_native_assert(
       componentDescriptor->getComponentHandle() ==
       componentDescriptorProvider.handle);

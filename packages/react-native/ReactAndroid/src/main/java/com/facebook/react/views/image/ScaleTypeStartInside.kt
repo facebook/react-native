@@ -22,7 +22,7 @@ internal class ScaleTypeStartInside : AbstractScaleType() {
       focusX: Float,
       focusY: Float,
       scaleX: Float,
-      scaleY: Float
+      scaleY: Float,
   ) {
     val scale = min(scaleX, scaleY).coerceAtMost(1.0f)
     val dx = parentRect.left.toFloat()

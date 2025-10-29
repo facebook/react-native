@@ -44,7 +44,7 @@ async function build() {
   const {
     positionals: packageNames,
     values: {validate, help},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
@@ -189,7 +189,7 @@ async function buildFile(
   // Transform source file using Babel
   const transformed = await prettier.format(
     (await babel.transformFileAsync(file, getBabelConfig(packageName))).code,
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     prettierConfig,
   );

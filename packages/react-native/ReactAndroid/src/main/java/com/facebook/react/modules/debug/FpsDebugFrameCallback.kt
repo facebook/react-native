@@ -11,7 +11,6 @@ import android.view.Choreographer
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.build.ReactBuildConfig
-import com.facebook.react.uimanager.UIManagerModule
 
 /**
  * Each time a frame is drawn, records whether it should have expected any more callbacks since the
@@ -62,7 +61,8 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
     // removeBridgeIdleDebugListener for Bridgeless
     @Suppress("DEPRECATION")
     if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      val uiManagerModule = reactContext.getNativeModule(UIManagerModule::class.java)
+      val uiManagerModule =
+          reactContext.getNativeModule(com.facebook.react.uimanager.UIManagerModule::class.java)
       if (!reactContext.isBridgeless) {
         reactContext.catalystInstance.addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
         isRunningOnFabric = false
@@ -83,10 +83,12 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
   fun stop() {
     @Suppress("DEPRECATION")
     if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      val uiManagerModule = reactContext.getNativeModule(UIManagerModule::class.java)
+      val uiManagerModule =
+          reactContext.getNativeModule(com.facebook.react.uimanager.UIManagerModule::class.java)
       if (!reactContext.isBridgeless) {
         reactContext.catalystInstance.removeBridgeIdleDebugListener(
-            didJSUpdateUiDuringFrameDetector)
+            didJSUpdateUiDuringFrameDetector
+        )
       }
       uiManagerModule?.setViewHierarchyUpdateDebugListener(null)
     }

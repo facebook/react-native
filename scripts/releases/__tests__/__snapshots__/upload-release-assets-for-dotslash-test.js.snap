@@ -1,0 +1,203 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`uploadReleaseAssetsForDotSlashFile deletes and reuploads the asset if force is true: console.log calls 1`] = `
+Array [
+  Array [
+    "Uploading assets for <tmpDir>/entry-point...",
+  ],
+  Array [
+    "[test.tar.gz] Deleting existing release asset...",
+  ],
+  Array [
+    "[test.tar.gz] Downloading from <serverUrl>...",
+  ],
+  Array [
+    "[test.tar.gz] Validating download...",
+  ],
+  Array [
+    "[test.tar.gz] Uploading to release...",
+  ],
+  Array [
+    "[test.tar.gz] Uploaded to https://github.com/facebook/react-native/releases/download/untagged-0b602d8af97c6d3b784c/test.tar.gz",
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile deletes and reuploads the asset if force is true: deleteReleaseAsset calls 1`] = `
+Array [
+  Array [
+    Object {
+      "asset_id": "1",
+      "owner": "facebook",
+      "repo": "react-native",
+    },
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile deletes and reuploads the asset if force is true: uploadReleaseAsset calls 1`] = `
+Array [
+  Array [
+    Object {
+      "data": Object {
+        "data": Array [],
+        "type": "Buffer",
+      },
+      "headers": Object {
+        "content-type": "text/plain",
+      },
+      "name": "test.tar.gz",
+      "owner": "facebook",
+      "release_id": "1",
+      "repo": "react-native",
+    },
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile does not overwrite an existing asset if dryRun is true: console.log calls 1`] = `
+Array [
+  Array [
+    "Uploading assets for <tmpDir>/entry-point...",
+  ],
+  Array [
+    "[test.tar.gz] Skipping existing release asset...",
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile does not upload the asset if dryRun is true: console.log calls 1`] = `
+Array [
+  Array [
+    "Uploading assets for <tmpDir>/entry-point...",
+  ],
+  Array [
+    "[test.tar.gz] Downloading from <serverUrl>...",
+  ],
+  Array [
+    "[test.tar.gz] Validating download...",
+  ],
+  Array [
+    "[test.tar.gz] Dry run: Not uploading to release.",
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile fails loudly if asset has been renamed by GitHub 1`] = `"Asset name was changed while uploading to the draft release: expected test.tar.gz, got test-renamed.tar.gz. <tmpDir>/entry-point has already been published to npm with the following URL, which will not work when the release is published on GitHub: https://github.com/facebook/react-native/releases/download/v1000.0.1/test.tar.gz"`;
+
+exports[`uploadReleaseAssetsForDotSlashFile fails loudly if asset has been renamed by GitHub: console.log calls 1`] = `
+Array [
+  Array [
+    "Uploading assets for <tmpDir>/entry-point...",
+  ],
+  Array [
+    "[test.tar.gz] Downloading from <serverUrl>...",
+  ],
+  Array [
+    "[test.tar.gz] Validating download...",
+  ],
+  Array [
+    "[test.tar.gz] Uploading to release...",
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile fails loudly if asset has been renamed by GitHub: uploadReleaseAsset calls 1`] = `
+Array [
+  Array [
+    Object {
+      "data": Object {
+        "data": Array [],
+        "type": "Buffer",
+      },
+      "headers": Object {
+        "content-type": "text/plain",
+      },
+      "name": "test.tar.gz",
+      "owner": "facebook",
+      "release_id": "1",
+      "repo": "react-native",
+    },
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile fails loudly if the upstream asset is corrupt 1`] = `"size mismatch: expected 1, got 0"`;
+
+exports[`uploadReleaseAssetsForDotSlashFile fails loudly if the upstream asset is corrupt: console.log calls 1`] = `
+Array [
+  Array [
+    "Uploading assets for <tmpDir>/entry-point...",
+  ],
+  Array [
+    "[test.tar.gz] Downloading from <serverUrl>...",
+  ],
+  Array [
+    "[test.tar.gz] Validating download...",
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile fails loudly if the upstream asset is unreachable 1`] = `"curl --silent --location --output <CURL_TEMP_DIR>/data <serverUrl>/error --write-out %{content_type} --fail exited with non-zero code: 22"`;
+
+exports[`uploadReleaseAssetsForDotSlashFile fails loudly if the upstream asset is unreachable: console.log calls 1`] = `
+Array [
+  Array [
+    "Uploading assets for <tmpDir>/entry-point...",
+  ],
+  Array [
+    "[test.tar.gz] Downloading from <serverUrl>/error...",
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile skips uploading the asset if already present: console.log calls 1`] = `
+Array [
+  Array [
+    "Uploading assets for <tmpDir>/entry-point...",
+  ],
+  Array [
+    "[test.tar.gz] Skipping existing release asset...",
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile uploads the asset if not already present: console.log calls 1`] = `
+Array [
+  Array [
+    "Uploading assets for <tmpDir>/entry-point...",
+  ],
+  Array [
+    "[test.tar.gz] Downloading from <serverUrl>...",
+  ],
+  Array [
+    "[test.tar.gz] Validating download...",
+  ],
+  Array [
+    "[test.tar.gz] Uploading to release...",
+  ],
+  Array [
+    "[test.tar.gz] Uploaded to https://github.com/facebook/react-native/releases/download/untagged-0b602d8af97c6d3b784c/test.tar.gz",
+  ],
+]
+`;
+
+exports[`uploadReleaseAssetsForDotSlashFile uploads the asset if not already present: uploadReleaseAsset calls 1`] = `
+Array [
+  Array [
+    Object {
+      "data": Object {
+        "data": Array [],
+        "type": "Buffer",
+      },
+      "headers": Object {
+        "content-type": "text/plain",
+      },
+      "name": "test.tar.gz",
+      "owner": "facebook",
+      "release_id": "1",
+      "repo": "react-native",
+    },
+  ],
+]
+`;

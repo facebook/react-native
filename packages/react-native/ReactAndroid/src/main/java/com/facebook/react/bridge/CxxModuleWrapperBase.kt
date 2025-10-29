@@ -33,7 +33,8 @@ protected constructor(
   }
 
   @Deprecated(
-      "The method canOverrideExistingModule is not used in the New Architecture and will be removed in a future release.")
+      "The method canOverrideExistingModule is not used in the New Architecture and will be removed in a future release."
+  )
   override fun canOverrideExistingModule(): Boolean = false
 
   override fun invalidate() {
@@ -50,9 +51,11 @@ protected constructor(
 
   private companion object {
     init {
-      BridgeSoLoader.staticInit()
+      ReactNativeJNISoLoader.staticInit()
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "CxxModuleWrapperBase", LegacyArchitectureLogLevel.WARNING)
+          "CxxModuleWrapperBase",
+          LegacyArchitectureLogLevel.WARNING,
+      )
     }
   }
 }

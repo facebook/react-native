@@ -12,7 +12,7 @@ import com.facebook.react.bridge.ReadableMap
 
 internal class ModulusAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
 
   private val inputNode: Int = config.getInt("input")
@@ -25,7 +25,8 @@ internal class ModulusAnimatedNode(
       nodeValue = (animatedNodeValue % modulus + modulus) % modulus
     } else {
       throw JSApplicationCausedNativeException(
-          "Illegal node ID set as an input for Animated.modulus node")
+          "Illegal node ID set as an input for Animated.modulus node"
+      )
     }
   }
 

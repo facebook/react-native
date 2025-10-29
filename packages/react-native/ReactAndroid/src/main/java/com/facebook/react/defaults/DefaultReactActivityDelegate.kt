@@ -32,7 +32,8 @@ public open class DefaultReactActivityDelegate(
               " be used for both flags",
       level = DeprecationLevel.WARNING,
       replaceWith =
-          ReplaceWith("DefaultReactActivityDelegate(activity, mainComponentName, fabricEnabled)"))
+          ReplaceWith("DefaultReactActivityDelegate(activity, mainComponentName, fabricEnabled)"),
+  )
   public constructor(
       activity: ReactActivity,
       mainComponentName: String,

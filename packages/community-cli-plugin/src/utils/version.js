@@ -88,7 +88,6 @@ Diff: ${styleText(['dim', 'underline'], newVersion?.diffUrl ?? 'none')}
   }
 }
 
-// $FlowFixMe
 function isDiffPurgeEntry(data: Partial<DiffPurge>): data is DiffPurge {
   return (
     // $FlowFixMe[incompatible-type-guard]
@@ -153,7 +152,7 @@ function buildDiffUrl(oldVersion: string, newVersion: string) {
  * Returns the most recent React Native version available to upgrade to.
  */
 async function getLatestRnDiffPurgeVersion(): Promise<LatestVersions | void> {
-  const options = {
+  const options: RequestOptions = {
     // https://developer.github.com/v3/#user-agent-required
     headers: {'User-Agent': '@react-native/community-cli-plugin'} as Headers,
   };

@@ -28,7 +28,7 @@ class TraceEventSerializer {
    * \return A folly::dynamic object that represents a serialized into JSON
    * Trace Event for CDP.
    */
-  static folly::dynamic serialize(TraceEvent&& event);
+  static folly::dynamic serialize(TraceEvent &&event);
 
   /**
    * Serialize a TraceEventProfileChunk to a folly::dynamic object.
@@ -37,8 +37,7 @@ class TraceEventSerializer {
    * \return A folly::dynamic object that represents a serialized into JSON
    * "ProfileChunk" Trace Event for CDP.
    */
-  static folly::dynamic serializeProfileChunk(
-      TraceEventProfileChunk&& profileChunk);
+  static folly::dynamic serializeProfileChunk(TraceEventProfileChunk &&profileChunk);
 
   /**
    * Serialize a TraceEventProfileChunk::TimeDeltas to a folly::dynamic
@@ -49,8 +48,7 @@ class TraceEventSerializer {
    * \return A folly::dynamic object that represents a serialized "timeDeltas"
    * property of "ProfileChunk" Trace Event for CDP.
    */
-  static folly::dynamic serializeProfileChunkTimeDeltas(
-      TraceEventProfileChunk::TimeDeltas&& deltas);
+  static folly::dynamic serializeProfileChunkTimeDeltas(TraceEventProfileChunk::TimeDeltas &&deltas);
 
   /**
    * Serialize a TraceEventProfileChunk::CPUProfile into a folly::dynamic
@@ -61,8 +59,7 @@ class TraceEventSerializer {
    * \return A folly::dynamic object that represents a serialized "cpuProfile"
    * property of "ProfileChunk" Trace Event for CDP.
    */
-  static folly::dynamic serializeProfileChunkCPUProfile(
-      TraceEventProfileChunk::CPUProfile&& cpuProfile);
+  static folly::dynamic serializeProfileChunkCPUProfile(TraceEventProfileChunk::CPUProfile &&cpuProfile);
 
   /**
    * Serialize a TraceEventProfileChunk::CPUProfile::Node into a folly::dynamic
@@ -73,8 +70,7 @@ class TraceEventSerializer {
    * \return A folly::dynamic object that represents a serialized
    * "cpuProfile.nodes[i]" property of "ProfileChunk" Trace Event for CDP.
    */
-  static folly::dynamic serializeProfileChunkCPUProfileNode(
-      TraceEventProfileChunk::CPUProfile::Node&& node);
+  static folly::dynamic serializeProfileChunkCPUProfileNode(TraceEventProfileChunk::CPUProfile::Node &&node);
 
   /**
    * Serialize a TraceEventProfileChunk::CPUProfile::Node::CallFrame into a
@@ -87,7 +83,7 @@ class TraceEventSerializer {
    * CDP.
    */
   static folly::dynamic serializeProfileChunkCPUProfileNodeCallFrame(
-      TraceEventProfileChunk::CPUProfile::Node::CallFrame&& callFrame);
+      TraceEventProfileChunk::CPUProfile::Node::CallFrame &&callFrame);
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

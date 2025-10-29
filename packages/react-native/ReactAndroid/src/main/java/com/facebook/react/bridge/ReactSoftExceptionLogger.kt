@@ -25,7 +25,8 @@ internal object ReactSoftExceptionLogger {
       RVG_ON_VIEW_REMOVED,
       CLIPPING_PROHIBITED_VIEW,
       SOFT_ASSERTIONS,
-      SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE)
+      SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+  )
   annotation class CategoryMode
 
   /** Constants that listeners can utilize for custom category-based behavior. */

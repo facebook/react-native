@@ -68,3 +68,8 @@
 -keepclassmembers class * {
     @com.facebook.yoga.annotations.DoNotStrip *;
 }
+
+# fresco
+-keep public class com.facebook.imageutils.** {
+   public *;
+}

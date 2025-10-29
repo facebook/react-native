@@ -103,7 +103,8 @@ public class NativeAnimatedNodesManager(
   public fun createAnimatedNode(tag: Int, config: ReadableMap) {
     if (animatedNodes.get(tag) != null) {
       throw JSApplicationIllegalArgumentException(
-          "createAnimatedNode: Animated node [$tag] already exists")
+          "createAnimatedNode: Animated node [$tag] already exists"
+      )
     }
     val node =
         when (val type = config.getString("type")) {
@@ -133,7 +134,8 @@ public class NativeAnimatedNodesManager(
     val node =
         animatedNodes.get(tag)
             ?: throw JSApplicationIllegalArgumentException(
-                "updateAnimatedNode: Animated node [$tag] does not exist")
+                "updateAnimatedNode: Animated node [$tag] does not exist"
+            )
 
     if (node is AnimatedNodeWithUpdateableConfig) {
       stopAnimationsForNode(node)
@@ -153,7 +155,8 @@ public class NativeAnimatedNodesManager(
     val node = animatedNodes[tag]
     if (node == null || node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("startListeningToAnimatedNodeValue: Animated node [${tag}] does not exist, or is not a 'value' node"))
+          ("startListeningToAnimatedNodeValue: Animated node [${tag}] does not exist, or is not a 'value' node")
+      )
     }
     node.setValueListener(listener)
   }
@@ -163,7 +166,8 @@ public class NativeAnimatedNodesManager(
     val node = animatedNodes.get(tag)
     if (node == null || node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("startListeningToAnimatedNodeValue: Animated node [${tag}] does not exist, or is not a 'value' node"))
+          ("startListeningToAnimatedNodeValue: Animated node [${tag}] does not exist, or is not a 'value' node")
+      )
     }
     node.setValueListener(null)
   }
@@ -173,7 +177,8 @@ public class NativeAnimatedNodesManager(
     val node = animatedNodes.get(tag)
     if (node == null || node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("setAnimatedNodeValue: Animated node [${tag}] does not exist, or is not a 'value' node"))
+          ("setAnimatedNodeValue: Animated node [${tag}] does not exist, or is not a 'value' node")
+      )
     }
     stopAnimationsForNode(node)
     node.nodeValue = value
@@ -185,7 +190,8 @@ public class NativeAnimatedNodesManager(
     val node = animatedNodes.get(tag)
     if (node == null || node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("setAnimatedNodeOffset: Animated node [${tag}] does not exist, or is not a 'value' node"))
+          ("setAnimatedNodeOffset: Animated node [${tag}] does not exist, or is not a 'value' node")
+      )
     }
     node.offset = offset
     updatedNodes.put(tag, node)
@@ -196,7 +202,8 @@ public class NativeAnimatedNodesManager(
     val node = animatedNodes.get(tag)
     if (node == null || node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("flattenAnimatedNodeOffset: Animated node [${tag}] does not exist, or is not a 'value' node"))
+          ("flattenAnimatedNodeOffset: Animated node [${tag}] does not exist, or is not a 'value' node")
+      )
     }
     node.flattenOffset()
   }
@@ -206,7 +213,8 @@ public class NativeAnimatedNodesManager(
     val node = animatedNodes.get(tag)
     if (node == null || node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("extractAnimatedNodeOffset: Animated node [${tag}] does not exist, or is not a 'value' node"))
+          ("extractAnimatedNodeOffset: Animated node [${tag}] does not exist, or is not a 'value' node")
+      )
     }
     node.extractOffset()
   }
@@ -216,15 +224,17 @@ public class NativeAnimatedNodesManager(
       animationId: Int,
       animatedNodeTag: Int,
       animationConfig: ReadableMap,
-      endCallback: Callback?
+      endCallback: Callback?,
   ) {
     val node =
         animatedNodes.get(animatedNodeTag)
             ?: throw JSApplicationIllegalArgumentException(
-                "startAnimatingNode: Animated node [$animatedNodeTag] does not exist")
+                "startAnimatingNode: Animated node [$animatedNodeTag] does not exist"
+            )
     if (node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("startAnimatingNode: Animated node [${animatedNodeTag}] should be of type ${ValueAnimatedNode::class.java.name}"))
+          ("startAnimatingNode: Animated node [${animatedNodeTag}] should be of type ${ValueAnimatedNode::class.java.name}")
+      )
     }
 
     val existingDriver = activeAnimations[animationId]
@@ -242,7 +252,8 @@ public class NativeAnimatedNodesManager(
           "decay" -> DecayAnimation(animationConfig)
           else -> {
             throw JSApplicationIllegalArgumentException(
-                "startAnimatingNode: Unsupported animation type [$animatedNodeTag]: $type")
+                "startAnimatingNode: Unsupported animation type [$animatedNodeTag]: $type"
+            )
           }
         }
     animation.id = animationId
@@ -343,11 +354,13 @@ public class NativeAnimatedNodesManager(
     val parentNode =
         animatedNodes.get(parentNodeTag)
             ?: throw JSApplicationIllegalArgumentException(
-                ("connectAnimatedNodes: Animated node with tag (parent) [${parentNodeTag}] does not exist"))
+                ("connectAnimatedNodes: Animated node with tag (parent) [${parentNodeTag}] does not exist")
+            )
     val childNode =
         animatedNodes.get(childNodeTag)
             ?: throw JSApplicationIllegalArgumentException(
-                ("connectAnimatedNodes: Animated node with tag (child) [${childNodeTag}] does not exist"))
+                ("connectAnimatedNodes: Animated node with tag (child) [${childNodeTag}] does not exist")
+            )
     parentNode.addChild(childNode)
     updatedNodes.put(childNodeTag, childNode)
   }
@@ -356,11 +369,13 @@ public class NativeAnimatedNodesManager(
     val parentNode =
         animatedNodes.get(parentNodeTag)
             ?: throw JSApplicationIllegalArgumentException(
-                ("disconnectAnimatedNodes: Animated node with tag (parent) [${parentNodeTag}] does not exist"))
+                ("disconnectAnimatedNodes: Animated node with tag (parent) [${parentNodeTag}] does not exist")
+            )
     val childNode =
         animatedNodes.get(childNodeTag)
             ?: throw JSApplicationIllegalArgumentException(
-                ("disconnectAnimatedNodes: Animated node with tag (child) [${childNodeTag}] does not exist"))
+                ("disconnectAnimatedNodes: Animated node with tag (child) [${childNodeTag}] does not exist")
+            )
     parentNode.removeChild(childNode)
     updatedNodes.put(childNodeTag, childNode)
   }
@@ -370,10 +385,12 @@ public class NativeAnimatedNodesManager(
     val node =
         animatedNodes.get(animatedNodeTag)
             ?: throw JSApplicationIllegalArgumentException(
-                ("connectAnimatedNodeToView: Animated node with tag [${animatedNodeTag}] does not exist"))
+                ("connectAnimatedNodeToView: Animated node with tag [${animatedNodeTag}] does not exist")
+            )
     if (node !is PropsAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("connectAnimatedNodeToView: Animated node connected to view [${viewTag}] should be of type ${PropsAnimatedNode::class.java.name}"))
+          ("connectAnimatedNodeToView: Animated node connected to view [${viewTag}] should be of type ${PropsAnimatedNode::class.java.name}")
+      )
     }
     checkNotNull(reactApplicationContext) {
       ("connectAnimatedNodeToView: Animated node could not be connected, no ReactApplicationContext: $viewTag")
@@ -384,7 +401,9 @@ public class NativeAnimatedNodesManager(
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           ReactNoCrashSoftException(
-              ("connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: $viewTag")))
+              ("connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: $viewTag")
+          ),
+      )
       return
     }
 
@@ -397,10 +416,12 @@ public class NativeAnimatedNodesManager(
     val node =
         animatedNodes.get(animatedNodeTag)
             ?: throw JSApplicationIllegalArgumentException(
-                ("disconnectAnimatedNodeFromView: Animated node with tag [${animatedNodeTag}] does not exist"))
+                ("disconnectAnimatedNodeFromView: Animated node with tag [${animatedNodeTag}] does not exist")
+            )
     if (node !is PropsAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("disconnectAnimatedNodeFromView: Animated node connected to view [${viewTag}] should be of type ${PropsAnimatedNode::class.java.name}"))
+          ("disconnectAnimatedNodeFromView: Animated node connected to view [${viewTag}] should be of type ${PropsAnimatedNode::class.java.name}")
+      )
     }
     node.disconnectFromView(viewTag)
   }
@@ -410,7 +431,8 @@ public class NativeAnimatedNodesManager(
     val node = animatedNodes.get(tag)
     if (node == null || node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          "getValue: Animated node with tag [$tag] does not exist or is not a 'value' node")
+          "getValue: Animated node with tag [$tag] does not exist or is not a 'value' node"
+      )
     }
     val value = node.getValue()
     if (callback != null) {
@@ -441,7 +463,8 @@ public class NativeAnimatedNodesManager(
     // default values since it will never actually update the view.
     if (node !is PropsAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          "Animated node connected to view [?] should be of type ${PropsAnimatedNode::class.java.name}")
+          "Animated node connected to view [?] should be of type ${PropsAnimatedNode::class.java.name}"
+      )
     }
     node.restoreDefaultValues()
   }
@@ -450,16 +473,18 @@ public class NativeAnimatedNodesManager(
   public fun addAnimatedEventToView(
       viewTag: Int,
       eventHandlerName: String,
-      eventMapping: ReadableMap
+      eventMapping: ReadableMap,
   ) {
     val nodeTag = eventMapping.getInt("animatedValueTag")
     val node =
         animatedNodes.get(nodeTag)
             ?: throw JSApplicationIllegalArgumentException(
-                "addAnimatedEventToView: Animated node with tag [$nodeTag] does not exist")
+                "addAnimatedEventToView: Animated node with tag [$nodeTag] does not exist"
+            )
     if (node !is ValueAnimatedNode) {
       throw JSApplicationIllegalArgumentException(
-          ("addAnimatedEventToView: Animated node on view [${viewTag}] connected to event handler (${eventHandlerName}) should be of type ${ValueAnimatedNode::class.java.name}"))
+          ("addAnimatedEventToView: Animated node on view [${viewTag}] connected to event handler (${eventHandlerName}) should be of type ${ValueAnimatedNode::class.java.name}")
+      )
     }
 
     val path = checkNotNull(eventMapping.getArray("nativeEventPath"))
@@ -483,7 +508,7 @@ public class NativeAnimatedNodesManager(
   public fun removeAnimatedEventFromView(
       viewTag: Int,
       eventHandlerName: String,
-      animatedValueTag: Int
+      animatedValueTag: Int,
   ) {
     val eventName = normalizeEventName(eventHandlerName)
 
@@ -746,7 +771,8 @@ public class NativeAnimatedNodesManager(
       val reason = if (cyclesDetected > 0) ("cycles ($cyclesDetected)") else "disconnected regions"
       val ex =
           IllegalStateException(
-              ("Looks like animated nodes graph has ${reason}, there are $activeNodesCount but toposort visited only $updatedNodesCount"))
+              ("Looks like animated nodes graph has ${reason}, there are $activeNodesCount but toposort visited only $updatedNodesCount")
+          )
       if (eventListenerInitializedForFabric && cyclesDetected == 0) {
         // TODO T71377544: investigate these SoftExceptions and see if we can remove entirely
         // or fix the root cause

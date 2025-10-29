@@ -17,19 +17,24 @@ import com.facebook.systrace.SystraceMessage
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class JavaMethodWrapper(
     private val moduleWrapper: JavaModuleWrapper,
     val method: Method,
-    isSync: Boolean
+    isSync: Boolean,
 ) : JavaModuleWrapper.NativeMethod {
   private abstract class ArgumentExtractor<T> {
     open fun getJSArgumentsNeeded(): Int = 1
 
+    @Suppress("DEPRECATION")
     abstract fun extractArgument(
         jsInstance: JSInstance,
         jsArguments: ReadableArray,
-        atIndex: Int
+        atIndex: Int,
     ): T?
   }
 
@@ -157,6 +162,7 @@ internal class JavaMethodWrapper(
         "$startIndex"
       }
 
+  @Suppress("DEPRECATION")
   override fun invoke(jsInstance: JSInstance, parameters: ReadableArray) {
     val traceName = moduleWrapper.name + "." + method.name
     SystraceMessage.beginSection(TRACE_TAG_REACT, "callJavaModuleMethod")
@@ -164,7 +170,11 @@ internal class JavaMethodWrapper(
         .flush()
     if (DEBUG) {
       PrinterHolder.printer.logMessage(
-          ReactDebugOverlayTags.BRIDGE_CALLS, "JS->Java: %s.%s()", moduleWrapper.name, method.name)
+          ReactDebugOverlayTags.BRIDGE_CALLS,
+          "JS->Java: %s.%s()",
+          moduleWrapper.name,
+          method.name,
+      )
     }
     try {
       if (!argumentsProcessed) {
@@ -179,8 +189,9 @@ internal class JavaMethodWrapper(
           }
 
       if (jsArgumentsNeeded != parameters.size()) {
-        throw NativeArgumentsParseException(
-            "$traceName got ${parameters.size()} arguments, expected $jsArgumentsNeeded")
+        throw JSApplicationCausedNativeException(
+            "$traceName got ${parameters.size()} arguments, expected $jsArgumentsNeeded"
+        )
       }
 
       var i = 0
@@ -189,28 +200,33 @@ internal class JavaMethodWrapper(
         while (i < validatedArgumentExtractors.size) {
           validatedArguments[i] =
               validatedArgumentExtractors[i].extractArgument(
-                  jsInstance, parameters, jsArgumentsConsumed)
+                  jsInstance,
+                  parameters,
+                  jsArgumentsConsumed,
+              )
           jsArgumentsConsumed += validatedArgumentExtractors[i].getJSArgumentsNeeded()
           i++
         }
       } catch (e: UnexpectedNativeTypeException) {
-        throw NativeArgumentsParseException(
+        throw JSApplicationCausedNativeException(
             "${e.message} (constructing arguments for $traceName at argument index ${
               getAffectedRange(
                   jsArgumentsConsumed,
-                  validatedArgumentExtractors[i].getJSArgumentsNeeded()
+                  validatedArgumentExtractors[i].getJSArgumentsNeeded(),
               )
           })",
-            e)
+            e,
+        )
       } catch (e: NullPointerException) {
-        throw NativeArgumentsParseException(
+        throw JSApplicationCausedNativeException(
             "${e.message} (constructing arguments for $traceName at argument index ${
               getAffectedRange(
                   jsArgumentsConsumed,
-                  validatedArgumentExtractors[i].getJSArgumentsNeeded()
+                  validatedArgumentExtractors[i].getJSArgumentsNeeded(),
               )
           })",
-            e)
+            e,
+        )
       }
 
       try {
@@ -235,93 +251,104 @@ internal class JavaMethodWrapper(
   companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "JavaMethodWrapper", LegacyArchitectureLogLevel.ERROR)
+          "JavaMethodWrapper",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
 
     private val ARGUMENT_EXTRACTOR_BOOLEAN: ArgumentExtractor<Boolean> =
         object : ArgumentExtractor<Boolean>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): Boolean = jsArguments.getBoolean(atIndex)
         }
 
     private val ARGUMENT_EXTRACTOR_DOUBLE: ArgumentExtractor<Double> =
         object : ArgumentExtractor<Double>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): Double = jsArguments.getDouble(atIndex)
         }
 
     private val ARGUMENT_EXTRACTOR_FLOAT: ArgumentExtractor<Float> =
         object : ArgumentExtractor<Float>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): Float = jsArguments.getDouble(atIndex).toFloat()
         }
 
     private val ARGUMENT_EXTRACTOR_INTEGER: ArgumentExtractor<Int> =
         object : ArgumentExtractor<Int>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): Int = jsArguments.getDouble(atIndex).toInt()
         }
 
     private val ARGUMENT_EXTRACTOR_STRING: ArgumentExtractor<String> =
         object : ArgumentExtractor<String>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): String? = jsArguments.getString(atIndex)
         }
 
     private val ARGUMENT_EXTRACTOR_ARRAY: ArgumentExtractor<ReadableArray> =
         object : ArgumentExtractor<ReadableArray>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): ReadableArray? = jsArguments.getArray(atIndex)
         }
 
     private val ARGUMENT_EXTRACTOR_DYNAMIC: ArgumentExtractor<Dynamic> =
         object : ArgumentExtractor<Dynamic>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): Dynamic = DynamicFromArray.create(jsArguments, atIndex)
         }
 
     private val ARGUMENT_EXTRACTOR_MAP: ArgumentExtractor<ReadableMap> =
         object : ArgumentExtractor<ReadableMap>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): ReadableMap? = jsArguments.getMap(atIndex)
         }
 
     private val ARGUMENT_EXTRACTOR_CALLBACK: ArgumentExtractor<Callback> =
         object : ArgumentExtractor<Callback>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): Callback? =
               if (jsArguments.isNull(atIndex)) {
                 null
               } else {
                 val id = jsArguments.getDouble(atIndex).toInt()
-                CallbackImpl(jsInstance, id)
+                @Suppress("DEPRECATION") CallbackImpl(jsInstance, id)
               }
         }
 
@@ -329,10 +356,11 @@ internal class JavaMethodWrapper(
         object : ArgumentExtractor<Promise>() {
           override fun getJSArgumentsNeeded(): Int = 2
 
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
-              atIndex: Int
+              atIndex: Int,
           ): Promise {
             val resolve =
                 ARGUMENT_EXTRACTOR_CALLBACK.extractArgument(jsInstance, jsArguments, atIndex)

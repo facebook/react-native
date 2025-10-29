@@ -48,7 +48,9 @@ internal object SoftAssertions {
   fun <T> assertNotNull(instance: T?): T? {
     if (instance == null) {
       ReactSoftExceptionLogger.logSoftException(
-          SOFT_ASSERTIONS, AssertionException("Expected object to not be null!"))
+          SOFT_ASSERTIONS,
+          AssertionException("Expected object to not be null!"),
+      )
     }
     return instance
   }

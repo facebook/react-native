@@ -85,14 +85,6 @@ RCT_EXPORT_MODULE()
       dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), self->_initialMessageBlock);
 }
 
-- (void)hideBannerAfter:(CGFloat)delay
-{
-  // Cancel previous hide call after the delay.
-  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hide) object:nil];
-  // Set new hide call after a delay.
-  [self performSelector:@selector(hide) withObject:nil afterDelay:delay];
-}
-
 - (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor
 {
   if (!RCTDevLoadingViewGetEnabled() || _hiding) {
@@ -128,6 +120,9 @@ RCT_EXPORT_MODULE()
     self->_container = [[UIView alloc] init];
     self->_container.backgroundColor = backgroundColor;
     self->_container.translatesAutoresizingMaskIntoConstraints = NO;
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hide)];
+    [self->_container addGestureRecognizer:tapGesture];
+    self->_container.userInteractionEnabled = YES;
 
     self->_label = [[UILabel alloc] init];
     self->_label.translatesAutoresizingMaskIntoConstraints = NO;
@@ -158,15 +153,12 @@ RCT_EXPORT_MODULE()
       [self->_label.centerXAnchor constraintEqualToAnchor:self->_container.centerXAnchor],
       [self->_label.bottomAnchor constraintEqualToAnchor:self->_container.bottomAnchor constant:-5],
     ]];
-
-    [self hideBannerAfter:15.0];
   });
 }
 
-RCT_EXPORT_METHOD(showMessage
-                  : (NSString *)message withColor
-                  : (NSNumber *__nonnull)color withBackgroundColor
-                  : (NSNumber *__nonnull)backgroundColor)
+RCT_EXPORT_METHOD(
+    showMessage : (NSString *)message withColor : (NSNumber *__nonnull)color withBackgroundColor : (NSNumber *__nonnull)
+        backgroundColor)
 {
   [self showMessage:message color:[RCTConvert UIColor:color] backgroundColor:[RCTConvert UIColor:backgroundColor]];
 }

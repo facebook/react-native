@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class StyleAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private val propMapping: Map<String, Int>
 
@@ -52,7 +52,8 @@ internal class StyleAnimatedNode(
         node.collectViewUpdates(key, propsMap)
       } else {
         throw IllegalArgumentException(
-            "Unsupported type of node used in property node ${node.javaClass}")
+            "Unsupported type of node used in property node ${node.javaClass}"
+        )
       }
     }
   }

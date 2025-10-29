@@ -37,7 +37,6 @@ const PAGE_DEFAULTS = {
 describe('inspector-proxy device socket handoff', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
-    projectRoot: '',
   });
   const autoCleanup = withAbortSignalForEachTest();
   afterEach(() => {

@@ -24,7 +24,7 @@ import okio.ByteString
 public class ReconnectingWebSocket(
     private val url: String,
     private var messageCallback: MessageCallback?,
-    private val connectionCallback: ConnectionCallback?
+    private val connectionCallback: ConnectionCallback?,
 ) : WebSocketListener() {
 
   public interface MessageCallback {

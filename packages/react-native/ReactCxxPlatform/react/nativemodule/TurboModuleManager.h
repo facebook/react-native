@@ -15,9 +15,8 @@
 
 namespace facebook::react {
 
-using TurboModuleManagerDelegate = std::function<std::shared_ptr<TurboModule>(
-    const std::string& name,
-    const std::shared_ptr<CallInvoker>& jsInvoker)>;
+using TurboModuleManagerDelegate =
+    std::function<std::shared_ptr<TurboModule>(const std::string &name, const std::shared_ptr<CallInvoker> &jsInvoker)>;
 
 using TurboModuleManagerDelegates = std::vector<TurboModuleManagerDelegate>;
 

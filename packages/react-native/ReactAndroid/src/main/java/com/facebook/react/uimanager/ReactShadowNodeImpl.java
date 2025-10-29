@@ -60,6 +60,8 @@ import java.util.Arrays;
  */
 @ReactPropertyHolder
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
   private static final YogaConfig sYogaConfig;
@@ -104,8 +106,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   public ReactShadowNodeImpl() {
     mDefaultPadding = new Spacing(0f);
     if (!isVirtual()) {
-      YogaNode node = YogaNodePool.get().acquire();
-      mYogaNode = node == null ? YogaNodeFactory.create(sYogaConfig) : node;
+      mYogaNode = YogaNodeFactory.create(sYogaConfig);
       mYogaNode.setData(this);
       Arrays.fill(mPadding, YogaConstants.UNDEFINED);
     } else {
@@ -1099,7 +1100,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   public void dispose() {
     if (mYogaNode != null) {
       mYogaNode.reset();
-      YogaNodePool.get().release(mYogaNode);
     }
   }
 

@@ -31,9 +31,9 @@ type MiddlewareReturn = {
   ...
 };
 
-// $FlowFixMe
+// $FlowFixMe[incompatible-type]
 const unusedStubWSServer: ws$WebSocketServer = {};
-// $FlowFixMe
+// $FlowFixMe[incompatible-type]
 const unusedMiddlewareStub: Server = {};
 
 const communityMiddlewareFallback = {

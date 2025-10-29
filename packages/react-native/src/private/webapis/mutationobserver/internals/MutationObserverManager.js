@@ -111,7 +111,7 @@ export function observe({
       // the public instance immediately when mutations occur. Otherwise React
       // could dereference it in the instance handle and we wouldn't be able to
       // access it.
-      // $FlowExpectedError[incompatible-call] This is typed as (mixed) => mixed in the native module because the codegen doesn't support the actual types.
+      // $FlowExpectedError[incompatible-type] This is typed as (mixed) => mixed in the native module because the codegen doesn't support the actual types.
       getPublicInstanceFromInternalInstanceHandle,
     );
     isConnected = true;

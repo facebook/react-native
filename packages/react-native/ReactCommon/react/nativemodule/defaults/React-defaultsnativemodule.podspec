@@ -38,10 +38,7 @@ Pod::Spec.new do |s|
                                "OTHER_CFLAGS" => "$(inherited)",
                                "DEFINES_MODULE" => "YES" }
 
-  if ENV['USE_FRAMEWORKS']
-    s.module_name            = "React_defaultsnativemodule"
-    s.header_mappings_dir  = "../.."
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "../..", module_name: "React_defaultsnativemodule")
 
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
@@ -50,8 +47,10 @@ Pod::Spec.new do |s|
   add_rncore_dependency(s)
 
   s.dependency "React-domnativemodule"
-  s.dependency "React-featureflagsnativemodule"
   s.dependency "React-microtasksnativemodule"
   s.dependency "React-idlecallbacksnativemodule"
+  s.dependency "React-webperformancenativemodule"
   add_dependency(s, "React-RCTFBReactNativeSpec")
+  add_dependency(s, "React-featureflags")
+  add_dependency(s, "React-featureflagsnativemodule")
 end

@@ -7,7 +7,7 @@
 
 #import "RCTRootContentView.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import "RCTBridge.h"
 #import "RCTPerformanceLogger.h"
@@ -108,4 +108,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

@@ -117,7 +117,7 @@ NSSet<NSString *> *getCoreModuleClasses(void)
 }
 
 static NSMutableArray<NSString *> *modulesLoadedWithOldArch;
-void addModuleLoadedWithOldArch(NSString *);
+void addModuleLoadedWithOldArch(NSString * /*moduleName*/);
 void addModuleLoadedWithOldArch(NSString *moduleName)
 {
   static dispatch_once_t onceToken;
@@ -138,7 +138,7 @@ NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void)
  * prior to the first bridge initialization.
  * TODO: (T115656171) Refactor RCTRegisterModule out of Bridge.m since it doesn't use the Bridge.
  */
-void RCTRegisterModule(Class);
+void RCTRegisterModule(Class /*moduleClass*/);
 void RCTRegisterModule(Class moduleClass)
 {
   if (RCTAreLegacyLogsEnabled() && ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
@@ -264,7 +264,7 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
   kDispatchAccessibilityManagerInitOntoMain = enabled;
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTBridgeHostTargetDelegate(RCTBridge *bridge)
@@ -380,8 +380,12 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                   moduleProvider:(RCTBridgeModuleListProvider)block
                    launchOptions:(NSDictionary *)launchOptions
 {
+  // Only enabld this assertion in OSS
+#if COCOAPODS
+  [RCTBridge throwIfOnLegacyArch];
+#endif
+
   if (self = [super init]) {
-    RCTEnforceNewArchitectureValidation(RCTNotAllowedInBridgeless, self, nil);
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
@@ -391,6 +395,17 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     [self setUp];
   }
   return self;
+}
+
+// Wrap the exception throwing in a static method to avoid the warning: "The code following the exception will never be
+// executed". This might create build failures internally where we treat warnings as errors.
++ (void)throwIfOnLegacyArch
+{
+  @throw [NSException
+      exceptionWithName:NSInternalInconsistencyException
+                 reason:
+                     @"You are trying to initialize the legacy architecture. This is not supported anymore and will be removed in the next version of React Native. Please use the New Architecture instead."
+               userInfo:nil];
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -675,7 +690,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   return _inspectorTarget.get();
 }
 @end
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 @implementation RCTBridge
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
@@ -781,4 +796,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 @end
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

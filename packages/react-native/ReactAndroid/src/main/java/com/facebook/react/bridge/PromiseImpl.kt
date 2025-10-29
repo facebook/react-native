@@ -133,7 +133,7 @@ constructor(private var resolve: Callback?, private var reject: Callback?) : Pro
       code: String?,
       message: String?,
       throwable: Throwable?,
-      userInfo: WritableMap?
+      userInfo: WritableMap?,
   ) {
     if (reject == null) {
       resolve = null

@@ -36,7 +36,7 @@ export function testBadDataWithTypicalItem(): React.Node {
       key: 1,
     },
   ];
-  // $FlowExpectedError - bad title type 6, should be string
+  // $FlowExpectedError[incompatible-type] - bad title type 6, should be string
   return <FlatList renderItem={renderMyListItem} data={data} />;
 }
 
@@ -46,7 +46,7 @@ export function testMissingFieldWithTypicalItem(): React.Node {
       key: 1,
     },
   ];
-  // $FlowExpectedError - missing title
+  // $FlowExpectedError[incompatible-type] - missing title
   return <FlatList renderItem={renderMyListItem} data={data} />;
 }
 
@@ -62,7 +62,7 @@ export function testGoodDataWithBadCustomRenderItemFunction(): React.Node {
       renderItem={info => (
         <span>
           {
-            // $FlowExpectedError - bad widgetCount type 6, should be Object
+            // $FlowExpectedError[prop-missing] - bad widgetCount type 6, should be Object
             info.item.widget.missingProp
           }
         </span>
@@ -80,22 +80,26 @@ export function testBadRenderItemFunction(): $ReadOnlyArray<React.Node> {
     },
   ];
   return [
-    // $FlowExpectedError - title should be inside `item`
+    // $FlowExpectedError[incompatible-type] - title should be inside `item`
+    // $FlowExpectedError[incompatible-exact]
     <FlatList renderItem={(info: {title: string}) => <span />} data={data} />,
     <FlatList
-      // $FlowExpectedError - bad index type string, should be number
+      // $FlowExpectedError[incompatible-type] - bad index type string, should be number
+      // $FlowExpectedError[incompatible-exact]
+      // $FlowExpectedError[unclear-type]
       renderItem={(info: {item: any, index: string}) => <span />}
       data={data}
     />,
     <FlatList
-      // $FlowExpectedError - bad title type number, should be string
+      // $FlowExpectedError[incompatible-type] - bad index type string, should be number
+      // $FlowExpectedError[incompatible-exact]
       renderItem={(info: {item: {title: number}}) => <span />}
-      // $FlowExpectedError - bad title type number, should be string
+      // $FlowExpectedError[incompatible-type] - bad title type number, should be string
       data={data}
     />,
     // EverythingIsFine
     <FlatList
-      // $FlowExpectedError - bad title type number, should be string
+      // $FlowExpectedError[incompatible-type] - bad title type number, should be string
       renderItem={(info: {item: {title: string, ...}, ...}) => <span />}
       data={data}
     />,
@@ -104,11 +108,11 @@ export function testBadRenderItemFunction(): $ReadOnlyArray<React.Node> {
 
 export function testOtherBadProps(): $ReadOnlyArray<React.Node> {
   return [
-    // $FlowExpectedError - bad numColumns type "lots"
+    // $FlowExpectedError[incompatible-type] - bad numColumns type "lots"
     <FlatList renderItem={renderMyListItem} data={[]} numColumns="lots" />,
-    // $FlowExpectedError - bad windowSize type "big"
+    // $FlowExpectedError[incompatible-type] - bad windowSize type "big"
     <FlatList renderItem={renderMyListItem} data={[]} windowSize="big" />,
-    // $FlowExpectedError - missing `data` prop
+    // $FlowExpectedError[incompatible-type] - missing `data` prop
     <FlatList renderItem={renderMyListItem} />,
   ];
 }

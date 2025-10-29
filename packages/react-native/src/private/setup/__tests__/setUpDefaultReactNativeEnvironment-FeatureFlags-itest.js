@@ -12,7 +12,7 @@ import * as ReactNativeFeatureFlags from '../../featureflags/ReactNativeFeatureF
 import * as ReactNativeFeatureFlagsBase from '../../featureflags/ReactNativeFeatureFlagsBase';
 import setUpDefaultReactNativeEnvironment from 'react-native/src/private/setup/setUpDefaultReactNativeEnvironment';
 
-describe('setUpReactNativeEnvironment', () => {
+describe('setUpReactNativeEnvironment (feature flags side-effects)', () => {
   it('should not read any feature flags', () => {
     ReactNativeFeatureFlagsBase.dangerouslyResetForTesting();
 

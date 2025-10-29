@@ -25,7 +25,7 @@ class RawPropsKeyMap final {
   /*
    * Stores `value` with by given `key`.
    */
-  void insert(const RawPropsKey& key, RawPropsValueIndex value) noexcept;
+  void insert(const RawPropsKey &key, RawPropsValueIndex value) noexcept;
 
   /*
    * Reindexes the stored data.
@@ -37,9 +37,7 @@ class RawPropsKeyMap final {
    * Finds and returns the `value` (some index) by given `key`.
    * Returns `kRawPropsValueIndexEmpty` if the value wan't found.
    */
-  RawPropsValueIndex at(
-      const char* name,
-      RawPropsPropNameLength length) noexcept;
+  RawPropsValueIndex at(const char *name, RawPropsPropNameLength length) noexcept;
 
  private:
   struct Item {
@@ -48,10 +46,8 @@ class RawPropsKeyMap final {
     char name[kPropNameLengthHardCap];
   };
 
-  static bool shouldFirstOneBeBeforeSecondOne(
-      const Item& lhs,
-      const Item& rhs) noexcept;
-  static bool hasSameName(const Item& lhs, const Item& rhs) noexcept;
+  static bool shouldFirstOneBeBeforeSecondOne(const Item &lhs, const Item &rhs) noexcept;
+  static bool hasSameName(const Item &lhs, const Item &rhs) noexcept;
 
   std::vector<Item> items_{};
   std::vector<RawPropsPropNameLength> buckets_{};

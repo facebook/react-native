@@ -3057,30 +3057,30 @@ type util$InspectOptions = {
 };
 
 declare type util$ParseArgsOption =
-  | {|
+  | $ReadOnly<{|
       type: 'boolean',
       multiple?: false,
       short?: string,
       default?: boolean,
-    |}
-  | {|
+    |}>
+  | $ReadOnly<{|
       type: 'boolean',
       multiple: true,
       short?: string,
       default?: Array<boolean>,
-    |}
-  | {|
+    |}>
+  | $ReadOnly<{|
       type: 'string',
       multiple?: false,
       short?: string,
       default?: string,
-    |}
-  | {|
+    |}>
+  | $ReadOnly<{|
       type: 'string',
       multiple: true,
       short?: string,
       default?: Array<string>,
-    |};
+    |}>;
 
 type util$ParseArgsOptionToValue<TOption> = TOption['type'] extends 'boolean'
   ? TOption['multiple'] extends true
@@ -3137,7 +3137,7 @@ declare module 'util' {
   declare function stripVTControlCharacters(str: string): string;
 
   declare function parseArgs<
-    TOptions: {[string]: util$ParseArgsOption} = {||},
+    TOptions: {+[string]: util$ParseArgsOption} = {||},
   >(config: {|
     args?: Array<string>,
     options?: TOptions,
@@ -3995,13 +3995,16 @@ declare class Process extends events$EventEmitter {
   initgroups?: (user: number | string, extra_group: number | string) => void;
   kill(pid: number, signal?: string | number): void;
   mainModule: Object;
-  memoryUsage(): {
-    arrayBuffers: number,
-    rss: number,
-    heapTotal: number,
-    heapUsed: number,
-    external: number,
-    ...
+  memoryUsage: {
+    (): {
+      arrayBuffers: number,
+      rss: number,
+      heapTotal: number,
+      heapUsed: number,
+      external: number,
+      ...
+    },
+    rss: () => number,
   };
   nextTick: <T>(cb: (...T) => mixed, ...T) => void;
   pid: number;

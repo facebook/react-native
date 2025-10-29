@@ -11,12 +11,7 @@
 'use strict';
 
 const {
-  downloadHermesSourceTarball,
-  expandHermesSourceTarball,
-} = require('../../../packages/react-native/scripts/hermes/hermes-utils.js');
-const {
   generateAndroidArtifacts,
-  generateiOSArtifacts,
 } = require('../../releases/utils/release-utils');
 const ghaArtifactsUtils = require('./github-actions-utils.js');
 const fs = require('fs');
@@ -24,7 +19,7 @@ const fs = require('fs');
 const {spawn} = require('node:child_process');
 const os = require('os');
 const path = require('path');
-const {cp, exec} = require('shelljs');
+const {exec} = require('shelljs');
 
 /*::
 type BuildType = 'dry-run' | 'release' | 'nightly';
@@ -182,17 +177,11 @@ async function downloadArtifacts(
   localNodeTGZPath /*: string */,
 ) {
   const mavenLocalURL = await ciArtifacts.artifactURLForMavenLocal();
-  const hermesURLZip = await ciArtifacts.artifactURLHermesDebug();
   const reactNativeURLZip = await ciArtifacts.artifactURLForReactNative();
 
   // Cleanup destination folder
   exec(`rm -rf ${ciArtifacts.baseTmpPath()}`);
   exec(`mkdir ${ciArtifacts.baseTmpPath()}`);
-
-  const hermesPathZip = path.join(
-    ciArtifacts.baseTmpPath(),
-    'hermes-ios-debug.zip',
-  );
 
   const mavenLocalZipPath = `${mavenLocalPath}.zip`;
   console.info(
@@ -201,15 +190,6 @@ async function downloadArtifacts(
   ciArtifacts.downloadArtifact(mavenLocalURL, mavenLocalZipPath);
   console.info(`Unzipping into ${mavenLocalPath}`);
   exec(`unzip -oq ${mavenLocalZipPath} -d ${mavenLocalPath}`);
-
-  console.info('\n[Download] Hermes');
-  ciArtifacts.downloadArtifact(hermesURLZip, hermesPathZip);
-  exec(`unzip ${hermesPathZip} -d ${ciArtifacts.baseTmpPath()}/hermes`);
-  const hermesPath = path.join(
-    ciArtifacts.baseTmpPath(),
-    'hermes',
-    'hermes-ios-debug.tar.gz',
-  );
 
   console.info(`\n[Download] React Native from  ${reactNativeURLZip}`);
   const reactNativeDestPath = path.join(
@@ -239,7 +219,7 @@ async function downloadArtifacts(
   const reactNativeTGZ = path.join(reactNativeDestPath, tgzName);
   exec(`mv ${reactNativeTGZ} ${newLocalNodeTGZ}`);
 
-  return {hermesPath, newLocalNodeTGZ};
+  return {newLocalNodeTGZ};
 }
 
 function buildArtifactsLocally(
@@ -261,48 +241,6 @@ function buildArtifactsLocally(
 
   // Generate native files for Android
   generateAndroidArtifacts(releaseVersion);
-
-  // Generate iOS Artifacts
-  const jsiFolder = `${reactNativePackagePath}/ReactCommon/jsi`;
-  const hermesCoreSourceFolder = `${reactNativePackagePath}/sdks/hermes`;
-
-  if (!fs.existsSync(hermesCoreSourceFolder)) {
-    console.info('The Hermes source folder is missing. Downloading...');
-    downloadHermesSourceTarball();
-    expandHermesSourceTarball();
-  }
-
-  // need to move the scripts inside the local hermes cloned folder
-  // cp sdks/hermes-engine/utils/*.sh <your_hermes_checkout>/utils/.
-  cp(
-    `${reactNativePackagePath}/sdks/hermes-engine/hermes-engine.podspec`,
-    `${reactNativePackagePath}/sdks/hermes/hermes-engine.podspec`,
-  );
-  cp(
-    `${reactNativePackagePath}/sdks/hermes-engine/hermes-utils.rb`,
-    `${reactNativePackagePath}/sdks/hermes/hermes-utils.rb`,
-  );
-  cp(
-    `${reactNativePackagePath}/sdks/hermes-engine/utils/*.sh`,
-    `${reactNativePackagePath}/sdks/hermes/utils/.`,
-  );
-
-  // for this scenario, we only need to create the debug build
-  // (env variable PRODUCTION defines that podspec side)
-  const buildTypeiOSArtifacts = 'Debug';
-
-  // the android ones get set into /private/tmp/maven-local
-  const localMavenPath = '/private/tmp/maven-local';
-
-  // Generate native files for iOS
-  const hermesPath = generateiOSArtifacts(
-    jsiFolder,
-    hermesCoreSourceFolder,
-    buildTypeiOSArtifacts,
-    localMavenPath,
-  );
-
-  return hermesPath;
 }
 
 /**
@@ -315,9 +253,6 @@ function buildArtifactsLocally(
  * - @releaseVersion the version that is about to be released.
  * - @buildType the type of build we want to execute if we build locally.
  * - @reactNativePackagePath the path to the react native package within the repo.
- *
- * Returns:
- * - @hermesPath the path to hermes for iOS
  */
 async function prepareArtifacts(
   ciArtifacts /*: ?typeof ghaArtifactsUtils */,
@@ -326,17 +261,16 @@ async function prepareArtifacts(
   releaseVersion /*: string */,
   buildType /*: BuildType */,
   reactNativePackagePath /*: string */,
-) /*: Promise<{hermesPath: string, newLocalNodeTGZ: string }> */ {
-  return ciArtifacts != null
-    ? await downloadArtifacts(ciArtifacts, mavenLocalPath, localNodeTGZPath)
-    : {
-        hermesPath: buildArtifactsLocally(
-          releaseVersion,
-          buildType,
-          reactNativePackagePath,
-        ),
-        newLocalNodeTGZ: localNodeTGZPath,
-      };
+) /*: Promise<{newLocalNodeTGZ: string }> */ {
+  if (ciArtifacts == null) {
+    buildArtifactsLocally(releaseVersion, buildType, reactNativePackagePath);
+
+    return {
+      newLocalNodeTGZ: localNodeTGZPath,
+    };
+  }
+
+  return downloadArtifacts(ciArtifacts, mavenLocalPath, localNodeTGZPath);
 }
 
 module.exports = {

@@ -7,7 +7,7 @@
 
 package com.facebook.react.tasks.internal.utils
 
-import groovy.test.GroovyTestCase.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class PrefabPreprocessingEntryTest {
@@ -16,10 +16,12 @@ class PrefabPreprocessingEntryTest {
   fun secondaryConstructor_createsAList() {
     val sampleEntry =
         PrefabPreprocessingEntry(
-            libraryName = "justALibrary", pathToPrefixCouple = "aPath" to "andAPrefix")
+            libraryName = "justALibrary",
+            pathToPrefixCouple = "aPath" to "andAPrefix",
+        )
 
-    assertEquals(1, sampleEntry.pathToPrefixCouples.size)
-    assertEquals("aPath", sampleEntry.pathToPrefixCouples[0].first)
-    assertEquals("andAPrefix", sampleEntry.pathToPrefixCouples[0].second)
+    assertThat(sampleEntry.pathToPrefixCouples.size).isEqualTo(1)
+    assertThat(sampleEntry.pathToPrefixCouples[0].first).isEqualTo("aPath")
+    assertThat(sampleEntry.pathToPrefixCouples[0].second).isEqualTo("andAPrefix")
   }
 }

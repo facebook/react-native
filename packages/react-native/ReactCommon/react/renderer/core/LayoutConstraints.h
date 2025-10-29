@@ -19,29 +19,25 @@ namespace facebook::react {
  * Unified layout constraints for measuring.
  */
 struct LayoutConstraints {
-  Size minimumSize{0, 0};
-  Size maximumSize{
-      std::numeric_limits<Float>::infinity(),
-      std::numeric_limits<Float>::infinity()};
+  Size minimumSize{.width = 0, .height = 0};
+  Size maximumSize{.width = std::numeric_limits<Float>::infinity(), .height = std::numeric_limits<Float>::infinity()};
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
 
   /*
    * Clamps the provided `Size` between the `minimumSize` and `maximumSize`
    * bounds of this `LayoutConstraints`.
    */
-  Size clamp(const Size& size) const;
+  Size clamp(const Size &size) const;
 };
 
-inline bool operator==(
-    const LayoutConstraints& lhs,
-    const LayoutConstraints& rhs) {
+inline bool operator==(const LayoutConstraints &lhs, const LayoutConstraints &rhs)
+{
   return std::tie(lhs.minimumSize, lhs.maximumSize, lhs.layoutDirection) ==
       std::tie(rhs.minimumSize, rhs.maximumSize, rhs.layoutDirection);
 }
 
-inline bool operator!=(
-    const LayoutConstraints& lhs,
-    const LayoutConstraints& rhs) {
+inline bool operator!=(const LayoutConstraints &lhs, const LayoutConstraints &rhs)
+{
   return !(lhs == rhs);
 }
 
@@ -50,12 +46,9 @@ inline bool operator!=(
 namespace std {
 template <>
 struct hash<facebook::react::LayoutConstraints> {
-  size_t operator()(
-      const facebook::react::LayoutConstraints& constraints) const {
-    return facebook::react::hash_combine(
-        constraints.minimumSize,
-        constraints.maximumSize,
-        constraints.layoutDirection);
+  size_t operator()(const facebook::react::LayoutConstraints &constraints) const
+  {
+    return facebook::react::hash_combine(constraints.minimumSize, constraints.maximumSize, constraints.layoutDirection);
   }
 };
 } // namespace std

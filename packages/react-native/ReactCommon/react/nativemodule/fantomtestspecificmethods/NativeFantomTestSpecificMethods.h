@@ -13,16 +13,13 @@ namespace facebook::react {
 
 struct FantomForcedCloneCommitHook;
 
-class NativeFantomTestSpecificMethods
-    : public NativeFantomTestSpecificMethodsCxxSpec<
-          NativeFantomTestSpecificMethods> {
+class NativeFantomTestSpecificMethods : public NativeFantomTestSpecificMethodsCxxSpec<NativeFantomTestSpecificMethods> {
  public:
-  explicit NativeFantomTestSpecificMethods(
-      std::shared_ptr<CallInvoker> jsInvoker);
+  explicit NativeFantomTestSpecificMethods(std::shared_ptr<CallInvoker> jsInvoker);
 
-  void registerForcedCloneCommitHook(jsi::Runtime& runtime);
+  void registerForcedCloneCommitHook(jsi::Runtime &runtime);
 
-  void takeFunctionAndNoop(jsi::Runtime& runtime, jsi::Function callback);
+  void takeFunctionAndNoop(jsi::Runtime &runtime, jsi::Function callback);
 
  private:
   std::shared_ptr<FantomForcedCloneCommitHook> fantomForcedCloneCommitHook_{};

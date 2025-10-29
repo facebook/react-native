@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <atomic>
 #include <functional>
@@ -38,7 +38,7 @@ class RAMBundleRegistry;
 // Except for loadBundleSync(), all void methods will queue
 // work to run on the jsQueue passed to the ctor, and return
 // immediately.
-class NativeToJsBridge {
+class [[deprecated("This API will be removed along with the legacy architecture.")]] NativeToJsBridge {
  public:
   friend class JsToNativeBridge;
 
@@ -46,7 +46,7 @@ class NativeToJsBridge {
    * This must be called on the main JS thread.
    */
   NativeToJsBridge(
-      JSExecutorFactory* jsExecutorFactory,
+      JSExecutorFactory *jsExecutorFactory,
       std::shared_ptr<ModuleRegistry> registry,
       std::shared_ptr<MessageQueueThread> jsQueue,
       std::shared_ptr<InstanceCallback> callback);
@@ -56,15 +56,12 @@ class NativeToJsBridge {
    * Executes a function with the module ID and method ID and any additional
    * arguments in JS.
    */
-  void callFunction(
-      std::string&& module,
-      std::string&& method,
-      folly::dynamic&& arguments);
+  void callFunction(std::string &&module, std::string &&method, folly::dynamic &&arguments);
 
   /**
    * Invokes a callback with the cbID, and optional additional arguments in JS.
    */
-  void invokeCallback(double callbackId, folly::dynamic&& arguments);
+  void invokeCallback(double callbackId, folly::dynamic &&arguments);
 
   /**
    * Sets global variables in the JS Context.
@@ -85,11 +82,9 @@ class NativeToJsBridge {
       std::unique_ptr<const JSBigString> startupScript,
       std::string sourceURL);
 
-  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
-  void setGlobalVariable(
-      std::string propName,
-      std::unique_ptr<const JSBigString> jsonValue);
-  void* getJavaScriptContext();
+  void registerBundle(uint32_t bundleId, const std::string &bundlePath);
+  void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
+  void *getJavaScriptContext();
   bool isInspectable();
   bool isBatchActive();
 
@@ -100,7 +95,7 @@ class NativeToJsBridge {
    */
   void destroy();
 
-  void runOnExecutorQueue(std::function<void(JSExecutor*)>&& task) noexcept;
+  void runOnExecutorQueue(std::function<void(JSExecutor *)> &&task) noexcept;
 
   /**
    * NativeMethodCallInvoker is used by TurboModules to schedule work on the
@@ -109,7 +104,7 @@ class NativeToJsBridge {
   std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
       std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker) const;
 
-  jsinspector_modern::RuntimeTargetDelegate& getInspectorTargetDelegate();
+  jsinspector_modern::RuntimeTargetDelegate &getInspectorTargetDelegate();
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued
@@ -138,4 +133,4 @@ class NativeToJsBridge {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

@@ -34,14 +34,16 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
                       bundleManager:(RCTBundleManager *)bundleManager
-                  callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER;
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
                                 bridge:(RCTBridge *)bridge
                         moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
                          bundleManager:(RCTBundleManager *)bundleManager
-                     callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER;
+                     callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Calls `constantsToExport` on the module and stores the result. Note that
@@ -49,61 +51,73 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
  * can be called on any thread, but may block the main thread briefly if the
  * module implements `constantsToExport`.
  */
-- (void)gatherConstants;
+- (void)gatherConstants __deprecated_msg("This API will be removed along with the legacy architecture.");
 
-@property (nonatomic, strong, readonly) Class moduleClass;
-@property (nonatomic, copy, readonly) NSString *name;
+@property (nonatomic, strong, readonly)
+    Class moduleClass __deprecated_msg("This API will be removed along with the legacy architecture.");
+@property (nonatomic, copy, readonly)
+    NSString *name __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Returns the module methods. Note that this will gather the methods the first
  * time it is called and then memoize the results.
  */
-@property (nonatomic, copy, readonly) NSArray<id<RCTBridgeMethod>> *methods;
+@property (nonatomic, copy, readonly) NSArray<id<RCTBridgeMethod>> *methods __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 /**
  * Returns a map of the module methods. Note that this will gather the methods the first
  * time it is called and then memoize the results.
  */
-@property (nonatomic, copy, readonly) NSDictionary<NSString *, id<RCTBridgeMethod>> *methodsByName;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id<RCTBridgeMethod>> *methodsByName __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 /**
  * Returns the module's constants, if it exports any
  */
-@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *exportedConstants;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *exportedConstants __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 /**
  * Returns YES if module instance has already been initialized; NO otherwise.
  */
-@property (nonatomic, assign, readonly) BOOL hasInstance;
+@property (nonatomic, assign, readonly)
+    BOOL hasInstance __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Returns YES if module instance must be created on the main thread.
  */
-@property (nonatomic, assign) BOOL requiresMainQueueSetup;
+@property (nonatomic, assign)
+    BOOL requiresMainQueueSetup __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Returns YES if module has constants to export.
  */
-@property (nonatomic, assign, readonly) BOOL hasConstantsToExport;
+@property (nonatomic, assign, readonly)
+    BOOL hasConstantsToExport __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Returns the current module instance. Note that this will init the instance
  * if it has not already been created. To check if the module instance exists
  * without causing it to be created, use `hasInstance` instead.
  */
-@property (nonatomic, strong, readwrite) id<RCTBridgeModule> instance;
+@property (nonatomic, strong, readwrite) id<RCTBridgeModule> instance __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 /**
  * Returns the module method dispatch queue. Note that this will init both the
  * queue and the module itself if they have not already been created.
  */
-@property (nonatomic, strong, readonly) dispatch_queue_t methodQueue;
+@property (nonatomic, strong, readonly)
+    dispatch_queue_t methodQueue __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Whether the receiver has a valid `instance` which implements -batchDidComplete.
  */
-@property (nonatomic, assign, readonly) BOOL implementsBatchDidComplete;
+@property (nonatomic, assign, readonly)
+    BOOL implementsBatchDidComplete __deprecated_msg("This API will be removed along with the legacy architecture.");
 
-@property (nonatomic, weak, readwrite) id<RCTModuleDataCallInvokerProvider> callInvokerProvider;
+@property (nonatomic, weak, readwrite) id<RCTModuleDataCallInvokerProvider> callInvokerProvider __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 @end

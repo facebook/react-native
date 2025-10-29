@@ -136,25 +136,23 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getValue : (double)x y : (NS
 {
   return @{
     @"x" : @(x),
-    @"y" : y ? y : [NSNull null],
-    @"z" : z ? z : [NSNull null],
+    @"y" : (y != nullptr) ? y : [NSNull null],
+    @"z" : (z != nullptr) ? z : [NSNull null],
   };
 }
 
 RCT_EXPORT_METHOD(getValueWithCallback : (RCTResponseSenderBlock)callback)
 {
-  if (!callback) {
+  if (callback == nullptr) {
     return;
   }
   callback(@[ @"value from callback!" ]);
 }
 
-RCT_EXPORT_METHOD(getValueWithPromise
-                  : (BOOL)error resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    getValueWithPromise : (BOOL)error resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
-  if (!resolve || !reject) {
+  if ((resolve == nullptr) || (reject == nullptr)) {
     return;
   }
 

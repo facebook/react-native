@@ -61,11 +61,15 @@ public class ModuleHolder {
             nativeModule.canOverrideExistingModule(),
             true,
             CxxModuleWrapper::class.java.isAssignableFrom(nativeModule.javaClass),
-            ReactModuleInfo.classIsTurboModule(nativeModule.javaClass))
+            ReactModuleInfo.classIsTurboModule(nativeModule.javaClass),
+        )
 
     internalModule = nativeModule
     PrinterHolder.printer.logMessage(
-        ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", name)
+        ReactDebugOverlayTags.NATIVE_MODULE,
+        "NativeModule init: %s",
+        name,
+    )
   }
 
   /*
@@ -162,7 +166,10 @@ public class ModuleHolder {
         .arg("name", name)
         .flush()
     PrinterHolder.printer.logMessage(
-        ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", name)
+        ReactDebugOverlayTags.NATIVE_MODULE,
+        "NativeModule init: %s",
+        name,
+    )
     val module: NativeModule
     try {
       module = checkNotNull(provider).get()

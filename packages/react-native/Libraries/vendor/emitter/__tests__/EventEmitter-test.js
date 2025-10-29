@@ -106,27 +106,27 @@ describe('listeners', () => {
     }).not.toThrow();
 
     expect(() => {
-      // $FlowExpectedError
+      // $FlowExpectedError[incompatible-type] 
       emitter.addListener('A', null);
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError
+      // $FlowExpectedError[incompatible-type] 
       emitter.addListener('A', undefined);
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError
+      // $FlowExpectedError[incompatible-type] 
       emitter.addListener('A', 'abc');
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError
+      // $FlowExpectedError[incompatible-type] 
       emitter.addListener('A', 123);
     }).toThrow();
 
     expect(() => {
-      // $FlowExpectedError
+      // $FlowExpectedError[incompatible-type] 
       emitter.addListener('A', 123);
     }).toThrow();
   });

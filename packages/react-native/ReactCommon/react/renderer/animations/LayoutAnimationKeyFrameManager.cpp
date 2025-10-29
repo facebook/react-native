@@ -122,14 +122,15 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
   if (layoutAnimationConfig) {
     std::scoped_lock lock(currentAnimationMutex_);
 
-    uiManagerDidConfigureNextLayoutAnimation(LayoutAnimation{
-        -1,
-        0,
-        false,
-        *layoutAnimationConfig,
-        successCallback,
-        failureCallback,
-        {}});
+    uiManagerDidConfigureNextLayoutAnimation(
+        LayoutAnimation{
+            .surfaceId = -1,
+            .startTime = 0,
+            .completed = false,
+            .layoutAnimationConfig = *layoutAnimationConfig,
+            .successCallback = successCallback,
+            .failureCallback = failureCallback,
+            .keyFrames = {}});
   } else {
     LOG(ERROR) << "Parsing LayoutAnimationConfig failed: "
                << (folly::dynamic)config;
@@ -500,14 +501,15 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 mutation);
 
             keyFrame = AnimationKeyFrame{
-                /* .finalMutationsForKeyFrame = */ {},
-                /* .type = */ AnimationConfigurationType::Create,
-                /* .tag = */ tag,
-                /* .parentTag = */ parentTag,
-                /* .viewStart = */ viewStart,
-                /* .viewEnd = */ viewFinal,
-                /* .viewPrev = */ baselineShadowView,
-                /* .initialProgress = */ 0};
+                /* .finalMutationsForKeyFrame = */ .finalMutationsForKeyFrame =
+                    {},
+                /* .type = */ .type = AnimationConfigurationType::Create,
+                /* .tag = */ .tag = tag,
+                /* .parentTag = */ .parentTag = parentTag,
+                /* .viewStart = */ .viewStart = viewStart,
+                /* .viewEnd = */ .viewEnd = viewFinal,
+                /* .viewPrev = */ .viewPrev = baselineShadowView,
+                /* .initialProgress = */ .initialProgress = 0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
 // This is just for assertion purposes.
 // The NDEBUG check here is to satisfy the compiler in certain environments
@@ -538,14 +540,15 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 mutation);
 
             keyFrame = AnimationKeyFrame{
-                /* .finalMutationsForKeyFrame = */ {mutation},
-                /* .type = */ AnimationConfigurationType::Update,
-                /* .tag = */ tag,
-                /* .parentTag = */ parentTag,
-                /* .viewStart = */ viewStart,
-                /* .viewEnd = */ viewFinal,
-                /* .viewPrev = */ baselineShadowView,
-                /* .initialProgress = */ 0};
+                /* .finalMutationsForKeyFrame = */ .finalMutationsForKeyFrame =
+                    {mutation},
+                /* .type = */ .type = AnimationConfigurationType::Update,
+                /* .tag = */ .tag = tag,
+                /* .parentTag = */ .parentTag = parentTag,
+                /* .viewStart = */ .viewStart = viewStart,
+                /* .viewEnd = */ .viewEnd = viewFinal,
+                /* .viewPrev = */ .viewPrev = baselineShadowView,
+                /* .initialProgress = */ .initialProgress = 0};
           } else {
             // This should just be "Remove" instructions that are not animated
             // (either this is a "move", or there's a corresponding "Delete"
@@ -624,14 +627,15 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   mutation);
 
               keyFrame = AnimationKeyFrame{
-                  /* .finalMutationsForKeyFrame */ {mutation, deleteMutation},
-                  /* .type */ AnimationConfigurationType::Delete,
-                  /* .tag */ tag,
-                  /* .parentTag */ parentTag,
-                  /* .viewStart */ viewStart,
-                  /* .viewEnd */ viewFinal,
-                  /* .viewPrev */ baselineShadowView,
-                  /* .initialProgress */ 0};
+                  /* .finalMutationsForKeyFrame */ .finalMutationsForKeyFrame =
+                      {mutation, deleteMutation},
+                  /* .type */ .type = AnimationConfigurationType::Delete,
+                  /* .tag */ .tag = tag,
+                  /* .parentTag */ .parentTag = parentTag,
+                  /* .viewStart */ .viewStart = viewStart,
+                  /* .viewEnd */ .viewEnd = viewFinal,
+                  /* .viewPrev */ .viewPrev = baselineShadowView,
+                  /* .initialProgress */ .initialProgress = 0};
             } else {
               PrintMutationInstruction(
                   "Executing Remove Immediately, due to reordering operation",
@@ -1172,25 +1176,31 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           // For CREATE/INSERT this will contain CREATE, INSERT in that order.
           // For REMOVE/DELETE, same.
         case ShadowViewMutation::Type::Create:
-          mutationsList.push_back(ShadowViewMutation::CreateMutation(
-              finalMutation.newChildShadowView));
+          mutationsList.push_back(
+              ShadowViewMutation::CreateMutation(
+                  finalMutation.newChildShadowView));
           break;
         case ShadowViewMutation::Type::Delete:
           mutationsList.push_back(ShadowViewMutation::DeleteMutation(prev));
           break;
         case ShadowViewMutation::Type::Insert:
-          mutationsList.push_back(ShadowViewMutation::InsertMutation(
-              finalMutation.parentTag,
-              finalMutation.newChildShadowView,
-              finalMutation.index));
+          mutationsList.push_back(
+              ShadowViewMutation::InsertMutation(
+                  finalMutation.parentTag,
+                  finalMutation.newChildShadowView,
+                  finalMutation.index));
           break;
         case ShadowViewMutation::Type::Remove:
-          mutationsList.push_back(ShadowViewMutation::RemoveMutation(
-              finalMutation.parentTag, prev, finalMutation.index));
+          mutationsList.push_back(
+              ShadowViewMutation::RemoveMutation(
+                  finalMutation.parentTag, prev, finalMutation.index));
           break;
         case ShadowViewMutation::Type::Update:
-          mutationsList.push_back(ShadowViewMutation::UpdateMutation(
-              prev, finalMutation.newChildShadowView, finalMutation.parentTag));
+          mutationsList.push_back(
+              ShadowViewMutation::UpdateMutation(
+                  prev,
+                  finalMutation.newChildShadowView,
+                  finalMutation.parentTag));
           break;
       }
       if (finalMutation.newChildShadowView.tag > 0) {

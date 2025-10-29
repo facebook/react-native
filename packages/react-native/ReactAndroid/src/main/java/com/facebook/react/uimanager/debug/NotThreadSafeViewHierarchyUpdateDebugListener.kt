@@ -18,7 +18,8 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
  * guarantees what thread onViewHierarchyUpdateEnqueued is called on.
  */
 @Deprecated(
-    "NotThreadSafeViewHierarchyUpdateDebugListener will be deleted in the new architecture.")
+    "NotThreadSafeViewHierarchyUpdateDebugListener will be deleted in the new architecture."
+)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal interface NotThreadSafeViewHierarchyUpdateDebugListener {
   /** Called when `UIManagerModule` enqueues a UI batch to be dispatched to the main thread. */

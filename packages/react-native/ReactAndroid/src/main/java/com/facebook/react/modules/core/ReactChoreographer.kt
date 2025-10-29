@@ -35,7 +35,7 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
     /**
      * Event used to trigger the idle callback. Called after all UI work has been dispatched to JS.
      */
-    IDLE_EVENT(4)
+    IDLE_EVENT(4),
   }
 
   private var choreographer: ChoreographerProvider.Choreographer? = null

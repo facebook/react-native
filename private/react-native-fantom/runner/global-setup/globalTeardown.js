@@ -12,11 +12,12 @@ import type {RunServerResult} from 'metro';
 
 type MetroServer = $NonMaybeType<RunServerResult?.['httpServer']>;
 
-declare var __METRO_SERVER__: ?RunServerResult;
+declare var __FANTOM_METRO_SERVER__: ?RunServerResult;
 
 function getMetroServer(): ?MetroServer {
-  return typeof __METRO_SERVER__ !== 'undefined' && __METRO_SERVER__ != null
-    ? __METRO_SERVER__.httpServer
+  return typeof __FANTOM_METRO_SERVER__ !== 'undefined' &&
+    __FANTOM_METRO_SERVER__ != null
+    ? __FANTOM_METRO_SERVER__.httpServer
     : null;
 }
 

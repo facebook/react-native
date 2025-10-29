@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTInvalidating.h>
 #import <React/RCTRootView.h>
@@ -18,19 +18,26 @@
 
 @interface RCTRootContentView : RCTView <RCTInvalidating>
 
-@property (nonatomic, readonly, weak) RCTBridge *bridge;
-@property (nonatomic, readonly, assign) BOOL contentHasAppeared;
-@property (nonatomic, readonly, strong) RCTTouchHandler *touchHandler;
-@property (nonatomic, readonly, assign) CGSize availableSize;
+@property (nonatomic, readonly, weak)
+    RCTBridge *bridge __deprecated_msg("This API will be removed along with the legacy architecture.");
+@property (nonatomic, readonly, assign)
+    BOOL contentHasAppeared __deprecated_msg("This API will be removed along with the legacy architecture.");
+@property (nonatomic, readonly, strong)
+    RCTTouchHandler *touchHandler __deprecated_msg("This API will be removed along with the legacy architecture.");
+@property (nonatomic, readonly, assign)
+    CGSize availableSize __deprecated_msg("This API will be removed along with the legacy architecture.");
 
-@property (nonatomic, assign) BOOL passThroughTouches;
-@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
+@property (nonatomic, assign)
+    BOOL passThroughTouches __deprecated_msg("This API will be removed along with the legacy architecture.");
+@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
                      reactTag:(NSNumber *)reactTag
-              sizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER;
+              sizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

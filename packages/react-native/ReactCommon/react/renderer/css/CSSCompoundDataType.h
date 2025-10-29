@@ -22,16 +22,14 @@ template <CSSDataType... AllowedTypesT>
 struct CSSCompoundDataType : public detail::CSSCompoundDataTypeMarker {};
 
 template <typename T>
-concept CSSValidCompoundDataType =
-    std::is_base_of_v<detail::CSSCompoundDataTypeMarker, T>;
+concept CSSValidCompoundDataType = std::is_base_of_v<detail::CSSCompoundDataTypeMarker, T>;
 
 /**
  * A concrete data type, or a compound data type which represents multiple other
  * data types.
  */
 template <typename T>
-concept CSSMaybeCompoundDataType =
-    CSSDataType<T> || CSSValidCompoundDataType<T>;
+concept CSSMaybeCompoundDataType = CSSDataType<T> || CSSValidCompoundDataType<T>;
 
 namespace detail {
 
@@ -39,53 +37,24 @@ namespace detail {
 template <CSSMaybeCompoundDataType... AllowedTypesT>
 struct merge_data_types;
 
-template <
-    CSSDataType... AlllowedTypes1T,
-    CSSDataType... AlllowedTypes2T,
-    CSSMaybeCompoundDataType... RestT>
-struct merge_data_types<
-    CSSCompoundDataType<AlllowedTypes1T...>,
-    CSSCompoundDataType<AlllowedTypes2T...>,
-    RestT...> {
-  using type = typename merge_data_types<
-      CSSCompoundDataType<AlllowedTypes1T..., AlllowedTypes2T...>,
-      RestT...>::type;
+template <CSSDataType... AlllowedTypes1T, CSSDataType... AlllowedTypes2T, CSSMaybeCompoundDataType... RestT>
+struct merge_data_types<CSSCompoundDataType<AlllowedTypes1T...>, CSSCompoundDataType<AlllowedTypes2T...>, RestT...> {
+  using type = typename merge_data_types<CSSCompoundDataType<AlllowedTypes1T..., AlllowedTypes2T...>, RestT...>::type;
 };
 
-template <
-    CSSDataType AlllowedType1T,
-    CSSDataType... AlllowedTypes2T,
-    CSSMaybeCompoundDataType... RestT>
-struct merge_data_types<
-    AlllowedType1T,
-    CSSCompoundDataType<AlllowedTypes2T...>,
-    RestT...> {
-  using type = typename merge_data_types<
-      CSSCompoundDataType<AlllowedType1T, AlllowedTypes2T...>,
-      RestT...>::type;
+template <CSSDataType AlllowedType1T, CSSDataType... AlllowedTypes2T, CSSMaybeCompoundDataType... RestT>
+struct merge_data_types<AlllowedType1T, CSSCompoundDataType<AlllowedTypes2T...>, RestT...> {
+  using type = typename merge_data_types<CSSCompoundDataType<AlllowedType1T, AlllowedTypes2T...>, RestT...>::type;
 };
 
-template <
-    CSSDataType AlllowedType2T,
-    CSSDataType... AlllowedTypes1T,
-    CSSMaybeCompoundDataType... RestT>
-struct merge_data_types<
-    CSSCompoundDataType<AlllowedTypes1T...>,
-    AlllowedType2T,
-    RestT...> {
-  using type = typename merge_data_types<
-      CSSCompoundDataType<AlllowedTypes1T..., AlllowedType2T>,
-      RestT...>::type;
+template <CSSDataType AlllowedType2T, CSSDataType... AlllowedTypes1T, CSSMaybeCompoundDataType... RestT>
+struct merge_data_types<CSSCompoundDataType<AlllowedTypes1T...>, AlllowedType2T, RestT...> {
+  using type = typename merge_data_types<CSSCompoundDataType<AlllowedTypes1T..., AlllowedType2T>, RestT...>::type;
 };
 
-template <
-    CSSDataType AlllowedType1T,
-    CSSDataType AlllowedType2T,
-    CSSMaybeCompoundDataType... RestT>
+template <CSSDataType AlllowedType1T, CSSDataType AlllowedType2T, CSSMaybeCompoundDataType... RestT>
 struct merge_data_types<AlllowedType1T, AlllowedType2T, RestT...> {
-  using type = typename merge_data_types<
-      CSSCompoundDataType<AlllowedType1T, AlllowedType2T>,
-      RestT...>::type;
+  using type = typename merge_data_types<CSSCompoundDataType<AlllowedType1T, AlllowedType2T>, RestT...>::type;
 };
 
 template <CSSDataType... AllowedTypesT>
@@ -115,7 +84,6 @@ template <CSSMaybeCompoundDataType... T>
 using CSSMergedDataTypes = typename detail::merge_data_types<T...>::type;
 
 template <typename MergedTypeT, typename... RestT>
-using CSSVariantWithTypes =
-    typename detail::merge_variant<MergedTypeT, RestT...>::type;
+using CSSVariantWithTypes = typename detail::merge_variant<MergedTypeT, RestT...>::type;
 
 } // namespace facebook::react
