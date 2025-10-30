@@ -342,10 +342,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTa
    *   sessions, or when the only Agent that had this domain enabled has
    *   disconnected.
    */
-  std::pair<bool, bool> processDomainChange(
-      Domain domain,
-      bool enabled,
-      const RuntimeAgent& notifyingAgent);
+  std::pair<bool, bool> processDomainChange(Domain domain, bool enabled, const RuntimeAgent &notifyingAgent);
 
   /**
    * Checks whether the given domain is enabled in at least one session
