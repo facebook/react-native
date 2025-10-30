@@ -5651,6 +5651,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun pageScroll (I)Z
 	public fun reactSmoothScrollTo (II)V
 	public fun requestChildFocus (Landroid/view/View;Landroid/view/View;)V
+	protected fun requestChildFocusWithoutScroll (Landroid/view/View;Landroid/view/View;)V
 	protected fun restoreScrollTo (II)V
 	public fun scrollTo (II)V
 	public fun scrollToPreservingMomentum (II)V
@@ -5791,6 +5792,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun reactSmoothScrollTo (II)V
 	public fun requestChildFocus (Landroid/view/View;Landroid/view/View;)V
+	protected fun requestChildFocusWithoutScroll (Landroid/view/View;Landroid/view/View;)V
 	public fun scrollTo (II)V
 	public fun scrollToPreservingMomentum (II)V
 	public fun setBackgroundColor (I)V
