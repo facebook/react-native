@@ -80,7 +80,7 @@ public class SurfaceMountingManager {
   // These are all non-null, until StopSurface is called
   private ConcurrentHashMap<Integer, ViewState> mTagToViewState =
       new ConcurrentHashMap<>(); // any thread
-  private Queue<MountItem> mOnViewAttachMountItems = new ArrayDeque<>();
+  private final Queue<MountItem> mOnViewAttachMountItems = new ArrayDeque<>();
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
