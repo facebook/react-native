@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @fantom_flags enableAccessToHostTreeInFabric:*
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
@@ -17,12 +16,10 @@ import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactN
 import TextInput from '../../../Components/TextInput/TextInput';
 import TextInputState from '../../../Components/TextInput/TextInputState';
 import View from '../../../Components/View/View';
-import ReactFabricHostComponent from '../ReactFabricHostComponent';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
-import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 // TODO: move these tests to the test file for `ReactNativeElement` when the legacy implementation is removed.
 describe('ReactFabricPublicInstance', () => {
@@ -36,11 +33,7 @@ describe('ReactFabricPublicInstance', () => {
 
     const node = nullthrows(nodeRef.current);
 
-    expect(node).toBeInstanceOf(
-      ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()
-        ? ReactNativeElement
-        : ReactFabricHostComponent,
-    );
+    expect(node).toBeInstanceOf(ReactNativeElement);
   });
 
   describe('blur', () => {

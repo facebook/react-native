@@ -63,9 +63,7 @@ export const DEFAULT_HERMES_VARIANT: HermesVariant = HermesVariant.Hermes;
 
 export const DEFAULT_FEATURE_FLAGS: FantomTestConfigFeatureFlags = {
   common: {},
-  jsOnly: {
-    enableAccessToHostTreeInFabric: true,
-  },
+  jsOnly: {},
   reactInternal: {},
 };
 

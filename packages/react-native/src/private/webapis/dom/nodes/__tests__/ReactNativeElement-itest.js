@@ -34,7 +34,7 @@ function ensureReactNativeElement(value: mixed): ReactNativeElement {
 /* eslint-disable no-bitwise */
 
 describe('ReactNativeElement', () => {
-  it('should be used to create public instances when the `enableAccessToHostTreeInFabric` feature flag is enabled', () => {
+  it('should be used to create public instances', () => {
     const ref = createRef<HostInstance>();
 
     const root = Fantom.createRoot();

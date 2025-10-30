@@ -26,13 +26,10 @@ import type {
 import type {RootTag} from '../RootTag';
 import type ReactFabricHostComponentT from './ReactFabricHostComponent';
 
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
-
 export opaque type PublicRootInstance = mixed;
 
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
 let ReactNativeDocumentModuleObject: ?ReactNativeDocumentModuleT;
-let ReactFabricHostComponentClass: Class<ReactFabricHostComponentT>;
 let ReactNativeElementClass: Class<ReactNativeElementT>;
 let ReadOnlyTextClass: Class<ReadOnlyTextT>;
 let RendererProxy: RendererProxyT;
@@ -54,14 +51,6 @@ function getReactNativeElementClass(): Class<ReactNativeElementT> {
   return ReactNativeElementClass;
 }
 
-function getReactFabricHostComponentClass(): Class<ReactFabricHostComponentT> {
-  if (ReactFabricHostComponentClass == null) {
-    ReactFabricHostComponentClass =
-      require('./ReactFabricHostComponent').default;
-  }
-  return ReactFabricHostComponentClass;
-}
-
 function getReadOnlyTextClass(): Class<ReadOnlyTextT> {
   if (ReadOnlyTextClass == null) {
     ReadOnlyTextClass =
@@ -71,15 +60,10 @@ function getReadOnlyTextClass(): Class<ReadOnlyTextT> {
 }
 
 export function createPublicRootInstance(rootTag: RootTag): PublicRootInstance {
-  if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
-    const ReactNativeDocumentModule = getReactNativeDocumentModule();
-
-    // $FlowExpectedError[incompatible-return]
-    return ReactNativeDocumentModule.createReactNativeDocument(rootTag);
-  }
+  const ReactNativeDocumentModule = getReactNativeDocumentModule();
 
   // $FlowExpectedError[incompatible-return]
-  return null;
+  return ReactNativeDocumentModule.createReactNativeDocument(rootTag);
 }
 
 export function createPublicInstance(
@@ -88,22 +72,13 @@ export function createPublicInstance(
   internalInstanceHandle: InternalInstanceHandle,
   ownerDocument: ReactNativeDocumentT,
 ): ReactFabricHostComponentT | ReactNativeElementT {
-  if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
-    const ReactNativeElement = getReactNativeElementClass();
-    return new ReactNativeElement(
-      tag,
-      viewConfig,
-      internalInstanceHandle,
-      ownerDocument,
-    );
-  } else {
-    const ReactFabricHostComponent = getReactFabricHostComponentClass();
-    return new ReactFabricHostComponent(
-      tag,
-      viewConfig,
-      internalInstanceHandle,
-    );
-  }
+  const ReactNativeElement = getReactNativeElementClass();
+  return new ReactNativeElement(
+    tag,
+    viewConfig,
+    internalInstanceHandle,
+    ownerDocument,
+  );
 }
 
 export function createPublicTextInstance(

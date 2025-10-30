@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<25169f72feeaa596faaeb8fc3fffac06>>
+ * @generated SignedSource<<a7822af6814b6860dc77cebb30f8c2ed>>
  * @flow strict
  * @noformat
  */
@@ -34,7 +34,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   configurePressabilityDuringInsertion: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   disableMaintainVisibleContentPosition: Getter<boolean>,
-  enableAccessToHostTreeInFabric: Getter<boolean>,
   enableVirtualViewExperimental: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
@@ -163,11 +162,6 @@ export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaS
  * Disable prop maintainVisibleContentPosition in ScrollView
  */
 export const disableMaintainVisibleContentPosition: Getter<boolean> = createJavaScriptFlagGetter('disableMaintainVisibleContentPosition', false);
-
-/**
- * Enables access to the host tree in Fabric using DOM-compatible APIs.
- */
-export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', true);
 
 /**
  * Enables the experimental version of `VirtualView`.
