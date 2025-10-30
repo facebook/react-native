@@ -481,6 +481,16 @@ Rect Transform::applyWithCenter(const Rect& rect, const Point& center) const {
       transformedA, transformedB, transformedC, transformedD);
 }
 
+Point Transform::applyWithRect(const Point& point, const Rect& rect) const {
+  return this->applyWithCenter(point, rect.getCenter());
+}
+
+Point Transform::applyWithCenter(const Point& point, const Point& center)
+    const {
+  auto vector = *this * Vector{point.x - center.x, point.y - center.y, 0, 1};
+  return {vector.x + center.x, vector.y + center.y};
+}
+
 EdgeInsets operator*(const EdgeInsets& edgeInsets, const Transform& transform) {
   return EdgeInsets{
       edgeInsets.left * transform.matrix[0],
@@ -510,6 +520,61 @@ Size operator*(const Size& size, const Transform& transform) {
   auto result = Size{};
   result.width = std::abs(transform.at(0, 0) * size.width);
   result.height = std::abs(transform.at(1, 1) * size.height);
+
+  return result;
+}
+
+Transform Transform::Invert(const Transform& rhs) {
+  auto result = Transform{};
+
+  if (rhs == Transform::Identity()) {
+    return rhs;
+  }
+
+  auto rhs00 = rhs.matrix[0];
+  auto rhs01 = rhs.matrix[1];
+  auto rhs02 = rhs.matrix[2];
+  auto rhs10 = rhs.matrix[4];
+  auto rhs11 = rhs.matrix[5];
+  auto rhs12 = rhs.matrix[6];
+  auto rhs20 = rhs.matrix[8];
+  auto rhs21 = rhs.matrix[9];
+  auto rhs22 = rhs.matrix[10];
+  auto rhs30 = rhs.matrix[12];
+  auto rhs31 = rhs.matrix[13];
+  auto rhs32 = rhs.matrix[14];
+
+  auto det = rhs00 * (rhs11 * rhs22 - rhs12 * rhs21) -
+      (rhs01 * (rhs10 * rhs22 - rhs12 * rhs20)) +
+      rhs02 * (rhs10 * rhs21 - rhs11 * rhs20);
+
+  if (isZero(det)) {
+    return Transform::Identity();
+  }
+
+  auto detinv = 1.0f / det;
+
+  result.matrix[0] = detinv * (rhs11 * rhs22 - rhs12 * rhs21);
+  result.matrix[1] = detinv * (rhs02 * rhs21 - rhs01 * rhs22);
+  result.matrix[2] = detinv * (rhs01 * rhs12 - rhs02 * rhs11);
+
+  result.matrix[4] = detinv * (rhs12 * rhs20 - rhs10 * rhs22);
+  result.matrix[5] = detinv * (rhs00 * rhs22 - rhs02 * rhs20);
+  result.matrix[6] = detinv * (rhs02 * rhs10 - rhs00 * rhs12);
+
+  result.matrix[8] = detinv * (rhs10 * rhs21 - rhs11 * rhs20);
+  result.matrix[9] = detinv * (rhs01 * rhs20 - rhs00 * rhs21);
+  result.matrix[10] = detinv * (rhs00 * rhs11 - rhs01 * rhs10);
+
+  result.matrix[12] =
+      -(rhs30 * result.matrix[0] + rhs31 * result.matrix[4] +
+        rhs32 * result.matrix[8]);
+  result.matrix[13] =
+      -(rhs30 * result.matrix[1] + rhs31 * result.matrix[5] +
+        rhs32 * result.matrix[9]);
+  result.matrix[14] =
+      -(rhs30 * result.matrix[2] + rhs31 * result.matrix[6] +
+        rhs32 * result.matrix[10]);
 
   return result;
 }
