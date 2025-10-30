@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d3786de5c8669d29376f135536f7cbbc>>
+ * @generated SignedSource<<d61394fb8056e5e1a68f9fe7b936985c>>
  */
 
 /**
@@ -232,7 +232,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableWebPerformanceAPIsByDefault() override {
-    return false;
+    return true;
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {

@@ -593,14 +593,14 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableWebPerformanceAPIsByDefault: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         description:
           'Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'canary',
+      ossReleaseStage: 'stable',
     },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
