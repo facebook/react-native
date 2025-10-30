@@ -467,9 +467,18 @@ void consoleTimeStamp(
     }
   }
 
+  std::optional<folly::dynamic> detail;
+  if (performanceTracer.isTracing() && argumentsCount >= 7) {
+    const jsi::Value& detailArgument = arguments[6];
+    if (detailArgument.isObject()) {
+      detail =
+          tracing::getConsoleTimeStampDetailFromObject(runtime, detailArgument);
+    }
+  }
+
   if (performanceTracer.isTracing()) {
     performanceTracer.reportTimeStamp(
-        label, start, end, trackName, trackGroup, color);
+        label, start, end, trackName, trackGroup, color, std::move(detail));
   }
 
   if (ReactPerfettoLogger::isTracing()) {

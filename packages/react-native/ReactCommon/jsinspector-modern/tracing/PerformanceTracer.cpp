@@ -213,7 +213,8 @@ void PerformanceTracer::reportTimeStamp(
     std::optional<ConsoleTimeStampEntry> end,
     std::optional<std::string> trackName,
     std::optional<std::string> trackGroup,
-    std::optional<ConsoleTimeStampColor> color) {
+    std::optional<ConsoleTimeStampColor> color,
+    std::optional<folly::dynamic> detail) {
   if (!tracingAtomic_) {
     return;
   }
@@ -231,6 +232,7 @@ void PerformanceTracer::reportTimeStamp(
           .trackName = std::move(trackName),
           .trackGroup = std::move(trackGroup),
           .color = std::move(color),
+          .detail = std::move(detail),
           .threadId = getCurrentThreadId(),
       });
 }
@@ -650,6 +652,13 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             }
             if (event.color) {
               data["color"] = consoleTimeStampColorToString(*event.color);
+            }
+            if (event.detail) {
+              folly::dynamic devtoolsDetail = folly::dynamic::object();
+              for (const auto& [key, value] : event.detail->items()) {
+                devtoolsDetail[key] = value;
+              }
+              data["devtools"] = folly::toJson(devtoolsDetail);
             }
 
             events.emplace_back(
