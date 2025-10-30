@@ -14,6 +14,7 @@
 #import <react/renderer/components/FBReactNativeSpec/Props.h>
 #import <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #import <react/renderer/components/modal/ModalHostViewState.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import "RCTConversions.h"
 
@@ -251,7 +252,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
   if (_state != nullptr) {
     auto newState = ModalHostViewState{RCTSizeFromCGSize(newBounds.size)};
-    _state->updateState(std::move(newState), EventQueue::UpdateMode::unstable_Immediate);
+    BOOL enableImmediateUpdateForModalDetents =
+        ReactNativeFeatureFlags::enableImmediateUpdateForModalDetents();
+    
+    _state->updateState(std::move(newState), enableImmediateUpdateForModalDetents ? EventQueue::UpdateMode::unstable_Immediate : EventQueue::UpdateMode::Asynchronous);
   }
 }
 

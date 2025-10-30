@@ -335,6 +335,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableImmediateUpdateForModalDetents: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-30',
+        description:
+          'When enabled, updates to modal detents will be applied immediately instead of being deferred to the next layout pass.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
     enableImmediateUpdateModeForContentOffsetChanges: {
       defaultValue: false,
       metadata: {

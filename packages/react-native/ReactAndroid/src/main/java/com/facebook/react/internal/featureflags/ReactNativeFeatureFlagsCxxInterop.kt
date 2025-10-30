@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8a775646d455cdb6d017fd08aee3e807>>
+ * @generated SignedSource<<86eaaf389de7ba9e424eb5797b2fcb8a>>
  */
 
 /**
@@ -81,6 +81,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableImmediateUpdateForModalDetents(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
 

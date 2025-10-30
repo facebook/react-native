@@ -230,7 +230,7 @@ function confirmProps(props: ModalProps) {
 
     if (
       Platform.OS === 'ios' &&
-      props.detents?.length > 0 &&
+      (props.detents?.length ?? 0) > 0 &&
       props.presentationStyle !== 'pageSheet' &&
       props.presentationStyle !== 'formSheet'
     ) {

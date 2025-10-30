@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<07b665ad842faafaf7520051f636d805>>
+ * @generated SignedSource<<87135fff5b48d1d07a0c86f5a2a99cda>>
  */
 
 /**
@@ -173,6 +173,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
    */
   RN_EXPORT static bool enableImagePrefetchingOnUiThreadAndroid();
+
+  /**
+   * When enabled, updates to modal detents will be applied immediately instead of being deferred to the next layout pass.
+   */
+  RN_EXPORT static bool enableImmediateUpdateForModalDetents();
 
   /**
    * Dispatches state updates for content offset changes synchronously on the main thread.
