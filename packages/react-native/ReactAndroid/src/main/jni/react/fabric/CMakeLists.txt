@@ -26,6 +26,7 @@ target_link_libraries(
         folly_runtime
         glog
         jsi
+        jsireact
         mapbufferjni
         react_codegen_rncore
         react_debug
