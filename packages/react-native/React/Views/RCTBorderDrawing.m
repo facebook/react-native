@@ -247,8 +247,12 @@ static UIImage *RCTGetSolidBorderImage(
 
   const CGSize size = makeStretchable ? (CGSize){
     // 1pt for the middle stretchable area along each axis
-    edgeInsets.left + 1 + edgeInsets.right,
-    edgeInsets.top + 1 + edgeInsets.bottom
+    // we also need to round the edge insets to avoid border bleeding
+    // this is because if the size is decimal, when calculating the unit
+    // rectangle for CALayer.contentsCenter we encounter rounding errors
+    // which causes visual glitches
+    ceil(edgeInsets.left) + 1 + ceil(edgeInsets.right),
+    ceil(edgeInsets.top) + 1 + ceil(edgeInsets.bottom),
   } : viewSize;
 
   UIGraphicsImageRenderer *const imageRenderer =
