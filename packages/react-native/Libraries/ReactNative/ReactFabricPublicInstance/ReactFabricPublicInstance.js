@@ -24,7 +24,6 @@ import type {
   ViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
 import type {RootTag} from '../RootTag';
-import type ReactFabricHostComponentT from './ReactFabricHostComponent';
 
 export opaque type PublicRootInstance = mixed;
 
@@ -71,7 +70,7 @@ export function createPublicInstance(
   viewConfig: ViewConfig,
   internalInstanceHandle: InternalInstanceHandle,
   ownerDocument: ReactNativeDocumentT,
-): ReactFabricHostComponentT | ReactNativeElementT {
+): ReactNativeElementT {
   const ReactNativeElement = getReactNativeElementClass();
   return new ReactNativeElement(
     tag,
@@ -90,13 +89,13 @@ export function createPublicTextInstance(
 }
 
 export function getNativeTagFromPublicInstance(
-  publicInstance: ReactFabricHostComponentT | ReactNativeElementT,
+  publicInstance: ReactNativeElementT,
 ): number {
   return publicInstance.__nativeTag;
 }
 
 export function getNodeFromPublicInstance(
-  publicInstance: ReactFabricHostComponentT | ReactNativeElementT,
+  publicInstance: ReactNativeElementT,
 ): ?Node {
   // Avoid loading ReactFabric if using an instance from the legacy renderer.
   if (publicInstance.__internalInstanceHandle == null) {
@@ -113,7 +112,7 @@ export function getNodeFromPublicInstance(
 }
 
 export function getInternalInstanceHandleFromPublicInstance(
-  publicInstance: ReactFabricHostComponentT | ReactNativeElementT,
+  publicInstance: ReactNativeElementT,
 ): InternalInstanceHandle {
   // TODO(T174762768): Remove this once OSS versions of renderers will be synced.
   // $FlowExpectedError[prop-missing] Keeping this for backwards-compatibility with the renderers versions in open source.
