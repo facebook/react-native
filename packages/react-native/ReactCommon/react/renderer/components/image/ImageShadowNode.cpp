@@ -17,6 +17,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(facebook-hte-CArray,modernize-avoid-c-arrays)
 const char ImageComponentName[] = "Image";
 
 void ImageShadowNode::setImageManager(
@@ -105,7 +106,8 @@ ImageSource ImageShadowNode::getImageSource() const {
 
   if (sources.empty()) {
     return {
-        /* .type = */ ImageSource::Type::Invalid,
+        /* .type = */
+        ImageSource::Type::Invalid,
     };
   }
 
