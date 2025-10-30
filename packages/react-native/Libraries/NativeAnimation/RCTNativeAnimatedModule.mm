@@ -30,7 +30,10 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   NSMutableDictionary<NSNumber *, NSNumber *> *_animIdIsManagedByFabric;
 }
 
-RCT_EXPORT_MODULE();
++ (NSString *)moduleName
+{
+  return @"NativeAnimatedModule";
+}
 
 + (BOOL)requiresMainQueueSetup
 {

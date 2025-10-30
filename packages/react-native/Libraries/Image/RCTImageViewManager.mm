@@ -20,7 +20,10 @@
 
 @implementation RCTImageViewManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"ImageViewManager";
+}
 
 - (RCTShadowView *)shadowView
 {

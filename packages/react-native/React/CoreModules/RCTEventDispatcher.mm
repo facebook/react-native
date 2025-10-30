@@ -44,7 +44,10 @@ static uint16_t RCTUniqueCoalescingKeyGenerator = 0;
 @synthesize dispatchToJSThread = _dispatchToJSThread;
 @synthesize callableJSModules = _callableJSModules;
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"EventDispatcher";
+}
 
 - (void)initialize
 {

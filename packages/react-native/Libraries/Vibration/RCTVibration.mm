@@ -18,7 +18,10 @@
 
 @implementation RCTVibration
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"Vibration";
+}
 
 - (void)vibrate
 {

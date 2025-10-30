@@ -20,7 +20,10 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification);
 
 @implementation RCTKeyboardObserver
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"KeyboardObserver";
+}
 
 - (void)startObserving
 {

@@ -167,7 +167,10 @@ static NSString *RCTGenerateFormBoundary()
 
 @synthesize methodQueue = _methodQueue;
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"Networking";
+}
 
 + (BOOL)requiresMainQueueSetup
 {

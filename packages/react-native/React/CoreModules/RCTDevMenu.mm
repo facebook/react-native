@@ -124,7 +124,10 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 @synthesize callableJSModules = _callableJSModules;
 @synthesize bundleManager = _bundleManager;
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"DevMenu";
+}
 
 + (void)initialize
 {

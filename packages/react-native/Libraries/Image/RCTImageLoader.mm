@@ -92,7 +92,10 @@ static NSError *addResponseHeadersToError(NSError *originalError, NSHTTPURLRespo
 @synthesize maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks;
 @synthesize maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes;
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"RCTImageLoader";
+}
 
 - (instancetype)init
 {

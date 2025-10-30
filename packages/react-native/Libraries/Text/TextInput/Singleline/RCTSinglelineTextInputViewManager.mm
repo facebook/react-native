@@ -14,7 +14,10 @@
 
 @implementation RCTSinglelineTextInputViewManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"SinglelineTextInputViewManager";
+}
 
 - (RCTShadowView *)shadowView
 {
