@@ -968,16 +968,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableAccessToHostTreeInFabric: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Enables access to the host tree in Fabric using DOM-compatible APIs.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'stable',
-    },
     enableVirtualViewExperimental: {
       defaultValue: false,
       metadata: {
