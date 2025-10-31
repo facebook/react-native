@@ -11,6 +11,7 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/performance/cdpmetrics/CdpMetricsReporter.h>
+#include <react/performance/cdpmetrics/CdpPerfIssuesReporter.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -134,6 +135,7 @@ class Scheduler final : public UIManagerDelegate {
 
   std::shared_ptr<PerformanceEntryReporter> performanceEntryReporter_;
   std::optional<CdpMetricsReporter> cdpMetricsReporter_;
+  std::optional<CdpPerfIssuesReporter> cdpPerfIssuesReporter_;
   std::shared_ptr<EventPerformanceLogger> eventPerformanceLogger_;
 
   /**

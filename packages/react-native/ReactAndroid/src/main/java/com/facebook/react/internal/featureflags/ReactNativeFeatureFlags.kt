@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ea1ee77358d99334a7c40bed44f2d90>>
+ * @generated SignedSource<<bac9e360daa589cba476d208f75ef2ca>>
  */
 
 /**
@@ -371,6 +371,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = accessor.overrideBySynchronousMountPropsAtMountingAndroid()
+
+  /**
+   * Enable reporting Performance Issues (`detail.rnPerfIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.
+   */
+  @JvmStatic
+  public fun perfIssuesEnabled(): Boolean = accessor.perfIssuesEnabled()
 
   /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.

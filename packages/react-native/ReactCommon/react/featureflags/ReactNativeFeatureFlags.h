@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<07b665ad842faafaf7520051f636d805>>
+ * @generated SignedSource<<e996f8acef4c9feeda40ea920a2e5353>>
  */
 
 /**
@@ -323,6 +323,11 @@ class ReactNativeFeatureFlags {
    * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.
    */
   RN_EXPORT static bool overrideBySynchronousMountPropsAtMountingAndroid();
+
+  /**
+   * Enable reporting Performance Issues (`detail.rnPerfIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.
+   */
+  RN_EXPORT static bool perfIssuesEnabled();
 
   /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.

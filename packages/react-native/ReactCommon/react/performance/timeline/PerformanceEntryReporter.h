@@ -59,8 +59,8 @@ class PerformanceEntryReporter {
   void clearEntries(PerformanceEntryType entryType);
   void clearEntries(PerformanceEntryType entryType, const std::string &entryName);
 
-  void addEventTimingListener(PerformanceEntryReporterEventTimingListener *listener);
-  void removeEventTimingListener(PerformanceEntryReporterEventTimingListener *listener);
+  void addEventListener(PerformanceEntryReporterEventListener *listener);
+  void removeEventListener(PerformanceEntryReporterEventListener *listener);
 
   static std::vector<PerformanceEntryType> getSupportedEntryTypes();
 
@@ -84,7 +84,7 @@ class PerformanceEntryReporter {
       const std::string &name,
       HighResTimeStamp startTime,
       HighResDuration duration,
-      UserTimingDetailProvider &&detailProvider = nullptr);
+      const std::optional<UserTimingDetailProvider> &detailProvider = std::nullopt);
 
   void reportEvent(
       const std::string &name,
@@ -123,7 +123,7 @@ class PerformanceEntryReporter {
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
   mutable std::shared_mutex listenersMutex_;
-  std::vector<PerformanceEntryReporterEventTimingListener *> eventTimingListeners_{};
+  std::vector<PerformanceEntryReporterEventListener *> eventListeners_{};
 
   const inline PerformanceEntryBuffer &getBuffer(PerformanceEntryType entryType) const
   {
@@ -166,7 +166,8 @@ class PerformanceEntryReporter {
   }
 
   void traceMark(const PerformanceMark &entry, UserTimingDetailProvider &&detailProvider) const;
-  void traceMeasure(const PerformanceMeasure &entry, UserTimingDetailProvider &&detailProvider) const;
+  void traceMeasure(const PerformanceMeasure &entry, const std::optional<UserTimingDetailProvider> &detailProvider)
+      const;
   void traceResourceTiming(
       const PerformanceResourceTiming &entry,
       const std::optional<std::string> &devtoolsRequestId,
