@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b9050ce18658ffe880bfb25d8e80e71d>>
+ * @generated SignedSource<<6bc2fbc946e21d0b51dd9bc71ac041e7>>
  * @flow strict
  * @noformat
  */
@@ -97,6 +97,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecyclingForScrollView: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
+  enableVirtualViewClippingWithoutScrollViewClipping: Getter<boolean>,
   enableVirtualViewContainerStateExperimental: Getter<boolean>,
   enableVirtualViewDebugFeatures: Getter<boolean>,
   enableVirtualViewRenderState: Getter<boolean>,
@@ -401,6 +402,10 @@ export const enableViewRecyclingForText: Getter<boolean> = createNativeFlagGette
  * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
  */
 export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForView', true);
+/**
+ * Set clipping to drawingRect of ScrollView.
+ */
+export const enableVirtualViewClippingWithoutScrollViewClipping: Getter<boolean> = createNativeFlagGetter('enableVirtualViewClippingWithoutScrollViewClipping', true);
 /**
  * Enables the experimental version of `VirtualViewContainerState`.
  */

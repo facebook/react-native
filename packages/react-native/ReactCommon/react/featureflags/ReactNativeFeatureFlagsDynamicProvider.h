@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c04830bf90f79c87f87aaf48b8a83c31>>
+ * @generated SignedSource<<fc8f8541827a039fa5bc4a113e75fdf6>>
  */
 
 /**
@@ -466,6 +466,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableViewRecyclingForView();
+  }
+
+  bool enableVirtualViewClippingWithoutScrollViewClipping() override {
+    auto value = values_["enableVirtualViewClippingWithoutScrollViewClipping"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableVirtualViewClippingWithoutScrollViewClipping();
   }
 
   bool enableVirtualViewContainerStateExperimental() override {
