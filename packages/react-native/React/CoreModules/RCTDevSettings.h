@@ -11,7 +11,9 @@
 #import <React/RCTEventEmitter.h>
 #import <React/RCTInitializing.h>
 
-@class RCTPackagerConnection;
+#if RCT_DEV
+#import <React/RCTPackagerConnection.h>
+#endif
 
 @protocol RCTPackagerClientMethod;
 
@@ -108,7 +110,30 @@
 
 #if RCT_DEV_MENU
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler
-    forPackagerMethod:(NSString *)name __deprecated_msg("Use RCTPackagerConnection directly instead");
+    forPackagerMethod:(NSString *)name __deprecated_msg("Use addRequestHandler or addNotificationHandler instead");
+#endif
+
+#if RCT_DEV
+/**
+ * Registers a handler for a notification broadcast from the packager. An
+ * example is "reload" - an instruction to reload from the packager.
+ * If multiple notification handlers are registered for the same method, they
+ * will all be invoked sequentially.
+ */
+- (RCTHandlerToken)addNotificationHandler:(RCTNotificationHandler)handler
+                                    queue:(dispatch_queue_t)queue
+                                forMethod:(NSString *)method;
+
+/**
+ * Registers a handler for a request from the packager. An example is
+ * pokeSamplingProfiler; it asks for profile data from the client.
+ * Only one handler can be registered for a given method; calling this
+ * displaces any previous request handler registered for that method.
+ */
+- (RCTHandlerToken)addRequestHandler:(RCTRequestHandler)handler
+                               queue:(dispatch_queue_t)queue
+                           forMethod:(NSString *)method;
+
 #endif
 
 @end
