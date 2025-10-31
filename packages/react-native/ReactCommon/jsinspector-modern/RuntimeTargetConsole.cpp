@@ -555,7 +555,7 @@ jsi::Value consoleCreateTask(
     const jsi::Value* args,
     size_t count,
     RuntimeTargetDelegate& runtimeTargetDelegate,
-    bool /* enabled */) {
+    bool enabled) {
   if (count < 1 || !args[0].isString()) {
     throw JSError(runtime, "First argument must be a non-empty string");
   }
@@ -565,9 +565,12 @@ jsi::Value consoleCreateTask(
   }
 
   jsi::Object task{runtime};
-  auto taskContext = std::make_shared<ConsoleTaskContext>(
-      runtime, runtimeTargetDelegate, name);
-  taskContext->schedule();
+  std::shared_ptr<ConsoleTaskContext> taskContext = nullptr;
+  if (enabled) {
+    taskContext = std::make_shared<ConsoleTaskContext>(
+        runtime, runtimeTargetDelegate, name);
+    taskContext->schedule();
+  }
 
   task.setProperty(
       runtime,
