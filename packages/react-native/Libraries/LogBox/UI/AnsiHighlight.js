@@ -87,7 +87,7 @@ export default function Ansi({
     <View style={styles.container}>
       {parsedLines.map((items, i) => (
         <View style={styles.line} key={i}>
-          <Text>
+          <Text style={styles.text}>
             {items.map((bundle, key) => {
               const textStyle =
                 bundle.fg && COLORS[bundle.fg]
@@ -121,5 +121,8 @@ const styles = StyleSheet.create({
   },
   line: {
     flexDirection: 'row',
+  },
+  text: {
+    flexGrow: 1,
   },
 });
