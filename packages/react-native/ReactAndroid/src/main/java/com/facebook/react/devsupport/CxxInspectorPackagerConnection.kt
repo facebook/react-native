@@ -14,6 +14,8 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.soloader.SoLoader
 import java.io.Closeable
+import java.util.ArrayDeque
+import java.util.Queue
 import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -76,6 +78,72 @@ internal class CxxInspectorPackagerConnection(
     override fun close()
   }
 
+  /**
+   * A simple WebSocket wrapper that prevents having more than 16MiB of messages queued
+   * simultaneously. This is done to stop OkHttp from closing the WebSocket connection.
+   *
+   * https://github.com/facebook/react-native/issues/39651.
+   * https://github.com/square/okhttp/blob/4e7dbec1ea6c9cf8d80422ac9d44b9b185c749a3/okhttp/src/commonJvmAndroid/kotlin/okhttp3/internal/ws/RealWebSocket.kt#L684.
+   */
+  private class WebSocketImpl(private val webSocket: WebSocket, private val handler: Handler) :
+      IWebSocket {
+    private val queueSizeThreshold = 16L * 1024 * 1024 // 16MiB
+    private val messageQueue: Queue<String> = ArrayDeque()
+    private val queueLock = Any()
+    private val drainRunnable =
+        object : Runnable {
+          override fun run() {
+            tryDrainQueue()
+          }
+        }
+
+    override fun send(message: String) {
+      synchronized(queueLock) {
+        val messageSize = message.toByteArray(Charsets.UTF_8).size
+        val currentQueueSize = webSocket.queueSize()
+
+        if (currentQueueSize + messageSize > queueSizeThreshold) {
+          messageQueue.offer(message)
+          scheduleDrain()
+        } else {
+          webSocket.send(message)
+          tryDrainQueue()
+        }
+      }
+    }
+
+    override fun close() {
+      synchronized(queueLock) {
+        handler.removeCallbacks(drainRunnable)
+        messageQueue.clear()
+        webSocket.close(1000, "End of session")
+      }
+    }
+
+    private fun tryDrainQueue() {
+      synchronized(queueLock) {
+        while (messageQueue.isNotEmpty()) {
+          val nextMessage = messageQueue.peek() ?: break
+          val messageSize = nextMessage.toByteArray(Charsets.UTF_8).size
+          val currentQueueSize = webSocket.queueSize()
+
+          if (currentQueueSize + messageSize <= queueSizeThreshold) {
+            messageQueue.poll()
+            webSocket.send(nextMessage)
+          } else {
+            scheduleDrain()
+            break
+          }
+        }
+      }
+    }
+
+    private fun scheduleDrain() {
+      handler.removeCallbacks(drainRunnable)
+      handler.postDelayed(drainRunnable, 100)
+    }
+  }
+
   /** Java implementation of the C++ InspectorPackagerConnectionDelegate interface. */
   private class DelegateImpl {
     private val httpClient =
@@ -130,15 +198,8 @@ internal class CxxInspectorPackagerConnection(
                 }
               },
           )
-      return object : IWebSocket {
-        override fun send(message: String) {
-          webSocket.send(message)
-        }
 
-        override fun close() {
-          webSocket.close(1000, "End of session")
-        }
-      }
+      return WebSocketImpl(webSocket, handler)
     }
 
     @DoNotStrip
