@@ -248,6 +248,18 @@ bool RuntimeTarget::isDomainEnabled(Domain domain) const {
   return threadSafeDomainStatus_[domain];
 }
 
+bool RuntimeTarget::isConsoleCreateTaskEnabled() const {
+  if (isDomainEnabled(Domain::Runtime)) {
+    return true;
+  }
+
+  if (auto tracingAgent = tracingAgent_.lock()) {
+    return tracingAgent->isRunningInBackgroundMode();
+  }
+
+  return false;
+}
+
 RuntimeTargetController::RuntimeTargetController(RuntimeTarget& target)
     : target_(target) {}
 
