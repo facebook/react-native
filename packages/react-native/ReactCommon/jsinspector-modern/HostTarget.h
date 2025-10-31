@@ -12,6 +12,7 @@
 #include "InspectorInterfaces.h"
 #include "InstanceTarget.h"
 #include "NetworkIOAgent.h"
+#include "PerfMonitorV2.h"
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
@@ -127,6 +128,12 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
   virtual void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) = 0;
 
   /**
+   * [Experimental] Called when the runtime has new data for the V2 Perf
+   * Monitor overlay. This is called on the inspector thread.
+   */
+  virtual void unstable_onPerfIssueAdded(const PerfIssuePayload & /*issue*/) {}
+
+  /**
    * Called by NetworkIOAgent on handling a `Network.loadNetworkResource` CDP
    * request. Platform implementations should override this to perform a
    * network request of the given URL, and use listener's callbacks on receipt
@@ -165,6 +172,13 @@ class HostTargetController final {
   HostTargetDelegate &getDelegate();
 
   bool hasInstance() const;
+
+  /**
+   * [Experimental] Install a runtime binding subscribing to new Performance
+   * Issues, which we broadcast to the V2 Perf Monitor overlay via
+   * \ref HostTargetDelegate::unstable_onPerfIssueAdded.
+   */
+  void installPerfIssuesBinding();
 
   /**
    * Increments the target's pause overlay counter. The counter represents the
@@ -325,6 +339,7 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
   std::unique_ptr<HostCommandSender> commandSender_;
+  std::unique_ptr<PerfMonitorUpdateHandler> perfMonitorUpdateHandler_;
   std::unique_ptr<HostRuntimeBinding> perfMetricsBinding_;
 
   /**
@@ -344,6 +359,13 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
   {
     return currentInstance_ != nullptr;
   }
+
+  /**
+   * [Experimental] Install a runtime binding subscribing to new Peformance
+   * Issues, which we broadcast to the V2 Perf Monitor overlay via
+   * \ref HostTargetDelegate::unstable_onPerfMonitorUpdate.
+   */
+  void installPerfIssuesBinding();
 
   // Necessary to allow HostAgent to access HostTarget's internals in a
   // controlled way (i.e. only HostTargetController gets friend access, while

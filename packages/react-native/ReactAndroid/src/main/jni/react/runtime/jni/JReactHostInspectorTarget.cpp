@@ -120,6 +120,13 @@ void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
   }
 }
 
+void JReactHostInspectorTarget::unstable_onPerfIssueAdded(
+    const PerfIssuePayload& issue) {
+  static auto method = javaClassStatic()->getMethod<void(local_ref<jstring>)>(
+      "handleNativePerfIssueAdded");
+  method(jobj_, make_jstring(issue.name));
+}
+
 void JReactHostInspectorTarget::loadNetworkResource(
     const jsinspector_modern::LoadNetworkResourceRequest& params,
     jsinspector_modern::ScopedExecutor<
