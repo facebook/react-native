@@ -7,6 +7,7 @@
 
 #include "JCxxInspectorPackagerConnection.h"
 #include "JCxxInspectorPackagerConnectionWebSocketDelegate.h"
+#include "JFrameTiming.h"
 #include "JInspectorFlags.h"
 #include "JInspectorNetworkReporter.h"
 
@@ -18,6 +19,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*unused*/) {
         registerNatives();
     facebook::react::jsinspector_modern::
         JCxxInspectorPackagerConnectionWebSocketDelegate::registerNatives();
+    facebook::react::jsinspector_modern::JFrameTiming::registerNatives();
     facebook::react::jsinspector_modern::JInspectorFlags::registerNatives();
     facebook::react::jsinspector_modern::JInspectorNetworkReporter::
         registerNatives();
