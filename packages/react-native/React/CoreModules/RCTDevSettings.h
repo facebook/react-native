@@ -11,6 +11,8 @@
 #import <React/RCTEventEmitter.h>
 #import <React/RCTInitializing.h>
 
+@class RCTPackagerConnection;
+
 @protocol RCTPackagerClientMethod;
 
 /**
@@ -84,6 +86,10 @@
  * Whether the performance monitor is visible.
  */
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
+
+#if RCT_DEV
+@property (nonatomic, readonly) RCTPackagerConnection *packagerConnection;
+#endif
 
 /**
  * Toggle the element inspector.

@@ -160,7 +160,13 @@
       _bridgelessBundleURLGetter != nil,
       @"RCTBundleManager: In bridgeless mode, RCTBridgelessBundleURLGetter must not be nil.");
 
-  return _bridgelessBundleURLGetter();
+  NSURL *bundleURL = [_bundleConfig getBundleURL];
+
+  if (bundleURL == nil) {
+    return _bridgelessBundleURLGetter();
+  }
+
+  return bundleURL;
 }
 
 - (void)resetBundleURL
