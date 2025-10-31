@@ -1088,6 +1088,16 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
             Float saturation = std::get<Float>(primitive.parameters);
             [_swiftUIWrapper updateSaturation:@(saturation)];
           }
+        } else if (primitive.type == FilterType::Contrast) {
+          if (_swiftUIWrapper != nullptr) {
+            Float contrast = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateContrast:@(contrast)];
+          }
+        } else if (primitive.type == FilterType::HueRotate) {
+          if (_swiftUIWrapper != nullptr) {
+            Float hueRotateDegrees = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateHueRotate:@(hueRotateDegrees)];
+          }
         }
       }
     }
@@ -1545,7 +1555,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   if (!_props->filter.empty()) {
     for (const auto &primitive : _props->filter) {
       if (primitive.type == FilterType::Blur || primitive.type == FilterType::Grayscale ||
-          primitive.type == FilterType::DropShadow || primitive.type == FilterType::Saturate) {
+          primitive.type == FilterType::DropShadow || primitive.type == FilterType::Saturate ||
+          primitive.type == FilterType::Contrast || primitive.type == FilterType::HueRotate) {
         return YES;
       }
     }
