@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<adcd03f8f6bcdb8b8197d9b0085c9d77>>
+ * @generated SignedSource<<c04830bf90f79c87f87aaf48b8a83c31>>
  */
 
 /**
@@ -556,6 +556,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::overrideBySynchronousMountPropsAtMountingAndroid();
+  }
+
+  bool perfIssuesEnabled() override {
+    auto value = values_["perfIssuesEnabled"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::perfIssuesEnabled();
   }
 
   bool perfMonitorV2Enabled() override {

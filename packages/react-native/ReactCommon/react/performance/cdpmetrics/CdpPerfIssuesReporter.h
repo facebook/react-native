@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/performance/timeline/PerformanceEntry.h>
 #include <react/performance/timeline/PerformanceEntryReporterListeners.h>
@@ -16,18 +17,18 @@
 namespace facebook::react {
 
 /**
- * [Experimental] Reports CDP interaction events via the
- * "__chromium_devtools_metrics_reporter" runtime binding.
+ * [Experimental] Reports new Performance Issues via the
+ * "__react_native_perf_issues_reporter" runtime binding.
  *
- * This populates the Interaction to Next Paint (INP) live metric in React
- * Native DevTools. Events are reported immediately and do not require an
- * active CDP Tracing session.
+ * This populates the Perf Issues indicator in the V2 Perf Monitor. Events are
+ * reported immediately and do not require an active CDP Tracing session.
  */
-class CdpMetricsReporter : public PerformanceEntryReporterEventListener {
+class CdpPerfIssuesReporter : public PerformanceEntryReporterEventListener {
  public:
-  explicit CdpMetricsReporter(RuntimeExecutor runtimeExecutor);
+  explicit CdpPerfIssuesReporter(RuntimeExecutor runtimeExecutor);
 
-  void onEventTimingEntry(const PerformanceEventTiming &entry) override;
+  void onMeasureEntry(const PerformanceMeasure &entry, const std::optional<UserTimingDetailProvider> &detailProvider)
+      override;
 
  private:
   const RuntimeExecutor runtimeExecutor_{};
