@@ -1044,13 +1044,20 @@ void NativeAnimatedNodesManager::onRender() {
 
   {
     // Flush async created animated nodes
-    std::lock_guard<std::mutex> lock(animatedNodesCreatedAsyncMutex_);
-    std::lock_guard<std::mutex> lockCreateAsync(connectedAnimatedNodesMutex_);
-    for (auto& [tag, node] : animatedNodesCreatedAsync_) {
-      animatedNodes_.insert({tag, std::move(node)});
-      updatedNodeTags_.insert(tag);
+    std::unordered_map<Tag, std::unique_ptr<AnimatedNode>>
+        animatedNodesCreatedAsync;
+    {
+      std::lock_guard<std::mutex> lock(animatedNodesCreatedAsyncMutex_);
+      std::swap(animatedNodesCreatedAsync, animatedNodesCreatedAsync_);
     }
-    animatedNodesCreatedAsync_.clear();
+
+    if (!animatedNodesCreatedAsync.empty()) {
+      std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
+      for (auto& [tag, node] : animatedNodesCreatedAsync) {
+        animatedNodes_.insert({tag, std::move(node)});
+        updatedNodeTags_.insert(tag);
+      }
+    }
   }
 
   // Run operations scheduled from AnimatedModule
