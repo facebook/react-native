@@ -83,10 +83,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         HasSmoothScroll,
         VirtualViewContainer {
 
-  private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
-  private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
+  private static final boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
+  private static final String TAG = ReactHorizontalScrollView.class.getSimpleName();
 
-  private static int NO_SCROLL_POSITION = Integer.MIN_VALUE;
+  private static final int NO_SCROLL_POSITION = Integer.MIN_VALUE;
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
