@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c5b1dc86ec11d40e5d26ae8a6f0ee6ff>>
+ * @generated SignedSource<<ec10c7629ff638dc8446fc99333647d1>>
  */
 
 /**
@@ -28,6 +28,10 @@ class ReactNativeFeatureFlagsOverridesOSSExperimental : public ReactNativeFeatur
     ReactNativeFeatureFlagsOverridesOSSExperimental() = default;
 
   bool enableAccessibilityOrder() override {
+    return true;
+  }
+
+  bool enableImmediateUpdateForModalDetents() override {
     return true;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e552924ddee2c2ba5ea511da830cd475>>
+ * @generated SignedSource<<b0e1651f3e29953ba39813f3175d1af1>>
  */
 
 /**
@@ -89,6 +89,8 @@ class NativeReactNativeFeatureFlags
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
+
+  bool enableImmediateUpdateForModalDetents(jsi::Runtime& runtime);
 
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
 

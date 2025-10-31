@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ea1ee77358d99334a7c40bed44f2d90>>
+ * @generated SignedSource<<dc6fe1b0ab9d22a8c9b2034f1724e522>>
  */
 
 /**
@@ -191,6 +191,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = accessor.enableImagePrefetchingOnUiThreadAndroid()
+
+  /**
+   * When enabled, updates to modal detents will be applied immediately instead of being deferred to the next layout pass.
+   */
+  @JvmStatic
+  public fun enableImmediateUpdateForModalDetents(): Boolean = accessor.enableImmediateUpdateForModalDetents()
 
   /**
    * Dispatches state updates for content offset changes synchronously on the main thread.

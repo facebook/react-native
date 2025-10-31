@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d04720bbbd42eaf338be612a0f3e36a6>>
+ * @generated SignedSource<<9d6ca4ab85f104654c347ed949eb669e>>
  */
 
 /**
@@ -198,6 +198,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableImagePrefetchingOnUiThreadAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImagePrefetchingOnUiThreadAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableImmediateUpdateForModalDetents() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImmediateUpdateForModalDetents");
     return method(javaProvider_);
   }
 
@@ -664,6 +670,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingOnUiThreadAndroid
   return ReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateForModalDetents(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableImmediateUpdateForModalDetents();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateModeForContentOffsetChanges(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges();
@@ -1046,6 +1057,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableImagePrefetchingOnUiThreadAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingOnUiThreadAndroid),
+      makeNativeMethod(
+        "enableImmediateUpdateForModalDetents",
+        JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateForModalDetents),
       makeNativeMethod(
         "enableImmediateUpdateModeForContentOffsetChanges",
         JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateModeForContentOffsetChanges),

@@ -14,6 +14,7 @@
 #import <react/renderer/components/FBReactNativeSpec/Props.h>
 #import <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #import <react/renderer/components/modal/ModalHostViewState.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import "RCTConversions.h"
 
@@ -107,6 +108,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL _shouldPresent;
   BOOL _isPresented;
   BOOL _modalInPresentation;
+  NSArray<UISheetPresentationControllerDetent *>* _detents;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -155,6 +157,13 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     [self saveAccessibilityFocusedView];
     self.viewController.presentationController.delegate = self;
     self.viewController.modalInPresentation = _modalInPresentation;
+
+    UISheetPresentationController *sheetPresentationController =
+      _viewController.sheetPresentationController;
+    
+     if (sheetPresentationController) {
+       sheetPresentationController.detents = _detents;
+     }
 
     _isPresented = YES;
     [self presentViewController:self.viewController
@@ -243,7 +252,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
   if (_state != nullptr) {
     auto newState = ModalHostViewState{RCTSizeFromCGSize(newBounds.size)};
-    _state->updateState(std::move(newState));
+    BOOL enableImmediateUpdateForModalDetents =
+        ReactNativeFeatureFlags::enableImmediateUpdateForModalDetents();
+    
+    _state->updateState(std::move(newState), enableImmediateUpdateForModalDetents ? EventQueue::UpdateMode::unstable_Immediate : EventQueue::UpdateMode::Asynchronous);
   }
 }
 
@@ -281,6 +293,13 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   if (oldViewProps.allowSwipeDismissal != newProps.allowSwipeDismissal) {
     _modalInPresentation = !newProps.allowSwipeDismissal;
     self.viewController.modalInPresentation = _modalInPresentation;
+  }
+  
+  if (oldViewProps.detents != newProps.detents) {
+    _detents = [self calculateDetents:newProps.detents];
+    if (_viewController.sheetPresentationController) {
+      _viewController.sheetPresentationController.detents = _detents;
+    }
   }
 
   _shouldPresent = newProps.visible;
@@ -323,6 +342,41 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   if (eventEmitter && props.allowSwipeDismissal) {
     eventEmitter->onRequestClose({});
   }
+}
+
+#pragma mark - Helpers
+
+- (NSArray<UISheetPresentationControllerDetent *> *)calculateDetents:(const std::vector<std::string> &)detents {
+  if (@available(iOS 16.0, *)) {
+    NSMutableArray<UISheetPresentationControllerDetent *> *detentsArray = [NSMutableArray new];
+    
+    for (const auto &detent : detents) {
+      NSString *detentString = [NSString stringWithUTF8String:detent.c_str()];
+      
+      if ([detentString isEqualToString:@"medium"]) {
+        [detentsArray addObject:[UISheetPresentationControllerDetent mediumDetent]];
+      } else if ([detentString isEqualToString:@"large"]) {
+        [detentsArray addObject:[UISheetPresentationControllerDetent largeDetent]];
+      } else {
+        // Try to parse as a number (custom detent)
+        NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+        NSNumber *number = [formatter numberFromString:detentString];
+        
+        if (number != nil) {
+          float value = [number floatValue];
+          [detentsArray addObject:[UISheetPresentationControllerDetent
+                                   customDetentWithIdentifier:nil
+                                   resolver:^CGFloat(id<UISheetPresentationControllerDetentResolutionContext> context) {
+            return value;
+          }]];
+        }
+      }
+    }
+    
+    return detentsArray;
+  }
+  
+  return [NSMutableArray new];
 }
 
 @end

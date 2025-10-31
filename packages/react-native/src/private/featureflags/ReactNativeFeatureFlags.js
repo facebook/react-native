@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f3aafc19ab1aa753684c933fef0d2dd2>>
+ * @generated SignedSource<<da07b0856f27e7ea86723c34010fc62a>>
  * @flow strict
  * @noformat
  */
@@ -77,6 +77,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableImagePrefetchingAndroid: Getter<boolean>,
   enableImagePrefetchingOnUiThreadAndroid: Getter<boolean>,
+  enableImmediateUpdateForModalDetents: Getter<boolean>,
   enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean>,
   enableImperativeFocus: Getter<boolean>,
   enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
@@ -320,6 +321,10 @@ export const enableImagePrefetchingAndroid: Getter<boolean> = createNativeFlagGe
  * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
  */
 export const enableImagePrefetchingOnUiThreadAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingOnUiThreadAndroid', false);
+/**
+ * When enabled, updates to modal detents will be applied immediately instead of being deferred to the next layout pass.
+ */
+export const enableImmediateUpdateForModalDetents: Getter<boolean> = createNativeFlagGetter('enableImmediateUpdateForModalDetents', false);
 /**
  * Dispatches state updates for content offset changes synchronously on the main thread.
  */
