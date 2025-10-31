@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<007a5a1235a999716b382ffd4ca23158>>
+ * @generated SignedSource<<2003ae7fc2c782b997d21938cc7b2380>>
  */
 
 /**
@@ -77,6 +77,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var overrideBySynchronousMountPropsAtMountingAndroidCache: Boolean? = null
+  private var perfIssuesEnabledCache: Boolean? = null
   private var perfMonitorV2EnabledCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
@@ -611,6 +612,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.overrideBySynchronousMountPropsAtMountingAndroid()
       overrideBySynchronousMountPropsAtMountingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun perfIssuesEnabled(): Boolean {
+    var cached = perfIssuesEnabledCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.perfIssuesEnabled()
+      perfIssuesEnabledCache = cached
     }
     return cached
   }
