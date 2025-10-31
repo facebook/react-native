@@ -252,6 +252,12 @@ class JSI_EXPORT NativeState {
   virtual ~NativeState();
 };
 
+// JSI_UNSTABLE gates features that will be released with a Hermes version in
+// the future. Until released, these features may be subject to change. After
+// release, these features will be moved out of JSI_UNSTABLE and become frozen.
+#ifdef JSI_UNSTABLE
+#endif // JSI_UNSTABLE
+
 /// Represents a JS runtime.  Movable, but not copyable.  Note that
 /// this object may not be thread-aware, but cannot be used safely from
 /// multiple threads at once.  The application is responsible for
