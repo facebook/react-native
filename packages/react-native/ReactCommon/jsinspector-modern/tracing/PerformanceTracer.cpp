@@ -187,7 +187,8 @@ void PerformanceTracer::reportMeasure(
     const std::string& name,
     HighResTimeStamp start,
     HighResDuration duration,
-    folly::dynamic&& detail) {
+    folly::dynamic&& detail,
+    std::function<std::optional<folly::dynamic>()>&& stackTraceProvider) {
   if (!tracingAtomic_) {
     return;
   }
@@ -204,6 +205,7 @@ void PerformanceTracer::reportMeasure(
           .duration = duration,
           .detail = std::move(detail),
           .threadId = getCurrentThreadId(),
+          .stackTraceProvider = std::move(stackTraceProvider),
       });
 }
 
@@ -214,7 +216,8 @@ void PerformanceTracer::reportTimeStamp(
     std::optional<std::string> trackName,
     std::optional<std::string> trackGroup,
     std::optional<ConsoleTimeStampColor> color,
-    std::optional<folly::dynamic> detail) {
+    std::optional<folly::dynamic> detail,
+    std::function<std::optional<folly::dynamic>()>&& stackTraceProvider) {
   if (!tracingAtomic_) {
     return;
   }
@@ -233,6 +236,7 @@ void PerformanceTracer::reportTimeStamp(
           .trackGroup = std::move(trackGroup),
           .color = std::move(color),
           .detail = std::move(detail),
+          .stackTraceProvider = std::move(stackTraceProvider),
           .threadId = getCurrentThreadId(),
       });
 }
@@ -571,6 +575,12 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
               beginEventArgs =
                   folly::dynamic::object("detail", folly::toJson(event.detail));
             }
+            if (event.stackTraceProvider) {
+              if (auto maybeStackTrace = event.stackTraceProvider()) {
+                beginEventArgs["data"] = folly::dynamic::object(
+                    "rnStackTrace", std::move(*maybeStackTrace));
+              }
+            }
 
             auto eventId = ++performanceMeasureCount_;
 
@@ -659,6 +669,11 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 devtoolsDetail[key] = value;
               }
               data["devtools"] = folly::toJson(devtoolsDetail);
+            }
+            if (event.stackTraceProvider) {
+              if (auto maybeStackTrace = event.stackTraceProvider()) {
+                data["rnStackTrace"] = std::move(*maybeStackTrace);
+              }
             }
 
             events.emplace_back(
