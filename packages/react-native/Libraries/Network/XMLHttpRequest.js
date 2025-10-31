@@ -34,8 +34,8 @@ const RCTNetworking = require('./RCTNetworking').default;
 const base64 = require('base64-js');
 const invariant = require('invariant');
 
-const PERFORMANCE_TRACK_NAME = 'Network (JS-initiated only)';
-const PERFORMANCE_TRACK_GROUP = 'Chrome DevTools Temp Compat';
+const PERFORMANCE_TRACK_GROUP = '⚛ Native';
+const PERFORMANCE_TRACK_NAME = 'Network (XHR)';
 
 declare var performance: Performance;
 
