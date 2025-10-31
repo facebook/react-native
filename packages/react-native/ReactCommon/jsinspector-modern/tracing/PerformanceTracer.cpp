@@ -360,6 +360,33 @@ void PerformanceTracer::reportResourceFinish(
       });
 }
 
+void PerformanceTracer::setLayerTreeId(std::string frame, int layerTreeId) {
+  enqueueEvent(
+      PerformanceTracerSetLayerTreeIdEvent{
+          .frame = frame,
+          .layerTreeId = layerTreeId,
+          .start = HighResTimeStamp::now(),
+      });
+}
+
+void PerformanceTracer::reportFrameTiming(
+    int frameSeqId,
+    HighResTimeStamp start,
+    HighResTimeStamp end) {
+  enqueueEvent(
+      PerformanceTracerFrameBeginDrawEvent{
+          .frameSeqId = frameSeqId,
+          .start = start,
+      });
+  enqueueEvent(
+      PerformanceTracerFrameCommitEvent{
+          .frameSeqId = frameSeqId,
+          .start = start,
+      });
+  enqueueEvent(
+      PerformanceTracerFrameDrawEvent{.frameSeqId = frameSeqId, .start = end});
+}
+
 /* static */ TraceEvent PerformanceTracer::constructRuntimeProfileTraceEvent(
     RuntimeProfileId profileId,
     ProcessId processId,
