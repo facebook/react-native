@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<07b665ad842faafaf7520051f636d805>>
+ * @generated SignedSource<<9c7e45e1f4ca25cfa78dd7349bf3c9ad>>
  */
 
 /**
@@ -273,6 +273,11 @@ class ReactNativeFeatureFlags {
    * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
    */
   RN_EXPORT static bool enableViewRecyclingForView();
+
+  /**
+   * Set clipping to drawingRect of ScrollView.
+   */
+  RN_EXPORT static bool enableVirtualViewClippingWithoutScrollViewClipping();
 
   /**
    * Enables the experimental version of `VirtualViewContainerState`.

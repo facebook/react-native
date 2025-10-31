@@ -187,17 +187,28 @@ public class ReactVirtualView(context: Context) :
     }
 
     // If no ScrollView, or ScrollView has disabled removeClippedSubviews, use default behavior
-    if (
-        parentScrollView == null ||
-            !((parentScrollView as ReactClippingViewGroup).removeClippedSubviews ?: false)
-    ) {
+    if (parentScrollView == null) {
       super.updateClippingRect(excludedViews)
       return
     }
 
     val clippingRect = checkNotNull(clippingRect)
+    val parentScrollView = checkNotNull(parentScrollView) as ReactClippingViewGroup
 
-    (parentScrollView as ReactClippingViewGroup).getClippingRect(clippingRect)
+    if (ReactNativeFeatureFlags.enableVirtualViewClippingWithoutScrollViewClipping()) {
+      if (parentScrollView.removeClippedSubviews) {
+        parentScrollView.getClippingRect(clippingRect)
+      } else {
+        (parentScrollView as View).getDrawingRect(clippingRect)
+      }
+    } else {
+      if (!(parentScrollView.removeClippedSubviews ?: false)) {
+        super.updateClippingRect(excludedViews)
+        return
+      }
+      parentScrollView.getClippingRect(clippingRect)
+    }
+
     clippingRect.intersect(targetRect)
     clippingRect.offset(-targetRect.left, -targetRect.top)
 

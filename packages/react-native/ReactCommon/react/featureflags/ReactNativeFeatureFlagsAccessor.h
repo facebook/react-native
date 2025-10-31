@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<352f96a011a58b975766f1e6f49aeb48>>
+ * @generated SignedSource<<9b2db913c6ac054deeca9214a7e18450>>
  */
 
 /**
@@ -79,6 +79,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableViewRecyclingForScrollView();
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
+  bool enableVirtualViewClippingWithoutScrollViewClipping();
   bool enableVirtualViewContainerStateExperimental();
   bool enableVirtualViewDebugFeatures();
   bool enableVirtualViewRenderState();
@@ -124,7 +125,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 81> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 82> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -173,6 +174,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableViewRecyclingForScrollView_;
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
+  std::atomic<std::optional<bool>> enableVirtualViewClippingWithoutScrollViewClipping_;
   std::atomic<std::optional<bool>> enableVirtualViewContainerStateExperimental_;
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
   std::atomic<std::optional<bool>> enableVirtualViewRenderState_;
