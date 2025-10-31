@@ -292,6 +292,10 @@ class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTa
    * Install the console API handler.
    */
   void installConsoleHandler();
+  /**
+   * Returns whether console.createTask should actually capture stack traces.
+   */
+  bool isConsoleCreateTaskEnabled() const;
 
   /**
    * Installs __DEBUGGER_SESSION_OBSERVER__ object on the JavaScript's global
