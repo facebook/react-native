@@ -206,6 +206,9 @@ std::shared_ptr<HostTarget> HostTarget::create(
     VoidExecutor executor) {
   std::shared_ptr<HostTarget> hostTarget{new HostTarget(delegate)};
   hostTarget->setExecutor(std::move(executor));
+  if (InspectorFlags::getInstance().getPerfIssuesEnabled()) {
+    hostTarget->installPerfIssuesBinding();
+  }
   return hostTarget;
 }
 
@@ -287,6 +290,17 @@ void HostTarget::sendCommand(HostCommand command) {
     }
     self.commandSender_->sendCommand(command);
   });
+}
+
+void HostTarget::installPerfIssuesBinding() {
+  perfMonitorUpdateHandler_ =
+      std::make_unique<PerfMonitorUpdateHandler>(delegate_);
+  perfMetricsBinding_ = std::make_unique<HostRuntimeBinding>(
+      *this, // Used immediately
+      "__react_native_perf_issues_reporter",
+      [this](const std::string& message) {
+        perfMonitorUpdateHandler_->handlePerfIssueAdded(message);
+      });
 }
 
 HostTargetController::HostTargetController(HostTarget& target)

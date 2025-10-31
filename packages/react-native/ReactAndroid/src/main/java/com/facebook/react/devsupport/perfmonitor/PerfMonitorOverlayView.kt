@@ -30,9 +30,11 @@ internal class PerfMonitorOverlayView(
     private val onButtonPress: () -> Unit,
 ) {
   private val dialog: Dialog
+  private lateinit var statusIndicator: TextView
   private lateinit var statusLabel: TextView
   private lateinit var tooltipLabel: TextView
-  private lateinit var statusIndicator: TextView
+  private lateinit var issuesContainer: LinearLayout
+  private lateinit var issueCountLabel: TextView
 
   init {
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
@@ -70,6 +72,11 @@ internal class PerfMonitorOverlayView(
     dialog.show()
   }
 
+  fun updatePerfIssueCount(count: Int) {
+    issueCountLabel.text = count.toString()
+    issuesContainer.visibility = if (count == 0) LinearLayout.GONE else LinearLayout.VISIBLE
+  }
+
   private fun createToolbarDialog(): Dialog {
     statusIndicator =
         TextView(context).apply {
@@ -85,11 +92,7 @@ internal class PerfMonitorOverlayView(
     val textContainer =
         LinearLayout(context).apply {
           orientation = LinearLayout.VERTICAL
-          layoutParams =
-              LinearLayout.LayoutParams(
-                  LinearLayout.LayoutParams.WRAP_CONTENT,
-                  LinearLayout.LayoutParams.WRAP_CONTENT,
-              )
+          setPadding(dpToPx(2f).toInt(), 0, 0, 0)
         }
     statusLabel =
         TextView(context).apply {
@@ -106,10 +109,35 @@ internal class PerfMonitorOverlayView(
     textContainer.addView(statusLabel)
     textContainer.addView(tooltipLabel)
 
+    issuesContainer =
+        LinearLayout(context).apply {
+          setPadding(dpToPx(8f).toInt(), 0, 0, 0)
+          visibility = LinearLayout.GONE
+        }
+    issueCountLabel =
+        TextView(context).apply {
+          textSize = TEXT_SIZE_PRIMARY
+          setTextColor(Color.WHITE)
+          typeface = TYPEFACE_BOLD
+          val alertDrawable =
+              context.getDrawable(android.R.drawable.ic_dialog_alert)?.apply {
+                setBounds(
+                    0,
+                    1,
+                    dpToPx(TEXT_SIZE_PRIMARY).toInt(),
+                    dpToPx(TEXT_SIZE_PRIMARY).toInt() + 1,
+                )
+              }
+          setCompoundDrawables(alertDrawable, null, null, null)
+          compoundDrawablePadding = dpToPx(6f).toInt()
+        }
+    issuesContainer.addView(issueCountLabel)
+
     val containerLayout = createInnerLayout()
     containerLayout.setOnClickListener { onButtonPress() }
     containerLayout.addView(statusIndicator)
     containerLayout.addView(textContainer)
+    containerLayout.addView(issuesContainer)
 
     val dialog =
         createAnchoredDialog(dpToPx(12f), dpToPx(12f)).apply { setContentView(containerLayout) }
@@ -175,7 +203,7 @@ internal class PerfMonitorOverlayView(
       showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
       dividerDrawable =
           object : ColorDrawable(Color.TRANSPARENT) {
-            override fun getIntrinsicWidth(): Int = dpToPx(8f).toInt()
+            override fun getIntrinsicWidth(): Int = dpToPx(10f).toInt()
           }
     }
   }

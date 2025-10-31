@@ -22,6 +22,7 @@ internal class PerfMonitorOverlayManager(
 
   private var view: PerfMonitorOverlayView? = null
   private var tracingState: TracingState = TracingState.ENABLEDINCDPMODE
+  private var perfIssueCount: Int = 0
 
   /** Enable the Perf Monitor overlay. */
   fun enable() {
@@ -72,8 +73,19 @@ internal class PerfMonitorOverlayManager(
 
   override fun onRecordingStateChanged(state: TracingState) {
     tracingState = state
+    if (state != TracingState.DISABLED) {
+      perfIssueCount = 0
+    }
     UiThreadUtil.runOnUiThread {
       view?.updateRecordingState(state)
+      view?.updatePerfIssueCount(perfIssueCount)
+      view?.show()
+    }
+  }
+
+  override fun onPerfIssueAdded(name: String) {
+    UiThreadUtil.runOnUiThread {
+      view?.updatePerfIssueCount(++perfIssueCount)
       view?.show()
     }
   }

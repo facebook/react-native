@@ -103,6 +103,7 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
   jsinspector_modern::HostTargetMetadata getMetadata() override;
   void onReload(const PageReloadRequest &request) override;
   void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) override;
+  void unstable_onPerfIssueAdded(const jsinspector_modern::PerfIssuePayload &issue) override;
   void loadNetworkResource(
       const jsinspector_modern::LoadNetworkResourceRequest &params,
       jsinspector_modern::ScopedExecutor<jsinspector_modern::NetworkRequestListener> executor) override;
