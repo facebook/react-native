@@ -193,4 +193,21 @@ public interface ReactHost {
 
   /** Set the DevMenu configuration. */
   public fun setDevMenuConfiguration(config: DevMenuConfiguration): Unit = Unit
+
+  /** Sets the source of the bundle to be loaded from the file system and reloads the app. */
+  public fun setBundleSource(filePath: String): Unit = Unit
+
+  /**
+   * Sets the source of the bundle to be loaded from the packager server, updates the packager
+   * connection and reloads the app.
+   *
+   * @param debugServerHost host and port of the server, for example "localhost:8081"
+   * @param moduleName the module name to load, for example "js/RNTesterApp.android"
+   * @param queryMapper a function that takes current packager options and returns updated options
+   */
+  public fun setBundleSource(
+      debugServerHost: String,
+      moduleName: String,
+      queryMapper: (Map<String, String>) -> Map<String, String> = { it },
+  ): Unit = Unit
 }
