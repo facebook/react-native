@@ -12,6 +12,32 @@ yarn add --dev eslint prettier @react-native/eslint-config
 
 ## Usage
 
+### For ESLint 9+ (Flat Config)
+
+Add to your `eslint.config.js`:
+
+```javascript
+const reactNativeConfig = require('@react-native/eslint-config/flat');
+
+module.exports = [
+  ...reactNativeConfig,
+  // Your custom config here
+];
+```
+
+Or with ES modules:
+
+```javascript
+import reactNativeConfig from '@react-native/eslint-config/flat';
+
+export default [
+  ...reactNativeConfig,
+  // Your custom config here
+];
+```
+
+### For ESLint 8 (Legacy Config)
+
 Add to your eslint config (`.eslintrc`, or `eslintConfig` field in `package.json`):
 
 ```json
