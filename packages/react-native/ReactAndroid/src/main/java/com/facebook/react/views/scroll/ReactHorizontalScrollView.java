@@ -28,6 +28,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
@@ -740,6 +741,20 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     return handled;
   }
 
+  private boolean isDescendantOf(View parent, View view) {
+    if (view == null || parent == null) {
+      return false;
+    }
+    ViewParent p = view.getParent();
+    while (p != null && p.getParent() != null) {
+      if (p == parent) {
+        return true;
+      }
+      p = p.getParent();
+    }
+    return false;
+  }
+
   @Override
   public boolean arrowScroll(int direction) {
     boolean handled = false;
@@ -751,7 +766,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         View currentFocused = findFocus();
         View nextFocused = FocusFinder.getInstance().findNextFocus(this, currentFocused, direction);
         View rootChild = getContentView();
-        if (rootChild != null && nextFocused != null && nextFocused.getParent() == rootChild) {
+        if (isDescendantOf(rootChild, nextFocused)) {
           if (!isScrolledInView(nextFocused) && !isMostlyScrolledInView(nextFocused)) {
             smoothScrollToNextPage(direction);
           }
