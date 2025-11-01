@@ -360,6 +360,33 @@ void PerformanceTracer::reportResourceFinish(
       });
 }
 
+void PerformanceTracer::setLayerTreeId(std::string frame, int layerTreeId) {
+  enqueueEvent(
+      PerformanceTracerSetLayerTreeIdEvent{
+          .frame = frame,
+          .layerTreeId = layerTreeId,
+          .start = HighResTimeStamp::now(),
+      });
+}
+
+void PerformanceTracer::reportFrameTiming(
+    int frameSeqId,
+    HighResTimeStamp start,
+    HighResTimeStamp end) {
+  enqueueEvent(
+      PerformanceTracerFrameBeginDrawEvent{
+          .frameSeqId = frameSeqId,
+          .start = start,
+      });
+  enqueueEvent(
+      PerformanceTracerFrameCommitEvent{
+          .frameSeqId = frameSeqId,
+          .start = start,
+      });
+  enqueueEvent(
+      PerformanceTracerFrameDrawEvent{.frameSeqId = frameSeqId, .start = end});
+}
+
 /* static */ TraceEvent PerformanceTracer::constructRuntimeProfileTraceEvent(
     RuntimeProfileId profileId,
     ProcessId processId,
@@ -735,6 +762,70 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                     .s = 't',
                     .tid = event.threadId,
                     .args = folly::dynamic::object("data", std::move(data)),
+                });
+          },
+          [&](PerformanceTracerSetLayerTreeIdEvent&& event) {
+            folly::dynamic data = folly::dynamic::object("frame", event.frame)(
+                "layerTreeId", event.layerTreeId);
+
+            events.emplace_back(
+                TraceEvent{
+                    .name = "SetLayerTreeId",
+                    .cat = "devtools.timeline",
+                    .ph = 'I',
+                    .ts = event.start,
+                    .pid = processId_,
+                    .s = 't',
+                    .tid = event.threadId,
+                    .args = folly::dynamic::object("data", std::move(data)),
+                });
+          },
+          [&](PerformanceTracerFrameBeginDrawEvent&& event) {
+            folly::dynamic data = folly::dynamic::object(
+                "frameSeqId", event.frameSeqId)("layerTreeId", 1);
+
+            events.emplace_back(
+                TraceEvent{
+                    .name = "BeginFrame",
+                    .cat = "devtools.timeline",
+                    .ph = 'I',
+                    .ts = event.start,
+                    .pid = processId_,
+                    .s = 't',
+                    .tid = event.threadId,
+                    .args = std::move(data),
+                });
+          },
+          [&](PerformanceTracerFrameCommitEvent&& event) {
+            folly::dynamic data = folly::dynamic::object(
+                "frameSeqId", event.frameSeqId)("layerTreeId", 1);
+
+            events.emplace_back(
+                TraceEvent{
+                    .name = "Commit",
+                    .cat = "devtools.timeline",
+                    .ph = 'I',
+                    .ts = event.start,
+                    .pid = processId_,
+                    .s = 't',
+                    .tid = event.threadId,
+                    .args = std::move(data),
+                });
+          },
+          [&](PerformanceTracerFrameDrawEvent&& event) {
+            folly::dynamic data = folly::dynamic::object(
+                "frameSeqId", event.frameSeqId)("layerTreeId", 1);
+
+            events.emplace_back(
+                TraceEvent{
+                    .name = "DrawFrame",
+                    .cat = "devtools.timeline",
+                    .ph = 'I',
+                    .ts = event.start,
+                    .pid = processId_,
+                    .s = 't',
+                    .tid = event.threadId,
+                    .args = std::move(data),
                 });
           },
       },
