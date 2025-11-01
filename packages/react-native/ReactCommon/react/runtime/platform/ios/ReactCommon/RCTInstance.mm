@@ -535,7 +535,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   {
     id<RCTDevLoadingViewProtocol> loadingView =
         (id<RCTDevLoadingViewProtocol>)[_turboModuleManager moduleForName:"DevLoadingView"];
-    [loadingView showWithURL:sourceURL];
+    // When the bundleFilePath is set in the RCTBundleConfiguration the Metro connection
+    // shouldn't be suggested/required.
+    if (_bridgeModuleDecorator.bundleManager.bundleConfig.bundleFilePath == nullptr) {
+      [loadingView showWithURL:sourceURL];
+    }
   }
 #endif
 
