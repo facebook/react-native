@@ -90,11 +90,15 @@ export class URL {
         }
       }
 
+      // Only add trailing slash if URL has no path (just domain)
       if (
         !this._url.endsWith('/') &&
         !(this._url.includes('?') || this._url.includes('#'))
       ) {
-        this._url += '/';
+        const afterProtocol = this._url.split('://')[1];
+        if (afterProtocol && !afterProtocol.includes('/')) {
+          this._url += '/';
+        }
       }
     } else {
       if (typeof base === 'string') {
@@ -170,6 +174,24 @@ export class URL {
     return searchMatch ? `?${searchMatch[1]}` : '';
   }
 
+  set search(value: string) {
+    // Remove leading '?' if present
+    const searchString = value.startsWith('?') ? value.slice(1) : value;
+
+    // Update the internal URL
+    const baseUrl = this._url.split('?')[0].split('#')[0];
+    const hash = this.hash;
+
+    if (searchString) {
+      this._url = baseUrl + '?' + searchString + hash;
+    } else {
+      this._url = baseUrl + hash;
+    }
+
+    // Reset the searchParams instance so it gets recreated with new values
+    this._searchParamsInstance = null;
+  }
+
   get searchParams(): URLSearchParams {
     if (this._searchParamsInstance == null) {
       this._searchParamsInstance = new URLSearchParams(this.search);
@@ -185,10 +207,19 @@ export class URL {
     if (this._searchParamsInstance === null) {
       return this._url;
     }
+
+    // Remove existing search params and hash from the URL
+    const baseUrl = this._url.split('?')[0].split('#')[0];
+    const hash = this.hash;
+
     // $FlowFixMe[incompatible-use]
     const instanceString = this._searchParamsInstance.toString();
-    const separator = this._url.indexOf('?') > -1 ? '&' : '?';
-    return this._url + separator + instanceString;
+
+    if (instanceString) {
+      return baseUrl + '?' + instanceString + hash;
+    } else {
+      return baseUrl + hash;
+    }
   }
 
   get username(): string {
