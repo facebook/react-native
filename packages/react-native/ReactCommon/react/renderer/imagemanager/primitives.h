@@ -128,6 +128,8 @@ class ImageSource {
         return "remote";
       case ImageSource::Type::Local:
         return "local";
+    default:
+        return "Unknown";
     }
   }
 
@@ -142,6 +144,8 @@ class ImageSource {
         return "force-cache";
       case ImageSource::CacheStategy::OnlyIfCached:
         return "only-if-cached";
+    default:
+        return "Unknown";
     }
   }
 #endif
