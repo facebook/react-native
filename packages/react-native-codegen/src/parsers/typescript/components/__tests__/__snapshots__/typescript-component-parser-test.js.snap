@@ -6,11 +6,11 @@ exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_
 
 exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES 1`] = `"codegenNativeCommands expected the same supportedCommands specified in the NativeCommands interface: hotspotUpdate, scrollTo"`;
 
-exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITH_NULLABLE_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
+exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITH_NULLABLE_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<> or React.ComponentRef<>"`;
 
 exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITHOUT_METHOD_NAMES 1`] = `"codegenNativeCommands must be passed options including the supported commands"`;
 
-exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
+exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<> or React.ComponentRef<>"`;
 
 exports[`RN Codegen TypeScript Parser Fails with error message NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE 1`] = `"key required_key_with_default must be optional if used with WithDefault<> annotation"`;
 
