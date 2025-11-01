@@ -5,7 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <jsinspector-modern/tracing/TracingState.h>
+#include <react/timing/primitives.h>
 
 #include "HostTarget.h"
 #include "HostTargetTraceRecording.h"
@@ -41,6 +43,9 @@ bool HostTarget::startTracing(tracing::Mode tracingMode) {
       std::make_unique<HostTargetTraceRecording>(tracingMode, *this);
   traceRecording_->setTracedInstance(currentInstance_.get());
   traceRecording_->start();
+
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  performanceTracer.setLayerTreeId("", 1);
 
   return true;
 }
