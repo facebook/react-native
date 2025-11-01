@@ -26,12 +26,8 @@ const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
 /**
  * The maximum number of ProfileChunk trace events
  * that will be sent in a single CDP Tracing.dataCollected message.
- * TODO(T219394401): Increase the size once we manage the queue on OkHTTP
- side
- * properly and avoid WebSocket disconnections when sending a message larger
- * than 16MB.
  */
-const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
+const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 10;
 
 } // namespace
 

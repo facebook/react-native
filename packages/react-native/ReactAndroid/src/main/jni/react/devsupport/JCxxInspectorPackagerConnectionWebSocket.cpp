@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <fbjni/ByteBuffer.h>
+
 #include "JCxxInspectorPackagerConnectionWebSocket.h"
 
 using namespace facebook::jni;
@@ -14,8 +16,12 @@ namespace facebook::react::jsinspector_modern {
 
 void JCxxInspectorPackagerConnectionWebSocket::send(std::string_view message) {
   static auto method =
-      javaClassStatic()->getMethod<void(const std::string&)>("send");
-  method(self(), std::string(message));
+      javaClassStatic()->getMethod<void(local_ref<JByteBuffer::javaobject>)>(
+          "send");
+  auto byteBuffer = JByteBuffer::wrapBytes(
+      const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(message.data())),
+      message.size());
+  method(self(), byteBuffer);
 }
 
 void JCxxInspectorPackagerConnectionWebSocket::close() {
