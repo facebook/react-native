@@ -11,7 +11,10 @@
 
 @implementation RCTBaseTextViewManager
 
-RCT_EXPORT_MODULE(RCTBaseText)
++ (NSString *)moduleName
+{
+  return @"BaseText";
+}
 
 - (UIView *)view
 {

@@ -12,7 +12,10 @@
 
 @implementation RCTMultilineTextInputViewManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"MultilineTextInputViewManager";
+}
 
 - (UIView *)view
 {

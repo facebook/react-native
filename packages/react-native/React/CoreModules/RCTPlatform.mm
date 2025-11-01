@@ -47,7 +47,10 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom)
   ModuleConstants<JS::NativePlatformConstantsIOS::Constants> _constants;
 }
 
-RCT_EXPORT_MODULE(PlatformConstants)
++ (NSString *)moduleName
+{
+  return @"PlatformConstants";
+}
 
 + (BOOL)requiresMainQueueSetup
 {

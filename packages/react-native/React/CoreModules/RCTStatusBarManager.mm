@@ -68,7 +68,10 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
   return value;
 }
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"StatusBarManager";
+}
 
 + (BOOL)requiresMainQueueSetup
 {

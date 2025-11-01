@@ -32,7 +32,10 @@
 
 @implementation RCTSnapshotManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"SnapshotManager";
+}
 
 - (UIView *)view
 {
