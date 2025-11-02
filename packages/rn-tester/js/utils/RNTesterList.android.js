@@ -59,6 +59,11 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/KeyboardAvoidingView/KeyboardAvoidingViewExample'),
   },
   {
+    key: 'KeyEvents',
+    module: require('../examples/KeyboardEventsExample/KeyboardEventsExample')
+      .default,
+  },
+  {
     key: 'ModalExample',
     category: 'UI',
     module: require('../examples/Modal/ModalExample'),
