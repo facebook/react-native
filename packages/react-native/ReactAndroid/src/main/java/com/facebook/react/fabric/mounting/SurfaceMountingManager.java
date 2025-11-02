@@ -60,7 +60,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -71,6 +70,8 @@ public class SurfaceMountingManager {
   public static final String TAG = SurfaceMountingManager.class.getSimpleName();
 
   private static final boolean SHOW_CHANGED_VIEW_HIERARCHIES = ReactBuildConfig.DEBUG && false;
+  private static final String PROP_TRANSFORM = "transform";
+  private static final String PROP_OPACITY = "opacity";
 
   private volatile boolean mIsStopped = false;
   private volatile boolean mRootViewAttached = false;
@@ -700,7 +701,7 @@ public class SurfaceMountingManager {
       String propKey = entry.getKey();
       if (outputReadableMap.hasKey(propKey)) {
         Object propValue = entry.getValue();
-        if (propKey.equals("transform")) {
+        if (propKey.equals(PROP_TRANSFORM)) {
           assert (outputReadableMap.getType(propKey) == ReadableType.Array
               && propValue instanceof ArrayList);
           WritableArray array = new WritableNativeArray();
@@ -720,7 +721,7 @@ public class SurfaceMountingManager {
             }
           }
           outputReadableMap.putArray(propKey, array);
-        } else if (propKey.equals("opacity")) {
+        } else if (propKey.equals(PROP_OPACITY)) {
           assert (outputReadableMap.getType(propKey) == ReadableType.Number
               && propValue instanceof Number);
           outputReadableMap.putDouble(propKey, ((Number) propValue).doubleValue());
@@ -732,23 +733,24 @@ public class SurfaceMountingManager {
   private static Map<String, Object> getHashMapFromPropsReadableMap(ReadableMap readableMap) {
     HashMap<String, Object> outputMap = new HashMap<>();
 
-    Iterator<Map.Entry<String, Object>> iter = readableMap.getEntryIterator();
-    while (iter.hasNext()) {
-      Map.Entry<String, Object> entry = iter.next();
-      String propKey = entry.getKey();
-      Object propValue = entry.getValue();
-      if (propKey.equals("transform") && propValue instanceof ReadableArray) {
-        ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>();
-        for (int i = 0; i < ((ReadableArray) propValue).size(); i++) {
-          ReadableMap map = ((ReadableArray) propValue).getMap(i);
+    if (readableMap.hasKey(PROP_TRANSFORM)
+        && readableMap.getType(PROP_TRANSFORM) == ReadableType.Array) {
+      ReadableArray transformArray = readableMap.getArray(PROP_TRANSFORM);
+      if (transformArray != null) {
+        ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>(transformArray.size());
+        for (int i = 0; i < transformArray.size(); i++) {
+          ReadableMap map = transformArray.getMap(i);
           if (map != null) {
             arrayList.add(map.toHashMap());
           }
         }
-        outputMap.put(propKey, arrayList);
-      } else if (propKey.equals("opacity") && propValue instanceof Number) {
-        outputMap.put(propKey, ((Number) propValue).doubleValue());
+        outputMap.put(PROP_TRANSFORM, arrayList);
       }
+    }
+
+    if (readableMap.hasKey(PROP_OPACITY)
+        && readableMap.getType(PROP_OPACITY) == ReadableType.Number) {
+      outputMap.put(PROP_OPACITY, readableMap.getDouble(PROP_OPACITY));
     }
 
     return outputMap;
