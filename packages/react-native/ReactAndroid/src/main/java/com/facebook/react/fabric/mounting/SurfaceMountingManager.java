@@ -60,7 +60,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -729,34 +728,9 @@ public class SurfaceMountingManager {
     }
   }
 
-  private static Map<String, Object> getHashMapFromPropsReadableMap(ReadableMap readableMap) {
-    HashMap<String, Object> outputMap = new HashMap<>();
-
-    Iterator<Map.Entry<String, Object>> iter = readableMap.getEntryIterator();
-    while (iter.hasNext()) {
-      Map.Entry<String, Object> entry = iter.next();
-      String propKey = entry.getKey();
-      Object propValue = entry.getValue();
-      if (propKey.equals("transform") && propValue instanceof ReadableArray) {
-        ArrayList<HashMap<String, Object>> arrayList = new ArrayList<>();
-        for (int i = 0; i < ((ReadableArray) propValue).size(); i++) {
-          ReadableMap map = ((ReadableArray) propValue).getMap(i);
-          if (map != null) {
-            arrayList.add(map.toHashMap());
-          }
-        }
-        outputMap.put(propKey, arrayList);
-      } else if (propKey.equals("opacity") && propValue instanceof Number) {
-        outputMap.put(propKey, ((Number) propValue).doubleValue());
-      }
-    }
-
-    return outputMap;
-  }
-
   public void storeSynchronousMountPropsOverride(int reactTag, ReadableMap props) {
     if (ReactNativeFeatureFlags.overrideBySynchronousMountPropsAtMountingAndroid()) {
-      Map<String, Object> propsMap = getHashMapFromPropsReadableMap(props);
+      Map<String, Object> propsMap = props.toHashMap();
       if (mTagToSynchronousMountProps.containsKey(reactTag)) {
         Map<String, Object> mergedPropsMap =
             Assertions.assertNotNull(mTagToSynchronousMountProps.get(reactTag));
