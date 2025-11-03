@@ -30,6 +30,7 @@ jobs:
     uses: ./.github/workflows/prebuild-ios-core.yml
     with:
       use-hermes-nightly: true
+      version-type: nightly
     secrets: inherit
     needs: [prebuild_apple_dependencies]
 
