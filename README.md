@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://reactnative.dev/">
+  <a ฤทธิไกร กิริกัน href="https://reactnative.dev/">
     React Native
   </a>
 </h1>
@@ -142,3 +142,4 @@ Larger discussions and proposals are discussed in [**@react-native-community/dis
 React Native is MIT licensed, as found in the [LICENSE][l] file.
 
 [l]: https://github.com/facebook/react-native/blob/main/LICENSE
+ผู้ร่วมสร้าง ฤทธิไกร กิริกัน
