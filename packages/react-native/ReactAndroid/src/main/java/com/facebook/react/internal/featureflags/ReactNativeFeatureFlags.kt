@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d8dc8c3a2efe8b7e870546e5749ef5ad>>
+ * @generated SignedSource<<15ede8025e516f2bdc0329efe49f4a62>>
  */
 
 /**
@@ -419,12 +419,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun skipActivityIdentityAssertionOnHostPause(): Boolean = accessor.skipActivityIdentityAssertionOnHostPause()
-
-  /**
-   * A flag to tell Fabric to sweep active touches from JSTouchDispatcher in Android when a child native gesture is started.
-   */
-  @JvmStatic
-  public fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = accessor.sweepActiveTouchOnChildNativeGesturesAndroid()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

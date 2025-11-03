@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6bd64914d0e2f0c727490a420496fbb0>>
+ * @generated SignedSource<<d96a6f5f05faef9ab3e7b28bcbb51aae>>
  */
 
 /**
@@ -367,11 +367,6 @@ bool NativeReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroi
 bool NativeReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
-}
-
-bool NativeReactNativeFeatureFlags::sweepActiveTouchOnChildNativeGesturesAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::sweepActiveTouchOnChildNativeGesturesAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
