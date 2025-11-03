@@ -94,6 +94,24 @@ export default class IntersectionObserver {
       );
     }
 
+    if (options != null && 'delay' in options) {
+      throw new Error(
+        "Failed to construct 'IntersectionObserver': The 'delay' option is not supported.",
+      );
+    }
+
+    if (options != null && 'scrollMargin' in options) {
+      throw new Error(
+        "Failed to construct 'IntersectionObserver': The 'scrollMargin' option is not supported.",
+      );
+    }
+
+    if (options != null && 'trackVisibility' in options) {
+      throw new Error(
+        "Failed to construct 'IntersectionObserver': The 'trackVisibility' option is not supported.",
+      );
+    }
+
     this._callback = callback;
 
     this._rootThresholds = normalizeRootThreshold(options?.rnRootThreshold);
@@ -150,6 +168,36 @@ export default class IntersectionObserver {
    */
   get rnRootThresholds(): $ReadOnlyArray<number> | null {
     return this._rootThresholds;
+  }
+
+  /**
+   * The `delay` option is not supported.
+   * @throws {Error} Always throws an error indicating this property is not supported.
+   */
+  get delay(): number {
+    throw new Error(
+      "Failed to read the 'delay' property from 'IntersectionObserver': This property is not supported.",
+    );
+  }
+
+  /**
+   * The `scrollMargin` option is not supported.
+   * @throws {Error} Always throws an error indicating this property is not supported.
+   */
+  get scrollMargin(): string {
+    throw new Error(
+      "Failed to read the 'scrollMargin' property from 'IntersectionObserver': This property is not supported.",
+    );
+  }
+
+  /**
+   * The `trackVisibility` option is not supported.
+   * @throws {Error} Always throws an error indicating this property is not supported.
+   */
+  get trackVisibility(): boolean {
+    throw new Error(
+      "Failed to read the 'trackVisibility' property from 'IntersectionObserver': This property is not supported.",
+    );
   }
 
   /**

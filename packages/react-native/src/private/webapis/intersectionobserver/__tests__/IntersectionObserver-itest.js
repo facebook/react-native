@@ -473,6 +473,103 @@ describe('IntersectionObserver', () => {
         new IntersectionObserver(() => {}, {rnRootThreshold: []}).thresholds,
       ).toEqual([0]);
     });
+
+    describe('unsupported options', () => {
+      it('should throw if `delay` option is specified', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] delay is not defined in Flow.
+          return new IntersectionObserver(() => {}, {delay: 100});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'delay' option is not supported.",
+        );
+      });
+
+      it('should throw if `scrollMargin` option is specified', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] scrollMargin is not defined in Flow.
+          return new IntersectionObserver(() => {}, {scrollMargin: '10px'});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'scrollMargin' option is not supported.",
+        );
+      });
+
+      it('should throw if `trackVisibility` option is specified', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] trackVisibility is not defined in Flow.
+          return new IntersectionObserver(() => {}, {trackVisibility: true});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'trackVisibility' option is not supported.",
+        );
+      });
+
+      it('should throw if `delay` option is set to undefined explicitly', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] delay is not defined in Flow.
+          return new IntersectionObserver(() => {}, {delay: undefined});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'delay' option is not supported.",
+        );
+      });
+
+      it('should throw if `scrollMargin` option is set to null explicitly', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] scrollMargin is not defined in Flow.
+          return new IntersectionObserver(() => {}, {scrollMargin: null});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'scrollMargin' option is not supported.",
+        );
+      });
+
+      it('should not throw when unsupported options are not specified', () => {
+        expect(() => {
+          return new IntersectionObserver(() => {}, {
+            threshold: 0.5,
+            rootMargin: '10px',
+          });
+        }).not.toThrow();
+      });
+
+      it('should throw if multiple unsupported options are specified', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] delay and trackVisibility are not defined in Flow.
+          return new IntersectionObserver(() => {}, {
+            delay: 100,
+            trackVisibility: true,
+          });
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'delay' option is not supported.",
+        );
+      });
+    });
+
+    describe('unsupported property getters', () => {
+      it('should throw when accessing delay getter', () => {
+        observer = new IntersectionObserver(() => {});
+        expect(() => {
+          return observer.delay;
+        }).toThrow(
+          "Failed to read the 'delay' property from 'IntersectionObserver': This property is not supported.",
+        );
+      });
+
+      it('should throw when accessing scrollMargin getter', () => {
+        observer = new IntersectionObserver(() => {});
+        expect(() => {
+          return observer.scrollMargin;
+        }).toThrow(
+          "Failed to read the 'scrollMargin' property from 'IntersectionObserver': This property is not supported.",
+        );
+      });
+
+      it('should throw when accessing trackVisibility getter', () => {
+        observer = new IntersectionObserver(() => {});
+        expect(() => {
+          return observer.trackVisibility;
+        }).toThrow(
+          "Failed to read the 'trackVisibility' property from 'IntersectionObserver': This property is not supported.",
+        );
+      });
+    });
   });
 
   describe('observe(target)', () => {
