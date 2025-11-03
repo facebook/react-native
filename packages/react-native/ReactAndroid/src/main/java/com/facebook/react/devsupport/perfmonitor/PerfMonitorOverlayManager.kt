@@ -7,6 +7,8 @@
 
 package com.facebook.react.devsupport.perfmonitor
 
+import android.os.Handler
+import android.os.Looper
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.interfaces.TracingState
 
@@ -23,6 +25,7 @@ internal class PerfMonitorOverlayManager(
   private var view: PerfMonitorOverlayView? = null
   private var tracingState: TracingState = TracingState.ENABLEDINCDPMODE
   private var perfIssueCount: Int = 0
+  private val handler = Handler(Looper.getMainLooper())
 
   /** Enable the Perf Monitor overlay. */
   fun enable() {
@@ -75,6 +78,7 @@ internal class PerfMonitorOverlayManager(
     tracingState = state
     if (state != TracingState.DISABLED) {
       perfIssueCount = 0
+      handler.removeCallbacksAndMessages(null)
     }
     UiThreadUtil.runOnUiThread {
       view?.updateRecordingState(state)
@@ -84,10 +88,23 @@ internal class PerfMonitorOverlayManager(
   }
 
   override fun onPerfIssueAdded(name: String) {
+    perfIssueCount++
+
     UiThreadUtil.runOnUiThread {
-      view?.updatePerfIssueCount(++perfIssueCount)
+      view?.updatePerfIssueCount(perfIssueCount)
       view?.show()
     }
+
+    handler.postDelayed(
+        {
+          perfIssueCount--
+          UiThreadUtil.runOnUiThread {
+            view?.updatePerfIssueCount(perfIssueCount)
+            view?.show()
+          }
+        },
+        PERF_ISSUE_EXPIRY_MS,
+    )
   }
 
   private fun handleRecordingButtonPress() {
@@ -104,5 +121,9 @@ internal class PerfMonitorOverlayManager(
       }
       TracingState.ENABLEDINCDPMODE -> Unit
     }
+  }
+
+  companion object {
+    private const val PERF_ISSUE_EXPIRY_MS = 20_000L
   }
 }

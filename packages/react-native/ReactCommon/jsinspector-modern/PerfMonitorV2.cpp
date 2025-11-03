@@ -21,7 +21,15 @@ void PerfMonitorUpdateHandler::handlePerfIssueAdded(
     delegate_.unstable_onPerfIssueAdded(
         PerfIssuePayload{
             .name = payload["name"].asString(),
-            .severity = payload["severity"].asString(),
+            .severity = payload["severity"].isNull()
+                ? std::nullopt
+                : std::make_optional(payload["severity"].asString()),
+            .description = payload["description"].isNull()
+                ? std::nullopt
+                : std::make_optional(payload["description"].asString()),
+            .learnMoreUrl = payload["learnMoreUrl"].isNull()
+                ? std::nullopt
+                : std::make_optional(payload["learnMoreUrl"].asString()),
         });
   }
 }
