@@ -29,7 +29,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
   private lateinit var _eventName: String
   private var coalescingKey = UNSET_COALESCING_KEY
   private var pointersEventData: List<WritableMap>? = null
-  private lateinit var eventState: PointerEventState
+  private var eventState: PointerEventState? = null
 
   private fun init(
       eventName: String,
@@ -84,7 +84,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
             return@EventAnimationDriverMatchSpec false
           }
           if (isBubblingEvent(eventName)) {
-            for (viewTarget in eventState.hitPathForActivePointer) {
+            for (viewTarget in checkNotNull(eventState).hitPathForActivePointer) {
               if (viewTarget.getViewId() == viewTag) {
                 return@EventAnimationDriverMatchSpec true
               }
@@ -97,10 +97,10 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
       }
 
   override fun onDispose() {
+    eventState = null
     pointersEventData = null
-    val motionEvent = motionEvent
-    this.motionEvent = null
     motionEvent?.recycle()
+    motionEvent = null
 
     // Either `this` is in the event pool, or motionEvent
     // is null. It is in theory not possible for a PointerEvent to
@@ -137,6 +137,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
     val pointerEvent = Arguments.createMap()
     val motionEvent = checkNotNull(motionEvent)
     val pointerId = motionEvent.getPointerId(index)
+    val eventState = checkNotNull(eventState)
 
     // https://www.w3.org/TR/pointerevents/#pointerevent-interface
     pointerEvent.putDouble("pointerId", pointerId.toDouble())
