@@ -48,6 +48,10 @@ public interface DevSupportManager : JSExceptionHandler {
     get() = true
     set(value) = Unit
 
+  public var bundleFilePath: String?
+    get() = null
+    set(value) = Unit
+
   public var devSupportEnabled: Boolean
 
   public fun showNewJavaError(message: String?, e: Throwable)
