@@ -17,10 +17,9 @@
 #include <ReactCommon/BindingsInstallerHolder.h>
 #include <ReactCommon/CxxTurboModuleUtils.h>
 #include <ReactCommon/JavaInteropTurboModule.h>
-#include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <react/jni/CxxModuleWrapper.h>
+#include <react/jni/CxxModuleWrapperBase.h>
 
 namespace facebook::react {
 
