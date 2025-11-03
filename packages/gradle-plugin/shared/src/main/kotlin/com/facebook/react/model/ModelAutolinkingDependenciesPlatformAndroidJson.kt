@@ -20,4 +20,5 @@ data class ModelAutolinkingDependenciesPlatformAndroidJson(
     val cxxModuleHeaderName: String? = null,
     val dependencyConfiguration: String? = null,
     val isPureCxxDependency: Boolean? = null,
+    val hasCodegenPrefab: Boolean = false,
 )

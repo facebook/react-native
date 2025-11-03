@@ -77,7 +77,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/$
 
 add_library(
   react_codegen_${targetName}
-  OBJECT
+  SHARED
   \${react_codegen_SRCS}
 )
 
