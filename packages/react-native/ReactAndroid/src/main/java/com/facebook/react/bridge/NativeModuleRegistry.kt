@@ -36,24 +36,9 @@ public class NativeModuleRegistry(
   @JvmName("getJavaModules") // This is needed because this method is accessed by JNI
   internal fun getJavaModules(jsInstance: JSInstance): List<JavaModuleWrapper> = buildList {
     for ((_, value) in modules) {
-      if (!value.isCxxModule) {
-        add(JavaModuleWrapper(jsInstance, value))
-      }
+      add(JavaModuleWrapper(jsInstance, value))
     }
   }
-
-  @get:JvmName(
-      "getCxxModules"
-  ) // This is needed till there are Java Consumer of this API inside React
-  // Native
-  internal val cxxModules: List<ModuleHolder>
-    get() = buildList {
-      for ((_, value) in modules) {
-        if (value.isCxxModule) {
-          add(value)
-        }
-      }
-    }
 
   /** Adds any new modules to the current module registry */
   @JvmName(

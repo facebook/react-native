@@ -208,22 +208,6 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
     return turboModule;
   }
 
-  static auto getTurboLegacyCxxModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-              const std::string&)>("getTurboLegacyCxxModule");
-  auto legacyCxxModule = getTurboLegacyCxxModule(javaPart.get(), name);
-  if (legacyCxxModule) {
-    TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
-
-    auto turboModule = std::make_shared<react::TurboCxxModule>(
-        legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
-    turboModuleCache_.insert({name, turboModule});
-
-    TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
-    return turboModule;
-  }
-
   return nullptr;
 }
 
@@ -259,23 +243,6 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
   }
 
   TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
-
-  static auto getLegacyCxxModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-              const std::string&)>("getLegacyCxxModule");
-  auto legacyCxxModule = getLegacyCxxModule(javaPart.get(), name);
-
-  if (legacyCxxModule) {
-    TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
-
-    auto turboModule = std::make_shared<react::TurboCxxModule>(
-        legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
-    legacyModuleCache_.insert({name, turboModule});
-
-    TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
-    return turboModule;
-  }
 
   static auto getLegacyJavaModule =
       javaPart->getClass()
