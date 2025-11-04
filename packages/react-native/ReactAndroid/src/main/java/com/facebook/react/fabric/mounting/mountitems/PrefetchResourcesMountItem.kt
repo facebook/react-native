@@ -16,16 +16,18 @@ internal class PrefetchResourcesMountItem(
     private val surfaceId: Int,
     private val componentName: String,
     private val params: ReadableMapBuffer,
+    private val tag: Int,
 ) : MountItem {
 
   @OptIn(UnstableReactNativeAPI::class, FrameworkAPI::class)
   override fun execute(mountingManager: MountingManager) {
     mountingManager
         .getSurfaceManager(surfaceId)
-        ?.experimental_prefetchResources(
+        ?.experimental_prefetchResource(
             surfaceId,
             componentName,
             params,
+            tag,
         )
   }
 
