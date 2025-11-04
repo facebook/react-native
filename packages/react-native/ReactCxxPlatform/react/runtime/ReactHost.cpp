@@ -9,6 +9,7 @@
 
 #include <ReactCommon/TurboModuleBinding.h>
 #include <cxxreact/JSBigString.h>
+#include <folly/system/ThreadName.h>
 #include <glog/logging.h>
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsinspector-modern/InspectorFlags.h>
@@ -401,11 +402,13 @@ void ReactHost::destroyReactInstance() {
 }
 
 void ReactHost::reloadReactInstance() {
-  if (isReloadingReactInstance_) {
+  if (isReloadingReactInstance_.exchange(true)) {
     return;
   }
-  isReloadingReactInstance_ = true;
+
   std::thread([this]() {
+    folly::setThreadName("ReactReload");
+
     std::vector<SurfaceManager::SurfaceProps> surfaceProps;
     for (auto& surfaceId : surfaceManager_->getRunningSurfaces()) {
       if (auto surfaceProp = surfaceManager_->getSurfaceProps(surfaceId);
@@ -469,9 +472,8 @@ bool ReactHost::loadScriptFromDevServer() {
                   }
                 })
             .get();
-    auto script = std::make_unique<JSBigStdString>(response);
-    reactInstance_->loadScript(
-        std::move(script), devServerHelper_->getBundleUrl());
+    auto script = std::make_unique<JSBigStdString>(std::move(response));
+    reactInstance_->loadScript(std::move(script), bundleUrl);
     devServerHelper_->setupHMRClient();
     return true;
   } catch (...) {
@@ -486,6 +488,7 @@ bool ReactHost::loadScriptFromDevServer() {
 bool ReactHost::loadScriptFromBundlePath(const std::string& bundlePath) {
   try {
     LOG(INFO) << "Loading JS bundle from bundle path: " << bundlePath;
+    // TODO: use platform-native asset loading strategy
     auto script = std::make_unique<JSBigStdString>(
         ResourceLoader::getFileContents(bundlePath));
     reactInstance_->loadScript(std::move(script), bundlePath);
