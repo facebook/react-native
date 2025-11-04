@@ -374,7 +374,7 @@ function createStructsString(
 
 template <${templateParameterWithTypename}>
 struct ${structName} {
-${templateMemberTypes.map(v => '  ' + v).join(';\n')};
+${templateMemberTypes.map(v => '  ' + v).join('{};\n')};
   bool operator==(const ${structName} &other) const {
     return ${value.properties
       .map(v => `${v.name} == other.${v.name}`)

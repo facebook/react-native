@@ -290,10 +290,10 @@ struct NativeEnumTurboModuleStateTypeBridging {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeEnumTurboModuleStateTypeWithEnums {
-  P0 state;
-  P1 regular;
-  P2 str;
-  P3 num;
+  P0 state{};
+  P1 regular{};
+  P2 str{};
+  P3 num{};
   P4 lowerCase;
   bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
     return state == other.state && regular == other.regular && str == other.str && num == other.num && lowerCase == other.lowerCase;
@@ -594,7 +594,7 @@ private:
 
 template <typename P0, typename P1>
 struct NativePartialAnnotationTurboModuleSomeObj {
-  P0 a;
+  P0 a{};
   P1 b;
   bool operator==(const NativePartialAnnotationTurboModuleSomeObj &other) const {
     return a == other.a && b == other.b;
@@ -1887,10 +1887,10 @@ struct NativeEnumTurboModuleStateTypeBridging {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeEnumTurboModuleStateTypeWithEnums {
-  P0 state;
-  P1 regular;
-  P2 str;
-  P3 num;
+  P0 state{};
+  P1 regular{};
+  P2 str{};
+  P3 num{};
   P4 lowerCase;
   bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
     return state == other.state && regular == other.regular && str == other.str && num == other.num && lowerCase == other.lowerCase;
@@ -2191,7 +2191,7 @@ private:
 
 template <typename P0, typename P1>
 struct NativePartialAnnotationTurboModuleSomeObj {
-  P0 a;
+  P0 a{};
   P1 b;
   bool operator==(const NativePartialAnnotationTurboModuleSomeObj &other) const {
     return a == other.a && b == other.b;
