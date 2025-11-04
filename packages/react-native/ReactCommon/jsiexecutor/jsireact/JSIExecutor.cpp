@@ -168,8 +168,7 @@ void JSIExecutor::loadBundle(
     ReactMarker::logTaggedMarker(
         ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
   }
-  runtime_->evaluateJavaScript(
-      std::make_unique<BigStringBuffer>(std::move(script)), sourceURL);
+  runtime_->evaluateJavaScript(std::move(script), sourceURL);
   flush();
   if (hasLogger) {
     ReactMarker::logTaggedMarker(
@@ -212,7 +211,7 @@ void JSIExecutor::registerBundle(
           "Empty bundle registered with ID " + tag + " from " + bundlePath);
     }
     runtime_->evaluateJavaScript(
-        std::make_unique<BigStringBuffer>(std::move(script)),
+        std::move(script),
         JSExecutor::getSyntheticBundlePath(bundleId, bundlePath));
   }
   ReactMarker::logTaggedMarker(
