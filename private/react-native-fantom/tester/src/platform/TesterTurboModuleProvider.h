@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <react/nativemodule/TurboModuleManager.h>
+#include <react/nativemodule/TurboModuleProvider.h>
 
 namespace facebook::react {
-class TesterTurboModuleManagerDelegate {
+class TesterTurboModuleProvider {
  public:
-  static TurboModuleManagerDelegate getTurboModuleManagerDelegate();
+  static TurboModuleProvider getTurboModuleProvider();
 };
 } // namespace facebook::react

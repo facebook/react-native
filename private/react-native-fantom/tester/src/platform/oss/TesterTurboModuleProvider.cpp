@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../TesterTurboModuleManagerDelegate.h"
+#include "../TesterTurboModuleProvider.h"
 
 namespace facebook::react {
-/* static */ TurboModuleManagerDelegate
-TesterTurboModuleManagerDelegate::getTurboModuleManagerDelegate() {
-  return TurboModuleManagerDelegate{
+/* static */ TurboModuleProvider
+TesterTurboModuleProvider::getTurboModuleProvider() {
+  return TurboModuleProvider{
       [](const std::string& name, const std::shared_ptr<CallInvoker>& jsInvoker)
           -> std::shared_ptr<TurboModule> { return nullptr; }};
 }
