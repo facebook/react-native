@@ -244,6 +244,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCTModuleRegistry *_objCModuleRegistry;
   RCTViewRegistry *_viewRegistry_DEPRECATED;
   RCTBundleManager *_bundleManager;
+  RCTBundleProvider *_bundleProvider;
   RCTCallableJSModules *_callableJSModules;
   std::atomic<BOOL> _loading;
   std::atomic<BOOL> _valid;
@@ -288,6 +289,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   return [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
                                                  moduleRegistry:_objCModuleRegistry
                                                   bundleManager:_bundleManager
+                                                  bundleProvider:_bundleProvider
                                               callableJSModules:_callableJSModules];
 }
 
@@ -810,6 +812,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                              moduleRegistry:_objCModuleRegistry
                                     viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
                                               bundleManager:_bundleManager
+                                             bundleProvider:_bundleProvider
                                           callableJSModules:_callableJSModules];
     moduleData.callInvokerProvider = self;
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
@@ -888,6 +891,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                                                moduleRegistry:_objCModuleRegistry
                                                       viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
                                                                 bundleManager:_bundleManager
+                                                              bundleProvider:_bundleProvider
                                                             callableJSModules:_callableJSModules];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
