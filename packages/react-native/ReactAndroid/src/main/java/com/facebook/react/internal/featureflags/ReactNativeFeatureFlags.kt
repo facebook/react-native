@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<15ede8025e516f2bdc0329efe49f4a62>>
+ * @generated SignedSource<<890156e9513bff7c7c6252f8cf4402e4>>
  */
 
 /**
@@ -379,7 +379,7 @@ public object ReactNativeFeatureFlags {
   public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = accessor.overrideBySynchronousMountPropsAtMountingAndroid()
 
   /**
-   * Enable reporting Performance Issues (`detail.rnPerfIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.
+   * Enable reporting Performance Issues (`detail.devtools.performanceIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.
    */
   @JvmStatic
   public fun perfIssuesEnabled(): Boolean = accessor.perfIssuesEnabled()

@@ -42,8 +42,10 @@ void CdpPerfIssuesReporter::onMeasureEntry(
       return;
     }
 
-    if (detail.count("rnPerfIssue") != 0 && detail["rnPerfIssue"].isObject()) {
-      auto& perfIssue = detail["rnPerfIssue"];
+    if (detail.count("devtools") != 0 && detail["devtools"].isObject() &&
+        detail["devtools"].count("performanceIssue") != 0 &&
+        detail["devtools"]["performanceIssue"].isObject()) {
+      auto& perfIssue = detail["devtools"]["performanceIssue"];
 
       if (perfIssue.count("name") != 0 && perfIssue.count("severity") != 0 &&
           perfIssue.count("description") != 0) {

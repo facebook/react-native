@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce6f11b805b3de79c414d1893cd7b2cc>>
+ * @generated SignedSource<<7e530e01e8c31edb68099a11bc371b89>>
  */
 
 /**
@@ -330,7 +330,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool overrideBySynchronousMountPropsAtMountingAndroid();
 
   /**
-   * Enable reporting Performance Issues (`detail.rnPerfIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.
+   * Enable reporting Performance Issues (`detail.devtools.performanceIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.
    */
   RN_EXPORT static bool perfIssuesEnabled();
 
