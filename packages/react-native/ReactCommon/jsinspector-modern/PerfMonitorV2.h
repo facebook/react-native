@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
 
 namespace facebook::react::jsinspector_modern {
@@ -15,7 +16,9 @@ class HostTargetDelegate;
 
 struct PerfIssuePayload {
   std::string name;
-  std::string severity;
+  std::optional<std::string> severity;
+  std::optional<std::string> description;
+  std::optional<std::string> learnMoreUrl;
 };
 
 /**
