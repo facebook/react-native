@@ -164,8 +164,6 @@ void CatalystInstanceImpl::initializeBridge(
     jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
         javaModules,
-    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-        cxxModules,
     jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject>
         inspectorTarget) {
   set_react_native_logfunc(&log);
@@ -196,7 +194,7 @@ void CatalystInstanceImpl::initializeBridge(
   moduleRegistry_ = std::make_shared<ModuleRegistry>(buildNativeModuleList(
       std::weak_ptr<Instance>(instance_),
       javaModules,
-      cxxModules,
+      {},
       moduleMessageQueue_));
 
   instance_->initializeBridge(
@@ -211,13 +209,11 @@ void CatalystInstanceImpl::initializeBridge(
 
 void CatalystInstanceImpl::extendNativeModules(
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
-        javaModules,
-    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-        cxxModules) {
+        javaModules) {
   moduleRegistry_->registerModules(buildNativeModuleList(
       std::weak_ptr<Instance>(instance_),
       javaModules,
-      cxxModules,
+      {},
       moduleMessageQueue_));
 }
 
