@@ -256,16 +256,20 @@ def nightly_tarball_url(version)
 
   xml_url = "https://central.sonatype.com/repository/maven-snapshots/#{namespace}/#{artifact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
 
-  response = Net::HTTP.get_response(URI(xml_url))
-  if response.is_a?(Net::HTTPSuccess)
-    xml = REXML::Document.new(response.body)
-    timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
-    build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
-    full_version = "#{version}-#{timestamp}-#{build_number}"
-    final_url = "https://central.sonatype.com/repository/maven-snapshots/#{namespace}/#{artifact_coordinate}/#{version}-SNAPSHOT/#{artifact_coordinate}-#{full_version}-#{artifact_name}"
+  begin
+    response = Net::HTTP.get_response(URI(xml_url))
+    if response.is_a?(Net::HTTPSuccess)
+      xml = REXML::Document.new(response.body)
+      timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
+      build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
+      full_version = "#{version}-#{timestamp}-#{build_number}"
+      final_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/#{artifact_coordinate}-#{full_version}-#{artifact_name}"
 
-    return final_url
-  else
+      return final_url
+    else
+      return ""
+    end
+  rescue => e
     return ""
   end
 end
