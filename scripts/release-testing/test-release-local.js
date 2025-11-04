@@ -17,8 +17,6 @@
  * and to make it more accessible for other devs to play around with.
  */
 
-import {getPackageVersionStrByTag} from '../releases/utils/npm-utils';
-
 const {initNewProjectFromSource} = require('../e2e/init-project-e2e');
 const {REPO_ROOT} = require('../shared/consts');
 const {
@@ -249,27 +247,6 @@ async function testRNTestProject(
     ciArtifacts != null
       ? path.join(ciArtifacts.baseTmpPath(), 'maven-local')
       : '/private/tmp/maven-local';
-
-  const latestHermesCommitly = await getPackageVersionStrByTag(
-    'hermes-compiler',
-    'nightly',
-  );
-  const latestHermesV1 = await getPackageVersionStrByTag(
-    'hermes-compiler',
-    'latest-v1',
-  );
-  sed(
-    '-i',
-    'HERMES_VERSION_NAME=.*',
-    `HERMES_VERSION_NAME=${latestHermesCommitly}`,
-    'sdks/hermes-engine/version.properties',
-  );
-  sed(
-    '-i',
-    'HERMES_V1_VERSION_NAME=.*',
-    `HERMES_V1_VERSION_NAME=${latestHermesV1}`,
-    'sdks/hermes-engine/version.properties',
-  );
 
   const {newLocalNodeTGZ} = await prepareArtifacts(
     ciArtifacts,
