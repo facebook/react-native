@@ -16,10 +16,17 @@ runs:
       uses: ./.github/actions/setup-node
     - name: Install node dependencies
       uses: ./.github/actions/yarn-install
+    - name: Read current RNVersion
+      shell: bash
+      id: read-rn-version
+      run: |
+        echo "rn-version=$(cat packages/react-native/package.json | jq -r 'version')" >> $GITHUB_OUTPUT
     - name: Set React Native Version
       # We don't want to set the version for stable branches, because this has been
       # already set from the 'create release' commits on the release branch.
-      if: ${{ !endsWith(github.ref_name, '-stable') }}
+      # For testing RC.0, though, the version has not been set yet. In that case, we are on Stable branch and
+      # it is the only case when the version is still 1000.0.0
+      if: ${{ !endsWith(github.ref_name, '-stable') || endsWith(github.ref_name, '-stable') && steps.read-rn-version.outputs.rn-version == '1000.0.0' }}
       shell: bash
       run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}
     - name: Setup gradle
