@@ -688,8 +688,13 @@ public class ReactScrollView extends ScrollView
                 @Override
                 public void run() {
                   mPostTouchRunnable = null;
-                  // Trigger snap alignment now that scrolling has stopped
-                  handlePostTouchScrolling(0, 0);
+                  // +1/-1 velocity if scrolling down or up. This is to ensure that the
+                  // next/previous page is picked rather than sliding backwards to the current page
+                  int velocityY = (int) -Math.signum(vScroll);
+                  if (mDisableIntervalMomentum) {
+                    velocityY = 0;
+                  }
+                  flingAndSnap(velocityY);
                 }
               };
           postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);

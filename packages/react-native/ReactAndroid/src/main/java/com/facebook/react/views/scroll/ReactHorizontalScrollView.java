@@ -849,8 +849,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 @Override
                 public void run() {
                   mPostTouchRunnable = null;
-                  // Trigger snap alignment now that scrolling has stopped
-                  handlePostTouchScrolling(0, 0);
+                  // +1/-1 velocity if scrolling right or left. This is to ensure that the
+                  // next/previous page is picked rather than sliding backwards to the current page
+                  int velocityX = (int) Math.signum(hScroll);
+                  if (mDisableIntervalMomentum) {
+                    velocityX = 0;
+                  }
+                  flingAndSnap(velocityX);
                 }
               };
           postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
