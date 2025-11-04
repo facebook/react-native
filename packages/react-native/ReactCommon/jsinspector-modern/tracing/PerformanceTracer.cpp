@@ -187,7 +187,8 @@ void PerformanceTracer::reportMeasure(
     const std::string& name,
     HighResTimeStamp start,
     HighResDuration duration,
-    folly::dynamic&& detail) {
+    folly::dynamic&& detail,
+    std::function<std::optional<folly::dynamic>()>&& stackTraceProvider) {
   if (!tracingAtomic_) {
     return;
   }
@@ -204,6 +205,7 @@ void PerformanceTracer::reportMeasure(
           .duration = duration,
           .detail = std::move(detail),
           .threadId = getCurrentThreadId(),
+          .stackTraceProvider = std::move(stackTraceProvider),
       });
 }
 
@@ -607,6 +609,12 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             if (event.detail != nullptr) {
               beginEventArgs =
                   folly::dynamic::object("detail", folly::toJson(event.detail));
+            }
+            if (event.stackTraceProvider) {
+              if (auto maybeStackTrace = event.stackTraceProvider()) {
+                beginEventArgs["data"] = folly::dynamic::object(
+                    "rnStackTrace", std::move(*maybeStackTrace));
+              }
             }
 
             auto eventId = ++performanceMeasureCount_;
