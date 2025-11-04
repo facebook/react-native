@@ -484,9 +484,7 @@ bool ReactHost::loadScriptFromDevServer() {
 bool ReactHost::loadScriptFromBundlePath(const std::string& bundlePath) {
   try {
     LOG(INFO) << "Loading JS bundle from bundle path: " << bundlePath;
-    // TODO: use platform-native asset loading strategy
-    auto script = std::make_unique<JSBigStdString>(
-        ResourceLoader::getFileContents(bundlePath));
+    auto script = ResourceLoader::getFileContents(bundlePath);
     reactInstance_->loadScript(std::move(script), bundlePath);
     LOG(INFO) << "Loaded JS bundle from bundle path: " << bundlePath;
     return true;
