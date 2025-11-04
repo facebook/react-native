@@ -21,6 +21,7 @@ const getNpmInfoMock = jest.fn();
 const generateAndroidArtifactsMock = jest.fn();
 const getPackagesMock = jest.fn();
 const updateHermesVersionsToNightlyMock = jest.fn();
+const getBranchName = jest.fn();
 
 const {REPO_ROOT} = require('../../shared/consts');
 const {publishNpm} = require('../publish-npm');
@@ -38,6 +39,7 @@ describe('publish-npm', () => {
         exitIfNotOnGit: command => command(),
         getCurrentCommit: () => 'currentco_mmit',
         isTaggedLatest: isTaggedLatestMock,
+        getBranchName: getBranchName,
       }))
       .mock('../../releases/utils/release-utils', () => ({
         generateAndroidArtifacts: generateAndroidArtifactsMock,
@@ -93,16 +95,44 @@ describe('publish-npm', () => {
   });
 
   describe("publishNpm('dry-run')", () => {
-    it('should set version and not publish', async () => {
+    it('should set version, hermes version, and not publish', async () => {
       const version = '1000.0.0-currentco';
       getNpmInfoMock.mockReturnValueOnce({
         version,
         tag: null,
       });
+      getBranchName.mockReturnValueOnce('main');
 
       await publishNpm('dry-run');
 
       expect(updateHermesVersionsToNightlyMock).toHaveBeenCalled();
+      expect(setVersionMock).not.toBeCalled();
+      expect(updateReactNativeArtifactsMock).toBeCalledWith(version, 'dry-run');
+
+      // Generate Android artifacts is now delegate to build_android entirely
+      expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
+      expect(consoleLogMock).toHaveBeenCalledWith(
+        'Skipping `npm publish` because --dry-run is set.',
+      );
+
+      // Expect termination
+      expect(publishAndroidArtifactsToMavenMock).not.toHaveBeenCalled();
+      expect(publishExternalArtifactsToMavenMock).not.toHaveBeenCalled();
+      expect(publishPackageMock).not.toHaveBeenCalled();
+    });
+
+    it('should set version, not set hermes version, and not publish', async () => {
+      const version = '1000.0.0-currentco';
+      getNpmInfoMock.mockReturnValueOnce({
+        version,
+        tag: null,
+      });
+      getBranchName.mockReturnValueOnce('0.83-stable');
+
+      await publishNpm('dry-run');
+
+      expect(updateHermesVersionsToNightlyMock).not.toHaveBeenCalled();
       expect(setVersionMock).not.toBeCalled();
       expect(updateReactNativeArtifactsMock).toBeCalledWith(version, 'dry-run');
 

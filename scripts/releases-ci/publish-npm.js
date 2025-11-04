@@ -26,6 +26,7 @@ const {
   publishAndroidArtifactsToMaven,
   publishExternalArtifactsToMaven,
 } = require('../releases/utils/release-utils');
+const {getBranchName} = require('../releases/utils/scm-utils');
 const {REPO_ROOT} = require('../shared/consts');
 const {getPackages} = require('../shared/monorepoUtils');
 const fs = require('fs');
@@ -119,8 +120,11 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
     const packageJson = JSON.parse(packageJsonContent);
 
     if (packageJson.version === '1000.0.0') {
-      // Set hermes versions to latest available
-      await updateHermesVersionsToNightly();
+      // Set hermes versions to latest available if not on a stable branch
+      if (!/.*-stable/.test(getBranchName())) {
+        await updateHermesVersionsToNightly();
+      }
+
       await updateReactNativeArtifacts(version, buildType);
     }
   }
