@@ -14,7 +14,7 @@
 #include <cxxreact/MessageQueueThread.h>
 #include <react/logging/DefaultLogger.h>
 #include <react/nativemodule/JavaScriptModule.h>
-#include <react/nativemodule/TurboModuleManager.h>
+#include <react/nativemodule/TurboModuleProvider.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/runtime/ReactInstance.h>
 #include <react/utils/RunLoopObserverManager.h>
@@ -48,7 +48,7 @@ class ReactHost {
       JsErrorHandler::OnJsError onJsError,
       Logger logger,
       std::shared_ptr<IDevUIDelegate> devUIDelegate = nullptr,
-      TurboModuleManagerDelegates turboModuleManagerDelegates = {},
+      TurboModuleProviders turboModuleProviders = {},
       std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate = nullptr,
       std::shared_ptr<NativeAnimatedNodesManagerProvider> animatedNodesManagerProvider = nullptr,
       ReactInstance::BindingsInstallFunc bindingsInstallFunc = nullptr);

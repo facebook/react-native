@@ -9,15 +9,16 @@
 
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModule.h>
+
 #include <functional>
 #include <string>
 #include <vector>
 
 namespace facebook::react {
 
-using TurboModuleManagerDelegate =
+using TurboModuleProvider =
     std::function<std::shared_ptr<TurboModule>(const std::string &name, const std::shared_ptr<CallInvoker> &jsInvoker)>;
 
-using TurboModuleManagerDelegates = std::vector<TurboModuleManagerDelegate>;
+using TurboModuleProviders = std::vector<TurboModuleProvider>;
 
 } // namespace facebook::react
