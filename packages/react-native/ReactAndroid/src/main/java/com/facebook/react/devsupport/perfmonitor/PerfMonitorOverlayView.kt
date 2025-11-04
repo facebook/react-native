@@ -120,12 +120,12 @@ internal class PerfMonitorOverlayView(
           setTextColor(Color.WHITE)
           typeface = TYPEFACE_BOLD
           val alertDrawable =
-              context.getDrawable(android.R.drawable.ic_dialog_alert)?.apply {
+              context.getDrawable(R.drawable.ic_perf_issue)?.apply {
                 setBounds(
                     0,
                     1,
-                    dpToPx(TEXT_SIZE_PRIMARY).toInt(),
-                    dpToPx(TEXT_SIZE_PRIMARY).toInt() + 1,
+                    dpToPx(ISSUE_ICON_SIZE).toInt(),
+                    dpToPx(ISSUE_ICON_SIZE).toInt() + 1,
                 )
               }
           setCompoundDrawables(alertDrawable, null, null, null)
@@ -214,6 +214,7 @@ internal class PerfMonitorOverlayView(
     private val COLOR_OVERLAY_BORDER = Color.parseColor("#6C6C6C")
     private val TEXT_SIZE_PRIMARY = 12f
     private val TEXT_SIZE_ACCESSORY = 10f
+    private val ISSUE_ICON_SIZE = 15f
     private val TYPEFACE_BOLD = Typeface.create("sans-serif", Typeface.BOLD)
   }
 }
