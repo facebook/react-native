@@ -277,7 +277,14 @@ struct CSSComponentValueVisitorDispatcher {
       return {};
     }
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
     switch (parser.peek().type()) {
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
       case CSSTokenType::Function:
         if (auto ret = visitFunction(visitors...)) {
           return *ret;
