@@ -26,7 +26,7 @@ class TaskDispatchThread {
   using TaskFn = std::function<void()>;
   using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
-  TaskDispatchThread(std::string threadName = "", int priorityOffset = 0) noexcept;
+  TaskDispatchThread(std::string_view threadName = "", int priorityOffset = 0) noexcept;
 
   ~TaskDispatchThread() noexcept;
 
