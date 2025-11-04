@@ -7,6 +7,7 @@
 
 #include "ConsoleTask.h"
 #include "ConsoleTaskContext.h"
+#include "ConsoleTaskOrchestrator.h"
 
 #include <jsinspector-modern/RuntimeTarget.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
@@ -480,8 +481,17 @@ void consoleTimeStamp(
   }
 
   if (performanceTracer.isTracing()) {
+    auto taskContext = ConsoleTaskOrchestrator::getInstance().top();
+
     performanceTracer.reportTimeStamp(
-        label, start, end, trackName, trackGroup, color, std::move(detail));
+        label,
+        start,
+        end,
+        trackName,
+        trackGroup,
+        color,
+        std::move(detail),
+        taskContext ? taskContext->getSerializedStackTraceProvider() : nullptr);
   }
 
   if (ReactPerfettoLogger::isTracing()) {
