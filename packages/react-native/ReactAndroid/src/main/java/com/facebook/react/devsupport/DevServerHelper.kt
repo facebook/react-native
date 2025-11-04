@@ -335,11 +335,12 @@ public open class DevServerHelper(
 
     try {
       client.newCall(request).execute().use { response ->
-        if (!response.isSuccessful || response.body() == null) {
+        if (!response.isSuccessful) {
           return null
         }
+        val body = response.body()
         Okio.sink(outputFile).use { output ->
-          Okio.buffer(response.body()?.source()!!).readAll(output)
+          Okio.buffer(body.source()).readAll(output)
         }
         return outputFile
       }

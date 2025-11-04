@@ -63,18 +63,16 @@ internal object InspectorNetworkHelper {
             listener.onHeaders(response.code(), headersMap)
 
             try {
-              response.body().use { responseBody ->
-                if (responseBody != null) {
-                  val inputStream = responseBody.byteStream()
-                  val chunkSize = 1024
-                  val buffer = ByteArray(chunkSize)
-                  var bytesRead: Int
+              response.body()?.use { responseBody ->
+                val inputStream = responseBody.byteStream()
+                val chunkSize = 1024
+                val buffer = ByteArray(chunkSize)
+                var bytesRead: Int
 
-                  inputStream.use { stream ->
-                    while ((stream.read(buffer).also { bytesRead = it }) != -1) {
-                      val chunk = String(buffer, 0, bytesRead)
-                      listener.onData(chunk)
-                    }
+                inputStream.use { stream ->
+                  while ((stream.read(buffer).also { bytesRead = it }) != -1) {
+                    val chunk = String(buffer, 0, bytesRead)
+                    listener.onData(chunk)
                   }
                 }
                 listener.onCompletion()
