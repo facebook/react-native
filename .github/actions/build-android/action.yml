@@ -20,7 +20,7 @@ runs:
       shell: bash
       id: read-rn-version
       run: |
-        echo "rn-version=$(cat packages/react-native/package.json | jq -r 'version')" >> $GITHUB_OUTPUT
+        echo "rn-version=$(cat packages/react-native/package.json | jq -r '.version')" >> $GITHUB_OUTPUT
     - name: Set React Native Version
       # We don't want to set the version for stable branches, because this has been
       # already set from the 'create release' commits on the release branch.
