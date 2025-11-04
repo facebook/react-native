@@ -49,7 +49,7 @@ namespace facebook::react {
 using JSIScopedTimeoutInvoker =
     std::function<void(const std::function<void()> &invokee, std::function<std::string()> errorMessageProducer)>;
 
-class BigStringBuffer : public jsi::Buffer {
+class [[deprecated("JSBigString implements jsi::Buffer directly")]] BigStringBuffer : public jsi::Buffer {
  public:
   BigStringBuffer(std::unique_ptr<const JSBigString> script) : script_(std::move(script)) {}
 
@@ -60,7 +60,7 @@ class BigStringBuffer : public jsi::Buffer {
 
   const uint8_t *data() const override
   {
-    return reinterpret_cast<const uint8_t *>(script_->c_str());
+    return script_->data();
   }
 
  private:

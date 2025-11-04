@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 
+#include <jsi/jsi.h>
+
 #ifndef RN_EXPORT
 #ifdef _MSC_VER
 #define RN_EXPORT
@@ -27,15 +29,17 @@ namespace facebook::react {
 // large string needs to be curried into a std::function<>, which must
 // by CopyConstructible.
 
-class JSBigString {
+class JSBigString : public facebook::jsi::Buffer {
  public:
   JSBigString() = default;
 
-  // Not copyable
+  // Not copyable or movable
   JSBigString(const JSBigString &) = delete;
   JSBigString &operator=(const JSBigString &) = delete;
+  JSBigString(JSBigString &&) = delete;
+  JSBigString &operator=(JSBigString &&) = delete;
 
-  virtual ~JSBigString() = default;
+  ~JSBigString() override = default;
 
   virtual bool isAscii() const = 0;
 
@@ -43,7 +47,12 @@ class JSBigString {
   virtual const char *c_str() const = 0;
 
   // Length of the c_str without the NULL byte.
-  virtual size_t size() const = 0;
+  size_t size() const override = 0;
+
+  const uint8_t *data() const final
+  {
+    return reinterpret_cast<const uint8_t *>(c_str());
+  }
 };
 
 // Concrete JSBigString implementation which holds a std::string
@@ -105,7 +114,7 @@ class RN_EXPORT JSBigBufferString : public JSBigString {
     return m_size;
   }
 
-  char *data()
+  char *mutableData()
   {
     return m_data;
   }
