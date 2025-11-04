@@ -60,7 +60,7 @@ struct ReactInstanceData {
   JsErrorHandler::OnJsError onJsError;
   Logger logger;
   std::shared_ptr<IDevUIDelegate> devUIDelegate;
-  TurboModuleManagerDelegates turboModuleManagerDelegates;
+  TurboModuleProviders turboModuleProviders;
   std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate;
   std::shared_ptr<NativeAnimatedNodesManagerProvider>
       animatedNodesManagerProvider;
@@ -75,7 +75,7 @@ ReactHost::ReactHost(
     JsErrorHandler::OnJsError onJsError,
     Logger logger,
     std::shared_ptr<IDevUIDelegate> devUIDelegate,
-    TurboModuleManagerDelegates turboModuleManagerDelegates,
+    TurboModuleProviders turboModuleProviders,
     std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate,
     std::shared_ptr<NativeAnimatedNodesManagerProvider>
         animatedNodesManagerProvider,
@@ -92,7 +92,7 @@ ReactHost::ReactHost(
       .onJsError = std::move(onJsError),
       .logger = std::move(logger),
       .devUIDelegate = devUIDelegate,
-      .turboModuleManagerDelegates = std::move(turboModuleManagerDelegates),
+      .turboModuleProviders = std::move(turboModuleProviders),
       .logBoxSurfaceDelegate = logBoxSurfaceDelegate,
       .animatedNodesManagerProvider = animatedNodesManagerProvider,
       .bindingsInstallFunc = std::move(bindingsInstallFunc)});
@@ -259,18 +259,16 @@ void ReactHost::createReactInstance() {
   reactInstance_->initializeRuntime(
       {
 #if defined(WITH_PERFETTO) || defined(RNCXX_WITH_PROFILING_PROVIDER)
-          .isProfiling = true
+          .isProfiling = true,
 #else
-          .isProfiling = false
+          .isProfiling = false,
 #endif
-          ,
           .runtimeDiagnosticFlags = ""},
       [weakMountingManager =
            std::weak_ptr<IMountingManager>(reactInstanceData_->mountingManager),
        logger = reactInstanceData_->logger,
        devUIDelegate = reactInstanceData_->devUIDelegate,
-       turboModuleManagerDelegates =
-           reactInstanceData_->turboModuleManagerDelegates,
+       turboModuleProviders = reactInstanceData_->turboModuleProviders,
        jsInvoker = std::move(jsInvoker),
        logBoxSurfaceDelegate = reactInstanceData_->logBoxSurfaceDelegate,
        devServerHelper =
@@ -297,7 +295,7 @@ void ReactHost::createReactInstance() {
             });
 
         auto turboModuleProvider =
-            [turboModuleManagerDelegates,
+            [turboModuleProviders,
              jsInvoker,
              logBoxSurfaceDelegate,
              devServerHelper,
@@ -311,11 +309,9 @@ void ReactHost::createReactInstance() {
           react_native_assert(
               !name.empty() && "TurboModule name must not be empty");
 
-          for (const auto& turboModuleManagerDelegate :
-               turboModuleManagerDelegates) {
-            if (turboModuleManagerDelegate) {
-              if (auto turboModule =
-                      turboModuleManagerDelegate(name, jsInvoker)) {
+          for (const auto& turboModuleProvider : turboModuleProviders) {
+            if (turboModuleProvider) {
+              if (auto turboModule = turboModuleProvider(name, jsInvoker)) {
                 return turboModule;
               }
             }
