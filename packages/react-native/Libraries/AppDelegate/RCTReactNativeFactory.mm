@@ -6,6 +6,7 @@
  */
 
 #import "RCTReactNativeFactory.h"
+#import <React/RCTBundleManager.h>
 #import <React/RCTColorSpaceUtils.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTLog.h>
@@ -41,6 +42,8 @@ using namespace facebook::react;
 @end
 
 @implementation RCTReactNativeFactory
+
+@synthesize bundleConfiguration = _bundleConfiguration;
 
 - (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate
 {
@@ -84,6 +87,7 @@ using namespace facebook::react;
   UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
                                             initialProperties:initialProperties
                                                 launchOptions:launchOptions
+                                          bundleConfiguration:self.bundleConfiguration
                                          devMenuConfiguration:self.devMenuConfiguration];
   UIViewController *rootViewController = [_delegate createRootViewController];
   [_delegate setRootView:rootView toRootViewController:rootViewController];
@@ -110,6 +114,14 @@ using namespace facebook::react;
   }
 
   return _delegate.bundleURL;
+}
+
+- (RCTBundleConfiguration *)bundleConfiguration
+{
+  if (_bundleConfiguration == nullptr) {
+    _bundleConfiguration = [RCTBundleConfiguration defaultConfiguration];
+  }
+  return _bundleConfiguration;
 }
 
 #pragma mark - RCTJSRuntimeConfiguratorProtocol
