@@ -107,7 +107,10 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
 @synthesize paused = _paused;
 @synthesize pauseCallback = _pauseCallback;
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"Timing";
+}
 
 - (instancetype)initWithDelegate:(id<RCTTimingDelegate>)delegate
 {

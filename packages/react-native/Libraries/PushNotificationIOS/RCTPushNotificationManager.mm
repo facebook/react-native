@@ -154,7 +154,10 @@ static BOOL IsNotificationRemote(UNNotification *notification)
   return [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
 }
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"PushNotificationManager";
+}
 
 - (dispatch_queue_t)methodQueue
 {

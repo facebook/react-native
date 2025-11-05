@@ -27,7 +27,10 @@ RCT_ENUM_CONVERTER(
 
 @implementation RCTActivityIndicatorViewManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"ActivityIndicatorViewManager";
+}
 
 - (UIView *)view
 {

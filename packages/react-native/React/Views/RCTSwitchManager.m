@@ -16,7 +16,10 @@
 
 @implementation RCTSwitchManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"SwitchManager";
+}
 
 - (UIView *)view
 {

@@ -179,7 +179,10 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 @synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"RCTUIManager";
+}
 
 + (BOOL)requiresMainQueueSetup
 {

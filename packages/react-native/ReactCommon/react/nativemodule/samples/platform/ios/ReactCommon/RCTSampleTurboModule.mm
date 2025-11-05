@@ -24,7 +24,10 @@ using namespace facebook::react;
 }
 
 // Backward-compatible export
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"SampleTurboModule";
+}
 
 // Backward-compatible queue configuration
 + (BOOL)requiresMainQueueSetup
