@@ -87,8 +87,7 @@ buildForTesting() {
     -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
-    -derivedDataPath "/tmp/RNTesterBuild" \
-    GCC_PREPROCESSOR_DEFINITIONS='$(inherited) NDEBUG=1'
+    -derivedDataPath "/tmp/RNTesterBuild"
 }
 
 runTestsOnly() {
