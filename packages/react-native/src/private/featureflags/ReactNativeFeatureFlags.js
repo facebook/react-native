@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<954a37442d8c691f35c868b9998a5aa3>>
+ * @generated SignedSource<<a52734633ac33a6f8dfc521bdc6e2692>>
  * @flow strict
  * @noformat
  */
@@ -123,7 +123,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useNativeEqualsInNativeReadableArrayAndroid: Getter<boolean>,
   useNativeTransformHelperAndroid: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
-  useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRawPropsJsiValue: Getter<boolean>,
   useShadowNodeStateOnClone: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
@@ -506,10 +505,6 @@ export const useNativeTransformHelperAndroid: Getter<boolean> = createNativeFlag
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
-/**
- * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
- */
-export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimizedEventBatchingOnAndroid', false);
 /**
  * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
  */

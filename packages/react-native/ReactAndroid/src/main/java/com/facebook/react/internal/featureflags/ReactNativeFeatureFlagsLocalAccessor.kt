@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b10ff10cb0d389a563da50c75a49c746>>
+ * @generated SignedSource<<9bb9a7cf89c92f5a397b2328fa983dc6>>
  */
 
 /**
@@ -97,7 +97,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useNativeEqualsInNativeReadableArrayAndroidCache: Boolean? = null
   private var useNativeTransformHelperAndroidCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
-  private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
   private var useShadowNodeStateOnCloneCache: Boolean? = null
   private var useSharedAnimatedBackendCache: Boolean? = null
@@ -834,16 +833,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
-    }
-    return cached
-  }
-
-  override fun useOptimizedEventBatchingOnAndroid(): Boolean {
-    var cached = useOptimizedEventBatchingOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.useOptimizedEventBatchingOnAndroid()
-      accessedFeatureFlags.add("useOptimizedEventBatchingOnAndroid")
-      useOptimizedEventBatchingOnAndroidCache = cached
     }
     return cached
   }
