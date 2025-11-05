@@ -263,7 +263,7 @@ def nightly_tarball_url(version)
       timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
       build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
       full_version = "#{version}-#{timestamp}-#{build_number}"
-      final_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/#{artifact_coordinate}-#{full_version}-#{artifact_name}"
+      final_url = "https://central.sonatype.com/repository/maven-snapshots/#{namespace}/#{artifact_coordinate}/#{version}-SNAPSHOT/#{artifact_coordinate}-#{full_version}-#{artifact_name}"
 
       return final_url
     else
