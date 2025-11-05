@@ -39,17 +39,6 @@ std::optional<folly::dynamic> ConsoleTaskContext::getSerializedStackTrace()
   return maybeValue;
 }
 
-std::function<std::optional<folly::dynamic>()>
-ConsoleTaskContext::getSerializedStackTraceProvider() const {
-  return [selfWeak = weak_from_this()]() -> std::optional<folly::dynamic> {
-    if (auto self = selfWeak.lock()) {
-      return self->getSerializedStackTrace();
-    }
-
-    return std::nullopt;
-  };
-}
-
 void ConsoleTaskContext::schedule() {
   orchestrator_.scheduleTask(id(), weak_from_this());
 }

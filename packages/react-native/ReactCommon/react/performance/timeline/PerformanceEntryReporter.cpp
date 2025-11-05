@@ -390,8 +390,7 @@ void PerformanceEntryReporter::traceMeasure(
           entry.startTime,
           entry.duration,
           std::move(detail),
-          taskContext ? taskContext->getSerializedStackTraceProvider()
-                      : nullptr);
+          taskContext ? taskContext->getSerializedStackTrace() : nullptr);
     }
   }
 }

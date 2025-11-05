@@ -491,7 +491,7 @@ void consoleTimeStamp(
         trackGroup,
         color,
         std::move(detail),
-        taskContext ? taskContext->getSerializedStackTraceProvider() : nullptr);
+        taskContext ? taskContext->getSerializedStackTrace() : nullptr);
   }
 
   if (ReactPerfettoLogger::isTracing()) {

@@ -82,7 +82,7 @@ class PerformanceTracer {
       HighResTimeStamp start,
       HighResDuration duration,
       folly::dynamic &&detail = nullptr,
-      std::function<std::optional<folly::dynamic>()> &&stackTraceProvider = nullptr);
+      std::optional<folly::dynamic> stackTrace = nullptr);
 
   /**
    * Record a "TimeStamp" Trace Event - a labelled entry on Performance
@@ -99,7 +99,7 @@ class PerformanceTracer {
       std::optional<std::string> trackGroup = std::nullopt,
       std::optional<ConsoleTimeStampColor> color = std::nullopt,
       std::optional<folly::dynamic> detail = std::nullopt,
-      std::function<std::optional<folly::dynamic>()> &&stackTraceProvider = nullptr);
+      std::optional<folly::dynamic> stackTrace = std::nullopt);
 
   /**
    * Record an Event Loop tick, which will be represented as an Event Loop task
@@ -258,7 +258,7 @@ class PerformanceTracer {
     HighResDuration duration;
     folly::dynamic detail;
     ThreadId threadId;
-    std::function<std::optional<folly::dynamic>()> stackTraceProvider;
+    std::optional<folly::dynamic> stackTrace;
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
 
@@ -270,7 +270,7 @@ class PerformanceTracer {
     std::optional<std::string> trackGroup;
     std::optional<ConsoleTimeStampColor> color;
     std::optional<folly::dynamic> detail;
-    std::function<std::optional<folly::dynamic>()> stackTraceProvider;
+    std::optional<folly::dynamic> stackTrace;
     ThreadId threadId;
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
