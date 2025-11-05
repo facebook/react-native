@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6120a91f22fd02a0ff5144df38bd1737>>
+ * @generated SignedSource<<4e4623461411b957286ef050ec0c4f6f>>
  */
 
 /**
@@ -57,6 +57,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool disableOldAndroidAttachmentMetricsWorkarounds() override {
     return true;
+  }
+
+  bool disableSubviewClippingAndroid() override {
+    return false;
   }
 
   bool disableTextLayoutManagerCacheAndroid() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dcec3cf74137d4a43dcaa0b330fba44a>>
+ * @generated SignedSource<<954a37442d8c691f35c868b9998a5aa3>>
  * @flow strict
  * @noformat
  */
@@ -58,6 +58,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   disableFabricCommitInCXXAnimated: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean>,
+  disableSubviewClippingAndroid: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
@@ -245,6 +246,10 @@ export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFl
  * Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics
  */
 export const disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean> = createNativeFlagGetter('disableOldAndroidAttachmentMetricsWorkarounds', true);
+/**
+ * Force disable subview clipping for ReactViewGroup on Android
+ */
+export const disableSubviewClippingAndroid: Getter<boolean> = createNativeFlagGetter('disableSubviewClippingAndroid', false);
 /**
  * Turns off the global measurement cache used by TextLayoutManager on Android.
  */
