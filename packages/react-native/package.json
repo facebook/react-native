@@ -129,6 +129,7 @@
     "scripts/xcode/ccache.conf",
     "scripts/xcode/with-environment.sh",
     "sdks/.hermesversion",
+    "sdks/.hermesv1version",
     "sdks/hermes-engine",
     "sdks/hermesc",
     "settings.gradle.kts",
