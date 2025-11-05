@@ -349,7 +349,9 @@ void SurfaceHandler::constraintLayout(
 
           return newRoot;
         },
-        {/* default commit options */});
+        {.enableStateReconciliation = false,
+         .mountSynchronously = false,
+         .source = ShadowTree::CommitSource::React});
   }
 }
 
