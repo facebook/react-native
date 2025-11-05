@@ -381,9 +381,9 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   // Only enable this assertion in OSS
-//#if COCOAPODS
-//  [RCTBridge throwIfOnLegacyArch];
-//#endif
+#if COCOAPODS
+  [RCTBridge throwIfOnLegacyArch];
+#endif
 
   if (self = [super init]) {
     _delegate = delegate;
