@@ -67,11 +67,11 @@ class SurfaceHandler {
   virtual ~SurfaceHandler() noexcept;
 
   /*
-   * Movable-only.
+   * Not moveable or copyable
    */
-  SurfaceHandler(SurfaceHandler &&other) noexcept;
+  SurfaceHandler(SurfaceHandler &&other) noexcept = delete;
   SurfaceHandler(const SurfaceHandler &SurfaceHandler) noexcept = delete;
-  SurfaceHandler &operator=(SurfaceHandler &&other) noexcept;
+  SurfaceHandler &operator=(SurfaceHandler &&other) noexcept = delete;
   SurfaceHandler &operator=(const SurfaceHandler &other) noexcept = delete;
 
 #pragma mark - Surface Life-Cycle Management
