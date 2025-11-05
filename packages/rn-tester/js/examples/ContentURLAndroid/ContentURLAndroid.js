@@ -34,7 +34,7 @@ function blobToBase64(blob: Blob) {
       if (typeof result === 'string') {
         resolve(result);
       } else {
-        reject('error: incompatible types');
+        reject(new Error('error: incompatible types'));
       }
     };
     reader.readAsDataURL(blob);

@@ -10,10 +10,7 @@
 import type * as React from 'react';
 import {Constructor} from '../../../types/private/Utilities';
 import {TimerMixin} from '../../../types/private/TimerMixin';
-import {
-  HostInstance,
-  NativeMethods,
-} from '../../../types/public/ReactNativeTypes';
+import {HostInstance} from '../../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {TextStyle} from '../../StyleSheet/StyleSheetTypes';
 import {
@@ -1029,7 +1026,7 @@ interface TextInputState {
  * @see https://reactnative.dev/docs/textinput#methods
  */
 declare class TextInputComponent extends React.Component<TextInputProps> {}
-declare const TextInputBase: Constructor<NativeMethods> &
+declare const TextInputBase: Constructor<HostInstance> &
   Constructor<TimerMixin> &
   typeof TextInputComponent;
 export class TextInput extends TextInputBase {

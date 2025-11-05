@@ -18,17 +18,15 @@ class Instance;
 
 class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
  public:
-  constexpr static const char* const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/StateWrapperImpl;";
-  constexpr static auto StateWrapperImplJavaDescriptor =
-      "com/facebook/react/fabric/StateWrapperImpl";
+  constexpr static const char *const kJavaDescriptor = "Lcom/facebook/react/fabric/StateWrapperImpl;";
+  constexpr static auto StateWrapperImplJavaDescriptor = "com/facebook/react/fabric/StateWrapperImpl";
 
   static void registerNatives();
 
   jni::local_ref<JReadableMapBuffer::jhybridobject> getStateMapBufferDataImpl();
   jni::local_ref<ReadableNativeMap::jhybridobject> getStateDataImpl();
   jni::local_ref<jobject> getStateDataReferenceImpl();
-  void updateStateImpl(NativeMap* map);
+  void updateStateImpl(NativeMap *map);
   void setState(std::shared_ptr<const State> state);
   std::shared_ptr<const State> getState() const;
 

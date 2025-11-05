@@ -22,9 +22,9 @@
 namespace facebook::react {
 
 TaskDispatchThread::TaskDispatchThread(
-    std::string threadName,
+    std::string_view threadName,
     int priorityOffset) noexcept
-    : threadName_(std::move(threadName)) {
+    : threadName_(threadName) {
 #ifdef ANDROID
   // Attaches the thread to JVM just in case anything calls out to Java
   thread_ = std::thread([&]() {

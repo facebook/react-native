@@ -7,7 +7,7 @@ on:
 jobs:
   prepare_workspace:
     name: Prepare workspace
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,7 +18,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: packages/react-native/third-party/
-          key: v2-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+          key: v3-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
           enableCrossOsArchive: true
       - name: Yarn Install
         if: steps.restore-ios-prebuilds.outputs.cache-hit != 'true'
@@ -40,13 +40,13 @@ jobs:
         uses: actions/cache/save@v4
         if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
         with:
-          key: v2-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+          key: v3-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
           enableCrossOsArchive: true
           path: packages/react-native/third-party/
 
   build-apple-slices:
     name: Build Apple Slice
-    runs-on: macos-14
+    runs-on: macos-15
     needs: [prepare_workspace]
     strategy:
       fail-fast: false
@@ -65,16 +65,17 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup node.js
         uses: ./.github/actions/setup-node
-      - name: Setup xcode
-        uses: ./.github/actions/setup-xcode
-        with:
-          xcode-version: '16.1'
       - name: Restore slice folder
         id: restore-slice-folder
         uses: actions/cache/restore@v4
         with:
           path: packages/react-native/third-party/.build/Build/Products
-          key: v2-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+          key: v3-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+      - name: Setup xcode
+        if: steps.restore-slice-folder.outputs.cache-hit != 'true'
+        uses: ./.github/actions/setup-xcode
+        with:
+          platform: ${{ matrix.slice }}
       - name: Yarn Install
         if: steps.restore-slice-folder.outputs.cache-hit != 'true'
         uses: ./.github/actions/yarn-install
@@ -85,15 +86,8 @@ jobs:
           name: ios-prebuilds-workspace
           path: packages/react-native/third-party/
       - name: Print third-party folder structure
+        if: steps.restore-slice-folder.outputs.cache-hit != 'true'
         run: ls -lR packages/react-native/third-party
-      - name: Install VisionOS
-        if: ${{ steps.restore-slice-folder.outputs.cache-hit != 'true' && (matrix.slice == 'xros' || matrix.slice == 'xros-simulator') }}
-        run: |
-          # https://github.com/actions/runner-images/issues/10559
-          sudo xcodebuild -runFirstLaunch
-          sudo xcrun simctl list
-          sudo xcodebuild -downloadPlatform visionOS
-          sudo xcodebuild -runFirstLaunch
       - name: Build slice ${{ matrix.slice }} for ${{ matrix.flavor }}
         if: steps.restore-slice-folder.outputs.cache-hit != 'true'
         run:  node scripts/releases/prepare-ios-prebuilds.js -b -p ${{ matrix.slice }} -r ${{ matrix.flavor }}
@@ -107,14 +101,14 @@ jobs:
         uses: actions/cache/save@v4
         if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
         with:
-          key: v2-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+          key: v3-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
           enableCrossOsArchive: true
           path: |
             packages/react-native/third-party/.build/Build/Products
 
   create-xcframework:
     name: Prepare XCFramework
-    runs-on: macos-14
+    runs-on: macos-15
     needs: [build-apple-slices]
     strategy:
       fail-fast: false
@@ -138,7 +132,7 @@ jobs:
         with:
           path: |
             packages/react-native/third-party/
-          key: v2-ios-dependencies-xcframework-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+          key: v3-ios-dependencies-xcframework-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
       # If cache hit, we already have our binary. We don't need to do anything.
       - name: Yarn Install
         if: steps.restore-xcframework.outputs.cache-hit != 'true'
@@ -200,4 +194,4 @@ jobs:
           path: |
             packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
             packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
-          key: v2-ios-dependencies-xcframework-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+          key: v3-ios-dependencies-xcframework-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}

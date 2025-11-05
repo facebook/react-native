@@ -19,11 +19,8 @@ extern const char TextInputComponentName[];
 /*
  * `ShadowNode` for <TextInput> component.
  */
-class TextInputShadowNode final : public BaseTextInputShadowNode<
-                                      TextInputComponentName,
-                                      TextInputProps,
-                                      TextInputEventEmitter,
-                                      TextInputState> {
+class TextInputShadowNode final
+    : public BaseTextInputShadowNode<TextInputComponentName, TextInputProps, TextInputEventEmitter, TextInputState> {
  public:
   using BaseTextInputShadowNode::BaseTextInputShadowNode;
 };

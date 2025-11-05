@@ -23,8 +23,7 @@
 
 namespace facebook::react {
 
-using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
-    const RootShadowNode& oldRootShadowNode)>;
+using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(const RootShadowNode &oldRootShadowNode)>;
 
 /*
  * Represents a result of a `commit` operation.
@@ -86,10 +85,10 @@ class ShadowTree final {
    */
   ShadowTree(
       SurfaceId surfaceId,
-      const LayoutConstraints& layoutConstraints,
-      const LayoutContext& layoutContext,
-      const ShadowTreeDelegate& delegate,
-      const ContextContainer& contextContainer);
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext,
+      const ShadowTreeDelegate &delegate,
+      const ContextContainer &contextContainer);
 
   ~ShadowTree();
 
@@ -111,16 +110,12 @@ class ShadowTree final {
    * and expecting a `newRootShadowNode` as a return value.
    * The `transaction` function can cancel commit returning `nullptr`.
    */
-  CommitStatus tryCommit(
-      const ShadowTreeCommitTransaction& transaction,
-      const CommitOptions& commitOptions) const;
+  CommitStatus tryCommit(const ShadowTreeCommitTransaction &transaction, const CommitOptions &commitOptions) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  CommitStatus commit(
-      const ShadowTreeCommitTransaction& transaction,
-      const CommitOptions& commitOptions) const;
+  CommitStatus commit(const ShadowTreeCommitTransaction &transaction, const CommitOptions &commitOptions) const;
 
   /*
    * Returns a `ShadowTreeRevision` representing the momentary state of
@@ -146,24 +141,18 @@ class ShadowTree final {
 
   void mount(ShadowTreeRevision revision, bool mountSynchronously) const;
 
-  void emitLayoutEvents(
-      std::vector<const LayoutableShadowNode*>& affectedLayoutableNodes) const;
+  void emitLayoutEvents(std::vector<const LayoutableShadowNode *> &affectedLayoutableNodes) const;
 
   const SurfaceId surfaceId_;
-  const ShadowTreeDelegate& delegate_;
+  const ShadowTreeDelegate &delegate_;
   mutable std::shared_mutex commitMutex_;
   mutable std::recursive_mutex commitMutexRecursive_;
-  mutable CommitMode commitMode_{
-      CommitMode::Normal}; // Protected by `commitMutex_`.
+  mutable CommitMode commitMode_{CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   std::shared_ptr<const MountingCoordinator> mountingCoordinator_;
 
-  using UniqueLock = std::variant<
-      std::unique_lock<std::shared_mutex>,
-      std::unique_lock<std::recursive_mutex>>;
-  using SharedLock = std::variant<
-      std::shared_lock<std::shared_mutex>,
-      std::unique_lock<std::recursive_mutex>>;
+  using UniqueLock = std::variant<std::unique_lock<std::shared_mutex>, std::unique_lock<std::recursive_mutex>>;
+  using SharedLock = std::variant<std::shared_lock<std::shared_mutex>, std::unique_lock<std::recursive_mutex>>;
 
   inline UniqueLock uniqueCommitLock() const;
   inline SharedLock sharedCommitLock() const;

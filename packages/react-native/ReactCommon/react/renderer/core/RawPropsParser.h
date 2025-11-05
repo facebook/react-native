@@ -30,18 +30,16 @@ class RawPropsParser final {
    * If `useRawPropsJsiValue` is `true`, the parser will use `jsi::Value`
    * directly for RawValues instead of converting them to `folly::dynamic`.
    */
-  RawPropsParser(
-      bool useRawPropsJsiValue = ReactNativeFeatureFlags::useRawPropsJsiValue())
-      : useRawPropsJsiValue_(useRawPropsJsiValue){};
+  RawPropsParser(bool useRawPropsJsiValue = ReactNativeFeatureFlags::useRawPropsJsiValue())
+      : useRawPropsJsiValue_(useRawPropsJsiValue) {};
 
   /*
    * To be used by `ConcreteComponentDescriptor` only.
    */
   template <typename PropsT>
-  void prepare() noexcept {
-    static_assert(
-        std::is_base_of<Props, PropsT>::value,
-        "PropsT must be a descendant of Props");
+  void prepare() noexcept
+  {
+    static_assert(std::is_base_of<Props, PropsT>::value, "PropsT must be a descendant of Props");
     RawProps emptyRawProps{};
 
     // Create a stub parser context.
@@ -66,7 +64,7 @@ class RawPropsParser final {
   /*
    * To be used by `RawProps` only.
    */
-  void preparse(const RawProps& rawProps) const noexcept;
+  void preparse(const RawProps &rawProps) const noexcept;
 
   /*
    * Non-generic part of `prepare`.
@@ -76,8 +74,7 @@ class RawPropsParser final {
   /*
    * To be used by `RawProps` only.
    */
-  const RawValue* at(const RawProps& rawProps, const RawPropsKey& key)
-      const noexcept;
+  const RawValue *at(const RawProps &rawProps, const RawPropsKey &key) const noexcept;
 
   mutable std::vector<RawPropsKey> keys_{};
   mutable RawPropsKeyMap nameToIndex_{};

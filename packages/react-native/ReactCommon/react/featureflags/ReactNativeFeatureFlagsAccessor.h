@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6c6458278652bc91570db82b2be6c7f1>>
+ * @generated SignedSource<<d96c22d66def7b301f08c53a27b8a801>>
  */
 
 /**
@@ -36,9 +36,11 @@ class ReactNativeFeatureFlagsAccessor {
   bool cdpInteractionMetricsEnabled();
   bool cxxNativeAnimatedEnabled();
   bool cxxNativeAnimatedRemoveJsSync();
+  bool disableEarlyViewCommandExecution();
   bool disableFabricCommitInCXXAnimated();
   bool disableMountItemReorderingAndroid();
   bool disableOldAndroidAttachmentMetricsWorkarounds();
+  bool disableSubviewClippingAndroid();
   bool disableTextLayoutManagerCacheAndroid();
   bool enableAccessibilityOrder();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
@@ -57,11 +59,11 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
-  bool enableImagePrefetchingJNIBatchingAndroid();
   bool enableImagePrefetchingOnUiThreadAndroid();
   bool enableImmediateUpdateModeForContentOffsetChanges();
   bool enableImperativeFocus();
   bool enableInteropViewManagerClassLookUpOptimizationIOS();
+  bool enableKeyEvents();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableMainQueueCoordinatorOnIOS();
@@ -78,6 +80,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableViewRecyclingForScrollView();
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
+  bool enableVirtualViewClippingWithoutScrollViewClipping();
+  bool enableVirtualViewContainerStateExperimental();
   bool enableVirtualViewDebugFeatures();
   bool enableVirtualViewRenderState();
   bool enableVirtualViewWindowFocusDetection();
@@ -87,12 +91,13 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxNetworkInspectionEnabled();
   bool hideOffscreenVirtualViewsOnIOS();
   bool overrideBySynchronousMountPropsAtMountingAndroid();
+  bool perfIssuesEnabled();
   bool perfMonitorV2Enabled();
   double preparedTextCacheSize();
   bool preventShadowTreeCommitExhaustion();
   bool shouldPressibilityUseW3CPointerEventsForHover();
+  bool shouldTriggerResponderTransferOnScrollAndroid();
   bool skipActivityIdentityAssertionOnHostPause();
-  bool sweepActiveTouchOnChildNativeGesturesAndroid();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool updateRuntimeShadowNodeReferencesOnCommit();
   bool useAlwaysAvailableJSErrorHandling();
@@ -104,6 +109,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useRawPropsJsiValue();
   bool useShadowNodeStateOnClone();
   bool useSharedAnimatedBackend();
+  bool useTraitHiddenOnAndroid();
   bool useTurboModuleInterop();
   bool useTurboModules();
   double viewCullingOutsetRatio();
@@ -120,15 +126,17 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 77> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 83> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedRemoveJsSync_;
+  std::atomic<std::optional<bool>> disableEarlyViewCommandExecution_;
   std::atomic<std::optional<bool>> disableFabricCommitInCXXAnimated_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> disableOldAndroidAttachmentMetricsWorkarounds_;
+  std::atomic<std::optional<bool>> disableSubviewClippingAndroid_;
   std::atomic<std::optional<bool>> disableTextLayoutManagerCacheAndroid_;
   std::atomic<std::optional<bool>> enableAccessibilityOrder_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
@@ -147,11 +155,11 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
-  std::atomic<std::optional<bool>> enableImagePrefetchingJNIBatchingAndroid_;
   std::atomic<std::optional<bool>> enableImagePrefetchingOnUiThreadAndroid_;
   std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
   std::atomic<std::optional<bool>> enableImperativeFocus_;
   std::atomic<std::optional<bool>> enableInteropViewManagerClassLookUpOptimizationIOS_;
+  std::atomic<std::optional<bool>> enableKeyEvents_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableMainQueueCoordinatorOnIOS_;
@@ -168,6 +176,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableViewRecyclingForScrollView_;
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
+  std::atomic<std::optional<bool>> enableVirtualViewClippingWithoutScrollViewClipping_;
+  std::atomic<std::optional<bool>> enableVirtualViewContainerStateExperimental_;
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
   std::atomic<std::optional<bool>> enableVirtualViewRenderState_;
   std::atomic<std::optional<bool>> enableVirtualViewWindowFocusDetection_;
@@ -177,12 +187,13 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
   std::atomic<std::optional<bool>> overrideBySynchronousMountPropsAtMountingAndroid_;
+  std::atomic<std::optional<bool>> perfIssuesEnabled_;
   std::atomic<std::optional<bool>> perfMonitorV2Enabled_;
   std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustion_;
   std::atomic<std::optional<bool>> shouldPressibilityUseW3CPointerEventsForHover_;
+  std::atomic<std::optional<bool>> shouldTriggerResponderTransferOnScrollAndroid_;
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
-  std::atomic<std::optional<bool>> sweepActiveTouchOnChildNativeGesturesAndroid_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
@@ -194,6 +205,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useRawPropsJsiValue_;
   std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
+  std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
   std::atomic<std::optional<double>> viewCullingOutsetRatio_;

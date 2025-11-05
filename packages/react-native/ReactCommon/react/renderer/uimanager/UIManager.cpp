@@ -70,10 +70,12 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
+  PropsParserContext propsParserContext{surfaceId, *contextContainer_};
 
   auto family = componentDescriptor.createFamily(
-      {tag, surfaceId, std::move(instanceHandle)});
+      {.tag = tag,
+       .surfaceId = surfaceId,
+       .instanceHandle = std::move(instanceHandle)});
   const auto props = componentDescriptor.cloneProps(
       propsParserContext, nullptr, std::move(rawProps));
   const auto state = componentDescriptor.createInitialState(props, family);
@@ -111,7 +113,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
 
   PropsParserContext propsParserContext{
-      shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
+      shadowNode.getFamily().getSurfaceId(), *contextContainer_};
 
   auto& componentDescriptor = shadowNode.getComponentDescriptor();
   auto& family = shadowNode.getFamily();
@@ -455,14 +457,14 @@ void UIManager::setNativeProps_DEPRECATED(
                         componentDescriptorRegistry_->at(
                             shadowNode->getComponentHandle());
                     PropsParserContext propsParserContext{
-                        family.getSurfaceId(), *contextContainer_.get()};
+                        family.getSurfaceId(), *contextContainer_};
                     auto props = componentDescriptor.cloneProps(
                         propsParserContext,
                         getShadowNodeInSubtree(*shadowNode, ancestorShadowNode)
                             ->getProps(),
                         RawProps(rawProps));
 
-                    return oldShadowNode.clone({/* .props = */ props});
+                    return oldShadowNode.clone({/* .props = */ .props = props});
                   });
 
               return std::static_pointer_cast<RootShadowNode>(rootNode);
@@ -679,11 +681,12 @@ void UIManager::setNativeAnimatedDelegate(
 }
 
 void UIManager::unstable_setAnimationBackend(
-    std::weak_ptr<AnimationBackend> animationBackend) {
+    std::weak_ptr<UIManagerAnimationBackend> animationBackend) {
   animationBackend_ = animationBackend;
 }
 
-std::weak_ptr<AnimationBackend> UIManager::unstable_getAnimationBackend() {
+std::weak_ptr<UIManagerAnimationBackend>
+UIManager::unstable_getAnimationBackend() {
   return animationBackend_;
 }
 

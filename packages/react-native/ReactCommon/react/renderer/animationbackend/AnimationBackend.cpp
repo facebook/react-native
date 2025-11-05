@@ -105,16 +105,18 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
   }
 }
 
-void AnimationBackend::start(const Callback& callback) {
+void AnimationBackend::start(const Callback& callback, bool isAsync) {
   callbacks.push_back(callback);
   // TODO: startOnRenderCallback_ should provide the timestamp from the platform
-  startOnRenderCallback_([this]() {
-    onAnimationFrame(
-        std::chrono::steady_clock::now().time_since_epoch().count() / 1000);
-  });
+  startOnRenderCallback_(
+      [this]() {
+        onAnimationFrame(
+            std::chrono::steady_clock::now().time_since_epoch().count() / 1000);
+      },
+      isAsync);
 }
-void AnimationBackend::stop() {
-  stopOnRenderCallback_();
+void AnimationBackend::stop(bool isAsync) {
+  stopOnRenderCallback_(isAsync);
   callbacks.clear();
 }
 

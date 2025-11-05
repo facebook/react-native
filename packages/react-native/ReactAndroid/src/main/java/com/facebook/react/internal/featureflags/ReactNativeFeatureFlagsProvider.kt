@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d4370bcde97d3c2b0b8d2a77e42a6031>>
+ * @generated SignedSource<<c4917c92012d904810ef7d832adf124c>>
  */
 
 /**
@@ -31,11 +31,15 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
+  @DoNotStrip public fun disableEarlyViewCommandExecution(): Boolean
+
   @DoNotStrip public fun disableFabricCommitInCXXAnimated(): Boolean
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
   @DoNotStrip public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean
+
+  @DoNotStrip public fun disableSubviewClippingAndroid(): Boolean
 
   @DoNotStrip public fun disableTextLayoutManagerCacheAndroid(): Boolean
 
@@ -73,8 +77,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
 
-  @DoNotStrip public fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
-
   @DoNotStrip public fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
 
   @DoNotStrip public fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
@@ -82,6 +84,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableImperativeFocus(): Boolean
 
   @DoNotStrip public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
+
+  @DoNotStrip public fun enableKeyEvents(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
@@ -115,6 +119,10 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
+  @DoNotStrip public fun enableVirtualViewClippingWithoutScrollViewClipping(): Boolean
+
+  @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
+
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
 
   @DoNotStrip public fun enableVirtualViewRenderState(): Boolean
@@ -133,6 +141,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean
 
+  @DoNotStrip public fun perfIssuesEnabled(): Boolean
+
   @DoNotStrip public fun perfMonitorV2Enabled(): Boolean
 
   @DoNotStrip public fun preparedTextCacheSize(): Double
@@ -141,9 +151,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 
-  @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
+  @DoNotStrip public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 
-  @DoNotStrip public fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean
+  @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
@@ -166,6 +176,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
 
   @DoNotStrip public fun useSharedAnimatedBackend(): Boolean
+
+  @DoNotStrip public fun useTraitHiddenOnAndroid(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

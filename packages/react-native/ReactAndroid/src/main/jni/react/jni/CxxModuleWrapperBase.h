@@ -16,23 +16,20 @@
 namespace facebook::react {
 
 struct JNativeModule : jni::JavaClass<JNativeModule> {
-  constexpr static const char* const kJavaDescriptor =
-      "Lcom/facebook/react/bridge/NativeModule;";
+  constexpr static const char *const kJavaDescriptor = "Lcom/facebook/react/bridge/NativeModule;";
 };
 
 /**
  * The C++ part of a CxxModuleWrapper is not a unique class, but it
  * must extend this base class.
  */
-class CxxModuleWrapperBase
-    : public jni::HybridClass<CxxModuleWrapperBase, JNativeModule> {
+class CxxModuleWrapperBase : public jni::HybridClass<CxxModuleWrapperBase, JNativeModule> {
  public:
-  constexpr static const char* const kJavaDescriptor =
-      "Lcom/facebook/react/bridge/CxxModuleWrapperBase;";
+  constexpr static const char *const kJavaDescriptor = "Lcom/facebook/react/bridge/CxxModuleWrapperBase;";
 
-  static void registerNatives() {
-    registerHybrid(
-        {makeNativeMethod("getName", CxxModuleWrapperBase::getName)});
+  static void registerNatives()
+  {
+    registerHybrid({makeNativeMethod("getName", CxxModuleWrapperBase::getName)});
   }
 
   // JNI method

@@ -30,7 +30,10 @@
   NSHashTable<RCTBaseTextInputShadowView *> *_shadowViews;
 }
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"BaseTextInputViewManager";
+}
 
 #pragma mark - Unified <TextInput> properties
 
@@ -125,12 +128,9 @@ RCT_EXPORT_METHOD(blur : (nonnull NSNumber *)viewTag)
   }];
 }
 
-RCT_EXPORT_METHOD(setTextAndSelection
-                  : (nonnull NSNumber *)viewTag mostRecentEventCount
-                  : (NSInteger)mostRecentEventCount value
-                  : (NSString *)value start
-                  : (NSInteger)start end
-                  : (NSInteger)end)
+RCT_EXPORT_METHOD(
+    setTextAndSelection : (nonnull NSNumber *)viewTag mostRecentEventCount : (NSInteger)
+        mostRecentEventCount value : (NSString *)value start : (NSInteger)start end : (NSInteger)end)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     RCTBaseTextInputView *view = (RCTBaseTextInputView *)viewRegistry[viewTag];

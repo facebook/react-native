@@ -9,6 +9,7 @@
 #include "InstanceAgent.h"
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
+#include "InspectorFlags.h"
 #include "NetworkIOAgent.h"
 #include "SessionState.h"
 #include "TracingAgent.h"
@@ -142,6 +143,24 @@ class HostAgent::Impl final {
           .shouldSendOKResponse = true,
       };
     }
+    if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
+      if (req.method == "Network.enable") {
+        sessionState_.isNetworkDomainEnabled = true;
+
+        return {
+            .isFinishedHandlingRequest = false,
+            .shouldSendOKResponse = true,
+        };
+      }
+      if (req.method == "Network.disable") {
+        sessionState_.isNetworkDomainEnabled = false;
+
+        return {
+            .isFinishedHandlingRequest = false,
+            .shouldSendOKResponse = true,
+        };
+      }
+    }
 
     // Methods other than domain enables/disables: handle anything we know how
     // to handle, and delegate to the InstanceAgent otherwise. (In some special
@@ -193,9 +212,10 @@ class HostAgent::Impl final {
         sendFuseboxNotice();
       }
 
-      frontendChannel_(cdp::jsonNotification(
-          "ReactNativeApplication.metadataUpdated",
-          createHostMetadataPayload(hostMetadata_)));
+      frontendChannel_(
+          cdp::jsonNotification(
+              "ReactNativeApplication.metadataUpdated",
+              createHostMetadataPayload(hostMetadata_)));
 
       auto stashedTraceRecording =
           targetController_.getDelegate()
@@ -232,10 +252,11 @@ class HostAgent::Impl final {
         auto executionContextId = req.params["executionContextId"].getInt();
         if (executionContextId < (int64_t)std::numeric_limits<int32_t>::min() ||
             executionContextId > (int64_t)std::numeric_limits<int32_t>::max()) {
-          frontendChannel_(cdp::jsonError(
-              req.id,
-              cdp::ErrorCode::InvalidParams,
-              "Invalid execution context id"));
+          frontendChannel_(
+              cdp::jsonError(
+                  req.id,
+                  cdp::ErrorCode::InvalidParams,
+                  "Invalid execution context id"));
           return {
               .isFinishedHandlingRequest = true,
               .shouldSendOKResponse = false,
@@ -245,10 +266,11 @@ class HostAgent::Impl final {
             ExecutionContextSelector::byId((int32_t)executionContextId);
 
         if (req.params.count("executionContextName") != 0u) {
-          frontendChannel_(cdp::jsonError(
-              req.id,
-              cdp::ErrorCode::InvalidParams,
-              "executionContextName is mutually exclusive with executionContextId"));
+          frontendChannel_(
+              cdp::jsonError(
+                  req.id,
+                  cdp::ErrorCode::InvalidParams,
+                  "executionContextName is mutually exclusive with executionContextId"));
           return {
               .isFinishedHandlingRequest = true,
               .shouldSendOKResponse = false,
@@ -371,16 +393,17 @@ class HostAgent::Impl final {
     for (auto arg : args) {
       argsArray.push_back(arg);
     }
-    frontendChannel_(cdp::jsonNotification(
-        "Log.entryAdded",
-        folly::dynamic::object(
-            "entry",
+    frontendChannel_(
+        cdp::jsonNotification(
+            "Log.entryAdded",
             folly::dynamic::object(
-                "timestamp",
-                duration_cast<milliseconds>(
-                    system_clock::now().time_since_epoch())
-                    .count())("source", "other")("level", "info")("text", text)(
-                "args", std::move(argsArray)))));
+                "entry",
+                folly::dynamic::object(
+                    "timestamp",
+                    duration_cast<milliseconds>(
+                        system_clock::now().time_since_epoch())
+                        .count())("source", "other")("level", "info")(
+                    "text", text)("args", std::move(argsArray)))));
   }
 
   void sendFuseboxNotice() {
@@ -467,13 +490,14 @@ HostAgent::HostAgent(
     HostTargetMetadata hostMetadata,
     SessionState& sessionState,
     VoidExecutor executor)
-    : impl_(std::make_unique<Impl>(
-          *this,
-          frontendChannel,
-          targetController,
-          std::move(hostMetadata),
-          sessionState,
-          std::move(executor))) {}
+    : impl_(
+          std::make_unique<Impl>(
+              *this,
+              frontendChannel,
+              targetController,
+              std::move(hostMetadata),
+              sessionState,
+              std::move(executor))) {}
 
 HostAgent::~HostAgent() = default;
 

@@ -32,6 +32,7 @@ import com.facebook.react.bridge.UiThreadUtil.assertOnUiThread
 import com.facebook.react.bridge.UiThreadUtil.runOnUiThread
 import com.facebook.react.common.ReactConstants.TAG
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.touch.OnInterceptTouchEventListener
 import com.facebook.react.touch.ReactHitSlopView
 import com.facebook.react.touch.ReactInterceptingViewGroup
@@ -153,6 +154,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
   private var accessibilityStateChangeListener:
       AccessibilityManager.AccessibilityStateChangeListener? =
       null
+  private var focusOnAttach = false
 
   init {
     initView()
@@ -212,6 +214,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
     updateBackgroundDrawable(null)
 
     resetPointerEvents()
+
+    // In case a focus was attempted but the view never attached, reset to false
+    focusOnAttach = false
   }
 
   private var _drawingOrderHelper: ViewGroupDrawingOrderHelper? = null
@@ -358,8 +363,17 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   override var removeClippedSubviews: Boolean
-    get() = _removeClippedSubviews
+    get() {
+      if (ReactNativeFeatureFlags.disableSubviewClippingAndroid()) {
+        return false
+      }
+      return _removeClippedSubviews
+    }
     set(newValue) {
+      if (ReactNativeFeatureFlags.disableSubviewClippingAndroid()) {
+        return
+      }
+
       if (newValue == _removeClippedSubviews) {
         return
       }
@@ -417,10 +431,15 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   internal fun requestFocusFromJS() {
-    super.requestFocus(FOCUS_DOWN, null)
+    if (isAttachedToWindow) {
+      super.requestFocus(FOCUS_DOWN, null)
+    } else {
+      focusOnAttach = true
+    }
   }
 
   internal fun clearFocusFromJS() {
+    focusOnAttach = false
     super.clearFocus()
   }
 
@@ -571,6 +590,11 @@ public open class ReactViewGroup public constructor(context: Context?) :
     super.onAttachedToWindow()
     if (_removeClippedSubviews) {
       updateClippingRect()
+    }
+
+    if (focusOnAttach) {
+      requestFocusFromJS()
+      focusOnAttach = false
     }
   }
 

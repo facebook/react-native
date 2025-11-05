@@ -17,7 +17,10 @@
 
 @implementation RCTDebuggingOverlayManager
 
-RCT_EXPORT_MODULE(DebuggingOverlay)
++ (NSString *)moduleName
+{
+  return @"DebuggingOverlay";
+}
 
 - (UIView *)view
 {

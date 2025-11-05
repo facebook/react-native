@@ -19,7 +19,10 @@ using namespace facebook::react;
 
 @implementation RCTI18nManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"I18nManager";
+}
 
 + (BOOL)requiresMainQueueSetup
 {

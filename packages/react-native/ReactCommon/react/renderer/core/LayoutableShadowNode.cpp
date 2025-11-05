@@ -29,8 +29,9 @@ LayoutableShadowNode::LayoutableShadowNode(
     const ShadowNode& sourceShadowNode,
     const ShadowNodeFragment& fragment)
     : ShadowNode(sourceShadowNode, fragment),
-      layoutMetrics_(static_cast<const LayoutableShadowNode&>(sourceShadowNode)
-                         .layoutMetrics_) {}
+      layoutMetrics_(
+          static_cast<const LayoutableShadowNode&>(sourceShadowNode)
+              .layoutMetrics_) {}
 
 LayoutMetrics LayoutableShadowNode::computeLayoutMetricsFromRoot(
     const ShadowNodeFamily& descendantNodeFamily,
@@ -356,17 +357,20 @@ SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
   auto layoutMetrics = getLayoutMetrics();
   auto defaultLayoutMetrics = LayoutMetrics();
 
-  layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>(
-      "frame", toString(layoutMetrics.frame)));
+  layoutInfo.push_back(
+      std::make_shared<DebugStringConvertibleItem>(
+          "frame", toString(layoutMetrics.frame)));
 
   if (layoutMetrics.borderWidth != defaultLayoutMetrics.borderWidth) {
-    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>(
-        "borderWidth", toString(layoutMetrics.borderWidth)));
+    layoutInfo.push_back(
+        std::make_shared<DebugStringConvertibleItem>(
+            "borderWidth", toString(layoutMetrics.borderWidth)));
   }
 
   if (layoutMetrics.contentInsets != defaultLayoutMetrics.contentInsets) {
-    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>(
-        "contentInsets", toString(layoutMetrics.contentInsets)));
+    layoutInfo.push_back(
+        std::make_shared<DebugStringConvertibleItem>(
+            "contentInsets", toString(layoutMetrics.contentInsets)));
   }
 
   if (layoutMetrics.displayType == DisplayType::None) {

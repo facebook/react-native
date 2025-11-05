@@ -30,5 +30,5 @@ export function takeScreenshot(
   if (NativeModule != null) {
     return NativeModule.takeScreenshot(id, options);
   }
-  return Promise.reject();
+  return Promise.reject(new Error('ScreenshotManager is not defined.'));
 }

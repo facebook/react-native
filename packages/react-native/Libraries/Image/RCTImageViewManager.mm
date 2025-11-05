@@ -20,7 +20,10 @@
 
 @implementation RCTImageViewManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"ImageViewManager";
+}
 
 - (RCTShadowView *)shadowView
 {
@@ -53,10 +56,9 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
   view.renderingMode = json ? UIImageRenderingModeAlwaysTemplate : defaultView.renderingMode;
 }
 
-RCT_EXPORT_METHOD(getSize
-                  : (NSURLRequest *)request successBlock
-                  : (RCTResponseSenderBlock)successBlock errorBlock
-                  : (RCTResponseErrorBlock)errorBlock)
+RCT_EXPORT_METHOD(
+    getSize : (NSURLRequest *)request successBlock : (RCTResponseSenderBlock)
+        successBlock errorBlock : (RCTResponseErrorBlock)errorBlock)
 {
   [[self.bridge moduleForName:@"ImageLoader"
         lazilyLoadIfNecessary:YES] getImageSizeForURLRequest:request
@@ -69,10 +71,9 @@ RCT_EXPORT_METHOD(getSize
                                                        }];
 }
 
-RCT_EXPORT_METHOD(getSizeWithHeaders
-                  : (RCTImageSource *)source resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    getSizeWithHeaders : (RCTImageSource *)source resolve : (RCTPromiseResolveBlock)
+        resolve reject : (RCTPromiseRejectBlock)reject)
 {
   [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
       getImageSizeForURLRequest:source.request
@@ -85,10 +86,9 @@ RCT_EXPORT_METHOD(getSizeWithHeaders
                           }];
 }
 
-RCT_EXPORT_METHOD(prefetchImage
-                  : (NSURLRequest *)request resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    prefetchImage : (NSURLRequest *)request resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)
+        reject)
 {
   if (!request) {
     reject(@"E_INVALID_URI", @"Cannot prefetch an image for an empty URI", nil);
@@ -107,10 +107,8 @@ RCT_EXPORT_METHOD(prefetchImage
                               }];
 }
 
-RCT_EXPORT_METHOD(queryCache
-                  : (NSArray *)requests resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    queryCache : (NSArray *)requests resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   resolve([[self.bridge moduleForName:@"ImageLoader"] getImageCacheStatus:requests]);
 }

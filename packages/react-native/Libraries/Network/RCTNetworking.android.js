@@ -77,12 +77,14 @@ const RCTNetworking = {
       }));
     }
     const requestId = generateRequestId();
+    const devToolsRequestId =
+      global.__NETWORK_REPORTER__?.createDevToolsRequestId();
     NativeNetworkingAndroid.sendRequest(
       method,
       url,
       requestId,
       convertHeadersMapToArray(headers),
-      {...body, trackingName},
+      {...body, trackingName, devToolsRequestId},
       responseType,
       incrementalUpdates,
       timeout,

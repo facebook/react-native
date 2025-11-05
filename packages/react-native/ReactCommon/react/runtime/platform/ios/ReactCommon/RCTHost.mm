@@ -152,10 +152,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                    launchOptions:launchOptions];
 }
 
-/**
- Host initialization should not be resource intensive. A host may be created before any intention of using React Native
- has been expressed.
- */
 - (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
                              hostDelegate:(id<RCTHostDelegate>)hostDelegate
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
@@ -167,23 +163,31 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
               turboModuleManagerDelegate:turboModuleManagerDelegate
                         jsEngineProvider:jsEngineProvider
                            launchOptions:launchOptions
+                     bundleConfiguration:[RCTBundleConfiguration defaultConfiguration]
                     devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
+/**
+ Host initialization should not be resource intensive. A host may be created before any intention of using React Native
+ has been expressed.
+ */
 - (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
                              hostDelegate:(id<RCTHostDelegate>)hostDelegate
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                             launchOptions:(nullable NSDictionary *)launchOptions
+                      bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
                      devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
-    _bundleManager = [RCTBundleManager new];
+    _bundleManager = [[RCTBundleManager alloc] initWithBundleConfig:bundleConfiguration];
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
     _launchOptions = [launchOptions copy];
+
+    [self setBundleURLProvider:provider];
 
     __weak RCTHost *weakSelf = self;
     auto bundleURLGetter = ^NSURL *() {
@@ -450,7 +454,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  // Update the global bundle URLq
+  // Update the global bundle URL
   RCTReloadCommandSetBundleURL(_bundleURL);
 }
 

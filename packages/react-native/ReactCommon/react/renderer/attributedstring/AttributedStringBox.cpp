@@ -16,12 +16,12 @@ namespace facebook::react {
 AttributedStringBox::AttributedStringBox()
     : mode_(Mode::Value),
       value_(std::make_shared<const AttributedString>(AttributedString{})),
-      opaquePointer_({}){};
+      opaquePointer_({}) {};
 
 AttributedStringBox::AttributedStringBox(const AttributedString& value)
     : mode_(Mode::Value),
       value_(std::make_shared<const AttributedString>(value)),
-      opaquePointer_({}){};
+      opaquePointer_({}) {};
 
 AttributedStringBox::AttributedStringBox(std::shared_ptr<void> opaquePointer)
     : mode_(Mode::OpaquePointer),

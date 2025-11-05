@@ -95,8 +95,8 @@ JReactInstance::JReactInstance(
   auto nativeMethodCallInvoker =
       std::make_unique<BridgelessNativeMethodCallInvoker>(
           sharedNativeMessageQueueThread);
-  nativeMethodCallInvokerHolder_ =
-      jni::make_global(NativeMethodCallInvokerHolder::newObjectCxxArgs(
+  nativeMethodCallInvokerHolder_ = jni::make_global(
+      NativeMethodCallInvokerHolder::newObjectCxxArgs(
           std::move(nativeMethodCallInvoker)));
 
   // Storing this here to make sure the Java reference doesn't get destroyed

@@ -13,124 +13,62 @@
  * instances and get some data from them (like their instance handle / fiber).
  */
 
-import type ReactNativeDocumentT from '../../../src/private/webapis/dom/nodes/ReactNativeDocument';
-import typeof * as ReactNativeDocumentModuleT from '../../../src/private/webapis/dom/nodes/ReactNativeDocument';
-import type ReactNativeElementT from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import type ReadOnlyTextT from '../../../src/private/webapis/dom/nodes/ReadOnlyText';
-import typeof * as RendererProxyT from '../../ReactNative/RendererProxy';
 import type {
   InternalInstanceHandle,
   Node,
   ViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
 import type {RootTag} from '../RootTag';
-import type ReactFabricHostComponentT from './ReactFabricHostComponent';
 
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
+import ReactNativeDocument, {
+  createReactNativeDocument,
+} from '../../../src/private/webapis/dom/nodes/ReactNativeDocument';
+import ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
+import ReadOnlyText from '../../../src/private/webapis/dom/nodes/ReadOnlyText';
+import * as RendererProxy from '../../ReactNative/RendererProxy';
 
 export opaque type PublicRootInstance = mixed;
 
-// Lazy loaded to avoid evaluating the module when using the legacy renderer.
-let ReactNativeDocumentModuleObject: ?ReactNativeDocumentModuleT;
-let ReactFabricHostComponentClass: Class<ReactFabricHostComponentT>;
-let ReactNativeElementClass: Class<ReactNativeElementT>;
-let ReadOnlyTextClass: Class<ReadOnlyTextT>;
-let RendererProxy: RendererProxyT;
-
-function getReactNativeDocumentModule(): ReactNativeDocumentModuleT {
-  if (ReactNativeDocumentModuleObject == null) {
-    // We initialize this lazily to avoid a require cycle.
-    ReactNativeDocumentModuleObject = require('../../../src/private/webapis/dom/nodes/ReactNativeDocument');
-  }
-
-  return ReactNativeDocumentModuleObject;
-}
-
-function getReactNativeElementClass(): Class<ReactNativeElementT> {
-  if (ReactNativeElementClass == null) {
-    ReactNativeElementClass =
-      require('../../../src/private/webapis/dom/nodes/ReactNativeElement').default;
-  }
-  return ReactNativeElementClass;
-}
-
-function getReactFabricHostComponentClass(): Class<ReactFabricHostComponentT> {
-  if (ReactFabricHostComponentClass == null) {
-    ReactFabricHostComponentClass =
-      require('./ReactFabricHostComponent').default;
-  }
-  return ReactFabricHostComponentClass;
-}
-
-function getReadOnlyTextClass(): Class<ReadOnlyTextT> {
-  if (ReadOnlyTextClass == null) {
-    ReadOnlyTextClass =
-      require('../../../src/private/webapis/dom/nodes/ReadOnlyText').default;
-  }
-  return ReadOnlyTextClass;
-}
-
 export function createPublicRootInstance(rootTag: RootTag): PublicRootInstance {
-  if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
-    const ReactNativeDocumentModule = getReactNativeDocumentModule();
-
-    // $FlowExpectedError[incompatible-return]
-    return ReactNativeDocumentModule.createReactNativeDocument(rootTag);
-  }
-
   // $FlowExpectedError[incompatible-return]
-  return null;
+  return createReactNativeDocument(rootTag);
 }
 
 export function createPublicInstance(
   tag: number,
   viewConfig: ViewConfig,
   internalInstanceHandle: InternalInstanceHandle,
-  ownerDocument: ReactNativeDocumentT,
-): ReactFabricHostComponentT | ReactNativeElementT {
-  if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
-    const ReactNativeElement = getReactNativeElementClass();
-    return new ReactNativeElement(
-      tag,
-      viewConfig,
-      internalInstanceHandle,
-      ownerDocument,
-    );
-  } else {
-    const ReactFabricHostComponent = getReactFabricHostComponentClass();
-    return new ReactFabricHostComponent(
-      tag,
-      viewConfig,
-      internalInstanceHandle,
-    );
-  }
+  ownerDocument: ReactNativeDocument,
+): ReactNativeElement {
+  return new ReactNativeElement(
+    tag,
+    viewConfig,
+    internalInstanceHandle,
+    ownerDocument,
+  );
 }
 
 export function createPublicTextInstance(
   internalInstanceHandle: InternalInstanceHandle,
-  ownerDocument: ReactNativeDocumentT,
-): ReadOnlyTextT {
-  const ReadOnlyText = getReadOnlyTextClass();
+  ownerDocument: ReactNativeDocument,
+): ReadOnlyText {
   return new ReadOnlyText(internalInstanceHandle, ownerDocument);
 }
 
 export function getNativeTagFromPublicInstance(
-  publicInstance: ReactFabricHostComponentT | ReactNativeElementT,
+  publicInstance: ReactNativeElement,
 ): number {
   return publicInstance.__nativeTag;
 }
 
 export function getNodeFromPublicInstance(
-  publicInstance: ReactFabricHostComponentT | ReactNativeElementT,
+  publicInstance: ReactNativeElement,
 ): ?Node {
   // Avoid loading ReactFabric if using an instance from the legacy renderer.
   if (publicInstance.__internalInstanceHandle == null) {
     return null;
   }
 
-  if (RendererProxy == null) {
-    RendererProxy = require('../../ReactNative/RendererProxy');
-  }
   return RendererProxy.getNodeFromInternalInstanceHandle(
     // $FlowExpectedError[incompatible-type] __internalInstanceHandle is always an InternalInstanceHandle from React when we get here.
     publicInstance.__internalInstanceHandle,
@@ -138,7 +76,7 @@ export function getNodeFromPublicInstance(
 }
 
 export function getInternalInstanceHandleFromPublicInstance(
-  publicInstance: ReactFabricHostComponentT | ReactNativeElementT,
+  publicInstance: ReactNativeElement,
 ): InternalInstanceHandle {
   // TODO(T174762768): Remove this once OSS versions of renderers will be synced.
   // $FlowExpectedError[prop-missing] Keeping this for backwards-compatibility with the renderers versions in open source.

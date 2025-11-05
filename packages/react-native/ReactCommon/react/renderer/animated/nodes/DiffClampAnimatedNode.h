@@ -17,10 +17,7 @@ namespace facebook::react {
 
 class DiffClampAnimatedNode final : public ValueAnimatedNode {
  public:
-  DiffClampAnimatedNode(
-      Tag tag,
-      const folly::dynamic& config,
-      NativeAnimatedNodesManager& manager);
+  DiffClampAnimatedNode(Tag tag, const folly::dynamic &config, NativeAnimatedNodesManager &manager);
 
   void update() override;
 

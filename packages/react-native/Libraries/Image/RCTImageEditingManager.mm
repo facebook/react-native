@@ -24,7 +24,10 @@
 
 @implementation RCTImageEditingManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"ImageEditingManager";
+}
 
 @synthesize moduleRegistry = _moduleRegistry;
 
@@ -38,11 +41,9 @@ RCT_EXPORT_MODULE()
  *        be scaled down to `displaySize` rather than `size`.
  *        All units are in px (not points).
  */
-RCT_EXPORT_METHOD(cropImage
-                  : (NSURLRequest *)imageRequest cropData
-                  : (JS::NativeImageEditor::Options &)cropData successCallback
-                  : (RCTResponseSenderBlock)successCallback errorCallback
-                  : (RCTResponseSenderBlock)errorCallback)
+RCT_EXPORT_METHOD(
+    cropImage : (NSURLRequest *)imageRequest cropData : (JS::NativeImageEditor::Options &)cropData successCallback : (
+        RCTResponseSenderBlock)successCallback errorCallback : (RCTResponseSenderBlock)errorCallback)
 {
   CGRect rect = {
     [RCTConvert CGPoint:@{

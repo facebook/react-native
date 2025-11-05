@@ -14,15 +14,15 @@ import androidx.annotation.ColorInt
 import com.facebook.react.modules.i18nmanager.I18nUtil
 
 internal data class ColorEdges(
-    @ColorInt val left: Int = Color.BLACK,
-    @ColorInt val top: Int = Color.BLACK,
-    @ColorInt val right: Int = Color.BLACK,
-    @ColorInt val bottom: Int = Color.BLACK,
+    @param:ColorInt val left: Int = Color.BLACK,
+    @param:ColorInt val top: Int = Color.BLACK,
+    @param:ColorInt val right: Int = Color.BLACK,
+    @param:ColorInt val bottom: Int = Color.BLACK,
 )
 
 @JvmInline
 internal value class BorderColors(
-    @ColorInt val edgeColors: Array<Int?> = arrayOfNulls<Int?>(LogicalEdge.values().size)
+    @param:ColorInt val edgeColors: Array<Int?> = arrayOfNulls<Int?>(LogicalEdge.values().size)
 ) {
 
   fun resolve(layoutDirection: Int, context: Context): ColorEdges {

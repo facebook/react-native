@@ -20,7 +20,8 @@
 
 namespace facebook::react {
 
-inline void fromString(const std::string& string, AccessibilityTraits& result) {
+inline void fromString(const std::string &string, AccessibilityTraits &result)
+{
   if (string == "none") {
     result = AccessibilityTraits::None;
     return;
@@ -108,10 +109,8 @@ inline void fromString(const std::string& string, AccessibilityTraits& result) {
   result = AccessibilityTraits::None;
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    AccessibilityTraits& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, AccessibilityTraits &result)
+{
   if (value.hasType<std::string>()) {
     fromString((std::string)value, result);
     return;
@@ -122,7 +121,7 @@ inline void fromRawValue(
   react_native_expect(value.hasType<std::vector<std::string>>());
   if (value.hasType<std::vector<std::string>>()) {
     auto items = (std::vector<std::string>)value;
-    for (auto& item : items) {
+    for (auto &item : items) {
       AccessibilityTraits itemAccessibilityTraits;
       fromString(item, itemAccessibilityTraits);
       result = result | itemAccessibilityTraits;
@@ -132,10 +131,8 @@ inline void fromRawValue(
   }
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    AccessibilityState& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, AccessibilityState &result)
+{
   auto map = (std::unordered_map<std::string, RawValue>)value;
   auto selected = map.find("selected");
   if (selected != map.end()) {
@@ -173,8 +170,8 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(
-    const ImportantForAccessibility& importantForAccessibility) {
+inline std::string toString(const ImportantForAccessibility &importantForAccessibility)
+{
   switch (importantForAccessibility) {
     case ImportantForAccessibility::Auto:
       return "auto";
@@ -187,10 +184,8 @@ inline std::string toString(
   }
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    ImportantForAccessibility& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, ImportantForAccessibility &result)
+{
   result = ImportantForAccessibility::Auto;
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
@@ -212,10 +207,8 @@ inline void fromRawValue(
   }
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    AccessibilityAction& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, AccessibilityAction &result)
+{
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto name = map.find("name");
@@ -232,10 +225,8 @@ inline void fromRawValue(
   }
 }
 
-inline void fromRawValue(
-    const PropsParserContext& /*unused*/,
-    const RawValue& value,
-    AccessibilityValue& result) {
+inline void fromRawValue(const PropsParserContext & /*unused*/, const RawValue &value, AccessibilityValue &result)
+{
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto min = map.find("min");
@@ -267,10 +258,8 @@ inline void fromRawValue(
   }
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    AccessibilityLabelledBy& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, AccessibilityLabelledBy &result)
+{
   if (value.hasType<std::string>()) {
     result.value.push_back((std::string)value);
   } else if (value.hasType<std::vector<std::string>>()) {
@@ -278,10 +267,8 @@ inline void fromRawValue(
   }
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    AccessibilityLiveRegion& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, AccessibilityLiveRegion &result)
+{
   result = AccessibilityLiveRegion::None;
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
@@ -301,7 +288,8 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const AccessibilityRole& accessibilityRole) {
+inline std::string toString(const AccessibilityRole &accessibilityRole)
+{
   switch (accessibilityRole) {
     case AccessibilityRole::None:
       return "none";
@@ -391,10 +379,8 @@ inline std::string toString(const AccessibilityRole& accessibilityRole) {
   return "none";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    AccessibilityRole& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, AccessibilityRole &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -491,7 +477,8 @@ inline void fromRawValue(
   result = AccessibilityRole::None;
 }
 
-inline std::string toString(const Role& role) {
+inline std::string toString(const Role &role)
+{
   switch (role) {
     case Role::Alert:
       return "alert";
@@ -631,10 +618,8 @@ inline std::string toString(const Role& role) {
   return "none";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    Role& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, Role &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -783,7 +768,8 @@ inline void fromRawValue(
   result = Role::None;
 }
 
-inline std::string toString(AccessibilityLiveRegion accessibilityLiveRegion) {
+inline std::string toString(AccessibilityLiveRegion accessibilityLiveRegion)
+{
   switch (accessibilityLiveRegion) {
     case AccessibilityLiveRegion::None:
       return "none";
@@ -795,7 +781,8 @@ inline std::string toString(AccessibilityLiveRegion accessibilityLiveRegion) {
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-inline std::string toString(AccessibilityState::CheckedState state) {
+inline std::string toString(AccessibilityState::CheckedState state)
+{
   switch (state) {
     case AccessibilityState::Unchecked:
       return "Unchecked";
@@ -808,7 +795,8 @@ inline std::string toString(AccessibilityState::CheckedState state) {
   }
 }
 
-inline std::string toString(const AccessibilityAction& accessibilityAction) {
+inline std::string toString(const AccessibilityAction &accessibilityAction)
+{
   std::string result = accessibilityAction.name;
   if (accessibilityAction.label.has_value()) {
     result += ": '" + accessibilityAction.label.value() + "'";
@@ -816,8 +804,8 @@ inline std::string toString(const AccessibilityAction& accessibilityAction) {
   return result;
 }
 
-inline std::string toString(
-    std::vector<AccessibilityAction> accessibilityActions) {
+inline std::string toString(std::vector<AccessibilityAction> accessibilityActions)
+{
   std::string result = "[";
   for (size_t i = 0; i < accessibilityActions.size(); i++) {
     result += toString(accessibilityActions[i]);
@@ -829,11 +817,10 @@ inline std::string toString(
   return result;
 }
 
-inline std::string toString(const AccessibilityState& accessibilityState) {
-  return "{disabled:" + toString(accessibilityState.disabled) +
-      ",selected:" + toString(accessibilityState.selected) +
-      ",checked:" + toString(accessibilityState.checked) +
-      ",busy:" + toString(accessibilityState.busy) +
+inline std::string toString(const AccessibilityState &accessibilityState)
+{
+  return "{disabled:" + toString(accessibilityState.disabled) + ",selected:" + toString(accessibilityState.selected) +
+      ",checked:" + toString(accessibilityState.checked) + ",busy:" + toString(accessibilityState.busy) +
       ",expanded:" + toString(accessibilityState.expanded) + "}";
 }
 #endif

@@ -30,10 +30,6 @@ ReactInstanceIntegrationTest::ReactInstanceIntegrationTest()
       testMode_(GetParam()) {}
 
 void ReactInstanceIntegrationTest::SetUp() {
-  if (testMode_ == ReactInstanceIntegrationTestMode::LEGACY_HERMES) {
-    InspectorFlags::getInstance().dangerouslyDisableFuseboxForTest();
-  }
-
   // Valdiate that the test mode in InspectorFlags is set correctly
   EXPECT_EQ(
       InspectorFlags::getInstance().getFuseboxEnabled(),
@@ -85,27 +81,20 @@ void ReactInstanceIntegrationTest::SetUp() {
   // Inspector:
   auto& inspector = getInspectorInstance();
 
-  if (hostTargetIfModernCDP != nullptr) {
-    // Under modern CDP, the React host is responsible for adding itself as
-    // the root target on startup.
-    pageId_ = inspector.addPage(
-        "mock-description",
-        "mock-vm",
-        [hostTargetIfModernCDP](std::unique_ptr<IRemoteConnection> remote)
-            -> std::unique_ptr<ILocalConnection> {
-          auto localConnection =
-              hostTargetIfModernCDP->connect(std::move(remote));
-          return localConnection;
-        },
-        // TODO: Allow customisation of InspectorTargetCapabilities
-        {});
-  } else {
-    // Under legacy CDP, Hermes' DecoratedRuntime adds its page automatically
-    // within ConnectionDemux.enableDebugging.
-    auto pages = inspector.getPages();
-    ASSERT_GT(pages.size(), 0);
-    pageId_ = pages.back().id;
-  }
+  ASSERT_NE(hostTargetIfModernCDP, nullptr);
+  // Under modern CDP, the React host is responsible for adding itself as
+  // the root target on startup.
+  pageId_ = inspector.addPage(
+      "mock-description",
+      "mock-vm",
+      [hostTargetIfModernCDP](std::unique_ptr<IRemoteConnection> remote)
+          -> std::unique_ptr<ILocalConnection> {
+        auto localConnection =
+            hostTargetIfModernCDP->connect(std::move(remote));
+        return localConnection;
+      },
+      // TODO: Allow customisation of InspectorTargetCapabilities
+      {});
 
   clientToVM_ =
       inspector.connect(pageId_.value(), mockRemoteConnections_.make_unique());
@@ -235,10 +224,6 @@ TEST_P(ReactInstanceIntegrationTest, ConsoleLog) {
 INSTANTIATE_TEST_SUITE_P(
     ReactInstanceVaryingInspectorBackend,
     ReactInstanceIntegrationTest,
-    ::testing::Values(
-#if !defined(HERMES_STATIC_HERMES)
-        ReactInstanceIntegrationTestMode::LEGACY_HERMES,
-#endif
-        ReactInstanceIntegrationTestMode::FUSEBOX));
+    ::testing::Values(ReactInstanceIntegrationTestMode::FUSEBOX));
 
 } // namespace facebook::react::jsinspector_modern

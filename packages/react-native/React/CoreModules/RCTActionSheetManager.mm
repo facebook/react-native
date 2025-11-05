@@ -42,7 +42,10 @@ using namespace facebook::react;
   return NO;
 }
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"ActionSheetManager";
+}
 
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
@@ -58,14 +61,24 @@ RCT_EXPORT_MODULE()
   } else {
     alertController.popoverPresentationController.permittedArrowDirections = 0;
   }
-  alertController.popoverPresentationController.sourceView = sourceView;
-  alertController.popoverPresentationController.sourceRect = sourceView.bounds;
+
+  if ([UIDevice.currentDevice userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    // These information only make sense for iPad, where the action sheet needs
+    // to be presented from a specific anchor point.
+    // Before iOS 26, if these information were passed on an iOS app, the action sheet
+    // was ignoring them. after iOS 26, they are took into consideration and the
+    // sheet behavior changes, for example the user can interact with the background
+    // By applying these informations only to the iPad use case, we revert to the previous
+    // behavior.
+    alertController.popoverPresentationController.sourceView = sourceView;
+    alertController.popoverPresentationController.sourceRect = sourceView.bounds;
+  }
   [parentViewController presentViewController:alertController animated:YES completion:nil];
 }
 
-RCT_EXPORT_METHOD(showActionSheetWithOptions
-                  : (JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options callback
-                  : (RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(
+    showActionSheetWithOptions : (JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)
+        options callback : (RCTResponseSenderBlock)callback)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");
@@ -158,8 +171,15 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                                callback(@[ @(localIndex) ]);
                                                              }
                                                            }];
-      if (isCancelButtonIndex) {
+      if (isCancelButtonIndex && cancelButtonTintColor != NULL) {
         [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
+      } else if (style != UIAlertActionStyleDestructive) {
+        // iOS 26 does not apply the tint color automatically to all the buttons.
+        // So we ca forcibly apply the tint color to all the buttons that are not
+        // destructive (which usually have a different tint color) nor they are
+        // cancel buttons (which might have a different tint color).
+        // This makes the Action Sheet behave as in iOS < 26.
+        [actionButton setValue:tintColor forKey:@"titleTextColor"];
       }
       [alertController addAction:actionButton];
 
@@ -212,10 +232,10 @@ RCT_EXPORT_METHOD(dismissActionSheet)
   });
 }
 
-RCT_EXPORT_METHOD(showShareActionSheetWithOptions
-                  : (JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options failureCallback
-                  : (RCTResponseSenderBlock)failureCallback successCallback
-                  : (RCTResponseSenderBlock)successCallback)
+RCT_EXPORT_METHOD(
+    showShareActionSheetWithOptions : (JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)
+        options failureCallback : (RCTResponseSenderBlock)failureCallback successCallback : (RCTResponseSenderBlock)
+            successCallback)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"Unable to show action sheet from app extension");

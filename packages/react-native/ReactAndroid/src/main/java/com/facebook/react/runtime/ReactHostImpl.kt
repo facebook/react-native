@@ -39,6 +39,7 @@ import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory
+import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.InspectorFlags
@@ -73,6 +74,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.Unit
 import kotlin.concurrent.Volatile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * A ReactHost is an object that manages a single [ReactInstance]. A ReactHost can be constructed
@@ -366,6 +370,12 @@ public class ReactHostImpl(
     reactInstanceEventListeners.remove(listener)
   }
 
+  override fun setDevMenuConfiguration(config: DevMenuConfiguration) {
+    devSupportManager.devMenuEnabled = config.devMenuEnabled
+    devSupportManager.shakeGestureEnabled = config.shakeGestureEnabled
+    devSupportManager.keyboardShortcutsEnabled = config.keyboardShortcutsEnabled
+  }
+
   /**
    * Entrypoint to reload the ReactInstance. If the ReactInstance is destroying, will wait until
    * destroy is finished, before reloading.
@@ -640,6 +650,28 @@ public class ReactHostImpl(
     } else {
       val method = "onNewIntent(intent = \"$intent\")"
       raiseSoftException(method, "Tried to access onNewIntent while context is not ready")
+    }
+  }
+
+  @ThreadConfined(value = ThreadConfined.UI)
+  override fun setBundleSource(filePath: String) {
+    devSupportManager.bundleFilePath = filePath
+    reload("Change bundle source")
+  }
+
+  @ThreadConfined(value = ThreadConfined.UI)
+  override fun setBundleSource(
+      debugServerHost: String,
+      moduleName: String,
+      queryMapper: (Map<String, String>) -> Map<String, String>,
+  ) {
+    CoroutineScope(Dispatchers.Default).launch {
+      (devSupportManager as DevSupportManagerBase).devServerHelper.closePackagerConnection()
+      val packagerConnectionSettings = devSupportManager.devSettings.packagerConnectionSettings
+      packagerConnectionSettings.setPackagerOptionsUpdater(queryMapper)
+      packagerConnectionSettings.debugServerHost = debugServerHost
+      devSupportManager.jsAppBundleName = moduleName
+      reload("Changed bundle source")
     }
   }
 
@@ -1056,6 +1088,16 @@ public class ReactHostImpl(
   private val jsBundleLoader: Task<JSBundleLoader>
     get() {
       stateTracker.enterState("getJSBundleLoader()")
+
+      if (devSupportManager.bundleFilePath != null) {
+        return try {
+          Task.forResult(
+              JSBundleLoader.createFileLoader(checkNotNull(devSupportManager.bundleFilePath))
+          )
+        } catch (e: Exception) {
+          Task.forError(e)
+        }
+      }
 
       if (useDevSupport && allowPackagerServerAccess) {
         return isMetroRunning.onSuccessTask(

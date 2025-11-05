@@ -56,13 +56,15 @@ static void sliceChildShadowNodeViewPairsRecursively(
     const CullingContext& cullingContext) {
   for (const auto& sharedChildShadowNode : shadowNode.getChildren()) {
     auto& childShadowNode = *sharedChildShadowNode;
-#ifndef ANDROID
     // T153547836: Disabled on Android because the mounting infrastructure
     // is not fully ready yet.
-    if (childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
+    if (
+#ifdef ANDROID
+        ReactNativeFeatureFlags::useTraitHiddenOnAndroid() &&
+#endif
+        childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
       continue;
     }
-#endif
     auto shadowView = ShadowView(childShadowNode);
 
     if (ReactNativeFeatureFlags::enableViewCulling()) {

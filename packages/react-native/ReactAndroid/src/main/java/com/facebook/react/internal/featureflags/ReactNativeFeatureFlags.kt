@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8af0aea8bbf4cffaad7d312032bef0e4>>
+ * @generated SignedSource<<66a87f8b82a1b3497eb9181a4ac6bab7>>
  */
 
 /**
@@ -55,6 +55,12 @@ public object ReactNativeFeatureFlags {
   public fun cxxNativeAnimatedRemoveJsSync(): Boolean = accessor.cxxNativeAnimatedRemoveJsSync()
 
   /**
+   * Dispatch view commands in mount item order.
+   */
+  @JvmStatic
+  public fun disableEarlyViewCommandExecution(): Boolean = accessor.disableEarlyViewCommandExecution()
+
+  /**
    * Prevents use of Fabric commit in C++ Animated implementation
    */
   @JvmStatic
@@ -71,6 +77,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean = accessor.disableOldAndroidAttachmentMetricsWorkarounds()
+
+  /**
+   * Force disable subview clipping for ReactViewGroup on Android
+   */
+  @JvmStatic
+  public fun disableSubviewClippingAndroid(): Boolean = accessor.disableSubviewClippingAndroid()
 
   /**
    * Turns off the global measurement cache used by TextLayoutManager on Android.
@@ -181,12 +193,6 @@ public object ReactNativeFeatureFlags {
   public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
 
   /**
-   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call
-   */
-  @JvmStatic
-  public fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = accessor.enableImagePrefetchingJNIBatchingAndroid()
-
-  /**
    * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
    */
   @JvmStatic
@@ -209,6 +215,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = accessor.enableInteropViewManagerClassLookUpOptimizationIOS()
+
+  /**
+   * Enables key up/down/press events to be sent to JS from components
+   */
+  @JvmStatic
+  public fun enableKeyEvents(): Boolean = accessor.enableKeyEvents()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -307,6 +319,18 @@ public object ReactNativeFeatureFlags {
   public fun enableViewRecyclingForView(): Boolean = accessor.enableViewRecyclingForView()
 
   /**
+   * Set clipping to drawingRect of ScrollView.
+   */
+  @JvmStatic
+  public fun enableVirtualViewClippingWithoutScrollViewClipping(): Boolean = accessor.enableVirtualViewClippingWithoutScrollViewClipping()
+
+  /**
+   * Enables the experimental version of `VirtualViewContainerState`.
+   */
+  @JvmStatic
+  public fun enableVirtualViewContainerStateExperimental(): Boolean = accessor.enableVirtualViewContainerStateExperimental()
+
+  /**
    * Enables VirtualView debug features such as logging and overlays.
    */
   @JvmStatic
@@ -361,6 +385,12 @@ public object ReactNativeFeatureFlags {
   public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = accessor.overrideBySynchronousMountPropsAtMountingAndroid()
 
   /**
+   * Enable reporting Performance Issues (`detail.devtools.performanceIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.
+   */
+  @JvmStatic
+  public fun perfIssuesEnabled(): Boolean = accessor.perfIssuesEnabled()
+
+  /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.
    */
   @JvmStatic
@@ -385,16 +415,16 @@ public object ReactNativeFeatureFlags {
   public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = accessor.shouldPressibilityUseW3CPointerEventsForHover()
 
   /**
+   * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
+   */
+  @JvmStatic
+  public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = accessor.shouldTriggerResponderTransferOnScrollAndroid()
+
+  /**
    * Skip activity identity assertion in ReactHostImpl::onHostPause()
    */
   @JvmStatic
   public fun skipActivityIdentityAssertionOnHostPause(): Boolean = accessor.skipActivityIdentityAssertionOnHostPause()
-
-  /**
-   * A flag to tell Fabric to sweep active touches from JSTouchDispatcher in Android when a child native gesture is started.
-   */
-  @JvmStatic
-  public fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = accessor.sweepActiveTouchOnChildNativeGesturesAndroid()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
@@ -461,6 +491,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useSharedAnimatedBackend(): Boolean = accessor.useSharedAnimatedBackend()
+
+  /**
+   * Use Trait::hidden on Android
+   */
+  @JvmStatic
+  public fun useTraitHiddenOnAndroid(): Boolean = accessor.useTraitHiddenOnAndroid()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

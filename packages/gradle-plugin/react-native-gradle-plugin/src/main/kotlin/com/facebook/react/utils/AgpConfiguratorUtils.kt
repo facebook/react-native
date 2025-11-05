@@ -44,12 +44,8 @@ internal object AgpConfiguratorUtils {
                   maybeCreate("debugOptimized").apply {
                     manifestPlaceholders["usesCleartextTraffic"] = "true"
                     initWith(debug)
-                    externalNativeBuild {
-                      cmake {
-                        arguments("-DCMAKE_BUILD_TYPE=Release")
-                        matchingFallbacks += listOf("release")
-                      }
-                    }
+                    matchingFallbacks += listOf("release")
+                    externalNativeBuild { cmake { arguments("-DCMAKE_BUILD_TYPE=Release") } }
                   }
                 }
               }
@@ -100,6 +96,7 @@ internal object AgpConfiguratorUtils {
           project.extensions
               .getByType(ApplicationAndroidComponentsExtension::class.java)
               .finalizeDsl { ext ->
+                ext.buildFeatures.resValues = true
                 ext.defaultConfig.resValue(
                     "string",
                     "react_native_dev_server_ip",

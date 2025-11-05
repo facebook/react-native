@@ -33,7 +33,10 @@ void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProv
 
 @synthesize moduleRegistry = _moduleRegistry;
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"HTTPRequestHandler";
+}
 
 - (void)invalidate
 {

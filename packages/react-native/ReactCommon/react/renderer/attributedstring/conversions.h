@@ -32,7 +32,8 @@
 
 namespace facebook::react {
 
-inline std::string toString(const DynamicTypeRamp& dynamicTypeRamp) {
+inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp)
+{
   switch (dynamicTypeRamp) {
     case DynamicTypeRamp::Caption2:
       return "caption2";
@@ -65,10 +66,8 @@ inline std::string toString(const DynamicTypeRamp& dynamicTypeRamp) {
   return "body";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    DynamicTypeRamp& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, DynamicTypeRamp &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -110,7 +109,8 @@ inline void fromRawValue(
   result = DynamicTypeRamp::Body;
 }
 
-inline std::string toString(const EllipsizeMode& ellipsisMode) {
+inline std::string toString(const EllipsizeMode &ellipsisMode)
+{
   switch (ellipsisMode) {
     case EllipsizeMode::Clip:
       return "clip";
@@ -129,10 +129,8 @@ inline std::string toString(const EllipsizeMode& ellipsisMode) {
   return "tail";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    EllipsizeMode& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, EllipsizeMode &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -160,7 +158,8 @@ inline void fromRawValue(
   result = EllipsizeMode::Tail;
 }
 
-inline std::string toString(const TextBreakStrategy& textBreakStrategy) {
+inline std::string toString(const TextBreakStrategy &textBreakStrategy)
+{
   switch (textBreakStrategy) {
     case TextBreakStrategy::Simple:
       return "simple";
@@ -175,10 +174,8 @@ inline std::string toString(const TextBreakStrategy& textBreakStrategy) {
   return "highQuality";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    TextBreakStrategy& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, TextBreakStrategy &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -202,10 +199,8 @@ inline void fromRawValue(
   result = TextBreakStrategy::HighQuality;
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    FontWeight& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, FontWeight &result)
+{
   react_native_expect(value.hasType<std::string>() || value.hasType<int>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -274,14 +269,13 @@ inline void fromRawValue(
   result = FontWeight::Regular;
 }
 
-inline std::string toString(const FontWeight& fontWeight) {
+inline std::string toString(const FontWeight &fontWeight)
+{
   return std::to_string((int)fontWeight);
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    FontStyle& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, FontStyle &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -306,7 +300,8 @@ inline void fromRawValue(
   result = FontStyle::Normal;
 }
 
-inline std::string toString(const FontStyle& fontStyle) {
+inline std::string toString(const FontStyle &fontStyle)
+{
   switch (fontStyle) {
     case FontStyle::Normal:
       return "normal";
@@ -322,15 +317,13 @@ inline std::string toString(const FontStyle& fontStyle) {
   return "normal";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    FontVariant& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, FontVariant &result)
+{
   result = FontVariant::Default;
   react_native_expect(value.hasType<std::vector<std::string>>());
   if (value.hasType<std::vector<std::string>>()) {
     auto items = std::vector<std::string>{value};
-    for (const auto& item : items) {
+    for (const auto &item : items) {
       if (item == "small-caps") {
         result = (FontVariant)((int)result | (int)FontVariant::SmallCaps);
       } else if (item == "oldstyle-nums") {
@@ -340,8 +333,7 @@ inline void fromRawValue(
       } else if (item == "tabular-nums") {
         result = (FontVariant)((int)result | (int)FontVariant::TabularNums);
       } else if (item == "proportional-nums") {
-        result =
-            (FontVariant)((int)result | (int)FontVariant::ProportionalNums);
+        result = (FontVariant)((int)result | (int)FontVariant::ProportionalNums);
       } else if (item == "stylistic-one") {
         result = (FontVariant)((int)result | (int)FontVariant::StylisticOne);
       } else if (item == "stylistic-two") {
@@ -367,26 +359,19 @@ inline void fromRawValue(
       } else if (item == "stylistic-twelve") {
         result = (FontVariant)((int)result | (int)FontVariant::StylisticTwelve);
       } else if (item == "stylistic-thirteen") {
-        result =
-            (FontVariant)((int)result | (int)FontVariant::StylisticThirteen);
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticThirteen);
       } else if (item == "stylistic-fourteen") {
-        result =
-            (FontVariant)((int)result | (int)FontVariant::StylisticFourteen);
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticFourteen);
       } else if (item == "stylistic-fifteen") {
-        result =
-            (FontVariant)((int)result | (int)FontVariant::StylisticFifteen);
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticFifteen);
       } else if (item == "stylistic-sixteen") {
-        result =
-            (FontVariant)((int)result | (int)FontVariant::StylisticSixteen);
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticSixteen);
       } else if (item == "stylistic-seventeen") {
-        result =
-            (FontVariant)((int)result | (int)FontVariant::StylisticSeventeen);
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticSeventeen);
       } else if (item == "stylistic-eighteen") {
-        result =
-            (FontVariant)((int)result | (int)FontVariant::StylisticEighteen);
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticEighteen);
       } else if (item == "stylistic-nineteen") {
-        result =
-            (FontVariant)((int)result | (int)FontVariant::StylisticNineteen);
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticNineteen);
       } else if (item == "stylistic-twenty") {
         result = (FontVariant)((int)result | (int)FontVariant::StylisticTwenty);
       } else {
@@ -399,7 +384,8 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const FontVariant& fontVariant) {
+inline std::string toString(const FontVariant &fontVariant)
+{
   auto result = std::string{};
   auto separator = std::string{", "};
   if (((int)fontVariant & (int)FontVariant::SmallCaps) != 0) {
@@ -485,10 +471,8 @@ inline std::string toString(const FontVariant& fontVariant) {
   return result;
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    TextTransform& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, TextTransform &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -517,7 +501,8 @@ inline void fromRawValue(
   result = TextTransform::None;
 }
 
-inline std::string toString(const TextTransform& textTransform) {
+inline std::string toString(const TextTransform &textTransform)
+{
   switch (textTransform) {
     case TextTransform::None:
       return "none";
@@ -537,10 +522,8 @@ inline std::string toString(const TextTransform& textTransform) {
   return "none";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    TextAlignment& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, TextAlignment &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -567,7 +550,8 @@ inline void fromRawValue(
   result = TextAlignment::Natural;
 }
 
-inline std::string toString(const TextAlignment& textAlignment) {
+inline std::string toString(const TextAlignment &textAlignment)
+{
   switch (textAlignment) {
     case TextAlignment::Natural:
       return "auto";
@@ -586,10 +570,8 @@ inline std::string toString(const TextAlignment& textAlignment) {
   return "auto";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& /*context*/,
-    const RawValue& value,
-    TextAlignmentVertical& result) {
+inline void fromRawValue(const PropsParserContext & /*context*/, const RawValue &value, TextAlignmentVertical &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -615,7 +597,8 @@ inline void fromRawValue(
   result = TextAlignmentVertical::Auto;
 }
 
-inline std::string toString(const TextAlignmentVertical& textAlignment) {
+inline std::string toString(const TextAlignmentVertical &textAlignment)
+{
   switch (textAlignment) {
     case TextAlignmentVertical::Auto:
       return "auto";
@@ -632,10 +615,8 @@ inline std::string toString(const TextAlignmentVertical& textAlignment) {
   return "auto";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    WritingDirection& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, WritingDirection &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -659,7 +640,8 @@ inline void fromRawValue(
   result = WritingDirection::Natural;
 }
 
-inline std::string toString(const WritingDirection& writingDirection) {
+inline std::string toString(const WritingDirection &writingDirection)
+{
   switch (writingDirection) {
     case WritingDirection::Natural:
       return "auto";
@@ -674,10 +656,8 @@ inline std::string toString(const WritingDirection& writingDirection) {
   return "auto";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    LineBreakStrategy& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, LineBreakStrategy &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -703,7 +683,8 @@ inline void fromRawValue(
   result = LineBreakStrategy::None;
 }
 
-inline std::string toString(const LineBreakStrategy& lineBreakStrategy) {
+inline std::string toString(const LineBreakStrategy &lineBreakStrategy)
+{
   switch (lineBreakStrategy) {
     case LineBreakStrategy::None:
       return "none";
@@ -720,10 +701,8 @@ inline std::string toString(const LineBreakStrategy& lineBreakStrategy) {
   return "none";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& /*context*/,
-    const RawValue& value,
-    LineBreakMode& result) {
+inline void fromRawValue(const PropsParserContext & /*context*/, const RawValue &value, LineBreakMode &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -753,7 +732,8 @@ inline void fromRawValue(
   result = LineBreakMode::Word;
 }
 
-inline std::string toString(const LineBreakMode& lineBreakMode) {
+inline std::string toString(const LineBreakMode &lineBreakMode)
+{
   switch (lineBreakMode) {
     case LineBreakMode::Word:
       return "wordWrapping";
@@ -774,10 +754,8 @@ inline std::string toString(const LineBreakMode& lineBreakMode) {
   return "wordWrapping";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    TextDecorationLineType& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, TextDecorationLineType &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -788,9 +766,7 @@ inline void fromRawValue(
     } else if (string == "strikethrough" || string == "line-through") {
       // TODO: remove "line-through" after deprecation
       result = TextDecorationLineType::Strikethrough;
-    } else if (
-        string == "underline-strikethrough" ||
-        string == "underline line-through") {
+    } else if (string == "underline-strikethrough" || string == "underline line-through") {
       // TODO: remove "underline line-through" after "line-through" deprecation
       result = TextDecorationLineType::UnderlineStrikethrough;
     } else {
@@ -807,8 +783,8 @@ inline void fromRawValue(
   result = TextDecorationLineType::None;
 }
 
-inline std::string toString(
-    const TextDecorationLineType& textDecorationLineType) {
+inline std::string toString(const TextDecorationLineType &textDecorationLineType)
+{
   switch (textDecorationLineType) {
     case TextDecorationLineType::None:
       return "none";
@@ -826,10 +802,8 @@ inline std::string toString(
   return "none";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    TextDecorationStyle& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, TextDecorationStyle &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -855,7 +829,8 @@ inline void fromRawValue(
   result = TextDecorationStyle::Solid;
 }
 
-inline std::string toString(const TextDecorationStyle& textDecorationStyle) {
+inline std::string toString(const TextDecorationStyle &textDecorationStyle)
+{
   switch (textDecorationStyle) {
     case TextDecorationStyle::Solid:
       return "solid";
@@ -873,7 +848,8 @@ inline std::string toString(const TextDecorationStyle& textDecorationStyle) {
   return "solid";
 }
 
-inline std::string toString(const HyphenationFrequency& hyphenationFrequency) {
+inline std::string toString(const HyphenationFrequency &hyphenationFrequency)
+{
   switch (hyphenationFrequency) {
     case HyphenationFrequency::None:
       return "none";
@@ -888,10 +864,8 @@ inline std::string toString(const HyphenationFrequency& hyphenationFrequency) {
   return "none";
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    HyphenationFrequency& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, HyphenationFrequency &result)
+{
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -916,10 +890,11 @@ inline void fromRawValue(
 }
 
 inline ParagraphAttributes convertRawProp(
-    const PropsParserContext& context,
-    const RawProps& rawProps,
-    const ParagraphAttributes& sourceParagraphAttributes,
-    const ParagraphAttributes& defaultParagraphAttributes) {
+    const PropsParserContext &context,
+    const RawProps &rawProps,
+    const ParagraphAttributes &sourceParagraphAttributes,
+    const ParagraphAttributes &defaultParagraphAttributes)
+{
   auto paragraphAttributes = ParagraphAttributes{};
 
   paragraphAttributes.maximumNumberOfLines = convertRawProp(
@@ -986,10 +961,8 @@ inline ParagraphAttributes convertRawProp(
   return paragraphAttributes;
 }
 
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    AttributedString::Range& result) {
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, AttributedString::Range &result)
+{
   auto map = (std::unordered_map<std::string, int>)value;
 
   auto start = map.find("start");
@@ -1002,9 +975,9 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const AttributedString::Range& range) {
-  return "{location: " + std::to_string(range.location) +
-      ", length: " + std::to_string(range.length) + "}";
+inline std::string toString(const AttributedString::Range &range)
+{
+  return "{location: " + std::to_string(range.location) + ", length: " + std::to_string(range.length) + "}";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
@@ -1066,36 +1039,26 @@ constexpr static MapBuffer::Key PA_KEY_MINIMUM_FONT_SIZE = 6;
 constexpr static MapBuffer::Key PA_KEY_MAXIMUM_FONT_SIZE = 7;
 constexpr static MapBuffer::Key PA_KEY_TEXT_ALIGN_VERTICAL = 8;
 
-inline MapBuffer toMapBuffer(const ParagraphAttributes& paragraphAttributes) {
+inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes)
+{
   auto builder = MapBufferBuilder();
-  builder.putInt(
-      PA_KEY_MAX_NUMBER_OF_LINES, paragraphAttributes.maximumNumberOfLines);
-  builder.putString(
-      PA_KEY_ELLIPSIZE_MODE, toString(paragraphAttributes.ellipsizeMode));
-  builder.putString(
-      PA_KEY_TEXT_BREAK_STRATEGY,
-      toString(paragraphAttributes.textBreakStrategy));
-  builder.putBool(
-      PA_KEY_ADJUST_FONT_SIZE_TO_FIT, paragraphAttributes.adjustsFontSizeToFit);
-  builder.putBool(
-      PA_KEY_INCLUDE_FONT_PADDING, paragraphAttributes.includeFontPadding);
-  builder.putString(
-      PA_KEY_HYPHENATION_FREQUENCY,
-      toString(paragraphAttributes.android_hyphenationFrequency));
+  builder.putInt(PA_KEY_MAX_NUMBER_OF_LINES, paragraphAttributes.maximumNumberOfLines);
+  builder.putString(PA_KEY_ELLIPSIZE_MODE, toString(paragraphAttributes.ellipsizeMode));
+  builder.putString(PA_KEY_TEXT_BREAK_STRATEGY, toString(paragraphAttributes.textBreakStrategy));
+  builder.putBool(PA_KEY_ADJUST_FONT_SIZE_TO_FIT, paragraphAttributes.adjustsFontSizeToFit);
+  builder.putBool(PA_KEY_INCLUDE_FONT_PADDING, paragraphAttributes.includeFontPadding);
+  builder.putString(PA_KEY_HYPHENATION_FREQUENCY, toString(paragraphAttributes.android_hyphenationFrequency));
   if (paragraphAttributes.textAlignVertical.has_value()) {
-    builder.putString(
-        PA_KEY_TEXT_ALIGN_VERTICAL,
-        toString(*paragraphAttributes.textAlignVertical));
+    builder.putString(PA_KEY_TEXT_ALIGN_VERTICAL, toString(*paragraphAttributes.textAlignVertical));
   }
-  builder.putDouble(
-      PA_KEY_MINIMUM_FONT_SIZE, paragraphAttributes.minimumFontSize);
-  builder.putDouble(
-      PA_KEY_MAXIMUM_FONT_SIZE, paragraphAttributes.maximumFontSize);
+  builder.putDouble(PA_KEY_MINIMUM_FONT_SIZE, paragraphAttributes.minimumFontSize);
+  builder.putDouble(PA_KEY_MAXIMUM_FONT_SIZE, paragraphAttributes.maximumFontSize);
 
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const FontVariant& fontVariant) {
+inline MapBuffer toMapBuffer(const FontVariant &fontVariant)
+{
   auto builder = MapBufferBuilder();
   int index = 0;
   if ((int)fontVariant & (int)FontVariant::SmallCaps) {
@@ -1117,15 +1080,14 @@ inline MapBuffer toMapBuffer(const FontVariant& fontVariant) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
+inline MapBuffer toMapBuffer(const TextAttributes &textAttributes)
+{
   auto builder = MapBufferBuilder();
   if (textAttributes.foregroundColor) {
-    builder.putInt(
-        TA_KEY_FOREGROUND_COLOR, toAndroidRepr(textAttributes.foregroundColor));
+    builder.putInt(TA_KEY_FOREGROUND_COLOR, toAndroidRepr(textAttributes.foregroundColor));
   }
   if (textAttributes.backgroundColor) {
-    builder.putInt(
-        TA_KEY_BACKGROUND_COLOR, toAndroidRepr(textAttributes.backgroundColor));
+    builder.putInt(TA_KEY_BACKGROUND_COLOR, toAndroidRepr(textAttributes.backgroundColor));
   }
   if (!std::isnan(textAttributes.opacity)) {
     builder.putDouble(TA_KEY_OPACITY, textAttributes.opacity);
@@ -1137,8 +1099,7 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
     builder.putDouble(TA_KEY_FONT_SIZE, textAttributes.fontSize);
   }
   if (!std::isnan(textAttributes.fontSizeMultiplier)) {
-    builder.putDouble(
-        TA_KEY_FONT_SIZE_MULTIPLIER, textAttributes.fontSizeMultiplier);
+    builder.putDouble(TA_KEY_FONT_SIZE_MULTIPLIER, textAttributes.fontSizeMultiplier);
   }
   if (textAttributes.fontWeight.has_value()) {
     builder.putString(TA_KEY_FONT_WEIGHT, toString(*textAttributes.fontWeight));
@@ -1151,12 +1112,10 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
     builder.putMapBuffer(TA_KEY_FONT_VARIANT, fontVariantMap);
   }
   if (textAttributes.allowFontScaling.has_value()) {
-    builder.putBool(
-        TA_KEY_ALLOW_FONT_SCALING, *textAttributes.allowFontScaling);
+    builder.putBool(TA_KEY_ALLOW_FONT_SCALING, *textAttributes.allowFontScaling);
   }
   if (!std::isnan(textAttributes.maxFontSizeMultiplier)) {
-    builder.putDouble(
-        TA_KEY_MAX_FONT_SIZE_MULTIPLIER, textAttributes.maxFontSizeMultiplier);
+    builder.putDouble(TA_KEY_MAX_FONT_SIZE_MULTIPLIER, textAttributes.maxFontSizeMultiplier);
   }
   if (!std::isnan(textAttributes.letterSpacing)) {
     builder.putDouble(TA_KEY_LETTER_SPACING, textAttributes.letterSpacing);
@@ -1168,64 +1127,46 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
     builder.putString(TA_KEY_ALIGNMENT, toString(*textAttributes.alignment));
   }
   if (textAttributes.baseWritingDirection.has_value()) {
-    builder.putString(
-        TA_KEY_BEST_WRITING_DIRECTION,
-        toString(*textAttributes.baseWritingDirection));
+    builder.putString(TA_KEY_BEST_WRITING_DIRECTION, toString(*textAttributes.baseWritingDirection));
   }
   if (textAttributes.lineBreakStrategy.has_value()) {
-    builder.putString(
-        TA_KEY_LINE_BREAK_STRATEGY,
-        toString(*textAttributes.lineBreakStrategy));
+    builder.putString(TA_KEY_LINE_BREAK_STRATEGY, toString(*textAttributes.lineBreakStrategy));
   }
   if (textAttributes.textTransform.has_value()) {
-    builder.putString(
-        TA_KEY_TEXT_TRANSFORM, toString(*textAttributes.textTransform));
+    builder.putString(TA_KEY_TEXT_TRANSFORM, toString(*textAttributes.textTransform));
   }
 
   // Decoration
   if (textAttributes.textDecorationColor) {
-    builder.putInt(
-        TA_KEY_TEXT_DECORATION_COLOR,
-        toAndroidRepr(textAttributes.textDecorationColor));
+    builder.putInt(TA_KEY_TEXT_DECORATION_COLOR, toAndroidRepr(textAttributes.textDecorationColor));
   }
   if (textAttributes.textDecorationLineType.has_value()) {
-    builder.putString(
-        TA_KEY_TEXT_DECORATION_LINE,
-        toString(*textAttributes.textDecorationLineType));
+    builder.putString(TA_KEY_TEXT_DECORATION_LINE, toString(*textAttributes.textDecorationLineType));
   }
   if (textAttributes.textDecorationStyle.has_value()) {
-    builder.putString(
-        TA_KEY_TEXT_DECORATION_STYLE,
-        toString(*textAttributes.textDecorationStyle));
+    builder.putString(TA_KEY_TEXT_DECORATION_STYLE, toString(*textAttributes.textDecorationStyle));
   }
 
   // Shadow
   if (!std::isnan(textAttributes.textShadowRadius)) {
-    builder.putDouble(
-        TA_KEY_TEXT_SHADOW_RADIUS, textAttributes.textShadowRadius);
+    builder.putDouble(TA_KEY_TEXT_SHADOW_RADIUS, textAttributes.textShadowRadius);
   }
   if (textAttributes.textShadowColor) {
-    builder.putInt(
-        TA_KEY_TEXT_SHADOW_COLOR,
-        toAndroidRepr(textAttributes.textShadowColor));
+    builder.putInt(TA_KEY_TEXT_SHADOW_COLOR, toAndroidRepr(textAttributes.textShadowColor));
   }
   if (textAttributes.textShadowOffset) {
-    builder.putDouble(
-        TA_KEY_TEXT_SHADOW_OFFSET_DX, textAttributes.textShadowOffset->width);
-    builder.putDouble(
-        TA_KEY_TEXT_SHADOW_OFFSET_DY, textAttributes.textShadowOffset->height);
+    builder.putDouble(TA_KEY_TEXT_SHADOW_OFFSET_DX, textAttributes.textShadowOffset->width);
+    builder.putDouble(TA_KEY_TEXT_SHADOW_OFFSET_DY, textAttributes.textShadowOffset->height);
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {
     builder.putBool(TA_KEY_IS_HIGHLIGHTED, *textAttributes.isHighlighted);
   }
   if (textAttributes.layoutDirection.has_value()) {
-    builder.putString(
-        TA_KEY_LAYOUT_DIRECTION, toString(*textAttributes.layoutDirection));
+    builder.putString(TA_KEY_LAYOUT_DIRECTION, toString(*textAttributes.layoutDirection));
   }
   if (textAttributes.accessibilityRole.has_value()) {
-    builder.putString(
-        TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
+    builder.putString(TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
   }
   if (textAttributes.role.has_value()) {
     builder.putInt(TA_KEY_ROLE, static_cast<int32_t>(*textAttributes.role));
@@ -1233,7 +1174,8 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const AttributedString::Fragment& fragment) {
+inline MapBuffer toMapBuffer(const AttributedString::Fragment &fragment)
+{
   auto builder = MapBufferBuilder();
 
   builder.putString(FR_KEY_STRING, fragment.string);
@@ -1242,11 +1184,8 @@ inline MapBuffer toMapBuffer(const AttributedString::Fragment& fragment) {
   }
   if (fragment.isAttachment()) {
     builder.putBool(FR_KEY_IS_ATTACHMENT, true);
-    builder.putDouble(
-        FR_KEY_WIDTH, fragment.parentShadowView.layoutMetrics.frame.size.width);
-    builder.putDouble(
-        FR_KEY_HEIGHT,
-        fragment.parentShadowView.layoutMetrics.frame.size.height);
+    builder.putDouble(FR_KEY_WIDTH, fragment.parentShadowView.layoutMetrics.frame.size.width);
+    builder.putDouble(FR_KEY_HEIGHT, fragment.parentShadowView.layoutMetrics.frame.size.height);
   }
   auto textAttributesMap = toMapBuffer(fragment.textAttributes);
   builder.putMapBuffer(FR_KEY_TEXT_ATTRIBUTES, textAttributesMap);
@@ -1254,7 +1193,8 @@ inline MapBuffer toMapBuffer(const AttributedString::Fragment& fragment) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
+inline MapBuffer toMapBuffer(const AttributedString &attributedString)
+{
   auto fragmentsBuilder = MapBufferBuilder();
 
   int index = 0;
@@ -1263,14 +1203,11 @@ inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
   }
 
   auto builder = MapBufferBuilder();
-  size_t hash =
-      std::hash<facebook::react::AttributedString>{}(attributedString);
+  size_t hash = std::hash<facebook::react::AttributedString>{}(attributedString);
   // TODO: This truncates half the hash
   builder.putInt(AS_KEY_HASH, static_cast<int>(hash));
   builder.putString(AS_KEY_STRING, attributedString.getString());
-  builder.putMapBuffer(
-      AS_KEY_BASE_ATTRIBUTES,
-      toMapBuffer(attributedString.getBaseTextAttributes()));
+  builder.putMapBuffer(AS_KEY_BASE_ATTRIBUTES, toMapBuffer(attributedString.getBaseTextAttributes()));
   auto fragmentsMap = fragmentsBuilder.build();
   builder.putMapBuffer(AS_KEY_FRAGMENTS, fragmentsMap);
   return builder.build();

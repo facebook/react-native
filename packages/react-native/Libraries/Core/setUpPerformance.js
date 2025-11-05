@@ -20,7 +20,9 @@ if (NativePerformance) {
     // $FlowExpectedError[cannot-write]
     global.performance = {
       mark: () => {},
+      clearMarks: () => {},
       measure: () => {},
+      clearMeasures: () => {},
       now: () => {
         const performanceNow = global.nativePerformanceNow || Date.now;
         return performanceNow();

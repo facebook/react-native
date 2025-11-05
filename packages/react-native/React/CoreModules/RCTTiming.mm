@@ -107,7 +107,10 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
 @synthesize paused = _paused;
 @synthesize pauseCallback = _pauseCallback;
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"Timing";
+}
 
 - (instancetype)initWithDelegate:(id<RCTTimingDelegate>)delegate
 {
@@ -353,11 +356,9 @@ RCT_EXPORT_MODULE()
  * calculating the timer's target time. We calculate this by passing in
  * Date.now() from JS and then subtracting that from the current time here.
  */
-RCT_EXPORT_METHOD(createTimer
-                  : (double)callbackID duration
-                  : (NSTimeInterval)jsDuration jsSchedulingTime
-                  : (double)jsSchedulingTime repeats
-                  : (BOOL)repeats)
+RCT_EXPORT_METHOD(
+    createTimer : (double)callbackID duration : (NSTimeInterval)jsDuration jsSchedulingTime : (double)
+        jsSchedulingTime repeats : (BOOL)repeats)
 {
   NSNumber *callbackIdObjc = [NSNumber numberWithDouble:callbackID];
   NSDate *schedulingTime = [RCTConvert NSDate:[NSNumber numberWithDouble:jsSchedulingTime]];

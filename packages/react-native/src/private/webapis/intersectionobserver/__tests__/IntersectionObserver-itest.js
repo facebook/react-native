@@ -88,13 +88,164 @@ describe('IntersectionObserver', () => {
       );
     });
 
-    it('should throw if `rootMargin` is provided', () => {
+    it('should accept valid `rootMargin` values', () => {
       expect(() => {
         // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
         return new IntersectionObserver(() => {}, {rootMargin: '10px'});
-      }).toThrow(
-        "Failed to construct 'IntersectionObserver': rootMargin is not supported",
-      );
+      }).not.toThrow();
+
+      expect(() => {
+        // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+        return new IntersectionObserver(() => {}, {rootMargin: '10px 20px'});
+      }).not.toThrow();
+
+      expect(() => {
+        // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+        return new IntersectionObserver(() => {}, {
+          rootMargin: '10px 20px 30px 40px',
+        });
+      }).not.toThrow();
+    });
+
+    describe('rootMargin', () => {
+      it('should parse single value rootMargin', () => {
+        // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+        observer = new IntersectionObserver(() => {}, {rootMargin: '10px'});
+        expect(observer.rootMargin).toBe('10px 10px 10px 10px');
+      });
+
+      it('should parse two value rootMargin', () => {
+        // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+        observer = new IntersectionObserver(() => {}, {
+          rootMargin: '10px 20px',
+        });
+        expect(observer.rootMargin).toBe('10px 20px 10px 20px');
+      });
+
+      it('should parse three value rootMargin', () => {
+        // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+        observer = new IntersectionObserver(() => {}, {
+          rootMargin: '10px 20px 30px',
+        });
+        expect(observer.rootMargin).toBe('10px 20px 30px 20px');
+      });
+
+      it('should parse four value rootMargin', () => {
+        // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+        observer = new IntersectionObserver(() => {}, {
+          rootMargin: '10px 20px 30px 40px',
+        });
+        expect(observer.rootMargin).toBe('10px 20px 30px 40px');
+      });
+
+      it('should handle negative rootMargin values', () => {
+        // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+        observer = new IntersectionObserver(() => {}, {
+          rootMargin: '-10px -20px',
+        });
+        expect(observer.rootMargin).toBe('-10px -20px -10px -20px');
+      });
+
+      it('should handle percentage rootMargin values', () => {
+        // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+        observer = new IntersectionObserver(() => {}, {
+          rootMargin: '10% 20%',
+        });
+        expect(observer.rootMargin).toBe('10% 20% 10% 20%');
+      });
+
+      describe('default values', () => {
+        it('should default to "0px 0px 0px 0px" when rootMargin is not provided', () => {
+          observer = new IntersectionObserver(() => {});
+          expect(observer.rootMargin).toBe('0px 0px 0px 0px');
+        });
+
+        it('should default to "0px 0px 0px 0px" when rootMargin is undefined', () => {
+          // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+          observer = new IntersectionObserver(() => {}, {
+            rootMargin: undefined,
+          });
+          expect(observer.rootMargin).toBe('0px 0px 0px 0px');
+        });
+
+        it('should default to "0px 0px 0px 0px" when rootMargin is empty string', () => {
+          // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+          observer = new IntersectionObserver(() => {}, {rootMargin: ''});
+          expect(observer.rootMargin).toBe('0px 0px 0px 0px');
+        });
+      });
+
+      describe('parsing failures', () => {
+        it('should throw when rootMargin is not a string', () => {
+          expect(() => {
+            // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+            // $FlowExpectedError[incompatible-type]
+            return new IntersectionObserver(() => {}, {rootMargin: 123});
+          }).toThrow(
+            "Failed to construct 'IntersectionObserver': Failed to read the 'rootMargin' property from 'IntersectionObserverInit': The provided value is not of type 'string'.",
+          );
+        });
+
+        it('should throw when rootMargin has too many values', () => {
+          expect(() => {
+            // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+            return new IntersectionObserver(() => {}, {
+              rootMargin: '10px 20px 30px 40px 50px',
+            });
+          }).toThrow(
+            "Failed to construct 'IntersectionObserver': Failed to parse rootMargin: Too many values (expected 1-4).",
+          );
+        });
+
+        it('should throw when rootMargin value is missing unit', () => {
+          expect(() => {
+            // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+            return new IntersectionObserver(() => {}, {rootMargin: '10'});
+          }).toThrow(
+            "Failed to construct 'IntersectionObserver': Failed to parse rootMargin: '10' is not a valid length. Only 'px' and '%' units are allowed.",
+          );
+        });
+
+        it('should throw when rootMargin value has invalid unit', () => {
+          expect(() => {
+            // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+            return new IntersectionObserver(() => {}, {rootMargin: '10em'});
+          }).toThrow(
+            "Failed to construct 'IntersectionObserver': Failed to parse rootMargin: '10em' is not a valid length. Only 'px' and '%' units are allowed.",
+          );
+        });
+
+        it('should throw when rootMargin value has invalid format', () => {
+          expect(() => {
+            // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+            return new IntersectionObserver(() => {}, {
+              rootMargin: 'invalid',
+            });
+          }).toThrow(
+            "Failed to construct 'IntersectionObserver': Failed to parse rootMargin: 'invalid' is not a valid length. Only 'px' and '%' units are allowed.",
+          );
+        });
+
+        it('should throw when rootMargin has mixed valid and invalid values', () => {
+          expect(() => {
+            // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+            return new IntersectionObserver(() => {}, {
+              rootMargin: '10px invalid',
+            });
+          }).toThrow(
+            "Failed to construct 'IntersectionObserver': Failed to parse rootMargin: 'invalid' is not a valid length. Only 'px' and '%' units are allowed.",
+          );
+        });
+
+        it('should throw when rootMargin value is only a unit', () => {
+          expect(() => {
+            // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+            return new IntersectionObserver(() => {}, {rootMargin: 'px'});
+          }).toThrow(
+            "Failed to construct 'IntersectionObserver': Failed to parse rootMargin: 'px' is not a valid length. Only 'px' and '%' units are allowed.",
+          );
+        });
+      });
     });
 
     it('should throw if `threshold` contains a value lower than 0 or greater than 1', () => {
@@ -129,7 +280,7 @@ describe('IntersectionObserver', () => {
       );
     });
 
-    it('should provide access to custom `root`', () => {
+    it('should provide access to explicit `root`', () => {
       const rootRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
@@ -321,6 +472,103 @@ describe('IntersectionObserver', () => {
       expect(
         new IntersectionObserver(() => {}, {rnRootThreshold: []}).thresholds,
       ).toEqual([0]);
+    });
+
+    describe('unsupported options', () => {
+      it('should throw if `delay` option is specified', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] delay is not defined in Flow.
+          return new IntersectionObserver(() => {}, {delay: 100});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'delay' option is not supported.",
+        );
+      });
+
+      it('should throw if `scrollMargin` option is specified', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] scrollMargin is not defined in Flow.
+          return new IntersectionObserver(() => {}, {scrollMargin: '10px'});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'scrollMargin' option is not supported.",
+        );
+      });
+
+      it('should throw if `trackVisibility` option is specified', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] trackVisibility is not defined in Flow.
+          return new IntersectionObserver(() => {}, {trackVisibility: true});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'trackVisibility' option is not supported.",
+        );
+      });
+
+      it('should throw if `delay` option is set to undefined explicitly', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] delay is not defined in Flow.
+          return new IntersectionObserver(() => {}, {delay: undefined});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'delay' option is not supported.",
+        );
+      });
+
+      it('should throw if `scrollMargin` option is set to null explicitly', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] scrollMargin is not defined in Flow.
+          return new IntersectionObserver(() => {}, {scrollMargin: null});
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'scrollMargin' option is not supported.",
+        );
+      });
+
+      it('should not throw when unsupported options are not specified', () => {
+        expect(() => {
+          return new IntersectionObserver(() => {}, {
+            threshold: 0.5,
+            rootMargin: '10px',
+          });
+        }).not.toThrow();
+      });
+
+      it('should throw if multiple unsupported options are specified', () => {
+        expect(() => {
+          // $FlowExpectedError[prop-missing] delay and trackVisibility are not defined in Flow.
+          return new IntersectionObserver(() => {}, {
+            delay: 100,
+            trackVisibility: true,
+          });
+        }).toThrow(
+          "Failed to construct 'IntersectionObserver': The 'delay' option is not supported.",
+        );
+      });
+    });
+
+    describe('unsupported property getters', () => {
+      it('should throw when accessing delay getter', () => {
+        observer = new IntersectionObserver(() => {});
+        expect(() => {
+          return observer.delay;
+        }).toThrow(
+          "Failed to read the 'delay' property from 'IntersectionObserver': This property is not supported.",
+        );
+      });
+
+      it('should throw when accessing scrollMargin getter', () => {
+        observer = new IntersectionObserver(() => {});
+        expect(() => {
+          return observer.scrollMargin;
+        }).toThrow(
+          "Failed to read the 'scrollMargin' property from 'IntersectionObserver': This property is not supported.",
+        );
+      });
+
+      it('should throw when accessing trackVisibility getter', () => {
+        observer = new IntersectionObserver(() => {});
+        expect(() => {
+          return observer.trackVisibility;
+        }).toThrow(
+          "Failed to read the 'trackVisibility' property from 'IntersectionObserver': This property is not supported.",
+        );
+      });
     });
   });
 
@@ -1144,7 +1392,7 @@ describe('IntersectionObserver', () => {
       });
     });
 
-    describe('with custom root', () => {
+    describe('with explicit root', () => {
       it('should report partial non-intersecting initial state correctly', () => {
         const nodeRef = createRef<HostInstance>();
         const scrollNodeRef = createRef<HostInstance>();
@@ -1489,6 +1737,1228 @@ describe('IntersectionObserver', () => {
           width: 1000,
           height: 1000,
         });
+      });
+    });
+
+    describe('with rootMargin', () => {
+      describe('expanding', () => {
+        it('full intersect with implicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              // Position element at x: -50, y: -50 (outside viewport)
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -50,
+                  left: -50,
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '50px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expectRectEquals(entries[0].rootBounds, {
+            x: -50,
+            y: -50,
+            width: 1100,
+            height: 1100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: -50,
+            y: -50,
+            width: 100,
+            height: 100,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: -50,
+            y: -50,
+            width: 100,
+            height: 100,
+          });
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(1);
+        });
+
+        it('no intersection with high threshold on explicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+          const rootNodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 200, height: 200}} ref={rootNodeRef}>
+                <View
+                  style={{
+                    marginTop: -75,
+                    width: 50,
+                    height: 50,
+                  }}
+                  ref={nodeRef}
+                />
+              </View>,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const rootNode = ensureReactNativeElement(rootNodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              root: rootNode,
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '50px 0px 0px 0px',
+              threshold: 1,
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(false);
+          expect(entries[0].intersectionRatio).toBe(0.5);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 0,
+            y: -50,
+            width: 200,
+            height: 250,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 0,
+            y: -50,
+            width: 50,
+            height: 25,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: -75,
+            width: 50,
+            height: 50,
+          });
+        });
+
+        it('no intersect with rnRootThreshold with implicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -75,
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '50px',
+              threshold: 1,
+              rnRootThreshold: 0.5,
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(false);
+          expect(entries[0].intersectionRatio).toBe(0.75);
+          expect(entries[0].rnRootIntersectionRatio).toBe(
+            (100 * 75) / (1100 * 1100),
+          );
+          expectRectEquals(entries[0].rootBounds, {
+            x: -50,
+            y: -50,
+            width: 1100,
+            height: 1100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 0,
+            y: -50,
+            width: 100,
+            height: 75,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: -75,
+            width: 100,
+            height: 100,
+          });
+        });
+
+        it('no intersect with rnRootThreshold with explicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+          const rootRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View ref={rootRef} style={{width: 100, height: 100}}>
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: -75,
+                    width: 100,
+                    height: 100,
+                  }}
+                  ref={nodeRef}
+                />
+                ,
+              </View>,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const rootNode = ensureReactNativeElement(rootRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '50px',
+              root: rootNode,
+              threshold: 1,
+              rnRootThreshold: 0.1,
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(0.75);
+          expect(entries[0].rnRootIntersectionRatio).toBe(
+            (100 * 75) / (200 * 200),
+          );
+          expectRectEquals(entries[0].rootBounds, {
+            x: -50,
+            y: -50,
+            width: 200,
+            height: 200,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 0,
+            y: -50,
+            width: 100,
+            height: 75,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: -75,
+            width: 100,
+            height: 100,
+          });
+        });
+
+        it('no intersection high threshold on implicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -75,
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '50px',
+              threshold: 1,
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expectRectEquals(entries[0].rootBounds, {
+            x: -50,
+            y: -50,
+            width: 1100,
+            height: 1100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 0,
+            y: -50,
+            width: 100,
+            height: 75,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: -75,
+            width: 100,
+            height: 100,
+          });
+          expect(entries[0].isIntersecting).toBe(false);
+          expect(entries[0].intersectionRatio).toBe(0.75);
+        });
+
+        it('partial intersection implicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -75,
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '50px',
+              threshold: 0.5,
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(0.75);
+          expectRectEquals(entries[0].rootBounds, {
+            x: -50,
+            y: -50,
+            width: 1100,
+            height: 1100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 0,
+            y: -50,
+            width: 100,
+            height: 75,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: -75,
+            width: 100,
+            height: 100,
+          });
+        });
+
+        it('no intersect with implicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -101,
+                  width: 50,
+                  height: 50,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '50px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expectRectEquals(entries[0].rootBounds, {
+            x: -50,
+            y: -50,
+            width: 1100,
+            height: 1100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: -101,
+            width: 50,
+            height: 50,
+          });
+          expect(entries[0].isIntersecting).toBe(false);
+          expect(entries[0].intersectionRatio).toBe(0);
+        });
+
+        it('full intersect with explicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+          const rootNodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 200, height: 200}} ref={rootNodeRef}>
+                <View
+                  style={{
+                    marginTop: 250,
+                    width: 50,
+                    height: 50,
+                  }}
+                  ref={nodeRef}
+                />
+              </View>,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const scrollNode = ensureReactNativeElement(rootNodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              root: scrollNode,
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '0px 0px 100px 0px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+        });
+      });
+
+      describe('contracting', () => {
+        it('partial intersection on explicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+          const rootNodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 200, height: 200}} ref={rootNodeRef}>
+                <View
+                  style={{
+                    marginTop: 30,
+                    width: 100,
+                    height: 100,
+                  }}
+                  ref={nodeRef}
+                />
+              </View>,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const scrollNode = ensureReactNativeElement(rootNodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              root: scrollNode,
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-50px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(0.4);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 50,
+            y: 50,
+            width: 100,
+            height: 100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 50,
+            y: 50,
+            width: 50,
+            height: 80,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: 30,
+            width: 100,
+            height: 100,
+          });
+        });
+
+        it('partial intersection with threshold on explicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+          const rootNodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 200, height: 200}} ref={rootNodeRef}>
+                <View
+                  style={{
+                    width: 100,
+                    height: 100,
+                  }}
+                  ref={nodeRef}
+                />
+              </View>,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const customRoot = ensureReactNativeElement(rootNodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              root: customRoot,
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-40px',
+              threshold: 0.3,
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe((60 * 60) / (100 * 100));
+          expectRectEquals(entries[0].rootBounds, {
+            x: 40,
+            y: 40,
+            width: 120,
+            height: 120,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 40,
+            y: 40,
+            width: 60,
+            height: 60,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100,
+          });
+        });
+
+        it('partial intersection on implicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 25,
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-50px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(0.375);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 50,
+            y: 50,
+            width: 900,
+            height: 900,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 50,
+            y: 50,
+            width: 50,
+            height: 75,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: 25,
+            width: 100,
+            height: 100,
+          });
+        });
+
+        it('edge-intersection with implicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-100px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 100,
+            y: 100,
+            width: 800,
+            height: 800,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 100,
+            y: 100,
+            width: 0,
+            height: 0,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100,
+          });
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(0);
+        });
+
+        it('no intersection with implicit root threshold 1', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 80,
+                  left: 10,
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-100px 0px 0px 0px',
+              threshold: 1,
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(false);
+          expect(entries[0].intersectionRatio).toBe(0.8);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 0,
+            y: 100,
+            width: 1000,
+            height: 900,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 10,
+            y: 100,
+            width: 100,
+            height: 80,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 10,
+            y: 80,
+            width: 100,
+            height: 100,
+          });
+        });
+
+        it('no intersection on implicit root completely outside', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-150px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(false);
+          expect(entries[0].intersectionRatio).toBe(0);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 150,
+            y: 150,
+            width: 700,
+            height: 700,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: 10,
+            width: 100,
+            height: 100,
+          });
+        });
+
+        it('full intersection with explicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+          const rootNodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 200, height: 200}} ref={rootNodeRef}>
+                <View
+                  style={{
+                    marginTop: 60,
+                    width: 80,
+                    height: 80,
+                  }}
+                  ref={nodeRef}
+                />
+              </View>,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const rootNode = ensureReactNativeElement(rootNodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              root: rootNode,
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-50px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 50,
+            y: 50,
+            width: 100,
+            height: 100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 50,
+            y: 60,
+            width: 30,
+            height: 80,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: 60,
+            width: 80,
+            height: 80,
+          });
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(0.375);
+        });
+
+        it('no intersection with explicit root', () => {
+          const nodeRef = createRef<HostInstance>();
+          const rootNodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 200, height: 200}} ref={rootNodeRef}>
+                <View
+                  style={{
+                    marginTop: -50,
+                    width: 50,
+                    height: 50,
+                  }}
+                  ref={nodeRef}
+                />
+              </View>,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const scrollNode = ensureReactNativeElement(rootNodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              root: scrollNode,
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-50px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(false);
+          expect(entries[0].intersectionRatio).toBe(0);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 50,
+            y: 50,
+            width: 100,
+            height: 100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: -50,
+            width: 50,
+            height: 50,
+          });
+        });
+      });
+
+      describe('percentage', () => {
+        it('full intersect with percentage rootMargin', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -50,
+                  left: -50,
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '5%',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(1);
+          expectRectEquals(entries[0].rootBounds, {
+            x: -50,
+            y: -50,
+            width: 1100,
+            height: 1100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: -50,
+            y: -50,
+            width: 100,
+            height: 100,
+          });
+        });
+        it('should calculate percentage rootMargin relative to root dimensions with custom root', () => {
+          const nodeRef = createRef<HostInstance>();
+          const rootNodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 200, height: 200}} ref={rootNodeRef}>
+                <View
+                  style={{
+                    width: 50,
+                    height: 50,
+                  }}
+                  ref={nodeRef}
+                />
+              </View>,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const scrollNode = ensureReactNativeElement(rootNodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              root: scrollNode,
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-25%',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(0);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 50,
+            y: 50,
+            width: 100,
+            height: 100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 50,
+            y: 50,
+            width: 0,
+            height: 0,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: 0,
+            width: 50,
+            height: 50,
+          });
+        });
+        it('should handle mixed px and percentage rootMargin values', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -100,
+                  left: 0,
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '10% 0px 0px 0px',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 0,
+            y: -100,
+            width: 1000,
+            height: 1100,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 0,
+            y: -100,
+            width: 100,
+            height: 100,
+          });
+          expectRectEquals(entries[0].boundingClientRect, {
+            x: 0,
+            y: -100,
+            width: 100,
+            height: 100,
+          });
+        });
+        it('edge intersection with negative percentage rootMargin', () => {
+          const nodeRef = createRef<HostInstance>();
+
+          const root = Fantom.createRoot({
+            viewportWidth: 1000,
+            viewportHeight: 1000,
+          });
+
+          Fantom.runTask(() => {
+            root.render(
+              <View
+                style={{
+                  width: 100,
+                  height: 100,
+                }}
+                ref={nodeRef}
+              />,
+            );
+          });
+
+          const node = ensureReactNativeElement(nodeRef.current);
+          const intersectionObserverCallback = jest.fn();
+
+          Fantom.runTask(() => {
+            observer = new IntersectionObserver(intersectionObserverCallback, {
+              // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+              rootMargin: '-10%',
+            });
+            observer.observe(node);
+          });
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+          const [entries] = intersectionObserverCallback.mock.lastCall;
+          expect(entries.length).toBe(1);
+          expect(entries[0].isIntersecting).toBe(true);
+          expect(entries[0].intersectionRatio).toBe(0);
+          expectRectEquals(entries[0].rootBounds, {
+            x: 100,
+            y: 100,
+            width: 800,
+            height: 800,
+          });
+          expectRectEquals(entries[0].intersectionRect, {
+            x: 100,
+            y: 100,
+            width: 0,
+            height: 0,
+          });
+        });
+      });
+
+      it('should update intersection state when element moves with rootMargin', () => {
+        const scrollNodeRef = createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot({
+          viewportWidth: 1000,
+          viewportHeight: 1000,
+        });
+
+        Fantom.runTask(() => {
+          root.render(
+            <ScrollView ref={scrollNodeRef}>
+              <View style={{width: 100, height: 100}} ref={nodeRef} />
+            </ScrollView>,
+          );
+        });
+
+        const node = ensureReactNativeElement(nodeRef.current);
+        const scrollNode = ensureReactNativeElement(scrollNodeRef.current);
+        const intersectionObserverCallback = jest.fn();
+
+        Fantom.runTask(() => {
+          observer = new IntersectionObserver(intersectionObserverCallback, {
+            // $FlowExpectedError[prop-missing] rootMargin is not even defined in Flow.
+            rootMargin: '50px',
+          });
+          observer.observe(node);
+        });
+
+        expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+        const [entries1] = intersectionObserverCallback.mock.lastCall;
+        expect(entries1[0].isIntersecting).toBe(true);
+
+        // Scroll element out of expanded viewport
+        Fantom.scrollTo(scrollNode, {x: 0, y: 200});
+
+        expect(intersectionObserverCallback).toHaveBeenCalledTimes(2);
+        const [entries2] = intersectionObserverCallback.mock.lastCall;
+        expect(entries2[0].isIntersecting).toBe(false);
       });
     });
 
@@ -1868,6 +3338,290 @@ describe('IntersectionObserver', () => {
     });
   });
 
+  describe('intersectionRect is relative to root', () => {
+    it('should report intersectionRect for implicit root', () => {
+      const node1Ref = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      Fantom.runTask(() => {
+        root.render(
+          <>
+            <View
+              style={{
+                position: 'absolute',
+                top: -50,
+                width: 100,
+                height: 100,
+              }}
+              ref={node1Ref}
+            />
+          </>,
+        );
+      });
+
+      const node1 = ensureReactNativeElement(node1Ref.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback);
+        observer.observe(node1);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].intersectionRatio).toBe(0.5);
+      expect(entries[0].target).toBe(node1);
+
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 50,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 0,
+        y: -50,
+        width: 100,
+        height: 100,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: 0,
+        y: 0,
+        width: 1000,
+        height: 1000,
+      });
+    });
+
+    it('should report intersectionRect for explicit root', () => {
+      const node1Ref = React.createRef<HostInstance>();
+      const node2Ref = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      Fantom.runTask(() => {
+        root.render(
+          <>
+            <View
+              style={{
+                position: 'relative',
+                marginTop: -50,
+                width: 500,
+                height: 500,
+              }}
+              ref={node1Ref}>
+              <View
+                style={{
+                  position: 'absolute',
+                  width: 100,
+                  height: 100,
+                  top: -50,
+                }}
+                ref={node2Ref}
+              />
+            </View>
+          </>,
+        );
+      });
+
+      const node1 = ensureReactNativeElement(node1Ref.current);
+      const node2 = ensureReactNativeElement(node2Ref.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback, {
+          root: node1,
+        });
+
+        observer.observe(node2);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 0,
+        y: -50,
+        width: 100,
+        height: 50,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 0,
+        y: -100,
+        width: 100,
+        height: 100,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: 0,
+        y: -50,
+        width: 500,
+        height: 500,
+      });
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].intersectionRatio).toBe(0.5);
+      expect(entries[0].target).toBe(node2);
+    });
+  });
+
+  describe('edge-adjacent intersection', () => {
+    it('should report edge intersect with implicit root', () => {
+      const node1Ref = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      Fantom.runTask(() => {
+        root.render(
+          <>
+            <View
+              style={{
+                position: 'absolute',
+                top: -100,
+                width: 100,
+                height: 100,
+              }}
+              ref={node1Ref}
+            />
+          </>,
+        );
+      });
+
+      const node1 = ensureReactNativeElement(node1Ref.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback);
+        observer.observe(node1);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].intersectionRatio).toBe(0);
+      expect(entries[0].target).toBe(node1);
+
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 0,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 0,
+        y: -100,
+        width: 100,
+        height: 100,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: 0,
+        y: 0,
+        width: 1000,
+        height: 1000,
+      });
+    });
+
+    it('should report edge-adjacent views with zero intersection area', () => {
+      const node1Ref = React.createRef<HostInstance>();
+      const node2Ref = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      Fantom.runTask(() => {
+        root.render(
+          <>
+            <View
+              style={{
+                position: 'relative',
+                marginTop: 100,
+                marginLeft: 100,
+                width: 100,
+                height: 100,
+              }}
+              ref={node1Ref}>
+              <View
+                style={{position: 'absolute', width: 50, height: 50, top: -50}}
+                ref={node2Ref}
+              />
+            </View>
+          </>,
+        );
+      });
+
+      const node1 = ensureReactNativeElement(node1Ref.current);
+      const node2 = ensureReactNativeElement(node2Ref.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback, {
+          root: node1,
+        });
+
+        observer.observe(node2);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].intersectionRatio).toBe(0);
+      expect(entries[0].target).toBe(node2);
+
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 100,
+        y: 100,
+        width: 50,
+        height: 0,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 100,
+        y: 50,
+        width: 50,
+        height: 50,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: 100,
+        y: 100,
+        width: 100,
+        height: 100,
+      });
+    });
+  });
+
   describe('clipping behavior', () => {
     it('should report intersection for clipping ancestor', () => {
       const nodeRef = React.createRef<HostInstance>();
@@ -1911,7 +3665,7 @@ describe('IntersectionObserver', () => {
       expect(entries.length).toBe(1);
       expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
       expect(entries[0].intersectionRatio).toBe(1);
-      // This is the ratio of intersection area / (custom) root area
+      // This is the ratio of intersection area / (explicit) root area
       expect(entries[0].rnRootIntersectionRatio).toBe(0.25);
       expect(entries[0].isIntersecting).toBe(true);
       expect(entries[0].target).toBe(node);
@@ -1976,7 +3730,7 @@ describe('IntersectionObserver', () => {
       expect(entries.length).toBe(1);
       expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
       expect(entries[0].intersectionRatio).toBe(0.5);
-      // This is the ratio of intersection area / (custom) root area
+      // This is the ratio of intersection area / (explicit) root area
       expect(entries[0].rnRootIntersectionRatio).toBe(0.5);
       expect(entries[0].isIntersecting).toBe(true);
       expect(entries[0].target).toBe(node);
@@ -1998,6 +3752,136 @@ describe('IntersectionObserver', () => {
         width: 100,
         height: 100,
       });
+    });
+
+    it('should report intersection for clipping ancestor with rootMargin', () => {
+      const nodeRef = React.createRef<HostInstance>();
+      const rootRef = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+      Fantom.runTask(() => {
+        root.render(
+          <View style={{width: 5, height: 5, overflow: 'hidden'}}>
+            <View ref={rootRef} style={{width: 200, height: 200}}>
+              <View
+                style={{width: 100, height: 100, marginTop: 100}}
+                ref={nodeRef}
+              />
+            </View>
+            ,
+          </View>,
+        );
+      });
+      const node = ensureReactNativeElement(nodeRef.current);
+      const rootNode = ensureReactNativeElement(rootRef.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback, {
+          root: rootNode,
+          rootMargin: '-50px',
+        });
+
+        observer.observe(node);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expect(entries[0].intersectionRatio).toBe((50 * 50) / (100 * 100));
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].target).toBe(node);
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 50,
+        y: 100,
+        width: 50,
+        height: 50,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 0,
+        y: 100,
+        width: 100,
+        height: 100,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: 50,
+        y: 50,
+        width: 100,
+        height: 100,
+      });
+    });
+
+    it('should report intersection for clipping root with rootMargin', () => {
+      const nodeRef = React.createRef<HostInstance>();
+      const rootRef = React.createRef<HostInstance>();
+
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={rootRef}
+            style={{width: 100, height: 100, overflow: 'hidden'}}>
+            <View
+              style={{width: 100, height: 100, marginTop: 50}}
+              ref={nodeRef}
+            />
+          </View>,
+        );
+      });
+      const node = ensureReactNativeElement(nodeRef.current);
+      const rootNode = ensureReactNativeElement(rootRef.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback, {
+          root: rootNode,
+          rootMargin: '10px',
+        });
+
+        observer.observe(node);
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries, reportedObserver] =
+        intersectionObserverCallback.mock.lastCall;
+
+      expect(reportedObserver).toBe(observer);
+      expect(entries.length).toBe(1);
+      expectRectEquals(entries[0].intersectionRect, {
+        x: 0,
+        y: 50,
+        width: 100,
+        height: 50,
+      });
+      expectRectEquals(entries[0].boundingClientRect, {
+        x: 0,
+        y: 50,
+        width: 100,
+        height: 100,
+      });
+      expectRectEquals(entries[0].rootBounds, {
+        x: -10,
+        y: -10,
+        width: 120,
+        height: 120,
+      });
+
+      expect(entries[0]).toBeInstanceOf(IntersectionObserverEntry);
+      expect(entries[0].intersectionRatio).toBe(0.5);
+      expect(entries[0].isIntersecting).toBe(true);
+      expect(entries[0].target).toBe(node);
     });
   });
 
@@ -2387,10 +4271,10 @@ describe('IntersectionObserver', () => {
           expect(intersectionObserverCallback).not.toHaveBeenCalled();
 
           observer.disconnect();
+
+          expect(intersectionObserverCallback).toHaveBeenCalledTimes(0);
         });
       });
-
-      expect(intersectionObserverCallback).toHaveBeenCalledTimes(0);
     });
   });
 });

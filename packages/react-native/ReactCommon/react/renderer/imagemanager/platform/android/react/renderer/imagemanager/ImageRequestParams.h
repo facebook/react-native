@@ -42,7 +42,9 @@ class ImageRequestParams {
         fadeDuration(fadeDuration),
         progressiveRenderingEnabled(progressiveRenderingEnabled),
         loadingIndicatorSource(std::move(loadingIndicatorSource)),
-        analyticTag(std::move(analyticTag)) {}
+        analyticTag(std::move(analyticTag))
+  {
+  }
 
   Float blurRadius{};
   ImageSource defaultSource{};
@@ -57,7 +59,8 @@ class ImageRequestParams {
   ImageSource loadingIndicatorSource{};
   std::string analyticTag{};
 
-  bool operator==(const ImageRequestParams& rhs) const {
+  bool operator==(const ImageRequestParams &rhs) const
+  {
     return std::tie(
                this->blurRadius,
                this->defaultSource,
@@ -86,7 +89,8 @@ class ImageRequestParams {
                rhs.analyticTag);
   }
 
-  bool operator!=(const ImageRequestParams& rhs) const {
+  bool operator!=(const ImageRequestParams &rhs) const
+  {
     return !(*this == rhs);
   }
 };

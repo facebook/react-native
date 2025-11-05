@@ -135,7 +135,6 @@ exports.examples = [
     title: 'Contrast',
     description: 'contrast(0.5)',
     name: 'contrast',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison style={{filter: [{contrast: 0.5}]}} />
@@ -155,7 +154,6 @@ exports.examples = [
     title: 'Grayscale',
     description: 'grayscale(0.5)',
     name: 'grayscale',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison style={{filter: [{grayscale: 0.5}]}} />
@@ -166,7 +164,6 @@ exports.examples = [
     title: 'Saturate',
     description: 'saturate(4)',
     name: 'saturate',
-    platform: 'android',
     render(): React.Node {
       return <StaticViewAndImageComparison style={{filter: [{saturate: 4}]}} />;
     },
@@ -175,7 +172,6 @@ exports.examples = [
     title: 'Hue Rotate',
     description: 'hueRotate(-90deg)',
     name: 'hueRotate',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison
@@ -231,7 +227,6 @@ exports.examples = [
     title: 'Drop Shadow',
     description: 'drop-shadow(30px 10px 4px #4444dd)',
     name: 'drop-shadow',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison

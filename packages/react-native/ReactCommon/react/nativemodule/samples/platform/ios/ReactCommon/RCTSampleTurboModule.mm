@@ -24,7 +24,10 @@ using namespace facebook::react;
 }
 
 // Backward-compatible export
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"SampleTurboModule";
+}
 
 // Backward-compatible queue configuration
 + (BOOL)requiresMainQueueSetup
@@ -149,10 +152,8 @@ RCT_EXPORT_METHOD(getValueWithCallback : (RCTResponseSenderBlock)callback)
   callback(@[ @"value from callback!" ]);
 }
 
-RCT_EXPORT_METHOD(getValueWithPromise
-                  : (BOOL)error resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    getValueWithPromise : (BOOL)error resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   if ((resolve == nullptr) || (reject == nullptr)) {
     return;

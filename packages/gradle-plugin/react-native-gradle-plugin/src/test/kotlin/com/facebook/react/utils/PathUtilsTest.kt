@@ -155,21 +155,11 @@ class PathUtilsTest {
 
   @Test
   @WithOs(OS.MAC)
-  fun detectOSAwareHermesCommand_withBundledHermescInsideRN() {
-    tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
-    val expected = tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
-
-    assertThat(detectOSAwareHermesCommand(tempFolder.root, "")).isEqualTo(expected.toString())
-  }
-
-  @Test
-  @WithOs(OS.MAC)
-  fun detectOSAwareHermesCommand_withHermesV1Enabled() {
+  fun detectOSAwareHermesCommand_withHermescFromNPM() {
     tempFolder.newFolder("node_modules/hermes-compiler/hermesc/osx-bin/")
     val expected = tempFolder.newFile("node_modules/hermes-compiler/hermesc/osx-bin/hermesc")
 
-    assertThat(detectOSAwareHermesCommand(tempFolder.root, "", hermesV1Enabled = true))
-        .isEqualTo(expected.toString())
+    assertThat(detectOSAwareHermesCommand(tempFolder.root, "")).isEqualTo(expected.toString())
   }
 
   @Test(expected = IllegalStateException::class)

@@ -31,10 +31,11 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom)
       return @"tv";
     case UIUserInterfaceIdiomCarPlay:
       return @"carplay";
-#if TARGET_OS_VISION
     case UIUserInterfaceIdiomVision:
       return @"vision";
-#endif
+    case UIUserInterfaceIdiomMac:
+      return @"mac";
+    case UIUserInterfaceIdiomUnspecified:
     default:
       return @"unknown";
   }
@@ -47,7 +48,10 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom)
   ModuleConstants<JS::NativePlatformConstantsIOS::Constants> _constants;
 }
 
-RCT_EXPORT_MODULE(PlatformConstants)
++ (NSString *)moduleName
+{
+  return @"PlatformConstants";
+}
 
 + (BOOL)requiresMainQueueSetup
 {

@@ -21,7 +21,7 @@ AnimatedMountingOverrideDelegate::AnimatedMountingOverrideDelegate(
     const Scheduler& scheduler)
     : MountingOverrideDelegate(),
       animatedManager_(&animatedManager),
-      scheduler_(&scheduler){};
+      scheduler_(&scheduler) {};
 
 bool AnimatedMountingOverrideDelegate::shouldOverridePullTransaction() const {
   if (animatedManager_ != nullptr) {
@@ -91,10 +91,11 @@ AnimatedMountingOverrideDelegate::pullTransaction(
             NullValueStrategy::Override);
 #endif
 
-        filteredMutations.emplace_back(ShadowViewMutation::UpdateMutation(
-            mutation.oldChildShadowView,
-            std::move(modifiedNewChildShadowView),
-            mutation.parentTag));
+        filteredMutations.emplace_back(
+            ShadowViewMutation::UpdateMutation(
+                mutation.oldChildShadowView,
+                std::move(modifiedNewChildShadowView),
+                mutation.parentTag));
       }
     }
   }

@@ -26,17 +26,12 @@
 namespace facebook::react {
 
 namespace detail {
-template <
-    typename DataT,
-    TemplateStringLiteral Name,
-    CSSDataType... AllowedComponentsT>
-  requires(std::is_same_v<
-           decltype(DataT::value),
-           std::variant<AllowedComponentsT...>>)
+template <typename DataT, TemplateStringLiteral Name, CSSDataType... AllowedComponentsT>
+  requires(std::is_same_v<decltype(DataT::value), std::variant<AllowedComponentsT...>>)
 struct CSSVariantComponentTransformParser {
-  static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& parser) -> std::optional<DataT> {
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+      -> std::optional<DataT>
+  {
     if (!iequals(func.name, Name)) {
       return {};
     }
@@ -44,10 +39,8 @@ struct CSSVariantComponentTransformParser {
     auto val = parseNextCSSValue<AllowedComponentsT...>(parser);
 
     return std::visit(
-        [&](auto&& v) -> std::optional<DataT> {
-          if constexpr (std::is_same_v<
-                            std::remove_cvref_t<decltype(v)>,
-                            std::monostate>) {
+        [&](auto &&v) -> std::optional<DataT> {
+          if constexpr (std::is_same_v<std::remove_cvref_t<decltype(v)>, std::monostate>) {
             return {};
           } else {
             return DataT{.value = std::forward<decltype(v)>(v)};
@@ -60,9 +53,9 @@ struct CSSVariantComponentTransformParser {
 template <typename DataT, TemplateStringLiteral Name>
   requires(std::is_same_v<decltype(DataT::value), float>)
 struct CSSNumberPercentTransformParser {
-  static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& parser) -> std::optional<DataT> {
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+      -> std::optional<DataT>
+  {
     if (!iequals(func.name, Name)) {
       return {};
     }
@@ -73,18 +66,17 @@ struct CSSNumberPercentTransformParser {
     }
 
     return DataT{
-        .value = std::holds_alternative<CSSNumber>(val)
-            ? std::get<CSSNumber>(val).value
-            : std::get<CSSPercentage>(val).value / 100.0f};
+        .value = std::holds_alternative<CSSNumber>(val) ? std::get<CSSNumber>(val).value
+                                                        : std::get<CSSPercentage>(val).value / 100.0f};
   }
 };
 
 template <typename DataT, TemplateStringLiteral Name>
   requires(std::is_same_v<decltype(DataT::degrees), float>)
 struct CSSAngleTransformParser {
-  static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& parser) -> std::optional<DataT> {
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+      -> std::optional<DataT>
+  {
     if (!iequals(func.name, Name)) {
       return {};
     }
@@ -95,9 +87,7 @@ struct CSSAngleTransformParser {
     }
 
     return DataT{
-        .degrees = std::holds_alternative<CSSAngle>(value)
-            ? std::get<CSSAngle>(value).degrees
-            : 0.0f,
+        .degrees = std::holds_alternative<CSSAngle>(value) ? std::get<CSSAngle>(value).degrees : 0.0f,
     };
   }
 };
@@ -110,22 +100,21 @@ struct CSSAngleTransformParser {
 struct CSSMatrix {
   std::array<float, 6> values{};
 
-  constexpr bool operator==(const CSSMatrix& rhs) const = default;
+  constexpr bool operator==(const CSSMatrix &rhs) const = default;
 };
 
 template <>
 struct CSSDataTypeParser<CSSMatrix> {
-  static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& parser) -> std::optional<CSSMatrix> {
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+      -> std::optional<CSSMatrix>
+  {
     if (!iequals(func.name, "matrix")) {
       return {};
     }
 
     CSSMatrix matrix{};
     for (int i = 0; i < 6; i++) {
-      auto value = parseNextCSSValue<CSSNumber>(
-          parser, i == 0 ? CSSDelimiter::None : CSSDelimiter::Comma);
+      auto value = parseNextCSSValue<CSSNumber>(parser, i == 0 ? CSSDelimiter::None : CSSDelimiter::Comma);
       if (std::holds_alternative<std::monostate>(value)) {
         return {};
       }
@@ -145,14 +134,14 @@ struct CSSTranslate {
   std::variant<CSSLength, CSSPercentage> x{};
   std::variant<CSSLength, CSSPercentage> y{};
 
-  constexpr bool operator==(const CSSTranslate& rhs) const = default;
+  constexpr bool operator==(const CSSTranslate &rhs) const = default;
 };
 
 template <>
 struct CSSDataTypeParser<CSSTranslate> {
-  static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& parser) -> std::optional<CSSTranslate> {
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+      -> std::optional<CSSTranslate>
+  {
     if (!iequals(func.name, "translate")) {
       return {};
     }
@@ -162,8 +151,7 @@ struct CSSDataTypeParser<CSSTranslate> {
       return {};
     }
 
-    auto y =
-        parseNextCSSValue<CSSLengthPercentage>(parser, CSSDelimiter::Comma);
+    auto y = parseNextCSSValue<CSSLengthPercentage>(parser, CSSDelimiter::Comma);
 
     CSSTranslate translate{};
     translate.x = std::holds_alternative<CSSLength>(x)
@@ -190,14 +178,14 @@ struct CSSTranslate3D {
   std::variant<CSSLength, CSSPercentage> y{};
   CSSLength z{};
 
-  constexpr bool operator==(const CSSTranslate3D& rhs) const = default;
+  constexpr bool operator==(const CSSTranslate3D &rhs) const = default;
 };
 
 template <>
 struct CSSDataTypeParser<CSSTranslate3D> {
-  static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& parser) -> std::optional<CSSTranslate3D> {
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+      -> std::optional<CSSTranslate3D>
+  {
     if (!iequals(func.name, "translate3d")) {
       return {};
     }
@@ -207,8 +195,7 @@ struct CSSDataTypeParser<CSSTranslate3D> {
       return {};
     }
 
-    auto y =
-        parseNextCSSValue<CSSLengthPercentage>(parser, CSSDelimiter::Comma);
+    auto y = parseNextCSSValue<CSSLengthPercentage>(parser, CSSDelimiter::Comma);
     if (std::holds_alternative<std::monostate>(y)) {
       return {};
     }
@@ -219,14 +206,10 @@ struct CSSDataTypeParser<CSSTranslate3D> {
     }
 
     return CSSTranslate3D{
-        .x = std::holds_alternative<CSSLength>(x)
-            ? std::variant<CSSLength, CSSPercentage>{std::get<CSSLength>(x)}
-            : std::variant<CSSLength, CSSPercentage>{std::get<CSSPercentage>(
-                  x)},
-        .y = std::holds_alternative<CSSLength>(y)
-            ? std::variant<CSSLength, CSSPercentage>{std::get<CSSLength>(y)}
-            : std::variant<CSSLength, CSSPercentage>{std::get<CSSPercentage>(
-                  y)},
+        .x = std::holds_alternative<CSSLength>(x) ? std::variant<CSSLength, CSSPercentage>{std::get<CSSLength>(x)}
+                                                  : std::variant<CSSLength, CSSPercentage>{std::get<CSSPercentage>(x)},
+        .y = std::holds_alternative<CSSLength>(y) ? std::variant<CSSLength, CSSPercentage>{std::get<CSSLength>(y)}
+                                                  : std::variant<CSSLength, CSSPercentage>{std::get<CSSPercentage>(y)},
         .z = std::get<CSSLength>(z),
     };
   }
@@ -240,16 +223,12 @@ static_assert(CSSDataType<CSSTranslate3D>);
 struct CSSTranslateX {
   std::variant<CSSLength, CSSPercentage> value{};
 
-  constexpr bool operator==(const CSSTranslateX& rhs) const = default;
+  constexpr bool operator==(const CSSTranslateX &rhs) const = default;
 };
 
 template <>
 struct CSSDataTypeParser<CSSTranslateX>
-    : public detail::CSSVariantComponentTransformParser<
-          CSSTranslateX,
-          "translateX",
-          CSSLength,
-          CSSPercentage> {};
+    : public detail::CSSVariantComponentTransformParser<CSSTranslateX, "translateX", CSSLength, CSSPercentage> {};
 
 static_assert(CSSDataType<CSSTranslateX>);
 
@@ -259,16 +238,12 @@ static_assert(CSSDataType<CSSTranslateX>);
 struct CSSTranslateY {
   std::variant<CSSLength, CSSPercentage> value{};
 
-  constexpr bool operator==(const CSSTranslateY& rhs) const = default;
+  constexpr bool operator==(const CSSTranslateY &rhs) const = default;
 };
 
 template <>
 struct CSSDataTypeParser<CSSTranslateY>
-    : public detail::CSSVariantComponentTransformParser<
-          CSSTranslateY,
-          "translateY",
-          CSSLength,
-          CSSPercentage> {};
+    : public detail::CSSVariantComponentTransformParser<CSSTranslateY, "translateY", CSSLength, CSSPercentage> {};
 
 static_assert(CSSDataType<CSSTranslateY>);
 
@@ -279,14 +254,14 @@ struct CSSScale {
   float x{};
   float y{};
 
-  constexpr bool operator==(const CSSScale& rhs) const = default;
+  constexpr bool operator==(const CSSScale &rhs) const = default;
 };
 
 template <>
 struct CSSDataTypeParser<CSSScale> {
-  static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& parser) -> std::optional<CSSScale> {
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+      -> std::optional<CSSScale>
+  {
     if (!iequals(func.name, "scale")) {
       return {};
     }
@@ -298,17 +273,14 @@ struct CSSDataTypeParser<CSSScale> {
       return {};
     }
 
-    auto y = parseNextCSSValue<CSSNumber, CSSPercentage>(
-        parser, CSSDelimiter::Comma);
+    auto y = parseNextCSSValue<CSSNumber, CSSPercentage>(parser, CSSDelimiter::Comma);
 
-    auto normX = std::holds_alternative<CSSNumber>(x)
-        ? std::get<CSSNumber>(x).value
-        : std::get<CSSPercentage>(x).value / 100.0f;
+    auto normX =
+        std::holds_alternative<CSSNumber>(x) ? std::get<CSSNumber>(x).value : std::get<CSSPercentage>(x).value / 100.0f;
 
     auto normY = std::holds_alternative<std::monostate>(y) ? normX
-        : std::holds_alternative<CSSNumber>(y)
-        ? std::get<CSSNumber>(y).value
-        : std::get<CSSPercentage>(y).value / 100.0f;
+        : std::holds_alternative<CSSNumber>(y)             ? std::get<CSSNumber>(y).value
+                                                           : std::get<CSSPercentage>(y).value / 100.0f;
 
     return CSSScale{.x = normX, .y = normY};
   }
@@ -322,12 +294,11 @@ static_assert(CSSDataType<CSSScale>);
 struct CSSScaleX {
   float value{};
 
-  constexpr bool operator==(const CSSScaleX& rhs) const = default;
+  constexpr bool operator==(const CSSScaleX &rhs) const = default;
 };
 
 template <>
-struct CSSDataTypeParser<CSSScaleX>
-    : public detail::CSSNumberPercentTransformParser<CSSScaleX, "scaleX"> {};
+struct CSSDataTypeParser<CSSScaleX> : public detail::CSSNumberPercentTransformParser<CSSScaleX, "scaleX"> {};
 
 static_assert(CSSDataType<CSSScaleX>);
 
@@ -337,12 +308,11 @@ static_assert(CSSDataType<CSSScaleX>);
 struct CSSScaleY {
   float value{};
 
-  constexpr bool operator==(const CSSScaleY& rhs) const = default;
+  constexpr bool operator==(const CSSScaleY &rhs) const = default;
 };
 
 template <>
-struct CSSDataTypeParser<CSSScaleY>
-    : public detail::CSSNumberPercentTransformParser<CSSScaleY, "scaleY"> {};
+struct CSSDataTypeParser<CSSScaleY> : public detail::CSSNumberPercentTransformParser<CSSScaleY, "scaleY"> {};
 
 static_assert(CSSDataType<CSSScaleY>);
 
@@ -352,12 +322,11 @@ static_assert(CSSDataType<CSSScaleY>);
 struct CSSRotate {
   float degrees{};
 
-  constexpr bool operator==(const CSSRotate& rhs) const = default;
+  constexpr bool operator==(const CSSRotate &rhs) const = default;
 };
 
 template <>
-struct CSSDataTypeParser<CSSRotate>
-    : public detail::CSSAngleTransformParser<CSSRotate, "rotate"> {};
+struct CSSDataTypeParser<CSSRotate> : public detail::CSSAngleTransformParser<CSSRotate, "rotate"> {};
 
 static_assert(CSSDataType<CSSRotate>);
 
@@ -367,12 +336,11 @@ static_assert(CSSDataType<CSSRotate>);
 struct CSSRotateX {
   float degrees{};
 
-  constexpr bool operator==(const CSSRotateX& rhs) const = default;
+  constexpr bool operator==(const CSSRotateX &rhs) const = default;
 };
 
 template <>
-struct CSSDataTypeParser<CSSRotateX>
-    : public detail::CSSAngleTransformParser<CSSRotateX, "rotateX"> {};
+struct CSSDataTypeParser<CSSRotateX> : public detail::CSSAngleTransformParser<CSSRotateX, "rotateX"> {};
 
 static_assert(CSSDataType<CSSRotateX>);
 
@@ -382,12 +350,11 @@ static_assert(CSSDataType<CSSRotateX>);
 struct CSSRotateY {
   float degrees{};
 
-  constexpr bool operator==(const CSSRotateY& rhs) const = default;
+  constexpr bool operator==(const CSSRotateY &rhs) const = default;
 };
 
 template <>
-struct CSSDataTypeParser<CSSRotateY>
-    : public detail::CSSAngleTransformParser<CSSRotateY, "rotateY"> {};
+struct CSSDataTypeParser<CSSRotateY> : public detail::CSSAngleTransformParser<CSSRotateY, "rotateY"> {};
 
 static_assert(CSSDataType<CSSRotateY>);
 
@@ -397,12 +364,11 @@ static_assert(CSSDataType<CSSRotateY>);
 struct CSSRotateZ {
   float degrees{};
 
-  constexpr bool operator==(const CSSRotateZ& rhs) const = default;
+  constexpr bool operator==(const CSSRotateZ &rhs) const = default;
 };
 
 template <>
-struct CSSDataTypeParser<CSSRotateZ>
-    : public detail::CSSAngleTransformParser<CSSRotateZ, "rotateZ"> {};
+struct CSSDataTypeParser<CSSRotateZ> : public detail::CSSAngleTransformParser<CSSRotateZ, "rotateZ"> {};
 
 static_assert(CSSDataType<CSSRotateZ>);
 
@@ -412,12 +378,11 @@ static_assert(CSSDataType<CSSRotateZ>);
 struct CSSSkewX {
   float degrees{};
 
-  constexpr bool operator==(const CSSSkewX& rhs) const = default;
+  constexpr bool operator==(const CSSSkewX &rhs) const = default;
 };
 
 template <>
-struct CSSDataTypeParser<CSSSkewX>
-    : public detail::CSSAngleTransformParser<CSSSkewX, "skewX"> {};
+struct CSSDataTypeParser<CSSSkewX> : public detail::CSSAngleTransformParser<CSSSkewX, "skewX"> {};
 
 static_assert(CSSDataType<CSSSkewX>);
 
@@ -427,12 +392,11 @@ static_assert(CSSDataType<CSSSkewX>);
 struct CSSSkewY {
   float degrees{};
 
-  constexpr bool operator==(const CSSSkewY& rhs) const = default;
+  constexpr bool operator==(const CSSSkewY &rhs) const = default;
 };
 
 template <>
-struct CSSDataTypeParser<CSSSkewY>
-    : public detail::CSSAngleTransformParser<CSSSkewY, "skewY"> {};
+struct CSSDataTypeParser<CSSSkewY> : public detail::CSSAngleTransformParser<CSSSkewY, "skewY"> {};
 
 static_assert(CSSDataType<CSSSkewY>);
 
@@ -442,21 +406,20 @@ static_assert(CSSDataType<CSSSkewY>);
 struct CSSPerspective {
   CSSLength length{};
 
-  constexpr bool operator==(const CSSPerspective& rhs) const = default;
+  constexpr bool operator==(const CSSPerspective &rhs) const = default;
 };
 
 template <>
 struct CSSDataTypeParser<CSSPerspective> {
-  static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& parser) -> std::optional<CSSPerspective> {
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+      -> std::optional<CSSPerspective>
+  {
     if (!iequals(func.name, "perspective")) {
       return {};
     }
 
     auto value = parseNextCSSValue<CSSLength>(parser);
-    if (std::holds_alternative<std::monostate>(value) ||
-        std::get<CSSLength>(value).value < 0) {
+    if (std::holds_alternative<std::monostate>(value) || std::get<CSSLength>(value).value < 0) {
       return {};
     }
 

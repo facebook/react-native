@@ -17,6 +17,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.hardware.SensorManager
 import android.os.Build
@@ -74,6 +75,8 @@ import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatur
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.RequestHandler
+import com.facebook.react.views.common.UiModeUtils
+import com.facebook.react.views.text.DefaultStyleValuesUtil
 import java.io.File
 import java.net.MalformedURLException
 import java.net.URL
@@ -82,7 +85,7 @@ import java.util.Locale
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
     public val reactInstanceDevHelper: ReactInstanceDevHelper,
-    @get:JvmName("getJSAppBundleName") public val jsAppBundleName: String?,
+    @get:JvmName("getJSAppBundleName") public var jsAppBundleName: String?,
     enableOnCreate: Boolean,
     public override val redBoxHandler: RedBoxHandler?,
     private val devBundleDownloadListener: DevBundleDownloadListener?,
@@ -127,6 +130,28 @@ public abstract class DevSupportManagerBase(
     set(isDevSupportEnabled) {
       this.isDevSupportEnabled = isDevSupportEnabled
       reloadSettings()
+    }
+
+  final override var shakeGestureEnabled: Boolean = true
+    get() = field
+    set(value) {
+      if (field == value) {
+        return
+      }
+
+      if (value) {
+        startShakeDetector()
+      } else {
+        stopShakeDetector()
+      }
+
+      field = value
+    }
+
+  override var bundleFilePath: String? = null
+    get() = field
+    set(value) {
+      field = value
     }
 
   override val sourceMapUrl: String
@@ -186,6 +211,9 @@ public abstract class DevSupportManagerBase(
   private var perfMonitorOverlayManager: PerfMonitorOverlayManager? = null
   private var perfMonitorInitialized = false
   private var tracingStateProvider: TracingStateProvider? = null
+
+  public override var keyboardShortcutsEnabled: Boolean = true
+  public override var devMenuEnabled: Boolean = true
 
   init {
     // We store JS bundle loaded from dev server in a single destination in app's data dir.
@@ -325,7 +353,12 @@ public abstract class DevSupportManagerBase(
   }
 
   override fun showDevOptionsDialog() {
-    if (devOptionsDialog != null || !isDevSupportEnabled || ActivityManager.isUserAMonkey()) {
+    if (
+        devOptionsDialog != null ||
+            !isDevSupportEnabled ||
+            !devMenuEnabled ||
+            ActivityManager.isUserAMonkey()
+    ) {
       return
     }
     val options = LinkedHashMap<String, DevOptionHandler>()
@@ -547,7 +580,11 @@ public abstract class DevSupportManagerBase(
                 isEnabled = isEnabled(position)
                 if (this is TextView) {
                   setTextColor(
-                      if (isEnabled) android.graphics.Color.WHITE else android.graphics.Color.GRAY
+                      if (isEnabled) {
+                        safeGetDefaultTextColor(context)
+                      } else {
+                        safeGetTextColorSecondary(context)
+                      }
                   )
                 }
               }
@@ -888,6 +925,17 @@ public abstract class DevSupportManagerBase(
     }
   }
 
+  private fun startShakeDetector() {
+    val sensorManager = applicationContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    shakeDetector.start(sensorManager)
+    isShakeDetectorStarted = true
+  }
+
+  private fun stopShakeDetector() {
+    shakeDetector.stop()
+    isShakeDetectorStarted = false
+  }
+
   private fun reload() {
     UiThreadUtil.assertOnUiThread()
 
@@ -897,11 +945,8 @@ public abstract class DevSupportManagerBase(
       debugOverlayController?.setFpsDebugViewVisible(devSettings.isFpsDebugEnabled)
 
       // start shake gesture detector
-      if (!isShakeDetectorStarted) {
-        val sensorManager =
-            applicationContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        shakeDetector.start(sensorManager)
-        isShakeDetectorStarted = true
+      if (!isShakeDetectorStarted && shakeGestureEnabled) {
+        startShakeDetector()
       }
 
       // register reload app broadcast receiver
@@ -955,8 +1000,7 @@ public abstract class DevSupportManagerBase(
 
       // stop shake gesture detector
       if (isShakeDetectorStarted) {
-        shakeDetector.stop()
-        isShakeDetectorStarted = false
+        stopShakeDetector()
       }
 
       // unregister app reload broadcast receiver
@@ -1009,6 +1053,17 @@ public abstract class DevSupportManagerBase(
     } else {
       context.registerReceiver(receiver, filter)
     }
+  }
+
+  private fun safeGetDefaultTextColor(context: Context): ColorStateList {
+    return DefaultStyleValuesUtil.getDefaultTextColor(context)
+        ?: if (UiModeUtils.isDarkMode(context)) ColorStateList.valueOf(android.graphics.Color.WHITE)
+        else ColorStateList.valueOf(android.graphics.Color.BLACK)
+  }
+
+  private fun safeGetTextColorSecondary(context: Context): ColorStateList {
+    return DefaultStyleValuesUtil.getTextColorSecondary(context)
+        ?: ColorStateList.valueOf(android.graphics.Color.GRAY)
   }
 
   override fun openDebugger(panel: String?) {

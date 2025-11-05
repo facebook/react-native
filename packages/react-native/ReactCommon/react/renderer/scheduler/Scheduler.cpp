@@ -24,33 +24,6 @@
 
 namespace facebook::react {
 
-namespace {
-
-class UIManagerCommitHookManagerImpl : public UIManagerCommitHookManager {
- public:
-  explicit UIManagerCommitHookManagerImpl(std::weak_ptr<UIManager> uiManager)
-      : uiManager_(std::move(uiManager)) {}
-
-  ~UIManagerCommitHookManagerImpl() override = default;
-
-  void registerCommitHook(UIManagerCommitHook& commitHook) override {
-    if (auto uiManager = uiManager_.lock()) {
-      uiManager->registerCommitHook(commitHook);
-    }
-  }
-
-  void unregisterCommitHook(UIManagerCommitHook& commitHook) override {
-    if (auto uiManager = uiManager_.lock()) {
-      uiManager->unregisterCommitHook(commitHook);
-    }
-  }
-
- private:
-  std::weak_ptr<UIManager> uiManager_;
-};
-
-} // namespace
-
 Scheduler::Scheduler(
     const SchedulerToolbox& schedulerToolbox,
     UIManagerAnimationDelegate* animationDelegate,
@@ -68,7 +41,12 @@ Scheduler::Scheduler(
   if (ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
       ReactNativeFeatureFlags::cdpInteractionMetricsEnabled()) {
     cdpMetricsReporter_.emplace(CdpMetricsReporter{runtimeExecutor_});
-    performanceEntryReporter_->addEventTimingListener(&*cdpMetricsReporter_);
+    performanceEntryReporter_->addEventListener(&*cdpMetricsReporter_);
+  }
+
+  if (ReactNativeFeatureFlags::perfIssuesEnabled()) {
+    cdpPerfIssuesReporter_.emplace(CdpPerfIssuesReporter{runtimeExecutor_});
+    performanceEntryReporter_->addEventListener(&*cdpPerfIssuesReporter_);
   }
 
   eventPerformanceLogger_ =
@@ -76,11 +54,6 @@ Scheduler::Scheduler(
 
   auto uiManager =
       std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
-  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
-    contextContainer_->insert(
-        std::string(UIManagerCommitHookManagerKey),
-        std::make_shared<UIManagerCommitHookManagerImpl>(uiManager));
-  }
 
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
@@ -204,7 +177,10 @@ Scheduler::~Scheduler() {
   uiManager_->setAnimationDelegate(nullptr);
 
   if (cdpMetricsReporter_) {
-    performanceEntryReporter_->removeEventTimingListener(&*cdpMetricsReporter_);
+    performanceEntryReporter_->removeEventListener(&*cdpMetricsReporter_);
+  }
+  if (cdpPerfIssuesReporter_) {
+    performanceEntryReporter_->removeEventListener(&*cdpPerfIssuesReporter_);
   }
 
   // Then, let's verify that the requirement was satisfied.
@@ -315,8 +291,8 @@ void Scheduler::uiManagerDidDispatchCommand(
     const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
-  TraceSection s("Scheduler::uiManagerDispatchCommand");
-
+  TraceSection s(
+      "Scheduler::uiManagerDispatchCommand", "commandName", commandName);
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
     runtimeScheduler_->scheduleRenderingUpdate(

@@ -7,7 +7,6 @@
 
 #include "ImageFetcher.h"
 
-#include <glog/logging.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/renderer/imagemanager/conversions.h>
 
@@ -15,56 +14,24 @@ namespace facebook::react {
 
 ImageFetcher::ImageFetcher(
     std::shared_ptr<const ContextContainer> contextContainer)
-    : contextContainer_(std::move(contextContainer)) {
-  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
-    if (auto uiManagerCommitHookManager =
-            contextContainer_
-                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
-                    std::string(UIManagerCommitHookManagerKey));
-        uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->registerCommitHook(*this);
-    }
-  }
-}
-
-ImageFetcher::~ImageFetcher() {
-  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
-    if (auto uiManagerCommitHookManager =
-            contextContainer_
-                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
-                    std::string(UIManagerCommitHookManagerKey));
-        uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->unregisterCommitHook(*this);
-    }
-  }
-}
+    : contextContainer_(std::move(contextContainer)) {}
 
 ImageRequest ImageFetcher::requestImage(
     const ImageSource& imageSource,
     SurfaceId surfaceId,
     const ImageRequestParams& imageRequestParams,
     Tag tag) {
-  items_[surfaceId].emplace_back(ImageRequestItem{
-      .imageSource = imageSource,
-      .imageRequestParams = imageRequestParams,
-      .tag = tag});
+  items_[surfaceId].emplace_back(
+      ImageRequestItem{
+          .imageSource = imageSource,
+          .imageRequestParams = imageRequestParams,
+          .tag = tag});
 
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
 
-  if (!ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
-    flushImageRequests();
-  }
+  flushImageRequests();
 
   return {imageSource, telemetry};
-}
-
-RootShadowNode::Unshared ImageFetcher::shadowTreeWillCommit(
-    const ShadowTree& /*shadowTree*/,
-    const RootShadowNode::Shared& /*oldRootShadowNode*/,
-    const RootShadowNode::Unshared& newRootShadowNode,
-    const ShadowTree::CommitOptions& /*commitOptions*/) noexcept {
-  flushImageRequests();
-  return newRootShadowNode;
 }
 
 void ImageFetcher::flushImageRequests() {
