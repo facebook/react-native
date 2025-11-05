@@ -291,6 +291,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void setRemoveClippedSubviews(boolean removeClippedSubviews) {
+    if (ReactNativeFeatureFlags.disableSubviewClippingAndroid()) {
+      return;
+    }
+
     if (removeClippedSubviews && mClippingRect == null) {
       mClippingRect = new Rect();
     }

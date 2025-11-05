@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7e530e01e8c31edb68099a11bc371b89>>
+ * @generated SignedSource<<8122e5c1e177a8f3deb2462a86f7cf64>>
  */
 
 /**
@@ -78,6 +78,11 @@ class ReactNativeFeatureFlags {
    * Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics
    */
   RN_EXPORT static bool disableOldAndroidAttachmentMetricsWorkarounds();
+
+  /**
+   * Force disable subview clipping for ReactViewGroup on Android
+   */
+  RN_EXPORT static bool disableSubviewClippingAndroid();
 
   /**
    * Turns off the global measurement cache used by TextLayoutManager on Android.

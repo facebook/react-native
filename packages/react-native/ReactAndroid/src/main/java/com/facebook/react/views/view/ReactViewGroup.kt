@@ -32,6 +32,7 @@ import com.facebook.react.bridge.UiThreadUtil.assertOnUiThread
 import com.facebook.react.bridge.UiThreadUtil.runOnUiThread
 import com.facebook.react.common.ReactConstants.TAG
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.touch.OnInterceptTouchEventListener
 import com.facebook.react.touch.ReactHitSlopView
 import com.facebook.react.touch.ReactInterceptingViewGroup
@@ -362,8 +363,17 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   override var removeClippedSubviews: Boolean
-    get() = _removeClippedSubviews
+    get() {
+      if (ReactNativeFeatureFlags.disableSubviewClippingAndroid()) {
+        return false
+      }
+      return _removeClippedSubviews
+    }
     set(newValue) {
+      if (ReactNativeFeatureFlags.disableSubviewClippingAndroid()) {
+        return
+      }
+
       if (newValue == _removeClippedSubviews) {
         return
       }

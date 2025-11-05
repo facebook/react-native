@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<762f97c6e72f9339ef925adb8481713f>>
+ * @generated SignedSource<<84b5ef5e3ada0d6f2b10abfffa6d9d0f>>
  */
 
 /**
@@ -51,6 +51,8 @@ class NativeReactNativeFeatureFlags
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool disableOldAndroidAttachmentMetricsWorkarounds(jsi::Runtime& runtime);
+
+  bool disableSubviewClippingAndroid(jsi::Runtime& runtime);
 
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
 

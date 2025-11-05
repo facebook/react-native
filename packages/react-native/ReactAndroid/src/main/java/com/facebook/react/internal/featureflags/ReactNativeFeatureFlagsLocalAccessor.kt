@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<98f16fd1bb180b247ee87bb24b10120e>>
+ * @generated SignedSource<<b10ff10cb0d389a563da50c75a49c746>>
  */
 
 /**
@@ -32,6 +32,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var disableFabricCommitInCXXAnimatedCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var disableOldAndroidAttachmentMetricsWorkaroundsCache: Boolean? = null
+  private var disableSubviewClippingAndroidCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
@@ -183,6 +184,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.disableOldAndroidAttachmentMetricsWorkarounds()
       accessedFeatureFlags.add("disableOldAndroidAttachmentMetricsWorkarounds")
       disableOldAndroidAttachmentMetricsWorkaroundsCache = cached
+    }
+    return cached
+  }
+
+  override fun disableSubviewClippingAndroid(): Boolean {
+    var cached = disableSubviewClippingAndroidCache
+    if (cached == null) {
+      cached = currentProvider.disableSubviewClippingAndroid()
+      accessedFeatureFlags.add("disableSubviewClippingAndroid")
+      disableSubviewClippingAndroidCache = cached
     }
     return cached
   }

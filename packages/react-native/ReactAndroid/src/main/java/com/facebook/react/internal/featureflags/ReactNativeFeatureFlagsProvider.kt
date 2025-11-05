@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c810245ced5a83806ace12572e112a70>>
+ * @generated SignedSource<<c4917c92012d904810ef7d832adf124c>>
  */
 
 /**
@@ -38,6 +38,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
   @DoNotStrip public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean
+
+  @DoNotStrip public fun disableSubviewClippingAndroid(): Boolean
 
   @DoNotStrip public fun disableTextLayoutManagerCacheAndroid(): Boolean
 
