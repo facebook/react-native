@@ -39,7 +39,10 @@
   NSMutableDictionary<NSNumber *, id<RCTWebSocketContentHandler>> *_contentHandlers;
 }
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"WebSocketModule";
+}
 
 - (dispatch_queue_t)methodQueue
 {

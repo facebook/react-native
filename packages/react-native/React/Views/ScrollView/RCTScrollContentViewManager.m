@@ -14,7 +14,10 @@
 
 @implementation RCTScrollContentViewManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"ScrollContentViewManager";
+}
 
 - (RCTScrollContentView *)view
 {

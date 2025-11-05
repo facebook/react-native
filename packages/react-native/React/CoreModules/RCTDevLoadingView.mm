@@ -37,7 +37,10 @@ using namespace facebook::react;
   dispatch_block_t _initialMessageBlock;
 }
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"DevLoadingView";
+}
 
 - (instancetype)init
 {

@@ -27,7 +27,10 @@ static void postNotificationWithURL(NSURL *URL, id sender)
 
 @implementation RCTLinkingManager
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"LinkingManager";
+}
 
 - (dispatch_queue_t)methodQueue
 {

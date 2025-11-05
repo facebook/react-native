@@ -42,7 +42,10 @@ static NSString *const kBlobURIScheme = @"blob";
   dispatch_queue_t _processingQueue;
 }
 
-RCT_EXPORT_MODULE(BlobModule)
++ (NSString *)moduleName
+{
+  return @"BlobModule";
+}
 
 @synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
