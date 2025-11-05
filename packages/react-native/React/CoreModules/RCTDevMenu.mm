@@ -544,6 +544,32 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   }
 }
 
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+  return @[
+    [UIKeyCommand keyCommandWithInput:@"d"
+                        modifierFlags:UIKeyModifierCommand
+                               action:@selector(toggle)],
+    [UIKeyCommand keyCommandWithInput:@"i"
+                        modifierFlags:UIKeyModifierCommand
+                               action:@selector(toggleElementInspector)],
+    [UIKeyCommand keyCommandWithInput:@"r"
+                        modifierFlags:UIKeyModifierCommand
+                               action:@selector(reloadFromKeyCommand)]
+  ];
+}
+
+- (void)toggleElementInspector
+{
+  RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
+  [devSettings toggleElementInspector];
+}
+
+- (void)reloadFromKeyCommand
+{
+  RCTTriggerReloadCommandListeners(@"Dev menu key command");
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {

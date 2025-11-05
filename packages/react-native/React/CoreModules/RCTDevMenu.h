@@ -105,6 +105,21 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  */
 - (void)disableReloadCommand;
 
+/**
+ * Get the key commands for the dev menu (Cmd+D, Cmd+I, Cmd+R).
+ */
+- (NSArray<UIKeyCommand *> *)keyCommands;
+
+/**
+ * Toggle the element inspector (called by key command).
+ */
+- (void)toggleElementInspector;
+
+/**
+ * Reload from key command (called by key command).
+ */
+- (void)reloadFromKeyCommand;
+
 @end
 
 typedef NSString * (^RCTDevMenuItemTitleBlock)(void);
