@@ -48,6 +48,10 @@ Pod::Spec.new do |s|
   s.dependency "React-oscompat"
   s.dependency "React-timing"
 
+  if use_hermes()
+    s.dependency "hermes-engine"
+  end
+
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
 end

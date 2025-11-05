@@ -42,6 +42,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
+  add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
