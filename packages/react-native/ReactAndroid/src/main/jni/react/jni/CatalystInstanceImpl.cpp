@@ -192,10 +192,7 @@ void CatalystInstanceImpl::initializeBridge(
   // stack.
 
   moduleRegistry_ = std::make_shared<ModuleRegistry>(buildNativeModuleList(
-      std::weak_ptr<Instance>(instance_),
-      javaModules,
-      {},
-      moduleMessageQueue_));
+      std::weak_ptr<Instance>(instance_), javaModules, moduleMessageQueue_));
 
   instance_->initializeBridge(
       std::make_unique<InstanceCallbackImpl>(callback),
@@ -211,10 +208,7 @@ void CatalystInstanceImpl::extendNativeModules(
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
         javaModules) {
   moduleRegistry_->registerModules(buildNativeModuleList(
-      std::weak_ptr<Instance>(instance_),
-      javaModules,
-      {},
-      moduleMessageQueue_));
+      std::weak_ptr<Instance>(instance_), javaModules, moduleMessageQueue_));
 }
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {

@@ -11,7 +11,6 @@
 #include <fbjni/fbjni.h>
 
 #include "CatalystInstanceImpl.h"
-#include "CxxModuleWrapperBase.h"
 #include "InspectorNetworkRequestListener.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ReactInstanceManagerInspectorTarget.h"
@@ -42,7 +41,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     CatalystInstanceImpl::registerNatives();
 #pragma clang diagnostic pop
 #endif
-    CxxModuleWrapperBase::registerNatives();
     ReactInstanceManagerInspectorTarget::registerNatives();
     InspectorNetworkRequestListener::registerNatives();
   });
