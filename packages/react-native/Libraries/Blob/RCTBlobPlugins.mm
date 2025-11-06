@@ -13,21 +13,21 @@
 
 #import "RCTBlobPlugins.h"
 
-#import <string>
-#import <unordered_map>
+#import <string_view>
 
-Class RCTBlobClassProvider(const char *name) {
-  // Intentionally leak to avoid crashing after static destructors are run.
-  static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
-    {"BlobModule", RCTBlobManagerCls},
-    {"FileReaderModule", RCTFileReaderModuleCls},
-  };
+using namespace std::literals;
 
-  auto p = sCoreModuleClassMap->find(name);
-  if (p != sCoreModuleClassMap->end()) {
-    auto classFunc = p->second;
-    return classFunc();
+Class RCTBlobClassProvider(const char *name)
+{
+
+  if (name == "BlobModule"sv) {
+    return RCTBlobManagerCls();
   }
+
+  if (name == "FileReaderModule"sv) {
+    return RCTFileReaderModuleCls();
+  }
+
   return nil;
 }
 
