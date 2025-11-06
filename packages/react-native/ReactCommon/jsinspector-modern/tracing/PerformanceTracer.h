@@ -81,7 +81,8 @@ class PerformanceTracer {
       const std::string &name,
       HighResTimeStamp start,
       HighResDuration duration,
-      folly::dynamic &&detail = nullptr);
+      folly::dynamic &&detail = nullptr,
+      std::function<std::optional<folly::dynamic>()> &&stackTraceProvider = nullptr);
 
   /**
    * Record a "TimeStamp" Trace Event - a labelled entry on Performance
@@ -257,6 +258,7 @@ class PerformanceTracer {
     HighResDuration duration;
     folly::dynamic detail;
     ThreadId threadId;
+    std::function<std::optional<folly::dynamic>()> stackTraceProvider;
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
 
