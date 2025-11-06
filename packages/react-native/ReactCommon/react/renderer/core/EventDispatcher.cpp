@@ -6,7 +6,7 @@
  */
 
 #include "EventDispatcher.h"
-#include <cxxreact/JSExecutor.h>
+
 #include <react/renderer/core/StateUpdate.h>
 
 #include "EventQueue.h"

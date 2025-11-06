@@ -45,6 +45,7 @@
 #include <react/renderer/scheduler/SurfaceDelegate.h>
 #include <react/renderer/scheduler/SurfaceManager.h>
 #include <react/renderer/uimanager/IMountingManager.h>
+#include <react/runtime/JSRuntimeBindings.h>
 #include <react/runtime/PlatformTimerRegistryImpl.h>
 #include <react/runtime/hermes/HermesInstance.h>
 #include <react/threading/MessageQueueThreadImpl.h>

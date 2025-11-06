@@ -30,7 +30,9 @@ Pod::Spec.new do |s|
   s.header_dir             = "jsireact"
 
   s.dependency "React-cxxreact"
+  s.dependency "React-jserrorhandler"
   s.dependency "React-jsi"
+  s.dependency "React-jsitooling"
   s.dependency "React-perflogger"
   add_dependency(s, "React-debug")
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
