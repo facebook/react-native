@@ -825,17 +825,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
-    useOptimizedEventBatchingOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-08-29',
-        description:
-          'Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     useRawPropsJsiValue: {
       defaultValue: true,
       metadata: {

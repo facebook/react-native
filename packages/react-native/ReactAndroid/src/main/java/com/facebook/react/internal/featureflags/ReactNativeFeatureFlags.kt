@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<66a87f8b82a1b3497eb9181a4ac6bab7>>
+ * @generated SignedSource<<9646ebeba75ec903be5ade7e2333f0c8>>
  */
 
 /**
@@ -467,12 +467,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
-
-  /**
-   * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
-   */
-  @JvmStatic
-  public fun useOptimizedEventBatchingOnAndroid(): Boolean = accessor.useOptimizedEventBatchingOnAndroid()
 
   /**
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value

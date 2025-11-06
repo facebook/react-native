@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8122e5c1e177a8f3deb2462a86f7cf64>>
+ * @generated SignedSource<<467f48f2231ceb6772a9a9da9e3badb9>>
  */
 
 /**
@@ -403,11 +403,6 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
-
-  /**
-   * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
-   */
-  RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
 
   /**
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
