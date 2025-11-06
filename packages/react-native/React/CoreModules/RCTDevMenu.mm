@@ -150,54 +150,8 @@ RCT_EXPORT_MODULE()
 
     _keyboardShortcutsEnabled = true;
     _devMenuEnabled = true;
-    [self registerHotkeys];
   }
   return self;
-}
-
-- (void)registerHotkeys
-{
-#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-  __weak __typeof(self) weakSelf = self;
-
-  // Toggle debug menu
-  [commands registerKeyCommandWithInput:@"d"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-                                   [weakSelf toggle];
-                                 }];
-
-  // Toggle element inspector
-  [commands registerKeyCommandWithInput:@"i"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-                                   [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
-                                       toggleElementInspector];
-                                 }];
-#endif
-}
-
-- (void)unregisterHotkeys
-{
-#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-
-  [commands unregisterKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierCommand];
-  [commands unregisterKeyCommandWithInput:@"i" modifierFlags:UIKeyModifierCommand];
-#endif
-}
-
-- (BOOL)isHotkeysRegistered
-{
-#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-
-  return [commands isKeyCommandRegisteredForInput:@"d" modifierFlags:UIKeyModifierCommand] &&
-      [commands isKeyCommandRegisteredForInput:@"i" modifierFlags:UIKeyModifierCommand];
-#else
-  return NO;
-#endif
 }
 
 - (BOOL)isReloadCommandRegistered
@@ -523,40 +477,11 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isHotLoadingEnabled;
 }
 
-- (void)setHotkeysEnabled:(BOOL)enabled
-{
-  if (enabled) {
-    [self registerHotkeys];
-  } else {
-    [self unregisterHotkeys];
-  }
-}
-
-- (BOOL)hotkeysEnabled
-{
-  return [self isHotkeysRegistered];
-}
-
 - (void)disableReloadCommand
 {
   if ([self isReloadCommandRegistered]) {
     [self unregisterReloadCommand];
   }
-}
-
-- (NSArray<UIKeyCommand *> *)keyCommands
-{
-  return @[
-    [UIKeyCommand keyCommandWithInput:@"d"
-                        modifierFlags:UIKeyModifierCommand
-                               action:@selector(toggle)],
-    [UIKeyCommand keyCommandWithInput:@"i"
-                        modifierFlags:UIKeyModifierCommand
-                               action:@selector(toggleElementInspector)],
-    [UIKeyCommand keyCommandWithInput:@"r"
-                        modifierFlags:UIKeyModifierCommand
-                               action:@selector(reloadFromKeyCommand)]
-  ];
 }
 
 - (void)toggleElementInspector

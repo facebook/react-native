@@ -257,19 +257,32 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 #pragma mark - Dev Menu
 
 #if RCT_DEV_MENU
-- (NSArray<UIKeyCommand *> *)keyCommands
-{
-  if (_devMenu) {
-    return [_devMenu keyCommands];
-  }
-  return @[];
-}
-#endif // RCT_DEV_MENU
-
 - (BOOL)canBecomeFirstResponder
 {
   return YES;
 }
-#endif // macOS]
+
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+//  return [_devMenu keyCommands] ?: @[];
+
+  return @[
+    [UIKeyCommand keyCommandWithInput:@"d"
+                        modifierFlags:UIKeyModifierCommand
+                               action:@selector(toggle)],
+    [UIKeyCommand keyCommandWithInput:@"i"
+                        modifierFlags:UIKeyModifierCommand
+                               action:@selector(toggleElementInspector)],
+  ];
+}
+
+- (void)toggle {
+  [_devMenu toggle];
+}
+
+- (void)toggleElementInspector {
+  [_devMenu toggleElementInspector];
+}
+#endif // RCT_DEV_MENU
 
 @end

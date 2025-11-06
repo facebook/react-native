@@ -57,7 +57,7 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 /**
  * Whether the hotkeys that toggles the developer menu is enabled.
  */
-@property (nonatomic, assign) BOOL hotkeysEnabled;
+@property (nonatomic, assign) BOOL hotkeysEnabled DEPRECATED_ATTRIBUTE;
 
 /**
  * Whether the developer menu is enabled.
@@ -83,6 +83,11 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  * Manually show the dev menu (can be called from JS).
  */
 - (void)show;
+
+/**
+ * Manually toggle the dev menu
+ */
+- (void)toggle;
 
 /**
  * Deprecated, use `RCTReloadCommand` instead.
