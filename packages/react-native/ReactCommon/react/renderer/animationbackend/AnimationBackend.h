@@ -18,6 +18,18 @@
 
 namespace facebook::react {
 
+class AnimationBackend;
+
+class UIManagerNativeAnimatedDelegateBackendImpl : public UIManagerNativeAnimatedDelegate {
+ public:
+  explicit UIManagerNativeAnimatedDelegateBackendImpl(std::weak_ptr<UIManagerAnimationBackend> animationBackend);
+
+  void runAnimationFrame() override;
+
+ private:
+  std::weak_ptr<UIManagerAnimationBackend> animationBackend_;
+};
+
 struct AnimationMutation {
   Tag tag;
   const ShadowNodeFamily *family;
