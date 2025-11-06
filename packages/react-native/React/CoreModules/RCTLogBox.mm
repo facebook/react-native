@@ -27,10 +27,7 @@
 
 @synthesize bridge = _bridge;
 
-+ (NSString *)moduleName
-{
-  return @"LogBox";
-}
+RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {

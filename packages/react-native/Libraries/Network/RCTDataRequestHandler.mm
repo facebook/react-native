@@ -20,10 +20,7 @@
   std::mutex _operationHandlerMutexLock;
 }
 
-+ (NSString *)moduleName
-{
-  return @"DataRequestHandler";
-}
+RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {

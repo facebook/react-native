@@ -26,10 +26,7 @@
   NSHashTable<RCTTextShadowView *> *_shadowViews;
 }
 
-+ (NSString *)moduleName
-{
-  return @"TextViewManager";
-}
+RCT_EXPORT_MODULE(RCTText)
 
 RCT_REMAP_SHADOW_PROPERTY(numberOfLines, maximumNumberOfLines, NSInteger)
 RCT_REMAP_SHADOW_PROPERTY(ellipsizeMode, lineBreakMode, NSLineBreakMode)

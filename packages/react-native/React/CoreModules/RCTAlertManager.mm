@@ -40,10 +40,7 @@ RCT_ENUM_CONVERTER(
   NSHashTable *_alertControllers;
 }
 
-+ (NSString *)moduleName
-{
-  return @"AlertManager";
-}
+RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {

@@ -19,10 +19,7 @@ using namespace facebook::react;
 
 @implementation RCTClipboard
 
-+ (NSString *)moduleName
-{
-  return @"Clipboard";
-}
+RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {

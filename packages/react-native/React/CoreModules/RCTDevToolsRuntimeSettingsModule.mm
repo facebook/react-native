@@ -23,11 +23,7 @@ static Config _config;
 @end
 
 @implementation RCTDevToolsRuntimeSettingsModule
-
-+ (NSString *)moduleName
-{
-  return @"ReactDevToolsRuntimeSettingsModule)";
-}
+RCT_EXPORT_MODULE(ReactDevToolsRuntimeSettingsModule)
 
 RCT_EXPORT_METHOD(
     setReloadAndProfileConfig : (JS::NativeReactDevToolsRuntimeSettingsModule::PartialReloadAndProfileConfig &)config)

@@ -26,10 +26,7 @@
 
 @synthesize moduleRegistry = _moduleRegistry;
 
-+ (NSString *)moduleName
-{
-  return @"ExceptionManager";
-}
+RCT_EXPORT_MODULE()
 
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate
 {

@@ -40,10 +40,7 @@
   NSPointerArray *_hostViews;
 }
 
-+ (NSString *)moduleName
-{
-  return @"ModalHostViewManager ";
-}
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {

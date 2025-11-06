@@ -20,10 +20,7 @@
 
 @implementation RCTFileReaderModule
 
-+ (NSString *)moduleName
-{
-  return @"FileReaderModule";
-}
+RCT_EXPORT_MODULE(FileReaderModule)
 
 @synthesize moduleRegistry = _moduleRegistry;
 

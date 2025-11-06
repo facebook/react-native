@@ -42,10 +42,7 @@ using namespace facebook::react;
   return NO;
 }
 
-+ (NSString *)moduleName
-{
-  return @"ActionSheetManager";
-}
+RCT_EXPORT_MODULE()
 
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 

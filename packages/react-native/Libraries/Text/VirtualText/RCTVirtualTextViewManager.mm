@@ -13,10 +13,7 @@
 
 @implementation RCTVirtualTextViewManager
 
-+ (NSString *)moduleName
-{
-  return @"VirtualTextViewManager";
-}
+RCT_EXPORT_MODULE(RCTVirtualText)
 
 - (UIView *)view
 {

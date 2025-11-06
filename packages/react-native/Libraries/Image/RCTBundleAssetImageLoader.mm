@@ -20,10 +20,7 @@
 
 @implementation RCTBundleAssetImageLoader
 
-+ (NSString *)moduleName
-{
-  return @"BundleAssetImageLoader";
-}
+RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {

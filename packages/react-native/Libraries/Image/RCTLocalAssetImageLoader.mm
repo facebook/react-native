@@ -20,10 +20,7 @@
 
 @implementation RCTLocalAssetImageLoader
 
-+ (NSString *)moduleName
-{
-  return @"LocalAssetImageLoader";
-}
+RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {

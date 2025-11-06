@@ -14,10 +14,7 @@
 
 @implementation RCTInputAccessoryViewManager
 
-+ (NSString *)moduleName
-{
-  return @"InputAccessoryViewManager";
-}
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {

@@ -24,10 +24,7 @@
   std::mutex _operationHandlerMutexLock;
 }
 
-+ (NSString *)moduleName
-{
-  return @"FileRequestHandler";
-}
+RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {

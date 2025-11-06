@@ -134,10 +134,7 @@ static std::atomic<int> numInitializedModules{0};
 @synthesize isInspectable = _isInspectable;
 @synthesize bundleManager = _bundleManager;
 
-+ (NSString *)moduleName
-{
-  return @"RCTDevSettings";
-}
+RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {

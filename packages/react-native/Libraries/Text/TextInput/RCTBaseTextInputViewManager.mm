@@ -30,10 +30,7 @@
   NSHashTable<RCTBaseTextInputShadowView *> *_shadowViews;
 }
 
-+ (NSString *)moduleName
-{
-  return @"BaseTextInputViewManager";
-}
+RCT_EXPORT_MODULE()
 
 #pragma mark - Unified <TextInput> properties
 
