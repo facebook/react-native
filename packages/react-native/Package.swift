@@ -199,21 +199,20 @@ let reactCxxReact = RNTarget(
   searchPaths: [CallInvokerPath],
   excludedPaths: ["tests"],
   dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .logger, .reactDebug, .reactJsInspector]
-
-)
-
-/// React-jsiexecutor.podspec
-let reactJsiExecutor = RNTarget(
-  name: .reactJsiExecutor,
-  path: "ReactCommon/jsiexecutor",
-  dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .reactJsInspector]
 )
 
 /// React-jsitooling.podspec
 let reactJsiTooling = RNTarget(
   name: .reactJsiTooling,
   path: "ReactCommon/jsitooling",
-  dependencies: [.reactNativeDependencies, .reactJsInspector, .reactJsInspectorTracing, .reactCxxReact, .jsi, .reactRuntimeExecutor]
+  dependencies: [.reactNativeDependencies, .jsi, .reactJsInspector, .reactJsInspectorTracing, .reactCxxReact]
+)
+
+/// React-jsiexecutor.podspec
+let reactJsiExecutor = RNTarget(
+  name: .reactJsiExecutor,
+  path: "ReactCommon/jsiexecutor",
+  dependencies: [.reactNativeDependencies, .jsi, .reactCxxReact, .reactJsiTooling]
 )
 
 /// React-hermes.podspec

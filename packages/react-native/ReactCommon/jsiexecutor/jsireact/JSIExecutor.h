@@ -12,6 +12,7 @@
 #include <cxxreact/RAMBundleRegistry.h>
 #include <jsi/jsi.h>
 #include <jsireact/JSINativeModules.h>
+#include <react/runtime/JSRuntimeBindings.h>
 #include <functional>
 #include <mutex>
 #include <optional>
@@ -127,10 +128,4 @@ class [[deprecated("This API will be removed along with the legacy architecture.
 #endif // RCT_REMOVE_LEGACY_ARCH
 };
 
-using Logger = std::function<void(const std::string &message, unsigned int logLevel)>;
-void bindNativeLogger(jsi::Runtime &runtime, Logger logger);
-
-void bindNativePerformanceNow(jsi::Runtime &runtime);
-
-double performanceNow();
 } // namespace facebook::react
