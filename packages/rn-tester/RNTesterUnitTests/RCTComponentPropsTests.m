@@ -79,6 +79,8 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
 {
   [super setUp];
 
+  XCTSkip(@"Skipping RCTComponentPropsTests since they rely on deprecated RCTBridge functionality.");
+
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
   _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"RNTesterUnitTestsBundle" withExtension:@"js"]
                                   moduleProvider:nil

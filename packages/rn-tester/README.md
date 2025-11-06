@@ -75,5 +75,3 @@ This is different from apps created using `react-native init` which have a depen
 ## Running tests (iOS)
 
 RNTester provides both integration and unit tests. You can run them all by hitting `Cmd+U` in Xcode. Alternatively, it is possible to run just unit tests or integration tests using the keybinding after selecting the appropriate scheme (either `RNTesterUnitTests` or `RNTesterIntegrationTests`).
-
-Please note that to run integration tests, for WebSocket tests, launching the test server is required beforehand: `cd packages/rn-tester/IntegrationTests && ./launchWebSocketServer.sh`.

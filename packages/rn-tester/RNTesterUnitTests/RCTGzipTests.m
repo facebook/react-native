@@ -52,7 +52,8 @@ extern BOOL RCTIsGzippedData(NSData *__nullable data);
   XCTAssertEqualObjects(outputString, inputString);
 }
 
-- (void)testRequestBodyEncoding
+// Disabled due to test being based on deprecated RCTBridge
+- (void)disabled_testRequestBodyEncoding
 {
   NSDictionary *query = @{
     @"url" : @"http://example.com",

@@ -141,6 +141,8 @@ RCT_EXPORT_MODULE()
 {
   [super setUp];
 
+  XCTSkip(@"Skipping RCTModuleInitTests since they rely on deprecated RCTBridge functionality.");
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(moduleDidInit:)
                                                name:RCTDidInitializeModuleNotification
