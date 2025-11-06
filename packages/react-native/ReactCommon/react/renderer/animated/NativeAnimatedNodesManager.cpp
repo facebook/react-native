@@ -519,6 +519,17 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 }
 
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
+  // This method can be called from either the UI thread or JavaScript thread.
+  // It ensures `startOnRenderCallback_` is called exactly once using atomic
+  // operations. We use std::atomic_bool rather than std::mutex to avoid
+  // potential deadlocks that could occur if we called external code while
+  // holding a mutex.
+  auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(true);
+  if (isRenderCallbackStarted) {
+    // onRender callback is already started.
+    return;
+  }
+
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
     if (auto animationBackend = animationBackend_.lock()) {
@@ -531,16 +542,6 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
 
     return;
   }
-  // This method can be called from either the UI thread or JavaScript thread.
-  // It ensures `startOnRenderCallback_` is called exactly once using atomic
-  // operations. We use std::atomic_bool rather than std::mutex to avoid
-  // potential deadlocks that could occur if we called external code while
-  // holding a mutex.
-  auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(true);
-  if (isRenderCallbackStarted) {
-    // onRender callback is already started.
-    return;
-  }
 
   if (startOnRenderCallback_) {
     startOnRenderCallback_([this]() { onRender(); }, isAsync);
@@ -549,17 +550,20 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
 
 void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded(
     bool isAsync) noexcept {
-  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    if (auto animationBackend = animationBackend_.lock()) {
-      animationBackend->stop(isAsync);
-    }
-    return;
-  }
   // When multiple threads reach this point, only one thread should call
   // stopOnRenderCallback_. This synchronization is primarily needed during
   // destruction of NativeAnimatedNodesManager. In normal operation,
   // stopRenderCallbackIfNeeded is always called from the UI thread.
   auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(false);
+
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    if (isRenderCallbackStarted) {
+      if (auto animationBackend = animationBackend_.lock()) {
+        animationBackend->stop(isAsync);
+      }
+    }
+    return;
+  }
 
   if (isRenderCallbackStarted) {
     if (stopOnRenderCallback_) {
