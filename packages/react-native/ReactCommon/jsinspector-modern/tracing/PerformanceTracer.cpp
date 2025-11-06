@@ -188,7 +188,7 @@ void PerformanceTracer::reportMeasure(
     HighResTimeStamp start,
     HighResDuration duration,
     folly::dynamic&& detail,
-    std::function<std::optional<folly::dynamic>()>&& stackTraceProvider) {
+    std::optional<folly::dynamic> stackTrace) {
   if (!tracingAtomic_) {
     return;
   }
@@ -205,7 +205,7 @@ void PerformanceTracer::reportMeasure(
           .duration = duration,
           .detail = std::move(detail),
           .threadId = getCurrentThreadId(),
-          .stackTraceProvider = std::move(stackTraceProvider),
+          .stackTrace = std::move(stackTrace),
       });
 }
 
@@ -217,7 +217,7 @@ void PerformanceTracer::reportTimeStamp(
     std::optional<std::string> trackGroup,
     std::optional<ConsoleTimeStampColor> color,
     std::optional<folly::dynamic> detail,
-    std::function<std::optional<folly::dynamic>()>&& stackTraceProvider) {
+    std::optional<folly::dynamic> stackTrace) {
   if (!tracingAtomic_) {
     return;
   }
@@ -236,7 +236,7 @@ void PerformanceTracer::reportTimeStamp(
           .trackGroup = std::move(trackGroup),
           .color = std::move(color),
           .detail = std::move(detail),
-          .stackTraceProvider = std::move(stackTraceProvider),
+          .stackTrace = std::move(stackTrace),
           .threadId = getCurrentThreadId(),
       });
 }
@@ -610,11 +610,9 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
               beginEventArgs =
                   folly::dynamic::object("detail", folly::toJson(event.detail));
             }
-            if (event.stackTraceProvider) {
-              if (auto maybeStackTrace = event.stackTraceProvider()) {
-                beginEventArgs["data"] = folly::dynamic::object(
-                    "rnStackTrace", std::move(*maybeStackTrace));
-              }
+            if (event.stackTrace) {
+              beginEventArgs["data"] = folly::dynamic::object(
+                  "rnStackTrace", std::move(*event.stackTrace));
             }
 
             auto eventId = ++performanceMeasureCount_;
@@ -705,10 +703,8 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
               }
               data["devtools"] = folly::toJson(devtoolsDetail);
             }
-            if (event.stackTraceProvider) {
-              if (auto maybeStackTrace = event.stackTraceProvider()) {
-                data["rnStackTrace"] = std::move(*maybeStackTrace);
-              }
+            if (event.stackTrace) {
+              data["rnStackTrace"] = std::move(*event.stackTrace);
             }
 
             events.emplace_back(

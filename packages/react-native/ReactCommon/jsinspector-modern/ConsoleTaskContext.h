@@ -80,11 +80,6 @@ class ConsoleTaskContext : public std::enable_shared_from_this<ConsoleTaskContex
    */
   std::optional<folly::dynamic> getSerializedStackTrace() const;
 
-  /**
-   * Returns a function that returns the serialized stack trace, if available.
-   */
-  std::function<std::optional<folly::dynamic>()> getSerializedStackTraceProvider() const;
-
   void schedule();
 
  private:
