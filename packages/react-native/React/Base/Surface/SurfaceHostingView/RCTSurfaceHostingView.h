@@ -14,6 +14,7 @@
 
 @class RCTBridge;
 @class RCTSurface;
+@class RCTDevMenu;
 
 typedef UIView *_Nullable (^RCTSurfaceHostingViewActivityIndicatorViewFactory)(void);
 

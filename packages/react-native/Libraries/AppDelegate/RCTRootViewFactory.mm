@@ -225,6 +225,7 @@
     if (devMenu) {
       [(RCTSurfaceHostingView *)rootView setDevMenu:devMenu];
     }
+  }
 #endif // RCT_DEV_MENU
 
   return rootView;
