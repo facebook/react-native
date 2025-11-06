@@ -39,6 +39,7 @@ import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory
+import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.InspectorFlags
@@ -61,6 +62,7 @@ import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
@@ -72,6 +74,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.Unit
 import kotlin.concurrent.Volatile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * A ReactHost is an object that manages a single [ReactInstance]. A ReactHost can be constructed
@@ -365,6 +370,12 @@ public class ReactHostImpl(
     reactInstanceEventListeners.remove(listener)
   }
 
+  override fun setDevMenuConfiguration(config: DevMenuConfiguration) {
+    devSupportManager.devMenuEnabled = config.devMenuEnabled
+    devSupportManager.shakeGestureEnabled = config.shakeGestureEnabled
+    devSupportManager.keyboardShortcutsEnabled = config.keyboardShortcutsEnabled
+  }
+
   /**
    * Entrypoint to reload the ReactInstance. If the ReactInstance is destroying, will wait until
    * destroy is finished, before reloading.
@@ -642,15 +653,41 @@ public class ReactHostImpl(
     }
   }
 
+  @ThreadConfined(value = ThreadConfined.UI)
+  override fun setBundleSource(filePath: String) {
+    devSupportManager.bundleFilePath = filePath
+    reload("Change bundle source")
+  }
+
+  @ThreadConfined(value = ThreadConfined.UI)
+  override fun setBundleSource(
+      debugServerHost: String,
+      moduleName: String,
+      queryMapper: (Map<String, String>) -> Map<String, String>,
+  ) {
+    CoroutineScope(Dispatchers.Default).launch {
+      (devSupportManager as DevSupportManagerBase).devServerHelper.closePackagerConnection()
+      val packagerConnectionSettings = devSupportManager.devSettings.packagerConnectionSettings
+      packagerConnectionSettings.setPackagerOptionsUpdater(queryMapper)
+      packagerConnectionSettings.debugServerHost = debugServerHost
+      devSupportManager.jsAppBundleName = moduleName
+      reload("Changed bundle source")
+    }
+  }
+
   @ThreadConfined(ThreadConfined.UI)
   override fun onConfigurationChanged(context: Context) {
     val currentReactContext = this.currentReactContext
     if (currentReactContext != null) {
       if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
+        val previousFontScale = PixelUtil.toPixelFromSP(1.0)
         DisplayMetricsHolder.initDisplayMetrics(currentReactContext)
+        val newFontScale = PixelUtil.toPixelFromSP(1.0)
 
-        synchronized(attachedSurfaces) {
-          attachedSurfaces.forEach { surface -> surface.view?.requestLayout() }
+        if (previousFontScale != newFontScale) {
+          synchronized(attachedSurfaces) {
+            attachedSurfaces.forEach { surface -> surface.view?.requestLayout() }
+          }
         }
       }
 
@@ -1051,6 +1088,16 @@ public class ReactHostImpl(
   private val jsBundleLoader: Task<JSBundleLoader>
     get() {
       stateTracker.enterState("getJSBundleLoader()")
+
+      if (devSupportManager.bundleFilePath != null) {
+        return try {
+          Task.forResult(
+              JSBundleLoader.createFileLoader(checkNotNull(devSupportManager.bundleFilePath))
+          )
+        } catch (e: Exception) {
+          Task.forError(e)
+        }
+      }
 
       if (useDevSupport && allowPackagerServerAccess) {
         return isMetroRunning.onSuccessTask(

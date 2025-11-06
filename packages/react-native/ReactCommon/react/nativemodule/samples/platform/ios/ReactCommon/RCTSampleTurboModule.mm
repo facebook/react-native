@@ -149,10 +149,8 @@ RCT_EXPORT_METHOD(getValueWithCallback : (RCTResponseSenderBlock)callback)
   callback(@[ @"value from callback!" ]);
 }
 
-RCT_EXPORT_METHOD(getValueWithPromise
-                  : (BOOL)error resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    getValueWithPromise : (BOOL)error resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   if ((resolve == nullptr) || (reject == nullptr)) {
     return;

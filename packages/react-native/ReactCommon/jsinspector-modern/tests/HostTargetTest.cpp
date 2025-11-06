@@ -180,9 +180,10 @@ TEST_F(HostTargetProtocolTest, PageReloadMethod) {
 
   EXPECT_CALL(
       hostTargetDelegate_,
-      onReload(Eq(HostTargetDelegate::PageReloadRequest{
-          .ignoreCache = std::nullopt,
-          .scriptToEvaluateOnLoad = std::nullopt})))
+      onReload(
+          Eq(HostTargetDelegate::PageReloadRequest{
+              .ignoreCache = std::nullopt,
+              .scriptToEvaluateOnLoad = std::nullopt})))
       .RetiresOnSaturation();
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 1,
@@ -196,8 +197,10 @@ TEST_F(HostTargetProtocolTest, PageReloadMethod) {
 
   EXPECT_CALL(
       hostTargetDelegate_,
-      onReload(Eq(HostTargetDelegate::PageReloadRequest{
-          .ignoreCache = true, .scriptToEvaluateOnLoad = "alert('hello');"})))
+      onReload(
+          Eq(HostTargetDelegate::PageReloadRequest{
+              .ignoreCache = true,
+              .scriptToEvaluateOnLoad = "alert('hello');"})))
       .RetiresOnSaturation();
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 2,

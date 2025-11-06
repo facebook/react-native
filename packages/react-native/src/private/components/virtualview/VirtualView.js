@@ -15,6 +15,7 @@ import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
 
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
 import * as ReactNativeFeatureFlags from '../../featureflags/ReactNativeFeatureFlags';
+import {useVirtualViewLogging} from './logger/VirtualViewLogger';
 import VirtualViewExperimentalNativeComponent from './VirtualViewExperimentalNativeComponent';
 import VirtualViewClassicNativeComponent from './VirtualViewNativeComponent';
 import nullthrows from 'nullthrows';
@@ -45,6 +46,7 @@ export type Rect = $ReadOnly<{
 
 export type ModeChangeEvent = $ReadOnly<{
   ...Omit<NativeModeChangeEvent, 'mode'>,
+  renderState: VirtualViewRenderState,
   mode: VirtualViewMode,
   target: HostInstance,
 }>;
@@ -90,21 +92,26 @@ function createVirtualView(initialState: State): VirtualViewComponent {
       _logs.states?.push(state);
     }
     const isHidden = state !== NotHidden;
+    const loggingCallbacksRef = useVirtualViewLogging(isHidden, nativeID);
 
     const handleModeChange = (
       event: NativeSyntheticEvent<NativeModeChangeEvent>,
     ) => {
       const mode = nullthrows(VirtualViewMode.cast(event.nativeEvent.mode));
+      const modeChangeEvent: ModeChangeEvent = {
+        mode,
+        renderState: isHidden
+          ? VirtualViewRenderState.None
+          : VirtualViewRenderState.Rendered,
+        // $FlowFixMe[incompatible-type] - we know this is a HostInstance
+        target: event.currentTarget as HostInstance,
+        targetRect: event.nativeEvent.targetRect,
+        thresholdRect: event.nativeEvent.thresholdRect,
+      };
+      loggingCallbacksRef.current?.logModeChange(modeChangeEvent);
+
       const emitModeChange =
-        onModeChange == null
-          ? null
-          : onModeChange.bind(null, {
-              mode,
-              // $FlowFixMe[incompatible-type] - we know this is a HostInstance
-              target: event.currentTarget as HostInstance,
-              targetRect: event.nativeEvent.targetRect,
-              thresholdRect: event.nativeEvent.thresholdRect,
-            });
+        onModeChange == null ? null : onModeChange.bind(null, modeChangeEvent);
 
       match (mode) {
         VirtualViewMode.Visible => {

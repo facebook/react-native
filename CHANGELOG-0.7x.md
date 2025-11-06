@@ -1,5 +1,14 @@
 # Changelog (pre 0.80)
 
+## v0.79.7
+
+### Fixed
+
+#### Android specific
+
+- **Layout:** Make missing parent view state in updateLayout a soft error ([56ad8d9bfd](https://github.com/facebook/react-native/commit/56ad8d9bfd08ea70bc6f5726a2b4a6afb6d2d7c2) by [@javache](https://github.com/javache))
+- **Layout:** Make missing parent view state in updateLayout a soft error ([f2e47d8dab](https://github.com/facebook/react-native/commit/f2e47d8dabcd61621ea81c86cd1e2488948c4229) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.79.6
 
 ### Added

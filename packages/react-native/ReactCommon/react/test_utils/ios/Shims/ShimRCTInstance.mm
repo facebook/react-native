@@ -22,9 +22,10 @@ static __weak ShimRCTInstance *weakShim = nil;
     RCTSwizzleInstanceSelector(
         [RCTInstance class],
         [ShimRCTInstance class],
-        @selector(initWithDelegate:
-                  jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget
-                                  :launchOptions:));
+        @selector
+        (initWithDelegate:
+            jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget:launchOptions
+                            :devMenuConfiguration:));
     RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
     RCTSwizzleInstanceSelector(
         [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
@@ -38,9 +39,10 @@ static __weak ShimRCTInstance *weakShim = nil;
   RCTSwizzleInstanceSelector(
       [RCTInstance class],
       [ShimRCTInstance class],
-      @selector(initWithDelegate:
-                jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget
-                                :launchOptions:));
+      @selector
+      (initWithDelegate:
+          jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget:launchOptions
+                          :devMenuConfiguration:));
   RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
   RCTSwizzleInstanceSelector(
       [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
@@ -55,6 +57,7 @@ static __weak ShimRCTInstance *weakShim = nil;
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
                    launchOptions:(NSDictionary *)launchOptions
+            devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   weakShim.initCount++;
   return self;

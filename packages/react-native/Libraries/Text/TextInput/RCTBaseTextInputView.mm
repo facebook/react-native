@@ -727,6 +727,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       return @"Join";
     case UIReturnKeyEmergencyCall:
       return @"Emergency Call";
+    case UIReturnKeyDefault:
+    case UIReturnKeyContinue:
+    case UIReturnKeyDone:
     default:
       return @"Done";
   }

@@ -32,6 +32,7 @@ using namespace facebook::react;
   NSDictionary *_constants;
 
   __weak UIWindow *_applicationWindow;
+  NSDictionary * (^_dimensionsProvider)(void);
 }
 
 static NSString *const kFrameKeyPath = @"frame";
@@ -45,6 +46,14 @@ RCT_EXPORT_MODULE()
   if (self = [super init]) {
     _applicationWindow = RCTKeyWindow();
     [_applicationWindow addObserver:self forKeyPath:kFrameKeyPath options:NSKeyValueObservingOptionNew context:nil];
+  }
+  return self;
+}
+
+- (instancetype)initWithDimensionsProvider:(NSDictionary * (^)(void))dimensionsProvider
+{
+  if (self = [self init]) {
+    _dimensionsProvider = dimensionsProvider;
   }
   return self;
 }
@@ -206,6 +215,15 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (NSDictionary *)_exportedDimensions
 {
+  // if a window size provider has been set, use that. If nil is returned from the provider
+  // it will fall back to the default behavior.
+  if (_dimensionsProvider != nil) {
+    auto dimensions = _dimensionsProvider();
+    if (dimensions != nil) {
+      return dimensions;
+    }
+  }
+
   RCTAssert(!_invalidated, @"Failed to get exported dimensions: RCTDeviceInfo has been invalidated");
   RCTAssert(_moduleRegistry, @"Failed to get exported dimensions: RCTModuleRegistry is nil");
   RCTAccessibilityManager *accessibilityManager =

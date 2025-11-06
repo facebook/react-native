@@ -14,6 +14,7 @@
 
 #import <RCTSwiftUIWrapper/RCTSwiftUIContainerViewWrapper.h>
 #import <React/RCTAssert.h>
+#import <React/RCTBackgroundImageUtils.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
@@ -528,8 +529,11 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     }
   }
 
-  // `linearGradient`
-  if (oldViewProps.backgroundImage != newViewProps.backgroundImage) {
+  // `backgroundImage`
+  if (oldViewProps.backgroundImage != newViewProps.backgroundImage ||
+      oldViewProps.backgroundPosition != newViewProps.backgroundPosition ||
+      oldViewProps.backgroundRepeat != newViewProps.backgroundRepeat ||
+      oldViewProps.backgroundSize != newViewProps.backgroundSize) {
     needsInvalidateLayer = YES;
   }
 
@@ -1047,14 +1051,23 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   [_filterLayer removeFromSuperlayer];
   _filterLayer = nil;
   if (_swiftUIWrapper != nullptr) {
-    [_swiftUIWrapper updateBlurRadius:@(0)];
+    [_swiftUIWrapper resetStyles];
   }
   self.layer.opacity = (float)_props->opacity;
   if (!_props->filter.empty()) {
     float multiplicativeBrightness = 1;
     bool hasBrightnessFilter = false;
     for (const auto &primitive : _props->filter) {
-      if (std::holds_alternative<Float>(primitive.parameters)) {
+      if (primitive.type == FilterType::DropShadow) {
+        if (_swiftUIWrapper != nullptr && std::holds_alternative<DropShadowParams>(primitive.parameters)) {
+          const auto &dropShadowParams = std::get<DropShadowParams>(primitive.parameters);
+          UIColor *shadowColor = RCTUIColorFromSharedColor(dropShadowParams.color);
+          [_swiftUIWrapper updateDropShadow:@(dropShadowParams.standardDeviation)
+                                          x:@(dropShadowParams.offsetX)
+                                          y:@(dropShadowParams.offsetY)
+                                      color:shadowColor];
+        }
+      } else if (std::holds_alternative<Float>(primitive.parameters)) {
         if (primitive.type == FilterType::Brightness) {
           multiplicativeBrightness *= std::get<Float>(primitive.parameters);
           hasBrightnessFilter = true;
@@ -1064,6 +1077,26 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           if (_swiftUIWrapper != nullptr) {
             Float blurRadius = std::get<Float>(primitive.parameters);
             [_swiftUIWrapper updateBlurRadius:@(blurRadius)];
+          }
+        } else if (primitive.type == FilterType::Grayscale) {
+          if (_swiftUIWrapper != nullptr) {
+            Float grayscale = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateGrayscale:@(grayscale)];
+          }
+        } else if (primitive.type == FilterType::Saturate) {
+          if (_swiftUIWrapper != nullptr) {
+            Float saturation = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateSaturation:@(saturation)];
+          }
+        } else if (primitive.type == FilterType::Contrast) {
+          if (_swiftUIWrapper != nullptr) {
+            Float contrast = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateContrast:@(contrast)];
+          }
+        } else if (primitive.type == FilterType::HueRotate) {
+          if (_swiftUIWrapper != nullptr) {
+            Float hueRotateDegrees = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateHueRotate:@(hueRotateDegrees)];
           }
         }
       }
@@ -1088,27 +1121,62 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   // background image
   [self clearExistingBackgroundImageLayers];
   if (!_props->backgroundImage.empty()) {
+    const auto borderMetricsBI = _props->resolveBorderMetrics(_layoutMetrics);
+
+    // background-origin: padding-box
+    CGRect backgroundPositioningArea = RCTCGRectFromRect(_layoutMetrics.getPaddingFrame());
+    // background-clip: border-box
+    CGRect backgroundPaintingArea = self.layer.bounds;
+
+    size_t imageIndex = _props->backgroundImage.size() - 1;
     // iterate in reverse to match CSS specification
     for (const auto &backgroundImage : std::ranges::reverse_view(_props->backgroundImage)) {
+      BackgroundSize backgroundSize = BackgroundSizeLengthPercentage{};
+      if (!_props->backgroundSize.empty()) {
+        backgroundSize = _props->backgroundSize[imageIndex % _props->backgroundSize.size()];
+      }
+
+      BackgroundPosition backgroundPosition;
+      if (!_props->backgroundPosition.empty()) {
+        backgroundPosition = _props->backgroundPosition[imageIndex % _props->backgroundPosition.size()];
+      }
+
+      BackgroundRepeat backgroundRepeat;
+      if (!_props->backgroundRepeat.empty()) {
+        backgroundRepeat = _props->backgroundRepeat[imageIndex % _props->backgroundRepeat.size()];
+      }
+
+      CGSize backgroundImageSize = [RCTBackgroundImageUtils calculateBackgroundImageSize:backgroundPositioningArea
+                                                                       itemIntrinsicSize:backgroundPositioningArea.size
+                                                                          backgroundSize:backgroundSize
+                                                                        backgroundRepeat:backgroundRepeat];
+
+      CALayer *gradientLayer;
+
       if (std::holds_alternative<LinearGradient>(backgroundImage)) {
         const auto &linearGradient = std::get<LinearGradient>(backgroundImage);
-        CALayer *backgroundImageLayer = [RCTLinearGradient gradientLayerWithSize:self.layer.bounds.size
-                                                                        gradient:linearGradient];
-        [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
-        backgroundImageLayer.masksToBounds = YES;
-        backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-        [layer addSublayer:backgroundImageLayer];
-        [_backgroundImageLayers addObject:backgroundImageLayer];
+        gradientLayer = [RCTLinearGradient gradientLayerWithSize:backgroundImageSize gradient:linearGradient];
       } else if (std::holds_alternative<RadialGradient>(backgroundImage)) {
         const auto &radialGradient = std::get<RadialGradient>(backgroundImage);
-        CALayer *backgroundImageLayer = [RCTRadialGradient gradientLayerWithSize:self.layer.bounds.size
-                                                                        gradient:radialGradient];
-        [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
+        gradientLayer = [RCTRadialGradient gradientLayerWithSize:backgroundImageSize gradient:radialGradient];
+      }
+
+      if (gradientLayer != nil) {
+        CALayer *backgroundImageLayer =
+            [RCTBackgroundImageUtils createBackgroundImageLayerWithSize:backgroundPositioningArea
+                                                           paintingArea:backgroundPaintingArea
+                                                               itemSize:backgroundImageSize
+                                                     backgroundPosition:backgroundPosition
+                                                       backgroundRepeat:backgroundRepeat
+                                                              itemLayer:gradientLayer];
+        [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetricsBI];
         backgroundImageLayer.masksToBounds = YES;
         backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
         [layer addSublayer:backgroundImageLayer];
         [_backgroundImageLayers addObject:backgroundImageLayer];
       }
+
+      imageIndex--;
     }
   }
 
@@ -1486,7 +1554,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   if (!_props->filter.empty()) {
     for (const auto &primitive : _props->filter) {
-      if (primitive.type == FilterType::Blur) {
+      if (primitive.type == FilterType::Blur || primitive.type == FilterType::Grayscale ||
+          primitive.type == FilterType::DropShadow || primitive.type == FilterType::Saturate ||
+          primitive.type == FilterType::Contrast || primitive.type == FilterType::HueRotate) {
         return YES;
       }
     }

@@ -14,6 +14,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableMap
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
@@ -110,7 +111,10 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     event.putMap("velocity", velocity)
     event.putInt("target", viewTag)
     event.putDouble("timestamp", timestamp.toDouble())
-    event.putBoolean("responderIgnoreScroll", true)
+    event.putBoolean(
+        "responderIgnoreScroll",
+        !ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid(),
+    )
     return event
   }
 

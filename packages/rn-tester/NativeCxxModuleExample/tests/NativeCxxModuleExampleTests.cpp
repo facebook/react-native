@@ -8,7 +8,6 @@
 #include <NativeCxxModuleExample/NativeCxxModuleExample.h>
 #include <ReactCommon/TurboModuleTestFixture.h>
 #include <gtest/gtest.h>
-#include <list>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -172,4 +171,25 @@ TEST_F(
   EXPECT_EQ(module_->getWithWithOptionalArgs(*runtime_, false), false);
 }
 
+TEST_F(NativeCxxModuleExampleTests, VoidFunEmitsEvents) {
+  int onPressCalled = 0;
+  std::string onClickCalled;
+  auto onPressSubscription = addEventEmitterListener<>(
+      *runtime_, "onPress", [&]() { onPressCalled++; });
+  addEventEmitterListener<std::string>(
+      *runtime_, "onClick", [&](const std::string& event) {
+        onClickCalled = event;
+      });
+  module_->voidFunc(*runtime_);
+  jsInvoker_->flushQueue();
+  EXPECT_EQ(onPressCalled, 1);
+  EXPECT_EQ(onClickCalled, "value from callback on click!");
+
+  onPressSubscription.remove();
+  jsInvoker_->flushQueue();
+
+  module_->voidFunc(*runtime_);
+  jsInvoker_->flushQueue();
+  EXPECT_EQ(onPressCalled, 1);
+}
 } // namespace facebook::react

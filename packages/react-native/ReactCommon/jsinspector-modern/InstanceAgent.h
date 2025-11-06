@@ -35,17 +35,14 @@ class InstanceAgent final {
    * object.
    * \param sessionState The state of the session that created this agent.
    */
-  explicit InstanceAgent(
-      FrontendChannel frontendChannel,
-      InstanceTarget& target,
-      SessionState& sessionState);
+  explicit InstanceAgent(FrontendChannel frontendChannel, InstanceTarget &target, SessionState &sessionState);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
    * \c FrontendChannel synchronously or asynchronously.
    * \param req The parsed request.
    */
-  bool handleRequest(const cdp::PreparsedRequest& req);
+  bool handleRequest(const cdp::PreparsedRequest &req);
 
   /**
    * Replace the current RuntimeAgent hostAgent_ with a new one
@@ -53,7 +50,7 @@ class InstanceAgent final {
    * \param runtime The new runtime target. May be nullptr to indicate
    * there's no current debuggable runtime.
    */
-  void setCurrentRuntime(RuntimeTarget* runtime);
+  void setCurrentRuntime(RuntimeTarget *runtime);
 
   /**
    * Send a console message to the frontend, or buffer it to be sent later.
@@ -66,9 +63,9 @@ class InstanceAgent final {
   void maybeSendPendingConsoleMessages();
 
   FrontendChannel frontendChannel_;
-  InstanceTarget& target_;
+  InstanceTarget &target_;
   std::shared_ptr<RuntimeAgent> runtimeAgent_;
-  SessionState& sessionState_;
+  SessionState &sessionState_;
 };
 
 #pragma mark - Tracing
@@ -81,14 +78,14 @@ class InstanceAgent final {
  */
 class InstanceTracingAgent : tracing::TargetTracingAgent {
  public:
-  explicit InstanceTracingAgent(tracing::TraceRecordingState& state);
+  explicit InstanceTracingAgent(tracing::TraceRecordingState &state);
 
   ~InstanceTracingAgent();
 
   /**
    * Registers the RuntimeTarget with this tracing agent.
    */
-  void setTracedRuntime(RuntimeTarget* runtimeTarget);
+  void setTracedRuntime(RuntimeTarget *runtimeTarget);
 
  private:
   std::shared_ptr<RuntimeTracingAgent> runtimeTracingAgent_;

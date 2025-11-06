@@ -286,6 +286,10 @@ android {
             "-DHERMES_ENABLE_INTL=True",
         )
 
+        if (hermesV1Enabled) {
+          arguments("-DHERMESVM_HEAP_HV_MODE=HEAP_HV_PREFER32")
+        }
+
         targets("hermesvm")
       }
     }
@@ -385,15 +389,4 @@ afterEvaluate {
 tasks.withType<JavaCompile>().configureEach {
   options.compilerArgs.add("-Xlint:deprecation,unchecked")
   options.compilerArgs.add("-Werror")
-}
-
-/* Publishing Configuration */
-apply(from = "../publish.gradle")
-
-// We need to override the artifact ID as this project is called `hermes-engine` but
-// the maven coordinates are on `hermes-android`.
-// Please note that the original coordinates, `hermes-engine`, have been voided
-// as they caused https://github.com/facebook/react-native/issues/35210
-publishing {
-  publications { getByName("release", MavenPublication::class) { artifactId = "hermes-android" } }
 }

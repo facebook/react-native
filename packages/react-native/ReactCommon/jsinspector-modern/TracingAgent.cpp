@@ -26,12 +26,8 @@ const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
 /**
  * The maximum number of ProfileChunk trace events
  * that will be sent in a single CDP Tracing.dataCollected message.
- * TODO(T219394401): Increase the size once we manage the queue on OkHTTP
- side
- * properly and avoid WebSocket disconnections when sending a message larger
- * than 16MB.
  */
-const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
+const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 10;
 
 } // namespace
 
@@ -53,12 +49,12 @@ TracingAgent::~TracingAgent() {
 
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
-    // @cdp Tracing.start support is experimental.
     if (sessionState_.isDebuggerDomainEnabled) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Debugger domain is expected to be disabled before starting Tracing"));
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "Debugger domain is expected to be disabled before starting Tracing"));
 
       return true;
     }
@@ -66,10 +62,11 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     bool didNotHaveAlreadyRunningRecording =
         hostTargetController_.startTracing(tracing::Mode::CDP);
     if (!didNotHaveAlreadyRunningRecording) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InvalidRequest,
-          "Tracing has already been started"));
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidRequest,
+              "Tracing has already been started"));
 
       return true;
     }
@@ -79,7 +76,6 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     return true;
   } else if (req.method == "Tracing.end") {
-    // @cdp Tracing.end support is experimental.
     auto state = hostTargetController_.stopTracing();
 
     sessionState_.hasPendingTraceRecording = false;
@@ -103,9 +99,10 @@ void TracingAgent::emitExternalTraceRecording(
 void TracingAgent::emitTraceRecording(
     tracing::TraceRecordingState traceRecording) const {
   auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
-    frontendChannel_(cdp::jsonNotification(
-        "Tracing.dataCollected",
-        folly::dynamic::object("value", std::move(eventsChunk))));
+    frontendChannel_(
+        cdp::jsonNotification(
+            "Tracing.dataCollected",
+            folly::dynamic::object("value", std::move(eventsChunk))));
   };
   tracing::TraceRecordingStateSerializer::emitAsDataCollectedChunks(
       std::move(traceRecording),
@@ -113,9 +110,10 @@ void TracingAgent::emitTraceRecording(
       TRACE_EVENT_CHUNK_SIZE,
       PROFILE_TRACE_EVENT_CHUNK_SIZE);
 
-  frontendChannel_(cdp::jsonNotification(
-      "Tracing.tracingComplete",
-      folly::dynamic::object("dataLossOccurred", false)));
+  frontendChannel_(
+      cdp::jsonNotification(
+          "Tracing.tracingComplete",
+          folly::dynamic::object("dataLossOccurred", false)));
 }
 
 } // namespace facebook::react::jsinspector_modern

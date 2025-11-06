@@ -443,15 +443,14 @@ static YGSize RCTTextShadowViewMeasure(
     size.width -= letterSpacing;
   }
 
-  size = (CGSize){
-      MIN(RCTCeilPixelValue(size.width), maximumSize.width), MIN(RCTCeilPixelValue(size.height), maximumSize.height)};
+  size = (CGSize){MIN(RCTCeilPixelValue(size.width), maximumSize.width),
+                  MIN(RCTCeilPixelValue(size.height), maximumSize.height)};
 
   // Adding epsilon value illuminates problems with converting values from
   // `double` to `float`, and then rounding them to pixel grid in Yoga.
   CGFloat epsilon = 0.001;
-  return (YGSize){
-      RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
-      RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)};
+  return (YGSize){RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
+                  RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)};
 }
 
 static float RCTTextShadowViewBaseline(YGNodeConstRef node, const float width, const float height)

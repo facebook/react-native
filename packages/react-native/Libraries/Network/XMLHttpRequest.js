@@ -14,7 +14,6 @@ import type {
   EventCallback,
   EventListener,
 } from '../../src/private/webapis/dom/events/EventTarget';
-import type Performance from '../../src/private/webapis/performance/Performance';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 import Event from '../../src/private/webapis/dom/events/Event';
@@ -34,13 +33,7 @@ const RCTNetworking = require('./RCTNetworking').default;
 const base64 = require('base64-js');
 const invariant = require('invariant');
 
-const PERFORMANCE_TRACK_NAME = 'Network (JS-initiated only)';
-const PERFORMANCE_TRACK_GROUP = 'Chrome DevTools Temp Compat';
-
-declare var performance: Performance;
-
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
-const LABEL_FOR_MISSING_URL_FOR_PROFILING = 'Unknown URL';
 
 export type NativeResponseType = 'base64' | 'blob' | 'text';
 export type ResponseType =
@@ -141,7 +134,6 @@ class XMLHttpRequest extends EventTarget {
   static DONE: number = DONE;
 
   static _interceptor: ?XHRInterceptor = null;
-  static _profiling: boolean = false;
 
   UNSENT: number = UNSENT;
   OPENED: number = OPENED;
@@ -180,10 +172,6 @@ class XMLHttpRequest extends EventTarget {
 
   static __setInterceptor_DO_NOT_USE(interceptor: ?XHRInterceptor) {
     XMLHttpRequest._interceptor = interceptor;
-  }
-
-  static enableProfiling(enableProfiling: boolean): void {
-    XMLHttpRequest._profiling = enableProfiling;
   }
 
   constructor() {
@@ -389,23 +377,12 @@ class XMLHttpRequest extends EventTarget {
       return;
     }
 
-    const start = XMLHttpRequest._profiling ? performance.now() : undefined;
-
     if (!this._response) {
       this._response = responseText;
     } else {
       this._response += responseText;
     }
 
-    if (XMLHttpRequest._profiling) {
-      console.timeStamp(
-        'Incremental Data: ' + this._getMeasureURL(),
-        start,
-        undefined,
-        PERFORMANCE_TRACK_NAME,
-        PERFORMANCE_TRACK_GROUP,
-      );
-    }
     XMLHttpRequest._interceptor &&
       XMLHttpRequest._interceptor.dataReceived(requestId, responseText);
 
@@ -450,16 +427,7 @@ class XMLHttpRequest extends EventTarget {
       this._clearSubscriptions();
       this._requestId = null;
       this.setReadyState(this.DONE);
-      if (XMLHttpRequest._profiling && this._startTime != null) {
-        const start = this._startTime;
-        console.timeStamp(
-          this._getMeasureURL(),
-          start,
-          undefined,
-          PERFORMANCE_TRACK_NAME,
-          PERFORMANCE_TRACK_GROUP,
-        );
-      }
+
       if (error) {
         XMLHttpRequest._interceptor &&
           XMLHttpRequest._interceptor.loadingFailed(requestId, error);
@@ -727,12 +695,6 @@ class XMLHttpRequest extends EventTarget {
       this._incrementalEvents = true;
     }
     super.addEventListener(type, listener);
-  }
-
-  _getMeasureURL(): string {
-    return (
-      this._trackingName ?? this._url ?? LABEL_FOR_MISSING_URL_FOR_PROFILING
-    );
   }
 
   /*

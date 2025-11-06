@@ -11,13 +11,11 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {View} from 'react-native';
 import * as FabricUIManager from 'react-native/Libraries/ReactNative/FabricUIManager';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 const UIManager = nullthrows(FabricUIManager.getFabricUIManager());
 
@@ -39,10 +37,8 @@ describe('Event Dispatching', () => {
 
     expect(onPointerUp).toHaveBeenCalledTimes(0);
 
-    const node = ensureInstance(ref.current, ReactNativeElement);
-
     Fantom.dispatchNativeEvent(
-      node,
+      ref,
       'onPointerUp',
       {x: 0, y: 0},
       {
@@ -71,10 +67,8 @@ describe('Event Dispatching', () => {
 
     expect(onPointerMove).toHaveBeenCalledTimes(0);
 
-    const node = ensureInstance(ref.current, ReactNativeElement);
-
     Fantom.dispatchNativeEvent(
-      node,
+      ref,
       'onPointerMove',
       {x: 0, y: 0},
       {
@@ -105,10 +99,8 @@ describe('Event Dispatching', () => {
 
     expect(onPointerMove).toHaveBeenCalledTimes(0);
 
-    const node = ensureInstance(ref.current, ReactNativeElement);
-
     Fantom.dispatchNativeEvent(
-      node,
+      ref,
       'onPointerMove',
       {x: 0, y: 0},
       {
@@ -151,10 +143,8 @@ describe('Event Dispatching', () => {
       expect(onPointerEnter).toHaveBeenCalledTimes(0);
       expect(onPointerLeave).toHaveBeenCalledTimes(0);
 
-      const node = ensureInstance(ref.current, ReactNativeElement);
-
       Fantom.dispatchNativeEvent(
-        node,
+        ref,
         'onPointerEnter',
         {x: 0, y: 0},
         {
@@ -169,7 +159,7 @@ describe('Event Dispatching', () => {
       );
 
       Fantom.dispatchNativeEvent(
-        node,
+        ref,
         'onPointerLeave',
         {x: 0, y: 0},
         {
@@ -198,11 +188,10 @@ describe('Event Dispatching', () => {
         root.render(<View ref={ref} onPointerMove={onPointerMove} />);
       });
 
-      const node = ensureInstance(ref.current, ReactNativeElement);
       expect(onPointerMove).toHaveBeenCalledTimes(0);
 
       Fantom.dispatchNativeEvent(
-        node,
+        ref,
         'onPointerMove',
         {x: 0, y: 1},
         {
@@ -216,7 +205,7 @@ describe('Event Dispatching', () => {
       );
 
       Fantom.dispatchNativeEvent(
-        node,
+        ref,
         'onPointerEnter',
         {x: 0, y: 0},
         {
@@ -227,7 +216,7 @@ describe('Event Dispatching', () => {
       expect(onPointerMove).toHaveBeenCalledTimes(1);
 
       Fantom.dispatchNativeEvent(
-        node,
+        ref,
         'onPointerMove',
         {x: 0, y: 1},
         {
@@ -241,7 +230,7 @@ describe('Event Dispatching', () => {
       );
 
       Fantom.dispatchNativeEvent(
-        node,
+        ref,
         'onPointerLeave',
         {x: 0, y: 0},
         {
@@ -252,7 +241,7 @@ describe('Event Dispatching', () => {
       expect(onPointerMove).toHaveBeenCalledTimes(2);
 
       Fantom.dispatchNativeEvent(
-        node,
+        ref,
         'onPointerMove',
         {x: 0, y: 1},
         {
@@ -280,11 +269,10 @@ describe('Event Dispatching', () => {
         root.render(<View ref={ref} onPointerMove={onPointerMove} />);
       });
 
-      const node = ensureInstance(ref.current, ReactNativeElement);
       expect(onPointerMove).toHaveBeenCalledTimes(0);
 
       Fantom.dispatchNativeEvent(
-        node,
+        ref,
         'onPointerEnter',
         {x: 0, y: 0},
         {
@@ -295,7 +283,7 @@ describe('Event Dispatching', () => {
       expect(onPointerMove).toHaveBeenCalledTimes(0);
 
       Fantom.dispatchNativeEvent(
-        node,
+        ref,
         'onPointerMove',
         {x: 0, y: 1},
         {
@@ -324,11 +312,9 @@ describe('Event Dispatching', () => {
 
       expect(onPointerMove).toHaveBeenCalledTimes(0);
 
-      const node = ensureInstance(ref.current, ReactNativeElement);
-
       Fantom.runOnUIThread(() => {
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 0, y: 0},
           {
@@ -338,7 +324,7 @@ describe('Event Dispatching', () => {
         );
 
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 1, y: 0},
           {
@@ -348,7 +334,7 @@ describe('Event Dispatching', () => {
         );
 
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 1, y: 1},
           {
@@ -386,12 +372,9 @@ describe('Event Dispatching', () => {
 
       expect(onPointerMove).toHaveBeenCalledTimes(0);
 
-      const node = ensureInstance(ref.current, ReactNativeElement);
-      const otherNode = ensureInstance(otherRef.current, ReactNativeElement);
-
       Fantom.runOnUIThread(() => {
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 0, y: 0},
           {
@@ -401,7 +384,7 @@ describe('Event Dispatching', () => {
         );
 
         Fantom.enqueueNativeEvent(
-          otherNode,
+          otherRef,
           'onScroll',
           {x: 1, y: 0},
           {
@@ -411,7 +394,7 @@ describe('Event Dispatching', () => {
         );
 
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 1, y: 1},
           {
@@ -443,11 +426,9 @@ describe('Event Dispatching', () => {
 
       expect(onPointerMove).toHaveBeenCalledTimes(0);
 
-      const node = ensureInstance(ref.current, ReactNativeElement);
-
       Fantom.runOnUIThread(() => {
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 0, y: 0},
           {
@@ -457,7 +438,7 @@ describe('Event Dispatching', () => {
         );
 
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onScroll',
           {x: 1, y: 0},
           {
@@ -467,7 +448,7 @@ describe('Event Dispatching', () => {
         );
 
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 1, y: 1},
           {
@@ -497,11 +478,9 @@ describe('Event Dispatching', () => {
 
       expect(onPointerMove).toHaveBeenCalledTimes(0);
 
-      const node = ensureInstance(ref.current, ReactNativeElement);
-
       Fantom.runOnUIThread(() => {
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 0, y: 0},
           {
@@ -511,7 +490,7 @@ describe('Event Dispatching', () => {
         );
 
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 1, y: 0},
           {
@@ -520,7 +499,7 @@ describe('Event Dispatching', () => {
         );
 
         Fantom.enqueueNativeEvent(
-          node,
+          ref,
           'onPointerMove',
           {x: 1, y: 1},
           {

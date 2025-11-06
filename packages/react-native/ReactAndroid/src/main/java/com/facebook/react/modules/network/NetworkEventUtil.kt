@@ -27,18 +27,18 @@ import okhttp3.Response
  */
 internal object NetworkEventUtil {
   @JvmStatic
-  fun onCreateRequest(requestId: Int, request: Request) {
+  fun onCreateRequest(devToolsRequestId: String, request: Request) {
     if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
       val headersMap = okHttpHeadersToMap(request.headers())
       InspectorNetworkReporter.reportRequestStart(
-          requestId,
+          devToolsRequestId,
           request.url().toString(),
           request.method(),
           headersMap,
           request.body()?.toString().orEmpty(),
           request.body()?.contentLength() ?: 0,
       )
-      InspectorNetworkReporter.reportConnectionTiming(requestId, headersMap)
+      InspectorNetworkReporter.reportConnectionTiming(devToolsRequestId, headersMap)
     }
   }
 
@@ -63,13 +63,14 @@ internal object NetworkEventUtil {
   fun onIncrementalDataReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
+      devToolsRequestId: String,
       data: String?,
       progress: Long,
       total: Long,
   ) {
     if (ReactNativeFeatureFlags.enableNetworkEventReporting() && data != null) {
-      InspectorNetworkReporter.reportDataReceived(requestId, data)
-      InspectorNetworkReporter.maybeStoreResponseBodyIncremental(requestId, data)
+      InspectorNetworkReporter.reportDataReceived(devToolsRequestId, data)
+      InspectorNetworkReporter.maybeStoreResponseBodyIncremental(devToolsRequestId, data)
     }
     reactContext?.emitDeviceEvent(
         "didReceiveNetworkIncrementalData",
@@ -103,12 +104,13 @@ internal object NetworkEventUtil {
   fun onDataReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
+      devToolsRequestId: String,
       data: String?,
       responseType: String,
   ) {
     if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
       InspectorNetworkReporter.maybeStoreResponseBody(
-          requestId,
+          devToolsRequestId,
           data.orEmpty(),
           responseType == "base64",
       )
@@ -126,12 +128,13 @@ internal object NetworkEventUtil {
   fun onDataReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
+      devToolsRequestId: String,
       data: WritableMap,
       rawData: ByteArray,
   ) {
     if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
       InspectorNetworkReporter.maybeStoreResponseBody(
-          requestId,
+          devToolsRequestId,
           Base64.encodeToString(rawData, Base64.NO_WRAP),
           true,
       )
@@ -149,11 +152,12 @@ internal object NetworkEventUtil {
   fun onRequestError(
       reactContext: ReactApplicationContext?,
       requestId: Int,
+      devToolsRequestId: String,
       error: String?,
       e: Throwable?,
   ) {
     if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
-      InspectorNetworkReporter.reportRequestFailed(requestId, false)
+      InspectorNetworkReporter.reportRequestFailed(devToolsRequestId, false)
     }
     reactContext?.emitDeviceEvent(
         "didCompleteNetworkResponse",
@@ -171,10 +175,11 @@ internal object NetworkEventUtil {
   fun onRequestSuccess(
       reactContext: ReactApplicationContext?,
       requestId: Int,
+      devToolsRequestId: String,
       encodedDataLength: Long,
   ) {
     if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
-      InspectorNetworkReporter.reportResponseEnd(requestId, encodedDataLength)
+      InspectorNetworkReporter.reportResponseEnd(devToolsRequestId, encodedDataLength)
     }
     reactContext?.emitDeviceEvent(
         "didCompleteNetworkResponse",
@@ -189,6 +194,7 @@ internal object NetworkEventUtil {
   fun onResponseReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
+      devToolsRequestId: String,
       requestUrl: String?,
       response: Response,
   ) {
@@ -200,7 +206,7 @@ internal object NetworkEventUtil {
 
     if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
       InspectorNetworkReporter.reportResponseStart(
-          requestId,
+          devToolsRequestId,
           requestUrl.orEmpty(),
           response.code(),
           headersMap,
@@ -223,6 +229,7 @@ internal object NetworkEventUtil {
   fun onResponseReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
+      devToolsRequestId: String,
       statusCode: Int,
       headers: WritableMap?,
       url: String?,
@@ -241,6 +248,7 @@ internal object NetworkEventUtil {
     onResponseReceived(
         reactContext,
         requestId,
+        devToolsRequestId,
         url,
         Response.Builder()
             .protocol(Protocol.HTTP_1_1)

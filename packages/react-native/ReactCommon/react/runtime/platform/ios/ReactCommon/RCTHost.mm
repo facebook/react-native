@@ -11,6 +11,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTInspectorNetworkHelper.h>
@@ -123,6 +124,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   std::vector<__weak RCTFabricSurface *> _attachedSurfaces;
 
   RCTModuleRegistry *_moduleRegistry;
+  RCTDevMenuConfiguration *_devMenuConfiguration;
 
   std::unique_ptr<RCTHostHostTargetDelegate> _inspectorHostDelegate;
   std::shared_ptr<jsinspector_modern::HostTarget> _inspectorTarget;
@@ -150,6 +152,21 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                    launchOptions:launchOptions];
 }
 
+- (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
+                             hostDelegate:(id<RCTHostDelegate>)hostDelegate
+               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                         jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                            launchOptions:(nullable NSDictionary *)launchOptions
+{
+  return [self initWithBundleURLProvider:provider
+                            hostDelegate:hostDelegate
+              turboModuleManagerDelegate:turboModuleManagerDelegate
+                        jsEngineProvider:jsEngineProvider
+                           launchOptions:launchOptions
+                     bundleConfiguration:[RCTBundleConfiguration defaultConfiguration]
+                    devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
+}
+
 /**
  Host initialization should not be resource intensive. A host may be created before any intention of using React Native
  has been expressed.
@@ -159,14 +176,18 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                             launchOptions:(nullable NSDictionary *)launchOptions
+                      bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+                     devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
-    _bundleManager = [RCTBundleManager new];
+    _bundleManager = [[RCTBundleManager alloc] initWithBundleConfig:bundleConfiguration];
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
     _launchOptions = [launchOptions copy];
+
+    [self setBundleURLProvider:provider];
 
     __weak RCTHost *weakSelf = self;
     auto bundleURLGetter = ^NSURL *() {
@@ -201,6 +222,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     });
 
     _inspectorHostDelegate = std::make_unique<RCTHostHostTargetDelegate>(self);
+    _devMenuConfiguration = devMenuConfiguration;
   }
   return self;
 }
@@ -246,7 +268,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
-                                      launchOptions:_launchOptions];
+                                      launchOptions:_launchOptions
+                               devMenuConfiguration:_devMenuConfiguration];
   [_hostDelegate hostDidStart:self];
 }
 
@@ -431,7 +454,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  // Update the global bundle URLq
+  // Update the global bundle URL
   RCTReloadCommandSetBundleURL(_bundleURL);
 }
 
@@ -449,7 +472,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
-                                      launchOptions:_launchOptions];
+                                      launchOptions:_launchOptions
+                               devMenuConfiguration:_devMenuConfiguration];
   [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {

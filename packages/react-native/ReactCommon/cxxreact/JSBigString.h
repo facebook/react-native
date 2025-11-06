@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 
+#include <jsi/jsi.h>
+
 #ifndef RN_EXPORT
 #ifdef _MSC_VER
 #define RN_EXPORT
@@ -27,41 +29,50 @@ namespace facebook::react {
 // large string needs to be curried into a std::function<>, which must
 // by CopyConstructible.
 
-class JSBigString {
+class JSBigString : public facebook::jsi::Buffer {
  public:
   JSBigString() = default;
 
-  // Not copyable
-  JSBigString(const JSBigString&) = delete;
-  JSBigString& operator=(const JSBigString&) = delete;
+  // Not copyable or movable
+  JSBigString(const JSBigString &) = delete;
+  JSBigString &operator=(const JSBigString &) = delete;
+  JSBigString(JSBigString &&) = delete;
+  JSBigString &operator=(JSBigString &&) = delete;
 
-  virtual ~JSBigString() = default;
+  ~JSBigString() override = default;
 
   virtual bool isAscii() const = 0;
 
   // This needs to be a \0 terminated string
-  virtual const char* c_str() const = 0;
+  virtual const char *c_str() const = 0;
 
   // Length of the c_str without the NULL byte.
-  virtual size_t size() const = 0;
+  size_t size() const override = 0;
+
+  const uint8_t *data() const final
+  {
+    return reinterpret_cast<const uint8_t *>(c_str());
+  }
 };
 
 // Concrete JSBigString implementation which holds a std::string
 // instance.
 class JSBigStdString : public JSBigString {
  public:
-  JSBigStdString(std::string str, bool isAscii = false)
-      : m_isAscii(isAscii), m_str(std::move(str)) {}
+  JSBigStdString(std::string str, bool isAscii = false) : m_isAscii(isAscii), m_str(std::move(str)) {}
 
-  bool isAscii() const override {
+  bool isAscii() const override
+  {
     return m_isAscii;
   }
 
-  const char* c_str() const override {
+  const char *c_str() const override
+  {
     return m_str.c_str();
   }
 
-  size_t size() const override {
+  size_t size() const override
+  {
     return m_str.size();
   }
 
@@ -76,34 +87,40 @@ class JSBigStdString : public JSBigString {
 // file.
 class RN_EXPORT JSBigBufferString : public JSBigString {
  public:
-  JSBigBufferString(size_t size) : m_data(new char[size + 1]), m_size(size) {
+  JSBigBufferString(size_t size) : m_data(new char[size + 1]), m_size(size)
+  {
     // Guarantee nul-termination.  The caller is responsible for
     // filling in the rest of m_data.
     m_data[m_size] = '\0';
   }
 
-  ~JSBigBufferString() override {
+  ~JSBigBufferString() override
+  {
     delete[] m_data;
   }
 
-  bool isAscii() const override {
+  bool isAscii() const override
+  {
     return true;
   }
 
-  const char* c_str() const override {
+  const char *c_str() const override
+  {
     return m_data;
   }
 
-  size_t size() const override {
+  size_t size() const override
+  {
     return m_size;
   }
 
-  char* data() {
+  char *mutableData()
+  {
     return m_data;
   }
 
  private:
-  char* m_data;
+  char *m_data;
   size_t m_size;
 };
 
@@ -113,24 +130,24 @@ class RN_EXPORT JSBigFileString : public JSBigString {
   JSBigFileString(int fd, size_t size, off_t offset = 0);
   ~JSBigFileString() override;
 
-  bool isAscii() const override {
+  bool isAscii() const override
+  {
     return true;
   }
 
-  const char* c_str() const override;
+  const char *c_str() const override;
 
   size_t size() const override;
   int fd() const;
 
-  static std::unique_ptr<const JSBigFileString> fromPath(
-      const std::string& sourceURL);
+  static std::unique_ptr<const JSBigFileString> fromPath(const std::string &sourceURL);
 
  private:
   int m_fd; // The file descriptor being mmapped
   size_t m_size; // The size of the mmapped region
   mutable off_t m_pageOff; // The offset in the mmapped region to the data.
   off_t m_mapOff; // The offset in the file to the mmapped region.
-  mutable const char* m_data; // Pointer to the mmapped region.
+  mutable const char *m_data; // Pointer to the mmapped region.
 };
 
 } // namespace facebook::react

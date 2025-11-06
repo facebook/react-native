@@ -40,6 +40,8 @@ const RCTNetworking = {
     withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);
+    const devToolsRequestId =
+      global.__NETWORK_REPORTER__?.createDevToolsRequestId();
     NativeNetworkingIOS.sendRequest(
       {
         method,
@@ -50,6 +52,7 @@ const RCTNetworking = {
         incrementalUpdates,
         timeout,
         withCredentials,
+        unstable_devToolsRequestId: devToolsRequestId,
       },
       callback,
     );

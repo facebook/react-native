@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<39140c882a6faa0403d3a59806c6bea5>>
+ * @generated SignedSource<<0d898a94decb43e191a343676c8afb91>>
  */
 
 /**
@@ -28,7 +28,7 @@
 namespace facebook::react {
 
 class NativeReactNativeFeatureFlags
-    : public NativeReactNativeFeatureFlagsCxxSpecJSI {
+    : public NativeReactNativeFeatureFlagsCxxSpec<NativeReactNativeFeatureFlags> {
  public:
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -44,11 +44,15 @@ class NativeReactNativeFeatureFlags
 
   bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
 
+  bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
+
   bool disableFabricCommitInCXXAnimated(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool disableOldAndroidAttachmentMetricsWorkarounds(jsi::Runtime& runtime);
+
+  bool disableSubviewClippingAndroid(jsi::Runtime& runtime);
 
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
 
@@ -86,8 +90,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
 
-  bool enableImagePrefetchingJNIBatchingAndroid(jsi::Runtime& runtime);
-
   bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
 
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
@@ -95,6 +97,8 @@ class NativeReactNativeFeatureFlags
   bool enableImperativeFocus(jsi::Runtime& runtime);
 
   bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
+
+  bool enableKeyEvents(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
@@ -128,6 +132,10 @@ class NativeReactNativeFeatureFlags
 
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
+  bool enableVirtualViewClippingWithoutScrollViewClipping(jsi::Runtime& runtime);
+
+  bool enableVirtualViewContainerStateExperimental(jsi::Runtime& runtime);
+
   bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
 
   bool enableVirtualViewRenderState(jsi::Runtime& runtime);
@@ -146,6 +154,8 @@ class NativeReactNativeFeatureFlags
 
   bool overrideBySynchronousMountPropsAtMountingAndroid(jsi::Runtime& runtime);
 
+  bool perfIssuesEnabled(jsi::Runtime& runtime);
+
   bool perfMonitorV2Enabled(jsi::Runtime& runtime);
 
   double preparedTextCacheSize(jsi::Runtime& runtime);
@@ -154,9 +164,9 @@ class NativeReactNativeFeatureFlags
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
-  bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
+  bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 
-  bool sweepActiveTouchOnChildNativeGesturesAndroid(jsi::Runtime& runtime);
+  bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
@@ -172,11 +182,13 @@ class NativeReactNativeFeatureFlags
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
 
-  bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
-
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
 
   bool useShadowNodeStateOnClone(jsi::Runtime& runtime);
+
+  bool useSharedAnimatedBackend(jsi::Runtime& runtime);
+
+  bool useTraitHiddenOnAndroid(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 

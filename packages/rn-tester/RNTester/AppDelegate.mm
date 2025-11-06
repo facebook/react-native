@@ -30,6 +30,10 @@
 #define USE_OSS_CODEGEN 0
 #endif
 
+#if RCT_DEV_MENU
+#import <React/RCTDevMenu.h>
+#endif
+
 static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
@@ -42,6 +46,15 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self];
 #if USE_OSS_CODEGEN
   self.dependencyProvider = [RCTAppDependencyProvider new];
+#endif
+
+#if RCT_DEV_MENU
+
+  RCTDevMenuConfiguration *devMenuConfiguration = [[RCTDevMenuConfiguration alloc] initWithDevMenuEnabled:true
+                                                                                      shakeGestureEnabled:true
+                                                                                 keyboardShortcutsEnabled:true];
+  [self.reactNativeFactory setDevMenuConfiguration:devMenuConfiguration];
+
 #endif
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];

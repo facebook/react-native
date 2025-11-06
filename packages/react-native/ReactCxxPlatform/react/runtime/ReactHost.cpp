@@ -9,6 +9,7 @@
 
 #include <ReactCommon/TurboModuleBinding.h>
 #include <cxxreact/JSBigString.h>
+#include <folly/system/ThreadName.h>
 #include <glog/logging.h>
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsinspector-modern/InspectorFlags.h>
@@ -59,7 +60,7 @@ struct ReactInstanceData {
   JsErrorHandler::OnJsError onJsError;
   Logger logger;
   std::shared_ptr<IDevUIDelegate> devUIDelegate;
-  TurboModuleManagerDelegates turboModuleManagerDelegates;
+  TurboModuleProviders turboModuleProviders;
   std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate;
   std::shared_ptr<NativeAnimatedNodesManagerProvider>
       animatedNodesManagerProvider;
@@ -74,7 +75,7 @@ ReactHost::ReactHost(
     JsErrorHandler::OnJsError onJsError,
     Logger logger,
     std::shared_ptr<IDevUIDelegate> devUIDelegate,
-    TurboModuleManagerDelegates turboModuleManagerDelegates,
+    TurboModuleProviders turboModuleProviders,
     std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate,
     std::shared_ptr<NativeAnimatedNodesManagerProvider>
         animatedNodesManagerProvider,
@@ -91,7 +92,7 @@ ReactHost::ReactHost(
       .onJsError = std::move(onJsError),
       .logger = std::move(logger),
       .devUIDelegate = devUIDelegate,
-      .turboModuleManagerDelegates = std::move(turboModuleManagerDelegates),
+      .turboModuleProviders = std::move(turboModuleProviders),
       .logBoxSurfaceDelegate = logBoxSurfaceDelegate,
       .animatedNodesManagerProvider = animatedNodesManagerProvider,
       .bindingsInstallFunc = std::move(bindingsInstallFunc)});
@@ -258,18 +259,16 @@ void ReactHost::createReactInstance() {
   reactInstance_->initializeRuntime(
       {
 #if defined(WITH_PERFETTO) || defined(RNCXX_WITH_PROFILING_PROVIDER)
-          .isProfiling = true
+          .isProfiling = true,
 #else
-          .isProfiling = false
+          .isProfiling = false,
 #endif
-          ,
           .runtimeDiagnosticFlags = ""},
       [weakMountingManager =
            std::weak_ptr<IMountingManager>(reactInstanceData_->mountingManager),
        logger = reactInstanceData_->logger,
        devUIDelegate = reactInstanceData_->devUIDelegate,
-       turboModuleManagerDelegates =
-           reactInstanceData_->turboModuleManagerDelegates,
+       turboModuleProviders = reactInstanceData_->turboModuleProviders,
        jsInvoker = std::move(jsInvoker),
        logBoxSurfaceDelegate = reactInstanceData_->logBoxSurfaceDelegate,
        devServerHelper =
@@ -296,7 +295,7 @@ void ReactHost::createReactInstance() {
             });
 
         auto turboModuleProvider =
-            [turboModuleManagerDelegates,
+            [turboModuleProviders,
              jsInvoker,
              logBoxSurfaceDelegate,
              devServerHelper,
@@ -310,11 +309,9 @@ void ReactHost::createReactInstance() {
           react_native_assert(
               !name.empty() && "TurboModule name must not be empty");
 
-          for (const auto& turboModuleManagerDelegate :
-               turboModuleManagerDelegates) {
-            if (turboModuleManagerDelegate) {
-              if (auto turboModule =
-                      turboModuleManagerDelegate(name, jsInvoker)) {
+          for (const auto& turboModuleProvider : turboModuleProviders) {
+            if (turboModuleProvider) {
+              if (auto turboModule = turboModuleProvider(name, jsInvoker)) {
                 return turboModule;
               }
             }
@@ -401,11 +398,13 @@ void ReactHost::destroyReactInstance() {
 }
 
 void ReactHost::reloadReactInstance() {
-  if (isReloadingReactInstance_) {
+  if (isReloadingReactInstance_.exchange(true)) {
     return;
   }
-  isReloadingReactInstance_ = true;
+
   std::thread([this]() {
+    folly::setThreadName("ReactReload");
+
     std::vector<SurfaceManager::SurfaceProps> surfaceProps;
     for (auto& surfaceId : surfaceManager_->getRunningSurfaces()) {
       if (auto surfaceProp = surfaceManager_->getSurfaceProps(surfaceId);
@@ -469,9 +468,8 @@ bool ReactHost::loadScriptFromDevServer() {
                   }
                 })
             .get();
-    auto script = std::make_unique<JSBigStdString>(response);
-    reactInstance_->loadScript(
-        std::move(script), devServerHelper_->getBundleUrl());
+    auto script = std::make_unique<JSBigStdString>(std::move(response));
+    reactInstance_->loadScript(std::move(script), bundleUrl);
     devServerHelper_->setupHMRClient();
     return true;
   } catch (...) {
@@ -486,8 +484,7 @@ bool ReactHost::loadScriptFromDevServer() {
 bool ReactHost::loadScriptFromBundlePath(const std::string& bundlePath) {
   try {
     LOG(INFO) << "Loading JS bundle from bundle path: " << bundlePath;
-    auto script = std::make_unique<JSBigStdString>(
-        ResourceLoader::getFileContents(bundlePath));
+    auto script = ResourceLoader::getFileContents(bundlePath);
     reactInstance_->loadScript(std::move(script), bundlePath);
     LOG(INFO) << "Loaded JS bundle from bundle path: " << bundlePath;
     return true;

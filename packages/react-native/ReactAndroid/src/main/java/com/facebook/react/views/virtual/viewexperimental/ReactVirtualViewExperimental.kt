@@ -20,7 +20,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroup
 import com.facebook.react.uimanager.ReactRoot
 import com.facebook.react.views.scroll.VirtualView
 import com.facebook.react.views.scroll.VirtualViewContainer
-import com.facebook.react.views.scroll.debugLog
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.virtual.VirtualViewMode
 import com.facebook.react.views.virtual.VirtualViewModeChangeEmitter
@@ -209,17 +208,29 @@ public class ReactVirtualViewExperimental(context: Context) :
     }
 
     // If no ScrollView, or ScrollView has disabled removeClippedSubviews, use default behavior
-    if (
-        scrollView == null ||
-            !((scrollView as ReactClippingViewGroup).removeClippedSubviews ?: false)
-    ) {
+    if (scrollView == null) {
       super.updateClippingRect(excludedViews)
       return
     }
 
     val clippingRect = checkNotNull(clippingRect)
+    val scrollView = checkNotNull(scrollView) as ReactClippingViewGroup
 
-    (scrollView as ReactClippingViewGroup).getClippingRect(clippingRect)
+    if (ReactNativeFeatureFlags.enableVirtualViewClippingWithoutScrollViewClipping()) {
+      if (scrollView.removeClippedSubviews) {
+        scrollView.getClippingRect(clippingRect)
+      } else {
+        (scrollView as View).getDrawingRect(clippingRect)
+      }
+    } else {
+      if (!(scrollView.removeClippedSubviews ?: false)) {
+        super.updateClippingRect(excludedViews)
+        return
+      }
+
+      scrollView.getClippingRect(clippingRect)
+    }
+
     clippingRect.intersect(containerRelativeRect)
     clippingRect.offset(-containerRelativeRect.left, -containerRelativeRect.top)
 
@@ -293,7 +304,7 @@ public class ReactVirtualViewExperimental(context: Context) :
 
   internal inline fun debugLog(subtag: String, block: () -> String = { "" }) {
     if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
-      FLog.d("$DEBUG_TAG:[$virtualViewID]:$subtag", "${block()}")
+      FLog.d("$DEBUG_TAG:[$virtualViewID]:$subtag", block())
     }
   }
 }

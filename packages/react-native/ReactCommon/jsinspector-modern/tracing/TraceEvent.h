@@ -31,7 +31,7 @@ struct TraceEvent {
    * Optional. Serialized as a string, usually is hexadecimal number.
    * https://github.com/ChromeDevTools/devtools-frontend/blob/99a9104ae974f8caa63927e356800f6762cdbf25/front_end/models/trace/helpers/Trace.ts#L198-L201
    */
-  std::optional<uint32_t> id;
+  std::optional<uint32_t> id{};
 
   /** The name of the event, as displayed in the Trace Viewer. */
   std::string name;
@@ -59,7 +59,7 @@ struct TraceEvent {
    * The scope of the event, either global (g), process (p), or thread (t).
    * Only applicable to instant events ("ph": "i").
    */
-  std::optional<char> s;
+  std::optional<char> s{};
 
   /** The ID for the thread that output this event. */
   ThreadId tid;
@@ -71,7 +71,7 @@ struct TraceEvent {
    * The duration of the event, in microseconds (µs). Only applicable to
    * complete events ("ph": "X").
    */
-  std::optional<HighResDuration> dur;
+  std::optional<HighResDuration> dur{};
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

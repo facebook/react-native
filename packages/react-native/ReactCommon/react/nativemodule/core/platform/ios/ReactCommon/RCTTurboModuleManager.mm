@@ -21,7 +21,7 @@
 #import <React/RCTCallInvoker.h>
 #import <React/RCTCallInvokerModule.h>
 #import <React/RCTConstants.h>
-#import <React/RCTCxxModule.h>
+#import <React/RCTDevMenuConfigurationDecorator.h>
 #import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
@@ -29,7 +29,6 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
-#import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 
@@ -215,15 +214,17 @@ typedef struct {
 
   RCTBridgeProxy *_bridgeProxy;
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
+  RCTDevMenuConfigurationDecorator *_devMenuConfigurationDecorator;
 
   dispatch_queue_t _sharedModuleQueue;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-                   bridgeProxy:(RCTBridgeProxy *)bridgeProxy
-         bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
-                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                     jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                      bridgeProxy:(RCTBridgeProxy *)bridgeProxy
+            bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                         delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                        jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+    devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator
 {
   if (self = [super init]) {
     _jsInvoker = std::move(jsInvoker);
@@ -233,6 +234,7 @@ typedef struct {
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
     _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
+    _devMenuConfigurationDecorator = devMenuConfigurationDecorator;
 
     if (RCTTurboModuleInteropEnabled()) {
       // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
@@ -273,10 +275,11 @@ typedef struct {
                      jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   return [self initWithBridge:bridge
-                  bridgeProxy:nil
-        bridgeModuleDecorator:[bridge bridgeModuleDecorator]
-                     delegate:delegate
-                    jsInvoker:jsInvoker];
+                        bridgeProxy:nil
+              bridgeModuleDecorator:[bridge bridgeModuleDecorator]
+                           delegate:delegate
+                          jsInvoker:jsInvoker
+      devMenuConfigurationDecorator:nil];
 }
 
 - (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
@@ -285,10 +288,25 @@ typedef struct {
                           jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   return [self initWithBridge:nil
-                  bridgeProxy:bridgeProxy
-        bridgeModuleDecorator:bridgeModuleDecorator
-                     delegate:delegate
-                    jsInvoker:jsInvoker];
+                        bridgeProxy:bridgeProxy
+              bridgeModuleDecorator:bridgeModuleDecorator
+                           delegate:delegate
+                          jsInvoker:jsInvoker
+      devMenuConfigurationDecorator:nil];
+}
+
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+      devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator
+{
+  return [self initWithBridge:nil
+                        bridgeProxy:bridgeProxy
+              bridgeModuleDecorator:bridgeModuleDecorator
+                           delegate:delegate
+                          jsInvoker:jsInvoker
+      devMenuConfigurationDecorator:devMenuConfigurationDecorator];
 }
 
 /**
@@ -367,24 +385,12 @@ typedef struct {
   }
 
   /**
-   * Step 2d: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
-   * wraps CxxModule.
-   */
-  Class moduleClass = [module class];
-  if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
-    // Use TurboCxxModule compat class to wrap the CxxModule instance.
-    // This is only for migration convenience, despite less performant.
-    auto turboModule = std::make_shared<TurboCxxModule>([((RCTCxxModule *)module) createModule], _jsInvoker);
-    _turboModuleCache.insert({moduleName, turboModule});
-    return turboModule;
-  }
-
-  /**
-   * Step 2e: Return an exact sub-class of ObjC TurboModule
+   * Step 3: Return an exact sub-class of ObjC TurboModule
    *
    * Use respondsToSelector: below to infer conformance to @protocol(RCTTurboModule). Using conformsToProtocol: is
    * expensive.
    */
+  Class moduleClass = [module class];
   if ([module respondsToSelector:@selector(getTurboModule:)]) {
     ObjCTurboModule::InitParams params = {
         .moduleName = moduleName,
@@ -447,15 +453,6 @@ typedef struct {
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
       std::make_shared<LegacyModuleNativeMethodCallInvoker>(methodQueue, [self _requiresMainQueueSetup:moduleClass]);
 
-  // If module is a legacy cxx module, return TurboCxxModule
-  if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
-    // Use TurboCxxModule compat class to wrap the CxxModule instance.
-    // This is only for migration convenience, despite less performant.
-    auto turboModule = std::make_shared<TurboCxxModule>([((RCTCxxModule *)module) createModule], _jsInvoker);
-    _legacyModuleCache.insert({moduleName, turboModule});
-    return turboModule;
-  }
-
   // Create interop module
   ObjCTurboModule::InitParams params = {
       .moduleName = moduleName,
@@ -476,7 +473,7 @@ typedef struct {
 - (BOOL)_isTurboModule:(const char *)moduleName
 {
   Class moduleClass = [self _getModuleClassFromName:moduleName];
-  return moduleClass != nil && (isTurboModuleClass(moduleClass) && ![moduleClass isSubclassOfClass:RCTCxxModule.class]);
+  return moduleClass != nil && isTurboModuleClass(moduleClass);
 }
 
 - (BOOL)_isLegacyModule:(const char *)moduleName
@@ -487,7 +484,7 @@ typedef struct {
 
 - (BOOL)_isLegacyModuleClass:(Class)moduleClass
 {
-  return moduleClass != nil && (!isTurboModuleClass(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
+  return moduleClass != nil && !isTurboModuleClass(moduleClass);
 }
 
 - (id<RCTModuleProvider>)_moduleProviderForName:(const char *)moduleName
@@ -769,6 +766,12 @@ typedef struct {
   if ([module respondsToSelector:@selector(initialize)]) {
     [(id<RCTInitializing>)module initialize];
   }
+
+#if RCT_DEV_MENU
+
+  [_devMenuConfigurationDecorator decorate:module];
+
+#endif
 
   /**
    * Attach method queue to id<RCTBridgeModule> object.

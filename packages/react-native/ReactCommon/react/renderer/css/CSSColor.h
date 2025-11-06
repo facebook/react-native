@@ -26,17 +26,18 @@ struct CSSColor {
   uint8_t b{};
   uint8_t a{};
 
-  constexpr bool operator==(const CSSColor& rhs) const = default;
+  constexpr bool operator==(const CSSColor &rhs) const = default;
 
-  static constexpr CSSColor black() {
+  static constexpr CSSColor black()
+  {
     return {.r = 0, .g = 0, .b = 0, .a = 255};
   }
 };
 
 template <>
 struct CSSDataTypeParser<CSSColor> {
-  static constexpr auto consumePreservedToken(const CSSPreservedToken& token)
-      -> std::optional<CSSColor> {
+  static constexpr auto consumePreservedToken(const CSSPreservedToken &token) -> std::optional<CSSColor>
+  {
     switch (token.type()) {
       case CSSTokenType::Ident:
         return parseCSSNamedColor<CSSColor>(token.stringValue());
@@ -47,9 +48,9 @@ struct CSSDataTypeParser<CSSColor> {
     }
   }
 
-  static constexpr auto consumeFunctionBlock(
-      const CSSFunctionBlock& func,
-      CSSSyntaxParser& parser) -> std::optional<CSSColor> {
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+      -> std::optional<CSSColor>
+  {
     return parseCSSColorFunction<CSSColor>(func.name, parser);
   }
 };

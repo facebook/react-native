@@ -24,22 +24,13 @@ namespace facebook::react {
  */
 class JSI_EXPORT TurboCxxModule : public TurboModule {
  public:
-  TurboCxxModule(
-      std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule,
-      std::shared_ptr<CallInvoker> jsInvoker);
+  TurboCxxModule(std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule, std::shared_ptr<CallInvoker> jsInvoker);
 
-  facebook::jsi::Value create(
-      facebook::jsi::Runtime& runtime,
-      const facebook::jsi::PropNameID& propName) override;
+  facebook::jsi::Value create(facebook::jsi::Runtime &runtime, const facebook::jsi::PropNameID &propName) override;
 
-  std::vector<facebook::jsi::PropNameID> getPropertyNames(
-      facebook::jsi::Runtime& runtime) override;
+  std::vector<facebook::jsi::PropNameID> getPropertyNames(facebook::jsi::Runtime &runtime) override;
 
-  jsi::Value invokeMethod(
-      jsi::Runtime& runtime,
-      const std::string& methodName,
-      const jsi::Value* args,
-      size_t count);
+  jsi::Value invokeMethod(jsi::Runtime &runtime, const std::string &methodName, const jsi::Value *args, size_t count);
 
  private:
   std::vector<facebook::xplat::module::CxxModule::Method> cxxMethods_;

@@ -45,7 +45,10 @@ class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
     return nativeModules->getModule(rt, name);
   }
 
-  void set(Runtime&, const PropNameID&, const Value&) override {
+  void set(
+      Runtime& /*unused*/,
+      const PropNameID& /*name*/,
+      const Value& /*value*/) override {
     throw std::runtime_error(
         "Unable to put on NativeModules: Operation unsupported");
   }
@@ -71,8 +74,9 @@ JSIExecutor::JSIExecutor(
     RuntimeInstaller runtimeInstaller)
     : runtime_(runtime),
       delegate_(delegate),
-      nativeModules_(std::make_shared<JSINativeModules>(
-          delegate ? delegate->getModuleRegistry() : nullptr)),
+      nativeModules_(
+          std::make_shared<JSINativeModules>(
+              delegate ? delegate->getModuleRegistry() : nullptr)),
       moduleRegistry_(delegate ? delegate->getModuleRegistry() : nullptr),
       scopedTimeoutInvoker_(scopedTimeoutInvoker),
       runtimeInstaller_(runtimeInstaller) {
@@ -164,8 +168,7 @@ void JSIExecutor::loadBundle(
     ReactMarker::logTaggedMarker(
         ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
   }
-  runtime_->evaluateJavaScript(
-      std::make_unique<BigStringBuffer>(std::move(script)), sourceURL);
+  runtime_->evaluateJavaScript(std::move(script), sourceURL);
   flush();
   if (hasLogger) {
     ReactMarker::logTaggedMarker(
@@ -208,7 +211,7 @@ void JSIExecutor::registerBundle(
           "Empty bundle registered with ID " + tag + " from " + bundlePath);
     }
     runtime_->evaluateJavaScript(
-        std::make_unique<BigStringBuffer>(std::move(script)),
+        std::move(script),
         JSExecutor::getSyntheticBundlePath(bundleId, bundlePath));
   }
   ReactMarker::logTaggedMarker(
@@ -265,8 +268,9 @@ void JSIExecutor::invokeCallback(
     ret = invokeCallbackAndReturnFlushedQueue_->call(
         *runtime_, callbackId, valueFromDynamic(*runtime_, arguments));
   } catch (...) {
-    std::throw_with_nested(std::runtime_error(
-        "Error invoking callback " + std::to_string(callbackId)));
+    std::throw_with_nested(
+        std::runtime_error(
+            "Error invoking callback " + std::to_string(callbackId)));
   }
 
   callNativeModules(ret, true);

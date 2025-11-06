@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport.perfmonitor
 
 import com.facebook.react.devsupport.interfaces.TracingState
@@ -12,4 +13,7 @@ import com.facebook.react.devsupport.interfaces.TracingState
 internal interface PerfMonitorUpdateListener {
   /** Called when the recording state of the background performance trace has changed. */
   fun onRecordingStateChanged(state: TracingState)
+
+  /** Called when a new Performance Issue is added. */
+  fun onPerfIssueAdded(name: String)
 }

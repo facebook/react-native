@@ -19,19 +19,18 @@
 namespace facebook::react {
 class PropsAnimatedNode final : public AnimatedNode {
  public:
-  PropsAnimatedNode(
-      Tag tag,
-      const folly::dynamic& config,
-      NativeAnimatedNodesManager& manager);
+  PropsAnimatedNode(Tag tag, const folly::dynamic &config, NativeAnimatedNodesManager &manager);
   void connectToView(Tag viewTag);
   void disconnectFromView(Tag viewTag);
   void restoreDefaultValues();
 
-  Tag connectedViewTag() const {
+  Tag connectedViewTag() const
+  {
     return connectedViewTag_;
   }
 
-  folly::dynamic props() {
+  folly::dynamic props()
+  {
     std::lock_guard<std::mutex> lock(propsMutex_);
     return props_;
   }

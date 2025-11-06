@@ -146,7 +146,7 @@ static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL isMutab
         if (strchr("{[", c)) {
           static const int options = (1 << 2); // loose unicode
           SEL selector = isMutable ? JSONKitMutableSelector : JSONKitSelector;
-          return ((id(*)(id, SEL, int, NSError **))objc_msgSend)(jsonString, selector, options, error);
+          return ((id (*)(id, SEL, int, NSError **))objc_msgSend)(jsonString, selector, options, error);
         }
         if (!strchr(" \r\n\t", c)) {
           break;
@@ -724,7 +724,7 @@ NSURL *RCTDataURL(NSString *mimeType, NSData *data)
                                                [data base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0]]];
 }
 
-extern "C" BOOL RCTIsGzippedData(NSData *__nullable); // exposed for unit testing purposes
+BOOL RCTIsGzippedData(NSData *__nullable /*data*/); // exposed for unit testing purposes
 BOOL RCTIsGzippedData(NSData *__nullable data)
 {
   UInt8 *bytes = (UInt8 *)data.bytes;

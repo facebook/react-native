@@ -18,17 +18,18 @@ class DevServerHelper;
 using SourceCodeConstants = NativeSourceCodeSourceCodeConstants<std::string>;
 
 template <>
-struct Bridging<SourceCodeConstants>
-    : NativeSourceCodeSourceCodeConstantsBridging<SourceCodeConstants> {};
+struct Bridging<SourceCodeConstants> : NativeSourceCodeSourceCodeConstantsBridging<SourceCodeConstants> {};
 
 class SourceCodeModule : public NativeSourceCodeCxxSpec<SourceCodeModule> {
  public:
   explicit SourceCodeModule(
       std::shared_ptr<CallInvoker> jsInvoker,
       std::shared_ptr<DevServerHelper> devServerHelper = nullptr)
-      : NativeSourceCodeCxxSpec(jsInvoker), devServerHelper_(devServerHelper) {}
+      : NativeSourceCodeCxxSpec(jsInvoker), devServerHelper_(devServerHelper)
+  {
+  }
 
-  SourceCodeConstants getConstants(jsi::Runtime& rt);
+  SourceCodeConstants getConstants(jsi::Runtime &rt);
 
  private:
   std::weak_ptr<DevServerHelper> devServerHelper_;

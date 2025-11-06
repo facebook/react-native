@@ -68,9 +68,9 @@ public open class ReactDelegate {
       launchOptions: Bundle?,
   ) {
     this.activity = activity
-    mainComponentName = appKey
+    this.mainComponentName = appKey
     this.launchOptions = launchOptions
-    doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
+    this.doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
     this.reactNativeHost = reactNativeHost
   }
 
@@ -81,9 +81,9 @@ public open class ReactDelegate {
       launchOptions: Bundle?,
   ) {
     this.activity = activity
-    mainComponentName = appKey
+    this.mainComponentName = appKey
     this.launchOptions = launchOptions
-    doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
+    this.doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
     this.reactHost = reactHost
   }
 
@@ -95,11 +95,11 @@ public open class ReactDelegate {
       launchOptions: Bundle?,
       fabricEnabled: Boolean,
   ) {
-    isFabricEnabled = fabricEnabled
+    this.isFabricEnabled = fabricEnabled
     this.activity = activity
-    mainComponentName = appKey
+    this.mainComponentName = appKey
     this.launchOptions = launchOptions
-    doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
+    this.doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
     this.reactNativeHost = reactNativeHost
   }
 
@@ -393,7 +393,11 @@ public open class ReactDelegate {
   public fun shouldShowDevMenuOrReload(keyCode: Int, event: KeyEvent?): Boolean {
     val devSupportManager = devSupportManager
     // shouldShowDevMenuOrReload is a Dev API and not supported in RELEASE mode.
-    if (devSupportManager == null || devSupportManager is ReleaseDevSupportManager) {
+    if (
+        devSupportManager == null ||
+            !devSupportManager.keyboardShortcutsEnabled ||
+            devSupportManager is ReleaseDevSupportManager
+    ) {
       return false
     }
 

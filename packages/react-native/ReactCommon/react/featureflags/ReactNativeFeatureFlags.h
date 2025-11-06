@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<559a8be87c24238e70fceded8ac962a0>>
+ * @generated SignedSource<<467f48f2231ceb6772a9a9da9e3badb9>>
  */
 
 /**
@@ -60,6 +60,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool cxxNativeAnimatedRemoveJsSync();
 
   /**
+   * Dispatch view commands in mount item order.
+   */
+  RN_EXPORT static bool disableEarlyViewCommandExecution();
+
+  /**
    * Prevents use of Fabric commit in C++ Animated implementation
    */
   RN_EXPORT static bool disableFabricCommitInCXXAnimated();
@@ -73,6 +78,11 @@ class ReactNativeFeatureFlags {
    * Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics
    */
   RN_EXPORT static bool disableOldAndroidAttachmentMetricsWorkarounds();
+
+  /**
+   * Force disable subview clipping for ReactViewGroup on Android
+   */
+  RN_EXPORT static bool disableSubviewClippingAndroid();
 
   /**
    * Turns off the global measurement cache used by TextLayoutManager on Android.
@@ -165,11 +175,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
-   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call
-   */
-  RN_EXPORT static bool enableImagePrefetchingJNIBatchingAndroid();
-
-  /**
    * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
    */
   RN_EXPORT static bool enableImagePrefetchingOnUiThreadAndroid();
@@ -188,6 +193,11 @@ class ReactNativeFeatureFlags {
    * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
    */
   RN_EXPORT static bool enableInteropViewManagerClassLookUpOptimizationIOS();
+
+  /**
+   * Enables key up/down/press events to be sent to JS from components
+   */
+  RN_EXPORT static bool enableKeyEvents();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -270,6 +280,16 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableViewRecyclingForView();
 
   /**
+   * Set clipping to drawingRect of ScrollView.
+   */
+  RN_EXPORT static bool enableVirtualViewClippingWithoutScrollViewClipping();
+
+  /**
+   * Enables the experimental version of `VirtualViewContainerState`.
+   */
+  RN_EXPORT static bool enableVirtualViewContainerStateExperimental();
+
+  /**
    * Enables VirtualView debug features such as logging and overlays.
    */
   RN_EXPORT static bool enableVirtualViewDebugFeatures();
@@ -315,6 +335,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool overrideBySynchronousMountPropsAtMountingAndroid();
 
   /**
+   * Enable reporting Performance Issues (`detail.devtools.performanceIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.
+   */
+  RN_EXPORT static bool perfIssuesEnabled();
+
+  /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool perfMonitorV2Enabled();
@@ -335,14 +360,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool shouldPressibilityUseW3CPointerEventsForHover();
 
   /**
+   * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
+   */
+  RN_EXPORT static bool shouldTriggerResponderTransferOnScrollAndroid();
+
+  /**
    * Skip activity identity assertion in ReactHostImpl::onHostPause()
    */
   RN_EXPORT static bool skipActivityIdentityAssertionOnHostPause();
-
-  /**
-   * A flag to tell Fabric to sweep active touches from JSTouchDispatcher in Android when a child native gesture is started.
-   */
-  RN_EXPORT static bool sweepActiveTouchOnChildNativeGesturesAndroid();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
@@ -380,11 +405,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
 
   /**
-   * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
-   */
-  RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
-
-  /**
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
    */
   RN_EXPORT static bool useRawPropsJsiValue();
@@ -393,6 +413,16 @@ class ReactNativeFeatureFlags {
    * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
    */
   RN_EXPORT static bool useShadowNodeStateOnClone();
+
+  /**
+   * Use shared animation backend in C++ Animated
+   */
+  RN_EXPORT static bool useSharedAnimatedBackend();
+
+  /**
+   * Use Trait::hidden on Android
+   */
+  RN_EXPORT static bool useTraitHiddenOnAndroid();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

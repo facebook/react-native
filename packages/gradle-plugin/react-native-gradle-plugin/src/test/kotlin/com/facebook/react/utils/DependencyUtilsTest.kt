@@ -289,7 +289,7 @@ class DependencyUtilsTest {
     val forcedModules = project.configurations.first().resolutionStrategy.forcedModules
     assertThat(forcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
         .isTrue()
-    assertThat(forcedModules.any { it.toString() == "com.facebook.react:hermes-android:4.5.6" })
+    assertThat(forcedModules.any { it.toString() == "com.facebook.hermes:hermes-android:4.5.6" })
         .isTrue()
   }
 
@@ -324,11 +324,11 @@ class DependencyUtilsTest {
     val libForcedModules = libProject.configurations.first().resolutionStrategy.forcedModules
     assertThat(appForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
         .isTrue()
-    assertThat(appForcedModules.any { it.toString() == "com.facebook.react:hermes-android:4.5.6" })
+    assertThat(appForcedModules.any { it.toString() == "com.facebook.hermes:hermes-android:4.5.6" })
         .isTrue()
     assertThat(libForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
         .isTrue()
-    assertThat(libForcedModules.any { it.toString() == "com.facebook.react:hermes-android:4.5.6" })
+    assertThat(libForcedModules.any { it.toString() == "com.facebook.hermes:hermes-android:4.5.6" })
         .isTrue()
   }
 
@@ -381,11 +381,15 @@ class DependencyUtilsTest {
     val libForcedModules = libProject.configurations.first().resolutionStrategy.forcedModules
     assertThat(appForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" })
         .isTrue()
-    assertThat(appForcedModules.any { it.toString() == "io.github.test:hermes-android:4.5.6" })
+    assertThat(
+            appForcedModules.any { it.toString() == "io.github.test.hermes:hermes-android:4.5.6" }
+        )
         .isTrue()
     assertThat(libForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" })
         .isTrue()
-    assertThat(libForcedModules.any { it.toString() == "io.github.test:hermes-android:4.5.6" })
+    assertThat(
+            libForcedModules.any { it.toString() == "io.github.test.hermes:hermes-android:4.5.6" }
+        )
         .isTrue()
   }
 
@@ -438,7 +442,7 @@ class DependencyUtilsTest {
         )
         .isEqualTo(dependencySubstitutions[0].third)
     assertThat("com.facebook.react:hermes-engine").isEqualTo(dependencySubstitutions[1].first)
-    assertThat("com.facebook.react:hermes-android:0.42.0")
+    assertThat("com.facebook.hermes:hermes-android:0.42.0")
         .isEqualTo(dependencySubstitutions[1].second)
     assertThat(
             "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."
@@ -490,19 +494,26 @@ class DependencyUtilsTest {
         )
         .isEqualTo(dependencySubstitutions[0].third)
     assertThat("com.facebook.react:hermes-engine").isEqualTo(dependencySubstitutions[1].first)
-    assertThat("io.github.test:hermes-android:0.42.0").isEqualTo(dependencySubstitutions[1].second)
+    assertThat("io.github.test.hermes:hermes-android:0.42.0")
+        .isEqualTo(dependencySubstitutions[1].second)
     assertThat(
             "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."
         )
         .isEqualTo(dependencySubstitutions[1].third)
-    assertThat("com.facebook.react:react-android").isEqualTo(dependencySubstitutions[2].first)
-    assertThat("io.github.test:react-android:0.42.0").isEqualTo(dependencySubstitutions[2].second)
-    assertThat("The react-android dependency was modified to use the correct Maven group.")
+    assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[2].first)
+    assertThat("io.github.test.hermes:hermes-android:0.42.0")
+        .isEqualTo(dependencySubstitutions[2].second)
+    assertThat("The hermes-android artifact was moved to com.facebook.hermes publishing group.")
         .isEqualTo(dependencySubstitutions[2].third)
-    assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[3].first)
-    assertThat("io.github.test:hermes-android:0.42.0").isEqualTo(dependencySubstitutions[3].second)
-    assertThat("The hermes-android dependency was modified to use the correct Maven group.")
+    assertThat("com.facebook.react:react-android").isEqualTo(dependencySubstitutions[3].first)
+    assertThat("io.github.test:react-android:0.42.0").isEqualTo(dependencySubstitutions[3].second)
+    assertThat("The react-android dependency was modified to use the correct Maven group.")
         .isEqualTo(dependencySubstitutions[3].third)
+    assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[4].first)
+    assertThat("io.github.test.hermes:hermes-android:0.42.0")
+        .isEqualTo(dependencySubstitutions[4].second)
+    assertThat("The hermes-android dependency was modified to use the correct Maven group.")
+        .isEqualTo(dependencySubstitutions[4].third)
   }
 
   @Test
@@ -532,15 +543,20 @@ class DependencyUtilsTest {
             "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."
         )
         .isEqualTo(dependencySubstitutions[1].third)
-    assertThat("com.facebook.react:react-android").isEqualTo(dependencySubstitutions[2].first)
-    assertThat("io.github.test:react-android:0.42.0").isEqualTo(dependencySubstitutions[2].second)
-    assertThat("The react-android dependency was modified to use the correct Maven group.")
-        .isEqualTo(dependencySubstitutions[2].third)
-    assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[3].first)
+    assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[2].first)
     assertThat("io.github.test.hermes:hermes-android:0.43.0")
-        .isEqualTo(dependencySubstitutions[3].second)
-    assertThat("The hermes-android dependency was modified to use the correct Maven group.")
+        .isEqualTo(dependencySubstitutions[2].second)
+    assertThat("The hermes-android artifact was moved to com.facebook.hermes publishing group.")
+        .isEqualTo(dependencySubstitutions[2].third)
+    assertThat("com.facebook.react:react-android").isEqualTo(dependencySubstitutions[3].first)
+    assertThat("io.github.test:react-android:0.42.0").isEqualTo(dependencySubstitutions[3].second)
+    assertThat("The react-android dependency was modified to use the correct Maven group.")
         .isEqualTo(dependencySubstitutions[3].third)
+    assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[4].first)
+    assertThat("io.github.test.hermes:hermes-android:0.43.0")
+        .isEqualTo(dependencySubstitutions[4].second)
+    assertThat("The hermes-android dependency was modified to use the correct Maven group.")
+        .isEqualTo(dependencySubstitutions[4].third)
   }
 
   @Test
@@ -560,6 +576,7 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
+              HERMES_VERSION_NAME=1000.0.0
               HERMES_V1_VERSION_NAME=1000.0.0
               ANOTHER_PROPERTY=true
               """
@@ -596,6 +613,7 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
+              HERMES_VERSION_NAME=0.14.0
               HERMES_V1_VERSION_NAME=250829098.0.0-stable
               ANOTHER_PROPERTY=true
               """
@@ -609,7 +627,7 @@ class DependencyUtilsTest {
     val hermesV1VersionString = strings.hermesV1VersionString
 
     assertThat(versionString).isEqualTo("0.0.0-20221101-2019-cfe811ab1-SNAPSHOT")
-    assertThat(hermesVersionString).isEqualTo("0.0.0-20221101-2019-cfe811ab1-SNAPSHOT")
+    assertThat(hermesVersionString).isEqualTo("0.14.0")
     assertThat(hermesV1VersionString).isEqualTo("250829098.0.0-stable")
   }
 
@@ -661,6 +679,7 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
+              HERMES_VERSION_NAME=
               HERMES_V1_VERSION_NAME=
               ANOTHER_PROPERTY=true
               """
@@ -695,6 +714,7 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
+              HERMES_VERSION_NAME=
               HERMES_V1_VERSION_NAME=
               ANOTHER_PROPERTY=true
               """
@@ -726,6 +746,7 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
+              HERMES_VERSION_NAME=
               HERMES_V1_VERSION_NAME=
               ANOTHER_PROPERTY=true
               """

@@ -15,10 +15,9 @@
 
 namespace facebook::react {
 
-inline SharedColor parsePlatformColor(
-    const ContextContainer& /*contextContainer*/,
-    int32_t /*surfaceId*/,
-    const RawValue& /*value*/) {
+inline SharedColor
+parsePlatformColor(const ContextContainer & /*contextContainer*/, int32_t /*surfaceId*/, const RawValue & /*value*/)
+{
   float alpha = 0;
   float red = 0;
   float green = 0;
@@ -27,13 +26,10 @@ inline SharedColor parsePlatformColor(
   return {colorFromComponents({red, green, blue, alpha})};
 }
 
-inline void fromRawValue(
-    const ContextContainer& contextContainer,
-    int32_t surfaceId,
-    const RawValue& value,
-    SharedColor& result) {
-  fromRawValueShared(
-      contextContainer, surfaceId, value, result, parsePlatformColor);
+inline void
+fromRawValue(const ContextContainer &contextContainer, int32_t surfaceId, const RawValue &value, SharedColor &result)
+{
+  fromRawValueShared(contextContainer, surfaceId, value, result, parsePlatformColor);
 }
 
 } // namespace facebook::react

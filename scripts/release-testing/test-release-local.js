@@ -248,7 +248,7 @@ async function testRNTestProject(
       ? path.join(ciArtifacts.baseTmpPath(), 'maven-local')
       : '/private/tmp/maven-local';
 
-  const {hermesPath, newLocalNodeTGZ} = await prepareArtifacts(
+  const {newLocalNodeTGZ} = await prepareArtifacts(
     ciArtifacts,
     mavenLocalPath,
     localNodeTGZPath,
@@ -313,9 +313,7 @@ async function testRNTestProject(
     // doing the pod install here so that it's easier to play around RNTestProject
     cd('ios');
     exec('bundle install');
-    exec(
-      `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=1 bundle exec pod install --ansi`,
-    );
+    exec(`USE_HERMES=1 bundle exec pod install --ansi`);
 
     cd('..');
     exec('npm run ios');

@@ -12,11 +12,25 @@
 #import <React/RCTBridgeProxy.h>
 #import <React/RCTDefines.h>
 
-#if RCT_DEV_MENU
-
 RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 
+@interface RCTDevMenuConfiguration : NSObject
+
+#if RCT_DEV_MENU
+
+@property (nonatomic, readonly) BOOL devMenuEnabled;
+@property (nonatomic, readonly) BOOL shakeGestureEnabled;
+@property (nonatomic, readonly) BOOL keyboardShortcutsEnabled;
+
+- (instancetype)initWithDevMenuEnabled:(BOOL)devMenuEnabled
+                   shakeGestureEnabled:(BOOL)shakeGestureEnabled
+              keyboardShortcutsEnabled:(BOOL)keyboardShortcutsEnabled;
+
 #endif
+
++ (instancetype)defaultConfiguration;
+
+@end
 
 @class RCTDevMenuItem;
 
@@ -44,6 +58,16 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  * Whether the hotkeys that toggles the developer menu is enabled.
  */
 @property (nonatomic, assign) BOOL hotkeysEnabled;
+
+/**
+ * Whether the developer menu is enabled.
+ */
+@property (nonatomic, assign) BOOL devMenuEnabled;
+
+/**
+ * Whether keyboard shortcuts are enabled.
+ */
+@property (nonatomic, assign) BOOL keyboardShortcutsEnabled;
 
 /**
  * Presented items in development menu
@@ -75,6 +99,11 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  * when user selects the item.
  */
 - (void)addItem:(RCTDevMenuItem *)item;
+
+/**
+ * Disable the reload command (Cmd+R) in the simulator.
+ */
+- (void)disableReloadCommand;
 
 @end
 

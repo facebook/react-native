@@ -8,7 +8,7 @@
 #include "TesterAppDelegate.h"
 
 #include "NativeFantom.h"
-#include "platform/TesterTurboModuleManagerDelegate.h"
+#include "platform/TesterTurboModuleProvider.h"
 #include "stubs/StubClock.h"
 #include "stubs/StubHttpClient.h"
 #include "stubs/StubQueue.h"
@@ -88,7 +88,7 @@ TesterAppDelegate::TesterAppDelegate(
 
   runLoopObserverManager_ = std::make_shared<RunLoopObserverManager>();
 
-  TurboModuleManagerDelegates turboModuleProviders{
+  TurboModuleProviders turboModuleProviders{
       [&](const std::string& name,
           const std::shared_ptr<CallInvoker>& jsInvoker)
           -> std::shared_ptr<TurboModule> {
@@ -105,15 +105,15 @@ TesterAppDelegate::TesterAppDelegate(
           return nullptr;
         }
       },
-      TesterTurboModuleManagerDelegate::getTurboModuleManagerDelegate()};
+      TesterTurboModuleProvider::getTurboModuleProvider()};
 
   g_setNativeAnimatedNowTimestampFunction(StubClock::now);
 
   auto provider = std::make_shared<NativeAnimatedNodesManagerProvider>(
-      [this](std::function<void()>&& onRender) {
+      [this](std::function<void()>&& onRender, bool /*isAsync*/) {
         onAnimationRender_ = std::move(onRender);
       },
-      [this]() { onAnimationRender_ = nullptr; });
+      [this](bool /*isAsync*/) { onAnimationRender_ = nullptr; });
 
   reactHost_ = std::make_unique<ReactHost>(
       reactInstanceConfig,

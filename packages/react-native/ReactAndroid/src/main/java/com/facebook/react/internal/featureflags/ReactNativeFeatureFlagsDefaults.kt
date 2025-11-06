@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9f7eb1bb5e24fd8ee87accf60209cce3>>
+ * @generated SignedSource<<7b8a5ad9a3353ea32a39bd139e9174f7>>
  */
 
 /**
@@ -31,11 +31,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun cxxNativeAnimatedRemoveJsSync(): Boolean = false
 
+  override fun disableEarlyViewCommandExecution(): Boolean = false
+
   override fun disableFabricCommitInCXXAnimated(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
   override fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean = true
+
+  override fun disableSubviewClippingAndroid(): Boolean = false
 
   override fun disableTextLayoutManagerCacheAndroid(): Boolean = false
 
@@ -73,8 +77,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
 
-  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = false
-
   override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
 
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
@@ -82,6 +84,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableImperativeFocus(): Boolean = false
 
   override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
+
+  override fun enableKeyEvents(): Boolean = false
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 
@@ -115,13 +119,17 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableViewRecyclingForView(): Boolean = true
 
+  override fun enableVirtualViewClippingWithoutScrollViewClipping(): Boolean = true
+
+  override fun enableVirtualViewContainerStateExperimental(): Boolean = false
+
   override fun enableVirtualViewDebugFeatures(): Boolean = false
 
   override fun enableVirtualViewRenderState(): Boolean = true
 
   override fun enableVirtualViewWindowFocusDetection(): Boolean = false
 
-  override fun enableWebPerformanceAPIsByDefault(): Boolean = false
+  override fun enableWebPerformanceAPIsByDefault(): Boolean = true
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
@@ -133,6 +141,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = false
 
+  override fun perfIssuesEnabled(): Boolean = false
+
   override fun perfMonitorV2Enabled(): Boolean = false
 
   override fun preparedTextCacheSize(): Double = 200.0
@@ -141,9 +151,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
 
-  override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
+  override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 
-  override fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = false
+  override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
@@ -159,11 +169,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
-  override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
-
   override fun useRawPropsJsiValue(): Boolean = true
 
   override fun useShadowNodeStateOnClone(): Boolean = false
+
+  override fun useSharedAnimatedBackend(): Boolean = false
+
+  override fun useTraitHiddenOnAndroid(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 

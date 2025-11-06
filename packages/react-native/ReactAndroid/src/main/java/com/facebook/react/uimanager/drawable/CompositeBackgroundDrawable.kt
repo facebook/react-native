@@ -38,6 +38,9 @@ internal class CompositeBackgroundDrawable(
     /** Background rendering Layer */
     val background: BackgroundDrawable? = null,
 
+    /** Background image rendering Layer */
+    val backgroundImage: BackgroundImageDrawable? = null,
+
     /** Border rendering Layer */
     val border: BorderDrawable? = null,
 
@@ -61,6 +64,7 @@ internal class CompositeBackgroundDrawable(
             originalBackground,
             outerShadows,
             background,
+            backgroundImage,
             border,
             feedbackUnderlay,
             innerShadows,
@@ -75,12 +79,31 @@ internal class CompositeBackgroundDrawable(
     setPaddingMode(LayerDrawable.PADDING_MODE_STACK)
   }
 
+  fun withNewBackgroundImage(
+      backgroundImage: BackgroundImageDrawable?
+  ): CompositeBackgroundDrawable {
+    return CompositeBackgroundDrawable(
+        context,
+        originalBackground,
+        outerShadows,
+        background,
+        backgroundImage,
+        border,
+        feedbackUnderlay,
+        innerShadows,
+        outline,
+        borderInsets,
+        borderRadius,
+    )
+  }
+
   fun withNewBackground(background: BackgroundDrawable?): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
         context,
         originalBackground,
         outerShadows,
         background,
+        backgroundImage,
         border,
         feedbackUnderlay,
         innerShadows,
@@ -99,6 +122,7 @@ internal class CompositeBackgroundDrawable(
         originalBackground,
         outerShadows,
         background,
+        backgroundImage,
         border,
         feedbackUnderlay,
         innerShadows,
@@ -114,6 +138,7 @@ internal class CompositeBackgroundDrawable(
         originalBackground,
         outerShadows,
         background,
+        backgroundImage,
         border,
         feedbackUnderlay,
         innerShadows,
@@ -129,6 +154,7 @@ internal class CompositeBackgroundDrawable(
         originalBackground,
         outerShadows,
         background,
+        backgroundImage,
         border,
         feedbackUnderlay,
         innerShadows,
@@ -144,6 +170,7 @@ internal class CompositeBackgroundDrawable(
         originalBackground,
         outerShadows,
         background,
+        backgroundImage,
         border,
         newUnderlay,
         innerShadows,
@@ -201,6 +228,7 @@ internal class CompositeBackgroundDrawable(
         originalBackground: Drawable?,
         outerShadows: List<Drawable>,
         background: BackgroundDrawable?,
+        backgroundImage: BackgroundImageDrawable?,
         border: BorderDrawable?,
         feedbackUnderlay: Drawable?,
         innerShadows: List<Drawable>,
@@ -210,6 +238,7 @@ internal class CompositeBackgroundDrawable(
       originalBackground?.let { layers.add(it) }
       layers.addAll(outerShadows.asReversed())
       background?.let { layers.add(it) }
+      backgroundImage?.let { layers.add(it) }
       border?.let { layers.add(it) }
       feedbackUnderlay?.let { layers.add(it) }
       layers.addAll(innerShadows.asReversed())
