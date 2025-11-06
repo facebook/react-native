@@ -207,19 +207,6 @@ class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTa
    */
   std::shared_ptr<RuntimeTracingAgent> createTracingAgent(tracing::TraceRecordingState &state);
 
-  /**
-   * Start sampling profiler for a particular JavaScript runtime.
-   */
-  void enableSamplingProfiler();
-  /**
-   * Stop sampling profiler for a particular JavaScript runtime.
-   */
-  void disableSamplingProfiler();
-  /**
-   * Return recorded sampling profile for the previous sampling session.
-   */
-  tracing::RuntimeSamplingProfile collectSamplingProfile();
-
  private:
   using Domain = RuntimeTargetController::Domain;
 
@@ -275,6 +262,18 @@ class JSINSPECTOR_EXPORT RuntimeTarget : public EnableExecutorFromThis<RuntimeTa
    * session - HostTargetTraceRecording.
    */
   std::weak_ptr<RuntimeTracingAgent> tracingAgent_;
+  /**
+   * Start sampling profiler for a particular JavaScript runtime.
+   */
+  void enableSamplingProfiler();
+  /**
+   * Stop sampling profiler for a particular JavaScript runtime.
+   */
+  void disableSamplingProfiler();
+  /**
+   * Return recorded sampling profile for the previous sampling session.
+   */
+  tracing::RuntimeSamplingProfile collectSamplingProfile();
 
   /**
    * Adds a function with the given name on the runtime's global object, that
