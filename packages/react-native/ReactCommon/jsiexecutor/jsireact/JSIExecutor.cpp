@@ -576,44 +576,4 @@ void JSIExecutor::flush() {}
 
 #endif // RCT_REMOVE_LEGACY_ARCH
 
-void bindNativeLogger(Runtime& runtime, Logger logger) {
-  runtime.global().setProperty(
-      runtime,
-      "nativeLoggingHook",
-      Function::createFromHostFunction(
-          runtime,
-          PropNameID::forAscii(runtime, "nativeLoggingHook"),
-          2,
-          [logger = std::move(logger)](
-              jsi::Runtime& runtime,
-              const jsi::Value&,
-              const jsi::Value* args,
-              size_t count) {
-            if (count != 2) {
-              throw std::invalid_argument(
-                  "nativeLoggingHook takes 2 arguments");
-            }
-            logger(
-                args[0].asString(runtime).utf8(runtime),
-                static_cast<unsigned int>(args[1].asNumber()));
-            return Value::undefined();
-          }));
-}
-
-void bindNativePerformanceNow(Runtime& runtime) {
-  runtime.global().setProperty(
-      runtime,
-      "nativePerformanceNow",
-      Function::createFromHostFunction(
-          runtime,
-          PropNameID::forAscii(runtime, "nativePerformanceNow"),
-          0,
-          [](jsi::Runtime& runtime,
-             const jsi::Value&,
-             const jsi::Value* args,
-             size_t /*count*/) {
-            return HighResTimeStamp::now().toDOMHighResTimeStamp();
-          }));
-}
-
 } // namespace facebook::react
