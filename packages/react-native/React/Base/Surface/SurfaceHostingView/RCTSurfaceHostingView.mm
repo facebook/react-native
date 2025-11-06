@@ -264,8 +264,6 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
 - (NSArray<UIKeyCommand *> *)keyCommands
 {
-//  return [_devMenu keyCommands] ?: @[];
-
   return @[
     [UIKeyCommand keyCommandWithInput:@"d"
                         modifierFlags:UIKeyModifierCommand
