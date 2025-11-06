@@ -10,6 +10,18 @@
 
 namespace facebook::react {
 
+UIManagerNativeAnimatedDelegateBackendImpl::
+    UIManagerNativeAnimatedDelegateBackendImpl(
+        std::weak_ptr<UIManagerAnimationBackend> animationBackend)
+    : animationBackend_(std::move(animationBackend)) {}
+
+void UIManagerNativeAnimatedDelegateBackendImpl::runAnimationFrame() {
+  if (auto animationBackendStrong = animationBackend_.lock()) {
+    animationBackendStrong->onAnimationFrame(
+        std::chrono::steady_clock::now().time_since_epoch().count() / 1000);
+  }
+}
+
 static inline Props::Shared cloneProps(
     AnimatedProps& animatedProps,
     const ShadowNode& shadowNode) {
@@ -108,15 +120,20 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
 void AnimationBackend::start(const Callback& callback, bool isAsync) {
   callbacks.push_back(callback);
   // TODO: startOnRenderCallback_ should provide the timestamp from the platform
-  startOnRenderCallback_(
-      [this]() {
-        onAnimationFrame(
-            std::chrono::steady_clock::now().time_since_epoch().count() / 1000);
-      },
-      isAsync);
+  if (startOnRenderCallback_) {
+    startOnRenderCallback_(
+        [this]() {
+          onAnimationFrame(
+              std::chrono::steady_clock::now().time_since_epoch().count() /
+              1000);
+        },
+        isAsync);
+  }
 }
 void AnimationBackend::stop(bool isAsync) {
-  stopOnRenderCallback_(isAsync);
+  if (stopOnRenderCallback_) {
+    stopOnRenderCallback_(isAsync);
+  }
   callbacks.clear();
 }
 
