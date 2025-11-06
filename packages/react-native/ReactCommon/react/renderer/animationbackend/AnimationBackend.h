@@ -59,8 +59,8 @@ class AnimationBackend : public UIManagerAnimationBackend {
       DirectManipulationCallback &&directManipulationCallback,
       FabricCommitCallback &&fabricCommitCallback,
       UIManager *uiManager);
-  void commitUpdatesWithFamilies(
-      const std::unordered_set<const ShadowNodeFamily *> &families,
+  void commitUpdates(
+      const std::unordered_map<SurfaceId, std::unordered_set<const ShadowNodeFamily *>> &surfaceToFamilies,
       std::unordered_map<Tag, AnimatedProps> &updates);
   void synchronouslyUpdateProps(const std::unordered_map<Tag, AnimatedProps> &updates);
 
