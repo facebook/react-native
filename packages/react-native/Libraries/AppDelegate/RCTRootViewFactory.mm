@@ -26,7 +26,6 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
-
 #import <ReactCommon/RCTHost+Internal.h>
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -36,8 +35,6 @@
 #import <react/runtime/JSRuntimeFactoryCAPI.h>
 
 #if RCT_DEV_MENU
-#import <React/RCTSurfaceHostingView+Private.h>
-#import <react/utils/ManagedObjectWrapper.h>
 #import "RCTDevMenu.h"
 #endif // RCT_DEV_MENU
 
@@ -196,14 +193,11 @@
 
   RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView =
       [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
-
 #if RCT_DEV_MENU
     RCTDevMenu *devMenu = [self.reactHost.moduleRegistry moduleForClass:[RCTDevMenu class]];
     if (devMenu) {
-      _contextContainer->erase("RCTDevMenu");
-      _contextContainer->insert("RCTDevMenu", facebook::react::wrapManagedObject(devMenu));
+      surfaceHostingProxyRootView.devMenu = devMenu;
     }
-  [surfaceHostingProxyRootView setContextContainer:_contextContainer];
 #endif // RCT_DEV_MENU
 
   surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
@@ -227,8 +221,10 @@
 
 #if RCT_DEV_MENU
   if ([rootView isKindOfClass:[RCTSurfaceHostingView class]]) {
-    [(RCTSurfaceHostingView *)rootView setContextContainer:_contextContainer];
-  }
+    RCTDevMenu *devMenu = [bridge moduleForClass:[RCTDevMenu class]];
+    if (devMenu) {
+      [(RCTSurfaceHostingView *)rootView setDevMenu:devMenu];
+    }
 #endif // RCT_DEV_MENU
 
   return rootView;
@@ -246,13 +242,6 @@
                                                                                   jsInvoker:callInvoker];
   _contextContainer->erase(facebook::react::RuntimeSchedulerKey);
   _contextContainer->insert(facebook::react::RuntimeSchedulerKey, _runtimeScheduler);
-
-  RCTDevMenu *devMenu = [bridge moduleForClass:[RCTDevMenu class]];
-  if (devMenu) {
-    _contextContainer->erase("RCTDevMenu");
-    _contextContainer->insert("RCTDevMenu", wrapManagedObject(devMenu));
-  }
-
   return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
 }
 

@@ -63,6 +63,14 @@ NS_ASSUME_NONNULL_BEGIN
  * @param disabled if `YES`, the auto-hide is disabled. Otherwise the loading view will be hidden automatically
  */
 - (void)disableActivityIndicatorAutoHide:(BOOL)disabled;
+
+#if RCT_DEV_MENU
+/**
+ * Dev menu for macOS context menu access.
+ */
+@property (nonatomic, strong, nullable) RCTDevMenu *devMenu;
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END
