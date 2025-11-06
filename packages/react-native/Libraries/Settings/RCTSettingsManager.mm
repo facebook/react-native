@@ -25,10 +25,7 @@
 
 @synthesize moduleRegistry = _moduleRegistry;
 
-+ (NSString *)moduleName
-{
-  return @"SettingsManager";
-}
+RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {

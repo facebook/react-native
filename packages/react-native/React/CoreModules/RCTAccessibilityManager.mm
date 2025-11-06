@@ -33,10 +33,7 @@ NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification =
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize multipliers = _multipliers;
 
-+ (NSString *)moduleName
-{
-  return @"AccessibilityManager";
-}
+RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {

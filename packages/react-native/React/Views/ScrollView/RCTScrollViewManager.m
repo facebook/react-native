@@ -53,10 +53,7 @@ RCT_ENUM_CONVERTER(
 
 @implementation RCTScrollViewManager
 
-+ (NSString *)moduleName
-{
-  return @"ScrollViewManager";
-}
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {

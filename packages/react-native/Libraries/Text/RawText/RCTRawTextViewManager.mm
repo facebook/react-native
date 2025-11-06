@@ -13,10 +13,7 @@
 
 @implementation RCTRawTextViewManager
 
-+ (NSString *)moduleName
-{
-  return @"RawText";
-}
+RCT_EXPORT_MODULE(RCTRawText)
 
 - (UIView *)view
 {

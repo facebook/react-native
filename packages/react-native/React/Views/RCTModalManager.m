@@ -17,10 +17,7 @@
 
 @implementation RCTModalManager
 
-+ (NSString *)moduleName
-{
-  return @"ModalManager";
-}
+RCT_EXPORT_MODULE();
 
 - (NSArray<NSString *> *)supportedEvents
 {

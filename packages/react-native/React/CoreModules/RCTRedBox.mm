@@ -480,10 +480,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize bundleManager = _bundleManager;
 
-+ (NSString *)moduleName
-{
-  return @"RedBox";
-}
+RCT_EXPORT_MODULE()
 
 - (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer
 {

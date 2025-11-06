@@ -39,10 +39,7 @@ static NSString *const kFrameKeyPath = @"frame";
 
 @synthesize moduleRegistry = _moduleRegistry;
 
-+ (NSString *)moduleName
-{
-  return @"DeviceInfo";
-}
+RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {

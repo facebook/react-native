@@ -20,10 +20,7 @@
 
 @implementation RCTGIFImageDecoder
 
-+ (NSString *)moduleName
-{
-  return @"GIFImageDecoder";
-}
+RCT_EXPORT_MODULE()
 
 - (BOOL)canDecodeImageData:(NSData *)imageData
 {

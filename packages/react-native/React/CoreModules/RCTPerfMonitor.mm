@@ -114,10 +114,7 @@ static vm_size_t RCTGetResidentMemorySize(void)
 @synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
 
-+ (NSString *)moduleName
-{
-  return @"PerfMonitor";
-}
+RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {

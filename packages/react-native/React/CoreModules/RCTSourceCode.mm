@@ -18,10 +18,7 @@ using namespace facebook::react;
 
 @implementation RCTSourceCode
 
-+ (NSString *)moduleName
-{
-  return @"SourceCode";
-}
+RCT_EXPORT_MODULE()
 
 @synthesize bundleManager = _bundleManager;
 
