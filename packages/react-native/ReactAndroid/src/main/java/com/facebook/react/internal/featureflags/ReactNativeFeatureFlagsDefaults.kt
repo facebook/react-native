@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b8a5ad9a3353ea32a39bd139e9174f7>>
+ * @generated SignedSource<<4b918bb9e7d4d920844e1059894723c4>>
  */
 
 /**
@@ -42,6 +42,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun disableSubviewClippingAndroid(): Boolean = false
 
   override fun disableTextLayoutManagerCacheAndroid(): Boolean = false
+
+  override fun disableViewPreallocationAndroid(): Boolean = false
 
   override fun enableAccessibilityOrder(): Boolean = false
 

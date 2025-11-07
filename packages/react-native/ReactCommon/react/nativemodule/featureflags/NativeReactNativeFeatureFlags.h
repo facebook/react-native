@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0d898a94decb43e191a343676c8afb91>>
+ * @generated SignedSource<<a6d09333c8b57ec3eec36a37987a06ec>>
  */
 
 /**
@@ -55,6 +55,8 @@ class NativeReactNativeFeatureFlags
   bool disableSubviewClippingAndroid(jsi::Runtime& runtime);
 
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
+
+  bool disableViewPreallocationAndroid(jsi::Runtime& runtime);
 
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 

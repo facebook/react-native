@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a52734633ac33a6f8dfc521bdc6e2692>>
+ * @generated SignedSource<<05426943ad805df5787e062e45146df0>>
  * @flow strict
  * @noformat
  */
@@ -60,6 +60,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean>,
   disableSubviewClippingAndroid: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
+  disableViewPreallocationAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableAndroidLinearText: Getter<boolean>,
@@ -253,6 +254,10 @@ export const disableSubviewClippingAndroid: Getter<boolean> = createNativeFlagGe
  * Turns off the global measurement cache used by TextLayoutManager on Android.
  */
 export const disableTextLayoutManagerCacheAndroid: Getter<boolean> = createNativeFlagGetter('disableTextLayoutManagerCacheAndroid', false);
+/**
+ * Force disable view preallocation triggered from createNode off the main thread on Android
+ */
+export const disableViewPreallocationAndroid: Getter<boolean> = createNativeFlagGetter('disableViewPreallocationAndroid', false);
 /**
  * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
  */

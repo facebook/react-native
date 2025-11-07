@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9bb9a7cf89c92f5a397b2328fa983dc6>>
+ * @generated SignedSource<<53a55696d6897c5bf0ce8b5389d4c7f9>>
  */
 
 /**
@@ -34,6 +34,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var disableOldAndroidAttachmentMetricsWorkaroundsCache: Boolean? = null
   private var disableSubviewClippingAndroidCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
+  private var disableViewPreallocationAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableAndroidLinearTextCache: Boolean? = null
@@ -203,6 +204,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.disableTextLayoutManagerCacheAndroid()
       accessedFeatureFlags.add("disableTextLayoutManagerCacheAndroid")
       disableTextLayoutManagerCacheAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun disableViewPreallocationAndroid(): Boolean {
+    var cached = disableViewPreallocationAndroidCache
+    if (cached == null) {
+      cached = currentProvider.disableViewPreallocationAndroid()
+      accessedFeatureFlags.add("disableViewPreallocationAndroid")
+      disableViewPreallocationAndroidCache = cached
     }
     return cached
   }
