@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4b918bb9e7d4d920844e1059894723c4>>
+ * @generated SignedSource<<a25d191472f7777804175ef9f56521d6>>
  */
 
 /**
@@ -34,6 +34,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun disableEarlyViewCommandExecution(): Boolean = false
 
   override fun disableFabricCommitInCXXAnimated(): Boolean = false
+
+  override fun disableImageViewPreallocationAndroid(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aa1ec8f536bf908fc0f0eebd0a57b588>>
+ * @generated SignedSource<<01feab16132bc07b79b359178e322327>>
  */
 
 /**
@@ -65,6 +65,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableFabricCommitInCXXAnimated(): Boolean = accessor.disableFabricCommitInCXXAnimated()
+
+  /**
+   * Force disable view preallocation for images triggered from createNode off the main thread on Android
+   */
+  @JvmStatic
+  public fun disableImageViewPreallocationAndroid(): Boolean = accessor.disableImageViewPreallocationAndroid()
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
