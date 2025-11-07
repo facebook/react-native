@@ -8,6 +8,7 @@
 #include "PerformanceTracer.h"
 #include "Timing.h"
 #include "TraceEventSerializer.h"
+#include "TracingCategory.h"
 
 #include <jsinspector-modern/network/CdpNetwork.h>
 #include <jsinspector-modern/network/HttpUtils.h>
@@ -138,7 +139,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
   events.emplace_back(
       TraceEvent{
           .name = "TracingStartedInPage",
-          .cat = "disabled-by-default-devtools.timeline",
+          .cat = {Category::HiddenTimeline},
           .ph = 'I',
           .ts = currentTraceStartTime,
           .pid = processId_,
@@ -149,7 +150,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
   events.emplace_back(
       TraceEvent{
           .name = "ReactNative-TracingStopped",
-          .cat = "disabled-by-default-devtools.timeline",
+          .cat = {Category::HiddenTimeline},
           .ph = 'I',
           .ts = currentTraceEndTime,
           .pid = processId_,
@@ -409,7 +410,7 @@ void PerformanceTracer::reportFrameTiming(
   return TraceEvent{
       .id = profileId,
       .name = "Profile",
-      .cat = "disabled-by-default-v8.cpu_profiler",
+      .cat = {Category::JavaScriptSampling},
       .ph = 'P',
       .ts = profileTimestamp,
       .pid = processId,
@@ -432,7 +433,7 @@ PerformanceTracer::constructRuntimeProfileChunkTraceEvent(
   return TraceEvent{
       .id = profileId,
       .name = "ProfileChunk",
-      .cat = "disabled-by-default-v8.cpu_profiler",
+      .cat = {Category::JavaScriptSampling},
       .ph = 'P',
       .ts = chunkTimestamp,
       .pid = processId,
@@ -564,7 +565,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "RunTask",
-                    .cat = "disabled-by-default-devtools.timeline",
+                    .cat = {Category::HiddenTimeline},
                     .ph = 'X',
                     .ts = event.start,
                     .pid = processId_,
@@ -576,7 +577,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "RunMicrotasks",
-                    .cat = "v8.execute",
+                    .cat = {Category::RuntimeExecution},
                     .ph = 'X',
                     .ts = event.start,
                     .pid = processId_,
@@ -596,7 +597,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = std::move(event.name),
-                    .cat = "blink.user_timing",
+                    .cat = {Category::UserTiming},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -621,7 +622,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 TraceEvent{
                     .id = eventId,
                     .name = event.name,
-                    .cat = "blink.user_timing",
+                    .cat = {Category::UserTiming},
                     .ph = 'b',
                     .ts = event.start,
                     .pid = processId_,
@@ -632,7 +633,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 TraceEvent{
                     .id = eventId,
                     .name = std::move(event.name),
-                    .cat = "blink.user_timing",
+                    .cat = {Category::UserTiming},
                     .ph = 'e',
                     .ts = event.start + event.duration,
                     .pid = processId_,
@@ -672,7 +673,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 events.emplace_back(
                     TraceEvent{
                         .name = "TimeStamp",
-                        .cat = "devtools.timeline",
+                        .cat = {Category::Timeline},
                         .ph = 'I',
                         .ts = event.createdAt,
                         .pid = processId_,
@@ -710,7 +711,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "TimeStamp",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.createdAt,
                     .pid = processId_,
@@ -730,7 +731,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "ResourceSendRequest",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -756,7 +757,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "ResourceReceiveResponse",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -774,7 +775,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "ResourceFinish",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -790,7 +791,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "SetLayerTreeId",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -806,7 +807,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "BeginFrame",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -822,7 +823,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "Commit",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -838,7 +839,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "DrawFrame",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
