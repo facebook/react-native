@@ -152,13 +152,14 @@ RuntimeTracingAgent::RuntimeTracingAgent(
     tracing::TraceRecordingState& state,
     RuntimeTargetController& targetController)
     : tracing::TargetTracingAgent(state), targetController_(targetController) {
-  if (state.mode == tracing::Mode::CDP) {
+  if (state.enabledCategories.contains(tracing::Category::JavaScriptSampling)) {
     targetController_.enableSamplingProfiler();
   }
 }
 
 RuntimeTracingAgent::~RuntimeTracingAgent() {
-  if (state_.mode == tracing::Mode::CDP) {
+  if (state_.enabledCategories.contains(
+          tracing::Category::JavaScriptSampling)) {
     targetController_.disableSamplingProfiler();
     auto profile = targetController_.collectSamplingProfile();
 
