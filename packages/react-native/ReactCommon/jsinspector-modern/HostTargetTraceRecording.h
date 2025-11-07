@@ -12,8 +12,10 @@
 #include "InstanceTarget.h"
 
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
+#include <jsinspector-modern/tracing/TracingCategory.h>
 
 #include <optional>
+#include <set>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -28,7 +30,10 @@ namespace facebook::react::jsinspector_modern {
  */
 class HostTargetTraceRecording {
  public:
-  explicit HostTargetTraceRecording(tracing::Mode tracingMode, HostTarget &hostTarget);
+  explicit HostTargetTraceRecording(
+      HostTarget &hostTarget,
+      tracing::Mode tracingMode,
+      std::set<tracing::Category> enabledCategories);
 
   inline bool isBackgroundInitiated() const
   {
@@ -61,14 +66,14 @@ class HostTargetTraceRecording {
 
  private:
   /**
-   * The mode in which this trace recording was initialized.
-   */
-  tracing::Mode tracingMode_;
-
-  /**
    * The Host for which this Trace Recording is going to happen.
    */
   HostTarget &hostTarget_;
+
+  /**
+   * The mode in which this trace recording was initialized.
+   */
+  tracing::Mode tracingMode_;
 
   /**
    * The state of the current Trace Recording.
@@ -81,6 +86,11 @@ class HostTargetTraceRecording {
    * Only allocated if the recording is enabled.
    */
   std::shared_ptr<HostTracingAgent> hostTracingAgent_;
+
+  /**
+   * The list of categories that are enabled for this recording.
+   */
+  std::set<tracing::Category> enabledCategories_;
 };
 
 } // namespace facebook::react::jsinspector_modern

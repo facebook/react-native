@@ -34,6 +34,9 @@ struct TraceRecordingState {
 
   // All captures Instance Tracing Profiles during this Trace Recording.
   std::vector<InstanceTracingProfile> instanceTracingProfiles{};
+
+  // The list of categories that are enabled for this recording.
+  std::set<tracing::Category> enabledCategories;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
