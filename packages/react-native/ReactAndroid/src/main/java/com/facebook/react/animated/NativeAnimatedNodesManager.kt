@@ -112,7 +112,8 @@ public class NativeAnimatedNodesManager(
           "value" -> ValueAnimatedNode(config)
           "color" -> ColorAnimatedNode(config, this, checkNotNull(reactApplicationContext))
           "props" -> PropsAnimatedNode(config, this)
-          "interpolation" -> InterpolationAnimatedNode(config)
+          "interpolation" ->
+              InterpolationAnimatedNode(config, checkNotNull(reactApplicationContext))
           "addition" -> AdditionAnimatedNode(config, this)
           "subtraction" -> SubtractionAnimatedNode(config, this)
           "division" -> DivisionAnimatedNode(config, this)
@@ -247,7 +248,8 @@ public class NativeAnimatedNodesManager(
 
     val animation =
         when (val type = animationConfig.getString("type")) {
-          "frames" -> FrameBasedAnimationDriver(animationConfig)
+          "frames" ->
+              FrameBasedAnimationDriver(animationConfig, checkNotNull(reactApplicationContext))
           "spring" -> SpringAnimation(animationConfig)
           "decay" -> DecayAnimation(animationConfig)
           else -> {

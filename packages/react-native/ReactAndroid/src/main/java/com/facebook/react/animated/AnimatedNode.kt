@@ -7,6 +7,7 @@
 
 package com.facebook.react.animated
 
+import android.content.Context
 import java.util.ArrayList
 
 /** Base class for all Animated.js library node types that can be created on the "native" side. */
@@ -15,6 +16,22 @@ public abstract class AnimatedNode {
   internal companion object {
     internal const val INITIAL_BFS_COLOR: Int = 0
     internal const val DEFAULT_ANIMATED_NODE_CHILD_COUNT: Int = 1
+
+    internal fun getContextHelper(node: AnimatedNode): Context? {
+      // Search children depth-first until we get to a PropsAnimatedNode, from which we can
+      // get the view and its context
+      node.children?.let { children ->
+        for (child in children) {
+          return if (child is PropsAnimatedNode) {
+            val view = child.connectedView
+            view?.context
+          } else {
+            getContextHelper(child)
+          }
+        }
+      }
+      return null
+    }
   }
 
   // TODO: T196787278 Reduce the visibility of these fields to package once we have
