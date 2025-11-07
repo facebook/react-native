@@ -43,6 +43,7 @@ SET(folly_runtime_SRC
         folly/json/json_pointer.cpp
         folly/json/json.cpp
         folly/lang/CString.cpp
+        folly/lang/Exception.cpp
         folly/lang/SafeAssert.cpp
         folly/lang/ToAscii.cpp
         folly/memory/detail/MallocImpl.cpp
