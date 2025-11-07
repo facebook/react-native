@@ -672,6 +672,10 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
 
 void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {
+  if (ReactNativeFeatureFlags::disableViewPreallocationAndroid()) {
+    return;
+  }
+
   auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;
