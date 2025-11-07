@@ -10,6 +10,7 @@
 #include <folly/container/small_vector.h>
 
 #include <optional>
+#include <set>
 #include <string>
 
 namespace facebook::react::jsinspector_modern::tracing {
@@ -75,6 +76,51 @@ inline std::string serializeTracingCategories(const Categories &categories)
     }
   }
   return serializedValue;
+}
+
+// { Timeline, UserTiming } => "devtools.timeline,blink.user_timing"
+inline std::string serializeTracingCategories(const std::set<Category> &categories)
+{
+  std::string serializedValue;
+
+  auto current = categories.begin();
+  while (current != categories.end()) {
+    serializedValue += tracingCategoryToString(*current);
+
+    ++current;
+    if (current != categories.end()) {
+      serializedValue += ",";
+    }
+  }
+
+  return serializedValue;
+}
+
+// "devtools.timeline,blink.user_timing" => { Timeline, UserTiming }
+inline std::set<Category> parseSerializedTracingCategories(const std::string &serializedCategories)
+{
+  std::set<Category> categories;
+  if (serializedCategories.empty()) {
+    return categories;
+  }
+
+  size_t start = 0;
+  size_t end = serializedCategories.find(',');
+  while (end != std::string::npos) {
+    std::string token = serializedCategories.substr(start, end - start);
+    if (auto category = getTracingCategoryFromString(token)) {
+      categories.insert(*category);
+    }
+    start = end + 1;
+    end = serializedCategories.find(',', start);
+  }
+
+  std::string lastToken = serializedCategories.substr(start);
+  if (auto category = getTracingCategoryFromString(lastToken)) {
+    categories.insert(*category);
+  }
+
+  return categories;
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing
