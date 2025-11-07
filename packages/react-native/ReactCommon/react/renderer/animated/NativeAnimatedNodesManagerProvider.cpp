@@ -96,7 +96,8 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
               std::move(directManipulationCallback),
               std::move(fabricCommitCallback),
               std::move(startOnRenderCallback_),
-              std::move(stopOnRenderCallback_));
+              std::move(stopOnRenderCallback_),
+              std::move(frameRateListenerCallback_));
 
       nativeAnimatedDelegate_ =
           std::make_shared<UIManagerNativeAnimatedDelegateImpl>(
