@@ -474,14 +474,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setImportantForAccessibility(
       @NonNull T view, @Nullable String importantForAccessibility) {
     if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
-      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     } else if (importantForAccessibility.equals("yes")) {
-      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
     } else if (importantForAccessibility.equals("no")) {
-      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
-      ViewCompat.setImportantForAccessibility(
-          view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
   }
 
