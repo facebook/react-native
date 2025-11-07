@@ -30,7 +30,6 @@
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
-#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 using namespace facebook;
 using namespace facebook::react;

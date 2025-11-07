@@ -13,20 +13,17 @@
 
 #import "RCTPushNotificationPlugins.h"
 
-#import <string>
-#import <unordered_map>
+#import <string_view>
 
-Class RCTPushNotificationClassProvider(const char *name) {
-  // Intentionally leak to avoid crashing after static destructors are run.
-  static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
-    {"PushNotificationManager", RCTPushNotificationManagerCls},
-  };
+using namespace std::literals;
 
-  auto p = sCoreModuleClassMap->find(name);
-  if (p != sCoreModuleClassMap->end()) {
-    auto classFunc = p->second;
-    return classFunc();
+Class RCTPushNotificationClassProvider(const char *name)
+{
+
+  if (name == "PushNotificationManager"sv) {
+    return RCTPushNotificationManagerCls();
   }
+
   return nil;
 }
 
