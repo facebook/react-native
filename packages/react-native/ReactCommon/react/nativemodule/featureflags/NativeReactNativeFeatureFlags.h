@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a6d09333c8b57ec3eec36a37987a06ec>>
+ * @generated SignedSource<<65a06880aea8299c68e57e5b48a2fed8>>
  */
 
 /**
@@ -47,6 +47,8 @@ class NativeReactNativeFeatureFlags
   bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
 
   bool disableFabricCommitInCXXAnimated(jsi::Runtime& runtime);
+
+  bool disableImageViewPreallocationAndroid(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 

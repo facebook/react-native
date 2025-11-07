@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f5be088886181124b1b9bb1b59222689>>
+ * @generated SignedSource<<95ebd4929bf0f98aa059ad4b8139f7b3>>
  */
 
 /**
@@ -72,6 +72,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool disableFabricCommitInCXXAnimated() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableFabricCommitInCXXAnimated");
+    return method(javaProvider_);
+  }
+
+  bool disableImageViewPreallocationAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableImageViewPreallocationAndroid");
     return method(javaProvider_);
   }
 
@@ -571,6 +577,11 @@ bool JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated(
   return ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::disableImageViewPreallocationAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableImageViewPreallocationAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
@@ -1005,6 +1016,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "disableFabricCommitInCXXAnimated",
         JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated),
+      makeNativeMethod(
+        "disableImageViewPreallocationAndroid",
+        JReactNativeFeatureFlagsCxxInterop::disableImageViewPreallocationAndroid),
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),

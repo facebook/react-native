@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<920c935b5d7f6bb3f92531cdac22df1d>>
+ * @generated SignedSource<<19cc3c19f4e6115556fa29320ab47ff2>>
  */
 
 /**
@@ -72,6 +72,11 @@ bool NativeReactNativeFeatureFlags::disableEarlyViewCommandExecution(
 bool NativeReactNativeFeatureFlags::disableFabricCommitInCXXAnimated(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
+}
+
+bool NativeReactNativeFeatureFlags::disableImageViewPreallocationAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableImageViewPreallocationAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
