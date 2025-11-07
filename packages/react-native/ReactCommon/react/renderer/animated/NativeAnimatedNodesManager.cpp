@@ -568,10 +568,10 @@ void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded(
   if (isRenderCallbackStarted) {
     if (stopOnRenderCallback_) {
       stopOnRenderCallback_(isAsync);
-    }
 
-    if (frameRateListenerCallback_) {
-      frameRateListenerCallback_(false);
+      if (frameRateListenerCallback_) {
+        frameRateListenerCallback_(false);
+      }
     }
   }
 }
