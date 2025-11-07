@@ -10,6 +10,7 @@
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
 #include "InspectorFlags.h"
+#include "InspectorInterfaces.h"
 #include "NetworkIOAgent.h"
 #include "SessionState.h"
 #include "TracingAgent.h"
@@ -216,6 +217,11 @@ class HostAgent::Impl final {
           cdp::jsonNotification(
               "ReactNativeApplication.metadataUpdated",
               createHostMetadataPayload(hostMetadata_)));
+      auto& inspector = getInspectorInstance();
+      bool isSingleHost = inspector.getSystemState().registeredPagesCount <= 1;
+      if (!isSingleHost) {
+        emitSystemStateChanged(isSingleHost);
+      }
 
       auto stashedTraceRecording =
           targetController_.getDelegate()
@@ -374,6 +380,17 @@ class HostAgent::Impl final {
     tracingAgent_.emitExternalTraceRecording(std::move(traceRecording));
   }
 
+  void emitSystemStateChanged(bool isSingleHost) {
+    frontendChannel_(
+        cdp::jsonNotification(
+            "ReactNativeApplication.systemStateChanged",
+            folly::dynamic::object("isSingleHost", isSingleHost)));
+
+    if (!isSingleHost) {
+      frontendChannel_(cdp::jsonNotification("Network.disable"));
+    }
+  }
+
  private:
   enum class FuseboxClientType { Unknown, Fusebox, NonFusebox };
 
@@ -480,6 +497,7 @@ class HostAgent::Impl final {
   }
   void emitExternalTraceRecording(tracing::TraceRecordingState traceRecording) {
   }
+  void emitSystemStateChanged(bool isSingleHost) {}
 };
 
 #endif // REACT_NATIVE_DEBUGGER_ENABLED
@@ -517,6 +535,10 @@ bool HostAgent::hasFuseboxClientConnected() const {
 void HostAgent::emitExternalTraceRecording(
     tracing::TraceRecordingState traceRecording) const {
   impl_->emitExternalTraceRecording(std::move(traceRecording));
+}
+
+void HostAgent::emitSystemStateChanged(bool isSingleHost) const {
+  impl_->emitSystemStateChanged(isSingleHost);
 }
 
 #pragma mark - Tracing

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0d898a94decb43e191a343676c8afb91>>
+ * @generated SignedSource<<dc83e6c06dab5bb23893576db20afd14>>
  */
 
 /**
@@ -145,6 +145,8 @@ class NativeReactNativeFeatureFlags
   bool enableWebPerformanceAPIsByDefault(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
+
+  bool fuseboxAssertSingleHostState(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 

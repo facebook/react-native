@@ -20,6 +20,12 @@ class InspectorFlags {
   static InspectorFlags &getInstance();
 
   /**
+   * Flag determining if the inspector backend should strictly assert that only
+   * a single host is registered.
+   */
+  bool getAssertSingleHostState() const;
+
+  /**
    * Flag determining if the modern CDP backend should be enabled.
    */
   bool getFuseboxEnabled() const;
@@ -54,6 +60,7 @@ class InspectorFlags {
 
  private:
   struct Values {
+    bool assertSingleHostState;
     bool fuseboxEnabled;
     bool isProfilingBuild;
     bool networkInspectionEnabled;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b8a5ad9a3353ea32a39bd139e9174f7>>
+ * @generated SignedSource<<30041179508b76146b4a6ff70f7d2090>>
  */
 
 /**
@@ -132,6 +132,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableWebPerformanceAPIsByDefault(): Boolean = true
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
+
+  override fun fuseboxAssertSingleHostState(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 

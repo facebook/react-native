@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0224a638fbec556a62c58f5d84c4c662>>
+ * @generated SignedSource<<d2d7e1a76af893f563e32e676fd78447>>
  */
 
 /**
@@ -538,6 +538,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  }
+
+  bool fuseboxAssertSingleHostState() override {
+    auto value = values_["fuseboxAssertSingleHostState"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fuseboxAssertSingleHostState();
   }
 
   bool fuseboxEnabledRelease() override {

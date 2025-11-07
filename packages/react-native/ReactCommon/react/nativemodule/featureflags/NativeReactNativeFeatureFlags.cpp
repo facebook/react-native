@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd66756451b25d73717a5907e6789a77>>
+ * @generated SignedSource<<b2337b5085ae0111773e1915b976cb4d>>
  */
 
 /**
@@ -317,6 +317,11 @@ bool NativeReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault(
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool NativeReactNativeFeatureFlags::fuseboxAssertSingleHostState(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fuseboxAssertSingleHostState();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
