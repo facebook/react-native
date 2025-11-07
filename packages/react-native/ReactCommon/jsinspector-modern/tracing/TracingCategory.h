@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <folly/container/small_vector.h>
+
 #include <optional>
 #include <string>
 
@@ -51,6 +53,28 @@ inline std::optional<Category> getTracingCategoryFromString(const std::string &s
   } else {
     return std::nullopt;
   }
+}
+
+/**
+ * The Trace Event could have multiple categories, but this is extremely rare case.
+ */
+using Categories = folly::small_vector<Category, 1>;
+
+// { Timeline, UserTiming } => "devtools.timeline,blink.user_timing"
+inline std::string serializeTracingCategories(const Categories &categories)
+{
+  if (categories.size() == 1) {
+    return tracingCategoryToString(categories.front());
+  }
+
+  std::string serializedValue;
+  for (size_t i = 0; i < categories.size(); ++i) {
+    serializedValue += tracingCategoryToString(categories[i]);
+    if (i < categories.size() - 1) {
+      serializedValue += ",";
+    }
+  }
+  return serializedValue;
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing
