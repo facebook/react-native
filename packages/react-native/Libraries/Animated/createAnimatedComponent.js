@@ -125,6 +125,7 @@ export function unstable_createAnimatedComponentWithAllowlist<
     const [reducedProps, callbackRef] = useAnimatedProps<
       TProps,
       React.ElementRef<TInstance>,
+      // $FlowFixMe[incompatible-type]
     >(props);
     const ref = useMergeRefs<React.ElementRef<TInstance>>(
       callbackRef,
