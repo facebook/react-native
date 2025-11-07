@@ -412,6 +412,21 @@ export function observe(observer: Observer): Subscription {
   };
 }
 
+/**
+ * Same as observe(), but doesn't call notify observer sync at the time of subscription.
+ * Expected to be used only in LogBoxStateSubscription.
+ */
+function observeNext(observer: Observer): Subscription {
+  const subscription = {observer};
+  observers.add(subscription);
+
+  return {
+    unsubscribe(): void {
+      observers.delete(subscription);
+    },
+  };
+}
+
 type LogBoxStateSubscriptionProps = $ReadOnly<{}>;
 type LogBoxStateSubscriptionState = $ReadOnly<{
   logs: LogBoxLogs,
@@ -447,12 +462,11 @@ export function withSubscription(
     }
 
     _subscription: ?Subscription;
+    _updateStateOnMountTimeoutId: ?TimeoutID;
 
     state: LogBoxStateSubscriptionState = {
-      logs: new Set(),
-      isDisabled: false,
       hasError: false,
-      selectedLogIndex: -1,
+      ...getNextState(),
     };
 
     render(): React.Node {
@@ -472,12 +486,25 @@ export function withSubscription(
     }
 
     componentDidMount(): void {
-      this._subscription = observe(data => {
+      this._subscription = observeNext(data => {
         this.setState(data);
       });
+
+      /**
+       * This should cover the case when the state changes in between the first render and mount effect.
+       * We defer the state update to next task to avoid cascading update.
+       */
+      this._updateStateOnMountTimeoutId = setTimeout(() => {
+        this._updateStateOnMountTimeoutId = null;
+        this.setState(getNextState());
+      }, 0);
     }
 
     componentWillUnmount(): void {
+      if (this._updateStateOnMountTimeoutId != null) {
+        clearTimeout(this._updateStateOnMountTimeoutId);
+      }
+
       if (this._subscription != null) {
         this._subscription.unsubscribe();
       }
