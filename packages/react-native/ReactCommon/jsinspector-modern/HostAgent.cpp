@@ -146,6 +146,19 @@ class HostAgent::Impl final {
     }
     if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
       if (req.method == "Network.enable") {
+        auto& inspector = getInspectorInstance();
+        if (inspector.getSystemState().registeredPagesCount > 1) {
+          frontendChannel_(
+              cdp::jsonError(
+                  req.id,
+                  cdp::ErrorCode::InternalError,
+                  "The Network domain is unavailable when multiple React Native hosts are registered."));
+          return {
+              .isFinishedHandlingRequest = true,
+              .shouldSendOKResponse = false,
+          };
+        }
+
         sessionState_.isNetworkDomainEnabled = true;
 
         return {
@@ -386,9 +399,7 @@ class HostAgent::Impl final {
             "ReactNativeApplication.systemStateChanged",
             folly::dynamic::object("isSingleHost", isSingleHost)));
 
-    if (!isSingleHost) {
-      frontendChannel_(cdp::jsonNotification("Network.disable"));
-    }
+    frontendChannel_(cdp::jsonNotification("Network.disable"));
   }
 
  private:
