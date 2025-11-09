@@ -533,6 +533,14 @@ class VirtualizedList extends StateSafePureComponent<
       if (props.initialScrollIndex == null || props.initialScrollIndex <= 0) {
         const initialRegion = VirtualizedList._initialRenderRegion(props);
         renderMask.addCells(initialRegion);
+      } else {
+        // When initialScrollIndex is set but the entire list fits in viewport,
+        // we still need to apply the scroll-to-top optimization to render all items
+        const initialNumToRender = initialNumToRenderOrDefault(props.initialNumToRender);
+        if (itemCount <= initialNumToRender) {
+          const initialRegion = VirtualizedList._initialRenderRegion(props);
+          renderMask.addCells(initialRegion);
+        }
       }
 
       // The layout coordinates of sticker headers may be off-screen while the
@@ -555,6 +563,16 @@ class VirtualizedList extends StateSafePureComponent<
     last: number,
   } {
     const itemCount = props.getItemCount(props.data);
+    const initialNumToRender = initialNumToRenderOrDefault(props.initialNumToRender);
+
+    // If initialScrollIndex is set and the total items fit within initialNumToRender,
+    // render all items to avoid missing items before initialScrollIndex
+    if (props.initialScrollIndex != null && itemCount <= initialNumToRender) {
+      return {
+        first: 0,
+        last: Math.max(0, itemCount - 1),
+      };
+    }
 
     const firstCellIndex = Math.max(
       0,
@@ -564,7 +582,7 @@ class VirtualizedList extends StateSafePureComponent<
     const lastCellIndex =
       Math.min(
         itemCount,
-        firstCellIndex + initialNumToRenderOrDefault(props.initialNumToRender),
+        firstCellIndex + initialNumToRender,
       ) - 1;
 
     return {
