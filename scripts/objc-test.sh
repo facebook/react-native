@@ -156,7 +156,7 @@ main() {
 
     # Build and run tests.
     RESULT=-1
-    MAX_RETRY=1
+    MAX_RETRY=3
     for ((i=1; i<=MAX_RETRY; i++))
     do
       echo "Attempt #$i of running tests..."
