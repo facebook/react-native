@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8122e5c1e177a8f3deb2462a86f7cf64>>
+ * @generated SignedSource<<62480a82004544f8365f4f0957eb7319>>
  */
 
 /**
@@ -70,6 +70,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool disableFabricCommitInCXXAnimated();
 
   /**
+   * Force disable view preallocation for images triggered from createNode off the main thread on Android
+   */
+  RN_EXPORT static bool disableImageViewPreallocationAndroid();
+
+  /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
@@ -88,6 +93,11 @@ class ReactNativeFeatureFlags {
    * Turns off the global measurement cache used by TextLayoutManager on Android.
    */
   RN_EXPORT static bool disableTextLayoutManagerCacheAndroid();
+
+  /**
+   * Force disable view preallocation triggered from createNode off the main thread on Android
+   */
+  RN_EXPORT static bool disableViewPreallocationAndroid();
 
   /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
@@ -403,11 +413,6 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
-
-  /**
-   * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
-   */
-  RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
 
   /**
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b10ff10cb0d389a563da50c75a49c746>>
+ * @generated SignedSource<<e8531e8c374d0ea1e604a2f3d5000078>>
  */
 
 /**
@@ -30,10 +30,12 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableEarlyViewCommandExecutionCache: Boolean? = null
   private var disableFabricCommitInCXXAnimatedCache: Boolean? = null
+  private var disableImageViewPreallocationAndroidCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var disableOldAndroidAttachmentMetricsWorkaroundsCache: Boolean? = null
   private var disableSubviewClippingAndroidCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
+  private var disableViewPreallocationAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableAndroidLinearTextCache: Boolean? = null
@@ -97,7 +99,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useNativeEqualsInNativeReadableArrayAndroidCache: Boolean? = null
   private var useNativeTransformHelperAndroidCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
-  private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
   private var useShadowNodeStateOnCloneCache: Boolean? = null
   private var useSharedAnimatedBackendCache: Boolean? = null
@@ -168,6 +169,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun disableImageViewPreallocationAndroid(): Boolean {
+    var cached = disableImageViewPreallocationAndroidCache
+    if (cached == null) {
+      cached = currentProvider.disableImageViewPreallocationAndroid()
+      accessedFeatureFlags.add("disableImageViewPreallocationAndroid")
+      disableImageViewPreallocationAndroidCache = cached
+    }
+    return cached
+  }
+
   override fun disableMountItemReorderingAndroid(): Boolean {
     var cached = disableMountItemReorderingAndroidCache
     if (cached == null) {
@@ -204,6 +215,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.disableTextLayoutManagerCacheAndroid()
       accessedFeatureFlags.add("disableTextLayoutManagerCacheAndroid")
       disableTextLayoutManagerCacheAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun disableViewPreallocationAndroid(): Boolean {
+    var cached = disableViewPreallocationAndroidCache
+    if (cached == null) {
+      cached = currentProvider.disableViewPreallocationAndroid()
+      accessedFeatureFlags.add("disableViewPreallocationAndroid")
+      disableViewPreallocationAndroidCache = cached
     }
     return cached
   }
@@ -834,16 +855,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
-    }
-    return cached
-  }
-
-  override fun useOptimizedEventBatchingOnAndroid(): Boolean {
-    var cached = useOptimizedEventBatchingOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.useOptimizedEventBatchingOnAndroid()
-      accessedFeatureFlags.add("useOptimizedEventBatchingOnAndroid")
-      useOptimizedEventBatchingOnAndroidCache = cached
     }
     return cached
   }

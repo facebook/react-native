@@ -25,6 +25,10 @@ type DevToolsColor =
   | 'warning'
   | 'error';
 
+declare interface ConsoleTask {
+  run<T>(f: () => T): T;
+}
+
 // $FlowExpectedError[libdef-override] Flow core definitions are incomplete.
 declare var console: {
   // Logging
@@ -74,6 +78,9 @@ declare var console: {
     color?: DevToolsColor,
     detail?: {[string]: mixed},
   ): void,
+
+  // Stack tagging
+  createTask(label: string): ConsoleTask,
 
   ...
 };

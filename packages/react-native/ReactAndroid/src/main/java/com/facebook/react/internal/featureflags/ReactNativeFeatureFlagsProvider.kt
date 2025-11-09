@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c4917c92012d904810ef7d832adf124c>>
+ * @generated SignedSource<<2325f5410537941e25998ca8c59bf51d>>
  */
 
 /**
@@ -35,6 +35,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun disableFabricCommitInCXXAnimated(): Boolean
 
+  @DoNotStrip public fun disableImageViewPreallocationAndroid(): Boolean
+
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
   @DoNotStrip public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean
@@ -42,6 +44,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun disableSubviewClippingAndroid(): Boolean
 
   @DoNotStrip public fun disableTextLayoutManagerCacheAndroid(): Boolean
+
+  @DoNotStrip public fun disableViewPreallocationAndroid(): Boolean
 
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
@@ -168,8 +172,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useNativeTransformHelperAndroid(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
-
-  @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRawPropsJsiValue(): Boolean
 

@@ -17,8 +17,10 @@
 #include "WeakList.h"
 
 #include <optional>
+#include <set>
 #include <string>
 
+#include <jsinspector-modern/tracing/TracingCategory.h>
 #include <jsinspector-modern/tracing/TracingMode.h>
 #include <jsinspector-modern/tracing/TracingState.h>
 
@@ -203,9 +205,11 @@ class HostTargetController final {
    * Starts trace recording for this HostTarget.
    *
    * \param mode In which mode to start the trace recording.
+   * \param enabledCategories The set of categories to enable.
+   *
    * \return false if already tracing, true otherwise.
    */
-  bool startTracing(tracing::Mode mode);
+  bool startTracing(tracing::Mode mode, std::set<tracing::Category> enabledCategories);
 
   /**
    * Stops previously started trace recording.
@@ -292,9 +296,11 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
    * Starts trace recording for this HostTarget.
    *
    * \param mode In which mode to start the trace recording.
+   * \param enabledCategories The set of categories to enable.
+   *
    * \return false if already tracing, true otherwise.
    */
-  bool startTracing(tracing::Mode mode);
+  bool startTracing(tracing::Mode mode, std::set<tracing::Category> enabledCategories);
 
   /**
    * Stops previously started trace recording.

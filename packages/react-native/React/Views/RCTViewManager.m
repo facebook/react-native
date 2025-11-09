@@ -128,10 +128,7 @@ RCT_MULTI_ENUM_CONVERTER(
 
 @synthesize bridge = _bridge;
 
-+ (NSString *)moduleName
-{
-  return @"RCTViewManager";
-}
+RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {

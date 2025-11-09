@@ -8,7 +8,6 @@
 package com.facebook.react
 
 import com.facebook.jni.HybridData
-import com.facebook.react.bridge.CxxModuleWrapper
 import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -103,7 +102,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       moduleClass.name,
                       reactModule.canOverrideExistingModule,
                       true,
-                      reactModule.isCxxModule,
+                      false,
                       ReactModuleInfo.classIsTurboModule(moduleClass),
                   )
               else
@@ -112,7 +111,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       moduleClass.name,
                       module.canOverrideExistingModule(),
                       true,
-                      CxxModuleWrapper::class.java.isAssignableFrom(moduleClass),
+                      false,
                       ReactModuleInfo.classIsTurboModule(moduleClass),
                   )
 

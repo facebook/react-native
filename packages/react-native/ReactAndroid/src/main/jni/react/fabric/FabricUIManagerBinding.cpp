@@ -29,6 +29,7 @@
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
+#include <string_view>
 
 namespace facebook::react {
 
@@ -672,6 +673,17 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
 
 void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {
+  using namespace std::literals::string_view_literals;
+
+  if (ReactNativeFeatureFlags::disableViewPreallocationAndroid()) {
+    return;
+  }
+
+  if (ReactNativeFeatureFlags::disableImageViewPreallocationAndroid() &&
+      std::string_view(shadowNode.getComponentName()) == "Image"sv) {
+    return;
+  }
+
   auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;

@@ -7,14 +7,16 @@
 
 #pragma once
 
+#include "FollyDynamicMatchers.h"
 #include "JsiIntegrationTest.h"
 
+#include <fmt/format.h>
 #include <folly/dynamic.h>
 #include <folly/json.h>
 #include <gmock/gmock.h>
-#include <vector>
 
-#include "FollyDynamicMatchers.h"
+#include <set>
+#include <vector>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -29,17 +31,28 @@ class TracingTestBase : public JsiIntegrationPortableTestBase<EngineAdapter, Exe
   /**
    * Helper method to start tracing via Tracing.start CDP command.
    */
-  void startTracing()
+  void startTracing(
+      const std::set<tracing::Category> &enabledCategories = {
+          tracing::Category::HiddenTimeline,
+          tracing::Category::JavaScriptSampling,
+          tracing::Category::RuntimeExecution,
+          tracing::Category::Timeline,
+          tracing::Category::UserTiming,
+      })
   {
     this->expectMessageFromPage(JsonEq(R"({
                                           "id": 1,
                                           "result": {}
                                         })"));
 
-    this->toPage_->sendMessage(R"({
-                                  "id": 1,
-                                  "method": "Tracing.start"
-                                })");
+    this->toPage_->sendMessage(
+        fmt::format(
+            R"({{
+              "id": 1,
+              "method": "Tracing.start",
+              "params": {{ "categories": "{0}" }}
+            }})",
+            tracing::serializeTracingCategories(enabledCategories)));
   }
 
   /**

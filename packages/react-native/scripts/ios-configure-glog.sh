@@ -14,7 +14,12 @@ if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     # it's better to rely on platform name as fallback because architecture differs between simulator and device
 
     if [[ "$PLATFORM_NAME" == *"simulator"* ]]; then
-        CURRENT_ARCH="x86_64"
+        if [[ "$(uname -m)" == "arm64" ]]; then
+            # Apple Silicon Mac -> arm64 simulator
+            CURRENT_ARCH="arm64"
+        else
+            CURRENT_ARCH="x86_64"
+        fi
     else
         CURRENT_ARCH="arm64"
     fi

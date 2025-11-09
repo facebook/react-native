@@ -32,10 +32,7 @@ static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 
 @synthesize methodQueue = _methodQueue;
 
-+ (NSString *)moduleName
-{
-  return @"ImageStoreManager";
-}
+RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {

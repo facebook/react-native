@@ -27,8 +27,15 @@ export type PackageJson = {
 };
 
 type PackagesFilter = $ReadOnly<{
+  // Include the main react-native package
   includeReactNative: boolean,
+
+  // Include packages marked with `private: true`
   includePrivate?: boolean,
+
+  // Force include the rn-tester package. Special case of a private package
+  // that we version and depend on in fbsource.
+  forceIncludeRNTester?: boolean,
 }>;
 
 export type PackageInfo = {
@@ -48,13 +55,17 @@ export type ProjectInfo = {
 */
 
 /**
- * Locates monrepo packages and returns a mapping of package names to their
- * metadata. Considers Yarn workspaces under `packages/`.
+ * Locates monorepo packages and returns a mapping of package names to their
+ * metadata. Considers Yarn workspaces under `packages/` and `private/`.
  */
 async function getPackages(
   filter /*: PackagesFilter */,
 ) /*: Promise<ProjectInfo> */ {
-  const {includeReactNative, includePrivate = false} = filter;
+  const {
+    includeReactNative,
+    includePrivate = false,
+    forceIncludeRNTester = false,
+  } = filter;
 
   const packagesEntries = await Promise.all(
     glob
@@ -69,9 +80,12 @@ async function getPackages(
   );
 
   return Object.fromEntries(
-    packagesEntries.filter(
-      ([_, {packageJson}]) => packageJson.private !== true || includePrivate,
-    ),
+    packagesEntries.filter(([_, {name, packageJson}]) => {
+      if (name === '@react-native/tester') {
+        return forceIncludeRNTester;
+      }
+      return packageJson.private !== true || includePrivate;
+    }),
   );
 }
 

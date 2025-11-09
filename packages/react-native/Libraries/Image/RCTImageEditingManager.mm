@@ -24,10 +24,7 @@
 
 @implementation RCTImageEditingManager
 
-+ (NSString *)moduleName
-{
-  return @"ImageEditingManager";
-}
+RCT_EXPORT_MODULE()
 
 @synthesize moduleRegistry = _moduleRegistry;
 

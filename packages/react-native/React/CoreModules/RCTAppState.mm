@@ -43,10 +43,7 @@ static NSString *RCTCurrentAppState()
   facebook::react::ModuleConstants<JS::NativeAppState::Constants> _constants;
 }
 
-+ (NSString *)moduleName
-{
-  return @"AppState";
-}
+RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {

@@ -11,9 +11,12 @@
 namespace facebook::react::jsinspector_modern {
 
 HostTargetTraceRecording::HostTargetTraceRecording(
+    HostTarget& hostTarget,
     tracing::Mode tracingMode,
-    HostTarget& hostTarget)
-    : tracingMode_(tracingMode), hostTarget_(hostTarget) {}
+    std::set<tracing::Category> enabledCategories)
+    : hostTarget_(hostTarget),
+      tracingMode_(tracingMode),
+      enabledCategories_(std::move(enabledCategories)) {}
 
 void HostTargetTraceRecording::setTracedInstance(
     InstanceTarget* instanceTarget) {
@@ -32,6 +35,7 @@ void HostTargetTraceRecording::start() {
   state_ = tracing::TraceRecordingState{
       .mode = tracingMode_,
       .startTime = HighResTimeStamp::now(),
+      .enabledCategories = enabledCategories_,
   };
   hostTracingAgent_ = hostTarget_.createTracingAgent(*state_);
 }

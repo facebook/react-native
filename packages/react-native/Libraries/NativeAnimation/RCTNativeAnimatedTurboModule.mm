@@ -30,10 +30,7 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   NSSet<NSString *> *_userDrivenAnimationEndedEvents;
 }
 
-+ (NSString *)moduleName
-{
-  return @"NativeAnimatedTurboModule";
-}
+RCT_EXPORT_MODULE();
 
 + (BOOL)requiresMainQueueSetup
 {

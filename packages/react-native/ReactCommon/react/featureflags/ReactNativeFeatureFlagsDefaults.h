@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4e4623461411b957286ef050ec0c4f6f>>
+ * @generated SignedSource<<cce007ecab09ff43ec931cb259542ed9>>
  */
 
 /**
@@ -51,6 +51,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableImageViewPreallocationAndroid() override {
+    return false;
+  }
+
   bool disableMountItemReorderingAndroid() override {
     return false;
   }
@@ -64,6 +68,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableTextLayoutManagerCacheAndroid() override {
+    return false;
+  }
+
+  bool disableViewPreallocationAndroid() override {
     return false;
   }
 
@@ -316,10 +324,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
-    return false;
-  }
-
-  bool useOptimizedEventBatchingOnAndroid() override {
     return false;
   }
 

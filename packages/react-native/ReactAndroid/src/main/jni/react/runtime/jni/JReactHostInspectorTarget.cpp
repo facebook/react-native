@@ -146,7 +146,14 @@ HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
 
 bool JReactHostInspectorTarget::startBackgroundTrace() {
   if (inspectorTarget_) {
-    return inspectorTarget_->startTracing(tracing::Mode::Background);
+    return inspectorTarget_->startTracing(
+        tracing::Mode::Background,
+        {
+            tracing::Category::HiddenTimeline,
+            tracing::Category::RuntimeExecution,
+            tracing::Category::Timeline,
+            tracing::Category::UserTiming,
+        });
   } else {
     jni::throwNewJavaException(
         "java/lang/IllegalStateException",

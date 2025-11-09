@@ -7,6 +7,7 @@
 
 #include "TraceEventSerializer.h"
 #include "Timing.h"
+#include "TracingCategory.h"
 
 #include <react/timing/primitives.h>
 
@@ -22,7 +23,7 @@ namespace facebook::react::jsinspector_modern::tracing {
     result["id"] = buffer.data();
   }
   result["name"] = std::move(event.name);
-  result["cat"] = std::move(event.cat);
+  result["cat"] = serializeTracingCategories(event.cat);
   result["ph"] = std::string(1, event.ph);
   result["ts"] = highResTimeStampToTracingClockTimeStamp(event.ts);
   result["pid"] = event.pid;

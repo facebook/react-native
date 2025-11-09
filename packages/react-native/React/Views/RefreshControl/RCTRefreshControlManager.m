@@ -15,10 +15,7 @@
 
 @implementation RCTRefreshControlManager
 
-+ (NSString *)moduleName
-{
-  return @"RefreshControlManager";
-}
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {

@@ -15,10 +15,7 @@
 
 @implementation RCTSafeAreaViewManager
 
-+ (NSString *)moduleName
-{
-  return @"SafeAreaViewManager";
-}
+RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {

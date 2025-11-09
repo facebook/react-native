@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<32ad8dfa8f1c1d662ff0ea7b424eb070>>
+ * @generated SignedSource<<a25d191472f7777804175ef9f56521d6>>
  */
 
 /**
@@ -35,6 +35,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableFabricCommitInCXXAnimated(): Boolean = false
 
+  override fun disableImageViewPreallocationAndroid(): Boolean = false
+
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
   override fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean = true
@@ -42,6 +44,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun disableSubviewClippingAndroid(): Boolean = false
 
   override fun disableTextLayoutManagerCacheAndroid(): Boolean = false
+
+  override fun disableViewPreallocationAndroid(): Boolean = false
 
   override fun enableAccessibilityOrder(): Boolean = false
 
@@ -168,8 +172,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useNativeTransformHelperAndroid(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
-
-  override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
   override fun useRawPropsJsiValue(): Boolean = true
 

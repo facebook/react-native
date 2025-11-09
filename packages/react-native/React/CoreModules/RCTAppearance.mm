@@ -92,10 +92,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
   return self;
 }
 
-+ (NSString *)moduleName
-{
-  return @"Appearance";
-}
+RCT_EXPORT_MODULE(Appearance)
 
 + (BOOL)requiresMainQueueSetup
 {

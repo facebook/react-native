@@ -99,7 +99,7 @@ class RuntimeAgent final {
  * Lifetime of this agent is bound to the lifetime of the Tracing session -
  * HostTargetTraceRecording and to the lifetime of the RuntimeTarget.
  */
-class RuntimeTracingAgent : tracing::TargetTracingAgent {
+class RuntimeTracingAgent : public tracing::TargetTracingAgent {
  public:
   explicit RuntimeTracingAgent(tracing::TraceRecordingState &state, RuntimeTargetController &targetController);
 

@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "ConsoleTask.h"
+#include "ConsoleTaskContext.h"
+#include "ConsoleTaskOrchestrator.h"
+
 #include <jsinspector-modern/RuntimeTarget.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 
@@ -477,8 +481,17 @@ void consoleTimeStamp(
   }
 
   if (performanceTracer.isTracing()) {
+    auto taskContext = ConsoleTaskOrchestrator::getInstance().top();
+
     performanceTracer.reportTimeStamp(
-        label, start, end, trackName, trackGroup, color, std::move(detail));
+        label,
+        start,
+        end,
+        trackName,
+        trackGroup,
+        color,
+        std::move(detail),
+        taskContext ? taskContext->getSerializedStackTrace() : nullptr);
   }
 
   if (ReactPerfettoLogger::isTracing()) {
@@ -519,6 +532,71 @@ void installConsoleTimeStamp(
                 consoleTimeStamp(runtime, args, count);
                 return jsi::Value::undefined();
               })));
+}
+
+/**
+ * run method of the task object returned from console.createTask().
+ */
+jsi::Value consoleTaskRun(
+    jsi::Runtime& runtime,
+    const jsi::Value* args,
+    size_t count,
+    std::shared_ptr<ConsoleTaskContext> taskContext) {
+  if (count < 1 || !args[0].isObject()) {
+    throw JSError(runtime, "First argument must be a function");
+  }
+  auto fnObj = args[0].getObject(runtime);
+  if (!fnObj.isFunction(runtime)) {
+    throw JSError(runtime, "First argument must be a function");
+  }
+
+  ConsoleTask consoleTask{taskContext};
+
+  auto fn = fnObj.getFunction(runtime);
+  return fn.call(runtime);
+}
+
+/**
+ * console.createTask. Non-standardized.
+ * https://developer.chrome.com/docs/devtools/console/api#createtask
+ */
+jsi::Value consoleCreateTask(
+    jsi::Runtime& runtime,
+    const jsi::Value* args,
+    size_t count,
+    RuntimeTargetDelegate& runtimeTargetDelegate,
+    bool enabled) {
+  if (count < 1 || !args[0].isString()) {
+    throw JSError(runtime, "First argument must be a non-empty string");
+  }
+  auto name = args[0].asString(runtime).utf8(runtime);
+  if (name.empty()) {
+    throw JSError(runtime, "First argument must be a non-empty string");
+  }
+
+  jsi::Object task{runtime};
+  std::shared_ptr<ConsoleTaskContext> taskContext = nullptr;
+  if (enabled) {
+    taskContext = std::make_shared<ConsoleTaskContext>(
+        runtime, runtimeTargetDelegate, name);
+    taskContext->schedule();
+  }
+
+  task.setProperty(
+      runtime,
+      "run",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "run"),
+          0,
+          [taskContext](
+              jsi::Runtime& runtime,
+              const jsi::Value& /*thisVal*/,
+              const jsi::Value* args,
+              size_t count) {
+            return consoleTaskRun(runtime, args, count, taskContext);
+          }));
+  return task;
 }
 
 } // namespace
@@ -623,6 +701,33 @@ void RuntimeTarget::installConsoleHandler() {
      * console.timeStamp
      */
     installConsoleTimeStamp(runtime, originalConsole, console);
+
+    /**
+     * console.createTask
+     */
+    console.setProperty(
+        runtime,
+        "createTask",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "createTask"),
+            0,
+            [state, selfWeak](
+                jsi::Runtime& runtime,
+                const jsi::Value& /*thisVal*/,
+                const jsi::Value* args,
+                size_t count) {
+              jsi::Value task;
+              tryExecuteSync(selfWeak, [&](auto& self) {
+                task = consoleCreateTask(
+                    runtime,
+                    args,
+                    count,
+                    self.delegate_,
+                    self.isConsoleCreateTaskEnabled());
+              });
+              return task;
+            }));
 
     // Install forwarding console methods.
 #define FORWARDING_CONSOLE_METHOD(name, type) \

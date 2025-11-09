@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<84b5ef5e3ada0d6f2b10abfffa6d9d0f>>
+ * @generated SignedSource<<65a06880aea8299c68e57e5b48a2fed8>>
  */
 
 /**
@@ -48,6 +48,8 @@ class NativeReactNativeFeatureFlags
 
   bool disableFabricCommitInCXXAnimated(jsi::Runtime& runtime);
 
+  bool disableImageViewPreallocationAndroid(jsi::Runtime& runtime);
+
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool disableOldAndroidAttachmentMetricsWorkarounds(jsi::Runtime& runtime);
@@ -55,6 +57,8 @@ class NativeReactNativeFeatureFlags
   bool disableSubviewClippingAndroid(jsi::Runtime& runtime);
 
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
+
+  bool disableViewPreallocationAndroid(jsi::Runtime& runtime);
 
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
@@ -181,8 +185,6 @@ class NativeReactNativeFeatureFlags
   bool useNativeTransformHelperAndroid(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
-
-  bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
 

@@ -7,6 +7,7 @@
 
 #include "PerformanceEntryReporter.h"
 
+#include <jsinspector-modern/ConsoleTaskOrchestrator.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/timing/primitives.h>
@@ -381,8 +382,15 @@ void PerformanceEntryReporter::traceMeasure(
     }
 
     if (performanceTracer.isTracing()) {
+      auto taskContext =
+          jsinspector_modern::ConsoleTaskOrchestrator::getInstance().top();
+
       performanceTracer.reportMeasure(
-          entry.name, entry.startTime, entry.duration, std::move(detail));
+          entry.name,
+          entry.startTime,
+          entry.duration,
+          std::move(detail),
+          taskContext ? taskContext->getSerializedStackTrace() : nullptr);
     }
   }
 }

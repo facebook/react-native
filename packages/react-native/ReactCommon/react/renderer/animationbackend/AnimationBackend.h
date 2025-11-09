@@ -18,6 +18,18 @@
 
 namespace facebook::react {
 
+class AnimationBackend;
+
+class UIManagerNativeAnimatedDelegateBackendImpl : public UIManagerNativeAnimatedDelegate {
+ public:
+  explicit UIManagerNativeAnimatedDelegateBackendImpl(std::weak_ptr<UIManagerAnimationBackend> animationBackend);
+
+  void runAnimationFrame() override;
+
+ private:
+  std::weak_ptr<UIManagerAnimationBackend> animationBackend_;
+};
+
 struct AnimationMutation {
   Tag tag;
   const ShadowNodeFamily *family;
@@ -47,8 +59,8 @@ class AnimationBackend : public UIManagerAnimationBackend {
       DirectManipulationCallback &&directManipulationCallback,
       FabricCommitCallback &&fabricCommitCallback,
       UIManager *uiManager);
-  void commitUpdatesWithFamilies(
-      const std::unordered_set<const ShadowNodeFamily *> &families,
+  void commitUpdates(
+      const std::unordered_map<SurfaceId, std::unordered_set<const ShadowNodeFamily *>> &surfaceToFamilies,
       std::unordered_map<Tag, AnimatedProps> &updates);
   void synchronouslyUpdateProps(const std::unordered_map<Tag, AnimatedProps> &updates);
 
