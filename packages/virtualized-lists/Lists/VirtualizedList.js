@@ -537,7 +537,7 @@ class VirtualizedList extends StateSafePureComponent<
         // When initialScrollIndex is set but the entire list fits in viewport,
         // we still need to apply the scroll-to-top optimization to render all items
         const initialNumToRender = initialNumToRenderOrDefault(props.initialNumToRender);
-        if (itemCount <= initialNumToRender) {
+        if (itemCount > 0 && itemCount <= initialNumToRender) {
           const initialRegion = VirtualizedList._initialRenderRegion(props);
           renderMask.addCells(initialRegion);
         }
@@ -565,12 +565,20 @@ class VirtualizedList extends StateSafePureComponent<
     const itemCount = props.getItemCount(props.data);
     const initialNumToRender = initialNumToRenderOrDefault(props.initialNumToRender);
 
+    // Handle empty list case
+    if (itemCount === 0) {
+      return {
+        first: 0,
+        last: -1,
+      };
+    }
+
     // If initialScrollIndex is set and the total items fit within initialNumToRender,
     // render all items to avoid missing items before initialScrollIndex
     if (props.initialScrollIndex != null && itemCount <= initialNumToRender) {
       return {
         first: 0,
-        last: Math.max(0, itemCount - 1),
+        last: itemCount - 1,
       };
     }
 
