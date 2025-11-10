@@ -623,6 +623,16 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     self.layer.opacity = (float)props.opacity;
   }
 
+  // LAYER CLEANUP FOR RECYCLING - Focus on shadow layers to fix #54204
+  // Clean up box shadow layers to prevent cross-component contamination
+  if (_boxShadowLayers) {
+    for (CALayer *boxShadowLayer in _boxShadowLayers) {
+      [boxShadowLayer removeFromSuperlayer];
+    }
+    [_boxShadowLayers removeAllObjects];
+    _boxShadowLayers = nil;
+  }
+
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
   _isJSResponder = NO;
