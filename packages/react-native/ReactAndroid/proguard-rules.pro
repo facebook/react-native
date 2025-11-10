@@ -73,6 +73,3 @@
 -keep public class com.facebook.imageutils.** {
    public *;
 }
-
-# devsupport - keep classes that are referenced via JNI or reflection
--keep class com.facebook.react.devsupport.** { *; }

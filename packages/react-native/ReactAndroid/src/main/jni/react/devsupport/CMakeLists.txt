@@ -20,8 +20,6 @@ target_include_directories(react_devsupportjni PUBLIC .)
 target_link_libraries(react_devsupportjni
         fbjni
         jsinspector
-        jsinspector_tracing
-        react_networking
-        react_timing)
+        react_networking)
 
 target_compile_reactnative_options(react_devsupportjni PRIVATE)

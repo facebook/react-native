@@ -3186,7 +3186,6 @@ public final class com/facebook/react/soloader/OpenSourceMergedSoMapping : com/f
 	public final fun libreact_devsupportjni_so ()I
 	public final fun libreact_featureflagsjni_so ()I
 	public final fun libreact_newarchdefaults_so ()I
-	public final fun libreact_performancetracerjni_so ()I
 	public final fun libreactnative_so ()I
 	public final fun libreactnativeblob_so ()I
 	public final fun libreactnativejni_common_so ()I

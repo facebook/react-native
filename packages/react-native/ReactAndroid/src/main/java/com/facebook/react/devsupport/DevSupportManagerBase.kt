@@ -72,7 +72,6 @@ import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorOverlayManager
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
-import com.facebook.react.internal.tracing.PerformanceTracer
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.RequestHandler
@@ -212,8 +211,6 @@ public abstract class DevSupportManagerBase(
   private var perfMonitorOverlayManager: PerfMonitorOverlayManager? = null
   private var perfMonitorInitialized = false
   private var tracingStateProvider: TracingStateProvider? = null
-  private var tracingStateSubscriptionId: Int? = null
-  private var frameTiming: FrameTiming? = null
 
   public override var keyboardShortcutsEnabled: Boolean = true
   public override var devMenuEnabled: Boolean = true
@@ -972,37 +969,12 @@ public abstract class DevSupportManagerBase(
               isPackagerConnected = true
               perfMonitorOverlayManager?.enable()
               perfMonitorOverlayManager?.startBackgroundTrace()
-
-              // Subscribe to tracing state changes
-              tracingStateSubscriptionId =
-                  PerformanceTracer.subscribeToTracingStateChanges(
-                      object : PerformanceTracer.TracingStateCallback {
-                        override fun onTracingStateChanged(isTracing: Boolean) {
-                          if (isTracing) {
-                            if (frameTiming == null) {
-                              currentActivity?.window?.let { window ->
-                                frameTiming = FrameTiming(window)
-                              }
-                            }
-                            frameTiming?.startMonitoring()
-                          } else {
-                            frameTiming?.stopMonitoring()
-                          }
-                        }
-                      }
-                  )
             }
 
             override fun onPackagerDisconnected() {
               isPackagerConnected = false
               perfMonitorOverlayManager?.disable()
               perfMonitorOverlayManager?.stopBackgroundTrace()
-
-              // Unsubscribe from tracing state changes
-              tracingStateSubscriptionId?.let { subscriptionId ->
-                PerformanceTracer.unsubscribeFromTracingStateChanges(subscriptionId)
-                tracingStateSubscriptionId = null
-              }
             }
 
             override fun onPackagerReloadCommand() {
