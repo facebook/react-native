@@ -21,6 +21,8 @@ class JFrameTiming : public jni::JavaClass<JFrameTiming> {
   static void
   reportFrameTiming(jni::alias_ref<jclass> /*unused*/, jint frame, jlong paintStartNanos, jlong paintEndNanos);
 
+  static void setLayerTreeId(jni::alias_ref<jclass> /*unused*/, jni::alias_ref<jstring> frame, jint layerTreeId);
+
   static void registerNatives();
 
  private:

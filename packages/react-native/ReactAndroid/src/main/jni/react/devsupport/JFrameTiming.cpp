@@ -27,9 +27,19 @@ void JFrameTiming::reportFrameTiming(
   performanceTracer.reportFrameTiming(frameNumber, startTime, endTime);
 }
 
+void JFrameTiming::setLayerTreeId(
+    jni::alias_ref<jclass> /*unused*/,
+    jni::alias_ref<jstring> frame,
+    jint layerTreeId) {
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+
+  performanceTracer.setLayerTreeId(frame->toStdString(), layerTreeId);
+}
+
 void JFrameTiming::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod("reportFrameTiming", JFrameTiming::reportFrameTiming),
+      makeNativeMethod("setLayerTreeId", JFrameTiming::setLayerTreeId),
   });
 }
 
