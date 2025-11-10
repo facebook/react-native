@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e3b2da8981d8ee398f753cb76e68c976>>
+ * @generated SignedSource<<287bbfdc05e7655b93b768cb18c1c315>>
  */
 
 /**
@@ -90,6 +90,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableImperativeFocus(): Boolean = false
 
   override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
+
+  override fun enableIntersectionObserverByDefault(): Boolean = false
 
   override fun enableKeyEvents(): Boolean = false
 

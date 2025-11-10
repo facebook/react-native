@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8786770921982fc5b0fa7cc0a7209494>>
+ * @generated SignedSource<<360c0e691a4db2635d4ce46a1bf07939>>
  * @flow strict
  * @noformat
  */
@@ -85,6 +85,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean>,
   enableImperativeFocus: Getter<boolean>,
   enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
+  enableIntersectionObserverByDefault: Getter<boolean>,
   enableKeyEvents: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
@@ -360,6 +361,10 @@ export const enableImperativeFocus: Getter<boolean> = createNativeFlagGetter('en
  * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
  */
 export const enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean> = createNativeFlagGetter('enableInteropViewManagerClassLookUpOptimizationIOS', false);
+/**
+ * Enables the IntersectionObserver Web API in React Native.
+ */
+export const enableIntersectionObserverByDefault: Getter<boolean> = createNativeFlagGetter('enableIntersectionObserverByDefault', false);
 /**
  * Enables key up/down/press events to be sent to JS from components
  */

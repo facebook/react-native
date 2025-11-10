@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<092b55220901732f9f21d4ccf74206e5>>
+ * @generated SignedSource<<df2133421c219d1418555f403e4d1242>>
  */
 
 /**
@@ -58,6 +58,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableImperativeFocusCache: Boolean? = null
   private var enableInteropViewManagerClassLookUpOptimizationIOSCache: Boolean? = null
+  private var enableIntersectionObserverByDefaultCache: Boolean? = null
   private var enableKeyEventsCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
@@ -448,6 +449,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableInteropViewManagerClassLookUpOptimizationIOS()
       accessedFeatureFlags.add("enableInteropViewManagerClassLookUpOptimizationIOS")
       enableInteropViewManagerClassLookUpOptimizationIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableIntersectionObserverByDefault(): Boolean {
+    var cached = enableIntersectionObserverByDefaultCache
+    if (cached == null) {
+      cached = currentProvider.enableIntersectionObserverByDefault()
+      accessedFeatureFlags.add("enableIntersectionObserverByDefault")
+      enableIntersectionObserverByDefaultCache = cached
     }
     return cached
   }

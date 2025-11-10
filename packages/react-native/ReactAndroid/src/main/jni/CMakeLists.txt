@@ -124,6 +124,7 @@ add_react_common_subdir(react/nativemodule/dom)
 add_react_common_subdir(react/nativemodule/featureflags)
 add_react_common_subdir(react/nativemodule/microtasks)
 add_react_common_subdir(react/nativemodule/idlecallbacks)
+add_react_common_subdir(react/nativemodule/intersectionobserver)
 add_react_common_subdir(react/nativemodule/webperformance)
 add_react_common_subdir(react/networking)
 add_react_common_subdir(jserrorhandler)
@@ -191,6 +192,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_nativemodule_dom>
           $<TARGET_OBJECTS:react_nativemodule_featureflags>
           $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
+          $<TARGET_OBJECTS:react_nativemodule_intersectionobserver>
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
           $<TARGET_OBJECTS:react_nativemodule_webperformance>
           $<TARGET_OBJECTS:react_networking>
@@ -282,6 +284,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_nativemodule_dom,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_intersectionobserver,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_webperformance,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_networking,INTERFACE_INCLUDE_DIRECTORIES>

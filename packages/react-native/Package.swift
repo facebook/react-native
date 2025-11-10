@@ -338,6 +338,13 @@ let reactWebPerformanceNativeModule = RNTarget(
   dependencies: [.reactNativeDependencies, .reactCxxReact, .reactTurboModuleCore, .reactPerformanceTimeline]
 )
 
+/// React-intersectionobservernativemodule.podspec
+let reactIntersectionObserverNativeModule = RNTarget(
+  name: .reactIntersectionObserverNativeModule,
+  path: "ReactCommon/react/nativemodule/intersectionobserver",
+  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactFabric, .reactTurboModuleBridging, .reactGraphics, .reactRuntimeScheduler]
+)
+
 /// React-featureflagnativemodule.podspec
 let reactFeatureflagsNativemodule = RNTarget(
   name: .reactFeatureflagsNativemodule,
@@ -682,6 +689,7 @@ let targets = [
   reactTurboModuleCoreMicrotasks,
   reactIdleCallbacksNativeModule,
   reactWebPerformanceNativeModule,
+  reactIntersectionObserverNativeModule,
   reactFeatureflagsNativemodule,
   reactNativeModuleDom,
   reactAppDelegate,
@@ -869,6 +877,7 @@ extension String {
   static let reactTurboModuleCoreMicrotasks = "ReactCommon/turbomodule/core/microtasks"
   static let reactIdleCallbacksNativeModule = "React-idlecallbacksnativemodule"
   static let reactWebPerformanceNativeModule = "React-webperformancenativemodule"
+  static let reactIntersectionObserverNativeModule = "React-intersectionobservernativemodule"
   static let reactFeatureflagsNativemodule = "React-featureflagsnativemodule"
   static let reactNativeModuleDom = "React-domnativemodule"
   static let reactAppDelegate = "React-RCTAppDelegate"
