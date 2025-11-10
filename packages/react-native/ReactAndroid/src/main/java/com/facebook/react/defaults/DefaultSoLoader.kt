@@ -9,10 +9,10 @@ package com.facebook.react.defaults
 
 import com.facebook.soloader.SoLoader
 
-internal object DefaultSoLoader {
+public object DefaultSoLoader {
   @Synchronized
   @JvmStatic
-  fun maybeLoadSoLibrary() {
+  public fun maybeLoadSoLibrary() {
     SoLoader.loadLibrary("react_newarchdefaults")
     try {
       SoLoader.loadLibrary("appmodules")
