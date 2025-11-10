@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a54000b8eb51cb91304902c7f722d45>>
+ * @generated SignedSource<<62cd6308b20f7426192ba02b7c3e86d1>>
  */
 
 /**
@@ -60,7 +60,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
-    return true;
+    return false;
   }
 
   bool enableAndroidTextMeasurementOptimizations() override {
@@ -269,6 +269,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   double virtualViewPrerenderRatio() override {
     return 5.0;
+  }
+
+  bool shadowTreeLockMountPhase() override {
+    return false;
   }
 };
 

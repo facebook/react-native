@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f17b8e4e33228e19b346837e7a33a2dd>>
+ * @generated SignedSource<<e935724682454f10d446041aba5fadf9>>
  * @flow strict
  * @noformat
  */
@@ -112,6 +112,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   virtualViewPrerenderRatio: Getter<number>,
+  shadowTreeLockMountPhase: Getter<boolean>,
 }>;
 
 /**
@@ -233,7 +234,7 @@ export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter(
 /**
  * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
  */
-export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', true);
+export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
 /**
  * Enables various optimizations throughout the path of measuring text on Android.
  */
@@ -442,6 +443,10 @@ export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurbo
  * Initial prerender ratio for VirtualView.
  */
 export const virtualViewPrerenderRatio: Getter<number> = createNativeFlagGetter('virtualViewPrerenderRatio', 5);
+/**
+ * Makes sure that one thread needs to finish mounting first before a new one can
+ */
+export const shadowTreeLockMountPhase: Getter<boolean> = createNativeFlagGetter('shadowTreeLockMountPhase', false);
 
 /**
  * Overrides the feature flags with the provided methods.

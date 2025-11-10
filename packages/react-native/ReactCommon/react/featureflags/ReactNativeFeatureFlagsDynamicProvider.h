@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<244db790cc754f31402981967cd902b5>>
+ * @generated SignedSource<<c5c61620885a5cb1ab7802d6ba21794d>>
  */
 
 /**
@@ -592,6 +592,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::virtualViewPrerenderRatio();
+  }
+
+  bool shadowTreeLockMountPhase() override {
+    auto value = values_["shadowTreeLockMountPhase"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shadowTreeLockMountPhase();
   }
 };
 

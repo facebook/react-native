@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e26a0c35f1499abf24e46275bbcbe06d>>
+ * @generated SignedSource<<4adf7c18e5b0458dd2c1c588cfb84849>>
  */
 
 /**
@@ -343,6 +343,11 @@ class ReactNativeFeatureFlags {
    * Initial prerender ratio for VirtualView.
    */
   RN_EXPORT static double virtualViewPrerenderRatio();
+
+  /**
+   * Makes sure that one thread needs to finish mounting first before a new one can
+   */
+  RN_EXPORT static bool shadowTreeLockMountPhase();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

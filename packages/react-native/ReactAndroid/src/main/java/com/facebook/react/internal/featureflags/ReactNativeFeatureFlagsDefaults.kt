@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<10d708ce4449eede46d750a1ed48d02e>>
+ * @generated SignedSource<<0f75d476cfd17f6ab2d64f2a2e1fd8dc>>
  */
 
 /**
@@ -39,7 +39,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAccessibilityOrder(): Boolean = false
 
-  override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = true
+  override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
   override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 
@@ -137,11 +137,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useRawPropsJsiValue(): Boolean = false
 
-  override fun useShadowNodeStateOnClone(): Boolean = true
+  override fun useShadowNodeStateOnClone(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 
   override fun useTurboModules(): Boolean = false
 
   override fun virtualViewPrerenderRatio(): Double = 5.0
+
+  override fun shadowTreeLockMountPhase(): Boolean = false
 }

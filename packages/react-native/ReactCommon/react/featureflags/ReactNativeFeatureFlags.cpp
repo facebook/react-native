@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2cabd888b74b84201ff027457efc6007>>
+ * @generated SignedSource<<89255c959bb302b7ffb9c32701c112fb>>
  */
 
 /**
@@ -268,6 +268,10 @@ bool ReactNativeFeatureFlags::useTurboModules() {
 
 double ReactNativeFeatureFlags::virtualViewPrerenderRatio() {
   return getAccessor().virtualViewPrerenderRatio();
+}
+
+bool ReactNativeFeatureFlags::shadowTreeLockMountPhase() {
+  return getAccessor().shadowTreeLockMountPhase();
 }
 
 void ReactNativeFeatureFlags::override(

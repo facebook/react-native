@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d1862a9ce3cfeda5d140941fcd3b25bc>>
+ * @generated SignedSource<<6ed8bc9bc9f4aeb6546280f6bb10e89b>>
  */
 
 /**
@@ -157,6 +157,8 @@ class NativeReactNativeFeatureFlags
   bool useTurboModules(jsi::Runtime& runtime);
 
   double virtualViewPrerenderRatio(jsi::Runtime& runtime);
+
+  bool shadowTreeLockMountPhase(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

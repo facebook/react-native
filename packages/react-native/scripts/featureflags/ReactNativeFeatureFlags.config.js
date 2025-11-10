@@ -691,6 +691,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    shadowTreeLockMountPhase: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-04',
+        description:
+          'Makes sure that one thread needs to finish mounting first before a new one can',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+    },
   },
 
   jsOnly: {

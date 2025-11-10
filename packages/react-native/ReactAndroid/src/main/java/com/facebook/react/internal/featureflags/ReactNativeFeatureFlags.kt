@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c52f3977ea07f976e36177f13c1ec684>>
+ * @generated SignedSource<<7550955526f976d80ddc4eca0ba17486>>
  */
 
 /**
@@ -395,6 +395,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun virtualViewPrerenderRatio(): Double = accessor.virtualViewPrerenderRatio()
+
+  /**
+   * Makes sure that one thread needs to finish mounting first before a new one can
+   */
+  @JvmStatic
+  public fun shadowTreeLockMountPhase(): Boolean = accessor.shadowTreeLockMountPhase()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider
