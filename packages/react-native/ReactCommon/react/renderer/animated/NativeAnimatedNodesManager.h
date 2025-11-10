@@ -261,6 +261,8 @@ class NativeAnimatedNodesManager {
   bool warnedAboutGraphTraversal_ = false;
 #endif
 
+  std::shared_ptr<std::atomic<bool>> destroyed_{std::make_shared<std::atomic<bool>>(false)};
+
   friend class ColorAnimatedNode;
   friend class AnimationDriver;
   friend class AnimationTestsBase;

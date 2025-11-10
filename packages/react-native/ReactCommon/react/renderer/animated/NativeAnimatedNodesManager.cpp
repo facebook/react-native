@@ -102,6 +102,7 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     : animationBackend_(animationBackend) {}
 
 NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
+  destroyed_->store(true);
   stopRenderCallbackIfNeeded(true);
 }
 
@@ -544,7 +545,13 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
   }
 
   if (startOnRenderCallback_) {
-    startOnRenderCallback_([this]() { onRender(); }, isAsync);
+    startOnRenderCallback_(
+        [this, destroyed = destroyed_]() {
+          if (!destroyed->load()) {
+            onRender();
+          }
+        },
+        isAsync);
   }
 }
 
