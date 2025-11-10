@@ -38,6 +38,9 @@ export type PackageInfo = {
   // The absolute path to the package
   path: string,
 
+  // The package version
+  version: string,
+
   // The parsed package.json contents
   packageJson: PackageJson,
 };
@@ -99,6 +102,7 @@ async function parsePackageInfo(
     {
       name: packageJson.name,
       path: packagePath,
+      version: packageJson.version,
       packageJson,
     },
   ];

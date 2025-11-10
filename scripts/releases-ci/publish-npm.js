@@ -28,8 +28,7 @@ const {
 } = require('../releases/utils/release-utils');
 const {getBranchName} = require('../releases/utils/scm-utils');
 const {REPO_ROOT} = require('../shared/consts');
-const {getPackages} = require('../shared/monorepoUtils');
-const fs = require('fs');
+const {getPackages, getWorkspaceRoot} = require('../shared/monorepoUtils');
 const path = require('path');
 const yargs = require('yargs');
 
@@ -110,16 +109,9 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
     // Before updating React Native artifacts versions for dry-run, we check if the version has already been set.
     // If it has, we don't need to update the artifacts at all (at this will revert them back to 1000.0.0)
     // If it hasn't, we can update the native artifacts accordingly.
-    const reactNativePackageJson = path.join(
-      REPO_ROOT,
-      'packages',
-      'react-native',
-      'package.json',
-    );
-    const packageJsonContent = fs.readFileSync(reactNativePackageJson, 'utf8');
-    const packageJson = JSON.parse(packageJsonContent);
+    const projectInfo = await getWorkspaceRoot();
 
-    if (packageJson.version === '1000.0.0') {
+    if (projectInfo.version === '1000.0.0') {
       // Set hermes versions to latest available if not on a stable branch
       if (!/.*-stable/.test(getBranchName())) {
         await updateHermesVersionsToNightly();
