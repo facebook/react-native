@@ -24,6 +24,8 @@
   CADisplayLink *_displayLink;
 #endif
   std::function<void()> _onRender;
+
+  std::weak_ptr<facebook::react::NativeAnimatedNodesManagerProvider> _nativeAnimatedNodesManagerProvider;
 }
 
 - (void)dealloc
@@ -48,7 +50,7 @@
 
 - (void)_onDisplayLinkTick
 {
-  if (_displayLink != nullptr && _onRender != nullptr) {
+  if (_nativeAnimatedNodesManagerProvider.lock() != nullptr && _displayLink != nullptr && _onRender != nullptr) {
     _onRender();
   }
 }
@@ -110,6 +112,7 @@
               stop_render();
             }
           });
+      _nativeAnimatedNodesManagerProvider = provider;
       return std::make_shared<facebook::react::AnimatedModule>(std::move(jsInvoker), std::move(provider));
     }
   }
