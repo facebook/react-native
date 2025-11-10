@@ -21,8 +21,6 @@ internal class FrameTiming(private val window: Window) {
 
   private var frameCounter: Int = 0
 
-  private external fun setLayerTreeId(frame: String, layerTreeId: Int)
-
   private val frameMetricsListener =
       Window.OnFrameMetricsAvailableListener { _, frameMetrics, dropCount ->
         val metrics = FrameMetrics(frameMetrics)
@@ -51,10 +49,6 @@ internal class FrameTiming(private val window: Window) {
       return
     }
     window.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
-
-    // Hardcoded frame identfier and layerTreeId. Needed for DevTools to
-    // begin parsing frame events.
-    setLayerTreeId("", 1)
   }
 
   internal fun stopMonitoring() {
