@@ -91,6 +91,8 @@ val preparePrefab by
                       Pair("src/main/jni/react/fabric", "react/fabric/"),
                       // glog
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
+                      // fbgloginit (exports fb/glog_init.h)
+                      Pair("src/main/jni/first-party/fbgloginit", ""),
                       // jsiinpsector
                       Pair("../ReactCommon/jsinspector-modern/", "jsinspector-modern/"),
                       // mapbufferjni
