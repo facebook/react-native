@@ -151,6 +151,7 @@ class ShadowTree final {
 
   const SurfaceId surfaceId_;
   const ShadowTreeDelegate& delegate_;
+  mutable std::shared_mutex mountMutex_;
   mutable std::shared_mutex commitMutex_;
   mutable std::recursive_mutex commitMutexRecursive_;
   mutable CommitMode commitMode_{

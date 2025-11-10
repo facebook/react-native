@@ -389,6 +389,12 @@ ShadowTreeRevision ShadowTree::getCurrentRevision() const {
 
 void ShadowTree::mount(ShadowTreeRevision revision, bool mountSynchronously)
     const {
+  std::unique_lock<std::shared_mutex> lock;
+  bool shouldLock = ReactNativeFeatureFlags::shadowTreeLockMountPhase();
+  if (shouldLock) {
+    // TODO: can a mount cause another mount, so we have to care about reentrancy?
+    lock = std::unique_lock<std::shared_mutex>(mountMutex_);
+  }
   mountingCoordinator_->push(std::move(revision));
   delegate_.shadowTreeDidFinishTransaction(
       mountingCoordinator_, mountSynchronously);
