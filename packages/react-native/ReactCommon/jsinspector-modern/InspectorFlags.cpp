@@ -17,6 +17,10 @@ InspectorFlags& InspectorFlags::getInstance() {
   return instance;
 }
 
+bool InspectorFlags::getAssertSingleHostState() const {
+  return loadFlagsAndAssertUnchanged().assertSingleHostState;
+}
+
 bool InspectorFlags::getFuseboxEnabled() const {
   if (fuseboxDisabledForTest_) {
     return false;
@@ -48,6 +52,8 @@ void InspectorFlags::dangerouslyDisableFuseboxForTest() {
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
+      .assertSingleHostState =
+          ReactNativeFeatureFlags::fuseboxAssertSingleHostState(),
       .fuseboxEnabled =
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
           true,

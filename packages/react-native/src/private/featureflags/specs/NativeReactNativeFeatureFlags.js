@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5819b97ded2f415bdcff52f7f408aec6>>
+ * @generated SignedSource<<4faf238a79cec9bc961d5f080d54872a>>
  * @flow strict
  * @noformat
  */
@@ -82,6 +82,7 @@ export interface Spec extends TurboModule {
   +enableVirtualViewWindowFocusDetection?: () => boolean;
   +enableWebPerformanceAPIsByDefault?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
+  +fuseboxAssertSingleHostState?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +hideOffscreenVirtualViewsOnIOS?: () => boolean;

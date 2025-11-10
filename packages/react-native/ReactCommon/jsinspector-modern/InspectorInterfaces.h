@@ -51,6 +51,11 @@ struct InspectorPageDescription {
 // Alias for backwards compatibility.
 using InspectorPage = InspectorPageDescription;
 
+struct InspectorSystemState {
+  /** The total count of pages registered during the app lifetime. */
+  int registeredPagesCount;
+};
+
 /// IRemoteConnection allows the VM to send debugger messages to the client.
 /// IRemoteConnection's methods are safe to call from any thread *if*
 /// InspectorPackagerConnection.cpp is in use.
@@ -78,7 +83,8 @@ class JSINSPECTOR_EXPORT ILocalConnection : public IDestructible {
 class JSINSPECTOR_EXPORT IPageStatusListener : public IDestructible {
  public:
   virtual ~IPageStatusListener() = 0;
-  virtual void onPageRemoved(int pageId) = 0;
+  virtual void onPageAdded(int /*pageId*/) {}
+  virtual void onPageRemoved(int /*pageId*/) {}
 };
 
 /// IInspector tracks debuggable JavaScript targets (pages).
@@ -127,6 +133,11 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
    * when pages are removed.
    */
   virtual void registerPageStatusListener(std::weak_ptr<IPageStatusListener> listener) = 0;
+
+  /**
+   * Get the current \c InspectorSystemState object.
+   */
+  virtual InspectorSystemState getSystemState() const = 0;
 };
 
 class NotImplementedException : public std::exception {

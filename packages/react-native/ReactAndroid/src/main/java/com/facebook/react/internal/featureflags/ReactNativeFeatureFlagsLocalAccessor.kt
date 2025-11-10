@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e8531e8c374d0ea1e604a2f3d5000078>>
+ * @generated SignedSource<<7a2517498558f2c0f69831d5466ddec3>>
  */
 
 /**
@@ -81,6 +81,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewWindowFocusDetectionCache: Boolean? = null
   private var enableWebPerformanceAPIsByDefaultCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
+  private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
@@ -675,6 +676,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       accessedFeatureFlags.add("fixMappingOfEventPrioritiesBetweenFabricAndReact")
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
+    }
+    return cached
+  }
+
+  override fun fuseboxAssertSingleHostState(): Boolean {
+    var cached = fuseboxAssertSingleHostStateCache
+    if (cached == null) {
+      cached = currentProvider.fuseboxAssertSingleHostState()
+      accessedFeatureFlags.add("fuseboxAssertSingleHostState")
+      fuseboxAssertSingleHostStateCache = cached
     }
     return cached
   }
