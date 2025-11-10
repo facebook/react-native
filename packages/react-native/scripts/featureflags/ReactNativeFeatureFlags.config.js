@@ -656,6 +656,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fuseboxAssertSingleHostState: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'stable',
+    },
     fuseboxEnabledRelease: {
       defaultValue: false,
       metadata: {

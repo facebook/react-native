@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<724a7046fefc47616249d6fac8367615>>
+ * @generated SignedSource<<71b74d31b17c008bbf5a0e381cdabe94>>
  */
 
 /**
@@ -82,6 +82,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableVirtualViewWindowFocusDetection() = 0;
   virtual bool enableWebPerformanceAPIsByDefault() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
+  virtual bool fuseboxAssertSingleHostState() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
   virtual bool hideOffscreenVirtualViewsOnIOS() = 0;
