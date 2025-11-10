@@ -53,7 +53,17 @@ TracingAgent::~TracingAgent() {
 
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
-    // @cdp Tracing.start support is experimental.
+    auto& inspector = getInspectorInstance();
+    if (inspector.getSystemState().registeredPagesCount > 1) {
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "The Tracing domain is unavailable when multiple React Native hosts are registered."));
+
+      return true;
+    }
+
     if (sessionState_.isDebuggerDomainEnabled) {
       frontendChannel_(
           cdp::jsonError(
