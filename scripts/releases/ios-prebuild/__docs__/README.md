@@ -63,8 +63,7 @@ RCT_USE_RN_DEP=1 bundle exec pod install
 
 This can be combined with `RCT_USE_RN_DEP=1` to use both React Native and its dependencies as prebuilt frameworks.
 
-For debugging and troubleshooting the Cocoapods scripts, you can use the
-following environment variables:
+For debugging and troubleshooting the Cocoapods scripts, you can use the following environment variables:
 
 - `RCT_USE_RN_DEP`: If set to 1, it will use the release tarball from Maven
   instead of building from source.
