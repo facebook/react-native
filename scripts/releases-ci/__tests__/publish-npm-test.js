@@ -96,7 +96,9 @@ describe('publish-npm', () => {
     beforeEach(() => {
       jest.mock('../../shared/monorepoUtils', () => ({
         ...jest.requireActual('../../shared/monorepoUtils'),
-        getWorkspaceRoot: jest.fn().mockResolvedValue({version: '1000.0.0'}),
+        getReactNativePackage: jest
+          .fn()
+          .mockResolvedValue({version: '1000.0.0'}),
       }));
     });
 
@@ -167,7 +169,7 @@ describe('publish-npm', () => {
         getBranchName.mockReturnValueOnce('0.83-stable');
         jest.mock('../../shared/monorepoUtils', () => ({
           ...jest.requireActual('../../shared/monorepoUtils'),
-          getWorkspaceRoot: jest
+          getReactNativePackage: jest
             .fn()
             .mockResolvedValue({version: '0.83.0-rc.0'}),
         }));
