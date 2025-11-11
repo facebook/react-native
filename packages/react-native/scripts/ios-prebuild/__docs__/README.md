@@ -14,7 +14,6 @@ The prebuild scripts are used to:
 - Create distributable binaries for iOS, iOS Simulator, Catalyst.
 - Support both Debug and Release build configurations
 - Generate Debug Symbol (dSYM) files for debugging
-- Enable library evolution and module stability for Swift packages
 
 ## Usage
 
