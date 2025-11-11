@@ -176,7 +176,10 @@ describe('publish-npm', () => {
 
         expect(updateHermesVersionsToNightlyMock).not.toHaveBeenCalled();
         expect(setVersionMock).not.toBeCalled();
-        expect(updateReactNativeArtifactsMock).toBeCalledWith(version, 'dry-run');
+        expect(updateReactNativeArtifactsMock).toBeCalledWith(
+          version,
+          'dry-run',
+        );
 
         // Generate Android artifacts is now delegate to build_android entirely
         expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
