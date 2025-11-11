@@ -467,7 +467,7 @@ public object BackgroundStyleApplicator {
    */
   @JvmStatic
   public fun setFeedbackUnderlay(view: View, drawable: Drawable?) {
-    ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
+    view.background = ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
   }
 
   /**
