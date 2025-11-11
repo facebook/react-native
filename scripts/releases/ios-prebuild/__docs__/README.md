@@ -65,9 +65,6 @@ This can be combined with `RCT_USE_RN_DEP=1` to use both React Native and its de
 
 For debugging and troubleshooting the Cocoapods scripts, you can use the following environment variables:
 
-- `RCT_USE_RN_DEP`: If set to 1, it will use the release tarball from Maven
-  instead of building from source.
-- `RCT_USE_LOCAL_RN_DEP`: **TEST ONLY** If set, it will use a local tarball of
-  ReactNativeDependencies if it exists.
-- `RCT_DEPS_VERSION`: **TEST ONLY** If set, it will override the version of
-  ReactNativeDependencies to be used.
+- `RCT_USE_RN_DEP`: If set to 1, it will use the release tarball from Maven instead of building from source.
+- `RCT_USE_LOCAL_RN_DEP`: **TEST ONLY** If set, it will use a local tarball of ReactNativeDependencies if it exists.
+- `RCT_DEPS_VERSION`: **TEST ONLY** If set, it will override the version of ReactNativeDependencies to be used.
