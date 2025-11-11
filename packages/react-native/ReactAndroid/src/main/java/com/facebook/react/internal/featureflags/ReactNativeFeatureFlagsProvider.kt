@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0efef5db3ded62f312486ac2fb04bcdb>>
+ * @generated SignedSource<<a2bdf7bbb1c18dbcdd4ea424362d3e9d>>
  */
 
 /**
@@ -80,6 +80,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip public fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
 
   @DoNotStrip public fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
 

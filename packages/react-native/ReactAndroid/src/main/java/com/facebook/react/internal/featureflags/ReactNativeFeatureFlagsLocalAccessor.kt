@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7a2517498558f2c0f69831d5466ddec3>>
+ * @generated SignedSource<<f484a05ce73cdf166d785560dca0536b>>
  */
 
 /**
@@ -53,6 +53,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
+  private var enableImagePrefetchingJNIBatchingAndroidCache: Boolean? = null
   private var enableImagePrefetchingOnUiThreadAndroidCache: Boolean? = null
   private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableImperativeFocusCache: Boolean? = null
@@ -396,6 +397,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableImagePrefetchingAndroid()
       accessedFeatureFlags.add("enableImagePrefetchingAndroid")
       enableImagePrefetchingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean {
+    var cached = enableImagePrefetchingJNIBatchingAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableImagePrefetchingJNIBatchingAndroid()
+      accessedFeatureFlags.add("enableImagePrefetchingJNIBatchingAndroid")
+      enableImagePrefetchingJNIBatchingAndroidCache = cached
     }
     return cached
   }
