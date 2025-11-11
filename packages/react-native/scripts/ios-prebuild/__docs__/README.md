@@ -4,10 +4,7 @@ This directory contains scripts for prebuilding React Native itself into XCFrame
 
 ## Overview
 
-These scripts automate the process of building React Native as a Swift Package
-and packaging it into XCFrameworks that can be distributed and consumed by iOS
-applications. The build process creates optimized frameworks for multiple
-architectures and platforms.
+These scripts automate the process of building React Native as a Swift Package and packaging it into XCFrameworks that can be distributed and consumed by iOS applications. The build process creates optimized frameworks for multiple architectures and platforms.
 
 ## Purpose
 
