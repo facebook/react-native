@@ -11,8 +11,7 @@ These scripts automate the process of building React Native as a Swift Package a
 The prebuild scripts are used to:
 
 - Build React Native itself (not its dependencies) as XCFrameworks
-- Create distributable binaries for iOS, iOS Simulator, Catalyst, Vision, and
-  visionOS platforms
+- Create distributable binaries for iOS, iOS Simulator, Catalyst.
 - Support both Debug and Release build configurations
 - Generate Debug Symbol (dSYM) files for debugging
 - Enable library evolution and module stability for Swift packages
