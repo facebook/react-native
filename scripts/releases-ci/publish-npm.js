@@ -117,8 +117,6 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
         await updateHermesVersionsToNightly();
       }
       await updateReactNativeArtifacts(version, buildType);
-    } else {
-      await updateReactNativeArtifacts(projectInfo.version, buildType);
     }
   }
 
