@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<414ebc294bc434bdf5f9eca094eac268>>
+ * @generated SignedSource<<7a72ab75c6e155769bf583cc8cac6a66>>
  */
 
 /**
@@ -115,6 +115,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableImagePrefetchingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableImagePrefetchingJNIBatchingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableImagePrefetchingOnUiThreadAndroid(
