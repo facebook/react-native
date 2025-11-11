@@ -15,8 +15,7 @@
   "scripts": {
     "start": "react-native start",
     "android": "react-native run-android",
-    "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installDebug",
-    "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installDebug",
+    "install-android": "../../gradlew :packages:rn-tester:android:app:installDebug",
     "clean-android": "rm -rf android/app/build",
     "prepare-ios": "node ./cli.js bootstrap ios",
     "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock RNTesterPods.xcworkspace/ ../react-native-codegen/lib/",
