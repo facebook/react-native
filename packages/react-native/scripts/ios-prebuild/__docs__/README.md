@@ -119,14 +119,9 @@ issues when:
 
 ## Integrating in your project with Cocoapods
 
-For consuming, debugging or troubleshooting when using Cocoapods scripts, you
-can use the following environment variables:
+For consuming, debugging or troubleshooting when using Cocoapods scripts, you can use the following environment variables:
 
-- `RCT_USE_PREBUILT_RNCORE`: If set to 1, it will use the release tarball from
-  Maven instead of building from source.
-- `RCT_TESTONLY_RNCORE_TARBALL_PATH`: **TEST ONLY** If set, it will use a local
-  tarball of RNCore if it exists.
-- `RCT_TESTONLY_RNCORE_VERSION`: **TEST ONLY** If set, it will override the
-  version of RNCore to be used.
-- `RCT_SYMBOLICATE_PREBUILT_FRAMEWORKS`: If set to 1, it will download the dSYMs
-  for the prebuilt RNCore frameworks and install these in the framework folders
+- `RCT_USE_PREBUILT_RNCORE`: If set to 1, it will use the release tarball from Maven instead of building from source.
+- `RCT_TESTONLY_RNCORE_TARBALL_PATH`: **TEST ONLY** If set, it will use a local tarball of RNCore if it exists.
+- `RCT_TESTONLY_RNCORE_VERSION`: **TEST ONLY** If set, it will override the version of RNCore to be used.
+- `RCT_SYMBOLICATE_PREBUILT_FRAMEWORKS`: If set to 1, it will download the dSYMs for the prebuilt RNCore frameworks and install these in the framework folders 
