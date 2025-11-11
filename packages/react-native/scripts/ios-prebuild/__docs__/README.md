@@ -26,7 +26,8 @@ node scripts/ios-prebuild
 
 If no options are passed, the script executes all the steps in this order:
 
-- setup build for all platforms and flavors
+- setup the codebase for all platforms and flavors
+- build for all platforms and flavors
 - compose xcframeworks
 - sign (if an identity is passed)
 
