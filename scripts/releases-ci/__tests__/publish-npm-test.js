@@ -96,7 +96,9 @@ describe('publish-npm', () => {
     beforeEach(() => {
       jest.mock('../../shared/monorepoUtils', () => ({
         ...jest.requireActual('../../shared/monorepoUtils'),
-        getWorkspaceRoot: jest.fn().mockResolvedValue({version: '1000.0.0'}),
+        getReactNativePackage: jest
+          .fn()
+          .mockResolvedValue({version: '1000.0.0'}),
       }));
     });
 
@@ -167,7 +169,7 @@ describe('publish-npm', () => {
         getBranchName.mockReturnValueOnce('0.83-stable');
         jest.mock('../../shared/monorepoUtils', () => ({
           ...jest.requireActual('../../shared/monorepoUtils'),
-          getWorkspaceRoot: jest
+          getReactNativePackage: jest
             .fn()
             .mockResolvedValue({version: '0.83.0-rc.0'}),
         }));
@@ -176,10 +178,7 @@ describe('publish-npm', () => {
 
         expect(updateHermesVersionsToNightlyMock).not.toHaveBeenCalled();
         expect(setVersionMock).not.toBeCalled();
-        expect(updateReactNativeArtifactsMock).toBeCalledWith(
-          version,
-          'dry-run',
-        );
+        expect(updateReactNativeArtifactsMock).not.toBeCalled();
 
         // Generate Android artifacts is now delegate to build_android entirely
         expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
