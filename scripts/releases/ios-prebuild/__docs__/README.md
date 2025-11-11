@@ -55,8 +55,7 @@ If no options are passed, the script executes all the steps in this order:
 
 ## Integrating in your project with Cocoapods
 
-To use the prebuilt React Native Dependencies XCFrameworks in your iOS project,
-run pod install with the environment variable `RCT_USE_RN_DEP` set to `1`:
+To use the prebuilt React Native Dependencies XCFrameworks in your iOS project, run pod install with the environment variable `RCT_USE_RN_DEP` set to `1`:
 
 ```bash
 RCT_USE_RN_DEP=1 bundle exec pod install
