@@ -1,7 +1,6 @@
 # iOS Prebuild Scripts
 
-This directory contains scripts for prebuilding React Native itself into
-XCFrameworks for iOS and related platforms.
+This directory contains scripts for prebuilding React Native itself into XCFrameworks for iOS and related platforms.
 
 ## Overview
 
