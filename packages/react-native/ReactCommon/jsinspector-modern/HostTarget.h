@@ -326,6 +326,11 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
    */
   void emitTraceRecordingForFirstFuseboxClient(tracing::TraceRecordingState traceRecording) const;
 
+  /**
+   * Emits a system state changed event to all active sessions.
+   */
+  void emitSystemStateChanged(bool isSingleHost) const;
+
  private:
   /**
    * Constructs a new HostTarget.

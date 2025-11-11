@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<77fabf68a75a0d8a563b032027e7f817>>
+ * @generated SignedSource<<64e8578585baaed88b48703555520f22>>
  * @flow strict
  * @noformat
  */
@@ -40,6 +40,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   reduceDefaultPropsInImage: Getter<boolean>,
   reduceDefaultPropsInText: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
+  shouldUseLinkRoleForPressableText: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
   virtualViewActivityBehavior: Getter<string>,
@@ -107,6 +108,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableVirtualViewWindowFocusDetection: Getter<boolean>,
   enableWebPerformanceAPIsByDefault: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
+  fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
@@ -195,6 +197,11 @@ export const reduceDefaultPropsInText: Getter<boolean> = createJavaScriptFlagGet
  * Enables use of AnimatedObject for animating transform values.
  */
 export const shouldUseAnimatedObjectForTransform: Getter<boolean> = createJavaScriptFlagGetter('shouldUseAnimatedObjectForTransform', false);
+
+/**
+ * Set accessibilityRole to "link" for pressable Text components by default.
+ */
+export const shouldUseLinkRoleForPressableText: Getter<boolean> = createJavaScriptFlagGetter('shouldUseLinkRoleForPressableText', false);
 
 /**
  * removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android
@@ -443,6 +450,10 @@ export const enableWebPerformanceAPIsByDefault: Getter<boolean> = createNativeFl
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
+/**
+ * Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.
+ */
+export const fuseboxAssertSingleHostState: Getter<boolean> = createNativeFlagGetter('fuseboxAssertSingleHostState', true);
 /**
  * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
  */

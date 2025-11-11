@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cce007ecab09ff43ec931cb259542ed9>>
+ * @generated SignedSource<<28355cbf76db9aa5aca8ea05db43d5ab>>
  */
 
 /**
@@ -253,6 +253,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
+  }
+
+  bool fuseboxAssertSingleHostState() override {
+    return true;
   }
 
   bool fuseboxEnabledRelease() override {

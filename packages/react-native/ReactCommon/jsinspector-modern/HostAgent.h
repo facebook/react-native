@@ -79,6 +79,12 @@ class HostAgent final {
    */
   void emitExternalTraceRecording(tracing::TraceRecordingState traceRecording) const;
 
+  /**
+   * Emits a system state changed event when the number of ReactHost instances
+   * changes.
+   */
+  void emitSystemStateChanged(bool isSingleHost) const;
+
  private:
   // We use the private implementation idiom to ensure this class has the same
   // layout regardless of whether REACT_NATIVE_DEBUGGER_ENABLED is defined. The
