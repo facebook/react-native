@@ -61,8 +61,7 @@ To use the prebuilt React Native Dependencies XCFrameworks in your iOS project, 
 RCT_USE_RN_DEP=1 bundle exec pod install
 ```
 
-This can be combined with `RCT_USE_RN_DEP=1` to use both React Native and its
-dependencies as prebuilt frameworks.
+This can be combined with `RCT_USE_RN_DEP=1` to use both React Native and its dependencies as prebuilt frameworks.
 
 For debugging and troubleshooting the Cocoapods scripts, you can use the
 following environment variables:
