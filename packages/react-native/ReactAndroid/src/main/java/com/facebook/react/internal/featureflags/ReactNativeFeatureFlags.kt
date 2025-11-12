@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a9af5f83c6e958cf170cd77f69e85ef0>>
+ * @generated SignedSource<<19656df8ed7f6c6cc897b1110f57c78e>>
  */
 
 /**
@@ -437,6 +437,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = accessor.shouldPressibilityUseW3CPointerEventsForHover()
+
+  /**
+   * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
+   */
+  @JvmStatic
+  public fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = accessor.shouldSetEnabledBasedOnAccessibilityState()
 
   /**
    * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.

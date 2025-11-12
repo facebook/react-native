@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f484a05ce73cdf166d785560dca0536b>>
+ * @generated SignedSource<<092b55220901732f9f21d4ccf74206e5>>
  */
 
 /**
@@ -92,6 +92,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
+  private var shouldSetEnabledBasedOnAccessibilityStateCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
@@ -787,6 +788,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.shouldPressibilityUseW3CPointerEventsForHover()
       accessedFeatureFlags.add("shouldPressibilityUseW3CPointerEventsForHover")
       shouldPressibilityUseW3CPointerEventsForHoverCache = cached
+    }
+    return cached
+  }
+
+  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean {
+    var cached = shouldSetEnabledBasedOnAccessibilityStateCache
+    if (cached == null) {
+      cached = currentProvider.shouldSetEnabledBasedOnAccessibilityState()
+      accessedFeatureFlags.add("shouldSetEnabledBasedOnAccessibilityState")
+      shouldSetEnabledBasedOnAccessibilityStateCache = cached
     }
     return cached
   }
