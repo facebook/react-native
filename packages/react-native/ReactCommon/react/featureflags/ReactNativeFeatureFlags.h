@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ff839b736c1c74b3dccefadb6e278b9>>
+ * @generated SignedSource<<fe259158b787cb506db6a4bdd6b9ddd8>>
  */
 
 /**
@@ -213,6 +213,11 @@ class ReactNativeFeatureFlags {
    * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
    */
   RN_EXPORT static bool enableInteropViewManagerClassLookUpOptimizationIOS();
+
+  /**
+   * Enables the IntersectionObserver Web API in React Native.
+   */
+  RN_EXPORT static bool enableIntersectionObserverByDefault();
 
   /**
    * Enables key up/down/press events to be sent to JS from components

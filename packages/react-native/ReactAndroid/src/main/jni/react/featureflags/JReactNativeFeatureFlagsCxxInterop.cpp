@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a3267843d7400974e8686c83d359c7b>>
+ * @generated SignedSource<<a0ef5d4a761067631023f6b5ec797cc6>>
  */
 
 /**
@@ -246,6 +246,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableInteropViewManagerClassLookUpOptimizationIOS");
+    return method(javaProvider_);
+  }
+
+  bool enableIntersectionObserverByDefault() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIntersectionObserverByDefault");
     return method(javaProvider_);
   }
 
@@ -740,6 +746,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOpti
   return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverByDefault(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableIntersectionObserverByDefault();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableKeyEvents(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableKeyEvents();
@@ -1136,6 +1147,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableInteropViewManagerClassLookUpOptimizationIOS",
         JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOptimizationIOS),
+      makeNativeMethod(
+        "enableIntersectionObserverByDefault",
+        JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverByDefault),
       makeNativeMethod(
         "enableKeyEvents",
         JReactNativeFeatureFlagsCxxInterop::enableKeyEvents),

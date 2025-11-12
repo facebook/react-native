@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9769e993b3481e991ef79406734b6e28>>
+ * @generated SignedSource<<066e98c5620ccf67d9e4ceb9d66b08f0>>
  */
 
 /**
@@ -133,6 +133,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableInteropViewManagerClassLookUpOptimizationIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableIntersectionObserverByDefault(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableKeyEvents(
