@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<47f44a8c91e3c79f5fa2d076575ad3c6>>
+ * @generated SignedSource<<11de61ca7deceb1931bf078b9125e97a>>
  * @flow strict
  * @noformat
  */
@@ -74,6 +74,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableDoubleMeasurementFixAndroid: Getter<boolean>,
   enableEagerMainQueueModulesOnIOS: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
+  enableExclusivePropsUpdateAndroid: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
@@ -315,6 +316,10 @@ export const enableEagerMainQueueModulesOnIOS: Getter<boolean> = createNativeFla
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */
 export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGetter('enableEagerRootViewAttachment', false);
+/**
+ * When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.
+ */
+export const enableExclusivePropsUpdateAndroid: Getter<boolean> = createNativeFlagGetter('enableExclusivePropsUpdateAndroid', false);
 /**
  * This feature flag enables logs for Fabric.
  */

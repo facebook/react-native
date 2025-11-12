@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2f0412d405655c1dafc7d63a8dcb0da1>>
+ * @generated SignedSource<<24a3e681a86bce628917f5e20ce1b1eb>>
  */
 
 /**
@@ -43,6 +43,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
   private var enableEagerMainQueueModulesOnIOSCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
+  private var enableExclusivePropsUpdateAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
@@ -310,6 +311,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableEagerRootViewAttachment()
       enableEagerRootViewAttachmentCache = cached
+    }
+    return cached
+  }
+
+  override fun enableExclusivePropsUpdateAndroid(): Boolean {
+    var cached = enableExclusivePropsUpdateAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableExclusivePropsUpdateAndroid()
+      enableExclusivePropsUpdateAndroidCache = cached
     }
     return cached
   }

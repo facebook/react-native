@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bebf3698e5e3e3899826da1ea2000171>>
+ * @generated SignedSource<<2ff839b736c1c74b3dccefadb6e278b9>>
  */
 
 /**
@@ -153,6 +153,11 @@ class ReactNativeFeatureFlags {
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
    */
   RN_EXPORT static bool enableEagerRootViewAttachment();
+
+  /**
+   * When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.
+   */
+  RN_EXPORT static bool enableExclusivePropsUpdateAndroid();
 
   /**
    * This feature flag enables logs for Fabric.
