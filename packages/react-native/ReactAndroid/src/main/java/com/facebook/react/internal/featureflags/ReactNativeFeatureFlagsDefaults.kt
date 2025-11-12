@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e3b2da8981d8ee398f753cb76e68c976>>
+ * @generated SignedSource<<89c93a8fe99467221ff89a2e31b0636b>>
  */
 
 /**
@@ -68,6 +68,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableEagerMainQueueModulesOnIOS(): Boolean = false
 
   override fun enableEagerRootViewAttachment(): Boolean = false
+
+  override fun enableExclusivePropsUpdateAndroid(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
 
