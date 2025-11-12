@@ -291,6 +291,7 @@ internal class ReactTextViewAccessibilityDelegate(
       val accessibleLinks = mutableListOf<AccessibleLink>()
       val spans = text.getSpans(0, text.length, ClickableSpan::class.java)
 
+      // Do not generate virtual views if whole text is a single link
       if (!isWholeTextSingleLink(text, spans)) {
         spans.sortBy { text.getSpanStart(it) }
         for (i in spans.indices) {
