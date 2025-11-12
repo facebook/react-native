@@ -241,7 +241,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setBridgeForInstance]", nil);
     @try {
       [(id)_instance setValue:_bridge forKey:@"bridge"];
-    } @catch (NSException *exception) {
+    } @catch (NSException *) {
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
            "permitted. You must either @synthesize the bridge property, "
@@ -291,7 +291,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       if (implementsMethodQueue) {
         @try {
           [(id)_instance setValue:_methodQueue forKey:@"methodQueue"];
-        } @catch (NSException *exception) {
+        } @catch (NSException *) {
           RCTLogError(
               @"%@ is returning nil for its methodQueue, which is not "
                "permitted. You must either return a pre-initialized "
