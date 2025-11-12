@@ -13,8 +13,13 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#ifdef REACT_NATIVE_DEBUG
+#include <thread>
+#endif
 
 namespace facebook::react {
+
+extern const char ImageFetcherKey[];
 
 class ImageFetcher {
  public:
@@ -25,16 +30,22 @@ class ImageFetcher {
   ImageFetcher(ImageFetcher &&) = delete;
   ImageFetcher &operator=(ImageFetcher &&) = delete;
 
+  void flushImageRequests();
+
+ private:
+  friend class ImageManager;
   ImageRequest requestImage(
       const ImageSource &imageSource,
       SurfaceId surfaceId,
       const ImageRequestParams &imageRequestParams,
       Tag tag);
 
- private:
-  void flushImageRequests();
-
   std::unordered_map<SurfaceId, std::vector<ImageRequestItem>> items_;
   std::shared_ptr<const ContextContainer> contextContainer_;
+
+#ifdef REACT_NATIVE_DEBUG
+  std::thread::id threadId_;
+  void assertThread() const;
+#endif
 };
 } // namespace facebook::react

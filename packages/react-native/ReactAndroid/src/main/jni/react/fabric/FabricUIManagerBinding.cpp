@@ -24,6 +24,7 @@
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/imagemanager/ImageFetcher.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -641,6 +642,19 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
   if (!mountingManager) {
     return;
   }
+
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    auto weakImageFetcher =
+        scheduler_->getContextContainer()->find<std::weak_ptr<ImageFetcher>>(
+            ImageFetcherKey);
+    auto imageFetcher = weakImageFetcher.has_value()
+        ? weakImageFetcher.value().lock()
+        : nullptr;
+    if (imageFetcher != nullptr) {
+      imageFetcher->flushImageRequests();
+    }
+  }
+
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
     auto mountingTransaction = mountingCoordinator->pullTransaction(
         /* willPerformAsynchronously = */ true);
