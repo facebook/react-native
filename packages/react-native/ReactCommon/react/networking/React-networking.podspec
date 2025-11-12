@@ -41,7 +41,6 @@ Pod::Spec.new do |s|
     s.module_name            = "React_networking"
     s.header_mappings_dir  = "../.."
   end
-  add_dependency(s, "React-featureflags")
   add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-performancetimeline"
