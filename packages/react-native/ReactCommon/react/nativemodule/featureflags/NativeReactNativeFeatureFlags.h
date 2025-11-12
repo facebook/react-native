@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<055734d7c236535cc1a703125c07d833>>
+ * @generated SignedSource<<a34445ec221d2560cdc59654d7c4833f>>
  */
 
 /**
@@ -103,6 +103,8 @@ class NativeReactNativeFeatureFlags
   bool enableImperativeFocus(jsi::Runtime& runtime);
 
   bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
+
+  bool enableIntersectionObserverByDefault(jsi::Runtime& runtime);
 
   bool enableKeyEvents(jsi::Runtime& runtime);
 

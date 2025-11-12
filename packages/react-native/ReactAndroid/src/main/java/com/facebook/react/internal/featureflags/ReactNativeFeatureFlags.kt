@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<19656df8ed7f6c6cc897b1110f57c78e>>
+ * @generated SignedSource<<93f2d4274bbd84508e8b8c96ba59ee7a>>
  */
 
 /**
@@ -233,6 +233,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = accessor.enableInteropViewManagerClassLookUpOptimizationIOS()
+
+  /**
+   * Enables the IntersectionObserver Web API in React Native.
+   */
+  @JvmStatic
+  public fun enableIntersectionObserverByDefault(): Boolean = accessor.enableIntersectionObserverByDefault()
 
   /**
    * Enables key up/down/press events to be sent to JS from components
