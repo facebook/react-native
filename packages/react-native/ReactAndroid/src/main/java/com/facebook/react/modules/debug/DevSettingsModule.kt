@@ -51,7 +51,7 @@ public class DevSettingsModule(
   override fun addMenuItem(title: String) {
     devSupportManager.addCustomDevOption(title) {
       val data = buildReadableMap { put("title", title) }
-      val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
       reactApplicationContext?.emitDeviceEvent("didPressMenuItem", data)
     }
   }

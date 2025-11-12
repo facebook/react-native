@@ -62,8 +62,7 @@ public abstract class BaseJavaModule : NativeModule {
   /**
    * @return a map of constants this module exports to JS. Supports JSON types.
    */
-  public open val constants: Map<String, Any>?
-    get() = null
+  public open fun getConstants(): Map<String, Any>? = null
 
   public override fun initialize() {
     // do nothing

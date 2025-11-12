@@ -244,18 +244,17 @@ public class SampleLegacyModule(private val context: ReactApplicationContext) :
     }
   }
 
-  override val constants: Map<String, Any>
-    get() {
-      val result: MutableMap<String, Any> = mutableMapOf()
-      val activity = context.currentActivity
-      if (activity != null) {
-        result["const2"] = 390
-      }
-      result["const1"] = true
-      result["const3"] = "something"
-      log("constantsToExport", "", result)
-      return result
+  override fun getConstants(): Map<String, Any> {
+    val result: MutableMap<String, Any> = mutableMapOf()
+    val activity = context.currentActivity
+    if (activity != null) {
+      result["const2"] = 390
     }
+    result["const1"] = true
+    result["const3"] = "something"
+    log("constantsToExport", "", result)
+    return result
+  }
 
   private fun log(method: String, input: Any?, output: Any?) {
     toast?.cancel()
