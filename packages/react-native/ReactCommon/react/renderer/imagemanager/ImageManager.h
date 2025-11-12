@@ -37,6 +37,9 @@ class ImageManager {
       Tag tag = {}) const;
 
  private:
+#ifdef ANDROID
+  std::shared_ptr<const ContextContainer> contextContainer_{};
+#endif
   void *self_{};
 };
 
