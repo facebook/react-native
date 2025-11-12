@@ -122,9 +122,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       // When exclusive props update is enabled, we only apply Props 1.5 processing
       // (raw props merging) when Props 2.0 is not available.
       if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid()) {
-        // Cast to base Props shared_ptr to safely call virtual method
-        auto baseProps = std::static_pointer_cast<const Props>(shadowNodeProps);
-        if (strcmp(ShadowNodeT::Name(), baseProps->getDiffPropsImplementationTarget()) == 0) {
+        if (strcmp(ShadowNodeT::Name(), shadowNodeProps->getDiffPropsImplementationTarget()) == 0) {
           // Props 2.0 supported for this component, Props 1.5 processing can be skipped
           fallbackToDynamicRawPropsAccumulation = false;
         }
