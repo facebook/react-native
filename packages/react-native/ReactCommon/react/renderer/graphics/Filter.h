@@ -79,6 +79,8 @@ inline std::string toString(const FilterType &filterType)
       return "sepia";
     case FilterType::DropShadow:
       return "dropShadow";
+    default:
+      abort();
   }
 }
 

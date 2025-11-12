@@ -105,6 +105,8 @@ inline std::string toString(const BlendMode &blendMode)
       return "color";
     case BlendMode::Luminosity:
       return "luminosity";
+    default:
+      abort();
   }
 }
 } // namespace facebook::react
