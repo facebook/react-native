@@ -48,10 +48,10 @@ import okio.Okio
 /** Implements the XMLHttpRequest JavaScript interface. */
 @ReactModule(name = NativeNetworkingAndroidSpec.NAME)
 public class NetworkingModule(
-    reactContext: ReactApplicationContext,
-    defaultUserAgent: String?,
-    client: OkHttpClient,
-    networkInterceptorCreators: List<NetworkInterceptorCreator>?,
+  reactContext: ReactApplicationContext,
+  defaultUserAgent: String?,
+  client: OkHttpClient,
+  networkInterceptorCreators: List<NetworkInterceptorCreator>?,
 ) : NativeNetworkingAndroidSpec(reactContext) {
 
   /**
@@ -65,7 +65,8 @@ public class NetworkingModule(
     /**
      * Fetch the URI and return a tuple containing the JS body payload and the raw response body.
      */
-    @Throws(IOException::class) public fun fetch(uri: Uri): Pair<WritableMap, ByteArray>
+    @Throws(IOException::class)
+    public fun fetch(uri: Uri): Pair<WritableMap, ByteArray>
   }
 
   /** Allows adding custom handling to build the [RequestBody] from the JS body payload. */
@@ -83,7 +84,8 @@ public class NetworkingModule(
     public fun supports(responseType: String): Boolean
 
     /** Returns the JS body payload for the [ResponseBody]. */
-    @Throws(IOException::class) public fun toResponseData(data: ByteArray): WritableMap
+    @Throws(IOException::class)
+    public fun toResponseData(data: ByteArray): WritableMap
   }
 
   private val client: OkHttpClient
@@ -108,12 +110,7 @@ public class NetworkingModule(
     this.client = resolvedClient
 
     val cookieJar = resolvedClient.cookieJar()
-    cookieJarContainer =
-        if (cookieJar is CookieJarContainer) {
-          cookieJar
-        } else {
-          null
-        }
+    cookieJarContainer = cookieJar as? CookieJarContainer
     this.defaultUserAgent = defaultUserAgent
   }
 
@@ -124,14 +121,14 @@ public class NetworkingModule(
    * @param client the [OkHttpClient] to be used for networking
    */
   internal constructor(
-      context: ReactApplicationContext,
-      defaultUserAgent: String?,
-      client: OkHttpClient,
+    context: ReactApplicationContext,
+    defaultUserAgent: String?,
+    client: OkHttpClient,
   ) : this(context, defaultUserAgent, client, null)
 
   /** @param context the ReactContext of the application */
   public constructor(
-      context: ReactApplicationContext
+    context: ReactApplicationContext
   ) : this(context, null, OkHttpClientProvider.createClient(context.applicationContext), null)
 
   /**
@@ -140,13 +137,13 @@ public class NetworkingModule(
    *   would be called to attach the interceptors to the client.
    */
   public constructor(
-      context: ReactApplicationContext,
-      networkInterceptorCreators: List<NetworkInterceptorCreator>?,
+    context: ReactApplicationContext,
+    networkInterceptorCreators: List<NetworkInterceptorCreator>?,
   ) : this(
-      context,
-      null,
-      OkHttpClientProvider.createClient(context.applicationContext),
-      networkInterceptorCreators,
+    context,
+    null,
+    OkHttpClientProvider.createClient(context.applicationContext),
+    networkInterceptorCreators,
   )
 
   /**
@@ -155,17 +152,17 @@ public class NetworkingModule(
    *   caller does not provide one explicitly
    */
   public constructor(
-      context: ReactApplicationContext,
-      defaultUserAgent: String?,
+    context: ReactApplicationContext,
+    defaultUserAgent: String?,
   ) : this(
-      context,
-      defaultUserAgent,
-      OkHttpClientProvider.createClient(context.applicationContext),
-      null,
+    context,
+    defaultUserAgent,
+    OkHttpClientProvider.createClient(context.applicationContext),
+    null,
   )
 
   @Deprecated(
-      """To be removed in a future release. See
+    """To be removed in a future release. See
         https://github.com/facebook/react-native/pull/37798#pullrequestreview-1518338914"""
   )
   public interface CustomClientBuilder : com.facebook.react.modules.network.CustomClientBuilder
@@ -211,70 +208,31 @@ public class NetworkingModule(
   }
 
   private fun extractOrGenerateDevToolsRequestId(
-      data: ReadableMap?,
+    data: ReadableMap?,
   ): String =
-      (if (
-          data != null &&
-              data.hasKey(REQUEST_DATA_KEY_DEVTOOLS_REQUEST_ID) &&
-              data.getType(REQUEST_DATA_KEY_DEVTOOLS_REQUEST_ID) == ReadableType.String
-      )
-          data.getString(REQUEST_DATA_KEY_DEVTOOLS_REQUEST_ID)
-      else null) ?: UUID.randomUUID().toString()
+    (if (data != null &&
+      data.hasKey(REQUEST_DATA_KEY_DEVTOOLS_REQUEST_ID) &&
+      data.getType(REQUEST_DATA_KEY_DEVTOOLS_REQUEST_ID) == ReadableType.String
+    )
+      data.getString(REQUEST_DATA_KEY_DEVTOOLS_REQUEST_ID)
+    else null) ?: UUID.randomUUID().toString()
 
   override fun sendRequest(
-      method: String,
-      url: String,
-      requestIdAsDouble: Double,
-      headers: ReadableArray?,
-      data: ReadableMap?,
-      responseType: String,
-      useIncrementalUpdates: Boolean,
-      timeoutAsDouble: Double,
-      withCredentials: Boolean,
+    method: String,
+    url: String,
+    requestIdAsDouble: Double,
+    headers: ReadableArray?,
+    data: ReadableMap?,
+    responseType: String,
+    useIncrementalUpdates: Boolean,
+    timeoutAsDouble: Double,
+    withCredentials: Boolean,
   ) {
     val requestId = requestIdAsDouble.toInt()
     val timeout = timeoutAsDouble.toInt()
     val devToolsRequestId = extractOrGenerateDevToolsRequestId(data)
     try {
       sendRequestInternalReal(
-          method,
-          url,
-          requestId,
-          headers,
-          data,
-          responseType,
-          useIncrementalUpdates,
-          timeout,
-          withCredentials,
-          devToolsRequestId,
-      )
-    } catch (th: Throwable) {
-      FLog.e(TAG, "Failed to send url request: $url", th)
-
-      NetworkEventUtil.onRequestError(
-          getReactApplicationContextIfActiveOrWarn(),
-          requestId,
-          devToolsRequestId,
-          th.message,
-          th,
-      )
-    }
-  }
-
-  @Deprecated("""sendRequestInternal is internal and will be made private in a future release.""")
-  /** @param timeout value of 0 results in no timeout */
-  public fun sendRequestInternal(
-      method: String,
-      url: String?,
-      requestId: Int,
-      headers: ReadableArray?,
-      data: ReadableMap?,
-      responseType: String,
-      useIncrementalUpdates: Boolean,
-      timeout: Int,
-      withCredentials: Boolean,
-  ) {
-    sendRequestInternalReal(
         method,
         url,
         requestId,
@@ -284,22 +242,60 @@ public class NetworkingModule(
         useIncrementalUpdates,
         timeout,
         withCredentials,
-        extractOrGenerateDevToolsRequestId(data),
+        devToolsRequestId,
+      )
+    } catch (th: Throwable) {
+      FLog.e(TAG, "Failed to send url request: $url", th)
+
+      NetworkEventUtil.onRequestError(
+        getReactApplicationContextIfActiveOrWarn(),
+        requestId,
+        devToolsRequestId,
+        th.message,
+        th,
+      )
+    }
+  }
+
+  @Deprecated("""sendRequestInternal is internal and will be made private in a future release.""")
+  /** @param timeout value of 0 results in no timeout */
+  public fun sendRequestInternal(
+    method: String,
+    url: String?,
+    requestId: Int,
+    headers: ReadableArray?,
+    data: ReadableMap?,
+    responseType: String,
+    useIncrementalUpdates: Boolean,
+    timeout: Int,
+    withCredentials: Boolean,
+  ) {
+    sendRequestInternalReal(
+      method,
+      url,
+      requestId,
+      headers,
+      data,
+      responseType,
+      useIncrementalUpdates,
+      timeout,
+      withCredentials,
+      extractOrGenerateDevToolsRequestId(data),
     )
   }
 
   /** @param timeout value of 0 results in no timeout */
   private fun sendRequestInternalReal(
-      method: String,
-      url: String?,
-      requestId: Int,
-      headers: ReadableArray?,
-      data: ReadableMap?,
-      responseType: String,
-      useIncrementalUpdates: Boolean,
-      timeout: Int,
-      withCredentials: Boolean,
-      devToolsRequestId: String,
+    method: String,
+    url: String?,
+    requestId: Int,
+    headers: ReadableArray?,
+    data: ReadableMap?,
+    responseType: String,
+    useIncrementalUpdates: Boolean,
+    timeout: Int,
+    withCredentials: Boolean,
+    devToolsRequestId: String,
   ) {
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     try {
@@ -313,42 +309,42 @@ public class NetworkingModule(
           // fix: UriHandlers which are not using file:// scheme fail in whatwg-fetch at this line
           // https://github.com/JakeChampion/fetch/blob/main/fetch.js#L547
           val response =
-              Response.Builder()
-                  .protocol(Protocol.HTTP_1_1)
-                  .request(Request.Builder().url(url.orEmpty()).build())
-                  .code(200)
-                  .message("OK")
-                  .build()
+            Response.Builder()
+              .protocol(Protocol.HTTP_1_1)
+              .request(Request.Builder().url(url.orEmpty()).build())
+              .code(200)
+              .message("OK")
+              .build()
           NetworkEventUtil.onResponseReceived(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              url,
-              response,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            url,
+            response,
           )
           NetworkEventUtil.onDataReceived(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              res,
-              rawBody,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            res,
+            rawBody,
           )
           NetworkEventUtil.onRequestSuccess(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              encodedDataLength.toLong(),
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            encodedDataLength.toLong(),
           )
           return
         }
       }
     } catch (e: IOException) {
       NetworkEventUtil.onRequestError(
-          reactApplicationContext,
-          requestId,
-          devToolsRequestId,
-          e.message,
-          e,
+        reactApplicationContext,
+        requestId,
+        devToolsRequestId,
+        e.message,
+        e,
       )
       return
     }
@@ -358,11 +354,11 @@ public class NetworkingModule(
       requestBuilder = Request.Builder().url(url.orEmpty())
     } catch (e: Exception) {
       NetworkEventUtil.onRequestError(
-          reactApplicationContext,
-          requestId,
-          devToolsRequestId,
-          e.message,
-          e,
+        reactApplicationContext,
+        requestId,
+        devToolsRequestId,
+        e.message,
+        e,
       )
       return
     }
@@ -386,32 +382,32 @@ public class NetworkingModule(
         val originalResponse = chain.proceed(chain.request())
         val originalResponseBody = checkNotNull(originalResponse.body())
         val responseBody =
-            ProgressResponseBody(
-                originalResponseBody,
-                object : ProgressListener {
-                  var last: Long = System.nanoTime()
+          ProgressResponseBody(
+            originalResponseBody,
+            object : ProgressListener {
+              var last: Long = System.nanoTime()
 
-                  override fun onProgress(bytesWritten: Long, contentLength: Long, done: Boolean) {
-                    val now = System.nanoTime()
-                    if (!done && !shouldDispatch(now, last)) {
-                      return
-                    }
-                    if (responseType == "text") {
-                      // For 'text' responses we continuously send response data with progress
-                      // info to
-                      // JS below, so no need to do anything here.
-                      return
-                    }
-                    NetworkEventUtil.onDataReceivedProgress(
-                        reactApplicationContext,
-                        requestId,
-                        bytesWritten,
-                        contentLength,
-                    )
-                    last = now
-                  }
-                },
-            )
+              override fun onProgress(bytesWritten: Long, contentLength: Long, done: Boolean) {
+                val now = System.nanoTime()
+                if (!done && !shouldDispatch(now, last)) {
+                  return
+                }
+                if (responseType == "text") {
+                  // For 'text' responses we continuously send response data with progress
+                  // info to
+                  // JS below, so no need to do anything here.
+                  return
+                }
+                NetworkEventUtil.onDataReceivedProgress(
+                  reactApplicationContext,
+                  requestId,
+                  bytesWritten,
+                  contentLength,
+                )
+                last = now
+              }
+            },
+          )
         originalResponse.newBuilder().body(responseBody).build()
       }
     }
@@ -428,11 +424,11 @@ public class NetworkingModule(
     val requestHeaders = extractHeaders(headers, data)
     if (requestHeaders == null) {
       NetworkEventUtil.onRequestError(
-          reactApplicationContext,
-          requestId,
-          devToolsRequestId,
-          "Unrecognized headers format",
-          null,
+        reactApplicationContext,
+        requestId,
+        devToolsRequestId,
+        "Unrecognized headers format",
+        null,
       )
       return
     }
@@ -454,16 +450,17 @@ public class NetworkingModule(
     var requestBody: RequestBody?
     when {
       data == null || method.lowercase() == "get" || method.lowercase() == "head" ->
-          requestBody = RequestBodyUtil.getEmptyBody(method)
+        requestBody = RequestBodyUtil.getEmptyBody(method)
+
       handler != null -> requestBody = handler.toRequestBody(data, contentType)
       data.hasKey(REQUEST_BODY_KEY_STRING) -> {
         if (contentType == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Payload is set but no content-type header specified",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Payload is set but no content-type header specified",
+            null,
           )
           return
         }
@@ -476,11 +473,11 @@ public class NetworkingModule(
           }
           if (requestBody == null) {
             NetworkEventUtil.onRequestError(
-                reactApplicationContext,
-                requestId,
-                devToolsRequestId,
-                "Failed to gzip request body",
-                null,
+              reactApplicationContext,
+              requestId,
+              devToolsRequestId,
+              "Failed to gzip request body",
+              null,
             )
             return
           }
@@ -489,18 +486,18 @@ public class NetworkingModule(
           // appending the character set to the Content-Type header when otherwise unspecified
           // https://github.com/facebook/react-native/issues/8237
           val charset =
-              if (contentMediaType == null) {
-                StandardCharsets.UTF_8
-              } else {
-                checkNotNull(contentMediaType.charset(StandardCharsets.UTF_8))
-              }
+            if (contentMediaType == null) {
+              StandardCharsets.UTF_8
+            } else {
+              checkNotNull(contentMediaType.charset(StandardCharsets.UTF_8))
+            }
           if (body == null) {
             NetworkEventUtil.onRequestError(
-                reactApplicationContext,
-                requestId,
-                devToolsRequestId,
-                "Received request but body was empty",
-                null,
+              reactApplicationContext,
+              requestId,
+              devToolsRequestId,
+              "Received request but body was empty",
+              null,
             )
             return
           }
@@ -508,14 +505,15 @@ public class NetworkingModule(
           requestBody = RequestBody.create(contentMediaType, body.toByteArray(charset))
         }
       }
+
       data.hasKey(REQUEST_BODY_KEY_BASE64) -> {
         if (contentType == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Payload is set but no content-type header specified",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Payload is set but no content-type header specified",
+            null,
           )
           return
         }
@@ -525,63 +523,65 @@ public class NetworkingModule(
         val contentMediaType = MediaType.parse(contentType)
         if (contentMediaType == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Invalid content type specified: $contentType",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Invalid content type specified: $contentType",
+            null,
           )
           return
         }
         val base64DecodedString = ByteString.decodeBase64(base64String)
         if (base64DecodedString == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Request body base64 string was invalid",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Request body base64 string was invalid",
+            null,
           )
           return
         }
         @Suppress("DEPRECATION")
         requestBody = RequestBody.create(contentMediaType, base64DecodedString)
       }
+
       data.hasKey(REQUEST_BODY_KEY_URI) -> {
         if (contentType == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Payload is set but no content-type header specified",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Payload is set but no content-type header specified",
+            null,
           )
           return
         }
         val uri = data.getString(REQUEST_BODY_KEY_URI)
         if (uri == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Request body URI field was set but null",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Request body URI field was set but null",
+            null,
           )
           return
         }
-        val fileInputStream = RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri)
+        val fileInputStream = RequestBodyUtil.getFileInputStream(this.reactApplicationContext, uri)
         if (fileInputStream == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Could not retrieve file for uri $uri",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Could not retrieve file for uri $uri",
+            null,
           )
           return
         }
         requestBody = RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream)
       }
+
       data.hasKey(REQUEST_BODY_KEY_FORMDATA) -> {
         if (contentType == null) {
           contentType = "multipart/form-data"
@@ -589,18 +589,19 @@ public class NetworkingModule(
         val parts = data.getArray(REQUEST_BODY_KEY_FORMDATA)
         if (parts == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Received request but form data was empty",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Received request but form data was empty",
+            null,
           )
           return
         }
         val multipartBuilder =
-            constructMultipartBody(parts, contentType, requestId, devToolsRequestId) ?: return
+          constructMultipartBody(parts, contentType, requestId, devToolsRequestId) ?: return
         requestBody = multipartBuilder.build()
       }
+
       else -> {
         // Nothing in data payload, at least nothing we could understand anyway.
         requestBody = RequestBodyUtil.getEmptyBody(method)
@@ -614,201 +615,198 @@ public class NetworkingModule(
     NetworkEventUtil.onCreateRequest(devToolsRequestId, request)
 
     client
-        .newCall(request)
-        .enqueue(
-            object : Callback {
-              override fun onFailure(call: Call, e: IOException) {
-                if (shuttingDown) {
-                  return
-                }
-                removeRequest(requestId)
-                val errorMessage =
-                    e.message ?: ("Error while executing request: ${e.javaClass.simpleName}")
+      .newCall(request)
+      .enqueue(
+        object : Callback {
+          override fun onFailure(call: Call, e: IOException) {
+            if (shuttingDown) {
+              return
+            }
+            removeRequest(requestId)
+            val errorMessage =
+              e.message ?: ("Error while executing request: ${e.javaClass.simpleName}")
+            NetworkEventUtil.onRequestError(
+              reactApplicationContext,
+              requestId,
+              devToolsRequestId,
+              errorMessage,
+              e,
+            )
+          }
+
+          @Throws(IOException::class)
+          override fun onResponse(call: Call, response: Response) {
+            if (shuttingDown) {
+              return
+            }
+            removeRequest(requestId)
+            // Before we touch the body send headers to JS
+            NetworkEventUtil.onResponseReceived(
+              reactApplicationContext,
+              requestId,
+              devToolsRequestId,
+              url,
+              response,
+            )
+
+            try {
+              // OkHttp implements something called transparent gzip, which mean that it will
+              // automatically add the Accept-Encoding gzip header and handle decoding
+              // internally.
+              // The issue is that it won't handle decoding if the user provides a
+              // Accept-Encoding
+              // header. This is also undesirable considering that iOS does handle the decoding
+              // even
+              // when the header is provided. To make sure this works in all cases, handle gzip
+              // body
+              // here also. This works fine since OKHttp will remove the Content-Encoding header
+              // if
+              // it used transparent gzip.
+              // See
+              // https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
+              var responseBody: ResponseBody? = response.body()
+              if (responseBody == null) {
                 NetworkEventUtil.onRequestError(
-                    reactApplicationContext,
-                    requestId,
-                    devToolsRequestId,
-                    errorMessage,
-                    e,
+                  reactApplicationContext,
+                  requestId,
+                  devToolsRequestId,
+                  "Response body is null",
+                  null,
                 )
+                return
               }
-
-              @Throws(IOException::class)
-              override fun onResponse(call: Call, response: Response) {
-                if (shuttingDown) {
-                  return
-                }
-                removeRequest(requestId)
-                // Before we touch the body send headers to JS
-                NetworkEventUtil.onResponseReceived(
+              if ("gzip".equals(response.header("Content-Encoding"), ignoreCase = true)) {
+                val gzipSource = GzipSource(responseBody.source())
+                val parsedContentType = response.header("Content-Type")?.let(MediaType::parse)
+                responseBody =
+                  @Suppress("DEPRECATION")
+                  ResponseBody.create(
+                    parsedContentType,
+                    -1L,
+                    Okio.buffer(gzipSource),
+                  )
+              }
+              // Check if a handler is registered
+              for (responseHandler in responseHandlers) {
+                if (responseHandler.supports(responseType)) {
+                  val responseData = responseBody.bytes()
+                  val res = responseHandler.toResponseData(responseData)
+                  NetworkEventUtil.onDataReceived(
                     reactApplicationContext,
                     requestId,
                     devToolsRequestId,
-                    url,
-                    response,
-                )
-
-                try {
-                  // OkHttp implements something called transparent gzip, which mean that it will
-                  // automatically add the Accept-Encoding gzip header and handle decoding
-                  // internally.
-                  // The issue is that it won't handle decoding if the user provides a
-                  // Accept-Encoding
-                  // header. This is also undesirable considering that iOS does handle the decoding
-                  // even
-                  // when the header is provided. To make sure this works in all cases, handle gzip
-                  // body
-                  // here also. This works fine since OKHttp will remove the Content-Encoding header
-                  // if
-                  // it used transparent gzip.
-                  // See
-                  // https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
-                  var responseBody: ResponseBody? = response.body()
-                  if (responseBody == null) {
-                    NetworkEventUtil.onRequestError(
-                        reactApplicationContext,
-                        requestId,
-                        devToolsRequestId,
-                        "Response body is null",
-                        null,
-                    )
-                    return
-                  }
-                  if ("gzip".equals(response.header("Content-Encoding"), ignoreCase = true)) {
-                    val gzipSource = GzipSource(responseBody.source())
-                    val parsedContentType = response.header("Content-Type")?.let(MediaType::parse)
-                    responseBody =
-                        @Suppress("DEPRECATION")
-                        ResponseBody.create(
-                            parsedContentType,
-                            -1L,
-                            Okio.buffer(gzipSource),
-                        )
-                  }
-                  // To satisfy the compiler, this is already checked above
-                  checkNotNull(responseBody)
-                  // Check if a handler is registered
-                  for (responseHandler in responseHandlers) {
-                    if (responseHandler.supports(responseType)) {
-                      val responseData = responseBody.bytes()
-                      val res = responseHandler.toResponseData(responseData)
-                      NetworkEventUtil.onDataReceived(
-                          reactApplicationContext,
-                          requestId,
-                          devToolsRequestId,
-                          res,
-                          responseData,
-                      )
-                      NetworkEventUtil.onRequestSuccess(
-                          reactApplicationContext,
-                          requestId,
-                          devToolsRequestId,
-                          responseBody.contentLength(),
-                      )
-                      return
-                    }
-                  }
-
-                  // If JS wants progress updates during the download, and it requested a text
-                  // response,
-                  // periodically send response data updates to JS.
-                  if (useIncrementalUpdates && responseType == "text") {
-                    readWithProgress(requestId, devToolsRequestId, responseBody)
-                    NetworkEventUtil.onRequestSuccess(
-                        reactApplicationContext,
-                        requestId,
-                        devToolsRequestId,
-                        responseBody.contentLength(),
-                    )
-                    return
-                  }
-
-                  // Otherwise send the data in one big chunk, in the format that JS requested.
-                  var responseString: String? = ""
-                  if (responseType == "text") {
-                    try {
-                      responseString = responseBody.string()
-                    } catch (e: IOException) {
-                      if (response.request().method().equals("HEAD", ignoreCase = true)) {
-                        // The request is an `HEAD` and the body is empty,
-                        // the OkHttp will produce an exception.
-                        // Ignore the exception to not invalidate the request in the
-                        // Javascript layer.
-                        // Introduced to fix issue #7463.
-                      } else {
-                        NetworkEventUtil.onRequestError(
-                            reactApplicationContext,
-                            requestId,
-                            devToolsRequestId,
-                            e.message,
-                            e,
-                        )
-                      }
-                    }
-                  } else if (responseType == "base64") {
-                    responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP)
-                  }
-                  NetworkEventUtil.onDataReceived(
-                      reactApplicationContext,
-                      requestId,
-                      devToolsRequestId,
-                      responseString,
-                      responseType,
+                    res,
+                    responseData,
                   )
                   NetworkEventUtil.onRequestSuccess(
-                      reactApplicationContext,
-                      requestId,
-                      devToolsRequestId,
-                      responseBody.contentLength(),
+                    reactApplicationContext,
+                    requestId,
+                    devToolsRequestId,
+                    responseBody.contentLength(),
                   )
+                  return
+                }
+              }
+
+              // If JS wants progress updates during the download, and it requested a text
+              // response,
+              // periodically send response data updates to JS.
+              if (useIncrementalUpdates && responseType == "text") {
+                readWithProgress(requestId, devToolsRequestId, responseBody)
+                NetworkEventUtil.onRequestSuccess(
+                  reactApplicationContext,
+                  requestId,
+                  devToolsRequestId,
+                  responseBody.contentLength(),
+                )
+                return
+              }
+
+              // Otherwise send the data in one big chunk, in the format that JS requested.
+              var responseString: String? = ""
+              if (responseType == "text") {
+                try {
+                  responseString = responseBody.string()
                 } catch (e: IOException) {
-                  NetworkEventUtil.onRequestError(
+                  if (response.request().method().equals("HEAD", ignoreCase = true)) {
+                    // The request is an `HEAD` and the body is empty,
+                    // the OkHttp will produce an exception.
+                    // Ignore the exception to not invalidate the request in the
+                    // Javascript layer.
+                    // Introduced to fix issue #7463.
+                  } else {
+                    NetworkEventUtil.onRequestError(
                       reactApplicationContext,
                       requestId,
                       devToolsRequestId,
                       e.message,
                       e,
-                  )
+                    )
+                  }
                 }
+              } else if (responseType == "base64") {
+                responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP)
               }
+              NetworkEventUtil.onDataReceived(
+                reactApplicationContext,
+                requestId,
+                devToolsRequestId,
+                responseString,
+                responseType,
+              )
+              NetworkEventUtil.onRequestSuccess(
+                reactApplicationContext,
+                requestId,
+                devToolsRequestId,
+                responseBody.contentLength(),
+              )
+            } catch (e: IOException) {
+              NetworkEventUtil.onRequestError(
+                reactApplicationContext,
+                requestId,
+                devToolsRequestId,
+                e.message,
+                e,
+              )
             }
-        )
+          }
+        })
   }
 
   private fun wrapRequestBodyWithProgressEmitter(
-      requestBody: RequestBody?,
-      requestId: Int,
+    requestBody: RequestBody?,
+    requestId: Int,
   ): RequestBody? {
     if (requestBody == null) {
       return null
     }
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     return RequestBodyUtil.createProgressRequest(
-        requestBody,
-        object : ProgressListener {
-          var last: Long = System.nanoTime()
+      requestBody,
+      object : ProgressListener {
+        var last: Long = System.nanoTime()
 
-          override fun onProgress(bytesWritten: Long, contentLength: Long, done: Boolean) {
-            val now = System.nanoTime()
-            if (done || shouldDispatch(now, last)) {
-              NetworkEventUtil.onDataSend(
-                  reactApplicationContext,
-                  requestId,
-                  bytesWritten,
-                  contentLength,
-              )
-              last = now
-            }
+        override fun onProgress(bytesWritten: Long, contentLength: Long, done: Boolean) {
+          val now = System.nanoTime()
+          if (done || shouldDispatch(now, last)) {
+            NetworkEventUtil.onDataSend(
+              reactApplicationContext,
+              requestId,
+              bytesWritten,
+              contentLength,
+            )
+            last = now
           }
-        },
+        }
+      },
     )
   }
 
   @Throws(IOException::class)
   private fun readWithProgress(
-      requestId: Int,
-      devToolsRequestId: String,
-      responseBody: ResponseBody,
+    requestId: Int,
+    devToolsRequestId: String,
+    responseBody: ResponseBody,
   ) {
     var totalBytesRead: Long = -1
     var contentLength: Long = -1
@@ -821,13 +819,13 @@ public class NetworkingModule(
     }
 
     val charset =
-        if (responseBody.contentType() == null) {
-          StandardCharsets.UTF_8
-        } else {
-          checkNotNull(responseBody.contentType()?.charset(StandardCharsets.UTF_8)) {
-            "Null character set for Content-Type: ${responseBody.contentType()}"
-          }
+      if (responseBody.contentType() == null) {
+        StandardCharsets.UTF_8
+      } else {
+        checkNotNull(responseBody.contentType()?.charset(StandardCharsets.UTF_8)) {
+          "Null character set for Content-Type: ${responseBody.contentType()}"
         }
+      }
     val streamDecoder = ProgressiveStringDecoder(charset)
     val inputStream = responseBody.byteStream()
     try {
@@ -836,12 +834,12 @@ public class NetworkingModule(
       val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
       while ((inputStream.read(buffer).also { read = it }) != -1) {
         NetworkEventUtil.onIncrementalDataReceived(
-            reactApplicationContext,
-            requestId,
-            devToolsRequestId,
-            streamDecoder.decodeNext(buffer, read),
-            totalBytesRead,
-            contentLength,
+          reactApplicationContext,
+          requestId,
+          devToolsRequestId,
+          streamDecoder.decodeNext(buffer, read),
+          totalBytesRead,
+          contentLength,
         )
       }
     } finally {
@@ -887,21 +885,21 @@ public class NetworkingModule(
   public override fun removeListeners(count: Double): Unit = Unit
 
   private fun constructMultipartBody(
-      body: ReadableArray,
-      contentType: String,
-      requestId: Int,
-      devToolsRequestId: String,
+    body: ReadableArray,
+    contentType: String,
+    requestId: Int,
+    devToolsRequestId: String,
   ): MultipartBody.Builder? {
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     val multipartBuilder = MultipartBody.Builder()
     val mediaType = MediaType.parse(contentType)
     if (mediaType == null) {
       NetworkEventUtil.onRequestError(
-          reactApplicationContext,
-          requestId,
-          devToolsRequestId,
-          "Invalid media type.",
-          null,
+        reactApplicationContext,
+        requestId,
+        devToolsRequestId,
+        "Invalid media type.",
+        null,
       )
       return null
     }
@@ -911,11 +909,11 @@ public class NetworkingModule(
       val bodyPart = body.getMap(i)
       if (bodyPart == null) {
         NetworkEventUtil.onRequestError(
-            reactApplicationContext,
-            requestId,
-            devToolsRequestId,
-            "Unrecognized FormData part.",
-            null,
+          reactApplicationContext,
+          requestId,
+          devToolsRequestId,
+          "Unrecognized FormData part.",
+          null,
         )
         return null
       }
@@ -925,11 +923,11 @@ public class NetworkingModule(
       var headers = extractHeaders(headersArray, null)
       if (headers == null) {
         NetworkEventUtil.onRequestError(
-            reactApplicationContext,
-            requestId,
-            devToolsRequestId,
-            "Missing or invalid header format for FormData part.",
-            null,
+          reactApplicationContext,
+          requestId,
+          devToolsRequestId,
+          "Missing or invalid header format for FormData part.",
+          null,
         )
         return null
       }
@@ -942,57 +940,56 @@ public class NetworkingModule(
         headers = headers.newBuilder().removeAll(CONTENT_TYPE_HEADER_NAME).build()
       }
 
-      if (
-          bodyPart.hasKey(REQUEST_BODY_KEY_STRING) &&
-              bodyPart.getString(REQUEST_BODY_KEY_STRING) != null
+      if (bodyPart.hasKey(REQUEST_BODY_KEY_STRING) &&
+        bodyPart.getString(REQUEST_BODY_KEY_STRING) != null
       ) {
         val bodyValue = bodyPart.getString(REQUEST_BODY_KEY_STRING).orEmpty()
         @Suppress("DEPRECATION")
         multipartBuilder.addPart(headers, RequestBody.create(partContentType, bodyValue))
-      } else if (
-          bodyPart.hasKey(REQUEST_BODY_KEY_URI) && bodyPart.getString(REQUEST_BODY_KEY_URI) != null
+      } else if (bodyPart.hasKey(REQUEST_BODY_KEY_URI) &&
+        bodyPart.getString(REQUEST_BODY_KEY_URI) != null
       ) {
         if (partContentType == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Binary FormData part needs a content-type header.",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Binary FormData part needs a content-type header.",
+            null,
           )
           return null
         }
         val fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI)
         if (fileContentUriStr == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Body must have a valid file uri",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Body must have a valid file uri",
+            null,
           )
           return null
         }
         val fileInputStream =
-            RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr)
+          RequestBodyUtil.getFileInputStream(this.reactApplicationContext, fileContentUriStr)
         if (fileInputStream == null) {
           NetworkEventUtil.onRequestError(
-              reactApplicationContext,
-              requestId,
-              devToolsRequestId,
-              "Could not retrieve file for uri $fileContentUriStr",
-              null,
+            reactApplicationContext,
+            requestId,
+            devToolsRequestId,
+            "Could not retrieve file for uri $fileContentUriStr",
+            null,
           )
           return null
         }
         multipartBuilder.addPart(headers, RequestBodyUtil.create(partContentType, fileInputStream))
       } else {
         NetworkEventUtil.onRequestError(
-            reactApplicationContext,
-            requestId,
-            devToolsRequestId,
-            "Unrecognized FormData part.",
-            null,
+          reactApplicationContext,
+          requestId,
+          devToolsRequestId,
+          "Unrecognized FormData part.",
+          null,
         )
       }
     }
@@ -1053,7 +1050,7 @@ public class NetworkingModule(
 
     @JvmStatic
     public fun setCustomClientBuilder(
-        ccb: com.facebook.react.modules.network.CustomClientBuilder?
+      ccb: com.facebook.react.modules.network.CustomClientBuilder?
     ) {
       customClientBuilder = ccb
     }

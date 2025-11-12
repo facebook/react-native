@@ -5,20 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-import static com.facebook.infer.annotation.ThreadConfined.ANY;
-
-import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.annotations.StableReactNativeAPI;
-import com.facebook.react.common.build.ReactBuildConfig;
-import java.util.Map;
+import com.facebook.common.logging.FLog
+import com.facebook.infer.annotation.Assertions
+import com.facebook.infer.annotation.Nullsafe
+import com.facebook.infer.annotation.ThreadConfined
+import com.facebook.infer.annotation.ThreadConfined.ANY
+import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.react.common.ReactConstants
+import com.facebook.react.common.annotations.StableReactNativeAPI
+import com.facebook.react.common.build.ReactBuildConfig
 
 /**
  * Base class for Catalyst native modules whose implementations are written in Java. Default
@@ -50,58 +47,48 @@ import java.util.Map;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @StableReactNativeAPI
-public abstract class BaseJavaModule implements NativeModule {
-  // taken from Libraries/Utilities/MessageQueue.js
-  public static final String METHOD_TYPE_ASYNC = "async";
-  public static final String METHOD_TYPE_PROMISE = "promise";
-  public static final String METHOD_TYPE_SYNC = "sync";
+public abstract class BaseJavaModule : NativeModule {
+  @JvmField
+  protected var mEventEmitterCallback: CxxCallbackImpl? = null
 
-  protected @Nullable CxxCallbackImpl mEventEmitterCallback;
+  private val mReactApplicationContext: ReactApplicationContext?
 
-  private final @Nullable ReactApplicationContext mReactApplicationContext;
+  public constructor() : this(null)
 
-  public BaseJavaModule() {
-    this(null);
-  }
-
-  public BaseJavaModule(@Nullable ReactApplicationContext reactContext) {
-    mReactApplicationContext = reactContext;
+  public constructor(reactContext: ReactApplicationContext?) {
+    mReactApplicationContext = reactContext
   }
 
   /**
    * @return a map of constants this module exports to JS. Supports JSON types.
    */
-  public @Nullable Map<String, Object> getConstants() {
-    return null;
-  }
+  public open val constants: Map<String, Any>?
+    get() = null
 
-  @Override
-  public void initialize() {
+  public override fun initialize() {
     // do nothing
   }
 
-  @Override
-  public boolean canOverrideExistingModule() {
-    return false;
+  public override fun canOverrideExistingModule(): Boolean {
+    return false
   }
 
   /**
    * The CatalystInstance is going away with Venice. Therefore, the TurboModule infra introduces the
    * invalidate() method to allow NativeModules to clean up after themselves.
    */
-  @Override
-  public void invalidate() {}
+  public override fun invalidate() {}
 
   /**
-   * Subclasses can use this method to access {@link ReactApplicationContext} passed as a
-   * constructor.
+   * Property accessor for Kotlin code using property syntax. Subclasses can use this to access
+   * {@link ReactApplicationContext} passed as a constructor.
    */
-  protected final ReactApplicationContext getReactApplicationContext() {
-    return Assertions.assertNotNull(
-        mReactApplicationContext,
-        "Tried to get ReactApplicationContext even though NativeModule wasn't instantiated with"
-            + " one");
-  }
+  protected val reactApplicationContext: ReactApplicationContext
+    @JvmName("getReactApplicationContext")
+    get() = Assertions.assertNotNull(
+      mReactApplicationContext,
+      "Tried to get ReactApplicationContext even though NativeModule wasn't instantiated with one"
+    )
 
   /**
    * Subclasses can use this method to access {@link ReactApplicationContext} passed as a
@@ -117,24 +104,31 @@ public abstract class BaseJavaModule implements NativeModule {
    * thread-safe.
    */
   @ThreadConfined(ANY)
-  protected @Nullable final ReactApplicationContext getReactApplicationContextIfActiveOrWarn() {
+  protected fun getReactApplicationContextIfActiveOrWarn(): ReactApplicationContext? {
     if (mReactApplicationContext != null && mReactApplicationContext.hasActiveReactInstance()) {
-      return mReactApplicationContext;
+      return mReactApplicationContext
     }
 
     // We want to collect data about how often this happens, but SoftExceptions will cause a crash
     // in debug mode, which isn't usually desirable.
-    String msg = "React Native Instance has already disappeared: requested by " + getName();
+    val msg = "React Native Instance has already disappeared: requested by $name"
     if (ReactBuildConfig.DEBUG) {
-      FLog.w(ReactConstants.TAG, msg);
+      FLog.w(ReactConstants.TAG, msg)
     } else {
-      ReactSoftExceptionLogger.logSoftException(ReactConstants.TAG, new RuntimeException(msg));
+      ReactSoftExceptionLogger.logSoftException(ReactConstants.TAG, RuntimeException(msg))
     }
-    return null;
+    return null
   }
 
   @DoNotStrip
-  protected void setEventEmitterCallback(CxxCallbackImpl eventEmitterCallback) {
-    mEventEmitterCallback = eventEmitterCallback;
+  protected fun setEventEmitterCallback(eventEmitterCallback: CxxCallbackImpl) {
+    mEventEmitterCallback = eventEmitterCallback
+  }
+
+  public companion object {
+    // taken from Libraries/Utilities/MessageQueue.js
+    public const val METHOD_TYPE_ASYNC: String = "async"
+    public const val METHOD_TYPE_PROMISE: String = "promise"
+    public const val METHOD_TYPE_SYNC: String = "sync"
   }
 }
