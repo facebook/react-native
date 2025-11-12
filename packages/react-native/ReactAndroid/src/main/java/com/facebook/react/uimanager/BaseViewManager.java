@@ -30,6 +30,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -385,8 +386,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setSelected(false);
     }
     view.setTag(R.id.accessibility_state, accessibilityState);
-    if (accessibilityState.hasKey("disabled") && !accessibilityState.getBoolean("disabled")) {
-      view.setEnabled(true);
+    if (accessibilityState.hasKey("disabled")) {
+      if (ReactNativeFeatureFlags.shouldSetEnabledBasedOnAccessibilityState()) {
+        // New behavior: properly set enabled state for both true and false
+        view.setEnabled(!accessibilityState.getBoolean("disabled"));
+      } else {
+        // Old behavior: only set enabled(true) when disabled=false
+        if (!accessibilityState.getBoolean("disabled")) {
+          view.setEnabled(true);
+        }
+      }
     }
 
     // For states which don't have corresponding methods in
