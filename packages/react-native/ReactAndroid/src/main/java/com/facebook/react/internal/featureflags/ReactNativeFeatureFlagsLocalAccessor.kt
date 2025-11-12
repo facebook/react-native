@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<092b55220901732f9f21d4ccf74206e5>>
+ * @generated SignedSource<<6217268b4398764dfd0da461d93bb55a>>
  */
 
 /**
@@ -67,7 +67,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
-  private var enableResourceTimingAPICache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
@@ -538,16 +537,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enablePropsUpdateReconciliationAndroid()
       accessedFeatureFlags.add("enablePropsUpdateReconciliationAndroid")
       enablePropsUpdateReconciliationAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableResourceTimingAPI(): Boolean {
-    var cached = enableResourceTimingAPICache
-    if (cached == null) {
-      cached = currentProvider.enableResourceTimingAPI()
-      accessedFeatureFlags.add("enableResourceTimingAPI")
-      enableResourceTimingAPICache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4b1e0adaaee9856feb290d0ba5e18147>>
+ * @generated SignedSource<<bebf3698e5e3e3899826da1ea2000171>>
  */
 
 /**
@@ -240,7 +240,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableNativeCSSParsing();
 
   /**
-   * Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.
+   * Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.
    */
   RN_EXPORT static bool enableNetworkEventReporting();
 
@@ -253,11 +253,6 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
    */
   RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
-
-  /**
-   * Enables the reporting of network resource timings through `PerformanceObserver`.
-   */
-  RN_EXPORT static bool enableResourceTimingAPI();
 
   /**
    * When enabled, it will use SwiftUI for filter effects like blur on iOS.

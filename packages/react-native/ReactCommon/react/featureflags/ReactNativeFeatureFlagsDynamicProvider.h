@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c64e43af67c252dc342c6182b762bc34>>
+ * @generated SignedSource<<ab8d528ba3da639920a43b11cde00f23>>
  */
 
 /**
@@ -430,15 +430,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enablePropsUpdateReconciliationAndroid();
-  }
-
-  bool enableResourceTimingAPI() override {
-    auto value = values_["enableResourceTimingAPI"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableResourceTimingAPI();
   }
 
   bool enableSwiftUIBasedFilters() override {
