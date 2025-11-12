@@ -204,6 +204,7 @@ async function getNightlyTarballUrl(
   return await computeNightlyTarballURL(
     version,
     buildType,
+    'hermes',
     artifactCoordinate,
     artifactName,
   );
