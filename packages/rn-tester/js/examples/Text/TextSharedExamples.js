@@ -232,7 +232,7 @@ component TextWithLinkRoleExample() {
 const styles = StyleSheet.create({
   link: {
     color: 'teal',
-    textDecoration: 'underline',
+    textDecorationLine: 'underline',
   },
 });
 
