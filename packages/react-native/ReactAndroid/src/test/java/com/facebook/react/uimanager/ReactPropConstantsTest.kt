@@ -100,7 +100,7 @@ class ReactPropConstantsTest {
     val reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
     val constants: Map<*, *> =
-        valueAtPath(uiManagerModule.constants as Map<*, *>, "SomeView", "NativeProps")
+        valueAtPath(uiManagerModule.getConstants() as Map<*, *>, "SomeView", "NativeProps")
 
     Assertions.assertThat(constants)
         .isEqualTo(
