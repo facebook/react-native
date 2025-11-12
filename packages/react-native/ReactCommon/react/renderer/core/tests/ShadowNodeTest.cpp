@@ -342,3 +342,35 @@ TEST_F(ShadowNodeTest, cloneMultiple) {
   EXPECT_EQ(newNodeABA->getTag(), nodeABA_->getTag());
   EXPECT_EQ(newNodeABA.get(), nodeABA_.get());
 }
+
+TEST_F(ShadowNodeTest, cloneMultipleWithSingleFamily) {
+  auto newProps = std::make_shared<const TestProps>();
+  auto newRoot = nodeA_->cloneMultiple(
+      {&nodeAB_->getFamily()},
+      [&](const ShadowNode& oldShadowNode, const ShadowNodeFragment& fragment) {
+        return oldShadowNode.clone({
+            .props = newProps,
+            .children = fragment.children,
+            .state = fragment.state,
+        });
+      });
+
+  EXPECT_EQ(newRoot->getTag(), nodeA_->getTag());
+  // The callback is called for each cloned node, so the root props are also
+  // updated
+  EXPECT_EQ(newRoot->getProps(), newProps);
+
+  auto newNodeAA = newRoot->getChildren()[0];
+  EXPECT_EQ(newNodeAA->getTag(), nodeAA_->getTag());
+  EXPECT_EQ(newNodeAA->getProps(), nodeAA_->getProps());
+  // AA was cloned when its parent was cloned as it was shared
+  EXPECT_NE(newNodeAA.get(), nodeAA_.get());
+
+  auto newNodeAB = newRoot->getChildren()[1];
+  EXPECT_EQ(newNodeAB->getTag(), nodeAB_->getTag());
+  EXPECT_EQ(newNodeAB->getProps(), newProps);
+
+  auto newNodeABA = newNodeAB->getChildren()[0];
+  EXPECT_EQ(newNodeABA->getTag(), nodeABA_->getTag());
+  EXPECT_EQ(newNodeABA.get(), nodeABA_.get());
+}
