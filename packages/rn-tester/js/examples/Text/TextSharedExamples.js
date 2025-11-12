@@ -15,7 +15,6 @@ import RNTesterText from '../../components/RNTesterText';
 import {useTheme} from '../../components/RNTesterTheme';
 import {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {description} from '../Playground/PlaygroundExample';
 
 function InlineView(props: {
   textAlign: 'auto' | 'left' | 'right' | 'center' | 'justify',
