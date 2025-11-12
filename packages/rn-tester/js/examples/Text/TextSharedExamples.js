@@ -194,7 +194,7 @@ component RtlAndInlineViewsExample() {
 }
 
 component TextWithLinkRoleExample() {
-  const handlePress = () => console.log("Link Press");
+  const handlePress = () => console.log('Link Press');
 
   return (
     <View>
