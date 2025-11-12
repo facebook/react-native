@@ -8,6 +8,7 @@
 #include "ImageFetcher.h"
 
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
+#include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/imagemanager/conversions.h>
 
@@ -17,7 +18,13 @@ extern const char ImageFetcherKey[] = "ImageFetcher";
 
 ImageFetcher::ImageFetcher(
     std::shared_ptr<const ContextContainer> contextContainer)
-    : contextContainer_(std::move(contextContainer)) {}
+    : contextContainer_(std::move(contextContainer))
+#ifdef REACT_NATIVE_DEBUG
+      ,
+      threadId_(std::this_thread::get_id())
+#endif
+{
+}
 
 ImageRequest ImageFetcher::requestImage(
     const ImageSource& imageSource,
@@ -40,6 +47,12 @@ ImageRequest ImageFetcher::requestImage(
 }
 
 void ImageFetcher::flushImageRequests() {
+#ifdef REACT_NATIVE_DEBUG
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    assertThread();
+  }
+#endif
+
   if (items_.empty()) {
     return;
   }
@@ -61,5 +74,13 @@ void ImageFetcher::flushImageRequests() {
 
   items_.clear();
 }
+
+#ifdef REACT_NATIVE_DEBUG
+void ImageFetcher::assertThread() const {
+  react_native_assert(
+      threadId_ != std::this_thread::get_id() &&
+      "ImageFetcher method called from the wrong thread!");
+}
+#endif
 
 } // namespace facebook::react
