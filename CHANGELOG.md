@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.83.0-rc.1
+
+### Changed
+
+- React Native DevTools: Remove network experiment and experimental icon, Add conditional disabling of features incompatible with multiple hosts ([19359ed095](https://github.com/facebook/react-native/commit/19359ed095059c5d6befcc7e2ff3472447680add) by [@huntie](https://github.com/huntie))
+- Bump HermesV1 versions ([79302df4de](https://github.com/facebook/react-native/commit/79302df4de1e4fb55ecfdcc4b9f4a7d6afa56810) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.83.0-rc.0
 
 ### Breaking
