@@ -68,6 +68,7 @@ public abstract class BaseJavaModule : NativeModule {
     // do nothing
   }
 
+  @Deprecated("canOverrideExistingModule is not used in the New Architecture")
   public override fun canOverrideExistingModule(): Boolean {
     return false
   }
