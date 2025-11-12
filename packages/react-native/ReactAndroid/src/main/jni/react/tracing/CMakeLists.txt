@@ -9,19 +9,19 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_devsupportjni_SRC CONFIGURE_DEPENDS *.cpp)
+file(GLOB react_performancetracerjni_SRC CONFIGURE_DEPENDS *.cpp)
 
-add_library(react_devsupportjni OBJECT ${react_devsupportjni_SRC})
+add_library(react_performancetracerjni OBJECT ${react_performancetracerjni_SRC})
 
-target_merge_so(react_devsupportjni)
+target_merge_so(react_performancetracerjni)
 
-target_include_directories(react_devsupportjni PUBLIC .)
+target_include_directories(react_performancetracerjni PUBLIC .)
 
-target_link_libraries(react_devsupportjni
+target_link_libraries(react_performancetracerjni
         fbjni
         jsinspector
         jsinspector_tracing
-        react_networking
+        reactnativejni_common
         react_timing)
 
-target_compile_reactnative_options(react_devsupportjni PRIVATE)
+target_compile_reactnative_options(react_performancetracerjni PRIVATE)

@@ -379,6 +379,15 @@ void PerformanceTracer::reportFrameTiming(
     int frameSeqId,
     HighResTimeStamp start,
     HighResTimeStamp end) {
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
+    return;
+  }
+
   ThreadId threadId = getCurrentThreadId();
   enqueueEvent(
       PerformanceTracerFrameBeginDrawEvent{
