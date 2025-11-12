@@ -115,6 +115,25 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     rawProps.parse(rawPropsParser_);
 
     auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
+#ifdef RN_SERIALIZABLE_STATE
+    bool fallbackToDynamicRawPropsAccumulation = true;
+    if (ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid() &&
+        ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+      // When exclusive props update is enabled, we only apply Props 1.5 processing
+      // (raw props merging) when Props 2.0 is not available.
+      if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid()) {
+        // Cast to base Props shared_ptr to safely call virtual method
+        auto baseProps = std::static_pointer_cast<const Props>(shadowNodeProps);
+        if (strcmp(ShadowNodeT::Name(), baseProps->getDiffPropsImplementationTarget()) == 0) {
+          // Props 2.0 supported for this component, Props 1.5 processing can be skipped
+          fallbackToDynamicRawPropsAccumulation = false;
+        }
+      }
+    }
+    if (fallbackToDynamicRawPropsAccumulation) {
+      ShadowNodeT::initializeDynamicProps(shadowNodeProps, rawProps, props);
+    }
+#endif
     // Use the new-style iterator
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<055734d7c236535cc1a703125c07d833>>
+ * @generated SignedSource<<8bb516ec2bc76a4e1a9cfb50abaebbee>>
  */
 
 /**
@@ -81,6 +81,8 @@ class NativeReactNativeFeatureFlags
   bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
+
+  bool enableExclusivePropsUpdateAndroid(jsi::Runtime& runtime);
 
   bool enableFabricLogs(jsi::Runtime& runtime);
 
