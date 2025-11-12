@@ -114,6 +114,7 @@ add_react_common_subdir(react/renderer/components/scrollview)
 add_react_common_subdir(react/renderer/components/safeareaview)
 add_react_common_subdir(react/renderer/leakchecker)
 add_react_common_subdir(react/renderer/observers/events)
+add_react_common_subdir(react/renderer/observers/intersection)
 add_react_common_subdir(react/renderer/textlayoutmanager)
 add_react_common_subdir(react/utils)
 add_react_common_subdir(react/bridging)
@@ -213,6 +214,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_renderer_mapbuffer>
           $<TARGET_OBJECTS:react_renderer_mounting>
           $<TARGET_OBJECTS:react_renderer_observers_events>
+          $<TARGET_OBJECTS:react_renderer_observers_intersection>
           $<TARGET_OBJECTS:react_renderer_runtimescheduler>
           $<TARGET_OBJECTS:react_renderer_scheduler>
           $<TARGET_OBJECTS:react_renderer_telemetry>

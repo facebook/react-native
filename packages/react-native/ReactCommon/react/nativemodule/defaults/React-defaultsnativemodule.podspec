@@ -16,7 +16,9 @@ else
   source[:tag] = "v#{version}"
 end
 
-header_search_paths = []
+header_search_paths = [
+  "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
+]
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the defaultsnativemodule to access its own files
@@ -40,6 +42,7 @@ Pod::Spec.new do |s|
 
   resolve_use_frameworks(s, header_mappings_dir: "../..", module_name: "React_defaultsnativemodule")
 
+  s.dependency "Yoga"
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
   depend_on_js_engine(s)
