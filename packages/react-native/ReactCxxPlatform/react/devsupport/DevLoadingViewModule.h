@@ -25,8 +25,8 @@ class DevLoadingViewModule : public NativeDevLoadingViewCxxSpec<DevLoadingViewMo
       jsi::Runtime &rt,
       const std::string &message,
       std::optional<int32_t> textColor,
-      std::optional<int32_t> backgroundColor);
-
+      std::optional<int32_t> backgroundColor,
+      std::optional<bool> dismissButton);
   void hide(jsi::Runtime &rt);
 
  private:

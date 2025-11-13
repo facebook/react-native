@@ -8,6 +8,7 @@
 package com.facebook.react.devsupport
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Rect
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -33,14 +34,21 @@ public class DefaultDevLoadingViewImplementation(
   private var devLoadingPopup: PopupWindow? = null
 
   override fun showMessage(message: String) {
-    showMessage(message, color = null, backgroundColor = null)
+    showMessage(message, color = null, backgroundColor = null, dismissButton = false)
   }
 
-  override fun showMessage(message: String, color: Double?, backgroundColor: Double?) {
+  override fun showMessage(
+      message: String,
+      color: Double?,
+      backgroundColor: Double?,
+      dismissButton: Boolean?,
+  ) {
     if (!isEnabled) {
       return
     }
-    UiThreadUtil.runOnUiThread { showInternal(message, color, backgroundColor) }
+    UiThreadUtil.runOnUiThread {
+      showInternal(message, color, backgroundColor, dismissButton ?: false)
+    }
   }
 
   override fun updateProgress(status: String?, done: Int?, total: Int?) {
@@ -63,7 +71,12 @@ public class DefaultDevLoadingViewImplementation(
     }
   }
 
-  private fun showInternal(message: String, color: Double?, backgroundColor: Double?) {
+  private fun showInternal(
+      message: String,
+      color: Double?,
+      backgroundColor: Double?,
+      dismissButton: Boolean,
+  ) {
     if (devLoadingPopup?.isShowing == true) {
       // already showing
       return
@@ -86,24 +99,56 @@ public class DefaultDevLoadingViewImplementation(
       val topOffset = rectangle.top
       val inflater =
           currentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-      val view = inflater.inflate(R.layout.dev_loading_view, null) as TextView
-      view.text = message
-      if (color != null) {
-        view.setTextColor(color.toInt())
+      val rootView = inflater.inflate(R.layout.dev_loading_view, null) as ViewGroup
+      val textView = rootView.findViewById<TextView>(R.id.loading_text)
+      textView.text = message
+
+      val dismissButtonView = rootView.findViewById<android.widget.Button>(R.id.dismiss_button)
+
+      if (dismissButton) {
+        dismissButtonView.visibility = android.view.View.VISIBLE
+      } else {
+        dismissButtonView.visibility = android.view.View.GONE
       }
-      if (backgroundColor != null) {
-        view.setBackgroundColor(backgroundColor.toInt())
+
+      // Use provided colors or defaults (matching iOS behavior)
+      val textColor = color?.toInt() ?: Color.WHITE
+      val bgColor = backgroundColor?.toInt() ?: Color.rgb(64, 64, 64) // Default grey
+
+      textView.setTextColor(textColor)
+      rootView.setBackgroundColor(bgColor)
+
+      if (dismissButton) {
+        dismissButtonView.setTextColor(textColor)
+
+        // Darken the background color for the button
+        val red = (Color.red(bgColor) * 0.7).toInt()
+        val green = (Color.green(bgColor) * 0.7).toInt()
+        val blue = (Color.blue(bgColor) * 0.7).toInt()
+        val darkerColor = Color.rgb(red, green, blue)
+
+        // Create rounded drawable for button
+        val drawable = android.graphics.drawable.GradientDrawable()
+        drawable.setColor(darkerColor)
+        drawable.cornerRadius = 15 * rootView.resources.displayMetrics.density
+        dismissButtonView.background = drawable
+
+        dismissButtonView.setOnClickListener { hideInternal() }
       }
-      view.setOnClickListener { hideInternal() }
+
+      // Allow tapping anywhere on the banner to dismiss
+      rootView.setOnClickListener { hideInternal() }
+
       val popup =
           PopupWindow(
-              view,
+              rootView,
               ViewGroup.LayoutParams.MATCH_PARENT,
               ViewGroup.LayoutParams.WRAP_CONTENT,
           )
       popup.showAtLocation(currentActivity.window.decorView, Gravity.NO_GRAVITY, 0, topOffset)
-      devLoadingView = view
+      devLoadingView = textView // Store the TextView for updateProgress()
       devLoadingPopup = popup
+
       // TODO T164786028: Find out the root cause of the BadTokenException exception here
     } catch (e: WindowManager.BadTokenException) {
       FLog.e(
