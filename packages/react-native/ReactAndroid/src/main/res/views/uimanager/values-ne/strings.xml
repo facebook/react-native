@@ -8,6 +8,7 @@
     <string name="imagebutton_description" gender="unknown">बटन, फोटो</string>
     <string name="combobox_description" gender="unknown">कम्बो बक्स</string>
     <string name="menu_description" gender="unknown">मेनु</string>
+    <string name="rn_tab_description" gender="unknown">टयाब</string>
     <string name="state_expanded_description" gender="unknown">विस्तार गरियो</string>
     <string name="state_on_description" gender="unknown">अन</string>
     <string name="state_off_description" gender="unknown">अफ</string>
