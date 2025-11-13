@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<152ea11685f3770782035b08831ef04d>>
+ * @generated SignedSource<<c345dba878d470a42fcff41aac490083>>
  */
 
 /**
@@ -169,6 +169,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableAccumulatedUpdatesInRawPropsAndroid();
+  }
+
+  bool enableAndroidAntialiasedBorderRadiusClipping() override {
+    auto value = values_["enableAndroidAntialiasedBorderRadiusClipping"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableAndroidAntialiasedBorderRadiusClipping();
   }
 
   bool enableAndroidLinearText() override {

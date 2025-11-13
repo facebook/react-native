@@ -3228,6 +3228,7 @@ public abstract interface class com/facebook/react/turbomodule/core/interfaces/T
 public final class com/facebook/react/uimanager/BackgroundStyleApplicator {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/BackgroundStyleApplicator;
 	public static final fun clipToPaddingBox (Landroid/view/View;Landroid/graphics/Canvas;)V
+	public static final fun clipToPaddingBoxWithAntiAliasing (Landroid/view/View;Landroid/graphics/Canvas;Lkotlin/jvm/functions/Function0;)V
 	public static final fun getBackgroundColor (Landroid/view/View;)Ljava/lang/Integer;
 	public static final fun getBorderColor (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;)Ljava/lang/Integer;
 	public static final fun getBorderRadius (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderRadiusProp;)Lcom/facebook/react/uimanager/LengthPercentage;

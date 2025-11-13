@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<acef1e4ac15cf78463831e3aeb35b641>>
+ * @generated SignedSource<<fb735bdc4e4085fd415f21894340dd75>>
  */
 
 /**
@@ -46,6 +46,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool disableViewPreallocationAndroid();
   bool enableAccessibilityOrder();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
+  bool enableAndroidAntialiasedBorderRadiusClipping();
   bool enableAndroidLinearText();
   bool enableAndroidTextMeasurementOptimizations();
   bool enableBridgelessArchitecture();
@@ -131,7 +132,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 88> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 89> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -147,6 +148,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> disableViewPreallocationAndroid_;
   std::atomic<std::optional<bool>> enableAccessibilityOrder_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
+  std::atomic<std::optional<bool>> enableAndroidAntialiasedBorderRadiusClipping_;
   std::atomic<std::optional<bool>> enableAndroidLinearText_;
   std::atomic<std::optional<bool>> enableAndroidTextMeasurementOptimizations_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
