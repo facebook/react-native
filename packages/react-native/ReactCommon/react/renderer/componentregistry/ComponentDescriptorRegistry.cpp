@@ -91,10 +91,9 @@ void ComponentDescriptorRegistry::add(
   _registryByName[componentDescriptorProvider.name] = sharedComponentDescriptor;
 }
 
+// Callers must hold the mutex
 void ComponentDescriptorRegistry::registerComponentDescriptor(
     const SharedComponentDescriptor& componentDescriptor) const {
-  std::unique_lock lock(mutex_);
-
   ComponentHandle componentHandle = componentDescriptor->getComponentHandle();
   _registryByHandle[componentHandle] = componentDescriptor;
 
@@ -128,12 +127,15 @@ const ComponentDescriptor& ComponentDescriptorRegistry::at(
 
   if (it == _registryByName.end()) {
     if (ReactNativeFeatureFlags::useFabricInterop()) {
+      lock.unlock();
       // When interop is enabled, if the component is not found we rely on
       // UnstableLegacyViewManagerAutomaticComponentDescriptor to support legacy
       // components in new architecture.
       auto componentDescriptor = std::make_shared<
           const UnstableLegacyViewManagerAutomaticComponentDescriptor>(
           parameters_, unifiedComponentName);
+
+      std::unique_lock writeLock(mutex_);
       registerComponentDescriptor(componentDescriptor);
       return *_registryByName.find(unifiedComponentName)->second;
     } else {
@@ -186,6 +188,7 @@ bool ComponentDescriptorRegistry::hasComponentDescriptorAt(
 
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(
     const SharedComponentDescriptor& descriptor) {
+  std::unique_lock lock(mutex_);
   _fallbackComponentDescriptor = descriptor;
   registerComponentDescriptor(descriptor);
 }
