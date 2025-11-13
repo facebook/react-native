@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6aa0feb805c07564631370eb30b4bc9e>>
+ * @generated SignedSource<<312e7dcaaaf8bade0acf80d15e8eedee>>
  * @flow strict
  * @noformat
  */
@@ -204,7 +204,7 @@ export const shouldUseAnimatedObjectForTransform: Getter<boolean> = createJavaSc
 /**
  * Set accessibilityRole to "link" for pressable Text components by default.
  */
-export const shouldUseLinkRoleForPressableText: Getter<boolean> = createJavaScriptFlagGetter('shouldUseLinkRoleForPressableText', false);
+export const shouldUseLinkRoleForPressableText: Getter<boolean> = createJavaScriptFlagGetter('shouldUseLinkRoleForPressableText', true);
 
 /**
  * removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android
@@ -504,7 +504,7 @@ export const shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean> = cr
 /**
  * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
  */
-export const shouldSetEnabledBasedOnAccessibilityState: Getter<boolean> = createNativeFlagGetter('shouldSetEnabledBasedOnAccessibilityState', false);
+export const shouldSetEnabledBasedOnAccessibilityState: Getter<boolean> = createNativeFlagGetter('shouldSetEnabledBasedOnAccessibilityState', true);
 /**
  * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
  */

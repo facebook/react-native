@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a388c8e701ece8b9ea1dc23915a09399>>
+ * @generated SignedSource<<4b24bc3165b6ab1583efc8e1a22444ed>>
  */
 
 /**
@@ -161,7 +161,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
 
-  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = false
+  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = true
 
   override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 
