@@ -412,7 +412,6 @@ namespace {
 
 std::shared_ptr<ShadowNode> cloneMultipleRecursive(
     const ShadowNode& shadowNode,
-    const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
     const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
     const std::function<std::shared_ptr<
         ShadowNode>(const ShadowNode&, const ShadowNodeFragment&)>& callback) {
@@ -430,16 +429,12 @@ std::shared_ptr<ShadowNode> cloneMultipleRecursive(
             std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
                 children);
       }
-      (*newChildren)[i] = cloneMultipleRecursive(
-          *children[i], familiesToUpdate, childrenCount, callback);
+      (*newChildren)[i] =
+          cloneMultipleRecursive(*children[i], childrenCount, callback);
     }
   }
 
-  ShadowNodeFragment fragment{.children = newChildren};
-  if (familiesToUpdate.contains(family)) {
-    return callback(shadowNode, fragment);
-  }
-  return shadowNode.clone(fragment);
+  return callback(shadowNode, {.children = newChildren});
 }
 
 } // namespace
@@ -479,8 +474,7 @@ std::shared_ptr<ShadowNode> ShadowNode::cloneMultiple(
     return nullptr;
   }
 
-  return cloneMultipleRecursive(
-      *this, familiesToUpdate, childrenCount, callback);
+  return cloneMultipleRecursive(*this, childrenCount, callback);
 }
 
 #pragma mark - DebugStringConvertible
