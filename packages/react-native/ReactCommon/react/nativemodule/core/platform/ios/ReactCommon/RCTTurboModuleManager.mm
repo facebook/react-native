@@ -694,7 +694,7 @@ typedef struct {
       } else if (_bridgeProxy) {
         [(id)module setValue:_bridgeProxy forKey:@"bridge"];
       }
-    } @catch (NSException *exception) {
+    } @catch (NSException *) {
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
            "permitted. You must either @synthesize the bridge property, "
@@ -742,7 +742,7 @@ typedef struct {
 
       @try {
         [(id)module setValue:methodQueue forKey:@"methodQueue"];
-      } @catch (NSException *exception) {
+      } @catch (NSException *) {
         RCTLogError(
             @"%@ has no setter or ivar for its methodQueue, which is not "
              "permitted. You must either @synthesize the methodQueue property, "
