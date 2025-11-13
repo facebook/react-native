@@ -775,13 +775,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     shouldSetEnabledBasedOnAccessibilityState: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2025-11-11',
         description:
           'Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -1098,13 +1097,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     shouldUseLinkRoleForPressableText: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2025-11-10',
         description:
           'Set accessibilityRole to "link" for pressable Text components by default.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
