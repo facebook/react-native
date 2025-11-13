@@ -104,6 +104,8 @@ val preparePrefab by
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                       // jsiinpsector
                       Pair("../ReactCommon/jsinspector-modern/", "jsinspector-modern/"),
+                      // jsitooling
+                      Pair("../ReactCommon/jsitooling/", ""),
                       // mapbufferjni
                       Pair("src/main/jni/react/mapbuffer", ""),
                       // turbomodulejsijni
