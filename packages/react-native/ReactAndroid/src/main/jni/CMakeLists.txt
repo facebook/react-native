@@ -114,6 +114,7 @@ add_react_common_subdir(react/renderer/components/scrollview)
 add_react_common_subdir(react/renderer/components/safeareaview)
 add_react_common_subdir(react/renderer/leakchecker)
 add_react_common_subdir(react/renderer/observers/events)
+add_react_common_subdir(react/renderer/observers/intersection)
 add_react_common_subdir(react/renderer/textlayoutmanager)
 add_react_common_subdir(react/utils)
 add_react_common_subdir(react/bridging)
@@ -124,6 +125,7 @@ add_react_common_subdir(react/nativemodule/dom)
 add_react_common_subdir(react/nativemodule/featureflags)
 add_react_common_subdir(react/nativemodule/microtasks)
 add_react_common_subdir(react/nativemodule/idlecallbacks)
+add_react_common_subdir(react/nativemodule/intersectionobserver)
 add_react_common_subdir(react/nativemodule/webperformance)
 add_react_common_subdir(react/networking)
 add_react_common_subdir(jserrorhandler)
@@ -192,6 +194,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_nativemodule_dom>
           $<TARGET_OBJECTS:react_nativemodule_featureflags>
           $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
+          $<TARGET_OBJECTS:react_nativemodule_intersectionobserver>
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
           $<TARGET_OBJECTS:react_nativemodule_webperformance>
           $<TARGET_OBJECTS:react_networking>
@@ -213,6 +216,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_renderer_mapbuffer>
           $<TARGET_OBJECTS:react_renderer_mounting>
           $<TARGET_OBJECTS:react_renderer_observers_events>
+          $<TARGET_OBJECTS:react_renderer_observers_intersection>
           $<TARGET_OBJECTS:react_renderer_runtimescheduler>
           $<TARGET_OBJECTS:react_renderer_scheduler>
           $<TARGET_OBJECTS:react_renderer_telemetry>
@@ -284,6 +288,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_nativemodule_dom,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_intersectionobserver,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_webperformance,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_networking,INTERFACE_INCLUDE_DIRECTORIES>

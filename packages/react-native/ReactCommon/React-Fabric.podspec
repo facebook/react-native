@@ -54,7 +54,7 @@ Pod::Spec.new do |s|
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
-  
+
   s.subspec "animated" do |ss|
     ss.source_files         = podspec_sources("react/renderer/animated/**/*.{m,mm,cpp,h}", "react/renderer/animated/**/*.{h}")
     ss.exclude_files        = "react/renderer/animated/tests"
@@ -66,7 +66,7 @@ Pod::Spec.new do |s|
     ss.exclude_files        = "react/renderer/animations/tests"
     ss.header_dir           = "react/renderer/animations"
   end
-  
+
   s.subspec "animationbackend" do |ss|
     ss.source_files         = podspec_sources("react/renderer/animationbackend/**/*.{m,mm,cpp,h}", "react/renderer/animationbackend/**/*.{h}")
     ss.header_dir           = "react/renderer/animationbackend"
@@ -178,6 +178,12 @@ Pod::Spec.new do |s|
       sss.source_files         = podspec_sources("react/renderer/observers/events/**/*.{m,mm,cpp,h}", "react/renderer/observers/events/**/*.h")
       sss.exclude_files        = "react/renderer/observers/events/tests"
       sss.header_dir           = "react/renderer/observers/events"
+    end
+
+    ss.subspec "intersection" do |sss|
+      sss.source_files         = podspec_sources("react/renderer/observers/intersection/**/*.{m,mm,cpp,h}", "react/renderer/observers/intersection/**/*.h")
+      sss.exclude_files        = "react/renderer/observers/intersection/tests"
+      sss.header_dir           = "react/renderer/observers/intersection"
     end
   end
 
