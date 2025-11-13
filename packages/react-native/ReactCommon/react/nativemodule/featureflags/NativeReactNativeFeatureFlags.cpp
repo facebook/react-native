@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<06396bfb1e5af10dd7ef72fd1d17607b>>
+ * @generated SignedSource<<131ac718d90f03a63bbfcfdcc9d85ed7>>
  */
 
 /**
@@ -159,6 +159,11 @@ bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
 }
 
+bool NativeReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::enableFabricLogs(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFabricLogs();
@@ -187,6 +192,11 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
 bool NativeReactNativeFeatureFlags::enableImagePrefetchingAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid(
@@ -252,11 +262,6 @@ bool NativeReactNativeFeatureFlags::enablePreparedTextLayout(
 bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::enableResourceTimingAPI(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableResourceTimingAPI();
 }
 
 bool NativeReactNativeFeatureFlags::enableSwiftUIBasedFilters(
@@ -377,6 +382,11 @@ bool NativeReactNativeFeatureFlags::preventShadowTreeCommitExhaustion(
 bool NativeReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
+}
+
+bool NativeReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState();
 }
 
 bool NativeReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid(

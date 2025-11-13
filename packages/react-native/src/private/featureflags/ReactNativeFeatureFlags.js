@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<64e8578585baaed88b48703555520f22>>
+ * @generated SignedSource<<11de61ca7deceb1931bf078b9125e97a>>
  * @flow strict
  * @noformat
  */
@@ -74,12 +74,14 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableDoubleMeasurementFixAndroid: Getter<boolean>,
   enableEagerMainQueueModulesOnIOS: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
+  enableExclusivePropsUpdateAndroid: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableImagePrefetchingAndroid: Getter<boolean>,
+  enableImagePrefetchingJNIBatchingAndroid: Getter<boolean>,
   enableImagePrefetchingOnUiThreadAndroid: Getter<boolean>,
   enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean>,
   enableImperativeFocus: Getter<boolean>,
@@ -93,7 +95,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableNetworkEventReporting: Getter<boolean>,
   enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
-  enableResourceTimingAPI: Getter<boolean>,
   enableSwiftUIBasedFilters: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
@@ -118,6 +119,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   preparedTextCacheSize: Getter<number>,
   preventShadowTreeCommitExhaustion: Getter<boolean>,
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
+  shouldSetEnabledBasedOnAccessibilityState: Getter<boolean>,
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
@@ -315,6 +317,10 @@ export const enableEagerMainQueueModulesOnIOS: Getter<boolean> = createNativeFla
  */
 export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGetter('enableEagerRootViewAttachment', false);
 /**
+ * When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.
+ */
+export const enableExclusivePropsUpdateAndroid: Getter<boolean> = createNativeFlagGetter('enableExclusivePropsUpdateAndroid', false);
+/**
  * This feature flag enables logs for Fabric.
  */
 export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableFabricLogs', false);
@@ -338,6 +344,10 @@ export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGe
  * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
  */
 export const enableImagePrefetchingAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingAndroid', false);
+/**
+ * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call
+ */
+export const enableImagePrefetchingJNIBatchingAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingJNIBatchingAndroid', false);
 /**
  * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
  */
@@ -379,7 +389,7 @@ export const enableModuleArgumentNSNullConversionIOS: Getter<boolean> = createNa
  */
 export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('enableNativeCSSParsing', false);
 /**
- * Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.
+ * Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.
  */
 export const enableNetworkEventReporting: Getter<boolean> = createNativeFlagGetter('enableNetworkEventReporting', false);
 /**
@@ -390,10 +400,6 @@ export const enablePreparedTextLayout: Getter<boolean> = createNativeFlagGetter(
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */
 export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNativeFlagGetter('enablePropsUpdateReconciliationAndroid', false);
-/**
- * Enables the reporting of network resource timings through `PerformanceObserver`.
- */
-export const enableResourceTimingAPI: Getter<boolean> = createNativeFlagGetter('enableResourceTimingAPI', false);
 /**
  * When enabled, it will use SwiftUI for filter effects like blur on iOS.
  */
@@ -490,6 +496,10 @@ export const preventShadowTreeCommitExhaustion: Getter<boolean> = createNativeFl
  * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
  */
 export const shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean> = createNativeFlagGetter('shouldPressibilityUseW3CPointerEventsForHover', false);
+/**
+ * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
+ */
+export const shouldSetEnabledBasedOnAccessibilityState: Getter<boolean> = createNativeFlagGetter('shouldSetEnabledBasedOnAccessibilityState', false);
 /**
  * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
  */

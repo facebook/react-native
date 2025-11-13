@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d03fa7e131f02dc08a6ffa75d09bdba>>
+ * @generated SignedSource<<b89ea8b8456bc8d19b35220e492d41fb>>
  */
 
 /**
@@ -252,6 +252,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableEagerRootViewAttachment();
   }
 
+  bool enableExclusivePropsUpdateAndroid() override {
+    auto value = values_["enableExclusivePropsUpdateAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableExclusivePropsUpdateAndroid();
+  }
+
   bool enableFabricLogs() override {
     auto value = values_["enableFabricLogs"];
     if (!value.isNull()) {
@@ -304,6 +313,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableImagePrefetchingAndroid();
+  }
+
+  bool enableImagePrefetchingJNIBatchingAndroid() override {
+    auto value = values_["enableImagePrefetchingJNIBatchingAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableImagePrefetchingJNIBatchingAndroid();
   }
 
   bool enableImagePrefetchingOnUiThreadAndroid() override {
@@ -421,15 +439,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enablePropsUpdateReconciliationAndroid();
-  }
-
-  bool enableResourceTimingAPI() override {
-    auto value = values_["enableResourceTimingAPI"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableResourceTimingAPI();
   }
 
   bool enableSwiftUIBasedFilters() override {
@@ -646,6 +655,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::shouldPressibilityUseW3CPointerEventsForHover();
+  }
+
+  bool shouldSetEnabledBasedOnAccessibilityState() override {
+    auto value = values_["shouldSetEnabledBasedOnAccessibilityState"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldSetEnabledBasedOnAccessibilityState();
   }
 
   bool shouldTriggerResponderTransferOnScrollAndroid() override {

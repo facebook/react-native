@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e53aa1a6fbbdc6e04a747e76677960c>>
+ * @generated SignedSource<<5b6fe2be27173e01396fb45f219cf8b8>>
  */
 
 /**
@@ -55,12 +55,14 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableDoubleMeasurementFixAndroid();
   bool enableEagerMainQueueModulesOnIOS();
   bool enableEagerRootViewAttachment();
+  bool enableExclusivePropsUpdateAndroid();
   bool enableFabricLogs();
   bool enableFabricRenderer();
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
+  bool enableImagePrefetchingJNIBatchingAndroid();
   bool enableImagePrefetchingOnUiThreadAndroid();
   bool enableImmediateUpdateModeForContentOffsetChanges();
   bool enableImperativeFocus();
@@ -74,7 +76,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableNetworkEventReporting();
   bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
-  bool enableResourceTimingAPI();
   bool enableSwiftUIBasedFilters();
   bool enableViewCulling();
   bool enableViewRecycling();
@@ -99,6 +100,7 @@ class ReactNativeFeatureFlagsAccessor {
   double preparedTextCacheSize();
   bool preventShadowTreeCommitExhaustion();
   bool shouldPressibilityUseW3CPointerEventsForHover();
+  bool shouldSetEnabledBasedOnAccessibilityState();
   bool shouldTriggerResponderTransferOnScrollAndroid();
   bool skipActivityIdentityAssertionOnHostPause();
   bool traceTurboModulePromiseRejectionsOnAndroid();
@@ -128,7 +130,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 85> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 87> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -153,12 +155,14 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableDoubleMeasurementFixAndroid_;
   std::atomic<std::optional<bool>> enableEagerMainQueueModulesOnIOS_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
+  std::atomic<std::optional<bool>> enableExclusivePropsUpdateAndroid_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
+  std::atomic<std::optional<bool>> enableImagePrefetchingJNIBatchingAndroid_;
   std::atomic<std::optional<bool>> enableImagePrefetchingOnUiThreadAndroid_;
   std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
   std::atomic<std::optional<bool>> enableImperativeFocus_;
@@ -172,7 +176,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;
   std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
-  std::atomic<std::optional<bool>> enableResourceTimingAPI_;
   std::atomic<std::optional<bool>> enableSwiftUIBasedFilters_;
   std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
@@ -197,6 +200,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustion_;
   std::atomic<std::optional<bool>> shouldPressibilityUseW3CPointerEventsForHover_;
+  std::atomic<std::optional<bool>> shouldSetEnabledBasedOnAccessibilityState_;
   std::atomic<std::optional<bool>> shouldTriggerResponderTransferOnScrollAndroid_;
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;

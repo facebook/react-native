@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71b74d31b17c008bbf5a0e381cdabe94>>
+ * @generated SignedSource<<1d083d5e542fcc38160fd4b177df4931>>
  */
 
 /**
@@ -48,12 +48,14 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableDoubleMeasurementFixAndroid() = 0;
   virtual bool enableEagerMainQueueModulesOnIOS() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
+  virtual bool enableExclusivePropsUpdateAndroid() = 0;
   virtual bool enableFabricLogs() = 0;
   virtual bool enableFabricRenderer() = 0;
   virtual bool enableFontScaleChangesUpdatingLayout() = 0;
   virtual bool enableIOSTextBaselineOffsetPerLine() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
   virtual bool enableImagePrefetchingAndroid() = 0;
+  virtual bool enableImagePrefetchingJNIBatchingAndroid() = 0;
   virtual bool enableImagePrefetchingOnUiThreadAndroid() = 0;
   virtual bool enableImmediateUpdateModeForContentOffsetChanges() = 0;
   virtual bool enableImperativeFocus() = 0;
@@ -67,7 +69,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableNetworkEventReporting() = 0;
   virtual bool enablePreparedTextLayout() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
-  virtual bool enableResourceTimingAPI() = 0;
   virtual bool enableSwiftUIBasedFilters() = 0;
   virtual bool enableViewCulling() = 0;
   virtual bool enableViewRecycling() = 0;
@@ -92,6 +93,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual double preparedTextCacheSize() = 0;
   virtual bool preventShadowTreeCommitExhaustion() = 0;
   virtual bool shouldPressibilityUseW3CPointerEventsForHover() = 0;
+  virtual bool shouldSetEnabledBasedOnAccessibilityState() = 0;
   virtual bool shouldTriggerResponderTransferOnScrollAndroid() = 0;
   virtual bool skipActivityIdentityAssertionOnHostPause() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;

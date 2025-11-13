@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28355cbf76db9aa5aca8ea05db43d5ab>>
+ * @generated SignedSource<<bce5d52ac8a180d1750bb64dd21c1bd3>>
  */
 
 /**
@@ -119,6 +119,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableExclusivePropsUpdateAndroid() override {
+    return false;
+  }
+
   bool enableFabricLogs() override {
     return false;
   }
@@ -140,6 +144,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableImagePrefetchingAndroid() override {
+    return false;
+  }
+
+  bool enableImagePrefetchingJNIBatchingAndroid() override {
     return false;
   }
 
@@ -192,10 +200,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {
-    return false;
-  }
-
-  bool enableResourceTimingAPI() override {
     return false;
   }
 
@@ -292,6 +296,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool shouldPressibilityUseW3CPointerEventsForHover() override {
+    return false;
+  }
+
+  bool shouldSetEnabledBasedOnAccessibilityState() override {
     return false;
   }
 

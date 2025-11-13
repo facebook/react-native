@@ -31,7 +31,7 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
       PerformanceEntryType::LONGTASK,
   };
 
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
+  if (ReactNativeFeatureFlags::enableNetworkEventReporting()) {
     supportedEntryTypes.emplace_back(PerformanceEntryType::RESOURCE);
   }
 

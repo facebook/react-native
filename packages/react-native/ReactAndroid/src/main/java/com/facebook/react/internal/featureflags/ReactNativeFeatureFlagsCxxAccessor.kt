@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<67b008ecdc29278a7019f60e24673fc1>>
+ * @generated SignedSource<<24a3e681a86bce628917f5e20ce1b1eb>>
  */
 
 /**
@@ -43,12 +43,14 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
   private var enableEagerMainQueueModulesOnIOSCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
+  private var enableExclusivePropsUpdateAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
+  private var enableImagePrefetchingJNIBatchingAndroidCache: Boolean? = null
   private var enableImagePrefetchingOnUiThreadAndroidCache: Boolean? = null
   private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableImperativeFocusCache: Boolean? = null
@@ -62,7 +64,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
-  private var enableResourceTimingAPICache: Boolean? = null
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
@@ -87,6 +88,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
+  private var shouldSetEnabledBasedOnAccessibilityStateCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
@@ -313,6 +315,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableExclusivePropsUpdateAndroid(): Boolean {
+    var cached = enableExclusivePropsUpdateAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableExclusivePropsUpdateAndroid()
+      enableExclusivePropsUpdateAndroidCache = cached
+    }
+    return cached
+  }
+
   override fun enableFabricLogs(): Boolean {
     var cached = enableFabricLogsCache
     if (cached == null) {
@@ -363,6 +374,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableImagePrefetchingAndroid()
       enableImagePrefetchingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean {
+    var cached = enableImagePrefetchingJNIBatchingAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableImagePrefetchingJNIBatchingAndroid()
+      enableImagePrefetchingJNIBatchingAndroidCache = cached
     }
     return cached
   }
@@ -480,15 +500,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enablePropsUpdateReconciliationAndroid()
       enablePropsUpdateReconciliationAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableResourceTimingAPI(): Boolean {
-    var cached = enableResourceTimingAPICache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableResourceTimingAPI()
-      enableResourceTimingAPICache = cached
     }
     return cached
   }
@@ -705,6 +716,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.shouldPressibilityUseW3CPointerEventsForHover()
       shouldPressibilityUseW3CPointerEventsForHoverCache = cached
+    }
+    return cached
+  }
+
+  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean {
+    var cached = shouldSetEnabledBasedOnAccessibilityStateCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.shouldSetEnabledBasedOnAccessibilityState()
+      shouldSetEnabledBasedOnAccessibilityStateCache = cached
     }
     return cached
   }

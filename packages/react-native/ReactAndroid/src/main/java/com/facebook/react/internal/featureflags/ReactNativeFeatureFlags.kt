@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<862c5a78fec94408ca78ef2349627a02>>
+ * @generated SignedSource<<9cb554e599417e707c0953baa6adb0c2>>
  */
 
 /**
@@ -169,6 +169,12 @@ public object ReactNativeFeatureFlags {
   public fun enableEagerRootViewAttachment(): Boolean = accessor.enableEagerRootViewAttachment()
 
   /**
+   * When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.
+   */
+  @JvmStatic
+  public fun enableExclusivePropsUpdateAndroid(): Boolean = accessor.enableExclusivePropsUpdateAndroid()
+
+  /**
    * This feature flag enables logs for Fabric.
    */
   @JvmStatic
@@ -203,6 +209,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
+
+  /**
+   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call
+   */
+  @JvmStatic
+  public fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = accessor.enableImagePrefetchingJNIBatchingAndroid()
 
   /**
    * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
@@ -265,7 +277,7 @@ public object ReactNativeFeatureFlags {
   public fun enableNativeCSSParsing(): Boolean = accessor.enableNativeCSSParsing()
 
   /**
-   * Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.
+   * Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.
    */
   @JvmStatic
   public fun enableNetworkEventReporting(): Boolean = accessor.enableNetworkEventReporting()
@@ -281,12 +293,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
-
-  /**
-   * Enables the reporting of network resource timings through `PerformanceObserver`.
-   */
-  @JvmStatic
-  public fun enableResourceTimingAPI(): Boolean = accessor.enableResourceTimingAPI()
 
   /**
    * When enabled, it will use SwiftUI for filter effects like blur on iOS.
@@ -431,6 +437,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = accessor.shouldPressibilityUseW3CPointerEventsForHover()
+
+  /**
+   * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
+   */
+  @JvmStatic
+  public fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = accessor.shouldSetEnabledBasedOnAccessibilityState()
 
   /**
    * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.

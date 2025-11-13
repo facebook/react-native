@@ -8,9 +8,12 @@
 #include "ImageFetcher.h"
 
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/imagemanager/conversions.h>
 
 namespace facebook::react {
+
+extern const char ImageFetcherKey[] = "ImageFetcher";
 
 ImageFetcher::ImageFetcher(
     std::shared_ptr<const ContextContainer> contextContainer)
@@ -29,9 +32,11 @@ ImageRequest ImageFetcher::requestImage(
 
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
 
-  flushImageRequests();
+  if (!ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    flushImageRequests();
+  }
 
-  return {imageSource, telemetry};
+  return ImageRequest{imageSource, telemetry};
 }
 
 void ImageFetcher::flushImageRequests() {

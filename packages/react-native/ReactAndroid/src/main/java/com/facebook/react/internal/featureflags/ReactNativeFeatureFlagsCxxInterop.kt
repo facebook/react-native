@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<553d71b2c9e8e89b2e5d48723f3009b4>>
+ * @generated SignedSource<<f57b2ecf22eabb7f207b86c472059084>>
  */
 
 /**
@@ -74,6 +74,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableEagerRootViewAttachment(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableExclusivePropsUpdateAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFabricRenderer(): Boolean
@@ -85,6 +87,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
 
@@ -111,8 +115,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enablePropsUpdateReconciliationAndroid(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableResourceTimingAPI(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableSwiftUIBasedFilters(): Boolean
 
@@ -161,6 +163,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun preventShadowTreeCommitExhaustion(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun shouldSetEnabledBasedOnAccessibilityState(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 

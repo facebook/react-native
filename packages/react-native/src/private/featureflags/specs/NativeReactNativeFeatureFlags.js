@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4faf238a79cec9bc961d5f080d54872a>>
+ * @generated SignedSource<<bddc4ce972a5fd24b18de9e47708209e>>
  * @flow strict
  * @noformat
  */
@@ -48,12 +48,14 @@ export interface Spec extends TurboModule {
   +enableDoubleMeasurementFixAndroid?: () => boolean;
   +enableEagerMainQueueModulesOnIOS?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
+  +enableExclusivePropsUpdateAndroid?: () => boolean;
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableImagePrefetchingAndroid?: () => boolean;
+  +enableImagePrefetchingJNIBatchingAndroid?: () => boolean;
   +enableImagePrefetchingOnUiThreadAndroid?: () => boolean;
   +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
   +enableImperativeFocus?: () => boolean;
@@ -67,7 +69,6 @@ export interface Spec extends TurboModule {
   +enableNetworkEventReporting?: () => boolean;
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
-  +enableResourceTimingAPI?: () => boolean;
   +enableSwiftUIBasedFilters?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
@@ -92,6 +93,7 @@ export interface Spec extends TurboModule {
   +preparedTextCacheSize?: () => number;
   +preventShadowTreeCommitExhaustion?: () => boolean;
   +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
+  +shouldSetEnabledBasedOnAccessibilityState?: () => boolean;
   +shouldTriggerResponderTransferOnScrollAndroid?: () => boolean;
   +skipActivityIdentityAssertionOnHostPause?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;

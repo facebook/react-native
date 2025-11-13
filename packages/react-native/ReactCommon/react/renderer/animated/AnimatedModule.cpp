@@ -221,6 +221,9 @@ void AnimatedModule::queueAndExecuteBatchedOperations(
 }
 
 void AnimatedModule::executeOperation(const Operation& operation) {
+  if (nodesManager_ == nullptr) {
+    return;
+  }
   std::visit(
       [&](const auto& op) {
         using T = std::decay_t<decltype(op)>;

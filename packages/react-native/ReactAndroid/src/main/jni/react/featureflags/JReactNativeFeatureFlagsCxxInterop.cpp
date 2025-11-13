@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<09f32ad880a470e45d3e5ba67a6e5831>>
+ * @generated SignedSource<<1a3267843d7400974e8686c83d359c7b>>
  */
 
 /**
@@ -177,6 +177,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableExclusivePropsUpdateAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableExclusivePropsUpdateAndroid");
+    return method(javaProvider_);
+  }
+
   bool enableFabricLogs() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricLogs");
@@ -210,6 +216,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableImagePrefetchingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImagePrefetchingAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableImagePrefetchingJNIBatchingAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImagePrefetchingJNIBatchingAndroid");
     return method(javaProvider_);
   }
 
@@ -288,12 +300,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enablePropsUpdateReconciliationAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePropsUpdateReconciliationAndroid");
-    return method(javaProvider_);
-  }
-
-  bool enableResourceTimingAPI() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableResourceTimingAPI");
     return method(javaProvider_);
   }
 
@@ -438,6 +444,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool shouldPressibilityUseW3CPointerEventsForHover() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldPressibilityUseW3CPointerEventsForHover");
+    return method(javaProvider_);
+  }
+
+  bool shouldSetEnabledBasedOnAccessibilityState() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldSetEnabledBasedOnAccessibilityState");
     return method(javaProvider_);
   }
 
@@ -668,6 +680,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment(
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableExclusivePropsUpdateAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFabricLogs();
@@ -696,6 +713,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
 bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingJNIBatchingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingOnUiThreadAndroid(
@@ -761,11 +783,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enablePreparedTextLayout(
 bool JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableResourceTimingAPI(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableResourceTimingAPI();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters(
@@ -886,6 +903,11 @@ bool JReactNativeFeatureFlagsCxxInterop::preventShadowTreeCommitExhaustion(
 bool JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsForHover(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::shouldSetEnabledBasedOnAccessibilityState(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::shouldTriggerResponderTransferOnScrollAndroid(
@@ -1079,6 +1101,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableEagerRootViewAttachment",
         JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment),
       makeNativeMethod(
+        "enableExclusivePropsUpdateAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableExclusivePropsUpdateAndroid),
+      makeNativeMethod(
         "enableFabricLogs",
         JReactNativeFeatureFlagsCxxInterop::enableFabricLogs),
       makeNativeMethod(
@@ -1096,6 +1121,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableImagePrefetchingAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid),
+      makeNativeMethod(
+        "enableImagePrefetchingJNIBatchingAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingJNIBatchingAndroid),
       makeNativeMethod(
         "enableImagePrefetchingOnUiThreadAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingOnUiThreadAndroid),
@@ -1135,9 +1163,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enablePropsUpdateReconciliationAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid),
-      makeNativeMethod(
-        "enableResourceTimingAPI",
-        JReactNativeFeatureFlagsCxxInterop::enableResourceTimingAPI),
       makeNativeMethod(
         "enableSwiftUIBasedFilters",
         JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters),
@@ -1210,6 +1235,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "shouldPressibilityUseW3CPointerEventsForHover",
         JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsForHover),
+      makeNativeMethod(
+        "shouldSetEnabledBasedOnAccessibilityState",
+        JReactNativeFeatureFlagsCxxInterop::shouldSetEnabledBasedOnAccessibilityState),
       makeNativeMethod(
         "shouldTriggerResponderTransferOnScrollAndroid",
         JReactNativeFeatureFlagsCxxInterop::shouldTriggerResponderTransferOnScrollAndroid),

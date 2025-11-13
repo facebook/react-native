@@ -1,6 +1,6 @@
 {
   "name": "@react-native/tester",
-  "version": "0.83.0-main",
+  "version": "0.84.0-main",
   "private": true,
   "description": "React Native tester app.",
   "license": "MIT",
@@ -15,8 +15,7 @@
   "scripts": {
     "start": "react-native start",
     "android": "react-native run-android",
-    "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installDebug",
-    "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installDebug",
+    "install-android": "../../gradlew :packages:rn-tester:android:app:installDebug",
     "clean-android": "rm -rf android/app/build",
     "prepare-ios": "node ./cli.js bootstrap ios",
     "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock RNTesterPods.xcworkspace/ ../react-native-codegen/lib/",
@@ -26,8 +25,8 @@
     "e2e-test-ios": "./scripts/maestro-test-ios.sh"
   },
   "dependencies": {
-    "@react-native/new-app-screen": "0.83.0-main",
-    "@react-native/popup-menu-android": "0.83.0-main",
+    "@react-native/new-app-screen": "0.84.0-main",
+    "@react-native/popup-menu-android": "0.84.0-main",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"

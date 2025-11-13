@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0efef5db3ded62f312486ac2fb04bcdb>>
+ * @generated SignedSource<<da5879ddbaea7cd51f828e284bc0e913>>
  */
 
 /**
@@ -69,6 +69,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
+  @DoNotStrip public fun enableExclusivePropsUpdateAndroid(): Boolean
+
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
@@ -80,6 +82,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip public fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
 
   @DoNotStrip public fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
 
@@ -106,8 +110,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
-
-  @DoNotStrip public fun enableResourceTimingAPI(): Boolean
 
   @DoNotStrip public fun enableSwiftUIBasedFilters(): Boolean
 
@@ -156,6 +158,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun preventShadowTreeCommitExhaustion(): Boolean
 
   @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
+
+  @DoNotStrip public fun shouldSetEnabledBasedOnAccessibilityState(): Boolean
 
   @DoNotStrip public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 

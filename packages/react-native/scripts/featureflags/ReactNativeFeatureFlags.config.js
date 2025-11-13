@@ -296,6 +296,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableExclusivePropsUpdateAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-11',
+        description:
+          'When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableFabricLogs: {
       defaultValue: false,
       metadata: {
@@ -352,6 +363,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-06-21',
         description:
           'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableImagePrefetchingJNIBatchingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-10',
+        description:
+          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -468,7 +490,7 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       metadata: {
         description:
-          'Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.',
+          'Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -492,16 +514,6 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableResourceTimingAPI: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables the reporting of network resource timings through `PerformanceObserver`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -759,6 +771,17 @@ const definitions: FeatureFlagDefinitions = {
           'Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldSetEnabledBasedOnAccessibilityState: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-11',
+        description:
+          'Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

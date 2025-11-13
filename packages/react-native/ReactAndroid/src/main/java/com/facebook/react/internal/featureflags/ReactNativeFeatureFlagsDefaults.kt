@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bf1a3a96ae311f186f7fffacc466407e>>
+ * @generated SignedSource<<47b33d1a21af24f369e52d3b8f226d73>>
  */
 
 /**
@@ -69,6 +69,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableEagerRootViewAttachment(): Boolean = false
 
+  override fun enableExclusivePropsUpdateAndroid(): Boolean = false
+
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
@@ -80,6 +82,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
+
+  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = false
 
   override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
 
@@ -106,8 +110,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
-
-  override fun enableResourceTimingAPI(): Boolean = false
 
   override fun enableSwiftUIBasedFilters(): Boolean = false
 
@@ -156,6 +158,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun preventShadowTreeCommitExhaustion(): Boolean = false
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
+
+  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = false
 
   override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 

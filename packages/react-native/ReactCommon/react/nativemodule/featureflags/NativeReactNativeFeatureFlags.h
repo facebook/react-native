@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d84bc60152fe0f894d49c8b45eb6505>>
+ * @generated SignedSource<<38054c031fa946345d83e7a7220edd33>>
  */
 
 /**
@@ -82,6 +82,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
+  bool enableExclusivePropsUpdateAndroid(jsi::Runtime& runtime);
+
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
@@ -93,6 +95,8 @@ class NativeReactNativeFeatureFlags
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
+
+  bool enableImagePrefetchingJNIBatchingAndroid(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
 
@@ -119,8 +123,6 @@ class NativeReactNativeFeatureFlags
   bool enablePreparedTextLayout(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
-
-  bool enableResourceTimingAPI(jsi::Runtime& runtime);
 
   bool enableSwiftUIBasedFilters(jsi::Runtime& runtime);
 
@@ -169,6 +171,8 @@ class NativeReactNativeFeatureFlags
   bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
+
+  bool shouldSetEnabledBasedOnAccessibilityState(jsi::Runtime& runtime);
 
   bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 
