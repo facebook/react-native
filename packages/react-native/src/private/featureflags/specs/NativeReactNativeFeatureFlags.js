@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d51c41724cd4d10eb227f96847277e99>>
+ * @generated SignedSource<<fecd2198c65b74c22fa1a6ce96343228>>
  * @flow strict
  * @noformat
  */
@@ -55,6 +55,7 @@ export interface Spec extends TurboModule {
   +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
   +enableImperativeFocus?: () => boolean;
   +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
+  +enableIntersectionObserverByDefault?: () => boolean;
   +enableKeyEvents?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;

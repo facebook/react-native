@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5864ef780bdc795d47c096b16bf248b5>>
+ * @generated SignedSource<<b88e97176f25900602b0821e16af4d12>>
  */
 
 /**
@@ -62,6 +62,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableImmediateUpdateModeForContentOffsetChanges();
   bool enableImperativeFocus();
   bool enableInteropViewManagerClassLookUpOptimizationIOS();
+  bool enableIntersectionObserverByDefault();
   bool enableKeyEvents();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
@@ -127,7 +128,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 84> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 85> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -159,6 +160,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
   std::atomic<std::optional<bool>> enableImperativeFocus_;
   std::atomic<std::optional<bool>> enableInteropViewManagerClassLookUpOptimizationIOS_;
+  std::atomic<std::optional<bool>> enableIntersectionObserverByDefault_;
   std::atomic<std::optional<bool>> enableKeyEvents_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;

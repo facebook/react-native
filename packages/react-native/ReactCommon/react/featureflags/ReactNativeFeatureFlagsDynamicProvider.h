@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<394e4281884f0d2519d680974d2ebfe5>>
+ * @generated SignedSource<<b4abe68bba3cca50754f060a278f9896>>
  */
 
 /**
@@ -313,6 +313,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableInteropViewManagerClassLookUpOptimizationIOS();
+  }
+
+  bool enableIntersectionObserverByDefault() override {
+    auto value = values_["enableIntersectionObserverByDefault"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableIntersectionObserverByDefault();
   }
 
   bool enableKeyEvents() override {
