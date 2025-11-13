@@ -1,5 +1,8 @@
 {
+  "name": "@react-native/monorepo",
   "private": true,
+  "version": "1000.0.0",
+  "license": "MIT",
   "packageManager": "yarn@1.22.22",
   "scripts": {
     "android": "yarn --cwd packages/rn-tester android",
