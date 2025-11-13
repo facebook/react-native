@@ -27,7 +27,7 @@ using SharedComponentDescriptorRegistry =
 /*
  * Registry of particular `ComponentDescriptor`s.
  */
-class ComponentDescriptorRegistry {
+class ComponentDescriptorRegistry : public std::enable_shared_from_this<ComponentDescriptorRegistry> {
  public:
   using Shared = std::shared_ptr<const ComponentDescriptorRegistry>;
 

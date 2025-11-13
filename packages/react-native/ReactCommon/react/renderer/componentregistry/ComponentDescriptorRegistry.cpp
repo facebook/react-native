@@ -40,13 +40,16 @@ void ComponentDescriptorRegistry::addMultipleAsync(
   auto parametersCopy = parameters_;
   auto contextContainerCopy = contextContainer_;
 
-  // Start thread immediately
-  std::thread([this, providers = std::move(providers), parametersCopy, contextContainerCopy]() {
+  auto self = shared_from_this();
+
+  // Start detached thread - registry stays alive until completion due to strong self reference
+  std::thread([self, providers = std::move(providers), parametersCopy, contextContainerCopy]() {
     // Ensure this C++ thread is attached to the JVM before touching JNI
     #ifdef __ANDROID__
       facebook::jni::Environment::ensureCurrentThreadIsAttached();
     #endif
-      std::unique_lock lock(mutex_);
+
+    std::unique_lock lock(self->mutex_);
 
     for (const auto& provider : providers) {
       auto componentDescriptor = provider.constructor(
@@ -60,8 +63,8 @@ void ComponentDescriptorRegistry::addMultipleAsync(
       auto sharedComponentDescriptor =
           std::shared_ptr<const ComponentDescriptor>(std::move(componentDescriptor));
 
-      _registryByHandle[provider.handle] = sharedComponentDescriptor;
-      _registryByName[provider.name] = sharedComponentDescriptor;
+      self->_registryByHandle[provider.handle] = sharedComponentDescriptor;
+      self->_registryByName[provider.name] = sharedComponentDescriptor;
     }
   }).detach();
 }
@@ -90,6 +93,8 @@ void ComponentDescriptorRegistry::add(
 
 void ComponentDescriptorRegistry::registerComponentDescriptor(
     const SharedComponentDescriptor& componentDescriptor) const {
+  std::unique_lock lock(mutex_);
+
   ComponentHandle componentHandle = componentDescriptor->getComponentHandle();
   _registryByHandle[componentHandle] = componentDescriptor;
 
