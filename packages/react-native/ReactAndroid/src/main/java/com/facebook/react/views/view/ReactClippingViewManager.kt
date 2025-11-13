@@ -31,47 +31,16 @@ public abstract class ReactClippingViewManager<T : ReactViewGroup> : ViewGroupMa
     view.removeClippedSubviews = removeClippedSubviews
   }
 
-  // parent: childIndex[] - Used when we can't immediately add a view
-  private val operationsMap = WeakHashMap<T, MutableMap<Int, Boolean>>()
-
   override fun addView(parent: T, child: View, index: Int) {
     UiThreadUtil.assertOnUiThread()
 
-    if (child.parent != null) {
-      operationsMap.getOrPut(parent) {
-        mutableMapOf()
-      }[index] = true
-
-      // When the child-parent relation is removed, onDetachedFromWindow will be called.
-      // Its important to wait for detaching as the view might be in a transition, and isn't removed immediately.
-      child.doOnDetach {
-        // Looking at how endViewTransition is implemented, dispatchDetachedFromWindow
-        // gets called _before_ the parent relation is removed, so we need to post this to the end of the frame:
-        child.post {
-          if(operationsMap.remove(parent) == null) {
-            // The addView operation was already countered by a removeView operation while we were waiting
-            FLog.w("ReactClippingViewManager", "Tried to add a view to a parent after the child was detached, but a remove operation was already enqueued")
-            return@post
-          }
-          FLog.w("ReactClippingViewManager", "addView(): ${child::class.java.simpleName} had a parent, removed from previous parent and after onDetach adding to new parent $parent")
-          addViewInternal(parent, child, index)
-        }
+    addViewSafely(parent, child, index) {
+      val removeClippedSubviews = parent.removeClippedSubviews
+      if (removeClippedSubviews) {
+        parent.addViewWithSubviewClippingEnabled(child, index)
+      } else {
+        parent.addView(child, index)
       }
-
-      // With the detach listener in place, we can now remove the view from the previous parent:
-      // Note: This call here is potentially redundant, as SurfaceMountingManager.kt is already removing it
-      (child.parent as? ViewGroup)?.removeView(child)
-    } else {
-      addViewInternal(parent, child, index)
-    }
-  }
-
-  private fun addViewInternal(parent: T, child: View, index: Int) {
-    val removeClippedSubviews = parent.removeClippedSubviews
-    if (removeClippedSubviews) {
-      parent.addViewWithSubviewClippingEnabled(child, index)
-    } else {
-      parent.addView(child, index)
     }
   }
 
