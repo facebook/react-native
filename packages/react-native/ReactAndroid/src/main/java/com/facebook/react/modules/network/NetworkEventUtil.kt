@@ -42,6 +42,29 @@ internal object NetworkEventUtil {
     }
   }
 
+  @Deprecated("Compatibility overload")
+  @JvmStatic
+  fun onCreateRequest(
+      devToolsRequestId: String,
+      requestUrl: String,
+      requestMethod: String,
+      requestHeaders: Map<String, String>,
+      requestBody: String,
+      encodedDataLength: Long,
+  ) {
+    if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
+      InspectorNetworkReporter.reportRequestStart(
+          devToolsRequestId,
+          requestUrl,
+          requestMethod,
+          requestHeaders,
+          requestBody,
+          encodedDataLength,
+      )
+      InspectorNetworkReporter.reportConnectionTiming(devToolsRequestId, requestHeaders)
+    }
+  }
+
   @JvmStatic
   fun onDataSend(
       reactContext: ReactApplicationContext?,
