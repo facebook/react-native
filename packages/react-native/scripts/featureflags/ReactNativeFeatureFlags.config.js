@@ -201,6 +201,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableAndroidAntialiasedBorderRadiusClipping: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-01-31',
+        description:
+          'Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAndroidLinearText: {
       defaultValue: false,
       metadata: {
