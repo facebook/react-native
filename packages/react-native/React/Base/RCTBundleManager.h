@@ -54,9 +54,9 @@ typedef NSMutableArray<NSURLQueryItem *> *_Nullable (^RCTPackagerOptionsUpdater)
 
 - (nullable NSURL *)getBundleURL;
 
-- (nullable NSString *)getPackagerServerScheme;
+- (nonnull NSString *)getPackagerServerScheme;
 
-- (nullable NSString *)getPackagerServerHost;
+- (nonnull NSString *)getPackagerServerHost;
 
 @end
 
