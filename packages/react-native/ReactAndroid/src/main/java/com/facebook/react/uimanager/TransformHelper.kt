@@ -9,6 +9,7 @@ package com.facebook.react.uimanager
 
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.NativeArray
+import com.facebook.react.bridge.ReactNativeJNISoLoader
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
@@ -16,6 +17,9 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 
 public object TransformHelper {
+  init {
+    ReactNativeJNISoLoader.staticInit()
+  }
 
   private val helperMatrix: ThreadLocal<DoubleArray> =
       object : ThreadLocal<DoubleArray>() {

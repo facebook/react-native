@@ -7,6 +7,10 @@
 
 #pragma once
 
-#warning Deprecated. Use <react/utils/MoveWrapper.h> instead.
+#include <jsi/jsi.h>
 
-#include <react/utils/MoveWrapper.h>
+namespace facebook::react {
+
+void handleJSError(jsi::Runtime &runtime, const jsi::JSError &error, bool isFatal);
+
+} // namespace facebook::react

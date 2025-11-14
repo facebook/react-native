@@ -37,7 +37,6 @@ Pod::Spec.new do |s|
   resolve_use_frameworks(s, header_mappings_dir: '../', module_name: "React_jserrorhandler")
 
   s.dependency "React-jsi"
-  s.dependency "React-cxxreact"
   s.dependency "ReactCommon/turbomodule/bridging"
   add_dependency(s, "React-featureflags")
   add_dependency(s, "React-debug")
