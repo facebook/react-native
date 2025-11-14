@@ -8,12 +8,16 @@
  * @format
  */
 
-import type {InterpolationConfigType} from '../nodes/AnimatedInterpolation';
+import type {
+  InterpolationConfigSupportedOutputType,
+  InterpolationConfigType,
+} from '../nodes/AnimatedInterpolation';
 
+import {PlatformColor} from '../../../Libraries/StyleSheet/PlatformColorValueTypes';
 import Easing from '../Easing';
 import AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 
-function createInterpolation<T: number | string>(
+function createInterpolation<T: InterpolationConfigSupportedOutputType>(
   config: InterpolationConfigType<T>,
 ): number => T {
   let parentValue = null;
@@ -358,6 +362,31 @@ describe('Interpolation', () => {
 
     expect(interpolation(1e-12)).toBe('rgba(0, 0, 0, 0)');
     expect(interpolation(2 / 3)).toBe('rgba(0, 0, 0, 0.667)');
+  });
+
+  it('should work with PlatformColor', () => {
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
+    const interpolation = createInterpolation({
+      inputRange: [0, 1],
+      outputRange: [
+        PlatformColor('@android:color/white'),
+        PlatformColor('@android:color/darker_gray'),
+      ],
+    });
+
+    // NativeColorValue is deferred to the native side to interpolate
+    expect(interpolation(0)).toStrictEqual(
+      PlatformColor('@android:color/white'),
+    );
+    expect(interpolation(2 / 3)).toStrictEqual(
+      PlatformColor('@android:color/white'),
+    );
+    expect(console.warn).toBeCalledWith(
+      'PlatformColor interpolation should happen natively, here we fallback to the closest color',
+    );
+    expect(interpolation(1)).toStrictEqual(
+      PlatformColor('@android:color/darker_gray'),
+    );
   });
 
   it.each([
