@@ -29,12 +29,18 @@ InterpolationAnimatedNode::InterpolationAnimatedNode(
     inputRanges_.push_back(rangeValue.asDouble());
   }
 
-  const bool isColorOutput = nodeConfig["outputType"].isString() &&
-      nodeConfig["outputType"].asString() == "color";
-  if (isColorOutput) {
+  const auto outputType = nodeConfig["outputType"].isString()
+      ? nodeConfig["outputType"].asString()
+      : "";
+  outputType_ = outputType;
+  if (outputType == "color") {
     isColorValue_ = true;
     for (const auto& rangeValue : nodeConfig["outputRange"]) {
       colorOutputRanges_.push_back(static_cast<int>(rangeValue.asInt()));
+    }
+  } else if (outputType == "platform_color") {
+    for (const auto& rangeValue : nodeConfig["outputRange"]) {
+      platformColorOutputRanges_.push_back(rangeValue);
     }
   } else {
     for (const auto& rangeValue : nodeConfig["outputRange"]) {
@@ -53,8 +59,10 @@ void InterpolationAnimatedNode::update() {
 
   if (const auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(parentTag_)) {
-    if (isColorValue_) {
+    if (outputType_ == "color") {
       setRawValue(interpolateColor(node->getValue()));
+    } else if (outputType_ == "platform_color") {
+      setRawValue(interpolatePlatformColor(node->getValue()));
     } else {
       setRawValue(interpolateValue(node->getValue()));
     }
@@ -103,6 +111,68 @@ double InterpolationAnimatedNode::interpolateColor(double value) {
 
   const auto outputMin = colorOutputRanges_[index];
   const auto outputMax = colorOutputRanges_[index + 1];
+  if (outputMin == outputMax) {
+    return outputMin;
+  }
+
+  const auto inputMin = inputRanges_[index];
+  const auto inputMax = inputRanges_[index + 1];
+  if (inputMin == inputMax) {
+    if (value <= inputMin) {
+      return static_cast<int32_t>(outputMin);
+    } else {
+      return static_cast<int32_t>(outputMax);
+    }
+  }
+
+  auto ratio = (value - inputMin) / (inputMax - inputMin);
+
+  auto outputMinA = alphaFromHostPlatformColor(outputMin);
+  auto outputMinR = redFromHostPlatformColor(outputMin);
+  auto outputMinG = greenFromHostPlatformColor(outputMin);
+  auto outputMinB = blueFromHostPlatformColor(outputMin);
+
+  auto outputMaxA = alphaFromHostPlatformColor(outputMax);
+  auto outputMaxR = redFromHostPlatformColor(outputMax);
+  auto outputMaxG = greenFromHostPlatformColor(outputMax);
+  auto outputMaxB = blueFromHostPlatformColor(outputMax);
+
+  auto outputValueA = ratio * (outputMaxA - outputMinA) + outputMinA;
+  auto outputValueR = ratio * (outputMaxR - outputMinR) + outputMinR;
+  auto outputValueG = ratio * (outputMaxG - outputMinG) + outputMinG;
+  auto outputValueB = ratio * (outputMaxB - outputMinB) + outputMinB;
+
+  return static_cast<int32_t>(hostPlatformColorFromRGBA(
+      static_cast<uint8_t>(outputValueR),
+      static_cast<uint8_t>(outputValueG),
+      static_cast<uint8_t>(outputValueB),
+      static_cast<uint8_t>(outputValueA)));
+}
+
+double InterpolationAnimatedNode::interpolatePlatformColor(double value) {
+  // Compute range index
+  size_t index = 1;
+  for (; index < inputRanges_.size() - 1; ++index) {
+    if (inputRanges_[index] >= value) {
+      break;
+    }
+  }
+  index--;
+  SharedColor outputMinSharedColor;
+  SharedColor outputMaxSharedColor;
+  if (manager_ != nullptr) {
+    manager_->resolvePlatformColor(
+        connectedRootTag_,
+        RawValue(platformColorOutputRanges_[index]),
+        outputMinSharedColor);
+    manager_->resolvePlatformColor(
+        connectedRootTag_,
+        RawValue(platformColorOutputRanges_[index + 1]),
+        outputMaxSharedColor);
+  }
+  auto outputMin = *outputMinSharedColor;
+  auto outputMax = *outputMaxSharedColor;
+
   if (outputMin == outputMax) {
     return outputMin;
   }
