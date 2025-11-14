@@ -55,7 +55,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
   devSettingsMenuEnabled = enabled;
 }
 
-#if RCT_DEV_MENU || RCT_REMOTE_PROFILE
+#if RCT_DEV || RCT_REMOTE_PROFILE
 
 @interface RCTDevSettingsUserDefaultsDataSource : NSObject <RCTDevSettingsDataSource>
 
@@ -190,7 +190,7 @@ RCT_EXPORT_MODULE()
 
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   if (numInitializedModules++ == 0) {
-    reloadToken = [_packagerConnection
+    reloadToken = [self
         addNotificationHandler:^(id params) {
           RCTTriggerReloadCommandListeners(@"Global hotkey");
         }
@@ -198,7 +198,7 @@ RCT_EXPORT_MODULE()
                      forMethod:@"reload"];
 #if RCT_DEV_MENU
     __weak __typeof(self) weakSelf = self;
-    devMenuToken = [_packagerConnection
+    devMenuToken = [self
         addNotificationHandler:^(id params) {
           __typeof(self) strongSelf = weakSelf;
           if (strongSelf == nullptr) {
@@ -437,6 +437,23 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   }
 }
 
+#if RCT_DEV
+- (RCTHandlerToken)addNotificationHandler:(RCTNotificationHandler)handler
+                                    queue:(dispatch_queue_t)queue
+                                forMethod:(NSString *)method
+{
+  return [_packagerConnection addNotificationHandler:handler queue:queue forMethod:method];
+}
+
+- (RCTHandlerToken)addRequestHandler:(RCTRequestHandler)handler
+                               queue:(dispatch_queue_t)queue
+                           forMethod:(NSString *)method
+{
+  return [_packagerConnection addRequestHandler:handler queue:queue forMethod:method];
+}
+
+#endif
+
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
@@ -527,7 +544,7 @@ RCT_EXPORT_METHOD(openDebugger)
 
 @end
 
-#else // #if RCT_DEV_MENU
+#else // #if RCT_DEV || RCT_REMOTE_PROFILE
 
 @interface RCTDevSettings () <NativeDevSettingsSpec>
 @end
@@ -591,6 +608,10 @@ RCT_EXPORT_METHOD(openDebugger)
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(params);
+}
+
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
+{
 }
 
 @end
