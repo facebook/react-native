@@ -29,12 +29,12 @@ declare var performance: Performance;
  */
 const MEMORY_LIMITS_KB = {
   environmentSetup: {
-    dev: 1300,
-    opt: 700,
+    dev: 1000,
+    opt: 500,
   },
   basicSurfaceRender: {
-    dev: 1700,
-    opt: 900,
+    dev: 1200,
+    opt: 700,
   },
 };
 
