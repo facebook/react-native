@@ -65,7 +65,12 @@ void ImageShadowNode::updateStateIfNeeded() {
       imageProps.fadeDuration,
       imageProps.progressiveRenderingEnabled,
       imageProps.loadingIndicatorSource,
-      imageProps.internal_analyticTag
+      imageProps.internal_analyticTag,
+      Size{
+          .width =
+              layoutMetrics_.frame.size.width * layoutMetrics_.pointScaleFactor,
+          .height = layoutMetrics_.frame.size.height *
+              layoutMetrics_.pointScaleFactor}
 #endif
   );
 
@@ -85,7 +90,9 @@ void ImageShadowNode::updateStateIfNeeded() {
          (uri.starts_with("content://") || uri.starts_with("file://")));
     // If we would resize but have no dimensions, skip creating the request
     if (shouldResize &&
-        (newImageSource.size.width == 0 || newImageSource.size.height == 0)) {
+        (newImageSource.size.width == 0 || newImageSource.size.height == 0 ||
+         layoutMetrics_.frame.size.width == 0 ||
+         layoutMetrics_.frame.size.height == 0)) {
       // Keep the old state - don't create a new image request
       return;
     }
