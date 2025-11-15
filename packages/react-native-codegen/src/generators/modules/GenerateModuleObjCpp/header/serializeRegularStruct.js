@@ -10,7 +10,10 @@
 
 'use strict';
 
-import type {Nullable} from '../../../../CodegenSchema';
+import type {
+  NativeModuleUnionTypeAnnotation,
+  Nullable,
+} from '../../../../CodegenSchema';
 import type {RegularStruct, StructTypeAnnotation} from '../StructCollector';
 import type {StructSerilizationOutput} from './serializeStruct';
 
@@ -45,6 +48,17 @@ const StructTemplate = ({
 @interface RCTCxxConvert (${hasteModuleName}_${structName})
 + (RCTManagedPointer *)JS_${hasteModuleName}_${structName}:(id)json;
 @end`;
+
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
 
 const MethodTemplate = ({
   returnType,
@@ -87,8 +101,37 @@ function toObjCType(
       return 'NSString *';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *';
+    case 'UnionTypeAnnotation':
+      const union: NativeModuleUnionTypeAnnotation = typeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return wrapCxxOptional('double', isRequired);
+      }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return wrapObjCOptional('id<NSObject>', isRequired);
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return 'NSString *';
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return wrapCxxOptional('bool', isRequired);
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'NumberTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -100,6 +143,8 @@ function toObjCType(
     case 'DoubleTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapCxxOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapCxxOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -171,8 +216,37 @@ function toObjCValue(
       return RCTBridgingTo('String');
     case 'StringLiteralTypeAnnotation':
       return RCTBridgingTo('String');
-    case 'StringLiteralUnionTypeAnnotation':
-      return RCTBridgingTo('String');
+    case 'UnionTypeAnnotation':
+      const union: NativeModuleUnionTypeAnnotation = typeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return RCTBridgingTo('Double');
+      }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return value;
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return RCTBridgingTo('String');
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return RCTBridgingTo('Bool');
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'NumberTypeAnnotation':
       return RCTBridgingTo('Double');
     case 'NumberLiteralTypeAnnotation':
@@ -184,6 +258,8 @@ function toObjCValue(
     case 'DoubleTypeAnnotation':
       return RCTBridgingTo('Double');
     case 'BooleanTypeAnnotation':
+      return RCTBridgingTo('Bool');
+    case 'BooleanLiteralTypeAnnotation':
       return RCTBridgingTo('Bool');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {

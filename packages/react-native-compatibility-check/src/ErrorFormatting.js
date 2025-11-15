@@ -18,11 +18,25 @@ import type {
   FormattedIncompatiblityReport,
   NativeSpecErrorStore,
 } from './DiffResults';
-import type {CompleteTypeAnnotation} from '@react-native/codegen/src/CodegenSchema';
+import type {
+  CompleteTypeAnnotation,
+  NativeModuleUnionTypeAnnotation,
+} from '@react-native/codegen/src/CodegenSchema';
 
 function indentedLineStart(indent: number): string {
   return '\n' + '  '.repeat(indent);
 }
+
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
 
 export function formatErrorMessage(
   error: TypeComparisonError,
@@ -173,6 +187,8 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
       return 'int';
     case 'NumberLiteralTypeAnnotation':
       return annotation.value.toString();
+    case 'BooleanLiteralTypeAnnotation':
+      return annotation.value.toString();
     case 'ObjectTypeAnnotation':
       return (
         '{' +
@@ -194,25 +210,72 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
         annotation.value.includes(' ')
         ? `'${annotation.value}'`
         : annotation.value;
-    case 'StringLiteralUnionTypeAnnotation':
-      return (
-        '(' +
-        annotation.types
-          .map(stringLit => formatTypeAnnotation(stringLit))
-          .join(' | ') +
-        ')'
+    case 'UnionTypeAnnotation':
+      const union: NativeModuleUnionTypeAnnotation = annotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(['NumberTypeAnnotation'])) {
+        return `Union<number>`;
+      }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return `Union<Object>`;
+      }
+
+      if (isUnionOfType(['StringTypeAnnotation'])) {
+        return `Union<string>`;
+      }
+
+      if (isUnionOfType(['BooleanTypeAnnotation'])) {
+        return `Union<boolean>`;
+      }
+
+      if (isUnionOfType(['StringLiteralTypeAnnotation'])) {
+        return (
+          '(' +
+          // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+          (union.types: $ReadOnlyArray<CompleteTypeAnnotation>)
+            .map(stringLit => formatTypeAnnotation(stringLit))
+            .join(' | ') +
+          ')'
+        );
+      }
+
+      if (isUnionOfType(['NumberLiteralTypeAnnotation'])) {
+        return (
+          '(' +
+          // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+          (union.types: $ReadOnlyArray<CompleteTypeAnnotation>)
+            .map(numLit => formatTypeAnnotation(numLit))
+            .join(' | ') +
+          ')'
+        );
+      }
+
+      if (isUnionOfType(['BooleanLiteralTypeAnnotation'])) {
+        return (
+          '(' +
+          // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+          (union.types: $ReadOnlyArray<CompleteTypeAnnotation>)
+            .map(boolLit => formatTypeAnnotation(boolLit))
+            .join(' | ') +
+          ')'
+        );
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
       );
     case 'StringTypeAnnotation':
       return 'string';
-    case 'UnionTypeAnnotation': {
-      const shortHandType =
-        annotation.memberType === 'StringTypeAnnotation'
-          ? 'string'
-          : annotation.memberType === 'ObjectTypeAnnotation'
-            ? 'Object'
-            : 'number';
-      return `Union<${shortHandType}>`;
-    }
     case 'PromiseTypeAnnotation':
       return 'Promise<' + formatTypeAnnotation(annotation.elementType) + '>';
     case 'EventEmitterTypeAnnotation':

@@ -678,7 +678,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
-  public abstract WritableMap getUnion(double chooseInt, double chooseFloat, ReadableMap chooseObject, String chooseString, String chooseStringLiteral);
+  public abstract ReadableMap getUnion(double chooseInt, double chooseFloat, ReadableMap chooseObject, String chooseString, String chooseStringLiteral);
 }
 ",
 }

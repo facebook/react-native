@@ -47,15 +47,28 @@ export type StringTypeAnnotation = $ReadOnly<{
   type: 'StringTypeAnnotation',
 }>;
 
+export type NumberTypeAnnotation = $ReadOnly<{
+  type: 'NumberTypeAnnotation',
+}>;
+
 export type StringLiteralTypeAnnotation = $ReadOnly<{
   type: 'StringLiteralTypeAnnotation',
   value: string,
 }>;
 
-export type StringLiteralUnionTypeAnnotation = $ReadOnly<{
-  type: 'StringLiteralUnionTypeAnnotation',
-  types: $ReadOnlyArray<StringLiteralTypeAnnotation>,
+export type BooleanLiteralTypeAnnotation = $ReadOnly<{
+  type: 'BooleanLiteralTypeAnnotation',
+  value: boolean,
 }>;
+
+export type StringLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<StringLiteralTypeAnnotation>;
+
+export type NumberLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<NumberLiteralTypeAnnotation>;
+
+export type BooleanLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<BooleanLiteralTypeAnnotation>;
 
 export type VoidTypeAnnotation = $ReadOnly<{
   type: 'VoidTypeAnnotation',
@@ -66,6 +79,16 @@ export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   properties: $ReadOnlyArray<NamedShape<T>>,
   // metadata for objects that generated from interfaces
   baseTypes?: $ReadOnlyArray<string>,
+}>;
+
+export type UnionTypeAnnotation<+T> = $ReadOnly<{
+  type: 'UnionTypeAnnotation',
+  types: $ReadOnlyArray<T>,
+}>;
+
+export type TupleTypeAnnotation = $ReadOnly<{
+  type: 'TupleTypeAnnotation',
+  types: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation,
 }>;
 
 export type MixedTypeAnnotation = $ReadOnly<{
@@ -358,15 +381,17 @@ export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   elementType: VoidTypeAnnotation | Nullable<NativeModuleBaseTypeAnnotation>,
 }>;
 
-export type UnionTypeAnnotationMemberType =
-  | 'NumberTypeAnnotation'
-  | 'ObjectTypeAnnotation'
-  | 'StringTypeAnnotation';
+export type NativeModuleUnionTypeAnnotationMemberType =
+  | NativeModuleObjectTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | NumberTypeAnnotation;
 
-export type NativeModuleUnionTypeAnnotation = $ReadOnly<{
-  type: 'UnionTypeAnnotation',
-  memberType: UnionTypeAnnotationMemberType,
-}>;
+export type NativeModuleUnionTypeAnnotation =
+  UnionTypeAnnotation<NativeModuleUnionTypeAnnotationMemberType>;
 
 export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
@@ -396,6 +421,7 @@ export type NativeModuleBaseTypeAnnotation =
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation

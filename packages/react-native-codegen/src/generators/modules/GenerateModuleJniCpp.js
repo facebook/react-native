@@ -17,6 +17,7 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleReturnTypeAnnotation,
+  NativeModuleUnionTypeAnnotation,
   Nullable,
   SchemaType,
 } from '../../CodegenSchema';
@@ -138,6 +139,17 @@ ${moduleLookups.map(ModuleLookupTemplate).join('\n')}
 `;
 };
 
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
+
 function translateReturnTypeToKind(
   nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
   resolveAlias: AliasResolver,
@@ -167,9 +179,9 @@ function translateReturnTypeToKind(
       return 'StringKind';
     case 'StringLiteralTypeAnnotation':
       return 'StringKind';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'StringKind';
     case 'BooleanTypeAnnotation':
+      return 'BooleanKind';
+    case 'BooleanLiteralTypeAnnotation':
       return 'BooleanKind';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -183,18 +195,36 @@ function translateReturnTypeToKind(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
-          return 'NumberKind';
-        case 'ObjectTypeAnnotation':
-          return 'ObjectKind';
-        case 'StringTypeAnnotation':
-          return 'StringKind';
-        default:
-          throw new Error(
-            `Unsupported union member returning value, found: ${realTypeAnnotation.memberType}"`,
-          );
+      const union: NativeModuleUnionTypeAnnotation = realTypeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return 'NumberKind';
       }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return 'ObjectKind';
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return 'StringKind';
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return 'BooleanKind';
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'NumberTypeAnnotation':
       return 'NumberKind';
     case 'NumberLiteralTypeAnnotation':
@@ -252,9 +282,9 @@ function translateParamTypeToJniType(
       return 'Ljava/lang/String;';
     case 'StringLiteralTypeAnnotation':
       return 'Ljava/lang/String;';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
+    case 'BooleanLiteralTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -268,18 +298,34 @@ function translateParamTypeToJniType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
-          return !isRequired ? 'Ljava/lang/Double;' : 'D';
-        case 'ObjectTypeAnnotation':
-          return 'Lcom/facebook/react/bridge/ReadableMap;';
-        case 'StringTypeAnnotation':
-          return 'Ljava/lang/String;';
-        default:
-          throw new Error(
-            `Unsupported union prop value, found: ${realTypeAnnotation.memberType}"`,
-          );
+      const union: NativeModuleUnionTypeAnnotation = realTypeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return !isRequired ? 'Ljava/lang/Double;' : 'D';
       }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return 'Lcom/facebook/react/bridge/ReadableMap;';
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return 'Ljava/lang/String;';
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(`Unsupported union types: ${invalidTypes.join(', ')}"`);
     case 'NumberTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'NumberLiteralTypeAnnotation':
@@ -334,9 +380,9 @@ function translateReturnTypeToJniType(
       return 'Ljava/lang/String;';
     case 'StringLiteralTypeAnnotation':
       return 'Ljava/lang/String;';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
+      return nullable ? 'Ljava/lang/Boolean;' : 'Z';
+    case 'BooleanLiteralTypeAnnotation':
       return nullable ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -350,18 +396,34 @@ function translateReturnTypeToJniType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
-          return nullable ? 'Ljava/lang/Double;' : 'D';
-        case 'ObjectTypeAnnotation':
-          return 'Lcom/facebook/react/bridge/WritableMap;';
-        case 'StringTypeAnnotation':
-          return 'Ljava/lang/String;';
-        default:
-          throw new Error(
-            `Unsupported union member type, found: ${realTypeAnnotation.memberType}"`,
-          );
+      const union: NativeModuleUnionTypeAnnotation = realTypeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return nullable ? 'Ljava/lang/Double;' : 'D';
       }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return 'Lcom/facebook/react/bridge/ReadableMap;';
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return 'Ljava/lang/String;';
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return nullable ? 'Ljava/lang/Boolean;' : 'Z';
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(`Unsupported union types: ${invalidTypes.join(', ')}"`);
     case 'NumberTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'NumberLiteralTypeAnnotation':

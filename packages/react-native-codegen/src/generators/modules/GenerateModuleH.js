@@ -22,6 +22,7 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
+  NativeModuleUnionTypeAnnotation,
   Nullable,
   SchemaType,
 } from '../../CodegenSchema';
@@ -40,6 +41,17 @@ const {
 type FilesOutput = Map<string, string>;
 
 type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
+
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
 
 function serializeArg(
   moduleName: string,
@@ -92,9 +104,9 @@ function serializeArg(
       return wrap(val => `${val}.asString(rt)`);
     case 'StringLiteralTypeAnnotation':
       return wrap(val => `${val}.asString(rt)`);
-    case 'StringLiteralUnionTypeAnnotation':
-      return wrap(val => `${val}.asString(rt)`);
     case 'BooleanTypeAnnotation':
+      return wrap(val => `${val}.asBool()`);
+    case 'BooleanLiteralTypeAnnotation':
       return wrap(val => `${val}.asBool()`);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
@@ -124,18 +136,36 @@ function serializeArg(
     case 'GenericObjectTypeAnnotation':
       return wrap(val => `${val}.asObject(rt)`);
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
-          return wrap(val => `${val}.asNumber()`);
-        case 'ObjectTypeAnnotation':
-          return wrap(val => `${val}.asObject(rt)`);
-        case 'StringTypeAnnotation':
-          return wrap(val => `${val}.asString(rt)`);
-        default:
-          throw new Error(
-            `Unsupported union member type for param  "${arg.name}, found: ${realTypeAnnotation.memberType}"`,
-          );
+      const union: NativeModuleUnionTypeAnnotation = realTypeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return wrap(val => `${val}.asNumber()`);
       }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return wrap(val => `${val}.asObject(rt)`);
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return wrap(val => `${val}.asString(rt)`);
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return wrap(val => `${val}.asBool()`);
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'ObjectTypeAnnotation':
       return wrap(val => `${val}.asObject(rt)`);
     case 'MixedTypeAnnotation':
@@ -251,8 +281,6 @@ function translatePrimitiveJSTypeToCpp(
       return wrapOptional('jsi::String', isRequired);
     case 'StringLiteralTypeAnnotation':
       return wrapOptional('jsi::String', isRequired);
-    case 'StringLiteralUnionTypeAnnotation':
-      return wrapOptional('jsi::String', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -264,6 +292,8 @@ function translatePrimitiveJSTypeToCpp(
     case 'Int32TypeAnnotation':
       return wrapOptional('int', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
@@ -277,16 +307,36 @@ function translatePrimitiveJSTypeToCpp(
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('jsi::Object', isRequired);
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
-          return wrapOptional('double', isRequired);
-        case 'ObjectTypeAnnotation':
-          return wrapOptional('jsi::Object', isRequired);
-        case 'StringTypeAnnotation':
-          return wrapOptional('jsi::String', isRequired);
-        default:
-          throw new Error(createErrorMessage(realTypeAnnotation.type));
+      const union: NativeModuleUnionTypeAnnotation = realTypeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return wrapOptional('double', isRequired);
       }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return wrapOptional('jsi::Object', isRequired);
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return wrapOptional('jsi::String', isRequired);
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return wrapOptional('bool', isRequired);
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'ObjectTypeAnnotation':
       return wrapOptional('jsi::Object', isRequired);
     case 'ArrayTypeAnnotation':

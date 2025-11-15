@@ -15,6 +15,7 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleReturnTypeAnnotation,
+  NativeModuleUnionTypeAnnotation,
   Nullable,
 } from '../../../CodegenSchema';
 import type {AliasResolver} from '../Utils';
@@ -61,6 +62,17 @@ export type MethodSerializationOutput = $ReadOnly<{
   returnJSType: ReturnJSType,
   argCount: number,
 }>;
+
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
 
 function serializeMethod(
   hasteModuleName: string,
@@ -259,8 +271,37 @@ function getParamObjCType(
       return notStruct(wrapOptional('NSString *', !nullable));
     case 'StringLiteralTypeAnnotation':
       return notStruct(wrapOptional('NSString *', !nullable));
-    case 'StringLiteralUnionTypeAnnotation':
-      return notStruct(wrapOptional('NSString *', !nullable));
+    case 'UnionTypeAnnotation':
+      const union: NativeModuleUnionTypeAnnotation = structTypeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return notStruct(isRequired ? 'double' : 'NSNumber *');
+      }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return notStruct(wrapOptional('NSDictionary *', !nullable));
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return notStruct(wrapOptional('NSString *', !nullable));
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'NumberTypeAnnotation':
       return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'NumberLiteralTypeAnnotation':
@@ -272,6 +313,8 @@ function getParamObjCType(
     case 'Int32TypeAnnotation':
       return notStruct(isRequired ? 'NSInteger' : 'NSNumber *');
     case 'BooleanTypeAnnotation':
+      return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
+    case 'BooleanLiteralTypeAnnotation':
       return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -340,10 +383,6 @@ function getReturnObjCType(
       // TODO: Can NSString * returns not be _Nullable?
       // In the legacy codegen, we don't surround NSSTring * with _Nullable
       return wrapOptional('NSString *', isRequired);
-    case 'StringLiteralUnionTypeAnnotation':
-      // TODO: Can NSString * returns not be _Nullable?
-      // In the legacy codegen, we don't surround NSSTring * with _Nullable
-      return wrapOptional('NSString *', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -355,6 +394,8 @@ function getReturnObjCType(
     case 'Int32TypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapOptional('NSNumber *', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -368,20 +409,38 @@ function getReturnObjCType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
-          return wrapOptional('NSNumber *', isRequired);
-        case 'ObjectTypeAnnotation':
-          return wrapOptional('NSDictionary *', isRequired);
-        case 'StringTypeAnnotation':
-          // TODO: Can NSString * returns not be _Nullable?
-          // In the legacy codegen, we don't surround NSSTring * with _Nullable
-          return wrapOptional('NSString *', isRequired);
-        default:
-          throw new Error(
-            `Unsupported union return type for ${methodName}, found: ${typeAnnotation.memberType}"`,
-          );
+      const union: NativeModuleUnionTypeAnnotation = typeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return wrapOptional('NSNumber *', isRequired);
       }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return wrapOptional('NSDictionary *', isRequired);
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        // TODO: Can NSString * returns not be _Nullable?
+        // In the legacy codegen, we don't surround NSSTring * with _Nullable
+        return wrapOptional('NSString *', isRequired);
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return wrapOptional('NSNumber *', isRequired);
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
     default:
@@ -414,8 +473,6 @@ function getReturnJSType(
       return 'StringKind';
     case 'StringLiteralTypeAnnotation':
       return 'StringKind';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'StringKind';
     case 'NumberTypeAnnotation':
       return 'NumberKind';
     case 'NumberLiteralTypeAnnotation':
@@ -427,6 +484,8 @@ function getReturnJSType(
     case 'Int32TypeAnnotation':
       return 'NumberKind';
     case 'BooleanTypeAnnotation':
+      return 'BooleanKind';
+    case 'BooleanLiteralTypeAnnotation':
       return 'BooleanKind';
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';
@@ -442,18 +501,36 @@ function getReturnJSType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
-          return 'NumberKind';
-        case 'ObjectTypeAnnotation':
-          return 'ObjectKind';
-        case 'StringTypeAnnotation':
-          return 'StringKind';
-        default:
-          throw new Error(
-            `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
-          );
+      const union: NativeModuleUnionTypeAnnotation = typeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return 'NumberKind';
       }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return 'ObjectKind';
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return 'StringKind';
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return 'BooleanKind';
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     default:
       (typeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(

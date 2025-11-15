@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  BooleanLiteralTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   FloatTypeAnnotation,
@@ -22,6 +23,7 @@ import type {
   NativeModuleNumberTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
+  NativeModuleUnionTypeAnnotation,
   Nullable,
   NumberLiteralTypeAnnotation,
   ReservedTypeAnnotation,
@@ -36,6 +38,17 @@ const {
   wrapNullable,
 } = require('../../../parsers/parsers-commons');
 const {capitalize} = require('../../Utils');
+
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 
@@ -65,6 +78,7 @@ export type StructTypeAnnotation =
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
@@ -127,28 +141,46 @@ class StructCollector {
       case 'MixedTypeAnnotation':
         throw new Error('Mixed types are unsupported in structs');
       case 'UnionTypeAnnotation':
-        switch (typeAnnotation.memberType) {
-          case 'StringTypeAnnotation':
-            return wrapNullable(nullable, {
-              type: 'StringTypeAnnotation',
-            });
-          case 'NumberTypeAnnotation':
-            return wrapNullable(nullable, {
-              type: 'NumberTypeAnnotation',
-            });
-          case 'ObjectTypeAnnotation':
-            // This isn't smart enough to actually know how to generate the
-            // options on the native side. So we just treat it as an unknown object type
-            return wrapNullable(nullable, {
-              type: 'GenericObjectTypeAnnotation',
-            });
-          default:
-            (typeAnnotation.memberType: empty);
-            throw new Error(
-              'Union types are unsupported in structs' +
-                JSON.stringify(typeAnnotation),
-            );
+        const union: NativeModuleUnionTypeAnnotation = typeAnnotation;
+        const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+          return union.types.every(memberTypeAnnotation =>
+            types.includes(memberTypeAnnotation.type),
+          );
+        };
+
+        if (isUnionOfType(NumberTypes)) {
+          return wrapNullable(nullable, {
+            type: 'NumberTypeAnnotation',
+          });
         }
+
+        if (isUnionOfType(ObjectTypes)) {
+          // This isn't smart enough to actually know how to generate the
+          // options on the native side. So we just treat it as an unknown object type
+          return wrapNullable(nullable, {
+            type: 'GenericObjectTypeAnnotation',
+          });
+        }
+
+        if (isUnionOfType(StringTypes)) {
+          return wrapNullable(nullable, {
+            type: 'StringTypeAnnotation',
+          });
+        }
+
+        if (isUnionOfType(BooleanTypes)) {
+          return wrapNullable(nullable, {
+            type: 'BooleanTypeAnnotation',
+          });
+        }
+
+        const invalidTypes = union.types.filter(member => {
+          return !ValidTypes.includes(member.type);
+        });
+
+        throw new Error(
+          `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+        );
       default: {
         return wrapNullable(nullable, typeAnnotation);
       }

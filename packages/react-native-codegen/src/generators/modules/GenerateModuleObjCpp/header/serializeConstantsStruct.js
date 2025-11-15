@@ -10,7 +10,10 @@
 
 'use strict';
 
-import type {Nullable} from '../../../../CodegenSchema';
+import type {
+  NativeModuleUnionTypeAnnotation,
+  Nullable,
+} from '../../../../CodegenSchema';
 import type {ConstantsStruct, StructTypeAnnotation} from '../StructCollector';
 import type {StructSerilizationOutput} from './serializeStruct';
 
@@ -21,6 +24,17 @@ const {
 } = require('../../../TypeUtils/Objective-C');
 const {capitalize} = require('../../../Utils');
 const {getNamespacedStructName, getSafePropertyName} = require('../Utils');
+
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
 
 const StructTemplate = ({
   hasteModuleName,
@@ -96,8 +110,37 @@ function toObjCType(
       return 'NSString *';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *';
+    case 'UnionTypeAnnotation':
+      const union: NativeModuleUnionTypeAnnotation = typeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return wrapCxxOptional('double', isRequired);
+      }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return wrapObjCOptional('id<NSObject>', isRequired);
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return 'NSString *';
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return wrapCxxOptional('bool', isRequired);
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'NumberTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -109,6 +152,8 @@ function toObjCType(
     case 'DoubleTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapCxxOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapCxxOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -181,8 +226,37 @@ function toObjCValue(
       return value;
     case 'StringLiteralTypeAnnotation':
       return value;
-    case 'StringLiteralUnionTypeAnnotation':
-      return value;
+    case 'UnionTypeAnnotation':
+      const union: NativeModuleUnionTypeAnnotation = typeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return wrapPrimitive('double');
+      }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return value;
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return value;
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return wrapPrimitive('BOOL');
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'NumberTypeAnnotation':
       return wrapPrimitive('double');
     case 'NumberLiteralTypeAnnotation':
@@ -194,6 +268,8 @@ function toObjCValue(
     case 'DoubleTypeAnnotation':
       return wrapPrimitive('double');
     case 'BooleanTypeAnnotation':
+      return wrapPrimitive('BOOL');
+    case 'BooleanLiteralTypeAnnotation':
       return wrapPrimitive('BOOL');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
