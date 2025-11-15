@@ -16240,28 +16240,6 @@ void registerCxxModuleToGlobalModuleMap(
         std::shared_ptr<CallInvoker> jsInvoker)> moduleProviderFunc);
 } // namespace facebook::react
 
-/// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboCxxModule.h}:
-/// @dep {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModule.h}
-
-namespace facebook::react {
-class JSI_EXPORT TurboCxxModule : public TurboModule {
- public:
-  TurboCxxModule(
-      std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule,
-      std::shared_ptr<CallInvoker> jsInvoker);
-  facebook::jsi::Value create(
-      facebook::jsi::Runtime& runtime,
-      const facebook::jsi::PropNameID& propName) override;
-  std::vector<facebook::jsi::PropNameID> getPropertyNames(
-      facebook::jsi::Runtime& runtime) override;
-  jsi::Value invokeMethod(
-      jsi::Runtime& runtime,
-      const std::string& methodName,
-      const jsi::Value* args,
-      size_t count);
-};
-} // namespace facebook::react
-
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModule.h}:
 namespace facebook::react {
 enum TurboModuleMethodValueKind {

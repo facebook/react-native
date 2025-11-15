@@ -363,11 +363,6 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'LegacyModuleExample',
     module: require('../examples/TurboModule/LegacyModuleExample'),
   },
-  {
-    key: 'TurboCxxModuleExample',
-    category: 'Basic',
-    module: require('../examples/TurboModule/TurboCxxModuleExample'),
-  },
   // Basic check to detect the availability of the IntersectionObserver API.
   // $FlowExpectedError[cannot-resolve-name]
   ...(typeof IntersectionObserver === 'function'
