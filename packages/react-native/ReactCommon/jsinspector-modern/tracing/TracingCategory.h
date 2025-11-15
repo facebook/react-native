@@ -16,11 +16,12 @@
 namespace facebook::react::jsinspector_modern::tracing {
 
 enum class Category {
-  HiddenTimeline, /*     disabled-by-default-devtools.timeline */
-  JavaScriptSampling, /* disabled-by-default-v8.cpu_profiler   */
-  RuntimeExecution, /*   v8.execute                            */
-  Timeline, /*           devtools.timeline                     */
-  UserTiming, /*         blink.user_timing                     */
+  HiddenTimeline, /*     disabled-by-default-devtools.timeline    */
+  JavaScriptSampling, /* disabled-by-default-v8.cpu_profiler      */
+  RuntimeExecution, /*   v8.execute                               */
+  Timeline, /*           devtools.timeline                        */
+  UserTiming, /*         blink.user_timing                        */
+  Screenshot, /*         disabled-by-default-devtools.screenshot  */
 };
 
 inline std::string tracingCategoryToString(const Category &category)
@@ -36,6 +37,8 @@ inline std::string tracingCategoryToString(const Category &category)
       return "disabled-by-default-v8.cpu_profiler";
     case Category::RuntimeExecution:
       return "v8.execute";
+    case Category::Screenshot:
+      return "disabled-by-default-devtools.screenshot";
   }
 }
 
@@ -50,6 +53,8 @@ inline std::optional<Category> getTracingCategoryFromString(const std::string &s
   } else if (str == "disabled-by-default-v8.cpu_profiler") {
     return Category::JavaScriptSampling;
   } else if (str == "v8.execute") {
+    return Category::RuntimeExecution;
+  } else if (str == "disabled-by-default-devtools.screenshot") {
     return Category::RuntimeExecution;
   } else {
     return std::nullopt;
