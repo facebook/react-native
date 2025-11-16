@@ -14,6 +14,7 @@
 #include "InspectorNetworkRequestListener.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ReactInstanceManagerInspectorTarget.h"
+#include "TransformHelper.h"
 
 #ifndef WITH_GLOGINIT
 #define WITH_GLOGINIT 1
@@ -43,6 +44,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 #endif
     ReactInstanceManagerInspectorTarget::registerNatives();
     InspectorNetworkRequestListener::registerNatives();
+    TransformHelper::registerNatives();
   });
 }
 

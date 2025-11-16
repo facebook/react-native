@@ -9,15 +9,12 @@
 
 #ifndef RCT_REMOVE_LEGACY_ARCH
 
-#include "ErrorUtils.h"
+#include <jserrorhandler/ErrorUtils.h>
 #include "JSBigString.h"
-#include "JSBundleType.h"
 #include "JSExecutor.h"
 #include "MessageQueueThread.h"
-#include "MethodCall.h"
 #include "NativeToJsBridge.h"
 #include "RAMBundleRegistry.h"
-#include "RecoverableError.h"
 #include "TraceSection.h"
 
 #include <cxxreact/JSIndexedRAMBundle.h>
@@ -27,7 +24,6 @@
 #include <glog/logging.h>
 
 #include <condition_variable>
-#include <exception>
 #include <memory>
 #include <mutex>
 #include <string>

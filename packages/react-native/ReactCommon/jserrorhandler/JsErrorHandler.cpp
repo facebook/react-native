@@ -6,11 +6,13 @@
  */
 
 #include "JsErrorHandler.h"
-#include <cxxreact/ErrorUtils.h>
+
 #include <glog/logging.h>
 #include <react/bridging/Bridging.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <string>
+
+#include "ErrorUtils.h"
 #include "StackTraceParser.h"
 
 using namespace facebook;
