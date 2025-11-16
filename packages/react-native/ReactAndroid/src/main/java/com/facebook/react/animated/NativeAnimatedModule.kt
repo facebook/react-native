@@ -231,7 +231,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     // emit the event to JS to resync the trees
     val onAnimationEndedData = buildReadableMap { putArray("tags") { tags.forEach { add(it) } } }
 
-    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+    val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     reactApplicationContext?.emitDeviceEvent("onUserDrivenAnimationEnded", onAnimationEndedData)
   }
 
@@ -352,7 +352,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
      */
     get() {
       if (nodesManagerRef.get() == null) {
-        val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+        val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
 
         if (reactApplicationContext != null) {
           nodesManagerRef.compareAndSet(null, NativeAnimatedNodesManager(reactApplicationContext))
@@ -435,7 +435,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
       return
     }
 
-    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+    val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     if (reactApplicationContext != null) {
       val uiManager = UIManagerHelper.getUIManager(reactApplicationContext, uiManagerType)
       if (uiManager != null) {
@@ -543,7 +543,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
         put("offset", offset)
       }
 
-      val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
       reactApplicationContext?.emitDeviceEvent("onAnimatedValueUpdate", onAnimatedValueData)
     }
 
@@ -981,7 +981,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     addUnbatchedOperation(
         object : UIThreadOperation() {
           override fun execute(animatedNodesManager: NativeAnimatedNodesManager) {
-            val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+            val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
 
             var viewTag = -1
             var i = 0
@@ -1013,7 +1013,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
                       put("offset", offset)
                     }
 
-                    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+                    val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
                     reactApplicationContext?.emitDeviceEvent(
                         "onAnimatedValueUpdate",
                         onAnimatedValueData,

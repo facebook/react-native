@@ -79,13 +79,13 @@ class NativeAnimatedNodeTraversalTest {
     uiManagerMock = mock<UIManagerModule>()
     eventDispatcherMock = mock<EventDispatcher>()
     whenever(uiManagerMock.eventDispatcher).thenAnswer { eventDispatcherMock }
-    whenever(uiManagerMock.constants).thenAnswer {
+    whenever(uiManagerMock.getConstants()).thenAnswer {
       mapOf("customDirectEventTypes" to emptyMap<Any, Any>())
     }
     whenever(uiManagerMock.directEventNamesResolver).thenAnswer {
       object : UIManagerModule.CustomEventNamesResolver {
         override fun resolveCustomEventName(eventName: String): String {
-          val constants: Map<String, Any?> = uiManagerMock.constants ?: emptyMap()
+          val constants: Map<String, Any?> = uiManagerMock.getConstants() ?: emptyMap()
           val directEventTypes: Any? = constants["customDirectEventTypes"]
           if (directEventTypes != null && directEventTypes is Map<*, *>) {
             val customEventType = directEventTypes[eventName]
@@ -1044,7 +1044,7 @@ class NativeAnimatedNodeTraversalTest {
   fun testNativeAnimatedEventCustomMapping() {
     val viewTag: Int = 1000
 
-    whenever(uiManagerMock.constants).thenAnswer {
+    whenever(uiManagerMock.getConstants()).thenAnswer {
       mapOf(
           "customDirectEventTypes" to mapOf("onScroll" to mapOf("registrationName" to "onScroll"))
       )
