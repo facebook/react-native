@@ -32,9 +32,9 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
   fun taskAction() {
     val model = JsonUtils.fromAutolinkingConfigJson(autolinkInputFile.get().asFile)
 
-    val packages = filterAndroidPackages(model)
-    val cmakeFileContent = generateCmakeFileContent(packages)
-    val cppFileContent = generateCppFileContent(packages)
+    val dependenciesWithNames = filterAndroidPackagesWithNames(model)
+    val cmakeFileContent = generateCmakeFileContent(dependenciesWithNames)
+    val cppFileContent = generateCppFileContent(dependenciesWithNames.map { it.second })
 
     val outputDir = generatedOutputDirectory.get().asFile
     outputDir.mkdirs()
@@ -43,49 +43,69 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
     File(outputDir, H_FILENAME).apply { writeText(hTemplate) }
   }
 
-  internal fun filterAndroidPackages(
+  internal fun filterAndroidPackagesWithNames(
       model: ModelAutolinkingConfigJson?
-  ): List<ModelAutolinkingDependenciesPlatformAndroidJson> =
-      model?.dependencies?.values?.mapNotNull { it.platforms?.android } ?: emptyList()
+  ): List<Pair<String, ModelAutolinkingDependenciesPlatformAndroidJson>> {
+    return model?.dependencies?.entries
+        ?.mapNotNull { (name, depValue) ->
+          depValue.platforms?.android?.let { android -> name to android }
+        } ?: emptyList()
+  }
 
   internal fun generateCmakeFileContent(
-      packages: List<ModelAutolinkingDependenciesPlatformAndroidJson>
+      dependenciesWithNames: List<Pair<String, ModelAutolinkingDependenciesPlatformAndroidJson>>
   ): String {
     val libraryIncludes =
-        packages.joinToString("\n") { dep ->
+        dependenciesWithNames.joinToString("\n") { (depName, dep) ->
           var addDirectoryString = ""
           val libraryName = dep.libraryName
           val cmakeListsPath = dep.cmakeListsPath
           val cxxModuleCMakeListsPath = dep.cxxModuleCMakeListsPath
-          if (libraryName != null && cmakeListsPath != null) {
-            // If user provided a custom cmakeListsPath, let's honor it.
-            val nativeFolderPath = sanitizeCmakeListsPath(cmakeListsPath)
-            addDirectoryString +=
-                "add_subdirectory(\"$nativeFolderPath\" ${libraryName}_autolinked_build)"
-          }
-          if (cxxModuleCMakeListsPath != null) {
-            // If user provided a custom cxxModuleCMakeListsPath, let's honor it.
-            val nativeFolderPath = sanitizeCmakeListsPath(cxxModuleCMakeListsPath)
-            addDirectoryString +=
-                "\nadd_subdirectory(\"$nativeFolderPath\" ${libraryName}_cxxmodule_autolinked_build)"
+
+          if (dep.hasCodegenPrefab) {
+            addDirectoryString += "find_package($depName CONFIG REQUIRED)"
+          } else {
+            if (libraryName != null && cmakeListsPath != null) {
+              val nativeFolderPath = sanitizeCmakeListsPath(cmakeListsPath)
+              addDirectoryString +=
+                  "add_subdirectory(\"$nativeFolderPath\" ${libraryName}_autolinked_build)"
+            }
+
+            if (cxxModuleCMakeListsPath != null) {
+              val nativeFolderPath = sanitizeCmakeListsPath(cxxModuleCMakeListsPath)
+              addDirectoryString +=
+                  "\nadd_subdirectory(\"$nativeFolderPath\" ${libraryName}_cxxmodule_autolinked_build)"
+            }
           }
           addDirectoryString
         }
 
     val libraryModules =
-        packages.joinToString("\n  ") { dep ->
+        dependenciesWithNames.joinToString("\n  ") { (depName, dep) ->
           var autolinkedLibraries = ""
-          if (dep.libraryName != null) {
-            autolinkedLibraries += "$CODEGEN_LIB_PREFIX${dep.libraryName}"
-          }
-          if (dep.cxxModuleCMakeListsModuleName != null) {
-            autolinkedLibraries += "\n${dep.cxxModuleCMakeListsModuleName}"
+          if (!dep.hasCodegenPrefab) {
+            if (dep.libraryName != null) {
+              autolinkedLibraries += "$CODEGEN_LIB_PREFIX${dep.libraryName}"
+            }
+            if (dep.cxxModuleCMakeListsModuleName != null) {
+              autolinkedLibraries += "\n${dep.cxxModuleCMakeListsModuleName}"
+            }
           }
           autolinkedLibraries
         }
 
+    val prefabModules =
+        dependenciesWithNames.joinToString("\n  ") { (depName, dep) ->
+          var prefabLibraries = ""
+          if (dep.hasCodegenPrefab) {
+            prefabLibraries += "$depName::$CODEGEN_LIB_PREFIX${dep.libraryName}"
+          }
+          prefabLibraries
+        }
+
     return CMAKE_TEMPLATE.replace("{{ libraryIncludes }}", libraryIncludes)
         .replace("{{ libraryModules }}", libraryModules)
+        .replace("{{ prefabModules }}", prefabModules)
   }
 
   internal fun generateCppFileContent(
@@ -177,6 +197,10 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
 
         set(AUTOLINKED_LIBRARIES
           {{ libraryModules }}
+        )
+
+        set(PREFAB_LIBRARIES 
+          {{ prefabModules }}
         )
         """
             .trimIndent()

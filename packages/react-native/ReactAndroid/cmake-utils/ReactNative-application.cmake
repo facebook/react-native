@@ -92,7 +92,7 @@ target_compile_options(common_flags INTERFACE ${folly_FLAGS})
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)
         include(${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)
-        target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})
+        target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES} ${PREBUILT_LIBRARIES})
         foreach(autolinked_library ${AUTOLINKED_LIBRARIES})
             target_link_libraries(${autolinked_library} common_flags)
         endforeach()
