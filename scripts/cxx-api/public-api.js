@@ -8,8 +8,9 @@
  * @format
  */
 
-const {execSync} = require('child_process');
+const {execSync, spawn} = require('child_process');
 const fs = require('fs');
+const {promisify} = require('util');
 const glob = require('glob');
 const ini = require('ini');
 const path = require('path');
@@ -18,18 +19,24 @@ const {styleText} = require('util');
 const CONFIG_PATH = path.join(__dirname, './public-api.conf');
 const GLOB_PROJECT_ROOT = path.resolve(path.join(__dirname, '../../'));
 
+// Promisify glob for better async handling
+const globAsync = promisify(glob);
+
+// Cache for file operations
+const fileCache = new Map();
+const fileTypeCache = new Map();
+
+// Parallel processing configuration
+const CONCURRENT_WORKERS = Math.max(1, require('os').cpus().length - 1);
+
 const log = {
-  // $FlowFixMe[unclear-type]
-  info: (...args /*: Array<any>*/) => console.info(...args),
-  // $FlowFixMe[unclear-type]
-  msg: (...args /*: Array<any>*/) => console.log(...args),
+  info: (...args) => console.info(...args),
+  msg: (...args) => console.log(...args),
 };
 
 const CPP_IS_PRIVATE = /\n private:([\s\S]*?)(?= public:| protected:|};)/g;
-const CPP_FORWARD_DECLARATION =
-  /(?:^|\n)?\s*(@?class|struct|@protocol) [^{ ]+;/g;
+const CPP_FORWARD_DECLARATION = /(?:^|\n)?\s*(@?class|struct|@protocol) [^{ ]+;/g;
 
-// $FlowFixMe[prop-missing]
 const isTTY = process.stdout.isTTY;
 
 /*::
@@ -42,17 +49,113 @@ type Config = {
     'clang-format'?: string,
   },
 };
-
-type ParsedConfig = {
-  include: {[string]: boolean},
-  exclude: {[string]: boolean},
-  settings: Config['settings'],
-}
 */
 
-function loadConfig(configPath /*: string*/ = CONFIG_PATH) /* : Config */ {
-  // prettier-ignore
-  const raw = ini.parse/*::<ParsedConfig>*/(fs.readFileSync(configPath, 'utf8'));
+class FileProcessor {
+  constructor(clang, clangFormat) {
+    this.clang = clang;
+    this.clangFormat = clangFormat;
+    this.platformCommand = process.platform === 'darwin' ? 'file -b -I' : 'file -b -i';
+  }
+
+  async getFileType(filePath) {
+    if (fileTypeCache.has(filePath)) {
+      return fileTypeCache.get(filePath);
+    }
+
+    try {
+      const raw = execSync(`${this.platformCommand} ${filePath}`).toString().trim();
+      let fileType;
+      
+      if (raw.startsWith('text/x-c++')) fileType = 'cpp';
+      else if (raw.startsWith('text/x-c')) fileType = 'c';
+      else if (raw.startsWith('text/x-objective-c')) fileType = 'objective-c';
+      else fileType = 'unknown';
+
+      fileTypeCache.set(filePath, fileType);
+      return fileType;
+    } catch (error) {
+      return 'unknown';
+    }
+  }
+
+  async processFile(filename) {
+    const filetype = await this.getFileType(filename);
+    
+    if (filetype === 'unknown') {
+      return { filename, filetype, content: null };
+    }
+
+    try {
+      const CPP20 = '202002L';
+      const sourceFileContents = execSync(
+        `${this.clang} -E -P -D__cplusplus=${CPP20} -nostdinc -nostdlibinc -nostdinc++ -nostdlib++ ${filename} 2> /dev/null | ${this.clangFormat}`,
+        { encoding: 'utf-8' }
+      ).toString().trim();
+
+      let cleaned = sourceFileContents;
+      if (filetype === 'cpp' || filetype === 'c') {
+        cleaned = cleaned.replace(CPP_IS_PRIVATE, '');
+      }
+
+      return { filename, filetype, content: cleaned };
+    } catch (error) {
+      return { filename, filetype, content: null };
+    }
+  }
+}
+
+class DependencyOptimizer {
+  constructor() {
+    this.contentMap = new Map();
+    this.dependencyGraph = new Map();
+  }
+
+  addFile(filename, content) {
+    if (!content) return;
+    this.contentMap.set(filename, content);
+  }
+
+  optimize() {
+    const files = Array.from(this.contentMap.entries());
+    let substitutions = 0;
+    let trimmedLines = 0;
+
+    // Sort by content length (largest first) for more efficient matching
+    files.sort((a, b) => b[1].length - a[1].length);
+
+    for (let i = 0; i < files.length; i++) {
+      const [src, ref] = files[i];
+      if (!ref) continue;
+
+      for (let j = i + 1; j < files.length; j++) {
+        const [key, value] = files[j];
+        if (!value || key === src) continue;
+
+        if (value.includes(ref)) {
+          const linesBefore = (value.match(/\n/g) || []).length;
+          const trimmed = value.replaceAll(ref, `/// @dep {${src}}`);
+          const linesAfter = (trimmed.match(/\n/g) || []).length;
+          
+          trimmedLines += linesBefore - linesAfter;
+          substitutions++;
+          
+          this.contentMap.set(key, trimmed);
+          files[j][1] = trimmed; // Update the sorted array
+        }
+      }
+    }
+
+    return { substitutions, trimmedLines };
+  }
+
+  getContent(filename) {
+    return this.contentMap.get(filename);
+  }
+}
+
+async function loadConfig(configPath = CONFIG_PATH) {
+  const raw = ini.parse(fs.readFileSync(configPath, 'utf8'));
   return {
     include: Object.keys(raw.include),
     exclude: Object.keys(raw.exclude),
@@ -60,146 +163,85 @@ function loadConfig(configPath /*: string*/ = CONFIG_PATH) /* : Config */ {
   };
 }
 
-function checkDependencies(
-  ...commands /*: $ReadOnlyArray<string> */
-) /*: boolean*/ {
-  let ok = true;
-  for (const command of commands) {
-    let found = true;
-    let version = '';
-    try {
-      const output = execSync(`${command} --version`).toString().trim();
-      const match = /(\d+\.\d+\.\d+)/.exec(output);
-      if (match) {
-        version = match[1];
+async function checkDependencies(...commands) {
+  const results = await Promise.all(
+    commands.map(async (command) => {
+      try {
+        const output = execSync(`${command} --version`).toString().trim();
+        const match = /(\d+\.\d+\.\d+)/.exec(output);
+        return { command, found: true, version: match ? match[1] : '' };
+      } catch (error) {
+        return { command, found: false, version: '' };
       }
-    } catch (e) {
-      if (!/command not found/.test(e.message)) {
-        // Guard against unexpected errors
-        log.info(e);
-      }
-      found = false;
-      ok = false;
-    }
-    const output = found
+    })
+  );
+
+  let allFound = true;
+  results.forEach(({ command, found, version }) => {
+    const output = found 
       ? styleText('green', `✅ ${version}`)
       : styleText('red', '🚨 not found');
     log.info(`🔍 ${command} → ${output}`);
-  }
-  return ok;
+    if (!found) allFound = false;
+  });
+
+  return allFound;
 }
 
-/*::
-enum FileType {
-  CPP = 'cpp',
-  C = 'c',
-  OBJC = 'objective-c',
-  UNKNOWN = 'unknown',
-}
-*/
-const FileType = {
-  CPP: 'cpp',
-  C: 'c',
-  OBJC: 'objective-c',
-  UNKNOWN: 'unknown',
-};
-
-function getFileType(filePath /*: string*/) /*: FileType */ {
-  let platformCommand = 'file -b -i';
-  if (process.platform === 'darwin') {
-    platformCommand = 'file -b -I';
-  }
-
-  const raw = execSync(`${platformCommand} ${filePath}`).toString().trim();
-  switch (true) {
-    case raw.startsWith('text/x-c++'):
-      return FileType.CPP;
-    case raw.startsWith('text/x-c'):
-      return FileType.C;
-    case raw.startsWith('text/x-objective-c'):
-      return FileType.OBJC;
-    default:
-      return FileType.UNKNOWN;
-  }
-}
-
-function trimCPPNoise(
-  sourcePath /*: string*/,
-  filetype /*: FileType */,
-  clang /*: string*/,
-  clangFormat /*: string */,
-) /*: ?string */ {
-  // This is the simplest possible way to parse preprocessor directives and normaize the output. We should investigate using
-  // clang's LibTooling API to do this with more control over what we output.
-  if (filetype === FileType.UNKNOWN) {
-    return;
-  }
-  // src: https://en.cppreference.com/w/cpp/preprocessor/replace#Predefined_macros.
-  //
-  // I think we should only be define this without a specific version. It affects the preprocessor beyond simply gating code.
-  // This means we're forever going to introduce massive changes to the outputted API file that aren't meaningful for capturing
-  // user introduced API changes. This will affect our revision control commit logs.
-  const CPP20 = '202002L';
-
-  // Strip comments, runs the preprocessor and removes formatting noise. The downside of this approach is it can be extremely
-  // noisy if the preprocessor is able to resolve imports. This isn't the case the majority of the time.
-  let sourceFileContents = execSync(
-    `${clang} -E -P -D__cplusplus=${CPP20} -nostdinc -nostdlibinc -nostdinc++ -nostdlib++ ${sourcePath} 2> /dev/null | ${clangFormat}`,
-    {encoding: 'utf-8'},
-  )
-    .toString()
-    .trim();
-
-  // The second pass isn't very robust, but it's good enough for now.
-  if (filetype === FileType.CPP || filetype === FileType.C) {
-    sourceFileContents = sourceFileContents.replace(CPP_IS_PRIVATE, '');
-  }
-
-  return sourceFileContents;
-}
-
-function wrapWithFileReference(
-  source /*: string*/,
-  filePath /*: string*/,
-) /*: string*/ {
+function wrapWithFileReference(source, filePath) {
   return `\n/// @src {${filePath}}:\n${source}`;
 }
 
-function main() {
-  const config = loadConfig();
+async function processFilesInParallel(files, processor) {
+  const batches = [];
+  const batchSize = Math.ceil(files.length / CONCURRENT_WORKERS);
+  
+  for (let i = 0; i < files.length; i += batchSize) {
+    batches.push(files.slice(i, i + batchSize));
+  }
 
-  // Check dependencies
+  const results = await Promise.all(
+    batches.map(async (batch) => {
+      const batchResults = [];
+      for (const file of batch) {
+        batchResults.push(await processor.processFile(file));
+      }
+      return batchResults;
+    })
+  );
+
+  return results.flat();
+}
+
+async function main() {
+  const config = await loadConfig();
   const clang = config.settings.clang ?? 'clang';
   const clangFormat = config.settings['clang-format'] ?? 'clang-format';
 
-  if (!checkDependencies(clang, clangFormat)) {
+  if (!await checkDependencies(clang, clangFormat)) {
     process.exitCode = 1;
     return;
   }
 
   let start = performance.now();
 
-  let files /*: string[]*/ = [];
-  for (const searchGlob of config.include) {
-    // glob 7 doesn't support searchGlob as a string[]
-    files = files.concat(
-      glob.sync(searchGlob, {
+  // Use Promise.all for parallel glob searching
+  const fileSets = await Promise.all(
+    config.include.map(searchGlob => 
+      globAsync(searchGlob, {
         ignore: config.exclude,
         root: GLOB_PROJECT_ROOT,
-      }),
-    );
-  }
-  files = Array.from(new Set(files));
-
-  // Sort the files to make the output deterministic
-  files.sort();
-
-  log.info(
-    `📚 Indexing header files took ${(performance.now() - start).toFixed(0)}ms`,
+      })
+    )
   );
 
-  // Write the output to a file. We lean on revision control to track changes.
+  let files = Array.from(new Set(fileSets.flat()));
+  files.sort();
+
+  log.info(`📚 Indexing ${files.length} header files took ${(performance.now() - start).toFixed(0)}ms`);
+
   const outputFile = path.join(GLOB_PROJECT_ROOT, config.settings.output);
+  
   try {
     fs.unlinkSync(outputFile);
     log.info(`🔥 ${outputFile} already exists, deleting...`);
@@ -208,105 +250,49 @@ function main() {
   }
 
   log.info(`Processing API (${files.length} files):\n`);
-
   start = performance.now();
 
-  const CURSOR_TO_BEGINNING = '\x1b[0G';
-  const CURSOR_CLEAR_LINE = '\x1b[2K';
+  const processor = new FileProcessor(clang, clangFormat);
+  const optimizer = new DependencyOptimizer();
 
-  const cache /*: {[filename: string]: ?string}*/ = {};
-  const filetypes /*: {[filename: string]: FileType}*/ = {};
-
-  for (let i = 0; i < files.length; i++) {
-    const filename = files[i];
-    const percentage = `${((i / files.length) * 100).toFixed(0)}% (${((performance.now() - start) / 1000).toFixed(0)}s)`;
-    let updated = `${percentage} → ${filename}`;
-    if (isTTY) {
-      // $FlowFixMe[prop-missing]
-      const columns = process.stdout.columns;
-      if (updated.length >= columns) {
-        updated = `${percentage} → `;
-        updated = `${updated}${filename.slice(0, columns - updated.length)}`;
-      }
-      process.stdout.write(
-        `${CURSOR_CLEAR_LINE}${CURSOR_TO_BEGINNING}${updated}`,
-      );
-    } else {
-      updated = `${filename}`;
-      log.msg(updated);
-    }
-
-    filetypes[filename] = getFileType(filename);
-    cache[filename] = trimCPPNoise(
-      filename,
-      filetypes[filename],
-      clang,
-      clangFormat,
-    );
-  }
-  if (isTTY) {
-    process.stdout.write('\n');
-  }
-  log.info('🧹 cleaning up preprocessor noise...');
-
-  start = performance.now();
-
-  // O(n^2)... but it's fine for now given we're processing ~ 1000 files
-  let trimmed_lines = 0;
-  let substitutions = 0;
-  for (const [src, ref] of Object.entries(cache)) {
-    if (ref == null || ref.length === 0) {
-      continue;
-    }
-    for (const [key, value] of Object.entries(cache)) {
-      if (key === src || value == null || value.length === 0) {
-        continue;
-      }
-      if (value.includes(ref)) {
-        const lines = value.match(/\n/g)?.length ?? 0;
-        const trimmed = value.replaceAll(ref, `/// @dep {${src}}`);
-
-        trimmed_lines += lines - (trimmed.match(/\n/g)?.length ?? 0);
-        substitutions++;
-
-        cache[key] = trimmed;
-      }
-    }
-  }
-  log.info(
-    `🧹 cleaned up ${substitutions} (${trimmed_lines} lines saved) dependencies in ${((performance.now() - start) / 100).toFixed(0)}ms`,
-  );
-  log.info(`💾 saving ${files.length} parsed header files to ${outputFile}`);
-
-  fs.appendFileSync(
-    outputFile,
-    `/*
- * This file is generated, do not edit.
- * ${'@' + 'generated'}
- *
- * @file_count ${files.length}
- * @generate-command: node tools/api/public-api.js
- */
-
-`,
-  );
-
-  for (const filename of files) {
-    let cleaned = cache[filename] ?? '';
-    const filetype = filetypes[filename] ?? FileType.UNKNOWN;
-
-    if (filetype !== FileType.UNKNOWN) {
-      // Remove forward declarations at the late stage avoid dirtying when we deduplicate all the imports
+  // Process files in parallel batches
+  const processedFiles = await processFilesInParallel(files, processor);
+  
+  // Populate optimizer and remove forward declarations
+  processedFiles.forEach(({ filename, filetype, content }) => {
+    let cleaned = content;
+    if (filetype !== 'unknown' && cleaned) {
       cleaned = cleaned.replace(CPP_FORWARD_DECLARATION, '');
     }
-    // Cache output so we can clean up more noise
-    fs.appendFileSync(
-      outputFile,
-      wrapWithFileReference(cleaned, filename) + '\n',
-    );
-  }
+    optimizer.addFile(filename, cleaned);
+  });
 
-  log.info(styleText('bold', '✅ Done!'));
+  log.info(`🔄 Optimizing dependencies...`);
+  const optimizationStart = performance.now();
+  const { substitutions, trimmedLines } = optimizer.optimize();
+  log.info(`🧹 Cleaned up ${substitutions} dependencies (${trimmedLines} lines saved) in ${((performance.now() - optimizationStart) / 100).toFixed(0)}ms`);
+
+  log.info(`💾 Saving ${files.length} parsed header files to ${outputFile}`);
+
+  // Write output in single operation
+  const outputContent = [
+    `/*\n * This file is generated, do not edit.\n * ${'@' + 'generated'}\n *\n * @file_count ${files.length}\n * @generate-command: node tools/api/public-api.js\n */\n\n`,
+    ...files.map(filename => {
+      const content = optimizer.getContent(filename);
+      return content ? wrapWithFileReference(content, filename) + '\n' : '';
+    })
+  ].join('');
+
+  fs.writeFileSync(outputFile, outputContent);
+
+  const totalTime = (performance.now() - start) / 1000;
+  log.info(styleText('bold', `✅ Done! Total time: ${totalTime.toFixed(2)}s`));
 }
+
+// Handle uncaught errors
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled promise rejection:', error);
+  process.exit(1);
+});
 
 main();
