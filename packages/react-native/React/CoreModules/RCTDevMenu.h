@@ -57,7 +57,7 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 /**
  * Whether the hotkeys that toggles the developer menu is enabled.
  */
-@property (nonatomic, assign) BOOL hotkeysEnabled;
+@property (nonatomic, assign) BOOL hotkeysEnabled DEPRECATED_ATTRIBUTE;
 
 /**
  * Whether the developer menu is enabled.
@@ -85,6 +85,11 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 - (void)show;
 
 /**
+ * Manually toggle the dev menu
+ */
+- (void)toggle;
+
+/**
  * Deprecated, use `RCTReloadCommand` instead.
  */
 - (void)reload DEPRECATED_ATTRIBUTE;
@@ -104,6 +109,21 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  * Disable the reload command (Cmd+R) in the simulator.
  */
 - (void)disableReloadCommand;
+
+/**
+ * Get the key commands for the dev menu (Cmd+D, Cmd+I, Cmd+R).
+ */
+- (NSArray<UIKeyCommand *> *)keyCommands;
+
+/**
+ * Toggle the element inspector (called by key command).
+ */
+- (void)toggleElementInspector;
+
+/**
+ * Reload from key command (called by key command).
+ */
+- (void)reloadFromKeyCommand;
 
 @end
 
