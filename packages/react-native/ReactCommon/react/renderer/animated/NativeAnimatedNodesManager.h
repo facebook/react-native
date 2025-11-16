@@ -58,10 +58,12 @@ class NativeAnimatedNodesManager {
   using StartOnRenderCallback = std::function<void(std::function<void()> &&, bool isAsync)>;
   using StopOnRenderCallback = std::function<void(bool isAsync)>;
   using FrameRateListenerCallback = std::function<void(bool /* shouldEnableListener */)>;
+  using ResolvePlatformColor = std::function<void(SurfaceId surfaceId, const RawValue &value, SharedColor &result)>;
 
   explicit NativeAnimatedNodesManager(
       DirectManipulationCallback &&directManipulationCallback,
       FabricCommitCallback &&fabricCommitCallback,
+      ResolvePlatformColor &&resolvePlatformColor,
       StartOnRenderCallback &&startOnRenderCallback = nullptr,
       StopOnRenderCallback &&stopOnRenderCallback = nullptr,
       FrameRateListenerCallback &&frameRateListenerCallback = nullptr) noexcept;
@@ -185,6 +187,8 @@ class NativeAnimatedNodesManager {
 
   bool isOnRenderThread() const noexcept;
 
+  void resolvePlatformColor(SurfaceId surfaceId, const RawValue &value, SharedColor &result) const;
+
  private:
   void stopRenderCallbackIfNeeded(bool isAsync) noexcept;
 
@@ -232,6 +236,8 @@ class NativeAnimatedNodesManager {
   // React context required to commit props onto Component View
   const DirectManipulationCallback directManipulationCallback_;
   const FabricCommitCallback fabricCommitCallback_;
+
+  const ResolvePlatformColor resolvePlatformColor_;
 
   /*
    * Tracks whether the render callback loop for animations is currently active.
