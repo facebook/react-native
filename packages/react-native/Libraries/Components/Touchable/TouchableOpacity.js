@@ -308,6 +308,9 @@ class TouchableOpacity extends React.Component<
         accessibilityState={_accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
+        onAccessibilityTap={this.props.onAccessibilityTap}
+        onAccessibilityEscape={this.props.onAccessibilityEscape}
+        onMagicTap={this.props.onMagicTap}
         accessibilityValue={accessibilityValue}
         importantForAccessibility={
           this.props['aria-hidden'] === true
