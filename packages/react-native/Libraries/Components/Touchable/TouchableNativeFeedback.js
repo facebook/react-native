@@ -336,16 +336,25 @@ class TouchableNativeFeedback extends React.Component<
 
     const accessibilityLabel =
       this.props['aria-label'] ?? this.props.accessibilityLabel;
+    // If the touchable is disabled, avoid applying the native feedback
+    // background/foreground drawable. When a native background drawable is
+    // applied it can override the view's background color. If the component
+    // is initially rendered as disabled and a drawable is set, subsequent
+    // updates to the view's background color (for example when toggling
+    // `disabled` -> `false`) may not visually update as expected. To avoid
+    // that, only pass through the native background/foreground when not
+    // disabled.
+    const backgroundForNative = this.props.disabled
+      ? null
+      : this.props.background === undefined
+      ? TouchableNativeFeedback.SelectableBackground()
+      : this.props.background;
+
     return cloneElement(
       element,
       {
         ...eventHandlersWithoutBlurAndFocus,
-        ...getBackgroundProp(
-          this.props.background === undefined
-            ? TouchableNativeFeedback.SelectableBackground()
-            : this.props.background,
-          this.props.useForeground === true,
-        ),
+        ...getBackgroundProp(backgroundForNative, this.props.useForeground === true),
         accessible: this.props.accessible !== false,
         accessibilityHint: this.props.accessibilityHint,
         accessibilityLanguage: this.props.accessibilityLanguage,
