@@ -77,8 +77,11 @@ RCT_EXPORT_MODULE()
     RCTTriggerReloadCommandListeners(@"JS Crash Reload");
   } else if (!RCT_DEV) {
     NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
-    NSDictionary *errorInfo =
-        @{NSLocalizedDescriptionKey : description, RCTJSStackTraceKey : stack, RCTJSExtraDataKey : extraDataAsJSON};
+    NSDictionary *errorInfo = @{
+      NSLocalizedDescriptionKey : description,
+      RCTJSStackTraceKey : stack == nil ? [NSNull null] : stack,
+      RCTJSExtraDataKey : extraDataAsJSON == nil ? [NSNull null] : extraDataAsJSON
+    };
     RCTFatal([NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo]);
   }
 }
