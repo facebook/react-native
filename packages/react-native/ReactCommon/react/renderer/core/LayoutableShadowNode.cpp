@@ -286,8 +286,12 @@ std::shared_ptr<const ShadowNode> LayoutableShadowNode::findNodeAtPoint(
 
   auto layoutMetrics = layoutableShadowNode->getLayoutMetrics();
   auto transform = layoutableShadowNode->getTransform();
-  auto transformedFrame = layoutMetrics.frame * transform;
-  auto isPointInside = transformedFrame.containsPoint(point);
+
+  auto transformInv = Transform::Invert(transform);
+  auto frame = layoutableShadowNode->getLayoutMetrics().frame;
+  auto transformedPoint = transformInv.applyWithRect(point, frame);
+
+  auto isPointInside = frame.containsPoint(transformedPoint);
 
   if (isPointInside && !layoutableShadowNode->canChildrenBeTouchTarget()) {
     return node;
@@ -302,28 +306,7 @@ std::shared_ptr<const ShadowNode> LayoutableShadowNode::findNodeAtPoint(
     }
   }
 
-  if (Transform::isVerticalInversion(transform) ||
-      Transform::isHorizontalInversion(transform)) {
-    auto centerX =
-        transformedFrame.origin.x + transformedFrame.size.width / 2.0;
-    auto centerY =
-        transformedFrame.origin.y + transformedFrame.size.height / 2.0;
-
-    auto relativeX = point.x - centerX;
-    auto relativeY = point.y - centerY;
-
-    if (Transform::isVerticalInversion(transform)) {
-      relativeY = -relativeY;
-    }
-    if (Transform::isHorizontalInversion(transform)) {
-      relativeX = -relativeX;
-    }
-
-    point.x = float(centerX + relativeX);
-    point.y = float(centerY + relativeY);
-  }
-
-  auto newPoint = point - transformedFrame.origin -
+  auto newPoint = transformedPoint - frame.origin -
       layoutableShadowNode->getContentOriginOffset(false);
 
   auto sortedChildren = node->getChildren();
