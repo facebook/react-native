@@ -17,6 +17,7 @@ import type {
   TypeComparisonError,
 } from './ComparisonResult';
 import type {
+  BooleanLiteralTypeAnnotation,
   CompleteReservedTypeAnnotation,
   CompleteTypeAnnotation,
   EventEmitterTypeAnnotation,
@@ -237,12 +238,12 @@ export function compareTypeAnnotation(
         EQUALITY_MSG,
       );
       return compareNumberLiteralTypes(newerAnnotation, olderAnnotation);
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'BooleanLiteralTypeAnnotation':
       invariant(
-        olderAnnotation.type === 'StringLiteralUnionTypeAnnotation',
+        olderAnnotation.type === 'BooleanLiteralTypeAnnotation',
         EQUALITY_MSG,
       );
-      return compareStringLiteralUnionTypes(newerAnnotation, olderAnnotation);
+      return compareBooleanLiteralTypes(newerAnnotation, olderAnnotation);
     case 'StringLiteralTypeAnnotation':
       invariant(
         olderAnnotation.type === 'StringLiteralTypeAnnotation',
@@ -812,17 +813,60 @@ export function compareUnionTypes(
   newerType: NativeModuleUnionTypeAnnotation,
   olderType: NativeModuleUnionTypeAnnotation,
 ): ComparisonResult {
-  if (newerType.memberType !== olderType.memberType) {
-    return makeError(
-      typeAnnotationComparisonError(
-        'Union member type does not match',
-        newerType,
-        olderType,
-      ),
-    );
-  }
+  // Compare the union types array
+  // We map to ensure Flow accepts the types array for comparison
+  const results = compareArrayOfTypes(
+    false, // Fixed order - allow reordering
+    false, // Can grow/shrink at the end
+    // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+    newerType.types,
+    // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+    olderType.types,
+  );
 
-  return {status: 'matching'};
+  switch (results.status) {
+    case 'length-mismatch':
+      throw new Error('length-mismatch returned with length changes allowed');
+    case 'type-mismatch':
+      return makeError(
+        typeAnnotationComparisonError(
+          `Subtype of union at position ${results.newIndex} did not match`,
+          newerType,
+          olderType,
+          results.error,
+        ),
+      );
+    case 'subtypable-changes':
+      if (
+        results.addedElements.length <= 0 &&
+        results.removedElements.length <= 0 &&
+        results.nestedChanges.length <= 0
+      ) {
+        throw new Error('union returned unexpected set of changes');
+      }
+
+      const changeLog: PositionalComparisonResult = {
+        typeKind: 'union',
+        nestedChanges: results.nestedChanges,
+      };
+
+      if (results.addedElements.length > 0) {
+        changeLog.addedElements = results.addedElements;
+      }
+
+      if (results.removedElements.length > 0) {
+        changeLog.removedElements = results.removedElements;
+      }
+
+      return {
+        status: 'positionalTypeChange',
+        changeLog,
+      };
+    case 'matching':
+      return {status: 'matching'};
+    default:
+      throw new Error('Unknown status');
+  }
 }
 
 export function comparePromiseTypes(
@@ -886,6 +930,21 @@ export function compareNumberLiteralTypes(
     : makeError(
         typeAnnotationComparisonError(
           'Numeric literals are not equal',
+          newerType,
+          olderType,
+        ),
+      );
+}
+
+export function compareBooleanLiteralTypes(
+  newerType: BooleanLiteralTypeAnnotation,
+  olderType: BooleanLiteralTypeAnnotation,
+): ComparisonResult {
+  return newerType.value === olderType.value
+    ? {status: 'matching'}
+    : makeError(
+        typeAnnotationComparisonError(
+          'Boolean literals are not equal',
           newerType,
           olderType,
         ),

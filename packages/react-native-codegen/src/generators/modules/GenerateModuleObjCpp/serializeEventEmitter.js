@@ -8,22 +8,65 @@
  * @format
  */
 
-import type {NativeModuleEventEmitterShape} from '../../../CodegenSchema';
+import type {
+  NativeModuleEventEmitterShape,
+  NativeModuleUnionTypeAnnotation,
+} from '../../../CodegenSchema';
 
 const {toPascalCase} = require('../../Utils');
+
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
 
 function getEventEmitterTypeObjCType(
   eventEmitter: NativeModuleEventEmitterShape,
 ): string {
-  const type = eventEmitter.typeAnnotation.typeAnnotation.type;
+  const typeAnnotation = eventEmitter.typeAnnotation.typeAnnotation;
 
-  switch (type) {
+  switch (typeAnnotation.type) {
     case 'StringTypeAnnotation':
       return 'NSString *_Nonnull';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *_Nonnull';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *_Nonnull';
+    case 'UnionTypeAnnotation':
+      const union: NativeModuleUnionTypeAnnotation = typeAnnotation;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return 'NSNumber *_Nonnull';
+      }
+
+      if (isUnionOfType(ObjectTypes)) {
+        return 'NSDictionary *';
+      }
+
+      if (isUnionOfType(StringTypes)) {
+        return 'NSString *_Nonnull';
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return 'BOOL';
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'NumberTypeAnnotation':
     case 'NumberLiteralTypeAnnotation':
       return 'NSNumber *_Nonnull';
@@ -44,7 +87,7 @@ function getEventEmitterTypeObjCType(
         `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
       );
     default:
-      (type: empty);
+      (typeAnnotation.type: empty);
       throw new Error(
         `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
       );

@@ -12,10 +12,22 @@
 import type {
   EventTypeAnnotation,
   NamedShape,
+  NativeModuleUnionTypeAnnotation,
   PropTypeAnnotation,
 } from '../../CodegenSchema';
 
 const {getEnumName, toSafeCppString} = require('../Utils');
+
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
 
 function toIntEnumValueName(propName: string, value: number): string {
   return `${toSafeCppString(propName)}${value}`;
@@ -61,7 +73,50 @@ function getCppArrayTypeForAnnotation(
     case 'Int32TypeAnnotation':
     case 'MixedTypeAnnotation':
       return `std::vector<${getCppTypeForAnnotation(typeElement.type)}>`;
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'UnionTypeAnnotation':
+      const union: NativeModuleUnionTypeAnnotation = typeElement;
+      const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+        return union.types.every(memberTypeAnnotation =>
+          types.includes(memberTypeAnnotation.type),
+        );
+      };
+
+      if (isUnionOfType(NumberTypes)) {
+        return `std::vector<${getCppTypeForAnnotation('DoubleTypeAnnotation')}>`;
+      }
+
+      if (isUnionOfType(ObjectTypes)) {
+        if (!structParts) {
+          throw new Error(
+            `Trying to generate the event emitter for an Array of ${typeElement.type} without informations to generate the generic type`,
+          );
+        }
+        return `std::vector<${generateEventStructName(structParts)}>`;
+      }
+
+      if (isUnionOfType(['StringTypeAnnotation'])) {
+        return `std::vector<${getCppTypeForAnnotation('StringTypeAnnotation')}>`;
+      }
+      if (isUnionOfType(['StringLiteralTypeAnnotation'])) {
+        if (!structParts) {
+          throw new Error(
+            `Trying to generate the event emitter for an Array of ${typeElement.type} without informations to generate the generic type`,
+          );
+        }
+        return `std::vector<${generateEventStructName(structParts)}>`;
+      }
+
+      if (isUnionOfType(BooleanTypes)) {
+        return `std::vector<${getCppTypeForAnnotation('BooleanTypeAnnotation')}>`;
+      }
+
+      const invalidTypes = union.types.filter(member => {
+        return !ValidTypes.includes(member.type);
+      });
+
+      throw new Error(
+        `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+      );
     case 'ObjectTypeAnnotation':
       if (!structParts) {
         throw new Error(
