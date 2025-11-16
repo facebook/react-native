@@ -82,8 +82,6 @@ function formatModesShort(overrides: PartialFantomTestConfig) {
 
 function formatFantomHermesVariant(hermesVariant: HermesVariant): string {
   switch (hermesVariant) {
-    case FantomTestConfigHermesVariant.Hermes:
-      return 'hermes';
     case FantomTestConfigHermesVariant.StaticHermesStable:
       return 'shermes 🆕';
     case FantomTestConfigHermesVariant.StaticHermesExperimental:

@@ -59,7 +59,8 @@ export const FantomTestConfigHermesVariant = HermesVariant;
 export const DEFAULT_IS_NATIVE_OPTIMIZED: boolean = false;
 export const DEFAULT_IS_JS_OPTIMIZED: boolean = false;
 export const DEFAULT_IS_JS_BYTECODE: boolean = false;
-export const DEFAULT_HERMES_VARIANT: HermesVariant = HermesVariant.Hermes;
+export const DEFAULT_HERMES_VARIANT: HermesVariant =
+  HermesVariant.StaticHermesStable;
 
 export const DEFAULT_FEATURE_FLAGS: FantomTestConfigFeatureFlags = {
   common: {},
@@ -147,8 +148,7 @@ export function getOverrides(
  * - `fantom_mode`: specifies the level of optimization to compile the test
  *  with. Valid values are `dev` and `opt`.
  * - `fantom_hermes_variant`: specifies the Hermes variant to use to run the
- *  test. Valid values are `hermes`, `static_hermes_stable` and
- * `static_hermes_experimental`.
+ *  test. Valid values are `static_hermes_stable` and `static_hermes_experimental`.
  * - `fantom_flags`: specifies the configuration for common and JS-only feature
  *  flags. They can be specified in the same pragma or in different ones, and
  *  the format is `<flag_name>:<value>`.
@@ -294,9 +294,6 @@ export default function getFantomTestConfigs(
     const hermesVariant = maybeHermesVariant;
 
     switch (hermesVariant) {
-      case 'hermes':
-        config.hermesVariant = HermesVariant.Hermes;
-        break;
       case 'static_hermes_stable':
         config.hermesVariant = HermesVariant.StaticHermesStable;
         break;
@@ -305,7 +302,6 @@ export default function getFantomTestConfigs(
         break;
       case '*':
         configVariations.push([
-          {hermesVariant: HermesVariant.Hermes},
           {hermesVariant: HermesVariant.StaticHermesStable},
           {hermesVariant: HermesVariant.StaticHermesExperimental},
         ]);

@@ -43,7 +43,6 @@ import {
   updateSnapshotsAndGetJestSnapshotResult,
 } from './snapshotUtils';
 import {
-  HermesVariant as HermesVariantEnum,
   getDebugInfoFromCommandResult,
   printConsoleLog,
   runCommand,
@@ -264,10 +263,7 @@ module.exports = async function runTest(
       continue;
     }
 
-    if (
-      EnvironmentOptions.isOSS &&
-      testConfig.hermesVariant !== HermesVariantEnum.Hermes
-    ) {
+    if (EnvironmentOptions.isOSS) {
       testResultsByConfig.push(
         skippedTestResults({
           ancestorTitles: [

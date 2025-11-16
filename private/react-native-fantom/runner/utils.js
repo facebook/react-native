@@ -18,7 +18,6 @@ import {SourceMapConsumer} from 'source-map';
 const BUCK_ISOLATION_DIR = 'react-native-fantom-buck-out';
 
 export enum HermesVariant {
-  Hermes,
   StaticHermesStable, // Static Hermes Stable
   // This creates too many combinations and it's not worth the cost for now.
   StaticHermesExperimental, // Static Hermes Trunk
@@ -31,8 +30,6 @@ export function getBuckOptionsForHermes(
     ? ['-c hermes.memory_instrumentation=true']
     : [];
   switch (variant) {
-    case HermesVariant.Hermes:
-      return baseOptions;
     case HermesVariant.StaticHermesStable:
       return [...baseOptions, '-c hermes.static_hermes=stable'];
     case HermesVariant.StaticHermesExperimental:
@@ -42,8 +39,6 @@ export function getBuckOptionsForHermes(
 
 export function getHermesCompilerTarget(variant: HermesVariant): string {
   switch (variant) {
-    case HermesVariant.Hermes:
-      return '//xplat/hermes/tools/hermesc:hermesc';
     case HermesVariant.StaticHermesStable:
       return '//xplat/shermes/stable:hermesc';
     case HermesVariant.StaticHermesExperimental:
