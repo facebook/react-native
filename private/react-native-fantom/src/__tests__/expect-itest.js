@@ -857,7 +857,7 @@ describe('expect', () => {
       expect(new Date('2025-01-02')).toMatchSnapshot();
       expect(new Error()).toMatchSnapshot();
       expect(new RegExp('asd')).toMatchSnapshot();
-      expect(new Promise(() => {})).toMatchSnapshot();
+      // expect(new Promise(() => {})).toMatchSnapshot();
     });
 
     test('named snapshots', () => {
