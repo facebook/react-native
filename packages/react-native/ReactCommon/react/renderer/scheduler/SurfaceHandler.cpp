@@ -329,7 +329,7 @@ void SurfaceHandler::constraintLayout(
 
           return newRoot;
         },
-        {/* default commit options */});
+        {});
   }
 }
 
