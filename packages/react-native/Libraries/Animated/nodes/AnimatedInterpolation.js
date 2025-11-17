@@ -12,6 +12,7 @@
 
 'use strict';
 
+import type {NativeColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from './AnimatedNode';
 import type {AnimatedNodeConfig} from './AnimatedNode';
@@ -26,7 +27,14 @@ import invariant from 'invariant';
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
-export type InterpolationConfigType<OutputT: number | string> = $ReadOnly<{
+export type InterpolationConfigSupportedOutputType =
+  | number
+  | string
+  | NativeColorValue;
+
+export type InterpolationConfigType<
+  OutputT: InterpolationConfigSupportedOutputType,
+> = $ReadOnly<{
   ...AnimatedNodeConfig,
   inputRange: $ReadOnlyArray<number>,
   outputRange: $ReadOnlyArray<OutputT>,
@@ -79,6 +87,28 @@ function createNumericInterpolation(
       extrapolateLeft,
       extrapolateRight,
     ): any);
+  };
+}
+
+function createPlatformColorInterpolation(
+  config: InterpolationConfigType<NativeColorValue>,
+): (input: number) => NativeColorValue {
+  const outputRange = config.outputRange;
+  const outputRangeIndices = Array.from(Array(outputRange.length).keys());
+  const interpolateIndex = createNumericInterpolation({
+    ...config,
+    inputRange: config.inputRange,
+    outputRange: outputRangeIndices,
+  });
+
+  return input => {
+    const interpolateResult = interpolateIndex(input);
+    if (!Number.isInteger(interpolateResult)) {
+      console.warn(
+        'PlatformColor interpolation should happen natively, here we fallback to the closest color',
+      );
+    }
+    return outputRange[Math.floor(interpolateResult)];
   };
 }
 
@@ -277,7 +307,7 @@ function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
   return i - 1;
 }
 
-function checkValidRanges<OutputT: number | string>(
+function checkValidRanges<OutputT: InterpolationConfigSupportedOutputType>(
   inputRange: $ReadOnlyArray<number>,
   outputRange: $ReadOnlyArray<OutputT>,
 ) {
@@ -304,7 +334,7 @@ function checkValidInputRange(arr: $ReadOnlyArray<number>) {
   }
 }
 
-function checkInfiniteRange<OutputT: number | string>(
+function checkInfiniteRange<OutputT: InterpolationConfigSupportedOutputType>(
   name: string,
   arr: $ReadOnlyArray<OutputT>,
 ) {
@@ -322,7 +352,7 @@ function checkInfiniteRange<OutputT: number | string>(
 }
 
 export default class AnimatedInterpolation<
-  OutputT: number | string,
+  OutputT: InterpolationConfigSupportedOutputType,
 > extends AnimatedWithChildren {
   _parent: AnimatedNode;
   _config: InterpolationConfigType<OutputT>;
@@ -347,6 +377,10 @@ export default class AnimatedInterpolation<
       const config = this._config;
       if (config.outputRange && typeof config.outputRange[0] === 'string') {
         this._interpolation = (createStringInterpolation((config: any)): any);
+      } else if (typeof config.outputRange[0] === 'object') {
+        this._interpolation = (createPlatformColorInterpolation(
+          (config: any),
+        ): any);
       } else {
         this._interpolation = (createNumericInterpolation((config: any)): any);
       }
@@ -403,6 +437,8 @@ export default class AnimatedInterpolation<
           return NativeAnimatedHelper.transformDataType(value);
         }
       }): any);
+    } else if (typeof outputRange[0] === 'object') {
+      outputType = 'platform_color';
     }
 
     return {

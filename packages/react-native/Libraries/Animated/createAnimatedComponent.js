@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {NativeColorValue} from '../StyleSheet/StyleSheetTypes';
 import type AnimatedAddition from './nodes/AnimatedAddition';
 import type AnimatedDiffClamp from './nodes/AnimatedDiffClamp';
 import type AnimatedDivision from './nodes/AnimatedDivision';
@@ -46,6 +47,7 @@ export type WithAnimatedValue<+T> = T extends Builtin | Nullable
         | AnimatedInterpolation<number | string>
         | AnimatedInterpolation<number>
         | AnimatedInterpolation<string>
+        | AnimatedInterpolation<NativeColorValue>
     : T extends $ReadOnlyArray<infer P>
       ? $ReadOnlyArray<WithAnimatedValue<P>>
       : T extends {...}
