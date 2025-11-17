@@ -33,15 +33,6 @@ exports[`expect toMatchSnapshot() complex types 7`] = `[Error]`;
 
 exports[`expect toMatchSnapshot() complex types 8`] = `/asd/`;
 
-exports[`expect toMatchSnapshot() complex types 9`] = `
-Promise {
-  "_h": 0,
-  "_i": 0,
-  "_j": null,
-  "_k": null,
-}
-`;
-
 exports[`expect toMatchSnapshot() named snapshots: named snapshot 1`] = `
 Object {
   "a": "b",
