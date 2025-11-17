@@ -4328,7 +4328,6 @@ public class com/facebook/react/uimanager/UIImplementation {
 	public fun setJSResponder (IZ)V
 	public fun setLayoutAnimationEnabledExperimental (Z)V
 	public fun setLayoutUpdateListener (Lcom/facebook/react/uimanager/UIImplementation$LayoutUpdateListener;)V
-	public fun setViewHierarchyUpdateDebugListener (Lcom/facebook/react/uimanager/debug/NotThreadSafeViewHierarchyUpdateDebugListener;)V
 	public fun setViewLocalData (ILjava/lang/Object;)V
 	public fun synchronouslyUpdateViewOnUIThread (ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	public fun updateInsetsPadding (IIIII)V
@@ -4412,7 +4411,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun setChildren (ILcom/facebook/react/bridge/ReadableArray;)V
 	public fun setJSResponder (IZ)V
 	public fun setLayoutAnimationEnabledExperimental (Z)V
-	public fun setViewHierarchyUpdateDebugListener (Lcom/facebook/react/uimanager/debug/NotThreadSafeViewHierarchyUpdateDebugListener;)V
 	public fun setViewLocalData (ILjava/lang/Object;)V
 	public fun startSurface (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;II)I
 	public fun stopSurface (I)V
@@ -4460,7 +4458,6 @@ public class com/facebook/react/uimanager/UIViewOperationQueue {
 	public fun isEmpty ()Z
 	public fun prependUIBlock (Lcom/facebook/react/uimanager/UIBlock;)V
 	public fun profileNextBatch ()V
-	public fun setViewHierarchyUpdateDebugListener (Lcom/facebook/react/uimanager/debug/NotThreadSafeViewHierarchyUpdateDebugListener;)V
 }
 
 public abstract interface class com/facebook/react/uimanager/UIViewOperationQueue$UIOperation {

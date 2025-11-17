@@ -45,7 +45,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
-import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -697,13 +696,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
-  }
-
-  // NOTE: When converted to Kotlin this method should be `internal` due to
-  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
-  public void setViewHierarchyUpdateDebugListener(
-      @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
-    mUIImplementation.setViewHierarchyUpdateDebugListener(listener);
   }
 
   @Override
