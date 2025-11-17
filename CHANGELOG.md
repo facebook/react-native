@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.83.0-rc.2
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+- React Native DevTools: Enable Network inspection features ([66469b58d8](https://github.com/facebook/react-native/commit/66469b58d85e820e401b82028b3fda57c53f08c1) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.0-rc.2 ([137c339e61](https://github.com/facebook/react-native/commit/137c339e61bc70a33feb91f6f7cf037ab0204d00) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([5777a4e6e9](https://github.com/facebook/react-native/commit/5777a4e6e9471a3938d173bf9b34251be57bad4d) by [@cipolleschi](https://github.com/cipolleschi))
+- Release 0.83.0-rc.1 ([90d66d55a8](https://github.com/facebook/react-native/commit/90d66d55a8c6040351f456185ab616fe8a7482d4) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+- Fix CLA failures when pushing Changelog and Podfile.lock ([2d5efc9820](https://github.com/facebook/react-native/commit/2d5efc98206c938334341844edfdd02cc0713565) by [@cipolleschi](https://github.com/cipolleschi))
+
+
 ## v0.83.0-rc.1
 
 ### Changed
