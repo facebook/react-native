@@ -263,7 +263,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "React-Core": [],
             "React-jsi": [],
             "React-jsiexecutor": [],
-            "ReactCommon/turbomodule/bridging": [],
+            "React-Bridging": [],
             "ReactCommon/turbomodule/core": [],
             "hermes-engine": [],
             "React-NativeModulesApple": [],

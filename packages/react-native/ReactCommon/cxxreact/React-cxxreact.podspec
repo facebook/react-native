@@ -40,6 +40,7 @@ Pod::Spec.new do |s|
   s.dependency "React-callinvoker", version
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-perflogger", version
+  s.dependency "React-jserrorhandler", version
   s.dependency "React-jsi", version
   s.dependency "React-logger", version
   s.dependency "React-debug", version

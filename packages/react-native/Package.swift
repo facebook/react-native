@@ -96,6 +96,7 @@ let reactDebug = RNTarget(
   path: "ReactCommon/react/debug",
   dependencies: [.reactNativeDependencies]
 )
+
 /// React-jsi.podspec
 let jsi = RNTarget(
   name: .jsi,
@@ -192,13 +193,29 @@ let reactJsInspector = RNTarget(
   ]
 )
 
+/// React-Bridging.podspec
+let reactTurboModuleBridging = RNTarget(
+  name: .reactTurboModuleBridging,
+  path: "ReactCommon/react/bridging",
+  excludedPaths: ["tests"],
+  dependencies: [.reactNativeDependencies, .reactPerfLogger, .jsi]
+)
+
+/// React-jserrorhandler.podspec
+let reactJsErrorHandler = RNTarget(
+  name: .reactJsErrorHandler,
+  path: "ReactCommon/jserrorhandler",
+  excludedPaths: ["tests"],
+  dependencies: [.reactNativeDependencies, .jsi, .reactFeatureFlags, .reactDebug, .reactTurboModuleBridging]
+)
+
 /// React-cxxreact.podspec
 let reactCxxReact = RNTarget(
   name: .reactCxxReact,
   path: "ReactCommon/cxxreact",
   searchPaths: [CallInvokerPath],
   excludedPaths: ["tests"],
-  dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .logger, .reactDebug, .reactJsInspector]
+  dependencies: [.reactNativeDependencies, .jsi, .reactJsErrorHandler, .reactPerfLogger, .logger, .reactDebug, .reactJsInspector]
 )
 
 /// React-jsitooling.podspec
@@ -243,7 +260,7 @@ let reactPerformanceCdpMetrics = RNTarget(
   name: .reactPerformanceCdpMetrics,
   path: "ReactCommon/react/performance/cdpmetrics",
   excludedPaths: ["tests"],
-  dependencies: [.reactNativeDependencies, .reactCxxReact, .jsi, .reactPerformanceTimeline, .reactRuntimeExecutor]
+  dependencies: [.reactNativeDependencies, .jsi, .reactPerformanceTimeline, .reactRuntimeExecutor]
 )
 
 /// React-performancetimeline.podspec
@@ -251,7 +268,7 @@ let reactPerformanceTimeline = RNTarget(
   name: .reactPerformanceTimeline,
   path: "ReactCommon/react/performance/timeline",
   excludedPaths: ["tests"],
-  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactJsInspectorTracing, .reactCxxReact, .reactPerfLogger]
+  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactJsInspectorTracing, .reactPerfLogger]
 )
 
 /// React-runtimescheduler.podspec
@@ -259,24 +276,7 @@ let reactRuntimeScheduler = RNTarget(
   name: .reactRuntimeScheduler,
   path: "ReactCommon/react/renderer/runtimescheduler",
   excludedPaths: ["tests"],
-  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactCxxReact, .reactPerfLogger, .reactPerformanceTimeline, .reactRendererConsistency, .reactUtils, .reactRuntimeExecutor]
-)
-
-/// ReactCommon.podspec
-/// This target represent the ReactCommon/turbomodule/bridging subspec
-let reactTurboModuleBridging = RNTarget(
-  name: .reactTurboModuleBridging,
-  path: "ReactCommon/react/bridging",
-  excludedPaths: ["tests"],
-  dependencies: [.reactNativeDependencies, .reactPerfLogger, .reactCxxReact, .jsi, .logger]
-)
-
-/// React-jserrorhandler.podspec
-let reactJsErrorHandler = RNTarget(
-  name: .reactJsErrorHandler,
-  path: "ReactCommon/jserrorhandler",
-  excludedPaths: ["tests"],
-  dependencies: [.reactNativeDependencies, .jsi, .reactCxxReact, .reactFeatureFlags, .reactDebug, .reactTurboModuleBridging]
+  dependencies: [.reactNativeDependencies, .reactJsErrorHandler, .reactFeatureFlags, .reactCxxReact, .reactPerfLogger, .reactPerformanceTimeline, .reactRendererConsistency, .reactUtils, .reactRuntimeExecutor]
 )
 
 /// React-graphicsApple
@@ -871,7 +871,7 @@ extension String {
   static let reactRCTActionSheet = "React-RCTActionSheet" // Empty target
   static let reactRCTLinking = "React-RCTLinking"
   static let reactCoreModules = "React-CoreModules"
-  static let reactTurboModuleBridging = "ReactCommon/turbomodule/bridging"
+  static let reactTurboModuleBridging = "React-Bridging"
   static let reactTurboModuleCore = "ReactCommon/turbomodule/core"
   static let reactTurboModuleCoreDefaults = "ReactCommon/turbomodule/core/defaults"
   static let reactTurboModuleCoreMicrotasks = "ReactCommon/turbomodule/core/microtasks"

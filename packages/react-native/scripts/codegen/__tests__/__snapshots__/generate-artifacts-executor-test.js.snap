@@ -235,7 +235,7 @@ exports[`execute test-app "ReactCodegen/RCTModulesConformingToProtocolsProvider.
 {
   static NSArray<NSString *> *classNames = nil;
   static dispatch_once_t onceToken;
-  
+
   dispatch_once(&onceToken, ^{
     classNames = @[
       @\\"RCTTestAppDeprecatedImageURLLoader\\",
@@ -244,7 +244,7 @@ exports[`execute test-app "ReactCodegen/RCTModulesConformingToProtocolsProvider.
 		@\\"TestLibraryImageURLLoader\\"
     ];
   });
-  
+
   return classNames;
 }
 
@@ -252,7 +252,7 @@ exports[`execute test-app "ReactCodegen/RCTModulesConformingToProtocolsProvider.
 {
   static NSArray<NSString *> *classNames = nil;
   static dispatch_once_t onceToken;
-  
+
   dispatch_once(&onceToken, ^{
     classNames = @[
       @\\"RCTTestAppDeprecatedImageDataDecoder\\",
@@ -261,7 +261,7 @@ exports[`execute test-app "ReactCodegen/RCTModulesConformingToProtocolsProvider.
 		@\\"TestLibraryImageDataDecoder\\"
     ];
   });
-  
+
   return classNames;
 }
 
@@ -269,7 +269,7 @@ exports[`execute test-app "ReactCodegen/RCTModulesConformingToProtocolsProvider.
 {
   static NSArray<NSString *> *classNames = nil;
   static dispatch_once_t onceToken;
-  
+
   dispatch_once(&onceToken, ^{
     classNames = @[
       @\\"RCTTestAppDeprecatedURLRequestHandler\\",
@@ -278,7 +278,7 @@ exports[`execute test-app "ReactCodegen/RCTModulesConformingToProtocolsProvider.
 		@\\"TestLibraryURLRequestHandler\\"
     ];
   });
-  
+
   return classNames;
 }
 
@@ -465,7 +465,7 @@ Pod::Spec.new do |s|
   s.dependency \\"RCTTypeSafety\\"
   s.dependency \\"React-Core\\"
   s.dependency \\"React-jsi\\"
-  s.dependency \\"ReactCommon/turbomodule/bridging\\"
+  s.dependency \\"React-Bridging\\"
   s.dependency \\"ReactCommon/turbomodule/core\\"
   s.dependency \\"React-NativeModulesApple\\"
   s.dependency 'React-graphics'
@@ -733,13 +733,13 @@ exports[`execute test-app-legacy "ReactCodegen/RCTModulesConformingToProtocolsPr
 {
   static NSArray<NSString *> *classNames = nil;
   static dispatch_once_t onceToken;
-  
+
   dispatch_once(&onceToken, ^{
     classNames = @[
       @\\"RCTTestAppDeprecatedImageURLLoader\\"
     ];
   });
-  
+
   return classNames;
 }
 
@@ -747,13 +747,13 @@ exports[`execute test-app-legacy "ReactCodegen/RCTModulesConformingToProtocolsPr
 {
   static NSArray<NSString *> *classNames = nil;
   static dispatch_once_t onceToken;
-  
+
   dispatch_once(&onceToken, ^{
     classNames = @[
-      
+
     ];
   });
-  
+
   return classNames;
 }
 
@@ -761,13 +761,13 @@ exports[`execute test-app-legacy "ReactCodegen/RCTModulesConformingToProtocolsPr
 {
   static NSArray<NSString *> *classNames = nil;
   static dispatch_once_t onceToken;
-  
+
   dispatch_once(&onceToken, ^{
     classNames = @[
       @\\"RCTTestAppDeprecatedURLRequestHandler\\"
     ];
   });
-  
+
   return classNames;
 }
 
@@ -944,7 +944,7 @@ Pod::Spec.new do |s|
   s.dependency \\"RCTTypeSafety\\"
   s.dependency \\"React-Core\\"
   s.dependency \\"React-jsi\\"
-  s.dependency \\"ReactCommon/turbomodule/bridging\\"
+  s.dependency \\"React-Bridging\\"
   s.dependency \\"ReactCommon/turbomodule/core\\"
   s.dependency \\"React-NativeModulesApple\\"
   s.dependency 'React-graphics'
