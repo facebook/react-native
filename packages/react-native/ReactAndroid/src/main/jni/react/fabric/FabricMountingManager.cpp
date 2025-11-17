@@ -24,9 +24,9 @@
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 
+#include <algorithm>
 #include <cfenv>
 #include <cmath>
-#include <unordered_set>
 #include <vector>
 
 namespace facebook::react {
@@ -53,6 +53,80 @@ void FabricMountingManager::onSurfaceStop(SurfaceId surfaceId) {
 }
 
 namespace {
+
+#ifdef REACT_NATIVE_DEBUG
+// List of layout-only props extracted from ViewProps.kt used to filter out
+// component props from Props 1.5 to validate the Props 2.0 output
+inline bool isLayoutOnlyProp(const std::string& propName) {
+  static const std::vector<std::string> layoutOnlyProps = {
+      // Flexbox Alignment
+      "alignItems",
+      "alignSelf",
+      "alignContent",
+
+      // Flexbox Properties
+      "flex",
+      "flexBasis",
+      "flexDirection",
+      "flexGrow",
+      "flexShrink",
+      "flexWrap",
+      "justifyContent",
+
+      // Gaps
+      "rowGap",
+      "columnGap",
+      "gap",
+
+      // Display & Position
+      "display",
+      "position",
+
+      // Positioning
+      "right",
+      "top",
+      "bottom",
+      "left",
+      "start",
+      "end",
+
+      // Dimensions
+      "width",
+      "height",
+      "minWidth",
+      "maxWidth",
+      "minHeight",
+      "maxHeight",
+
+      // Margins
+      "margin",
+      "marginVertical",
+      "marginHorizontal",
+      "marginLeft",
+      "marginRight",
+      "marginTop",
+      "marginBottom",
+      "marginStart",
+      "marginEnd",
+
+      // Paddings
+      "padding",
+      "paddingVertical",
+      "paddingHorizontal",
+      "paddingLeft",
+      "paddingRight",
+      "paddingTop",
+      "paddingBottom",
+      "paddingStart",
+      "paddingEnd",
+
+      // Other
+      "collapsable",
+  };
+  return std::find(layoutOnlyProps.begin(), layoutOnlyProps.end(), propName) !=
+      layoutOnlyProps.end();
+}
+#endif
 
 inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
   switch (mountItemType) {
@@ -232,8 +306,29 @@ jni::local_ref<jobject> getProps(
       strcmp(
           newShadowView.componentName,
           newProps->getDiffPropsImplementationTarget()) == 0) {
-    return ReadableNativeMap::newObjectCxxArgs(
-        newProps->getDiffProps(oldProps));
+    auto diff = newProps->getDiffProps(oldProps);
+
+#ifdef REACT_NATIVE_DEBUG
+    if (oldProps != nullptr) {
+      auto controlDiff =
+          diffDynamicProps(oldProps->rawProps, newProps->rawProps);
+
+      for (const auto& [prop, value] : controlDiff.items()) {
+        if (diff.count(prop) == 0) {
+          // Skip layout-only props since they are not included in Props 2.0
+          if (!isLayoutOnlyProp(prop.asString())) {
+            LOG(ERROR) << "Props diff validation failed: Props 1.5 has prop '"
+                       << prop.asString()
+                       << "' = " << (value != nullptr ? value : "NULL")
+                       << " that Props 2.0 doesn't have for component "
+                       << newShadowView.componentName;
+          }
+        }
+      }
+    }
+#endif
+
+    return ReadableNativeMap::newObjectCxxArgs(std::move(diff));
   }
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
     if (oldProps == nullptr) {
