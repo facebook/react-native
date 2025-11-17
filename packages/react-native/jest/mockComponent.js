@@ -39,6 +39,7 @@ export default function mockComponent<
     React.ElementProps<typeof RealComponent>,
   > =
     typeof RealComponent === 'function' &&
+    RealComponent.prototype != null &&
     RealComponent.prototype.constructor instanceof React.Component
       ? RealComponent
       : React.Component;
