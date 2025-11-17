@@ -73,11 +73,13 @@ thread_local bool NativeAnimatedNodesManager::isOnRenderThread_{false};
 NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     DirectManipulationCallback&& directManipulationCallback,
     FabricCommitCallback&& fabricCommitCallback,
+    ResolvePlatformColor&& resolvePlatformColor,
     StartOnRenderCallback&& startOnRenderCallback,
     StopOnRenderCallback&& stopOnRenderCallback,
     FrameRateListenerCallback&& frameRateListenerCallback) noexcept
     : directManipulationCallback_(std::move(directManipulationCallback)),
       fabricCommitCallback_(std::move(fabricCommitCallback)),
+      resolvePlatformColor_(std::move(resolvePlatformColor)),
       startOnRenderCallback_(std::move(startOnRenderCallback)),
       stopOnRenderCallback_(std::move(stopOnRenderCallback)),
       frameRateListenerCallback_(std::move(frameRateListenerCallback)) {
@@ -845,6 +847,15 @@ void NativeAnimatedNodesManager::onManagedPropsRemoved(Tag tag) noexcept {
 
 bool NativeAnimatedNodesManager::isOnRenderThread() const noexcept {
   return isOnRenderThread_;
+}
+
+void NativeAnimatedNodesManager::resolvePlatformColor(
+    SurfaceId surfaceId,
+    const RawValue& value,
+    SharedColor& result) const {
+  if (resolvePlatformColor_) {
+    resolvePlatformColor_(surfaceId, value, result);
+  }
 }
 
 #pragma mark - Listeners

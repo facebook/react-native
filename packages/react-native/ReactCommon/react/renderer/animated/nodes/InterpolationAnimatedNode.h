@@ -29,13 +29,20 @@ class InterpolationAnimatedNode final : public ValueAnimatedNode {
  private:
   double interpolateValue(double value);
   double interpolateColor(double value);
+  double interpolatePlatformColor(double value);
 
   std::vector<double> inputRanges_;
   std::vector<double> defaultOutputRanges_;
   std::vector<Color> colorOutputRanges_;
+  std::vector<folly::dynamic> platformColorOutputRanges_;
   std::string extrapolateLeft_;
   std::string extrapolateRight_;
 
+  std::string outputType_;
+
   Tag parentTag_{animated::undefinedAnimatedNodeIdentifier};
+
+  // Needed for PlatformColor resolver
+  SurfaceId connectedRootTag_{animated::undefinedAnimatedNodeIdentifier};
 };
 } // namespace facebook::react

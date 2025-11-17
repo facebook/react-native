@@ -14,6 +14,9 @@
 #ifdef RN_USE_ANIMATION_BACKEND
 #include <react/renderer/animationbackend/AnimationBackend.h>
 #endif
+#include <react/renderer/animated/internal/primitives.h>
+#include <react/renderer/components/view/conversions.h>
+#include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 namespace facebook::react {
@@ -70,6 +73,24 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           uiManager->synchronouslyUpdateViewOnUIThread(viewTag, props);
         };
 
+    // TODO: remove force casting.
+    auto* scheduler = (Scheduler*)uiManager->getDelegate();
+    auto resolvePlatformColor = [scheduler, uiManager](
+                                    SurfaceId surfaceId,
+                                    const RawValue& value,
+                                    SharedColor& result) {
+      if (uiManager) {
+        if (surfaceId != animated::undefinedAnimatedNodeIdentifier) {
+          PropsParserContext propsParserContext{
+              surfaceId, *scheduler->getContextContainer()};
+          fromRawValue(propsParserContext, value, result);
+        } else {
+          LOG(ERROR)
+              << "Cannot resolve platformColor because surfaceId is unavailable.";
+        }
+      }
+    };
+
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
       // TODO: this should be initialized outside of animated, but for now it
@@ -95,6 +116,7 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           std::make_shared<NativeAnimatedNodesManager>(
               std::move(directManipulationCallback),
               std::move(fabricCommitCallback),
+              std::move(resolvePlatformColor),
               std::move(startOnRenderCallback_),
               std::move(stopOnRenderCallback_),
               std::move(frameRateListenerCallback_));
@@ -128,8 +150,6 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
     uiManager->setNativeAnimatedDelegate(nativeAnimatedDelegate_);
 
-    // TODO: remove force casting.
-    auto* scheduler = (Scheduler*)uiManager->getDelegate();
     animatedMountingOverrideDelegate_ =
         std::make_shared<AnimatedMountingOverrideDelegate>(
             *nativeAnimatedNodesManager_, *scheduler);
