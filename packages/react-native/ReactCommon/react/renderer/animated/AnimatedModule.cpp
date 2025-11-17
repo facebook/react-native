@@ -27,17 +27,18 @@ void AnimatedModule::finishOperationBatch(jsi::Runtime& /*rt*/) {
   std::swap(preOperations_, preOperations);
   std::swap(operations_, operations);
 
-  if (nodesManager_) {
+  if (auto nodesManager = nodesManager_.lock()) {
     // TODO: nodesManager_ must exist at all times. But without this check
     // AnimatedProps-itest.js fails.
-    nodesManager_->scheduleOnUI([this,
-                                 preOperations = std::move(preOperations),
-                                 operations = std::move(operations)]() {
+    nodesManager->scheduleOnUI([this,
+                                preOperations = std::move(preOperations),
+                                operations = std::move(operations),
+                                nodesManager = nodesManager_]() {
       for (auto& preOperation : preOperations) {
-        executeOperation(preOperation);
+        executeOperation(preOperation, nodesManager);
       }
       for (auto& operation : operations) {
-        executeOperation(operation);
+        executeOperation(operation, nodesManager);
       }
     });
   }
@@ -50,8 +51,8 @@ void AnimatedModule::createAnimatedNode(
   auto configDynamic = dynamicFromValue(rt, jsi::Value(rt, config));
   if (auto it = configDynamic.find("disableBatchingForNativeCreate");
       it != configDynamic.items().end() && it->second == true) {
-    if (nodesManager_) {
-      nodesManager_->createAnimatedNodeAsync(tag, configDynamic);
+    if (auto nodesManager = nodesManager_.lock()) {
+      nodesManager->createAnimatedNodeAsync(tag, configDynamic);
     }
   } else {
     operations_.emplace_back(
@@ -220,79 +221,83 @@ void AnimatedModule::queueAndExecuteBatchedOperations(
   // TODO(T225953475): missing implementation
 }
 
-void AnimatedModule::executeOperation(const Operation& operation) {
-  if (nodesManager_ == nullptr) {
-    return;
-  }
-  std::visit(
-      [&](const auto& op) {
-        using T = std::decay_t<decltype(op)>;
+void AnimatedModule::executeOperation(
+    const Operation& operation,
+    std::weak_ptr<NativeAnimatedNodesManager> nodesManagerWeak) {
+  if (auto nodesManager = nodesManagerWeak.lock()) {
+    std::visit(
+        [&](const auto& op) {
+          using T = std::decay_t<decltype(op)>;
 
-        if constexpr (std::is_same_v<T, CreateAnimatedNodeOp>) {
-          nodesManager_->createAnimatedNode(op.tag, op.config);
-        } else if constexpr (std::is_same_v<T, GetValueOp>) {
-          auto animValue = nodesManager_->getValue(op.tag);
-          if (animValue) {
-            op.callback.call(animValue.value());
+          if constexpr (std::is_same_v<T, CreateAnimatedNodeOp>) {
+            nodesManager->createAnimatedNode(op.tag, op.config);
+          } else if constexpr (std::is_same_v<T, GetValueOp>) {
+            auto animValue = nodesManager->getValue(op.tag);
+            if (animValue) {
+              op.callback.call(animValue.value());
+            }
+          } else if constexpr (std::is_same_v<
+                                   T,
+                                   StartListeningToAnimatedNodeValueOp>) {
+            nodesManager->startListeningToAnimatedNodeValue(
+                op.tag, [this, tag = op.tag](double value) {
+                  emitDeviceEvent(
+                      "onAnimatedValueUpdate",
+                      [tag, value](
+                          jsi::Runtime& rt, std::vector<jsi::Value>& args) {
+                        auto arg = jsi::Object(rt);
+                        arg.setProperty(rt, "tag", jsi::Value(tag));
+                        arg.setProperty(rt, "value", jsi::Value(value));
+                        args.emplace_back(rt, arg);
+                      });
+                });
+          } else if constexpr (std::is_same_v<
+                                   T,
+                                   StopListeningToAnimatedNodeValueOp>) {
+            nodesManager->stopListeningToAnimatedNodeValue(op.tag);
+          } else if constexpr (std::is_same_v<T, ConnectAnimatedNodesOp>) {
+            nodesManager->connectAnimatedNodes(op.parentTag, op.childTag);
+          } else if constexpr (std::is_same_v<T, DisconnectAnimatedNodesOp>) {
+            nodesManager->disconnectAnimatedNodes(op.parentTag, op.childTag);
+          } else if constexpr (std::is_same_v<T, StartAnimatingNodeOp>) {
+            nodesManager->startAnimatingNode(
+                op.animationId,
+                op.nodeTag,
+                std::move(op.config),
+                std::move(op.endCallback));
+          } else if constexpr (std::is_same_v<T, StopAnimationOp>) {
+            nodesManager->stopAnimation(op.animationId, false);
+          } else if constexpr (std::is_same_v<T, SetAnimatedNodeValueOp>) {
+            nodesManager->setAnimatedNodeValue(op.nodeTag, op.value);
+          } else if constexpr (std::is_same_v<T, SetAnimatedNodeOffsetOp>) {
+            nodesManager->setAnimatedNodeOffset(op.nodeTag, op.offset);
+          } else if constexpr (std::is_same_v<T, FlattenAnimatedNodeOffsetOp>) {
+            nodesManager->flattenAnimatedNodeOffset(op.nodeTag);
+          } else if constexpr (std::is_same_v<T, ExtractAnimatedNodeOffsetOp>) {
+            nodesManager->extractAnimatedNodeOffsetOp(op.nodeTag);
+          } else if constexpr (std::is_same_v<T, ConnectAnimatedNodeToViewOp>) {
+            nodesManager->connectAnimatedNodeToView(op.nodeTag, op.viewTag);
+          } else if constexpr (std::is_same_v<
+                                   T,
+                                   DisconnectAnimatedNodeFromViewOp>) {
+            nodesManager->disconnectAnimatedNodeFromView(
+                op.nodeTag, op.viewTag);
+          } else if constexpr (std::is_same_v<T, RestoreDefaultValuesOp>) {
+            nodesManager->restoreDefaultValues(op.nodeTag);
+          } else if constexpr (std::is_same_v<T, DropAnimatedNodeOp>) {
+            nodesManager->dropAnimatedNode(op.tag);
+          } else if constexpr (std::is_same_v<T, AddAnimatedEventToViewOp>) {
+            nodesManager->addAnimatedEventToView(
+                op.viewTag, op.eventName, op.eventMapping);
+          } else if constexpr (std::is_same_v<
+                                   T,
+                                   RemoveAnimatedEventFromViewOp>) {
+            nodesManager->removeAnimatedEventFromView(
+                op.viewTag, op.eventName, op.animatedNodeTag);
           }
-        } else if constexpr (std::is_same_v<
-                                 T,
-                                 StartListeningToAnimatedNodeValueOp>) {
-          nodesManager_->startListeningToAnimatedNodeValue(
-              op.tag, [this, tag = op.tag](double value) {
-                emitDeviceEvent(
-                    "onAnimatedValueUpdate",
-                    [tag, value](
-                        jsi::Runtime& rt, std::vector<jsi::Value>& args) {
-                      auto arg = jsi::Object(rt);
-                      arg.setProperty(rt, "tag", jsi::Value(tag));
-                      arg.setProperty(rt, "value", jsi::Value(value));
-                      args.emplace_back(rt, arg);
-                    });
-              });
-        } else if constexpr (std::is_same_v<
-                                 T,
-                                 StopListeningToAnimatedNodeValueOp>) {
-          nodesManager_->stopListeningToAnimatedNodeValue(op.tag);
-        } else if constexpr (std::is_same_v<T, ConnectAnimatedNodesOp>) {
-          nodesManager_->connectAnimatedNodes(op.parentTag, op.childTag);
-        } else if constexpr (std::is_same_v<T, DisconnectAnimatedNodesOp>) {
-          nodesManager_->disconnectAnimatedNodes(op.parentTag, op.childTag);
-        } else if constexpr (std::is_same_v<T, StartAnimatingNodeOp>) {
-          nodesManager_->startAnimatingNode(
-              op.animationId,
-              op.nodeTag,
-              std::move(op.config),
-              std::move(op.endCallback));
-        } else if constexpr (std::is_same_v<T, StopAnimationOp>) {
-          nodesManager_->stopAnimation(op.animationId, false);
-        } else if constexpr (std::is_same_v<T, SetAnimatedNodeValueOp>) {
-          nodesManager_->setAnimatedNodeValue(op.nodeTag, op.value);
-        } else if constexpr (std::is_same_v<T, SetAnimatedNodeOffsetOp>) {
-          nodesManager_->setAnimatedNodeOffset(op.nodeTag, op.offset);
-        } else if constexpr (std::is_same_v<T, FlattenAnimatedNodeOffsetOp>) {
-          nodesManager_->flattenAnimatedNodeOffset(op.nodeTag);
-        } else if constexpr (std::is_same_v<T, ExtractAnimatedNodeOffsetOp>) {
-          nodesManager_->extractAnimatedNodeOffsetOp(op.nodeTag);
-        } else if constexpr (std::is_same_v<T, ConnectAnimatedNodeToViewOp>) {
-          nodesManager_->connectAnimatedNodeToView(op.nodeTag, op.viewTag);
-        } else if constexpr (std::is_same_v<
-                                 T,
-                                 DisconnectAnimatedNodeFromViewOp>) {
-          nodesManager_->disconnectAnimatedNodeFromView(op.nodeTag, op.viewTag);
-        } else if constexpr (std::is_same_v<T, RestoreDefaultValuesOp>) {
-          nodesManager_->restoreDefaultValues(op.nodeTag);
-        } else if constexpr (std::is_same_v<T, DropAnimatedNodeOp>) {
-          nodesManager_->dropAnimatedNode(op.tag);
-        } else if constexpr (std::is_same_v<T, AddAnimatedEventToViewOp>) {
-          nodesManager_->addAnimatedEventToView(
-              op.viewTag, op.eventName, op.eventMapping);
-        } else if constexpr (std::is_same_v<T, RemoveAnimatedEventFromViewOp>) {
-          nodesManager_->removeAnimatedEventFromView(
-              op.viewTag, op.eventName, op.animatedNodeTag);
-        }
-      },
-      operation);
+        },
+        operation);
+  }
 }
 
 void AnimatedModule::installJSIBindingsWithRuntime(jsi::Runtime& runtime) {
