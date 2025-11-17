@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.83.0-rc.2
+
+### Added
+
+- React Native DevTools: Enable Network inspection features ([66469b58d8](https://github.com/facebook/react-native/commit/66469b58d85e820e401b82028b3fda57c53f08c1) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Changed
+
+- Gate IntersectionObserver in the Canary release level ([5119db44ce](https://github.com/facebook/react-native/commit/5119db44ce5b600edc79dd9fe752d6e0a53375f4) by [@lunaleaps](https://github.com/lunaleaps))
+
 ## v0.83.0-rc.1
 
 ### Changed
