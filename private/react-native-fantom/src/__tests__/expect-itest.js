@@ -857,7 +857,8 @@ describe('expect', () => {
       expect(new Date('2025-01-02')).toMatchSnapshot();
       expect(new Error()).toMatchSnapshot();
       expect(new RegExp('asd')).toMatchSnapshot();
-      expect(new Promise(() => {})).toMatchSnapshot();
+      // TODO(T245412835): uncomment this once we support Hermes V1 in OSS fantom.
+      // expect(new Promise(() => {})).toMatchSnapshot();
     });
 
     test('named snapshots', () => {
