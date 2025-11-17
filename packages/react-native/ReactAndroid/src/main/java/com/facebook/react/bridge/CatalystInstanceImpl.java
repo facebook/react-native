@@ -39,7 +39,6 @@ import com.facebook.systrace.TraceListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -88,7 +87,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   // Access from any thread
   private final ReactQueueConfigurationImpl mReactQueueConfiguration;
-  private final CopyOnWriteArrayList<NotThreadSafeBridgeIdleDebugListener> mBridgeIdleListeners;
   private final AtomicInteger mPendingJSCalls = new AtomicInteger(0);
   private final String mJsPendingCallsTitleForTrace =
       "pending_js_calls_instance" + sNextInstanceIdForTrace.getAndIncrement();
@@ -138,7 +136,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mReactQueueConfiguration =
         ReactQueueConfigurationImpl.create(
             reactQueueConfigurationSpec, new NativeExceptionHandler());
-    mBridgeIdleListeners = new CopyOnWriteArrayList<>();
     mNativeModuleRegistry = nativeModuleRegistry;
     mJSModuleRegistry = new JavaScriptModuleRegistry();
     mJSBundleLoader = jsBundleLoader;
@@ -372,14 +369,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
             mFabricUIManager.invalidate();
           }
           boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
-          if (!mBridgeIdleListeners.isEmpty()) {
-            for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-              if (!wasIdle) {
-                listener.onTransitionToBridgeIdle();
-              }
-              listener.onBridgeDestroyed();
-            }
-          }
 
           getReactQueueConfiguration()
               .getJSQueueThread()
@@ -521,30 +510,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniHandleMemoryPressure(level);
   }
 
-  /**
-   * Adds a idle listener for this Catalyst instance. The listener will receive notifications
-   * whenever the bridge transitions from idle to busy and vice-versa, where the busy state is
-   * defined as there being some non-zero number of calls to JS that haven't resolved via a
-   * onBatchComplete call. The listener should be purely passive and not affect application logic.
-   *
-   * @noinspection deprecation
-   */
-  @Override
-  public void addBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener) {
-    mBridgeIdleListeners.add(listener);
-  }
-
-  /**
-   * Removes a NotThreadSafeBridgeIdleDebugListener previously added with {@link
-   * #addBridgeIdleDebugListener}
-   *
-   * @noinspection deprecation
-   */
-  @Override
-  public void removeBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener) {
-    mBridgeIdleListeners.remove(listener);
-  }
-
   @Override
   public native void setGlobalVariable(String propName, String jsonValue);
 
@@ -561,16 +526,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();
-    boolean wasIdle = oldPendingCalls == 0;
     Systrace.traceCounter(TRACE_TAG_REACT, mJsPendingCallsTitleForTrace, oldPendingCalls + 1);
-    if (wasIdle && !mBridgeIdleListeners.isEmpty()) {
-      mNativeModulesQueueThread.runOnQueue(
-          () -> {
-            for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-              listener.onTransitionToBridgeBusy();
-            }
-          });
-    }
   }
 
   @Override
@@ -592,17 +548,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     int newPendingCalls = mPendingJSCalls.decrementAndGet();
     // TODO(9604406): handle case of web workers injecting messages to main thread
     // Assertions.assertCondition(newPendingCalls >= 0);
-    boolean isNowIdle = newPendingCalls == 0;
     Systrace.traceCounter(TRACE_TAG_REACT, mJsPendingCallsTitleForTrace, newPendingCalls);
-
-    if (isNowIdle && !mBridgeIdleListeners.isEmpty()) {
-      mNativeModulesQueueThread.runOnQueue(
-          () -> {
-            for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-              listener.onTransitionToBridgeIdle();
-            }
-          });
-    }
   }
 
   private void onNativeException(Exception e) {

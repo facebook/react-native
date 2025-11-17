@@ -57,7 +57,6 @@ import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleRegistry;
-import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactCxxErrorHandler;
@@ -183,7 +182,6 @@ public class ReactInstanceManager {
   private final boolean mUseDeveloperSupport;
   private final boolean mRequireActivity;
   private final boolean mKeepActivity;
-  private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private final Object mReactContextLock = new Object();
   private @Nullable volatile ReactContext mCurrentReactContext;
   private final Context mApplicationContext;
@@ -246,7 +244,6 @@ public class ReactInstanceManager {
       DevSupportManagerFactory devSupportManagerFactory,
       boolean requireActivity,
       boolean keepActivity,
-      @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
       JSExceptionHandler jSExceptionHandler,
       @Nullable RedBoxHandler redBoxHandler,
@@ -292,7 +289,6 @@ public class ReactInstanceManager {
             devLoadingViewManager,
             pausedInDebuggerOverlayManager);
     Systrace.endSection(TRACE_TAG_REACT);
-    mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mJSExceptionHandler = jSExceptionHandler;
@@ -1516,9 +1512,6 @@ public class ReactInstanceManager {
         uiManager.initialize();
         catalystInstance.setFabricUIManager(uiManager);
       }
-    }
-    if (mBridgeIdleDebugListener != null) {
-      catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
     if (BuildConfig.ENABLE_PERFETTO || Systrace.isTracing(TRACE_TAG_REACT)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
