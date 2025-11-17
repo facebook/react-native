@@ -153,29 +153,29 @@ void EventNestedObjectPropsNativeComponentViewEventEmitter::onChange(OnChange ev
   dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     {
-  auto location_codegen1 = jsi::Object(runtime);
+  auto __codegen__1__location = jsi::Object(runtime);
   {
-    auto source_codegen2 = jsi::Object(runtime);
-    source_codegen2.setProperty(runtime, \\"url\\", event.location.source.url);
-    location_codegen1.setProperty(runtime, \\"source\\", source_codegen2);
+    auto __codegen__2__source = jsi::Object(runtime);
+    __codegen__2__source.setProperty(runtime, \\"url\\", event.location.source.url);
+    __codegen__1__location.setProperty(runtime, \\"source\\", __codegen__2__source);
   }
-  location_codegen1.setProperty(runtime, \\"x\\", event.location.x);
-  location_codegen1.setProperty(runtime, \\"y\\", event.location.y);
+  __codegen__1__location.setProperty(runtime, \\"x\\", event.location.x);
+  __codegen__1__location.setProperty(runtime, \\"y\\", event.location.y);
 
-      auto arrayOfObjects_codegen3 = jsi::Array(runtime, event.location.arrayOfObjects.size());
-      size_t arrayOfObjectsIndex_codegen4 = 0;
-      for (auto arrayOfObjectsValue_codegen5 : event.location.arrayOfObjects) {
-        auto arrayOfObjectsObject_codegen6 = jsi::Object(runtime);
+      auto __codegen__3__arrayOfObjects = jsi::Array(runtime, event.location.arrayOfObjects.size());
+      size_t __codegen__4__arrayOfObjectsIndex = 0;
+      for (auto __codegen__5__arrayOfObjectsValue : event.location.arrayOfObjects) {
+        auto __codegen__6__arrayOfObjectsObject = jsi::Object(runtime);
         {
-    auto value_codegen7 = jsi::Object(runtime);
-    value_codegen7.setProperty(runtime, \\"str\\", arrayOfObjectsValue_codegen5.value.str);
-    arrayOfObjectsObject_codegen6.setProperty(runtime, \\"value\\", value_codegen7);
+    auto __codegen__7__value = jsi::Object(runtime);
+    __codegen__7__value.setProperty(runtime, \\"str\\", __codegen__5__arrayOfObjectsValue.value.str);
+    __codegen__6__arrayOfObjectsObject.setProperty(runtime, \\"value\\", __codegen__7__value);
   }
-        arrayOfObjects_codegen3.setValueAtIndex(runtime, arrayOfObjectsIndex_codegen4++, arrayOfObjectsObject_codegen6);
+        __codegen__3__arrayOfObjects.setValueAtIndex(runtime, __codegen__4__arrayOfObjectsIndex++, __codegen__6__arrayOfObjectsObject);
       }
-      location_codegen1.setProperty(runtime, \\"arrayOfObjects\\", arrayOfObjects_codegen3);
+      __codegen__1__location.setProperty(runtime, \\"arrayOfObjects\\", __codegen__3__arrayOfObjects);
     
-  payload.setProperty(runtime, \\"location\\", location_codegen1);
+  payload.setProperty(runtime, \\"location\\", __codegen__1__location);
 }
     return payload;
   });

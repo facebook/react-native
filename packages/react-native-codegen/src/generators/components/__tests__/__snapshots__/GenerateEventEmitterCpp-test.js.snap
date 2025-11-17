@@ -197,15 +197,15 @@ void EventsNestedObjectNativeComponentEventEmitter::onChange(OnChange event) con
   dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     {
-  auto location_codegen1 = jsi::Object(runtime);
+  auto __codegen__1__location = jsi::Object(runtime);
   {
-    auto source_codegen2 = jsi::Object(runtime);
-    source_codegen2.setProperty(runtime, \\"url\\", event.location.source.url);
-    location_codegen1.setProperty(runtime, \\"source\\", source_codegen2);
+    auto __codegen__2__source = jsi::Object(runtime);
+    __codegen__2__source.setProperty(runtime, \\"url\\", event.location.source.url);
+    __codegen__1__location.setProperty(runtime, \\"source\\", __codegen__2__source);
   }
-  location_codegen1.setProperty(runtime, \\"x\\", event.location.x);
-  location_codegen1.setProperty(runtime, \\"y\\", event.location.y);
-  payload.setProperty(runtime, \\"location\\", location_codegen1);
+  __codegen__1__location.setProperty(runtime, \\"x\\", event.location.x);
+  __codegen__1__location.setProperty(runtime, \\"y\\", event.location.y);
+  payload.setProperty(runtime, \\"location\\", __codegen__1__location);
 }
     return payload;
   });
@@ -249,60 +249,60 @@ void EventsNativeComponentEventEmitter::onArrayEventType(OnArrayEventType event)
   dispatchEvent(\\"arrayEventType\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     
-    auto bool_array_event_prop_codegen1 = jsi::Array(runtime, event.bool_array_event_prop.size());
-    size_t bool_array_event_propIndex_codegen2 = 0;
-    for (auto bool_array_event_propValue_codegen3 : event.bool_array_event_prop) {
-      bool_array_event_prop_codegen1.setValueAtIndex(runtime, bool_array_event_propIndex_codegen2++, (bool)bool_array_event_propValue_codegen3);
+    auto __codegen__1__bool_array_event_prop = jsi::Array(runtime, event.bool_array_event_prop.size());
+    size_t __codegen__2__bool_array_event_propIndex = 0;
+    for (auto __codegen__3__bool_array_event_propValue : event.bool_array_event_prop) {
+      __codegen__1__bool_array_event_prop.setValueAtIndex(runtime, __codegen__2__bool_array_event_propIndex++, (bool)__codegen__3__bool_array_event_propValue);
     }
-    payload.setProperty(runtime, \\"bool_array_event_prop\\", bool_array_event_prop_codegen1);
+    payload.setProperty(runtime, \\"bool_array_event_prop\\", __codegen__1__bool_array_event_prop);
   
 
-    auto string_enum_event_prop_codegen4 = jsi::Array(runtime, event.string_enum_event_prop.size());
-    size_t string_enum_event_propIndex_codegen5 = 0;
-    for (auto string_enum_event_propValue_codegen6 : event.string_enum_event_prop) {
-      string_enum_event_prop_codegen4.setValueAtIndex(runtime, string_enum_event_propIndex_codegen5++, toString(string_enum_event_propValue_codegen6));
+    auto __codegen__4__string_enum_event_prop = jsi::Array(runtime, event.string_enum_event_prop.size());
+    size_t __codegen__5__string_enum_event_propIndex = 0;
+    for (auto __codegen__6__string_enum_event_propValue : event.string_enum_event_prop) {
+      __codegen__4__string_enum_event_prop.setValueAtIndex(runtime, __codegen__5__string_enum_event_propIndex++, toString(__codegen__6__string_enum_event_propValue));
     }
-    payload.setProperty(runtime, \\"string_enum_event_prop\\", string_enum_event_prop_codegen4);
+    payload.setProperty(runtime, \\"string_enum_event_prop\\", __codegen__4__string_enum_event_prop);
   
 
-    auto array_array_event_prop_codegen7 = jsi::Array(runtime, event.array_array_event_prop.size());
-    size_t array_array_event_propIndex_codegen8 = 0;
-    for (auto array_array_event_propValue_codegen9 : event.array_array_event_prop) {
-      auto array_array_event_propArray_codegen10 = jsi::Array(runtime, array_array_event_propValue_codegen9.size());
-      size_t array_array_event_propIndex_codegen8Internal = 0;
-      for (auto array_array_event_propValue_codegen9Internal : array_array_event_propValue_codegen9) {
-        array_array_event_propArray_codegen10.setValueAtIndex(runtime, array_array_event_propIndex_codegen8Internal++, array_array_event_propValue_codegen9Internal);
+    auto __codegen__7__array_array_event_prop = jsi::Array(runtime, event.array_array_event_prop.size());
+    size_t __codegen__8__array_array_event_propIndex = 0;
+    for (auto __codegen__9__array_array_event_propValue : event.array_array_event_prop) {
+      auto __codegen__10__array_array_event_propArray = jsi::Array(runtime, __codegen__9__array_array_event_propValue.size());
+      size_t __codegen__8__array_array_event_propIndexInternal = 0;
+      for (auto __codegen__9__array_array_event_propValueInternal : __codegen__9__array_array_event_propValue) {
+        __codegen__10__array_array_event_propArray.setValueAtIndex(runtime, __codegen__8__array_array_event_propIndexInternal++, __codegen__9__array_array_event_propValueInternal);
       }
-      array_array_event_prop_codegen7.setValueAtIndex(runtime, array_array_event_propIndex_codegen8++, array_array_event_propArray_codegen10);
+      __codegen__7__array_array_event_prop.setValueAtIndex(runtime, __codegen__8__array_array_event_propIndex++, __codegen__10__array_array_event_propArray);
     }
-    payload.setProperty(runtime, \\"array_array_event_prop\\", array_array_event_prop_codegen7);
+    payload.setProperty(runtime, \\"array_array_event_prop\\", __codegen__7__array_array_event_prop);
   
 
-    auto array_object_event_prop_codegen11 = jsi::Array(runtime, event.array_object_event_prop.size());
-    size_t array_object_event_propIndex_codegen12 = 0;
-    for (auto array_object_event_propValue_codegen13 : event.array_object_event_prop) {
-      auto array_object_event_propObject_codegen14 = jsi::Object(runtime);
-      array_object_event_propObject_codegen14.setProperty(runtime, \\"lat\\", array_object_event_propValue_codegen13.lat);
-array_object_event_propObject_codegen14.setProperty(runtime, \\"lon\\", array_object_event_propValue_codegen13.lon);
+    auto __codegen__11__array_object_event_prop = jsi::Array(runtime, event.array_object_event_prop.size());
+    size_t __codegen__12__array_object_event_propIndex = 0;
+    for (auto __codegen__13__array_object_event_propValue : event.array_object_event_prop) {
+      auto __codegen__14__array_object_event_propObject = jsi::Object(runtime);
+      __codegen__14__array_object_event_propObject.setProperty(runtime, \\"lat\\", __codegen__13__array_object_event_propValue.lat);
+__codegen__14__array_object_event_propObject.setProperty(runtime, \\"lon\\", __codegen__13__array_object_event_propValue.lon);
 
-    auto names_codegen15 = jsi::Array(runtime, array_object_event_propValue_codegen13.names.size());
-    size_t namesIndex_codegen16 = 0;
-    for (auto namesValue_codegen17 : array_object_event_propValue_codegen13.names) {
-      names_codegen15.setValueAtIndex(runtime, namesIndex_codegen16++, namesValue_codegen17);
+    auto __codegen__15__names = jsi::Array(runtime, __codegen__13__array_object_event_propValue.names.size());
+    size_t __codegen__16__namesIndex = 0;
+    for (auto __codegen__17__namesValue : __codegen__13__array_object_event_propValue.names) {
+      __codegen__15__names.setValueAtIndex(runtime, __codegen__16__namesIndex++, __codegen__17__namesValue);
     }
-    array_object_event_propObject_codegen14.setProperty(runtime, \\"names\\", names_codegen15);
+    __codegen__14__array_object_event_propObject.setProperty(runtime, \\"names\\", __codegen__15__names);
   
-      array_object_event_prop_codegen11.setValueAtIndex(runtime, array_object_event_propIndex_codegen12++, array_object_event_propObject_codegen14);
+      __codegen__11__array_object_event_prop.setValueAtIndex(runtime, __codegen__12__array_object_event_propIndex++, __codegen__14__array_object_event_propObject);
     }
-    payload.setProperty(runtime, \\"array_object_event_prop\\", array_object_event_prop_codegen11);
+    payload.setProperty(runtime, \\"array_object_event_prop\\", __codegen__11__array_object_event_prop);
   
 
-    auto array_mixed_event_prop_codegen18 = jsi::Array(runtime, event.array_mixed_event_prop.size());
-    size_t array_mixed_event_propIndex_codegen19 = 0;
-    for (auto array_mixed_event_propValue_codegen20 : event.array_mixed_event_prop) {
-      array_mixed_event_prop_codegen18.setValueAtIndex(runtime, array_mixed_event_propIndex_codegen19++, jsi::valueFromDynamic(runtime, array_mixed_event_propValue_codegen20));
+    auto __codegen__18__array_mixed_event_prop = jsi::Array(runtime, event.array_mixed_event_prop.size());
+    size_t __codegen__19__array_mixed_event_propIndex = 0;
+    for (auto __codegen__20__array_mixed_event_propValue : event.array_mixed_event_prop) {
+      __codegen__18__array_mixed_event_prop.setValueAtIndex(runtime, __codegen__19__array_mixed_event_propIndex++, jsi::valueFromDynamic(runtime, __codegen__20__array_mixed_event_propValue));
     }
-    payload.setProperty(runtime, \\"array_mixed_event_prop\\", array_mixed_event_prop_codegen18);
+    payload.setProperty(runtime, \\"array_mixed_event_prop\\", __codegen__18__array_mixed_event_prop);
   
     return payload;
   });
