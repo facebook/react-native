@@ -183,15 +183,6 @@ module.exports = {
   get BackHandler() {
     return require('./Libraries/Utilities/BackHandler').default;
   },
-  get Clipboard() {
-    warnOnce(
-      'clipboard-moved',
-      'Clipboard has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-clipboard/clipboard' instead of 'react-native'. " +
-        'See https://github.com/react-native-clipboard/clipboard',
-    );
-    return require('./Libraries/Components/Clipboard/Clipboard').default;
-  },
   get codegenNativeCommands() {
     return require('./Libraries/Utilities/codegenNativeCommands').default;
   },

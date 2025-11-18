@@ -97,7 +97,6 @@ mock(
   'm#../Libraries/Components/ActivityIndicator/ActivityIndicator',
   'm#./mocks/ActivityIndicator',
 );
-mock('m#../Libraries/Components/Clipboard/Clipboard', 'm#./mocks/Clipboard');
 mock(
   'm#../Libraries/Components/RefreshControl/RefreshControl',
   // $FlowFixMe[incompatible-type] - `../Libraries/Components/RefreshControl/RefreshControl` should export a component type.

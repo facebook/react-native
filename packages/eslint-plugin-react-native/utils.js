@@ -264,10 +264,6 @@ const publicAPIMapping = {
     default: 'BackHandler',
     types: ['BackPressEventName'],
   },
-  'Libraries/Components/Clipboard/Clipboard': {
-    default: 'Clipboard',
-    types: null,
-  },
   'Libraries/Utilities/DeviceInfo': {
     default: 'DeviceInfo',
     types: ['DeviceInfoConstants'],

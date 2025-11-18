@@ -40,10 +40,6 @@ Class RCTCoreModulesClassProvider(const char *name)
     return RCTAppearanceCls();
   }
 
-  if (name == "Clipboard"sv) {
-    return RCTClipboardCls();
-  }
-
   if (name == "DevLoadingView"sv) {
     return RCTDevLoadingViewCls();
   }
