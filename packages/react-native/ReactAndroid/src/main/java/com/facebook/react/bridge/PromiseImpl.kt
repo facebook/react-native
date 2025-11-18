@@ -182,7 +182,7 @@ constructor(private var resolve: Callback?, private var reject: Callback?) : Pro
       val stackTrace = throwable.stackTrace
       val nativeStackAndroid = WritableNativeArray()
 
-      // Build an an Array of StackFrames to match JavaScript:
+      // Build an Array of StackFrames to match JavaScript:
       // iOS: /Libraries/Core/Devtools/parseErrorStack.js -> StackFrame
       var i = 0
       while (i < stackTrace.size && i < ERROR_STACK_FRAME_LIMIT) {

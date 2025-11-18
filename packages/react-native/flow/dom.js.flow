@@ -996,7 +996,7 @@ type KeyboardEvent$Init = {
   metaKey?: boolean,
   /**
    * Initializes the `repeat` attribute of the KeyboardEvent object. This
-   * attribute should be set to true if the the current KeyboardEvent is
+   * attribute should be set to true if the current KeyboardEvent is
    * considered part of a repeating sequence of similar events caused by the
    * long depression of any single key, false otherwise.
    */

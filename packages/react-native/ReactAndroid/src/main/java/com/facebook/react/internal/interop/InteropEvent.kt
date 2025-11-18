@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.events.Event
 
 /**
  * An [Event] class used by the [InteropEventEmitter]. This class is just holding the event name and
- * the data which is received by the `receiveEvent` method and will be passed over the the
+ * the data which is received by the `receiveEvent` method and will be passed over the
  * [com.facebook.react.uimanager.events.EventDispatcher]
  */
 @InteropLegacyArchitecture

@@ -15,7 +15,7 @@ import type {AccessibilityProps} from 'react-native';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 
-const ACCESIBILITY_ROLE_VALUES: $ReadOnlyArray<AccessibilityRole> = [
+const ACCESSIBILITY_ROLE_VALUES: $ReadOnlyArray<AccessibilityRole> = [
   'none',
   'button',
   'link',
@@ -246,7 +246,7 @@ export default function accessibilityPropsSuite(
 
     describe('accessibilityRole', () => {
       describe(`value propagation`, () => {
-        ACCESIBILITY_ROLE_VALUES.forEach(role => {
+        ACCESSIBILITY_ROLE_VALUES.forEach(role => {
           it(`can be set to ${role}`, () => {
             expect(
               getAccessibilityProp(

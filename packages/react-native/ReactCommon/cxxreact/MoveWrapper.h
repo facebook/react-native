@@ -13,7 +13,7 @@ namespace facebook::react {
 
 /*
 NOTE: we keep this internal copy of folly/MoveWrapper.h to unblock
-the the workstream of dropping the dependency on folly in RN!
+the workstream of dropping the dependency on folly in RN!
 
 For a technical explanation on why we still need this we defer
 to the doc in folly/Function.h:
