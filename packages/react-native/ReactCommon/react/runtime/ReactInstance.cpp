@@ -95,7 +95,7 @@ ReactInstance::ReactInstance(
               jsErrorHandler->handleError(jsiRuntime, originalError, true);
             } catch (std::exception& ex) {
               jsi::JSError error(
-                  jsiRuntime, std::string("Non-js exception: ") + ex.what());
+                  jsiRuntime, std::string("Non-JS exception: ") + ex.what());
               jsErrorHandler->handleError(jsiRuntime, error, true);
             }
           });
