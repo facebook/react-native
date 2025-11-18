@@ -65,7 +65,6 @@
 #import "React/RCTBundleURLProvider.h"
 #import "React/RCTCallInvoker.h"
 #import "React/RCTCallInvokerModule.h"
-#import "React/RCTClipboard.h"
 #import "React/RCTColorAnimatedNode.h"
 #import "React/RCTComponent.h"
 #import "React/RCTComponentData.h"

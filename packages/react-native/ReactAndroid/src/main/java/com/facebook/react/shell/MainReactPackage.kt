@@ -27,7 +27,6 @@ import com.facebook.react.modules.appstate.AppStateModule
 import com.facebook.react.modules.blob.BlobModule
 import com.facebook.react.modules.blob.FileReaderModule
 import com.facebook.react.modules.camera.ImageStoreManager
-import com.facebook.react.modules.clipboard.ClipboardModule
 import com.facebook.react.modules.devloading.DevLoadingModule
 import com.facebook.react.modules.devtoolsruntimesettings.ReactDevToolsRuntimeSettingsModule
 import com.facebook.react.modules.dialog.DialogModule
@@ -76,7 +75,6 @@ import com.facebook.react.views.view.ReactViewManager
             BlobModule::class,
             DevLoadingModule::class,
             FileReaderModule::class,
-            ClipboardModule::class,
             DialogModule::class,
             FrescoModule::class,
             I18nManagerModule::class,
@@ -109,7 +107,6 @@ constructor(private val config: MainPackageConfig? = null) :
         BlobModule.NAME -> BlobModule(reactContext)
         DevLoadingModule.NAME -> DevLoadingModule(reactContext)
         FileReaderModule.NAME -> FileReaderModule(reactContext)
-        ClipboardModule.NAME -> ClipboardModule(reactContext)
         DialogModule.NAME -> DialogModule(reactContext)
         FrescoModule.NAME -> FrescoModule(reactContext, true, config?.frescoConfig)
         I18nManagerModule.NAME -> I18nManagerModule(reactContext)
@@ -247,7 +244,6 @@ constructor(private val config: MainPackageConfig? = null) :
                 BlobModule::class.java,
                 DevLoadingModule::class.java,
                 FileReaderModule::class.java,
-                ClipboardModule::class.java,
                 DialogModule::class.java,
                 FrescoModule::class.java,
                 I18nManagerModule::class.java,
