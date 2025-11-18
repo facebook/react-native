@@ -61,8 +61,6 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
     // removeBridgeIdleDebugListener for Bridgeless
     @Suppress("DEPRECATION")
     if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      val uiManagerModule =
-          reactContext.getNativeModule(com.facebook.react.uimanager.UIManagerModule::class.java)
       if (!reactContext.isBridgeless) {
         reactContext.catalystInstance.addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
         isRunningOnFabric = false
@@ -71,7 +69,6 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
         // for Fabric or point users to use RNDT.
         isRunningOnFabric = true
       }
-      uiManagerModule?.setViewHierarchyUpdateDebugListener(didJSUpdateUiDuringFrameDetector)
     }
     this.targetFps = targetFps
     UiThreadUtil.runOnUiThread {
@@ -82,15 +79,10 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
 
   fun stop() {
     @Suppress("DEPRECATION")
-    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      val uiManagerModule =
-          reactContext.getNativeModule(com.facebook.react.uimanager.UIManagerModule::class.java)
-      if (!reactContext.isBridgeless) {
-        reactContext.catalystInstance.removeBridgeIdleDebugListener(
-            didJSUpdateUiDuringFrameDetector
-        )
-      }
-      uiManagerModule?.setViewHierarchyUpdateDebugListener(null)
+    if (
+        !ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE && !reactContext.isBridgeless
+    ) {
+      reactContext.catalystInstance.removeBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
     }
     UiThreadUtil.runOnUiThread {
       choreographer = Choreographer.getInstance()

@@ -12,7 +12,6 @@
 package com.facebook.react.modules.debug
 
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener
-import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener
 
 /**
  * Debug object that listens to bridge busy/idle events and UiManagerModule dispatches and uses it
@@ -21,8 +20,7 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
  * [getDidJSHitFrameAndCleanup] should be called once per frame via a
  * [android.view.Choreographer.FrameCallback].
  */
-internal class DidJSUpdateUiDuringFrameDetector :
-    NotThreadSafeBridgeIdleDebugListener, NotThreadSafeViewHierarchyUpdateDebugListener {
+internal class DidJSUpdateUiDuringFrameDetector : NotThreadSafeBridgeIdleDebugListener {
   private val transitionToIdleEvents = ArrayList<Long>(20)
   private val transitionToBusyEvents = ArrayList<Long>(20)
   private val viewHierarchyUpdateEnqueuedEvents = ArrayList<Long>(20)
@@ -42,16 +40,6 @@ internal class DidJSUpdateUiDuringFrameDetector :
   @Synchronized
   override fun onBridgeDestroyed() {
     // do nothing
-  }
-
-  @Synchronized
-  override fun onViewHierarchyUpdateEnqueued() {
-    viewHierarchyUpdateEnqueuedEvents.add(System.nanoTime())
-  }
-
-  @Synchronized
-  override fun onViewHierarchyUpdateFinished() {
-    viewHierarchyUpdateFinishedEvents.add(System.nanoTime())
   }
 
   /**
