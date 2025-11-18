@@ -37,7 +37,7 @@ jobs:
             const {createDraftRelease} = require('./.github/workflow-scripts/createDraftRelease.js');
             const version = '${{ github.ref_name }}';
             const {isLatest} = require('./.github/workflow-scripts/publishTemplate.js');
-            return (await createDraftRelease(version, isLatest(), '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}', ${{ inputs.hermesVersion }}, ${{ inputs.hermesV1Version }})).id;
+            return (await createDraftRelease(version, isLatest(), '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}', '${{ inputs.hermesVersion }}', '${{ inputs.hermesV1Version }}')).id;
           result-encoding: string
       - name: Upload release assets for DotSlash
         uses: actions/github-script@v6
