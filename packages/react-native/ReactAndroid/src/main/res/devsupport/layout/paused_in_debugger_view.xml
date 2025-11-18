@@ -20,17 +20,17 @@
         android:id="@+id/button_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
         android:text=""
         android:textColor="#444"
         android:textSize="16dp"
         android:textStyle="bold"
-        android:layout_marginBottom="1dp"
         />
     <ImageView
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@drawable/ic_resume"
         android:layout_marginStart="8dp"
         android:layout_marginVertical="8dp"
+        android:src="@drawable/ic_resume"
         />
 </LinearLayout>
