@@ -770,6 +770,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
+            .put(
+                "topKeyDown",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyDown", "captured", "onKeyDownCapture")))
+            .put(
+                "topKeyUp",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyUp", "captured", "onKeyUpCapture")))
             .build());
     return eventTypeConstants;
   }
