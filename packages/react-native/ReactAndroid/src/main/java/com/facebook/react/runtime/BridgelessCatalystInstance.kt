@@ -19,7 +19,6 @@ import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.NativeArrayInterface
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.NativeModuleRegistry
-import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.RuntimeScheduler
 import com.facebook.react.bridge.UIManager
@@ -139,14 +138,6 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
 
   override val sourceURL: String
     get() = throw UnsupportedOperationException("Unimplemented method 'getSourceURL'")
-
-  override fun addBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener) {
-    throw UnsupportedOperationException("Unimplemented method 'addBridgeIdleDebugListener'")
-  }
-
-  override fun removeBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener) {
-    throw UnsupportedOperationException("Unimplemented method 'removeBridgeIdleDebugListener'")
-  }
 
   override fun registerSegment(segmentId: Int, path: String) {
     throw UnsupportedOperationException("Unimplemented method 'registerSegment'")

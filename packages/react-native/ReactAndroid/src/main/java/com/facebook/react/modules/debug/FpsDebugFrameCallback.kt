@@ -26,8 +26,6 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
     Choreographer.FrameCallback {
 
   private var choreographer: Choreographer? = null
-  private val didJSUpdateUiDuringFrameDetector: DidJSUpdateUiDuringFrameDetector =
-      DidJSUpdateUiDuringFrameDetector()
   private var firstFrameTime: Long = -1
   private var lastFrameTime: Long = -1
   private var numFrameCallbacks = 0
@@ -40,11 +38,7 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
     if (firstFrameTime == -1L) {
       firstFrameTime = l
     }
-    val lastFrameStartTime = lastFrameTime
     lastFrameTime = l
-    if (didJSUpdateUiDuringFrameDetector.getDidJSHitFrameAndCleanup(lastFrameStartTime, l)) {
-      numFrameCallbacksWithBatchDispatches++
-    }
     numFrameCallbacks++
     val expectedNumFrames = expectedNumFrames
     val framesDropped = expectedNumFrames - expectedNumFramesPrev - 1
@@ -61,14 +55,9 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
     // removeBridgeIdleDebugListener for Bridgeless
     @Suppress("DEPRECATION")
     if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      if (!reactContext.isBridgeless) {
-        reactContext.catalystInstance.addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
-        isRunningOnFabric = false
-      } else {
-        // T172641976 Consider either implementing a mechanism similar to addBridgeIdleDebugListener
-        // for Fabric or point users to use RNDT.
-        isRunningOnFabric = true
-      }
+      // T172641976 Consider either implementing a mechanism similar to addBridgeIdleDebugListener
+      // for Fabric or point users to use RNDT.
+      isRunningOnFabric = true
     }
     this.targetFps = targetFps
     UiThreadUtil.runOnUiThread {
@@ -79,11 +68,6 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
 
   fun stop() {
     @Suppress("DEPRECATION")
-    if (
-        !ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE && !reactContext.isBridgeless
-    ) {
-      reactContext.catalystInstance.removeBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
-    }
     UiThreadUtil.runOnUiThread {
       choreographer = Choreographer.getInstance()
       choreographer?.removeFrameCallback(this)
