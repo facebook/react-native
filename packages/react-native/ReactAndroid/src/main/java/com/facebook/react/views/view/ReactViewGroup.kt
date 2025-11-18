@@ -1026,6 +1026,85 @@ public open class ReactViewGroup public constructor(context: Context?) :
     accessibilityStateChangeListener = null
   }
 
+  //#region debug helper
+  public fun describeViewAncestry(start: View): String {
+    val sb = StringBuilder()
+    var v: View? = start
+    var depth = 0
+    while (v != null) {
+      val nativeId = v.getTag(R.id.view_tag_native_id)
+      val testId = v.getTag(R.id.react_test_id)
+      val uiType = getUIManagerType(v).toString()
+      val cd = v.contentDescription
+      sb.append("#").append(depth)
+        .append(" class=").append(v::class.java.name)
+        .append(" tag=").append(v.id)
+        .append(" ui=").append(uiType)
+      if (nativeId != null) sb.append(" nativeID=").append(nativeId)
+      if (testId != null) sb.append(" testID=").append(testId)
+      if (cd != null) sb.append(" contentDesc=").append(cd)
+      sb.append('\n')
+      val p = v.parent
+      v = if (p is View) p else null
+      depth++
+    }
+    return sb.toString()
+  }
+
+  public fun describeChildren(): String {
+    val sb = StringBuilder()
+
+    sb.append("  Attached children: ")
+    val childCount = childCount
+    if (childCount == 0) {
+      sb.append("    (none)\n")
+    } else {
+      for (i in 0 until childCount) {
+        try {
+          val child = getChildAt(i)
+          if (child == null) {
+            sb.append("    [$i] NULL CHILD!\n")
+          } else {
+            val childNativeId = child.getTag(R.id.view_tag_native_id)
+            val childTestId = child.getTag(R.id.react_test_id)
+            sb.append("    [$i] ")
+              .append(child::class.java.simpleName)
+              .append(" id=").append(child.id)
+            if (childNativeId != null) sb.append(" nativeID=").append(childNativeId)
+            if (childTestId != null) sb.append(" testID=").append(childTestId)
+            sb.append(" parent=").append(if (child.parent != null) "attached" else "DETACHED")
+            sb.append('\n')
+          }
+        } catch (e: Exception) {
+          sb.append("    [$i] ERROR: ").append(e.message).append('\n')
+        }
+      }
+    }
+
+    try {
+      // If removeClippedSubviews is enabled, show clipped children too
+      if (removeClippedSubviews && allChildren != null && allChildrenCount > childCount) {
+        sb.append("  Clipped children:\n")
+        for (i in 0 until allChildrenCount) {
+          val child = allChildren!![i]
+          if (child != null && child.parent == null) {
+            val childNativeId = child.getTag(R.id.view_tag_native_id)
+            sb.append("    [$i] ")
+              .append(child::class.java.simpleName)
+              .append(" id=").append(child.id)
+            if (childNativeId != null) sb.append(" nativeID=").append(childNativeId)
+            sb.append(" (CLIPPED)\n")
+          }
+        }
+      }
+    } catch (e: Exception) {
+      sb.append("  Error describing clipped children: ").append(e.message).append('\n')
+    }
+
+    return sb.toString()
+  }
+  //#endregion
+
   private companion object {
     private const val ARRAY_CAPACITY_INCREMENT = 12
     private val defaultLayoutParam = LayoutParams(0, 0)
