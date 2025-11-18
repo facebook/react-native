@@ -68,7 +68,7 @@ NSError *tryAndReturnError(const std::function<void()> &func)
       return nil;
     } @catch (NSException *exception) {
       return RCTErrorWithNSException(exception);
-    } @catch (id exception) {
+    } @catch (id) {
       // This will catch any other ObjC exception, but no C++ exceptions
       return RCTErrorWithMessage(@"non-std ObjC Exception");
     }
