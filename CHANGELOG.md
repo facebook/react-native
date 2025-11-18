@@ -362,6 +362,20 @@ None
 
 - **Network:** Fixed vulnerability on undici and on-headers ([dd00c9055a](https://github.com/facebook/react-native/commit/dd00c9055a8f0c9ceac1716385a8a9874f7a4c2e) by [@cipolleschi](https://github.com/cipolleschi))
 
+## v0.81.5
+
+### Fixed
+
+- Fixed switch ([4106d54a6d](https://github.com/facebook/react-native/commit/4106d54a6ddacbb784fc8335e9a82054f51a2d02) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+- Fix request permission not always resolving in Android 16 ([39ede95921](https://github.com/facebook/react-native/commit/39ede959211e10032f147d2b0b7af783cba049c8) by [@lukmccall](https://github.com/lukmccall))
+
+#### iOS specific
+
+- Fix RCTDeviceInfo crash when application.delegate.window is nil in modern iOS app architectures ([968909488a](https://github.com/facebook/react-native/commit/968909488a844c695a92ce000497840e577190dd) by [@25harsh](https://github.com/25harsh))
+
 ## v0.81.4
 
 ### Fixed
