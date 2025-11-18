@@ -1455,7 +1455,7 @@ TEST_P(JSITest, MicrotasksTest) {
     EXPECT_EQ(
         rt.global().getProperty(rt, "globalValue").asString(rt).utf8(rt),
         "hello world");
-  } catch (const JSINativeException& ex) {
+  } catch (const JSINativeException&) {
     // queueMicrotask() is unimplemented by some runtimes, ignore such failures.
   }
 }
@@ -1550,7 +1550,7 @@ TEST_P(JSITest, ArrayBufferSizeTest) {
   try {
     // Ensure we can safely write some data to the buffer.
     memset(ab.data(rt), 0xab, 10);
-  } catch (const JSINativeException& ex) {
+  } catch (const JSINativeException&) {
     // data() is unimplemented by some runtimes, ignore such failures.
   }
 
