@@ -124,6 +124,8 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ${enumName} &value) {
   switch (value) {
     ${toCases}
+    default:
+      abort();
   }
 }
 
@@ -154,13 +156,16 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   assert(value.hasType<int>());
   auto integerValue = (int)value;
   switch (integerValue) {${fromCases}
+    default:
+      abort();
   }
-  abort();
 }
 
 static inline std::string toString(const ${enumName} &value) {
   switch (value) {
     ${toCases}
+    default:
+      abort();
   }
 }
 
@@ -168,6 +173,8 @@ static inline std::string toString(const ${enumName} &value) {
 static inline folly::dynamic toDynamic(const ${enumName} &value) {
   switch (value) {
     ${toDynamicCases}
+    default:
+      abort();
   }
 }
 #endif

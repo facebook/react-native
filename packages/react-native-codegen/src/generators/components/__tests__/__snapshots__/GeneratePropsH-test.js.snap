@@ -1100,8 +1100,9 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
     case 2:
       result = Int32EnumPropsNativeComponentMaxInterval::MaxInterval2;
       return;
+    default:
+      abort();
   }
-  abort();
 }
 
 static inline std::string toString(const Int32EnumPropsNativeComponentMaxInterval &value) {
@@ -1109,6 +1110,8 @@ static inline std::string toString(const Int32EnumPropsNativeComponentMaxInterva
     case Int32EnumPropsNativeComponentMaxInterval::MaxInterval0: return \\"0\\";
     case Int32EnumPropsNativeComponentMaxInterval::MaxInterval1: return \\"1\\";
     case Int32EnumPropsNativeComponentMaxInterval::MaxInterval2: return \\"2\\";
+    default:
+      abort();
   }
 }
 
@@ -1118,6 +1121,8 @@ static inline folly::dynamic toDynamic(const Int32EnumPropsNativeComponentMaxInt
     case Int32EnumPropsNativeComponentMaxInterval::MaxInterval0: return 0;
     case Int32EnumPropsNativeComponentMaxInterval::MaxInterval1: return 1;
     case Int32EnumPropsNativeComponentMaxInterval::MaxInterval2: return 2;
+    default:
+      abort();
   }
 }
 #endif
@@ -1399,6 +1404,8 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ObjectPropsStringEnumProp &value) {
   switch (value) {
     case ObjectPropsStringEnumProp::Option1: return \\"option1\\";
+    default:
+      abort();
   }
 }
 
@@ -1416,13 +1423,16 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
     case 0:
       result = ObjectPropsIntEnumProp::IntEnumProp0;
       return;
+    default:
+      abort();
   }
-  abort();
 }
 
 static inline std::string toString(const ObjectPropsIntEnumProp &value) {
   switch (value) {
     case ObjectPropsIntEnumProp::IntEnumProp0: return \\"0\\";
+    default:
+      abort();
   }
 }
 
@@ -1430,6 +1440,8 @@ static inline std::string toString(const ObjectPropsIntEnumProp &value) {
 static inline folly::dynamic toDynamic(const ObjectPropsIntEnumProp &value) {
   switch (value) {
     case ObjectPropsIntEnumProp::IntEnumProp0: return 0;
+    default:
+      abort();
   }
 }
 #endif
@@ -1870,6 +1882,8 @@ static inline std::string toString(const StringEnumPropsNativeComponentAlignment
     case StringEnumPropsNativeComponentAlignment::Top: return \\"top\\";
     case StringEnumPropsNativeComponentAlignment::Center: return \\"center\\";
     case StringEnumPropsNativeComponentAlignment::BottomRight: return \\"bottom-right\\";
+    default:
+      abort();
   }
 }
 
