@@ -1725,7 +1725,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -1742,7 +1742,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -1759,7 +1759,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -1776,7 +1776,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -2176,7 +2176,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -2196,7 +2196,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -2216,7 +2216,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -2236,7 +2236,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -2536,7 +2536,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -2553,7 +2553,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -2570,7 +2570,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -2587,7 +2587,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -2987,7 +2987,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3007,7 +3007,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3027,7 +3027,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3047,7 +3047,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3346,7 +3346,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -3363,7 +3363,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -3380,7 +3380,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -3397,7 +3397,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -3797,7 +3797,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3817,7 +3817,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3837,7 +3837,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3857,7 +3857,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -4157,7 +4157,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4174,7 +4174,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4191,7 +4191,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4208,7 +4208,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4608,7 +4608,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -4628,7 +4628,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -4648,7 +4648,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -4668,7 +4668,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPOR
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -5266,7 +5266,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -5283,7 +5283,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -5300,7 +5300,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -5317,7 +5317,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -5717,7 +5717,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -5737,7 +5737,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -5757,7 +5757,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -5777,7 +5777,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -6076,7 +6076,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6093,7 +6093,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6110,7 +6110,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6127,7 +6127,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6527,7 +6527,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -6547,7 +6547,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -6567,7 +6567,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -6587,7 +6587,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -6886,7 +6886,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6903,7 +6903,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6920,7 +6920,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6937,7 +6937,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -7337,7 +7337,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -7357,7 +7357,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -7377,7 +7377,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -7397,7 +7397,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -7696,7 +7696,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -7713,7 +7713,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -7730,7 +7730,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -7747,7 +7747,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8147,7 +8147,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8167,7 +8167,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8187,7 +8187,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8207,7 +8207,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8507,7 +8507,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8524,7 +8524,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8541,7 +8541,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8558,7 +8558,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8958,7 +8958,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8978,7 +8978,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8998,7 +8998,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -9018,7 +9018,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -9317,7 +9317,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -9334,7 +9334,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -9351,7 +9351,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -9368,7 +9368,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -9768,7 +9768,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -9788,7 +9788,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -9808,7 +9808,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -9828,7 +9828,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10127,7 +10127,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10144,7 +10144,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10161,7 +10161,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10178,7 +10178,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10578,7 +10578,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10598,7 +10598,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10618,7 +10618,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10638,7 +10638,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10937,7 +10937,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10954,7 +10954,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10971,7 +10971,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10988,7 +10988,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -11388,7 +11388,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -11408,7 +11408,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -11428,7 +11428,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -11448,7 +11448,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -11747,7 +11747,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -11764,7 +11764,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -11781,7 +11781,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -11798,7 +11798,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -12198,7 +12198,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12218,7 +12218,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12238,7 +12238,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12258,7 +12258,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12558,7 +12558,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -12575,7 +12575,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -12592,7 +12592,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -12609,7 +12609,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -13009,7 +13009,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -13029,7 +13029,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -13049,7 +13049,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -13069,7 +13069,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -14916,7 +14916,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -14933,7 +14933,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -14950,7 +14950,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -14967,7 +14967,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -15367,7 +15367,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -15387,7 +15387,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -15407,7 +15407,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -15427,7 +15427,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -15727,7 +15727,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -15744,7 +15744,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -15761,7 +15761,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -15778,7 +15778,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -16178,7 +16178,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -16198,7 +16198,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -16218,7 +16218,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -16238,7 +16238,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -16537,7 +16537,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -16554,7 +16554,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -16571,7 +16571,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -16588,7 +16588,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -16988,7 +16988,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17008,7 +17008,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17028,7 +17028,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17048,7 +17048,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17348,7 +17348,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17365,7 +17365,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17382,7 +17382,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17399,7 +17399,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17799,7 +17799,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17819,7 +17819,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17839,7 +17839,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17859,7 +17859,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_COMMANDS_EVENTS_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -18457,7 +18457,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -18474,7 +18474,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -18491,7 +18491,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -18508,7 +18508,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -18908,7 +18908,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -18928,7 +18928,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -18948,7 +18948,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -18968,7 +18968,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -19267,7 +19267,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -19284,7 +19284,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -19301,7 +19301,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -19318,7 +19318,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -19718,7 +19718,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -19738,7 +19738,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -19758,7 +19758,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -19778,7 +19778,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -20077,7 +20077,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20094,7 +20094,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20111,7 +20111,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20128,7 +20128,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20528,7 +20528,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -20548,7 +20548,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -20568,7 +20568,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -20588,7 +20588,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -20887,7 +20887,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20904,7 +20904,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20921,7 +20921,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20938,7 +20938,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -21338,7 +21338,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21358,7 +21358,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21378,7 +21378,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21398,7 +21398,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21698,7 +21698,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -21715,7 +21715,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -21732,7 +21732,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -21749,7 +21749,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -22149,7 +22149,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22169,7 +22169,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22189,7 +22189,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22209,7 +22209,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22508,7 +22508,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -22525,7 +22525,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -22542,7 +22542,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -22559,7 +22559,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -22959,7 +22959,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22979,7 +22979,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22999,7 +22999,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23019,7 +23019,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23318,7 +23318,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23335,7 +23335,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23352,7 +23352,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23369,7 +23369,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23769,7 +23769,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23789,7 +23789,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23809,7 +23809,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23829,7 +23829,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -24128,7 +24128,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24145,7 +24145,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24162,7 +24162,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24179,7 +24179,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24579,7 +24579,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -24599,7 +24599,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -24619,7 +24619,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -24639,7 +24639,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -24938,7 +24938,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24955,7 +24955,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24972,7 +24972,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24989,7 +24989,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -25389,7 +25389,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -25409,7 +25409,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -25429,7 +25429,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -25449,7 +25449,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -25749,7 +25749,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -25766,7 +25766,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -25783,7 +25783,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -25800,7 +25800,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -26200,7 +26200,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26220,7 +26220,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26240,7 +26240,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26260,7 +26260,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_EVENTS_DEFINED_I
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -27434,7 +27434,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -27451,7 +27451,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -27468,7 +27468,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -27485,7 +27485,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -27885,7 +27885,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -27905,7 +27905,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -27925,7 +27925,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -27945,7 +27945,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -28245,7 +28245,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -28262,7 +28262,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -28279,7 +28279,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -28296,7 +28296,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -28696,7 +28696,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -28716,7 +28716,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -28736,7 +28736,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -28756,7 +28756,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -29055,7 +29055,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29072,7 +29072,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29089,7 +29089,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29106,7 +29106,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29506,7 +29506,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -29526,7 +29526,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -29546,7 +29546,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -29566,7 +29566,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -29866,7 +29866,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29883,7 +29883,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29900,7 +29900,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29917,7 +29917,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -30317,7 +30317,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30337,7 +30337,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30357,7 +30357,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30377,7 +30377,7 @@ exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_PROPS_AND_EVENTS
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -31692,7 +31692,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -31709,7 +31709,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -31726,7 +31726,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -31743,7 +31743,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -32143,7 +32143,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -32163,7 +32163,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -32183,7 +32183,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -32203,7 +32203,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -32503,7 +32503,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -32520,7 +32520,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -32537,7 +32537,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -32554,7 +32554,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -32954,7 +32954,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -32974,7 +32974,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -32994,7 +32994,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -33014,7 +33014,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -33313,7 +33313,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -33330,7 +33330,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -33347,7 +33347,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -33364,7 +33364,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -33764,7 +33764,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -33784,7 +33784,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -33804,7 +33804,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -33824,7 +33824,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -34124,7 +34124,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -34141,7 +34141,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -34158,7 +34158,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -34175,7 +34175,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -34575,7 +34575,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -34595,7 +34595,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -34615,7 +34615,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -34635,7 +34635,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
