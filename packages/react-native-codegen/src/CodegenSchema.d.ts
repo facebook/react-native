@@ -46,6 +46,16 @@ export interface VoidTypeAnnotation {
   readonly type: 'VoidTypeAnnotation';
 }
 
+export interface NumberLiteralTypeAnnotation {
+  readonly type: 'NumberLiteralTypeAnnotation';
+  readonly value: number;
+}
+
+export interface StringLiteralTypeAnnotation {
+  readonly type: 'StringLiteralTypeAnnotation';
+  readonly value: string;
+}
+
 export interface ObjectTypeAnnotation<T> {
   readonly type: 'ObjectTypeAnnotation';
   readonly properties: readonly NamedShape<T>[];
