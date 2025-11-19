@@ -68,6 +68,13 @@ export interface UnionTypeAnnotation<T> {
   readonly types: readonly T[];
 }
 
+// TODO(T72031674): TupleTypeAnnotation is added for parity with UnionTypeAnnotation
+// to support future implementation. Currently limited to String and Number literals.
+export interface TupleTypeAnnotation {
+  readonly type: 'TupleTypeAnnotation';
+  readonly types: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation;
+}
+
 export interface MixedTypeAnnotation {
   readonly type: 'MixedTypeAnnotation';
 }
