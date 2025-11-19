@@ -112,7 +112,7 @@ RCT_EXPORT_MODULE()
 
     self->_showDate = [NSDate date];
 
-    if (!self->label) {
+    if (!self->_label) {
       self->_label = [[UILabel alloc] init];
       self->_label.translatesAutoresizingMaskIntoConstraints = NO;
       self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
@@ -121,7 +121,7 @@ RCT_EXPORT_MODULE()
     self->_label.textColor = color;
     self->_label.text = message;
 
-    if (!self->container) {
+    if (!self->_container) {
       self->_container = [[UIView alloc] init];
       self->_container.translatesAutoresizingMaskIntoConstraints = NO;
       UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hide)];
