@@ -210,29 +210,38 @@ function readOutputDirFromPkgJson(
 
 function computeOutputPath(
   projectRoot /*: string */,
-  baseOutputPath /*: string | void | null */,
+  optionalBaseOutputPath /*: string | void | null */,
   pkgJson /*: $FlowFixMe */,
   platform /*: string */,
-) {
-  if (baseOutputPath == null) {
+) /*: string */ {
+  let baseOutputPath /*: string */;
+  if (optionalBaseOutputPath == null) {
     const outputDirFromPkgJson = readOutputDirFromPkgJson(pkgJson, platform);
     if (outputDirFromPkgJson != null) {
-      // $FlowFixMe[reassign-const]
       baseOutputPath = path.join(projectRoot, outputDirFromPkgJson);
     } else {
-      // $FlowFixMe[reassign-const]
       baseOutputPath = projectRoot;
     }
+  } else {
+    baseOutputPath = optionalBaseOutputPath;
   }
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
     // Don't create nested directories for libraries to make importing generated headers easier.
     return baseOutputPath;
   }
   if (platform === 'android') {
-    return defaultOutputPathForAndroid(baseOutputPath);
+    return defaultOutputPathForAndroid(
+      baseOutputPath != null && baseOutputPath.length > 0
+        ? baseOutputPath
+        : projectRoot,
+    );
   }
   if (platform === 'ios') {
-    return defaultOutputPathForIOS(baseOutputPath);
+    return defaultOutputPathForIOS(
+      baseOutputPath != null && baseOutputPath.length > 0
+        ? baseOutputPath
+        : projectRoot,
+    );
   }
   return baseOutputPath;
 }
