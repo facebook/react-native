@@ -55,16 +55,22 @@ If no options are passed, the script executes all the steps in this order:
 
 ## Integrating in your project with Cocoapods
 
-To use the prebuilt React Native Dependencies XCFrameworks in your iOS project, run pod install with the environment variable `RCT_USE_RN_DEP` set to `1`:
+To use the prebuilt React Native Dependencies XCFrameworks in your iOS project,
+run pod install with the environment variable `RCT_USE_RN_DEP` set to `1`:
 
 ```bash
 RCT_USE_RN_DEP=1 bundle exec pod install
 ```
 
-This can be combined with `RCT_USE_RN_DEP=1` to use both React Native and its dependencies as prebuilt frameworks.
+This can be combined with `RCT_USE_RN_DEP=1` to use both React Native and its
+dependencies as prebuilt frameworks.
 
-For debugging and troubleshooting the Cocoapods scripts, you can use the following environment variables:
+For debugging and troubleshooting the Cocoapods scripts, you can use the
+following environment variables:
 
-- `RCT_USE_RN_DEP`: If set to 1, it will use the release tarball from Maven instead of building from source.
-- `RCT_USE_LOCAL_RN_DEP`: **TEST ONLY** If set, it will use a local tarball of ReactNativeDependencies if it exists.
-- `RCT_DEPS_VERSION`: **TEST ONLY** If set, it will override the version of ReactNativeDependencies to be used.
+- `RCT_USE_RN_DEP`: If set to 1, it will use the release tarball from Maven
+  instead of building from source.
+- `RCT_USE_LOCAL_RN_DEP`: **TEST ONLY** If set, it will use a local tarball of
+  ReactNativeDependencies if it exists.
+- `RCT_DEPS_VERSION`: **TEST ONLY** If set, it will override the version of
+  ReactNativeDependencies to be used.
