@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c345dba878d470a42fcff41aac490083>>
+ * @generated SignedSource<<2126c6978235d194eb9826c4574ad0c0>>
  */
 
 /**
@@ -682,6 +682,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::shouldSetEnabledBasedOnAccessibilityState();
+  }
+
+  bool shouldSetIsClickableByDefault() override {
+    auto value = values_["shouldSetIsClickableByDefault"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldSetIsClickableByDefault();
   }
 
   bool shouldTriggerResponderTransferOnScrollAndroid() override {

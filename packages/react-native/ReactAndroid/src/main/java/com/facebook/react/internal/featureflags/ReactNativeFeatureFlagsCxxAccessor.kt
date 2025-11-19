@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b2c2e874b05283e0ebd62899f7c417d8>>
+ * @generated SignedSource<<15bb2229e65b6a6ae728d512ff51885f>>
  */
 
 /**
@@ -91,6 +91,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var shouldSetEnabledBasedOnAccessibilityStateCache: Boolean? = null
+  private var shouldSetIsClickableByDefaultCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
@@ -745,6 +746,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.shouldSetEnabledBasedOnAccessibilityState()
       shouldSetEnabledBasedOnAccessibilityStateCache = cached
+    }
+    return cached
+  }
+
+  override fun shouldSetIsClickableByDefault(): Boolean {
+    var cached = shouldSetIsClickableByDefaultCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.shouldSetIsClickableByDefault()
+      shouldSetIsClickableByDefaultCache = cached
     }
     return cached
   }

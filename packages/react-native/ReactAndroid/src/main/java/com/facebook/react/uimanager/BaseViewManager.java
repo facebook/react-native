@@ -149,6 +149,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
     // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
     // Therefore we set the following options as such:
+    if (ReactNativeFeatureFlags.shouldSetIsClickableByDefault()) {
+      view.setClickable(true);
+    }
     view.setFocusable(false);
     view.setFocusableInTouchMode(false);
 
@@ -678,6 +681,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   protected void onAfterUpdateTransaction(@NonNull T view) {
     super.onAfterUpdateTransaction(view);
+    configureClickableState(view);
     updateViewAccessibility(view);
 
     Boolean invalidateTransform = (Boolean) view.getTag(R.id.invalidate_transform);
@@ -1010,6 +1014,25 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   // Please add new props to BaseViewManagerDelegate as well!
+
+  private static <T extends View> void configureClickableState(@NonNull T view) {
+    if (!ReactNativeFeatureFlags.shouldSetIsClickableByDefault()) {
+      return;
+    }
+
+    boolean shouldBeClickable =
+        !(view instanceof ReactPointerEventsView)
+            || PointerEvents.canBeTouchTarget(((ReactPointerEventsView) view).getPointerEvents());
+
+    // NOTE: In Android O+, setClickable(true) has the side effect of setting focusable=true.
+    // We need to preserve the original focusable state to respect the focusable prop.
+    boolean wasFocusable = view.isFocusable();
+    boolean wasFocusableInTouchMode = view.isFocusableInTouchMode();
+
+    view.setClickable(shouldBeClickable);
+    view.setFocusable(wasFocusable);
+    view.setFocusableInTouchMode(wasFocusableInTouchMode);
+  }
 
   /**
    * A helper class to keep track of the original focus change listener if one is set. This is

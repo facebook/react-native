@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ccb22ddcd1a76b7c52cf0f1b23e6152b>>
+ * @generated SignedSource<<85a6247f6049f60c18efdce5db0cccdf>>
  */
 
 /**
@@ -169,6 +169,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldSetEnabledBasedOnAccessibilityState(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun shouldSetIsClickableByDefault(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 
