@@ -340,6 +340,12 @@ export interface StringLiteralUnionTypeAnnotation {
   readonly types: NativeModuleStringLiteralTypeAnnotation[];
 }
 
+export type NumberLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<NumberLiteralTypeAnnotation>;
+
+export type BooleanLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<BooleanLiteralTypeAnnotation>;
+
 export interface NativeModuleNumberTypeAnnotation {
   readonly type: 'NumberTypeAnnotation';
 }
