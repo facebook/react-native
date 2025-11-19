@@ -77,6 +77,13 @@ export type UnionTypeAnnotation<+T> = $ReadOnly<{
   types: $ReadOnlyArray<T>,
 }>;
 
+// TODO(T72031674): TupleTypeAnnotation is added for parity with UnionTypeAnnotation
+// to support future implementation. Currently limited to String and Number literals.
+export type TupleTypeAnnotation = $ReadOnly<{
+  type: 'TupleTypeAnnotation',
+  types: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation,
+}>;
+
 export type MixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
 }>;
