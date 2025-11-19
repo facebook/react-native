@@ -26,6 +26,10 @@ export interface FloatTypeAnnotation {
   readonly type: 'FloatTypeAnnotation';
 }
 
+export interface NumberTypeAnnotation {
+  readonly type: 'NumberTypeAnnotation';
+}
+
 export interface BooleanTypeAnnotation {
   readonly type: 'BooleanTypeAnnotation';
 }
@@ -42,11 +46,38 @@ export interface VoidTypeAnnotation {
   readonly type: 'VoidTypeAnnotation';
 }
 
+export interface NumberLiteralTypeAnnotation {
+  readonly type: 'NumberLiteralTypeAnnotation';
+  readonly value: number;
+}
+
+export interface StringLiteralTypeAnnotation {
+  readonly type: 'StringLiteralTypeAnnotation';
+  readonly value: string;
+}
+
+export interface BooleanLiteralTypeAnnotation {
+  readonly type: 'BooleanLiteralTypeAnnotation';
+  readonly value: boolean;
+}
+
 export interface ObjectTypeAnnotation<T> {
   readonly type: 'ObjectTypeAnnotation';
   readonly properties: readonly NamedShape<T>[];
   // metadata for objects that generated from interfaces
   readonly baseTypes?: readonly string[] | undefined;
+}
+
+export interface UnionTypeAnnotation<T> {
+  readonly type: 'UnionTypeAnnotation';
+  readonly types: readonly T[];
+}
+
+// TODO(T72031674): TupleTypeAnnotation is added for parity with UnionTypeAnnotation
+// to support future implementation. Currently limited to String and Number literals.
+export interface TupleTypeAnnotation {
+  readonly type: 'TupleTypeAnnotation';
+  readonly types: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation;
 }
 
 export interface MixedTypeAnnotation {
@@ -304,10 +335,14 @@ export interface NativeModuleStringLiteralTypeAnnotation {
   readonly value: string;
 }
 
-export interface StringLiteralUnionTypeAnnotation {
-  readonly type: 'StringLiteralUnionTypeAnnotation';
-  readonly types: NativeModuleStringLiteralTypeAnnotation[];
-}
+export type StringLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<StringLiteralTypeAnnotation>;
+
+export type NumberLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<NumberLiteralTypeAnnotation>;
+
+export type BooleanLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<BooleanLiteralTypeAnnotation>;
 
 export interface NativeModuleNumberTypeAnnotation {
   readonly type: 'NumberTypeAnnotation';
@@ -369,15 +404,17 @@ export interface NativeModulePromiseTypeAnnotation {
   readonly elementType: Nullable<NativeModuleBaseTypeAnnotation> | VoidTypeAnnotation;
 }
 
-export type UnionTypeAnnotationMemberType =
-  | 'NumberTypeAnnotation'
-  | 'ObjectTypeAnnotation'
-  | 'StringTypeAnnotation';
+export type NativeModuleUnionTypeAnnotationMemberType =
+  | NativeModuleObjectTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | NumberTypeAnnotation;
 
-export interface NativeModuleUnionTypeAnnotation {
-  readonly type: 'UnionTypeAnnotation';
-  readonly memberType: UnionTypeAnnotationMemberType;
-}
+export type NativeModuleUnionTypeAnnotation =
+  UnionTypeAnnotation<NativeModuleUnionTypeAnnotationMemberType>;
 
 export interface NativeModuleMixedTypeAnnotation {
   readonly type: 'MixedTypeAnnotation';
