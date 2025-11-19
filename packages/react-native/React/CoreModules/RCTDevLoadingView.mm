@@ -113,9 +113,11 @@ RCT_EXPORT_MODULE()
     self->_showDate = [NSDate date];
 
     UIWindow *mainWindow = RCTKeyWindow();
-    self->_window = [[UIWindow alloc] initWithWindowScene:mainWindow.windowScene];
-    self->_window.windowLevel = UIWindowLevelStatusBar + 1;
-    self->_window.rootViewController = [UIViewController new];
+    if (!self->_window) {
+      self->_window = [[UIWindow alloc] initWithWindowScene:mainWindow.windowScene];
+      self->_window.windowLevel = UIWindowLevelStatusBar + 1;
+      self->_window.rootViewController = [UIViewController new];
+    }
 
     self->_container = [[UIView alloc] init];
     self->_container.backgroundColor = backgroundColor;
