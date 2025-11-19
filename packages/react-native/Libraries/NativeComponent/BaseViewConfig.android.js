@@ -122,6 +122,18 @@ const bubblingEventTypes = {
       bubbled: 'onFocus',
     },
   },
+  topKeyDown: {
+    phasedRegistrationNames: {
+      captured: 'onKeyDownCapture',
+      bubbled: 'onKeyDown',
+    },
+  },
+  topKeyUp: {
+    phasedRegistrationNames: {
+      captured: 'onKeyUpCapture',
+      bubbled: 'onKeyUp',
+    },
+  },
 };
 
 const directEventTypes = {

@@ -380,6 +380,7 @@ public class com/facebook/react/ReactRootView : android/widget/FrameLayout, com/
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;I)V
 	protected fun dispatchDraw (Landroid/graphics/Canvas;)V
+	protected fun dispatchJSKeyEvent (Landroid/view/KeyEvent;)V
 	protected fun dispatchJSPointerEvent (Landroid/view/MotionEvent;Z)V
 	protected fun dispatchJSTouchEvent (Landroid/view/MotionEvent;)V
 	public fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
@@ -3121,6 +3122,7 @@ public final class com/facebook/react/runtime/ReactSurfaceView : com/facebook/re
 	public fun isViewAttachedToReactInstance ()Z
 	public fun onChildEndedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
 	public fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
+	public fun requestChildFocus (Landroid/view/View;Landroid/view/View;)V
 	public fun requestDisallowInterceptTouchEvent (Z)V
 	public fun setIsFabric (Z)V
 }
