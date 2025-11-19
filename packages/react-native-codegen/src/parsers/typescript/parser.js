@@ -18,10 +18,10 @@ import type {
   NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
+  NativeModuleUnionTypeAnnotationMemberType,
   Nullable,
   PropTypeAnnotation,
   SchemaType,
-  UnionTypeAnnotationMemberType,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {
@@ -109,7 +109,7 @@ class TypeScriptParser implements Parser {
 
   remapUnionTypeAnnotationMemberNames(
     membersTypes: Array<$FlowFixMe>,
-  ): Array<UnionTypeAnnotationMemberType> {
+  ): Array<NativeModuleUnionTypeAnnotationMemberType> {
     const remapLiteral = (item: $FlowFixMe) => {
       return item.literal
         ? item.literal.type
@@ -121,12 +121,6 @@ class TypeScriptParser implements Parser {
     /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return [...new Set(membersTypes.map(remapLiteral))];
-  }
-
-  getStringLiteralUnionTypeAnnotationStringLiterals(
-    membersTypes: Array<$FlowFixMe>,
-  ): Array<string> {
-    return membersTypes.map((item: $FlowFixMe) => item.literal.value);
   }
 
   parseFile(filename: string): SchemaType {
