@@ -56,6 +56,11 @@ export interface StringLiteralTypeAnnotation {
   readonly value: string;
 }
 
+export interface BooleanLiteralTypeAnnotation {
+  readonly type: 'BooleanLiteralTypeAnnotation';
+  readonly value: boolean;
+}
+
 export interface ObjectTypeAnnotation<T> {
   readonly type: 'ObjectTypeAnnotation';
   readonly properties: readonly NamedShape<T>[];
