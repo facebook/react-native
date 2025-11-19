@@ -56,6 +56,11 @@ export type StringLiteralTypeAnnotation = $ReadOnly<{
   value: string,
 }>;
 
+export type BooleanLiteralTypeAnnotation = $ReadOnly<{
+  type: 'BooleanLiteralTypeAnnotation',
+  value: boolean,
+}>;
+
 export type StringLiteralUnionTypeAnnotation = $ReadOnly<{
   type: 'StringLiteralUnionTypeAnnotation',
   types: $ReadOnlyArray<StringLiteralTypeAnnotation>,
