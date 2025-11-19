@@ -63,7 +63,7 @@ const path = require('path');
 function execute(
   projectRoot /*: string */,
   targetPlatform /*: string */,
-  baseOutputPath /*: string */,
+  baseOutputPath /*: string | void | null */,
   source /*: string */,
   runReactNativeCodegen /*: boolean */ = true,
 ) {
@@ -210,7 +210,7 @@ function readOutputDirFromPkgJson(
 
 function computeOutputPath(
   projectRoot /*: string */,
-  baseOutputPath /*: string */,
+  baseOutputPath /*: string | void | null */,
   pkgJson /*: $FlowFixMe */,
   platform /*: string */,
 ) {
