@@ -405,6 +405,15 @@ export type UnionTypeAnnotationMemberType =
   | 'ObjectTypeAnnotation'
   | 'StringTypeAnnotation';
 
+export type NativeModuleUnionTypeAnnotationMemberType =
+  | NativeModuleObjectTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | NumberTypeAnnotation;
+
 export interface NativeModuleUnionTypeAnnotation {
   readonly type: 'UnionTypeAnnotation';
   readonly memberType: UnionTypeAnnotationMemberType;
