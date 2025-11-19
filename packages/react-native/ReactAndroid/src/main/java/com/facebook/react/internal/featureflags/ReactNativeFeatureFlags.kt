@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b1469e448ca6f773a3095ec2cbf4bc00>>
+ * @generated SignedSource<<783b32e7fdda85b8577753f0553288d5>>
  */
 
 /**
@@ -455,6 +455,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = accessor.shouldSetEnabledBasedOnAccessibilityState()
+
+  /**
+   * Sets isClickable=true by default on all React Native views on Android to improve UI harvesting detection while maintaining focusable=false to preserve expected behavior.
+   */
+  @JvmStatic
+  public fun shouldSetIsClickableByDefault(): Boolean = accessor.shouldSetIsClickableByDefault()
 
   /**
    * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.

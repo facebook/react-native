@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e5affd56757a5b815ac0a16305d1a82d>>
+ * @generated SignedSource<<a7123e265a748fe2d69d266fcd56e9b6>>
  */
 
 /**
@@ -309,6 +309,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool shouldSetEnabledBasedOnAccessibilityState() override {
     return true;
+  }
+
+  bool shouldSetIsClickableByDefault() override {
+    return false;
   }
 
   bool shouldTriggerResponderTransferOnScrollAndroid() override {

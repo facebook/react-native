@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9c10486574fdff78933aed6acd90533c>>
+ * @generated SignedSource<<6f9513178d03ce6e69dfc1b0182af336>>
  */
 
 /**
@@ -308,6 +308,10 @@ bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {
 
 bool ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState() {
   return getAccessor().shouldSetEnabledBasedOnAccessibilityState();
+}
+
+bool ReactNativeFeatureFlags::shouldSetIsClickableByDefault() {
+  return getAccessor().shouldSetIsClickableByDefault();
 }
 
 bool ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid() {

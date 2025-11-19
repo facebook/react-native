@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d9337b8c6a6d759ce9bd2ff95f2ba2e2>>
+ * @generated SignedSource<<823bb9957844065a1c3cceb0c1669838>>
  * @flow strict
  * @noformat
  */
@@ -122,6 +122,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   preventShadowTreeCommitExhaustion: Getter<boolean>,
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
   shouldSetEnabledBasedOnAccessibilityState: Getter<boolean>,
+  shouldSetIsClickableByDefault: Getter<boolean>,
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
@@ -510,6 +511,10 @@ export const shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean> = cr
  * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
  */
 export const shouldSetEnabledBasedOnAccessibilityState: Getter<boolean> = createNativeFlagGetter('shouldSetEnabledBasedOnAccessibilityState', true);
+/**
+ * Sets isClickable=true by default on all React Native views on Android to improve UI harvesting detection while maintaining focusable=false to preserve expected behavior.
+ */
+export const shouldSetIsClickableByDefault: Getter<boolean> = createNativeFlagGetter('shouldSetIsClickableByDefault', false);
 /**
  * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
  */
