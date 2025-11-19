@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {NativeModuleUnionTypeAnnotation} from '../CodegenSchema';
+
 function capitalize(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -44,9 +46,58 @@ function getEnumName(moduleName: string, origEnumName: string): string {
   return `${moduleName}${uppercasedPropName}`;
 }
 
+type ValidUnionType = 'boolean' | 'number' | 'object' | 'string';
+const NumberTypes = ['NumberTypeAnnotation', 'NumberLiteralTypeAnnotation'];
+const StringTypes = ['StringTypeAnnotation', 'StringLiteralTypeAnnotation'];
+const ObjectTypes = ['ObjectTypeAnnotation'];
+const BooleanTypes = ['BooleanTypeAnnotation', 'BooleanLiteralTypeAnnotation'];
+const ValidUnionTypes = [
+  ...NumberTypes,
+  ...ObjectTypes,
+  ...StringTypes,
+  ...BooleanTypes,
+];
+
+function parseValidUnionType(
+  annotation: NativeModuleUnionTypeAnnotation,
+): ValidUnionType {
+  const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+    return annotation.types.every(memberTypeAnnotation =>
+      types.includes(memberTypeAnnotation.type),
+    );
+  };
+  if (isUnionOfType(BooleanTypes)) {
+    return 'boolean';
+  }
+  if (isUnionOfType(NumberTypes)) {
+    return 'number';
+  }
+  if (isUnionOfType(ObjectTypes)) {
+    return 'object';
+  }
+  if (isUnionOfType(StringTypes)) {
+    return 'string';
+  }
+
+  const invalidTypes = annotation.types.filter(member => {
+    return !ValidUnionTypes.includes(member.type);
+  });
+
+  // Check if union members are all supported but not homogeneous
+  // (e.g., mix of number and boolean)
+  if (invalidTypes.length === 0) {
+    throw new Error(`Non-homogenous union member types`);
+  } else {
+    throw new Error(
+      `Unsupported union member types: ${invalidTypes.join(', ')}"`,
+    );
+  }
+}
+
 module.exports = {
   capitalize,
   indent,
+  parseValidUnionType,
   toPascalCase,
   toSafeCppString,
   getEnumName,
