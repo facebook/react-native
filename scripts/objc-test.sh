@@ -77,17 +77,20 @@ runTests() {
     -scheme RNTester \
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
+    -derivedDataPath "/tmp/RNTesterBuild" \
       "${SKIPPED_TESTS[@]}"
 }
 
 buildForTesting() {
   # shellcheck disable=SC1091
   source "$ROOT/scripts/.tests.env"
+
   xcodebuild build-for-testing \
     -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
-    -derivedDataPath "/tmp/RNTesterBuild"
+    -derivedDataPath "/tmp/RNTesterBuild" \
+    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS"
 }
 
 runTestsOnly() {
