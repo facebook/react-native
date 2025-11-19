@@ -128,7 +128,7 @@ function getNativeTypeFromAnnotation(
     case 'FloatTypeAnnotation':
     case 'MixedTypeAnnotation':
       return getCppTypeForAnnotation(type);
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'UnionTypeAnnotation':
     case 'ObjectTypeAnnotation':
       return generateEventStructName([...nameParts, eventProperty.name]);
     case 'ArrayTypeAnnotation':
@@ -188,7 +188,7 @@ function handleGenerateStructForArray(
       nameParts.concat([name]),
       nullthrows(elementType.properties),
     );
-  } else if (elementType.type === 'StringLiteralUnionTypeAnnotation') {
+  } else if (elementType.type === 'UnionTypeAnnotation') {
     generateEnum(
       structs,
       elementType.types.map(literal => literal.value),
@@ -251,7 +251,7 @@ function generateStruct(
           nullthrows(typeAnnotation.properties),
         );
         return;
-      case 'StringLiteralUnionTypeAnnotation':
+      case 'UnionTypeAnnotation':
         generateEnum(
           structs,
           typeAnnotation.types.map(literal => literal.value),

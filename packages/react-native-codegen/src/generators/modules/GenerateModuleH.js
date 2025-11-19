@@ -29,7 +29,12 @@ import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
 const {wrapOptional} = require('../TypeUtils/Cxx');
-const {getEnumName, toPascalCase, toSafeCppString} = require('../Utils');
+const {
+  getEnumName,
+  parseValidUnionType,
+  toPascalCase,
+  toSafeCppString,
+} = require('../Utils');
 const {
   createAliasResolver,
   getModules,
@@ -92,9 +97,9 @@ function serializeArg(
       return wrap(val => `${val}.asString(rt)`);
     case 'StringLiteralTypeAnnotation':
       return wrap(val => `${val}.asString(rt)`);
-    case 'StringLiteralUnionTypeAnnotation':
-      return wrap(val => `${val}.asString(rt)`);
     case 'BooleanTypeAnnotation':
+      return wrap(val => `${val}.asBool()`);
+    case 'BooleanLiteralTypeAnnotation':
       return wrap(val => `${val}.asBool()`);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
@@ -124,17 +129,19 @@ function serializeArg(
     case 'GenericObjectTypeAnnotation':
       return wrap(val => `${val}.asObject(rt)`);
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return wrap(val => `${val}.asBool()`);
+        case 'number':
           return wrap(val => `${val}.asNumber()`);
-        case 'ObjectTypeAnnotation':
+        case 'object':
           return wrap(val => `${val}.asObject(rt)`);
-        case 'StringTypeAnnotation':
+        case 'string':
           return wrap(val => `${val}.asString(rt)`);
         default:
-          throw new Error(
-            `Unsupported union member type for param  "${arg.name}, found: ${realTypeAnnotation.memberType}"`,
-          );
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
       }
     case 'ObjectTypeAnnotation':
       return wrap(val => `${val}.asObject(rt)`);
@@ -251,8 +258,6 @@ function translatePrimitiveJSTypeToCpp(
       return wrapOptional('jsi::String', isRequired);
     case 'StringLiteralTypeAnnotation':
       return wrapOptional('jsi::String', isRequired);
-    case 'StringLiteralUnionTypeAnnotation':
-      return wrapOptional('jsi::String', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -264,6 +269,8 @@ function translatePrimitiveJSTypeToCpp(
     case 'Int32TypeAnnotation':
       return wrapOptional('int', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
@@ -277,15 +284,19 @@ function translatePrimitiveJSTypeToCpp(
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('jsi::Object', isRequired);
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return wrapOptional('bool', isRequired);
+        case 'number':
           return wrapOptional('double', isRequired);
-        case 'ObjectTypeAnnotation':
+        case 'object':
           return wrapOptional('jsi::Object', isRequired);
-        case 'StringTypeAnnotation':
+        case 'string':
           return wrapOptional('jsi::String', isRequired);
         default:
-          throw new Error(createErrorMessage(realTypeAnnotation.type));
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
       }
     case 'ObjectTypeAnnotation':
       return wrapOptional('jsi::Object', isRequired);

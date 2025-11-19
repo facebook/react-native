@@ -242,15 +242,22 @@ describe('components', () => {
           {},
           {},
         ),
-      ).toEqual(
-        expect.objectContaining({
-          status: 'positionalTypeChange',
-          changeLog: expect.objectContaining({
-            typeKind: 'stringUnion',
-            addedElements: expect.arrayContaining([expect.any(Array)]),
-          }),
-        }),
-      );
+      ).toEqual({
+        status: 'positionalTypeChange',
+        changeLog: {
+          nestedChanges: [],
+          typeKind: 'union',
+          addedElements: [
+            [
+              2,
+              {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'baz',
+              },
+            ],
+          ],
+        },
+      });
     });
 
     it('array of an object to an extra key not compatible', () => {
@@ -815,7 +822,45 @@ describe('compareTypes unions', () => {
         nativeModuleBeforeAfterTypesAliases,
         nativeModuleBeforeAfterTypesAliases,
       ),
-    ).toBeAnError();
+    ).toEqual({
+      status: 'positionalTypeChange',
+      changeLog: {
+        typeKind: 'union',
+        nestedChanges: [],
+        addedElements: [
+          [
+            0,
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'str1',
+            },
+          ],
+          [
+            1,
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'str2',
+            },
+          ],
+        ],
+        removedElements: [
+          [
+            0,
+            {
+              type: 'NumberLiteralTypeAnnotation',
+              value: 4,
+            },
+          ],
+          [
+            1,
+            {
+              type: 'NumberLiteralTypeAnnotation',
+              value: 5,
+            },
+          ],
+        ],
+      },
+    });
   });
   it('fails on differing unions with same length and same alias name', () => {
     expect(
@@ -825,7 +870,59 @@ describe('compareTypes unions', () => {
         nativeModuleBeforeAfterTypesAliases,
         nativeModuleBeforeAfterTypesAliases,
       ),
-    ).toBeAnError();
+    ).toEqual({
+      status: 'functionChange',
+      functionChangeLog: {
+        parameterTypes: {
+          typeKind: 'parameter',
+          nestedChanges: [
+            [
+              0,
+              0,
+              {
+                status: 'positionalTypeChange',
+                changeLog: {
+                  typeKind: 'union',
+                  nestedChanges: [],
+                  addedElements: [
+                    [
+                      0,
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'str1',
+                      },
+                    ],
+                    [
+                      1,
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'str2',
+                      },
+                    ],
+                  ],
+                  removedElements: [
+                    [
+                      0,
+                      {
+                        type: 'NumberLiteralTypeAnnotation',
+                        value: 4,
+                      },
+                    ],
+                    [
+                      1,
+                      {
+                        type: 'NumberLiteralTypeAnnotation',
+                        value: 5,
+                      },
+                    ],
+                  ],
+                },
+              },
+            ],
+          ],
+        },
+      },
+    });
   });
   it('reports on unions with differing types: string -> object', () => {
     expect(
@@ -835,7 +932,54 @@ describe('compareTypes unions', () => {
         nativeModuleBeforeAfterTypesAliases,
         nativeModuleBeforeAfterTypesAliases,
       ),
-    ).toHaveErrorWithMessage('Union member type does not match');
+    ).toEqual({
+      status: 'positionalTypeChange',
+      changeLog: {
+        typeKind: 'union',
+        nestedChanges: [],
+        addedElements: [
+          [
+            0,
+            {
+              type: 'NumberLiteralTypeAnnotation',
+              value: 4,
+            },
+          ],
+          [
+            1,
+            {
+              type: 'NumberLiteralTypeAnnotation',
+              value: 5,
+            },
+          ],
+        ],
+        removedElements: [
+          [
+            0,
+            {
+              type: 'ObjectTypeAnnotation',
+              properties: [],
+            },
+          ],
+          [
+            1,
+            {
+              type: 'ObjectTypeAnnotation',
+              properties: [
+                {
+                  name: 'key',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralTypeAnnotation',
+                    value: 'value',
+                  },
+                },
+              ],
+            },
+          ],
+        ],
+      },
+    });
   });
   it('reports on unions with differing lengths same alias', () => {
     expect(
@@ -845,15 +989,22 @@ describe('compareTypes unions', () => {
         nativeModuleBeforeAfterTypesAliases,
         nativeModuleBeforeAfterTypesAliases,
       ).functionChangeLog.parameterTypes.nestedChanges[0][2],
-    ).toEqual(
-      expect.objectContaining({
-        status: 'positionalTypeChange',
-        changeLog: expect.objectContaining({
-          typeKind: 'stringUnion',
-          removedElements: expect.arrayContaining([expect.any(Array)]),
-        }),
-      }),
-    );
+    ).toEqual({
+      status: 'positionalTypeChange',
+      changeLog: {
+        typeKind: 'union',
+        nestedChanges: [],
+        removedElements: [
+          [
+            2,
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'str3',
+            },
+          ],
+        ],
+      },
+    });
   });
 });
 
@@ -991,15 +1142,22 @@ describe('compareTypes on string literal unions', () => {
         nativeTypeDiffingTypesAliases,
         nativeTypeDiffingTypesAliases,
       ),
-    ).toEqual(
-      expect.objectContaining({
-        status: 'positionalTypeChange',
-        changeLog: expect.objectContaining({
-          typeKind: 'stringUnion',
-          removedElements: expect.arrayContaining([expect.any(Array)]),
-        }),
-      }),
-    );
+    ).toEqual({
+      status: 'positionalTypeChange',
+      changeLog: {
+        typeKind: 'union',
+        nestedChanges: [],
+        removedElements: [
+          [
+            3,
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'd',
+            },
+          ],
+        ],
+      },
+    });
   });
 
   it('fails on unions with differing elements', () => {
@@ -1010,16 +1168,31 @@ describe('compareTypes on string literal unions', () => {
         nativeTypeDiffingTypesAliases,
         nativeTypeDiffingTypesAliases,
       ),
-    ).toEqual(
-      expect.objectContaining({
-        status: 'positionalTypeChange',
-        changeLog: expect.objectContaining({
-          typeKind: 'stringUnion',
-          addedElements: expect.arrayContaining([expect.any(Array)]),
-          removedElements: expect.arrayContaining([expect.any(Array)]),
-        }),
-      }),
-    );
+    ).toEqual({
+      status: 'positionalTypeChange',
+      changeLog: {
+        typeKind: 'union',
+        nestedChanges: [],
+        addedElements: [
+          [
+            1,
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'b',
+            },
+          ],
+        ],
+        removedElements: [
+          [
+            1,
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'x',
+            },
+          ],
+        ],
+      },
+    });
   });
 });
 

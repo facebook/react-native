@@ -762,17 +762,11 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "incompatibleTypes",
-          "message": "NativeModuleTest: Object contained a property with a type mismatch
-  -- exampleFunction: has conflicting type changes
-      --new: (a: (a | b | c), b: number)=>void
-      --old: (a: Union<number>, b: number)=>void
-      Parameter at index 0 did not match
-          --new: (a: (a | b | c), b: number)=>void
-          --old: (a: Union<number>, b: number)=>void
-          Type annotations are not the same.
-              --new: (a | b | c)
-              --old: Union<number>",
+          "errorCode": "addedUnionCases",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Union added items, but native will not expect/support them
+  -- position 0 a
+  -- position 1 b
+  -- position 2 c",
         },
       ],
     },
