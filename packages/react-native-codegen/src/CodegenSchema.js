@@ -30,6 +30,10 @@ export type FloatTypeAnnotation = $ReadOnly<{
   type: 'FloatTypeAnnotation',
 }>;
 
+export type NumberTypeAnnotation = $ReadOnly<{
+  type: 'NumberTypeAnnotation',
+}>;
+
 export type BooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
@@ -66,6 +70,18 @@ export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   properties: $ReadOnlyArray<NamedShape<T>>,
   // metadata for objects that generated from interfaces
   baseTypes?: $ReadOnlyArray<string>,
+}>;
+
+export type UnionTypeAnnotation<+T> = $ReadOnly<{
+  type: 'UnionTypeAnnotation',
+  types: $ReadOnlyArray<T>,
+}>;
+
+// TODO(T72031674): TupleTypeAnnotation is added for parity with UnionTypeAnnotation
+// to support future implementation. Currently limited to String and Number literals.
+export type TupleTypeAnnotation = $ReadOnly<{
+  type: 'TupleTypeAnnotation',
+  types: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation,
 }>;
 
 export type MixedTypeAnnotation = $ReadOnly<{
