@@ -19,7 +19,7 @@ const {wrapOptional: wrapCxxOptional} = require('../../../TypeUtils/Cxx');
 const {
   wrapOptional: wrapObjCOptional,
 } = require('../../../TypeUtils/Objective-C');
-const {capitalize} = require('../../../Utils');
+const {capitalize, parseValidUnionType} = require('../../../Utils');
 const {getNamespacedStructName, getSafePropertyName} = require('../Utils');
 
 const StructTemplate = ({
@@ -96,8 +96,21 @@ function toObjCType(
       return 'NSString *';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *';
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return wrapCxxOptional('bool', isRequired);
+        case 'number':
+          return wrapCxxOptional('double', isRequired);
+        case 'object':
+          return wrapObjCOptional('id<NSObject>', isRequired);
+        case 'string':
+          return 'NSString *';
+        default:
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
+      }
     case 'NumberTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -109,6 +122,8 @@ function toObjCType(
     case 'DoubleTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapCxxOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapCxxOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -181,8 +196,21 @@ function toObjCValue(
       return value;
     case 'StringLiteralTypeAnnotation':
       return value;
-    case 'StringLiteralUnionTypeAnnotation':
-      return value;
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return wrapPrimitive('BOOL');
+        case 'number':
+          return wrapPrimitive('double');
+        case 'object':
+          return value;
+        case 'string':
+          return value;
+        default:
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
+      }
     case 'NumberTypeAnnotation':
       return wrapPrimitive('double');
     case 'NumberLiteralTypeAnnotation':
@@ -194,6 +222,8 @@ function toObjCValue(
     case 'DoubleTypeAnnotation':
       return wrapPrimitive('double');
     case 'BooleanTypeAnnotation':
+      return wrapPrimitive('BOOL');
+    case 'BooleanLiteralTypeAnnotation':
       return wrapPrimitive('BOOL');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {

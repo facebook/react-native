@@ -18,10 +18,10 @@ import type {
   NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
+  NativeModuleUnionTypeAnnotationMemberType,
   Nullable,
   PropTypeAnnotation,
   SchemaType,
-  UnionTypeAnnotationMemberType,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {
@@ -105,13 +105,7 @@ export class MockedParser implements Parser {
 
   remapUnionTypeAnnotationMemberNames(
     membersTypes: $FlowFixMe[],
-  ): UnionTypeAnnotationMemberType[] {
-    return [];
-  }
-
-  getStringLiteralUnionTypeAnnotationStringLiterals(
-    membersTypes: $FlowFixMe[],
-  ): string[] {
+  ): NativeModuleUnionTypeAnnotationMemberType[] {
     return [];
   }
 
