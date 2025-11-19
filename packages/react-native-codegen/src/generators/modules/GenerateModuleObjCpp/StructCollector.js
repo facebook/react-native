@@ -36,7 +36,7 @@ const {
   unwrapNullable,
   wrapNullable,
 } = require('../../../parsers/parsers-commons');
-const {capitalize} = require('../../Utils');
+const {capitalize, parseValidUnionType} = require('../../Utils');
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 
@@ -129,27 +129,29 @@ class StructCollector {
       case 'MixedTypeAnnotation':
         throw new Error('Mixed types are unsupported in structs');
       case 'UnionTypeAnnotation':
-        switch (typeAnnotation.memberType) {
-          case 'StringTypeAnnotation':
+        const validUnionType = parseValidUnionType(typeAnnotation);
+        switch (validUnionType) {
+          case 'boolean':
             return wrapNullable(nullable, {
-              type: 'StringTypeAnnotation',
+              type: 'BooleanTypeAnnotation',
             });
-          case 'NumberTypeAnnotation':
+          case 'number':
             return wrapNullable(nullable, {
               type: 'NumberTypeAnnotation',
             });
-          case 'ObjectTypeAnnotation':
+          case 'object':
             // This isn't smart enough to actually know how to generate the
             // options on the native side. So we just treat it as an unknown object type
             return wrapNullable(nullable, {
               type: 'GenericObjectTypeAnnotation',
             });
+          case 'string':
+            return wrapNullable(nullable, {
+              type: 'StringTypeAnnotation',
+            });
           default:
-            (typeAnnotation.memberType: empty);
-            throw new Error(
-              'Union types are unsupported in structs' +
-                JSON.stringify(typeAnnotation),
-            );
+            (validUnionType: empty);
+            throw new Error(`Unsupported union member types`);
         }
       default: {
         return wrapNullable(nullable, typeAnnotation);
