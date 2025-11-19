@@ -26,6 +26,10 @@ export interface FloatTypeAnnotation {
   readonly type: 'FloatTypeAnnotation';
 }
 
+export interface NumberTypeAnnotation {
+  readonly type: 'NumberTypeAnnotation';
+}
+
 export interface BooleanTypeAnnotation {
   readonly type: 'BooleanTypeAnnotation';
 }
