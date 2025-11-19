@@ -112,30 +112,32 @@ RCT_EXPORT_MODULE()
 
     self->_showDate = [NSDate date];
 
-    UIWindow *mainWindow = RCTKeyWindow();
-    if (!self->_window) {
-      self->_window = [[UIWindow alloc] initWithWindowScene:mainWindow.windowScene];
-      self->_window.windowLevel = UIWindowLevelStatusBar + 1;
-      self->_window.rootViewController = [UIViewController new];
+    if (!self->label) {
+      self->_label = [[UILabel alloc] init];
+      self->_label.translatesAutoresizingMaskIntoConstraints = NO;
+      self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
+      self->_label.textAlignment = NSTextAlignmentCenter;
+    }
+    self->_label.textColor = color;
+    self->_label.text = message;
 
+    if (!self->container) {
       self->_container = [[UIView alloc] init];
       self->_container.translatesAutoresizingMaskIntoConstraints = NO;
       UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hide)];
       [self->_container addGestureRecognizer:tapGesture];
       self->_container.userInteractionEnabled = YES;
-
-      self->_label = [[UILabel alloc] init];
-      self->_label.translatesAutoresizingMaskIntoConstraints = NO;
-      self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
-      self->_label.textAlignment = NSTextAlignmentCenter;
-
-      [self->_window.rootViewController.view addSubview:self->_container];
       [self->_container addSubview:self->_label];
     }
-
     self->_container.backgroundColor = backgroundColor;
-    self->_label.textColor = color;
-    self->_label.text = message;
+
+    UIWindow *mainWindow = RCTKeyWindow();
+    if (!self->_window) {
+      self->_window = [[UIWindow alloc] initWithWindowScene:mainWindow.windowScene];
+      self->_window.windowLevel = UIWindowLevelStatusBar + 1;
+      self->_window.rootViewController = [UIViewController new];
+      [self->_window.rootViewController.view addSubview:self->_container];
+    }
 
     CGFloat topSafeAreaHeight = mainWindow.safeAreaInsets.top;
     CGFloat height = topSafeAreaHeight + 25;
