@@ -30,6 +30,10 @@ export type FloatTypeAnnotation = $ReadOnly<{
   type: 'FloatTypeAnnotation',
 }>;
 
+export type NumberTypeAnnotation = $ReadOnly<{
+  type: 'NumberTypeAnnotation',
+}>;
+
 export type BooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
