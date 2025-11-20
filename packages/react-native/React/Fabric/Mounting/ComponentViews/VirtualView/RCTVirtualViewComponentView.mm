@@ -330,9 +330,8 @@ static BOOL sIsAccessibilityUsed = NO;
     return;
   }
 
-  std::shared_ptr<const VirtualViewEventEmitter> emitter =
-      std::static_pointer_cast<const VirtualViewEventEmitter>(_eventEmitter);
-  emitter->onModeChange(event);
+  auto &emitter = static_cast<const VirtualViewEventEmitter &>(*_eventEmitter);
+  emitter.onModeChange(event);
 }
 
 - (void)dispatchSyncModeChange:(VirtualViewEventEmitter::OnModeChange &)event
@@ -341,13 +340,12 @@ static BOOL sIsAccessibilityUsed = NO;
     return;
   }
 
-  std::shared_ptr<const VirtualViewEventEmitter> emitter =
-      std::static_pointer_cast<const VirtualViewEventEmitter>(_eventEmitter);
+  auto &emitter = static_cast<const VirtualViewEventEmitter &>(*_eventEmitter);
 
   // TODO: Move this into a custom event emitter. We had to duplicate the codegen code here from onModeChange in order
   // to dispatch synchronously and discrete.
-  emitter->experimental_flushSync([&emitter, &event]() {
-    emitter->dispatchEvent(
+  emitter.experimental_flushSync([&emitter, &event]() {
+    emitter.dispatchEvent(
         "modeChange",
         [event](jsi::Runtime &runtime) {
           auto payload = jsi::Object(runtime);
