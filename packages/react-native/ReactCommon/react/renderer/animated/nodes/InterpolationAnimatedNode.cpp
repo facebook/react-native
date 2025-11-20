@@ -11,9 +11,11 @@
 
 #include "InterpolationAnimatedNode.h"
 
+#include <glog/logging.h>
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 #include <react/renderer/animated/drivers/AnimationDriverUtils.h>
 #include <react/renderer/animated/internal/primitives.h>
+#include <react/renderer/animated/nodes/PropsAnimatedNode.h>
 #include <react/renderer/graphics/HostPlatformColor.h>
 
 namespace facebook::react {
@@ -150,6 +152,10 @@ double InterpolationAnimatedNode::interpolateColor(double value) {
 }
 
 double InterpolationAnimatedNode::interpolatePlatformColor(double value) {
+  if (connectedRootTag_ == animated::undefinedAnimatedNodeIdentifier) {
+    connectedRootTag_ = resolveConnectedRootTag();
+  }
+
   // Compute range index
   size_t index = 1;
   for (; index < inputRanges_.size() - 1; ++index) {
@@ -209,6 +215,29 @@ double InterpolationAnimatedNode::interpolatePlatformColor(double value) {
       static_cast<uint8_t>(outputValueG),
       static_cast<uint8_t>(outputValueB),
       static_cast<uint8_t>(outputValueA)));
+}
+
+SurfaceId InterpolationAnimatedNode::resolveConnectedRootTag() const {
+  // find nearest connected props node
+  std::deque<Tag> nodesQueue{tag()};
+  while (!nodesQueue.empty()) {
+    auto nodeTag = nodesQueue.front();
+    nodesQueue.pop_front();
+    if (auto node = manager_->getAnimatedNode<AnimatedNode>(nodeTag)) {
+      if (node->type() == AnimatedNodeType::Props) {
+        if (auto propsNode = static_cast<PropsAnimatedNode*>(node)) {
+          return propsNode->connectedRootTag();
+        }
+        break;
+      }
+      auto children = node->getChildren();
+      nodesQueue.insert(nodesQueue.end(), children.begin(), children.end());
+    }
+  }
+
+  LOG(ERROR)
+      << "InterpolationAnimatedNode: Unable to resolve connected root tag";
+  return animated::undefinedAnimatedNodeIdentifier;
 }
 
 } // namespace facebook::react

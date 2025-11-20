@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {RootTag} from '../../Types/RootTagTypes';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimatedNodeConfig} from './AnimatedNode';
 import type {AnimatedStyleAllowlist} from './AnimatedStyle';
@@ -97,11 +98,13 @@ export default class AnimatedProps extends AnimatedNode {
   _nodes: $ReadOnlyArray<AnimatedNode>;
   _props: {[string]: mixed};
   _target: ?TargetView = null;
+  _rootTag: ?RootTag = undefined;
 
   constructor(
     inputProps: {[string]: mixed},
     callback: () => void,
     allowlist?: ?AnimatedPropsAllowlist,
+    rootTag?: RootTag,
     config?: ?AnimatedNodeConfig,
   ) {
     super(config);
@@ -110,6 +113,7 @@ export default class AnimatedProps extends AnimatedNode {
     this._nodes = nodes;
     this._props = props;
     this._callback = callback;
+    this._rootTag = rootTag;
   }
 
   __getValue(): Object {
@@ -318,6 +322,7 @@ export default class AnimatedProps extends AnimatedNode {
     return {
       type: 'props',
       props: propsConfig,
+      rootTag: this._rootTag ?? undefined,
       debugID: this.__getDebugID(),
     };
   }
