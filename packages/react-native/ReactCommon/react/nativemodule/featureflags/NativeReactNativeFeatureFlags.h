@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a973cf276f9f61a96e717b1ec8561c78>>
+ * @generated SignedSource<<e5c5fdba24cc5e31f39bc6fd72e9f7b9>>
  */
 
 /**
@@ -175,6 +175,8 @@ class NativeReactNativeFeatureFlags
   bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
+
+  bool shouldResetOnClickListenerWhenRecyclingView(jsi::Runtime& runtime);
 
   bool shouldSetEnabledBasedOnAccessibilityState(jsi::Runtime& runtime);
 

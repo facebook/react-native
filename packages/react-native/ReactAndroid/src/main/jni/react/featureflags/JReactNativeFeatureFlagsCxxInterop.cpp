@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2f04d4a48caf61c182d412b2ae335e3a>>
+ * @generated SignedSource<<d30f5ffcbec1c5175623573fdbd0be87>>
  */
 
 /**
@@ -456,6 +456,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool shouldPressibilityUseW3CPointerEventsForHover() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldPressibilityUseW3CPointerEventsForHover");
+    return method(javaProvider_);
+  }
+
+  bool shouldResetOnClickListenerWhenRecyclingView() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldResetOnClickListenerWhenRecyclingView");
     return method(javaProvider_);
   }
 
@@ -933,6 +939,11 @@ bool JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsFo
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::shouldResetOnClickListenerWhenRecyclingView(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::shouldResetOnClickListenerWhenRecyclingView();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::shouldSetEnabledBasedOnAccessibilityState(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState();
@@ -1274,6 +1285,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "shouldPressibilityUseW3CPointerEventsForHover",
         JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsForHover),
+      makeNativeMethod(
+        "shouldResetOnClickListenerWhenRecyclingView",
+        JReactNativeFeatureFlagsCxxInterop::shouldResetOnClickListenerWhenRecyclingView),
       makeNativeMethod(
         "shouldSetEnabledBasedOnAccessibilityState",
         JReactNativeFeatureFlagsCxxInterop::shouldSetEnabledBasedOnAccessibilityState),
