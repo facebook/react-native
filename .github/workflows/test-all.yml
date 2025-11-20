@@ -282,7 +282,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
 
-  run_fantom_tests:
+  prebuild_fantom_tester:
     runs-on: 8-core-ubuntu
     needs: [set_release_type]
     container:
@@ -295,7 +295,39 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build and Test Fantom
+      - name: Build Fantom Test Runner
+        uses: ./.github/actions/build-fantom-runner
+        with:
+          release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
+  run_fantom_tests:
+    runs-on: 8-core-ubuntu
+    needs: [set_release_type, prebuild_fantom_tester]
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        TERM: "dumb"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
+        ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Install node dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Download Fantom Tester
+        uses: actions/download-artifact@v4
+        with:
+          name: fantom-build-artifacts
+          path: private/react-native-fantom/build/tester
+      - name: Make Fantom Tester executable
+        run: |
+          ls -la private/react-native-fantom/build/tester
+          chmod +x private/react-native-fantom/build/tester/fantom_tester
+      - name: Run Fantom Tests
         uses: ./.github/actions/run-fantom-tests
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
