@@ -35,6 +35,7 @@ const {
 } = require('../../parsers-commons');
 const {
   emitArrayType,
+  emitBooleanLiteral,
   emitCommonTypes,
   emitDictionary,
   emitFunction,
@@ -248,6 +249,9 @@ function translateTypeAnnotation(
     }
     case 'NumberLiteralTypeAnnotation': {
       return emitNumberLiteral(nullable, typeAnnotation.value);
+    }
+    case 'BooleanLiteralTypeAnnotation': {
+      return emitBooleanLiteral(nullable, typeAnnotation.value);
     }
     case 'StringLiteralTypeAnnotation': {
       return wrapNullable(nullable, {

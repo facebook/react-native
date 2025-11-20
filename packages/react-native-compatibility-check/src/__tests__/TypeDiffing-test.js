@@ -905,6 +905,30 @@ describe('compareTypes on string literals', () => {
   });
 });
 
+describe('compareTypes on boolean literals', () => {
+  it('matches literals that are the same', () => {
+    expect(
+      compareTypes(
+        nativeTypeDiffingTypesMethodParamLookup('booleanLiteral0'),
+        nativeTypeDiffingTypesMethodParamLookup('booleanLiteral0'),
+        nativeTypeDiffingTypesAliases,
+        nativeTypeDiffingTypesAliases,
+      ).status,
+    ).toBe('matching');
+  });
+
+  it('fails on literals that are not the same', () => {
+    expect(
+      compareTypes(
+        nativeTypeDiffingTypesMethodParamLookup('booleanLiteral0'),
+        nativeTypeDiffingTypesMethodParamLookup('booleanLiteral1'),
+        nativeTypeDiffingTypesAliases,
+        nativeTypeDiffingTypesAliases,
+      ),
+    ).toHaveErrorWithMessage('Boolean literals are not equal');
+  });
+});
+
 describe('compareTypes on numeric literals', () => {
   it('matches literals that are the same', () => {
     expect(

@@ -96,6 +96,8 @@ function serializeArg(
       return wrap(val => `${val}.asString(rt)`);
     case 'BooleanTypeAnnotation':
       return wrap(val => `${val}.asBool()`);
+    case 'BooleanLiteralTypeAnnotation':
+      return wrap(val => `${val}.asBool()`);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -264,6 +266,8 @@ function translatePrimitiveJSTypeToCpp(
     case 'Int32TypeAnnotation':
       return wrapOptional('int', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {

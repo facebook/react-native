@@ -142,6 +142,7 @@ function translateEventEmitterTypeToJavaType(
     case 'Int32TypeAnnotation':
       return 'double';
     case 'BooleanTypeAnnotation':
+    case 'BooleanLiteralTypeAnnotation':
       return 'boolean';
     case 'GenericObjectTypeAnnotation':
     case 'ObjectTypeAnnotation':
@@ -213,6 +214,8 @@ function translateFunctionParamToJavaType(
     case 'Int32TypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapOptional('boolean', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapOptional('boolean', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
@@ -310,6 +313,8 @@ function translateFunctionReturnTypeToJavaType(
       return wrapOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapOptional('boolean', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
+      return wrapOptional('boolean', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -387,6 +392,8 @@ function getFalsyReturnStatementFromReturnType(
     case 'Int32TypeAnnotation':
       return nullable ? 'return null;' : 'return 0;';
     case 'BooleanTypeAnnotation':
+      return nullable ? 'return null;' : 'return false;';
+    case 'BooleanLiteralTypeAnnotation':
       return nullable ? 'return null;' : 'return false;';
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
