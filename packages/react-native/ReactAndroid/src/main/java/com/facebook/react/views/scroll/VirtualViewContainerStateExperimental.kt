@@ -49,6 +49,13 @@ internal class VirtualViewContainerStateExperimental(scrollView: ViewGroup) :
     }
   }
 
+  override fun remove(virtualView: VirtualView) {
+    super.remove(virtualView)
+    HPV.remove(virtualView.virtualViewID)
+    P.remove(virtualView.virtualViewID)
+    V.remove(virtualView.virtualViewID)
+  }
+
   /**
    * Perform mode update check on a single VirtualView. Does not check other VirtualViews in the
    * collection. Use carefully

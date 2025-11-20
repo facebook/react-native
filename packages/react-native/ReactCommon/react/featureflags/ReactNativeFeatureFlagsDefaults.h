@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<85c260dcb8eb9209a53207c3c54183f0>>
+ * @generated SignedSource<<bce5d52ac8a180d1750bb64dd21c1bd3>>
  */
 
 /**
@@ -51,6 +51,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableImageViewPreallocationAndroid() override {
+    return false;
+  }
+
   bool disableMountItemReorderingAndroid() override {
     return false;
   }
@@ -64,6 +68,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableTextLayoutManagerCacheAndroid() override {
+    return false;
+  }
+
+  bool disableViewPreallocationAndroid() override {
     return false;
   }
 
@@ -111,6 +119,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableExclusivePropsUpdateAndroid() override {
+    return false;
+  }
+
   bool enableFabricLogs() override {
     return false;
   }
@@ -132,6 +144,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableImagePrefetchingAndroid() override {
+    return false;
+  }
+
+  bool enableImagePrefetchingJNIBatchingAndroid() override {
     return false;
   }
 
@@ -184,10 +200,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {
-    return false;
-  }
-
-  bool enableResourceTimingAPI() override {
     return false;
   }
 
@@ -247,6 +259,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool fuseboxAssertSingleHostState() override {
+    return true;
+  }
+
   bool fuseboxEnabledRelease() override {
     return false;
   }
@@ -280,6 +296,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool shouldPressibilityUseW3CPointerEventsForHover() override {
+    return false;
+  }
+
+  bool shouldSetEnabledBasedOnAccessibilityState() override {
     return false;
   }
 

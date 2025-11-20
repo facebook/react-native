@@ -51,14 +51,6 @@ You can build and run RN-Tester by using this command from the root of the repo:
 yarn android
 ```
 
-If you wish to use JSC instead you should invoke:
-
-```sh
-cd packages/rn-tester
-yarn install-android-jsc
-yarn start
-```
-
 > [!NOTE]
 > Building for the first time can take a while.
 

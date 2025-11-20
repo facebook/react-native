@@ -113,6 +113,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableImageViewPreallocationAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-07',
+        description:
+          'Force disable view preallocation for images triggered from createNode off the main thread on Android',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {
@@ -152,6 +163,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-05-28',
         description:
           'Turns off the global measurement cache used by TextLayoutManager on Android.',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    disableViewPreallocationAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-07',
+        description:
+          'Force disable view preallocation triggered from createNode off the main thread on Android',
         expectedReleaseValue: false,
         purpose: 'experimentation',
       },
@@ -274,6 +296,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableExclusivePropsUpdateAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-11',
+        description:
+          'When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableFabricLogs: {
       defaultValue: false,
       metadata: {
@@ -330,6 +363,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-06-21',
         description:
           'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableImagePrefetchingJNIBatchingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-10',
+        description:
+          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -446,7 +490,7 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       metadata: {
         description:
-          'Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.',
+          'Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -470,16 +514,6 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableResourceTimingAPI: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables the reporting of network resource timings through `PerformanceObserver`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -634,6 +668,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fuseboxAssertSingleHostState: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'stable',
+    },
     fuseboxEnabledRelease: {
       defaultValue: false,
       metadata: {
@@ -727,6 +771,17 @@ const definitions: FeatureFlagDefinitions = {
           'Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldSetEnabledBasedOnAccessibilityState: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-11',
+        description:
+          'Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -1037,6 +1092,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-02-05',
         description:
           'Enables use of AnimatedObject for animating transform values.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldUseLinkRoleForPressableText: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-10',
+        description:
+          'Set accessibilityRole to "link" for pressable Text components by default.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

@@ -82,7 +82,7 @@ internal class OutlineDrawable(
     }
 
   private val outlinePaint: Paint =
-      Paint().apply {
+      Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         color = outlineColor
         strokeWidth = outlineWidth

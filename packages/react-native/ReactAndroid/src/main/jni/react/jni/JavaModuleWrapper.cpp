@@ -9,7 +9,6 @@
 
 #include <glog/logging.h>
 
-#include <cxxreact/CxxModule.h>
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/JsArgumentHelpers.h>

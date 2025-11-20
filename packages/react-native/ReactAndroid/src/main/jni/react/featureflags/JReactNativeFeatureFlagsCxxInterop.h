@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1deb0145d8c51d608903e1704e96b8d>>
+ * @generated SignedSource<<9769e993b3481e991ef79406734b6e28>>
  */
 
 /**
@@ -48,6 +48,9 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool disableFabricCommitInCXXAnimated(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool disableImageViewPreallocationAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool disableMountItemReorderingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -58,6 +61,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool disableTextLayoutManagerCacheAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool disableViewPreallocationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableAccessibilityOrder(
@@ -93,6 +99,9 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableEagerRootViewAttachment(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool enableExclusivePropsUpdateAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool enableFabricLogs(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -109,6 +118,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableImagePrefetchingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableImagePrefetchingJNIBatchingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableImagePrefetchingOnUiThreadAndroid(
@@ -148,9 +160,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enablePropsUpdateReconciliationAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableResourceTimingAPI(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableSwiftUIBasedFilters(
@@ -195,6 +204,9 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool fuseboxAssertSingleHostState(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool fuseboxEnabledRelease(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -220,6 +232,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool shouldPressibilityUseW3CPointerEventsForHover(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool shouldSetEnabledBasedOnAccessibilityState(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool shouldTriggerResponderTransferOnScrollAndroid(

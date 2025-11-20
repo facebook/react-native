@@ -8,7 +8,6 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <cstdint>
 #include <unordered_map>
 #include <vector>
 
@@ -50,17 +49,11 @@ class TimerManager {
 
   void setRuntimeExecutor(RuntimeExecutor runtimeExecutor) noexcept;
 
-  void callReactNativeMicrotasks(jsi::Runtime &runtime);
-
   void callTimer(TimerHandle handle);
 
   void attachGlobals(jsi::Runtime &runtime);
 
  private:
-  TimerHandle createReactNativeMicrotask(jsi::Function &&callback, std::vector<jsi::Value> &&args);
-
-  void deleteReactNativeMicrotask(jsi::Runtime &runtime, TimerHandle handle);
-
   TimerHandle createTimer(
       jsi::Function &&callback,
       std::vector<jsi::Value> &&args,
@@ -88,11 +81,6 @@ class TimerManager {
   // As per WHATWG HTML 8.6.1 (Timers) ids must be greater than zero, i.e. start
   // at 1
   TimerHandle timerIndex_{1};
-
-  // The React Native microtask queue is used to back public APIs including
-  // `queueMicrotask`, `clearImmediate`, and `setImmediate` (which is used by
-  // the Promise polyfill) when the JSVM microtask mechanism is not used.
-  std::vector<TimerHandle> reactNativeMicrotasksQueue_;
 };
 
 } // namespace facebook::react

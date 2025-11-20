@@ -24,11 +24,13 @@
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/imagemanager/ImageFetcher.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
+#include <string_view>
 
 namespace facebook::react {
 
@@ -640,6 +642,19 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
   if (!mountingManager) {
     return;
   }
+
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    auto weakImageFetcher =
+        scheduler_->getContextContainer()->find<std::weak_ptr<ImageFetcher>>(
+            ImageFetcherKey);
+    auto imageFetcher = weakImageFetcher.has_value()
+        ? weakImageFetcher.value().lock()
+        : nullptr;
+    if (imageFetcher != nullptr) {
+      imageFetcher->flushImageRequests();
+    }
+  }
+
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
     auto mountingTransaction = mountingCoordinator->pullTransaction(
         /* willPerformAsynchronously = */ true);
@@ -672,6 +687,17 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
 
 void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {
+  using namespace std::literals::string_view_literals;
+
+  if (ReactNativeFeatureFlags::disableViewPreallocationAndroid()) {
+    return;
+  }
+
+  if (ReactNativeFeatureFlags::disableImageViewPreallocationAndroid() &&
+      std::string_view(shadowNode.getComponentName()) == "Image"sv) {
+    return;
+  }
+
   auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;

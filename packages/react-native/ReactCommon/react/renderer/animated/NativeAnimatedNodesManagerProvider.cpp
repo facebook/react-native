@@ -80,19 +80,28 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           std::move(directManipulationCallback),
           std::move(fabricCommitCallback),
           uiManager);
-#endif
 
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(animationBackend_);
 
+      nativeAnimatedDelegate_ =
+          std::make_shared<UIManagerNativeAnimatedDelegateBackendImpl>(
+              animationBackend_);
+
       uiManager->unstable_setAnimationBackend(animationBackend_);
+#endif
     } else {
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(
               std::move(directManipulationCallback),
               std::move(fabricCommitCallback),
               std::move(startOnRenderCallback_),
-              std::move(stopOnRenderCallback_));
+              std::move(stopOnRenderCallback_),
+              std::move(frameRateListenerCallback_));
+
+      nativeAnimatedDelegate_ =
+          std::make_shared<UIManagerNativeAnimatedDelegateImpl>(
+              nativeAnimatedNodesManager_);
     }
 
     addEventEmitterListener(
@@ -116,10 +125,6 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
               }
               return false;
             }));
-
-    nativeAnimatedDelegate_ =
-        std::make_shared<UIManagerNativeAnimatedDelegateImpl>(
-            nativeAnimatedNodesManager_);
 
     uiManager->setNativeAnimatedDelegate(nativeAnimatedDelegate_);
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0224a638fbec556a62c58f5d84c4c662>>
+ * @generated SignedSource<<b89ea8b8456bc8d19b35220e492d41fb>>
  */
 
 /**
@@ -99,6 +99,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::disableFabricCommitInCXXAnimated();
   }
 
+  bool disableImageViewPreallocationAndroid() override {
+    auto value = values_["disableImageViewPreallocationAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableImageViewPreallocationAndroid();
+  }
+
   bool disableMountItemReorderingAndroid() override {
     auto value = values_["disableMountItemReorderingAndroid"];
     if (!value.isNull()) {
@@ -133,6 +142,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::disableTextLayoutManagerCacheAndroid();
+  }
+
+  bool disableViewPreallocationAndroid() override {
+    auto value = values_["disableViewPreallocationAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableViewPreallocationAndroid();
   }
 
   bool enableAccessibilityOrder() override {
@@ -234,6 +252,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableEagerRootViewAttachment();
   }
 
+  bool enableExclusivePropsUpdateAndroid() override {
+    auto value = values_["enableExclusivePropsUpdateAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableExclusivePropsUpdateAndroid();
+  }
+
   bool enableFabricLogs() override {
     auto value = values_["enableFabricLogs"];
     if (!value.isNull()) {
@@ -286,6 +313,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableImagePrefetchingAndroid();
+  }
+
+  bool enableImagePrefetchingJNIBatchingAndroid() override {
+    auto value = values_["enableImagePrefetchingJNIBatchingAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableImagePrefetchingJNIBatchingAndroid();
   }
 
   bool enableImagePrefetchingOnUiThreadAndroid() override {
@@ -403,15 +439,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enablePropsUpdateReconciliationAndroid();
-  }
-
-  bool enableResourceTimingAPI() override {
-    auto value = values_["enableResourceTimingAPI"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableResourceTimingAPI();
   }
 
   bool enableSwiftUIBasedFilters() override {
@@ -540,6 +567,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
   }
 
+  bool fuseboxAssertSingleHostState() override {
+    auto value = values_["fuseboxAssertSingleHostState"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fuseboxAssertSingleHostState();
+  }
+
   bool fuseboxEnabledRelease() override {
     auto value = values_["fuseboxEnabledRelease"];
     if (!value.isNull()) {
@@ -619,6 +655,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::shouldPressibilityUseW3CPointerEventsForHover();
+  }
+
+  bool shouldSetEnabledBasedOnAccessibilityState() override {
+    auto value = values_["shouldSetEnabledBasedOnAccessibilityState"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldSetEnabledBasedOnAccessibilityState();
   }
 
   bool shouldTriggerResponderTransferOnScrollAndroid() override {

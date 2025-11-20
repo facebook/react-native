@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b72070ee07df0d084009668488efb889>>
+ * @generated SignedSource<<5b6fe2be27173e01396fb45f219cf8b8>>
  */
 
 /**
@@ -38,10 +38,12 @@ class ReactNativeFeatureFlagsAccessor {
   bool cxxNativeAnimatedRemoveJsSync();
   bool disableEarlyViewCommandExecution();
   bool disableFabricCommitInCXXAnimated();
+  bool disableImageViewPreallocationAndroid();
   bool disableMountItemReorderingAndroid();
   bool disableOldAndroidAttachmentMetricsWorkarounds();
   bool disableSubviewClippingAndroid();
   bool disableTextLayoutManagerCacheAndroid();
+  bool disableViewPreallocationAndroid();
   bool enableAccessibilityOrder();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
   bool enableAndroidLinearText();
@@ -53,12 +55,14 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableDoubleMeasurementFixAndroid();
   bool enableEagerMainQueueModulesOnIOS();
   bool enableEagerRootViewAttachment();
+  bool enableExclusivePropsUpdateAndroid();
   bool enableFabricLogs();
   bool enableFabricRenderer();
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
+  bool enableImagePrefetchingJNIBatchingAndroid();
   bool enableImagePrefetchingOnUiThreadAndroid();
   bool enableImmediateUpdateModeForContentOffsetChanges();
   bool enableImperativeFocus();
@@ -72,7 +76,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableNetworkEventReporting();
   bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
-  bool enableResourceTimingAPI();
   bool enableSwiftUIBasedFilters();
   bool enableViewCulling();
   bool enableViewRecycling();
@@ -87,6 +90,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableVirtualViewWindowFocusDetection();
   bool enableWebPerformanceAPIsByDefault();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  bool fuseboxAssertSingleHostState();
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
   bool hideOffscreenVirtualViewsOnIOS();
@@ -96,6 +100,7 @@ class ReactNativeFeatureFlagsAccessor {
   double preparedTextCacheSize();
   bool preventShadowTreeCommitExhaustion();
   bool shouldPressibilityUseW3CPointerEventsForHover();
+  bool shouldSetEnabledBasedOnAccessibilityState();
   bool shouldTriggerResponderTransferOnScrollAndroid();
   bool skipActivityIdentityAssertionOnHostPause();
   bool traceTurboModulePromiseRejectionsOnAndroid();
@@ -125,7 +130,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 82> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 87> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -133,10 +138,12 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> cxxNativeAnimatedRemoveJsSync_;
   std::atomic<std::optional<bool>> disableEarlyViewCommandExecution_;
   std::atomic<std::optional<bool>> disableFabricCommitInCXXAnimated_;
+  std::atomic<std::optional<bool>> disableImageViewPreallocationAndroid_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> disableOldAndroidAttachmentMetricsWorkarounds_;
   std::atomic<std::optional<bool>> disableSubviewClippingAndroid_;
   std::atomic<std::optional<bool>> disableTextLayoutManagerCacheAndroid_;
+  std::atomic<std::optional<bool>> disableViewPreallocationAndroid_;
   std::atomic<std::optional<bool>> enableAccessibilityOrder_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
   std::atomic<std::optional<bool>> enableAndroidLinearText_;
@@ -148,12 +155,14 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableDoubleMeasurementFixAndroid_;
   std::atomic<std::optional<bool>> enableEagerMainQueueModulesOnIOS_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
+  std::atomic<std::optional<bool>> enableExclusivePropsUpdateAndroid_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
+  std::atomic<std::optional<bool>> enableImagePrefetchingJNIBatchingAndroid_;
   std::atomic<std::optional<bool>> enableImagePrefetchingOnUiThreadAndroid_;
   std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
   std::atomic<std::optional<bool>> enableImperativeFocus_;
@@ -167,7 +176,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;
   std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
-  std::atomic<std::optional<bool>> enableResourceTimingAPI_;
   std::atomic<std::optional<bool>> enableSwiftUIBasedFilters_;
   std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
@@ -182,6 +190,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableVirtualViewWindowFocusDetection_;
   std::atomic<std::optional<bool>> enableWebPerformanceAPIsByDefault_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
+  std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
@@ -191,6 +200,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustion_;
   std::atomic<std::optional<bool>> shouldPressibilityUseW3CPointerEventsForHover_;
+  std::atomic<std::optional<bool>> shouldSetEnabledBasedOnAccessibilityState_;
   std::atomic<std::optional<bool>> shouldTriggerResponderTransferOnScrollAndroid_;
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;

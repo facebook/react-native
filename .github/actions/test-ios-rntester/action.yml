@@ -1,9 +1,6 @@
 name: test-ios-rntester
 description: Test iOS RNTester
 inputs:
-  use-frameworks:
-    description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
-    default: StaticLibraries
   ruby-version:
     description: The version of ruby that must be used
     default: 2.6.10
@@ -15,6 +12,10 @@ inputs:
     default: Debug
   run-e2e-tests:
     description: Whether we want to run E2E tests or not
+    required: false
+    default: false
+  use-frameworks:
+    description: Whether we have to build with Dynamic Frameworks. If this is set to true, it builds from source
     required: false
     default: false
 
@@ -43,29 +44,34 @@ runs:
       if: ${{ inputs.run-unit-tests == 'true' }}
       uses: ./.github/actions/prepare-ios-tests
     - name: Download ReactNativeDependencies
+      if: ${{ inputs.use-frameworks == 'false' }}
       uses: actions/download-artifact@v4
       with:
         name: ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz
         path: /tmp/third-party/
     - name: Print third-party folder
+      if: ${{ inputs.use-frameworks == 'false' }}
       shell: bash
       run: ls -lR /tmp/third-party
     - name: Download React Native Prebuilds
+      if: ${{ inputs.use-frameworks == 'false' }}
       uses: actions/download-artifact@v4
       with:
         name: ReactCore${{ inputs.flavor }}.xcframework.tar.gz
         path: /tmp/ReactCore
     - name: Print ReactCore folder
+      if: ${{ inputs.use-frameworks == 'false' }}
       shell: bash
       run: ls -lR /tmp/ReactCore
     - name: Install CocoaPods dependencies
       shell: bash
       run: |
-        export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
-        export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ inputs.flavor }}.xcframework.tar.gz"
-
-        if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
+        if [[ ${{ inputs.use-frameworks }} == "true" ]]; then
           export USE_FRAMEWORKS=dynamic
+        else
+          # If use-frameworks is false, let's use prebuilds
+          export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
+          export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ inputs.flavor }}.xcframework.tar.gz"
         fi
 
         cd packages/rn-tester
@@ -108,7 +114,7 @@ runs:
         name: xcresults
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
     - name: Upload RNTester App
-      if: ${{ inputs.use-frameworks == 'StaticLibraries' && inputs.ruby-version == '2.6.10' }} # This is needed to avoid conflicts with the artifacts
+      if: ${{ inputs.use-frameworks == 'false' && inputs.ruby-version == '2.6.10' }} # This is needed to avoid conflicts with the artifacts
       uses: actions/upload-artifact@v4.3.4
       with:
         name: RNTesterApp-NewArch-${{ inputs.flavor }}

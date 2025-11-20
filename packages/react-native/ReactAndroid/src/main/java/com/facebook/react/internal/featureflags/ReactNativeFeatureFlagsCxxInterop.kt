@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fbc551ca005a7d8abcd2cf2e5d29a3a6>>
+ * @generated SignedSource<<f57b2ecf22eabb7f207b86c472059084>>
  */
 
 /**
@@ -40,6 +40,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun disableFabricCommitInCXXAnimated(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun disableImageViewPreallocationAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun disableMountItemReorderingAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean
@@ -47,6 +49,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun disableSubviewClippingAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableTextLayoutManagerCacheAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun disableViewPreallocationAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAccessibilityOrder(): Boolean
 
@@ -70,6 +74,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableEagerRootViewAttachment(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableExclusivePropsUpdateAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFabricRenderer(): Boolean
@@ -81,6 +87,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
 
@@ -107,8 +115,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enablePropsUpdateReconciliationAndroid(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableResourceTimingAPI(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableSwiftUIBasedFilters(): Boolean
 
@@ -138,6 +144,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun fuseboxAssertSingleHostState(): Boolean
+
   @DoNotStrip @JvmStatic public external fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fuseboxNetworkInspectionEnabled(): Boolean
@@ -155,6 +163,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun preventShadowTreeCommitExhaustion(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun shouldSetEnabledBasedOnAccessibilityState(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 

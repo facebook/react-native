@@ -647,6 +647,10 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["removeClippedSubviews"] = removeClippedSubviews;
   }
 
+  if (collapsableChildren != oldProps->collapsableChildren) {
+    result["collapsableChildren"] = collapsableChildren;
+  }
+
   if (onLayout != oldProps->onLayout) {
     result["onLayout"] = onLayout;
   }

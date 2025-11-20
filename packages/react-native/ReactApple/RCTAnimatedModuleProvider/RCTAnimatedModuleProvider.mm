@@ -24,11 +24,33 @@
   CADisplayLink *_displayLink;
 #endif
   std::function<void()> _onRender;
+
+  std::weak_ptr<facebook::react::NativeAnimatedNodesManagerProvider> _nativeAnimatedNodesManagerProvider;
+}
+
+- (void)dealloc
+{
+  if (_displayLink != nil) {
+#if TARGET_OS_OSX
+    RCTPlatformDisplayLink *displayLink = _displayLink;
+#else
+    CADisplayLink *displayLink = _displayLink;
+#endif
+    _displayLink = nil;
+    if ([NSThread isMainThread]) {
+      [displayLink invalidate];
+    } else {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        [displayLink invalidate];
+      });
+    }
+    _onRender = nullptr;
+  }
 }
 
 - (void)_onDisplayLinkTick
 {
-  if (_displayLink != nullptr && _onRender != nullptr) {
+  if (_nativeAnimatedNodesManagerProvider.lock() != nullptr && _displayLink != nullptr && _onRender != nullptr) {
     _onRender();
   }
 }
@@ -69,11 +91,16 @@
             const auto stop_render = [weakSelf]() {
               RCTAnimatedModuleProvider *strongSelf = weakSelf;
               if (strongSelf) {
-                if (strongSelf->_displayLink != nil) {
-                  [strongSelf->_displayLink invalidate];
-                  strongSelf->_displayLink = nil;
-                  strongSelf->_onRender = nullptr;
+#if TARGET_OS_OSX
+                RCTPlatformDisplayLink *displayLink = strongSelf->_displayLink;
+#else
+                CADisplayLink *displayLink = strongSelf->_displayLink;
+#endif
+                strongSelf->_displayLink = nil;
+                if (displayLink != nil) {
+                  [displayLink invalidate];
                 }
+                strongSelf->_onRender = nullptr;
               }
             };
 
@@ -85,6 +112,7 @@
               stop_render();
             }
           });
+      _nativeAnimatedNodesManagerProvider = provider;
       return std::make_shared<facebook::react::AnimatedModule>(std::move(jsInvoker), std::move(provider));
     }
   }

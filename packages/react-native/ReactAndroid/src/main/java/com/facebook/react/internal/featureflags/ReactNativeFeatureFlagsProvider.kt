@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eeb5d70e45eecdef0d9307cbe8ff17c2>>
+ * @generated SignedSource<<da5879ddbaea7cd51f828e284bc0e913>>
  */
 
 /**
@@ -35,6 +35,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun disableFabricCommitInCXXAnimated(): Boolean
 
+  @DoNotStrip public fun disableImageViewPreallocationAndroid(): Boolean
+
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
   @DoNotStrip public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean
@@ -42,6 +44,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun disableSubviewClippingAndroid(): Boolean
 
   @DoNotStrip public fun disableTextLayoutManagerCacheAndroid(): Boolean
+
+  @DoNotStrip public fun disableViewPreallocationAndroid(): Boolean
 
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
@@ -65,6 +69,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
+  @DoNotStrip public fun enableExclusivePropsUpdateAndroid(): Boolean
+
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
@@ -76,6 +82,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip public fun enableImagePrefetchingJNIBatchingAndroid(): Boolean
 
   @DoNotStrip public fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
 
@@ -102,8 +110,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
-
-  @DoNotStrip public fun enableResourceTimingAPI(): Boolean
 
   @DoNotStrip public fun enableSwiftUIBasedFilters(): Boolean
 
@@ -133,6 +139,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
+  @DoNotStrip public fun fuseboxAssertSingleHostState(): Boolean
+
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
@@ -150,6 +158,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun preventShadowTreeCommitExhaustion(): Boolean
 
   @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
+
+  @DoNotStrip public fun shouldSetEnabledBasedOnAccessibilityState(): Boolean
 
   @DoNotStrip public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 

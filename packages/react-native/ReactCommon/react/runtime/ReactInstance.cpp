@@ -18,10 +18,10 @@
 #include <jsi/hermes.h>
 #include <jsi/instrumentation.h>
 #include <jsinspector-modern/HostTarget.h>
-#include <jsireact/JSIExecutor.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/runtime/JSRuntimeBindings.h>
 #include <react/timing/primitives.h>
 #include <react/utils/jsi-utils.h>
 #include <iostream>
@@ -46,6 +46,12 @@ std::shared_ptr<RuntimeScheduler> createRuntimeScheduler(
       PerformanceEntryReporter::getInstance().get());
 
   return scheduler;
+}
+
+std::string getSyntheticBundlePath(uint32_t bundleId) {
+  std::array<char, 32> buffer{};
+  std::snprintf(buffer.data(), buffer.size(), "seg-%u.js", bundleId);
+  return buffer.data();
 }
 
 } // namespace
@@ -365,12 +371,8 @@ void ReactInstance::registerSegment(
     }
     LOG(WARNING) << "Starting to evaluate segment " << segmentId
                  << " in ReactInstance::registerSegment";
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     runtime.evaluateJavaScript(
-        std::move(script),
-        JSExecutor::getSyntheticBundlePath(segmentId, segmentPath));
-#pragma clang diagnostic pop
+        std::move(script), getSyntheticBundlePath(segmentId));
     LOG(WARNING) << "Finished evaluating segment " << segmentId
                  << " in ReactInstance::registerSegment";
     if (hasLogger) {

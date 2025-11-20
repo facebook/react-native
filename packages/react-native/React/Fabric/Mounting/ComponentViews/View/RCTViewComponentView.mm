@@ -623,6 +623,26 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     self.layer.opacity = (float)props.opacity;
   }
 
+  // Clean up box shadow layers to prevent cross-component contamination
+  if (_boxShadowLayers != nullptr) {
+    for (CALayer *boxShadowLayer = nullptr in _boxShadowLayers) {
+      [boxShadowLayer removeFromSuperlayer];
+    }
+    [_boxShadowLayers removeAllObjects];
+    _boxShadowLayers = nil;
+  }
+
+  // Clean up other visual layers
+  [_backgroundColorLayer removeFromSuperlayer];
+  _backgroundColorLayer = nil;
+  [_borderLayer removeFromSuperlayer];
+  _borderLayer = nil;
+  [_outlineLayer removeFromSuperlayer];
+  _outlineLayer = nil;
+  [_filterLayer removeFromSuperlayer];
+  _filterLayer = nil;
+  [self clearExistingBackgroundImageLayers];
+
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
   _isJSResponder = NO;

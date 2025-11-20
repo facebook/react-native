@@ -58,6 +58,22 @@ jobs:
           ruby-version: "3.2.0"
           flavor: Debug
 
+  test_ios_rntester_dynamic_frameworks:
+    runs-on: macos-15-large
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [Debug, Release]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run it
+        uses: ./.github/actions/test-ios-rntester
+        with:
+          flavor: Debug
+          use-frameworks: true
+
+
   test_ios_rntester:
     runs-on: macos-15-large
     needs:
@@ -67,7 +83,7 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [Debug, Release]
-        frameworks: [StaticLibraries, DynamicFrameworks]
+        frameworks: [false, true]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -441,7 +457,7 @@ jobs:
     strategy:
       matrix:
         flavor: [Debug, Release]
-        use_frameworks: [StaticLibraries, DynamicFrameworks]
+        use_frameworks: [false, true]
         exclude:
           # This config is tested with Ruby 3.2.0. Let's not double test it.
           - flavor: Debug

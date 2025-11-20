@@ -31,6 +31,7 @@ export default class StateSafePureComponent<
     this._installSetStateHooks();
   }
 
+  // $FlowFixMe[incompatible-type]
   setState<K: $Keys<State>>(
     partialState: ?(Pick<State, K> | ((State, Props) => ?Pick<State, K>)),
     callback?: () => mixed,

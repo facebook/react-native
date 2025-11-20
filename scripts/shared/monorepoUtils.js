@@ -8,7 +8,7 @@
  * @format
  */
 
-const {REPO_ROOT} = require('./consts');
+const {REACT_NATIVE_PACKAGE_DIR, REPO_ROOT} = require('./consts');
 const {promises: fs} = require('fs');
 const glob = require('glob');
 const path = require('path');
@@ -27,8 +27,15 @@ export type PackageJson = {
 };
 
 type PackagesFilter = $ReadOnly<{
+  // Include the main react-native package
   includeReactNative: boolean,
+
+  // Include packages marked with `private: true`
   includePrivate?: boolean,
+
+  // Force include the rn-tester package. Special case of a private package
+  // that we version and depend on in fbsource.
+  forceIncludeRNTester?: boolean,
 }>;
 
 export type PackageInfo = {
@@ -37,6 +44,9 @@ export type PackageInfo = {
 
   // The absolute path to the package
   path: string,
+
+  // The package version
+  version: string,
 
   // The parsed package.json contents
   packageJson: PackageJson,
@@ -48,13 +58,17 @@ export type ProjectInfo = {
 */
 
 /**
- * Locates monrepo packages and returns a mapping of package names to their
- * metadata. Considers Yarn workspaces under `packages/`.
+ * Locates monorepo packages and returns a mapping of package names to their
+ * metadata. Considers Yarn workspaces under `packages/` and `private/`.
  */
 async function getPackages(
   filter /*: PackagesFilter */,
 ) /*: Promise<ProjectInfo> */ {
-  const {includeReactNative, includePrivate = false} = filter;
+  const {
+    includeReactNative,
+    includePrivate = false,
+    forceIncludeRNTester = false,
+  } = filter;
 
   const packagesEntries = await Promise.all(
     glob
@@ -69,9 +83,12 @@ async function getPackages(
   );
 
   return Object.fromEntries(
-    packagesEntries.filter(
-      ([_, {packageJson}]) => packageJson.private !== true || includePrivate,
-    ),
+    packagesEntries.filter(([_, {name, packageJson}]) => {
+      if (name === '@react-native/tester') {
+        return forceIncludeRNTester;
+      }
+      return packageJson.private !== true || includePrivate;
+    }),
   );
 }
 
@@ -83,6 +100,16 @@ async function getWorkspaceRoot() /*: Promise<PackageInfo> */ {
     path.join(REPO_ROOT, 'package.json'),
   );
 
+  return packageInfo;
+}
+
+/**
+ * Get the parsed package metadata for the main react-native package.
+ */
+async function getReactNativePackage() /*: Promise<PackageInfo> */ {
+  const [, packageInfo] = await parsePackageInfo(
+    path.join(REACT_NATIVE_PACKAGE_DIR, 'package.json'),
+  );
   return packageInfo;
 }
 
@@ -99,6 +126,7 @@ async function parsePackageInfo(
     {
       name: packageJson.name,
       path: packagePath,
+      version: packageJson.version,
       packageJson,
     },
   ];
@@ -154,4 +182,5 @@ module.exports = {
   getPackages,
   getWorkspaceRoot,
   updatePackageJson,
+  getReactNativePackage,
 };

@@ -13,7 +13,6 @@
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
 #include <jsinspector-modern/ReactCdp.h>
-#include <jsireact/JSIExecutor.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/runtime/BufferedRuntimeExecutor.h>
 #include <react/runtime/JSRuntimeFactory.h>

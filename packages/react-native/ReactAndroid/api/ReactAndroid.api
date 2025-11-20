@@ -680,19 +680,6 @@ public final class com/facebook/react/bridge/CxxCallbackImpl : com/facebook/jni/
 	public fun invoke ([Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/bridge/CxxModuleWrapper : com/facebook/react/bridge/CxxModuleWrapperBase {
-	protected fun <init> (Lcom/facebook/jni/HybridData;)V
-}
-
-public class com/facebook/react/bridge/CxxModuleWrapperBase : com/facebook/react/bridge/NativeModule {
-	protected fun <init> (Lcom/facebook/jni/HybridData;)V
-	public fun canOverrideExistingModule ()Z
-	public fun getName ()Ljava/lang/String;
-	public fun initialize ()V
-	public fun invalidate ()V
-	protected final fun resetModule (Lcom/facebook/jni/HybridData;)V
-}
-
 public final class com/facebook/react/bridge/DefaultJSExceptionHandler : com/facebook/react/bridge/JSExceptionHandler {
 	public fun <init> ()V
 	public fun handleException (Ljava/lang/Exception;)V
@@ -3199,6 +3186,7 @@ public final class com/facebook/react/soloader/OpenSourceMergedSoMapping : com/f
 	public final fun libreact_devsupportjni_so ()I
 	public final fun libreact_featureflagsjni_so ()I
 	public final fun libreact_newarchdefaults_so ()I
+	public final fun libreact_performancetracerjni_so ()I
 	public final fun libreactnative_so ()I
 	public final fun libreactnativeblob_so ()I
 	public final fun libreactnativejni_common_so ()I

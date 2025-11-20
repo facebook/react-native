@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0d898a94decb43e191a343676c8afb91>>
+ * @generated SignedSource<<38054c031fa946345d83e7a7220edd33>>
  */
 
 /**
@@ -48,6 +48,8 @@ class NativeReactNativeFeatureFlags
 
   bool disableFabricCommitInCXXAnimated(jsi::Runtime& runtime);
 
+  bool disableImageViewPreallocationAndroid(jsi::Runtime& runtime);
+
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool disableOldAndroidAttachmentMetricsWorkarounds(jsi::Runtime& runtime);
@@ -55,6 +57,8 @@ class NativeReactNativeFeatureFlags
   bool disableSubviewClippingAndroid(jsi::Runtime& runtime);
 
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
+
+  bool disableViewPreallocationAndroid(jsi::Runtime& runtime);
 
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
@@ -78,6 +82,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
+  bool enableExclusivePropsUpdateAndroid(jsi::Runtime& runtime);
+
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
@@ -89,6 +95,8 @@ class NativeReactNativeFeatureFlags
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
+
+  bool enableImagePrefetchingJNIBatchingAndroid(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
 
@@ -115,8 +123,6 @@ class NativeReactNativeFeatureFlags
   bool enablePreparedTextLayout(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
-
-  bool enableResourceTimingAPI(jsi::Runtime& runtime);
 
   bool enableSwiftUIBasedFilters(jsi::Runtime& runtime);
 
@@ -146,6 +152,8 @@ class NativeReactNativeFeatureFlags
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
+  bool fuseboxAssertSingleHostState(jsi::Runtime& runtime);
+
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
@@ -163,6 +171,8 @@ class NativeReactNativeFeatureFlags
   bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
+
+  bool shouldSetEnabledBasedOnAccessibilityState(jsi::Runtime& runtime);
 
   bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 

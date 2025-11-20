@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b8a5ad9a3353ea32a39bd139e9174f7>>
+ * @generated SignedSource<<47b33d1a21af24f369e52d3b8f226d73>>
  */
 
 /**
@@ -35,6 +35,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableFabricCommitInCXXAnimated(): Boolean = false
 
+  override fun disableImageViewPreallocationAndroid(): Boolean = false
+
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
   override fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean = true
@@ -42,6 +44,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun disableSubviewClippingAndroid(): Boolean = false
 
   override fun disableTextLayoutManagerCacheAndroid(): Boolean = false
+
+  override fun disableViewPreallocationAndroid(): Boolean = false
 
   override fun enableAccessibilityOrder(): Boolean = false
 
@@ -65,6 +69,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableEagerRootViewAttachment(): Boolean = false
 
+  override fun enableExclusivePropsUpdateAndroid(): Boolean = false
+
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
@@ -76,6 +82,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
+
+  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = false
 
   override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
 
@@ -102,8 +110,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
-
-  override fun enableResourceTimingAPI(): Boolean = false
 
   override fun enableSwiftUIBasedFilters(): Boolean = false
 
@@ -133,6 +139,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
+  override fun fuseboxAssertSingleHostState(): Boolean = true
+
   override fun fuseboxEnabledRelease(): Boolean = false
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
@@ -150,6 +158,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun preventShadowTreeCommitExhaustion(): Boolean = false
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
+
+  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = false
 
   override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 

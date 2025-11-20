@@ -30,7 +30,9 @@ Pod::Spec.new do |s|
   s.header_dir             = "jsireact"
 
   s.dependency "React-cxxreact"
+  s.dependency "React-jserrorhandler"
   s.dependency "React-jsi"
+  s.dependency "React-jsitooling"
   s.dependency "React-perflogger"
   add_dependency(s, "React-debug")
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
@@ -38,6 +40,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   if use_hermes()
     s.dependency 'hermes-engine'
   end

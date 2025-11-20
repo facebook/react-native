@@ -49,6 +49,17 @@ TracingAgent::~TracingAgent() {
 
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
+    auto& inspector = getInspectorInstance();
+    if (inspector.getSystemState().registeredPagesCount > 1) {
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "The Tracing domain is unavailable when multiple React Native hosts are registered."));
+
+      return true;
+    }
+
     if (sessionState_.isDebuggerDomainEnabled) {
       frontendChannel_(
           cdp::jsonError(
@@ -59,8 +70,25 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
       return true;
     }
 
-    bool didNotHaveAlreadyRunningRecording =
-        hostTargetController_.startTracing(tracing::Mode::CDP);
+    /**
+     * This logic has to be updated with the next upgrade of Chrome
+     * DevTools Frotnend fork.
+     *
+     * At the moment of writing this, our fork uses categories field, which is
+     * marked as depreacted in CDP spec.
+     *
+     * Latest versions of Chrome DevTools in stable channel of Chromium are
+     * already using traceConfig field.
+     */
+    std::set<tracing::Category> enabledCategories;
+    if (req.params.isObject() && req.params.count("categories") != 0 &&
+        req.params["categories"].isString()) {
+      enabledCategories = tracing::parseSerializedTracingCategories(
+          req.params["categories"].getString());
+    }
+
+    bool didNotHaveAlreadyRunningRecording = hostTargetController_.startTracing(
+        tracing::Mode::CDP, std::move(enabledCategories));
     if (!didNotHaveAlreadyRunningRecording) {
       frontendChannel_(
           cdp::jsonError(

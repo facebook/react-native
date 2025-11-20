@@ -271,9 +271,10 @@ class ReactNativeCoreUtils
         return if dsym_bundles.empty?
 
         # Define source path mappings - from absolute build paths to relative framework paths
+        # Expand the path relative to the installation root (project root, parent of ios/)
+        react_native_absolute_path = File.expand_path(@@react_native_path, Pod::Config.instance.installation_root)
         mappings = [
-            # Make sure to make react_native_path absolute
-            ["/Users/runner/work/react-native/react-native/packages/react-native", "#{File.expand_path(@@react_native_path)}"],
+            ["/Users/runner/work/react-native/react-native/packages/react-native", react_native_absolute_path],
         ]
 
         dsym_bundles.each do |dsym_path| begin
