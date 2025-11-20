@@ -78,7 +78,7 @@ using namespace facebook::react;
   BOOL supportsMultipleScenes = sceneManifest ? [sceneManifest[@"UIApplicationSupportsMultipleScenes"] boolValue] : false;
 
   if (supportsMultipleScenes) {
-    NSLog(@"RCTReactNativeFactory: (WARNING - UNSUPPORTED RN APP CONFIGURATION) Your application is running with the Info.plist UIApplicationSceneManifest.UIApplicationSupportsMultipleScenes key set to true, which is NOT supported by React Native at the moment. Allowing the user to run multiple windows of a RN application means allowing to run multiple instances of it (and React Native) in the same process, which may cause ALL SORTS OF PROBLEMS in implementations which use singletons or static storage lifetime variables.");
+    RCTLogWarn(@"RCTReactNativeFactory: (WARNING - UNSUPPORTED RN APP CONFIGURATION) Your application is running with the Info.plist UIApplicationSceneManifest.UIApplicationSupportsMultipleScenes key set to true, which is NOT supported by React Native at the moment. Allowing the user to run multiple windows of a RN application means allowing to run multiple instances of it (and React Native) in the same process, which may cause ALL SORTS OF PROBLEMS in implementations which use singletons or static storage lifetime variables.");
   }
 
   return self;
