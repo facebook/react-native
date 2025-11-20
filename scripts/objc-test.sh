@@ -93,18 +93,6 @@ buildForTesting() {
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS"
 }
 
-runTestsOnly() {
-  # shellcheck disable=SC1091
-  source "$ROOT/scripts/.tests.env"
-  echo "[Testing] Running tests on $IOS_DEVICE for OS $IOS_TARGET_OS"
-  xcodebuild test \
-    -workspace RNTesterPods.xcworkspace \
-    -scheme RNTester \
-    -sdk iphonesimulator \
-    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
-      "${SKIPPED_TESTS[@]}"
-}
-
 buildProject() {
   xcodebuild build \
     -workspace RNTesterPods.xcworkspace \
