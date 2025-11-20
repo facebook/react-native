@@ -53,7 +53,6 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   BOOL _useCustomContainerView;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
   RCTSwiftUIContainerViewWrapper *_swiftUIWrapper;
-  NSDictionary<NSString *, NSString *> *_accessibilityActionsLabelMap;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -1496,7 +1495,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     return nil;
   }
 
-  NSMutableDictionary<NSString *, NSString *> *labelMap = [NSMutableDictionary new];
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
   for (const auto &accessibilityAction : accessibilityActions) {
     NSString *actionName = RCTNSStringFromString(accessibilityAction.name);
@@ -1504,7 +1502,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
     if (accessibilityAction.label.has_value()) {
       actionLabel = RCTNSStringFromString(accessibilityAction.label.value());
-      labelMap[actionLabel] = actionName;
     }
 
     [customActions
@@ -1513,7 +1510,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
                                                            selector:@selector(didActivateAccessibilityCustomAction:)]];
   }
 
-  _accessibilityActionsLabelMap = [labelMap copy];
   return [customActions copy];
 }
 
@@ -1564,11 +1560,15 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
-    // iOS defines the name as the localized label, so use our map to convert this back to the non-localized action name
-    // when passing to JS. This allows for standard action names across platforms.
+    // iOS defines the name as the localized label, so iterate through accessibilityActions to find the matching
+    // non-localized action name when passing to JS. This allows for standard action names across platforms.
     NSString *actionName = action.name;
-    if (_accessibilityActionsLabelMap && _accessibilityActionsLabelMap[action.name]) {
-      actionName = _accessibilityActionsLabelMap[action.name];
+    for (const auto &accessibilityAction : _props->accessibilityActions) {
+      if (accessibilityAction.label.has_value() &&
+          [RCTNSStringFromString(accessibilityAction.label.value()) isEqualToString:action.name]) {
+        actionName = RCTNSStringFromString(accessibilityAction.name);
+        break;
+      }
     }
     _eventEmitter->onAccessibilityAction(RCTStringFromNSString(actionName));
     return YES;
