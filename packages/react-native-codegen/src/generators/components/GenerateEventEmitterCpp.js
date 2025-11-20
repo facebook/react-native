@@ -207,7 +207,7 @@ function handleArrayElementType(
         loopLocalVariable,
         val => `jsi::valueFromDynamic(runtime, ${val})`,
       );
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'UnionTypeAnnotation':
       return setValueAtIndex(
         propertyName,
         indexVariable,
@@ -320,7 +320,7 @@ function generateSetters(
             usingEvent,
             prop => `jsi::valueFromDynamic(runtime, ${prop})`,
           );
-        case 'StringLiteralUnionTypeAnnotation':
+        case 'UnionTypeAnnotation':
           return generateSetter(
             parentPropertyName,
             eventProperty.name,
