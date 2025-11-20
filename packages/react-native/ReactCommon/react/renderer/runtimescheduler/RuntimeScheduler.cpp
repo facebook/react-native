@@ -9,8 +9,8 @@
 #include "RuntimeScheduler_Legacy.h"
 #include "RuntimeScheduler_Modern.h"
 
-#include <cxxreact/ErrorUtils.h>
 #include <cxxreact/TraceSection.h>
+#include <jserrorhandler/ErrorUtils.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <utility>
 

@@ -179,7 +179,7 @@ def use_react_native! (
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-oscompat', :path => "#{prefix}/ReactCommon/oscompat"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
-  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
+  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/React-Turbomodule.podspec", :modular_headers => true
   pod 'React-NativeModulesApple', :path => "#{prefix}/ReactCommon/react/nativemodule/core/platform/ios", :modular_headers => true
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
   setup_fabric!(:react_native_path => prefix)

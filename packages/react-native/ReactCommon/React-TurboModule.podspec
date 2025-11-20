@@ -41,32 +41,24 @@ Pod::Spec.new do |s|
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
   # Note: Update this only when ready to minimize breaking changes.
   s.subspec "turbomodule" do |ss|
-    ss.dependency "React-callinvoker", version
-    ss.dependency "React-perflogger", version
-    ss.dependency "React-cxxreact", version
-    ss.dependency "React-jsi", version
-    ss.dependency "React-logger", version
-    if use_hermes()
-      ss.dependency "hermes-engine"
-    end
+    ss.subspec "core" do |sss|
+      sss.source_files = podspec_sources("react/nativemodule/core/ReactCommon/**/*.{cpp,h}", "react/nativemodule/core/ReactCommon/**/*.h")
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_featureflags.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers\"" }
 
-    ss.subspec "bridging" do |sss|
-      sss.dependency           "React-jsi", version
-      sss.source_files         = podspec_sources("react/bridging/**/*.{cpp,h}", "react/bridging/**/*.h")
-      sss.exclude_files        = "react/bridging/tests"
-      sss.header_dir           = "react/bridging"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+      sss.dependency "React-cxxreact", version
+      sss.dependency "React-debug", version
+      sss.dependency "React-featureflags", version
+      sss.dependency "React-logger", version
+      sss.dependency "React-jsi", version
+      sss.dependency "React-utils", version
       if use_hermes()
         sss.dependency "hermes-engine"
       end
     end
 
-    ss.subspec "core" do |sss|
-      sss.source_files = podspec_sources("react/nativemodule/core/ReactCommon/**/*.{cpp,h}", "react/nativemodule/core/ReactCommon/**/*.h")
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_featureflags.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers\"" }
-      sss.dependency "React-debug", version
-      sss.dependency "React-featureflags", version
-      sss.dependency "React-utils", version
+    # Provided for backwards compat, use React-Bridging instead
+    ss.subspec "bridging" do |sss|
+      sss.dependency "React-Bridging", version
     end
   end
 end
