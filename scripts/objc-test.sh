@@ -72,7 +72,7 @@ waitForWebSocketServer() {
 runTests() {
   # shellcheck disable=SC1091
   source "$ROOT/scripts/.tests.env"
-  xcodebuild build test \
+  xcodebuild test \
     -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
