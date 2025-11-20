@@ -78,6 +78,7 @@ runTests() {
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
     -derivedDataPath "/tmp/RNTesterBuild" \
+    -resultBundlePath "/tmp/RNTesterTestResults" \
       "${SKIPPED_TESTS[@]}"
 }
 
