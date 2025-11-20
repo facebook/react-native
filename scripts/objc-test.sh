@@ -85,7 +85,8 @@ runTests() {
 buildForTesting() {
   # shellcheck disable=SC1091
   source "$ROOT/scripts/.tests.env"
-
+  bundle install
+  bundle exec pod install
   xcodebuild build-for-testing \
     -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
