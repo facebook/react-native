@@ -325,9 +325,26 @@ RCT_EXPORT_METHOD(
     announceForAccessibilityWithOptions : (NSString *)announcement options : (
         JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions &)options)
 {
-  NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, id> *attrsDictionary = [NSMutableDictionary new];
   if (options.queue()) {
     attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] = @(*(options.queue()) ? YES : NO);
+  }
+
+  if (options.priority() != nil) {
+    NSString *priorityString = options.priority();
+    if (@available(iOS 17.0, *)) {
+      NSString *priorityValue = nil;
+      if ([priorityString isEqualToString:@"low"]) {
+        priorityValue = UIAccessibilityPriorityLow;
+      } else if ([priorityString isEqualToString:@"default"]) {
+        priorityValue = UIAccessibilityPriorityDefault;
+      } else if ([priorityString isEqualToString:@"high"]) {
+        priorityValue = UIAccessibilityPriorityHigh;
+      }
+      if (priorityValue != nil) {
+        attrsDictionary[UIAccessibilitySpeechAttributeAnnouncementPriority] = priorityValue;
+      }
+    }
   }
 
   if (attrsDictionary.count > 0) {
