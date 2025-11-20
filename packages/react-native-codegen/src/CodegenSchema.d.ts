@@ -53,6 +53,11 @@ export interface ObjectTypeAnnotation<T> {
   readonly baseTypes?: readonly string[] | undefined;
 }
 
+export interface UnionTypeAnnotation<T> {
+  readonly type: 'UnionTypeAnnotation';
+  readonly types: readonly T[];
+}
+
 export interface MixedTypeAnnotation {
   readonly type: 'MixedTypeAnnotation';
 }
