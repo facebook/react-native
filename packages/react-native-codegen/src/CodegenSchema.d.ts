@@ -299,7 +299,7 @@ export interface UnsafeAnyTypeAnnotation {
   readonly type: 'AnyTypeAnnotation',
 }
 
-export interface NativeModuleNumberLiteralTypeAnnotation {
+export interface NumberLiteralTypeAnnotation {
   readonly type: 'NumberLiteralTypeAnnotation';
   readonly value: number;
 }
@@ -308,14 +308,14 @@ export interface NativeModuleStringTypeAnnotation {
   readonly type: 'StringTypeAnnotation';
 }
 
-export interface NativeModuleStringLiteralTypeAnnotation {
+export interface StringLiteralTypeAnnotation {
   readonly type: 'StringLiteralTypeAnnotation';
   readonly value: string;
 }
 
 export interface StringLiteralUnionTypeAnnotation {
   readonly type: 'StringLiteralUnionTypeAnnotation';
-  readonly types: NativeModuleStringLiteralTypeAnnotation[];
+  readonly types: StringLiteralTypeAnnotation[];
 }
 
 export interface NativeModuleNumberTypeAnnotation {
@@ -340,7 +340,7 @@ export interface NativeModuleBooleanTypeAnnotation {
 
 export type NativeModuleEnumMember = {
   readonly name: string;
-  readonly value: NativeModuleStringLiteralTypeAnnotation | NativeModuleNumberLiteralTypeAnnotation,
+  readonly value: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation,
 };
 
 export type NativeModuleEnumMemberType =
@@ -398,9 +398,9 @@ export type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleFloatTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleNumberLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
   | NativeModuleStringTypeAnnotation
-  | NativeModuleStringLiteralTypeAnnotation
+  | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
@@ -412,10 +412,10 @@ export type NativeModuleEventEmitterTypeAnnotation =
 
 export type NativeModuleBaseTypeAnnotation =
   NativeModuleStringTypeAnnotation
-  | NativeModuleStringLiteralTypeAnnotation
+  | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleNumberLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleDoubleTypeAnnotation
   | NativeModuleFloatTypeAnnotation
