@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  BooleanLiteralTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   EventTypeAnnotation,
@@ -177,6 +178,16 @@ function emitNumberLiteral(
 ): Nullable<NumberLiteralTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'NumberLiteralTypeAnnotation',
+    value,
+  });
+}
+
+function emitBooleanLiteral(
+  nullable: boolean,
+  value: boolean,
+): Nullable<BooleanLiteralTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'BooleanLiteralTypeAnnotation',
     value,
   });
 }
@@ -764,6 +775,7 @@ function emitUnionProp(
 module.exports = {
   emitArrayType,
   emitBoolean,
+  emitBooleanLiteral,
   emitBoolProp,
   emitDouble,
   emitDoubleProp,
