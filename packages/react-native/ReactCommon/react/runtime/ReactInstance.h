@@ -31,6 +31,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
       JsErrorHandler::OnJsError onJsError,
       jsinspector_modern::HostTarget *parentInspectorTarget = nullptr);
 
+  ~ReactInstance() noexcept;
+
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
 
   RuntimeExecutor getBufferedRuntimeExecutor() noexcept;

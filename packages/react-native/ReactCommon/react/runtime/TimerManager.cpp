@@ -56,6 +56,18 @@ TimerManager::TimerManager(
     std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept
     : platformTimerRegistry_(std::move(platformTimerRegistry)) {}
 
+TimerManager::~TimerManager() noexcept {
+  quit();
+}
+
+void TimerManager::quit() {
+  if (platformTimerRegistry_ == nullptr) {
+    return;
+  }
+  platformTimerRegistry_->quit();
+  platformTimerRegistry_ = nullptr;
+}
+
 void TimerManager::setRuntimeExecutor(
     RuntimeExecutor runtimeExecutor) noexcept {
   runtimeExecutor_ = std::move(runtimeExecutor);
