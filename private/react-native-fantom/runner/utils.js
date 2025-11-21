@@ -9,6 +9,7 @@
  */
 
 import * as EnvironmentOptions from './EnvironmentOptions';
+import {getCoverageFilePath} from './paths';
 import {spawn, spawnSync} from 'child_process';
 import fs from 'fs';
 import os from 'os';
@@ -51,10 +52,14 @@ export function getHermesCompilerTarget(variant: HermesVariant): string {
   }
 }
 
-export function getBuckModesForPlatform(
-  enableRelease: boolean = false,
-): $ReadOnlyArray<string> {
-  let mode = enableRelease ? 'opt' : 'dev';
+export function getBuckModesForPlatform({
+  enableCoverage,
+  enableRelease,
+}: {
+  enableCoverage: boolean,
+  enableRelease: boolean,
+}): $ReadOnlyArray<string> {
+  let mode = enableCoverage ? 'code-coverage' : enableRelease ? 'opt' : 'dev';
 
   if (enableRelease) {
     if (EnvironmentOptions.enableASAN || EnvironmentOptions.enableTSAN) {
@@ -151,6 +156,7 @@ export function runCommand(
       encoding: 'utf8',
       env: {
         ...process.env,
+        LLVM_PROFILE_FILE: getCoverageFilePath(),
         PATH: `/usr/local/bin:/usr/bin:${process.env.PATH ?? ''}`,
       },
     },
@@ -191,6 +197,7 @@ export function runCommandSync(
     encoding: 'utf8',
     env: {
       ...process.env,
+      LLVM_PROFILE_FILE: getCoverageFilePath(),
       PATH: `/usr/local/bin:/usr/bin:${process.env.PATH ?? ''}`,
     },
   });
