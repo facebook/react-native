@@ -878,6 +878,7 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   borderRightWidth?: number,
   borderStartWidth?: number,
   borderTopWidth?: number,
+  color?: ____ColorValue_Internal,
   opacity?: number,
   outlineColor?: ____ColorValue_Internal,
   outlineOffset?: number,
