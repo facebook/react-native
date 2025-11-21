@@ -60,6 +60,75 @@ std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string &mo
 `;
 };
 
+const ReactNativeFlagsTemplate = () => {
+  return `
+# React Native specific compiler flags
+# This CMake file exposes the React Native Flags that all the libraries should use when
+# compiling a module that will end up inside libreactnative.so
+
+SET(reactnative_FLAGS
+        -Wall
+        -Werror
+        -fexceptions
+        -frtti
+        -std=c++20
+        -DFOLLY_NO_CONFIG=1
+        -DLOG_TAG=\"ReactNative\"
+)
+
+# This function can be used to configure the reactnative flags for a specific target in
+# a convenient way. The usage is:
+#
+# target_compile_reactnative_options(target_name scope)
+#
+# scope is either PUBLIC, PRIVATE or INTERFACE
+
+function(target_compile_reactnative_options target_name scope)
+  target_compile_options(\${target_name} \${scope} \${reactnative_FLAGS})
+  # TODO T228344694 improve this so that it works for all platforms
+  if(ANDROID)
+    target_compile_definitions(\${target_name} \${scope} RN_SERIALIZABLE_STATE)
+  endif()
+endfunction()
+`;
+};
+const AdditionalSetupTemplate = () => {
+  return `
+
+SET(reactnative_FLAGS
+        -Wall
+        -Werror
+        -fexceptions
+        -frtti
+        -std=c++20
+        -DFOLLY_NO_CONFIG=1
+        -DLOG_TAG=\"ReactNative\"
+)
+
+SET(folly_FLAGS
+        -DFOLLY_NO_CONFIG=1
+        -DFOLLY_HAVE_CLOCK_GETTIME=1
+        -DFOLLY_USE_LIBCPP=1
+        -DFOLLY_CFG_NO_COROUTINES=1
+        -DFOLLY_MOBILE=1
+        -DFOLLY_HAVE_RECVMMSG=1
+        -DFOLLY_HAVE_PTHREAD=1
+        # Once we target android-23 above, we can comment
+        # the following line. NDK uses GNU style stderror_r() after API 23.
+        -DFOLLY_HAVE_XSI_STRERROR_R=1
+        )
+
+add_compile_options(\${folly_FLAGS})
+
+find_package(fbjni REQUIRED CONFIG)
+find_package(ReactAndroid REQUIRED CONFIG)
+
+add_library(jsi ALIAS ReactAndroid::jsi)
+add_library(reactnative ALIAS ReactAndroid::reactnative)
+add_library(fbjni ALIAS fbjni::fbjni)
+
+`;
+};
 // Note: this CMakeLists.txt template includes dependencies for both NativeModule and components.
 const CMakeListsTemplate = ({
   libraryName,
@@ -73,11 +142,13 @@ const CMakeListsTemplate = ({
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+${targetName !== 'rncore' ? ReactNativeFlagsTemplate() + AdditionalSetupTemplate() : ''}
+
 file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/${libraryName}/*.cpp)
 
 add_library(
   react_codegen_${targetName}
-  SHARED
+  ${targetName !== 'rncore' ? 'SHARED' : 'OBJECT'}
   \${react_codegen_SRCS}
 )
 
