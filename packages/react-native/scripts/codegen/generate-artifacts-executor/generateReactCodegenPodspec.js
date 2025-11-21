@@ -29,7 +29,7 @@ function generateReactCodegenPodspec(
   appPath /*: string */,
   appPkgJson /*: $FlowFixMe */,
   outputPath /*: string */,
-  baseOutputPath /*: string | void | null */,
+  baseOutputPath /*: ?string */,
 ) {
   const inputFiles = getInputFiles(appPath, appPkgJson);
   const codegenScript = codegenScripts(appPath, baseOutputPath);
@@ -78,7 +78,7 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
 
 function codegenScripts(
   appPath /*: string */,
-  outputPath /*: string | void | null */,
+  outputPath /*: ?string */,
 ) {
   const relativeAppPath =
     outputPath != null && outputPath.length > 0
