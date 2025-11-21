@@ -188,6 +188,7 @@ val configureFantomTester by
               "-DREACT_COMMON_DIR=$reactNativeDir/ReactCommon",
               "-DREACT_CXX_PLATFORM_DIR=$reactNativeDir/ReactCxxPlatform",
               "-DREACT_THIRD_PARTY_NDK_DIR=$reactAndroidBuildDir/third-party-ndk",
+              "-DRN_ENABLE_DEBUG_STRING_CONVERTIBLE=ON",
           )
       commandLine(cmdArgs)
       standardOutputFile.set(project.file("$buildDir/reports/configure-fantom_tester.log"))
