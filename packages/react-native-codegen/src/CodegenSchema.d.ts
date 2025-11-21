@@ -46,6 +46,11 @@ export interface VoidTypeAnnotation {
   readonly type: 'VoidTypeAnnotation';
 }
 
+export interface BooleanLiteralTypeAnnotation {
+  readonly type: 'BooleanLiteralTypeAnnotation';
+  readonly value: boolean;
+}
+
 export interface ObjectTypeAnnotation<T> {
   readonly type: 'ObjectTypeAnnotation';
   readonly properties: readonly NamedShape<T>[];
@@ -399,6 +404,7 @@ export type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleInt32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | NativeModuleStringTypeAnnotation
   | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
@@ -416,6 +422,7 @@ export type NativeModuleBaseTypeAnnotation =
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleDoubleTypeAnnotation
   | NativeModuleFloatTypeAnnotation
