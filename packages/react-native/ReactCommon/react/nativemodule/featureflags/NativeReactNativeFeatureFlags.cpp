@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0969284c44b0f712e140c447d74df827>>
+ * @generated SignedSource<<d52683a54f117315b33a29f4579b90c6>>
  */
 
 /**
@@ -392,6 +392,11 @@ bool NativeReactNativeFeatureFlags::preventShadowTreeCommitExhaustion(
 bool NativeReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
+}
+
+bool NativeReactNativeFeatureFlags::shouldResetClickableWhenRecyclingView(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::shouldResetClickableWhenRecyclingView();
 }
 
 bool NativeReactNativeFeatureFlags::shouldResetOnClickListenerWhenRecyclingView(

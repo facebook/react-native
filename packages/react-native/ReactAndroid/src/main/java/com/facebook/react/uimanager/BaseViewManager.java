@@ -149,8 +149,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
     // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
     // Therefore we set the following options as such:
-    if (ReactNativeFeatureFlags.shouldSetIsClickableByDefault()) {
-      view.setClickable(true);
+    if (ReactNativeFeatureFlags.shouldResetClickableWhenRecyclingView()) {
+      view.setClickable(ReactNativeFeatureFlags.shouldSetIsClickableByDefault());
     }
     if (ReactNativeFeatureFlags.shouldResetOnClickListenerWhenRecyclingView()) {
       view.setOnClickListener(null);

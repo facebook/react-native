@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<87d3308992d9f10b714b3b8c53da6b1b>>
+ * @generated SignedSource<<1c742f07be860af7f36041b1ae8d681c>>
  */
 
 /**
@@ -449,6 +449,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = accessor.shouldPressibilityUseW3CPointerEventsForHover()
+
+  /**
+   * Reset isClickable to false when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
+   */
+  @JvmStatic
+  public fun shouldResetClickableWhenRecyclingView(): Boolean = accessor.shouldResetClickableWhenRecyclingView()
 
   /**
    * Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
