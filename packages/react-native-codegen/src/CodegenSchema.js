@@ -377,6 +377,15 @@ export type UnionTypeAnnotationMemberType =
   | 'ObjectTypeAnnotation'
   | 'StringTypeAnnotation';
 
+export type NativeModuleUnionTypeAnnotationMemberType =
+  | NativeModuleObjectTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | NumberTypeAnnotation;
+
 export type NativeModuleUnionTypeAnnotation = $ReadOnly<{
   type: 'UnionTypeAnnotation',
   memberType: UnionTypeAnnotationMemberType,
