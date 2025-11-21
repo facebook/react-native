@@ -41,34 +41,7 @@ static inline Props::Shared cloneProps(
   auto viewProps = std::const_pointer_cast<BaseViewProps>(
       std::static_pointer_cast<const BaseViewProps>(newProps));
   for (auto& animatedProp : animatedProps.props) {
-    switch (animatedProp->propName) {
-      case OPACITY:
-        viewProps->opacity = get<Float>(animatedProp);
-        break;
-
-      case WIDTH:
-        viewProps->yogaStyle.setDimension(
-            yoga::Dimension::Width, get<yoga::Style::SizeLength>(animatedProp));
-        break;
-
-      case HEIGHT:
-        viewProps->yogaStyle.setDimension(
-            yoga::Dimension::Height,
-            get<yoga::Style::SizeLength>(animatedProp));
-        break;
-
-      case BORDER_RADII:
-        viewProps->borderRadii = get<CascadedBorderRadii>(animatedProp);
-        break;
-
-      case FLEX:
-        viewProps->yogaStyle.setFlex(get<yoga::FloatOptional>(animatedProp));
-        break;
-
-      case TRANSFORM:
-        viewProps->transform = get<Transform>(animatedProp);
-        break;
-    }
+    cloneProp(*viewProps, *animatedProp);
   }
   return newProps;
 }

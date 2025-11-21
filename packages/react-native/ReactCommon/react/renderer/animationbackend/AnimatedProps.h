@@ -33,8 +33,43 @@ T get(const std::unique_ptr<AnimatedPropBase> &animatedProp)
   return static_cast<AnimatedProp<T> *>(animatedProp.get())->value;
 }
 
+template <typename T>
+T get(const AnimatedPropBase &animatedProp)
+{
+  return static_cast<const AnimatedProp<T> &>(animatedProp).value;
+}
+
 struct AnimatedProps {
   std::vector<std::unique_ptr<AnimatedPropBase>> props;
   std::unique_ptr<RawProps> rawProps;
 };
+
+inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animatedProp)
+{
+  switch (animatedProp.propName) {
+    case OPACITY:
+      viewProps.opacity = get<Float>(animatedProp);
+      break;
+
+    case WIDTH:
+      viewProps.yogaStyle.setDimension(yoga::Dimension::Width, get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case HEIGHT:
+      viewProps.yogaStyle.setDimension(yoga::Dimension::Height, get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case BORDER_RADII:
+      viewProps.borderRadii = get<CascadedBorderRadii>(animatedProp);
+      break;
+
+    case FLEX:
+      viewProps.yogaStyle.setFlex(get<yoga::FloatOptional>(animatedProp));
+      break;
+
+    case TRANSFORM:
+      viewProps.transform = get<Transform>(animatedProp);
+      break;
+  }
+}
 } // namespace facebook::react
