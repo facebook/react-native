@@ -63,7 +63,7 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
           val cxxModuleCMakeListsPath = dep.cxxModuleCMakeListsPath
 
           if (dep.hasCodegenPrefab) {
-            addDirectoryString += "find_package($depName CONFIG REQUIRED)"
+            addDirectoryString += "find_package(${cleanseDepName(depName)} CONFIG REQUIRED)"
           } else {
             if (libraryName != null && cmakeListsPath != null) {
               val nativeFolderPath = sanitizeCmakeListsPath(cmakeListsPath)
@@ -98,7 +98,7 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
         dependenciesWithNames.joinToString("\n  ") { (depName, dep) ->
           var prefabLibraries = ""
           if (dep.hasCodegenPrefab) {
-            prefabLibraries += "$depName::$CODEGEN_LIB_PREFIX${dep.libraryName}"
+            prefabLibraries += "${cleanseDepName(depName)}::$CODEGEN_LIB_PREFIX${dep.libraryName}"
           }
           prefabLibraries
         }
@@ -181,6 +181,9 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
 
     internal fun sanitizeCmakeListsPath(cmakeListsPath: String): String =
         cmakeListsPath.replace("CMakeLists.txt", "").replace(" ", "\\ ")
+
+    internal fun cleanseDepName(depName: String): String =
+        depName.replace(Regex("[~*!'()]+"), "_").replace(Regex("^@([\\w-.]+)/"), "$1_")
 
     // language=cmake
     val CMAKE_TEMPLATE =
