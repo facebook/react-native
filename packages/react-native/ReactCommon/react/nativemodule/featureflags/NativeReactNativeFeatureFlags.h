@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc1786ebed10af9cf4343d88b6336960>>
+ * @generated SignedSource<<e5c5fdba24cc5e31f39bc6fd72e9f7b9>>
  */
 
 /**
@@ -176,7 +176,11 @@ class NativeReactNativeFeatureFlags
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
+  bool shouldResetOnClickListenerWhenRecyclingView(jsi::Runtime& runtime);
+
   bool shouldSetEnabledBasedOnAccessibilityState(jsi::Runtime& runtime);
+
+  bool shouldSetIsClickableByDefault(jsi::Runtime& runtime);
 
   bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 

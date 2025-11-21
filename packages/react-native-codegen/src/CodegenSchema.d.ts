@@ -26,6 +26,10 @@ export interface FloatTypeAnnotation {
   readonly type: 'FloatTypeAnnotation';
 }
 
+export interface NumberTypeAnnotation {
+  readonly type: 'NumberTypeAnnotation';
+}
+
 export interface BooleanTypeAnnotation {
   readonly type: 'BooleanTypeAnnotation';
 }
@@ -42,11 +46,21 @@ export interface VoidTypeAnnotation {
   readonly type: 'VoidTypeAnnotation';
 }
 
+export interface BooleanLiteralTypeAnnotation {
+  readonly type: 'BooleanLiteralTypeAnnotation';
+  readonly value: boolean;
+}
+
 export interface ObjectTypeAnnotation<T> {
   readonly type: 'ObjectTypeAnnotation';
   readonly properties: readonly NamedShape<T>[];
   // metadata for objects that generated from interfaces
   readonly baseTypes?: readonly string[] | undefined;
+}
+
+export interface UnionTypeAnnotation<T> {
+  readonly type: 'UnionTypeAnnotation';
+  readonly types: readonly T[];
 }
 
 export interface MixedTypeAnnotation {
@@ -290,7 +304,7 @@ export interface UnsafeAnyTypeAnnotation {
   readonly type: 'AnyTypeAnnotation',
 }
 
-export interface NativeModuleNumberLiteralTypeAnnotation {
+export interface NumberLiteralTypeAnnotation {
   readonly type: 'NumberLiteralTypeAnnotation';
   readonly value: number;
 }
@@ -299,14 +313,14 @@ export interface NativeModuleStringTypeAnnotation {
   readonly type: 'StringTypeAnnotation';
 }
 
-export interface NativeModuleStringLiteralTypeAnnotation {
+export interface StringLiteralTypeAnnotation {
   readonly type: 'StringLiteralTypeAnnotation';
   readonly value: string;
 }
 
 export interface StringLiteralUnionTypeAnnotation {
   readonly type: 'StringLiteralUnionTypeAnnotation';
-  readonly types: NativeModuleStringLiteralTypeAnnotation[];
+  readonly types: StringLiteralTypeAnnotation[];
 }
 
 export interface NativeModuleNumberTypeAnnotation {
@@ -331,7 +345,7 @@ export interface NativeModuleBooleanTypeAnnotation {
 
 export type NativeModuleEnumMember = {
   readonly name: string;
-  readonly value: NativeModuleStringLiteralTypeAnnotation | NativeModuleNumberLiteralTypeAnnotation,
+  readonly value: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation,
 };
 
 export type NativeModuleEnumMemberType =
@@ -374,6 +388,15 @@ export type UnionTypeAnnotationMemberType =
   | 'ObjectTypeAnnotation'
   | 'StringTypeAnnotation';
 
+export type NativeModuleUnionTypeAnnotationMemberType =
+  | NativeModuleObjectTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | NumberTypeAnnotation;
+
 export interface NativeModuleUnionTypeAnnotation {
   readonly type: 'UnionTypeAnnotation';
   readonly memberType: UnionTypeAnnotationMemberType;
@@ -389,9 +412,10 @@ export type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleFloatTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleNumberLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | NativeModuleStringTypeAnnotation
-  | NativeModuleStringLiteralTypeAnnotation
+  | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
@@ -403,10 +427,11 @@ export type NativeModuleEventEmitterTypeAnnotation =
 
 export type NativeModuleBaseTypeAnnotation =
   NativeModuleStringTypeAnnotation
-  | NativeModuleStringLiteralTypeAnnotation
+  | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleNumberLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleDoubleTypeAnnotation
   | NativeModuleFloatTypeAnnotation

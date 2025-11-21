@@ -101,6 +101,8 @@ function toObjCType(
       return wrapCxxOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapCxxOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
+      return wrapCxxOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -184,6 +186,8 @@ function toObjCValue(
     case 'DoubleTypeAnnotation':
       return RCTBridgingTo('Double');
     case 'BooleanTypeAnnotation':
+      return RCTBridgingTo('Bool');
+    case 'BooleanLiteralTypeAnnotation':
       return RCTBridgingTo('Bool');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {

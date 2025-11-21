@@ -30,6 +30,10 @@ export type FloatTypeAnnotation = $ReadOnly<{
   type: 'FloatTypeAnnotation',
 }>;
 
+export type NumberTypeAnnotation = $ReadOnly<{
+  type: 'NumberTypeAnnotation',
+}>;
+
 export type BooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
@@ -52,6 +56,11 @@ export type StringLiteralTypeAnnotation = $ReadOnly<{
   value: string,
 }>;
 
+export type BooleanLiteralTypeAnnotation = $ReadOnly<{
+  type: 'BooleanLiteralTypeAnnotation',
+  value: boolean,
+}>;
+
 export type StringLiteralUnionTypeAnnotation = $ReadOnly<{
   type: 'StringLiteralUnionTypeAnnotation',
   types: $ReadOnlyArray<StringLiteralTypeAnnotation>,
@@ -66,6 +75,11 @@ export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   properties: $ReadOnlyArray<NamedShape<T>>,
   // metadata for objects that generated from interfaces
   baseTypes?: $ReadOnlyArray<string>,
+}>;
+
+export type UnionTypeAnnotation<+T> = $ReadOnly<{
+  type: 'UnionTypeAnnotation',
+  types: $ReadOnlyArray<T>,
 }>;
 
 export type MixedTypeAnnotation = $ReadOnly<{
@@ -363,6 +377,15 @@ export type UnionTypeAnnotationMemberType =
   | 'ObjectTypeAnnotation'
   | 'StringTypeAnnotation';
 
+export type NativeModuleUnionTypeAnnotationMemberType =
+  | NativeModuleObjectTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | NumberTypeAnnotation;
+
 export type NativeModuleUnionTypeAnnotation = $ReadOnly<{
   type: 'UnionTypeAnnotation',
   memberType: UnionTypeAnnotationMemberType,
@@ -379,6 +402,7 @@ type NativeModuleEventEmitterBaseTypeAnnotation =
   | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | StringTypeAnnotation
   | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
@@ -396,6 +420,7 @@ export type NativeModuleBaseTypeAnnotation =
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation

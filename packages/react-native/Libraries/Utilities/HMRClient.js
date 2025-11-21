@@ -307,6 +307,7 @@ function setHMRUnavailableReason(reason: string) {
     DevLoadingView.showMessage(
       'Fast Refresh disconnected. Reload app to reconnect.',
       'error',
+      {dismissButton: true},
     );
     console.warn(reason);
     // (Not using the `warning` module to prevent a Buck cycle.)

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c345dba878d470a42fcff41aac490083>>
+ * @generated SignedSource<<580042ea458e08d35755160b9a93a323>>
  */
 
 /**
@@ -675,6 +675,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::shouldPressibilityUseW3CPointerEventsForHover();
   }
 
+  bool shouldResetOnClickListenerWhenRecyclingView() override {
+    auto value = values_["shouldResetOnClickListenerWhenRecyclingView"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldResetOnClickListenerWhenRecyclingView();
+  }
+
   bool shouldSetEnabledBasedOnAccessibilityState() override {
     auto value = values_["shouldSetEnabledBasedOnAccessibilityState"];
     if (!value.isNull()) {
@@ -682,6 +691,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::shouldSetEnabledBasedOnAccessibilityState();
+  }
+
+  bool shouldSetIsClickableByDefault() override {
+    auto value = values_["shouldSetIsClickableByDefault"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldSetIsClickableByDefault();
   }
 
   bool shouldTriggerResponderTransferOnScrollAndroid() override {

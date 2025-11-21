@@ -29,6 +29,11 @@ class PropsAnimatedNode final : public AnimatedNode {
     return connectedViewTag_;
   }
 
+  SurfaceId connectedRootTag() const
+  {
+    return connectedRootTag_;
+  }
+
   folly::dynamic props()
   {
     std::lock_guard<std::mutex> lock(propsMutex_);
@@ -45,5 +50,8 @@ class PropsAnimatedNode final : public AnimatedNode {
   bool layoutStyleUpdated_{false};
 
   Tag connectedViewTag_{animated::undefinedAnimatedNodeIdentifier};
+
+  // Needed for PlatformColor resolver
+  SurfaceId connectedRootTag_{animated::undefinedAnimatedNodeIdentifier};
 };
 } // namespace facebook::react

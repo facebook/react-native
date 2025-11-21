@@ -31,6 +31,8 @@ class InterpolationAnimatedNode final : public ValueAnimatedNode {
   double interpolateColor(double value);
   double interpolatePlatformColor(double value);
 
+  SurfaceId resolveConnectedRootTag() const;
+
   std::vector<double> inputRanges_;
   std::vector<double> defaultOutputRanges_;
   std::vector<Color> colorOutputRanges_;

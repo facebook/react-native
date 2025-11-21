@@ -173,6 +173,8 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
       return 'int';
     case 'NumberLiteralTypeAnnotation':
       return annotation.value.toString();
+    case 'BooleanLiteralTypeAnnotation':
+      return annotation.value.toString();
     case 'ObjectTypeAnnotation':
       return (
         '{' +

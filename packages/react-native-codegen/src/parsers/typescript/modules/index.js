@@ -34,6 +34,7 @@ const {
 const {parseObjectProperty} = require('../../parsers-commons');
 const {
   emitArrayType,
+  emitBooleanLiteral,
   emitCommonTypes,
   emitDictionary,
   emitFunction,
@@ -408,6 +409,9 @@ function translateTypeAnnotation(
         }
         case 'NumericLiteral': {
           return emitNumberLiteral(nullable, literal.value);
+        }
+        case 'BooleanLiteral': {
+          return emitBooleanLiteral(nullable, literal.value);
         }
         default: {
           throw new UnsupportedTypeAnnotationParserError(

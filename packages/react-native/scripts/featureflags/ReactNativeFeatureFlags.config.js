@@ -795,11 +795,31 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    shouldResetOnClickListenerWhenRecyclingView: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
     shouldSetEnabledBasedOnAccessibilityState: {
       defaultValue: true,
       metadata: {
         description:
           'Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldSetIsClickableByDefault: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Sets isClickable=true by default on all React Native views on Android to improve UI harvesting detection while maintaining focusable=false to preserve expected behavior.',
         expectedReleaseValue: true,
         purpose: 'release',
       },

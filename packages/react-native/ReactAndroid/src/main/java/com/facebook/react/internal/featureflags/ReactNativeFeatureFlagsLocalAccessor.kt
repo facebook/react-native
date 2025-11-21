@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6d1a15e64f42cc7d8869300720276215>>
+ * @generated SignedSource<<aedd122d17339b8c2acf189c1bb00f4d>>
  */
 
 /**
@@ -94,7 +94,9 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
+  private var shouldResetOnClickListenerWhenRecyclingViewCache: Boolean? = null
   private var shouldSetEnabledBasedOnAccessibilityStateCache: Boolean? = null
+  private var shouldSetIsClickableByDefaultCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
@@ -814,12 +816,32 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun shouldResetOnClickListenerWhenRecyclingView(): Boolean {
+    var cached = shouldResetOnClickListenerWhenRecyclingViewCache
+    if (cached == null) {
+      cached = currentProvider.shouldResetOnClickListenerWhenRecyclingView()
+      accessedFeatureFlags.add("shouldResetOnClickListenerWhenRecyclingView")
+      shouldResetOnClickListenerWhenRecyclingViewCache = cached
+    }
+    return cached
+  }
+
   override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean {
     var cached = shouldSetEnabledBasedOnAccessibilityStateCache
     if (cached == null) {
       cached = currentProvider.shouldSetEnabledBasedOnAccessibilityState()
       accessedFeatureFlags.add("shouldSetEnabledBasedOnAccessibilityState")
       shouldSetEnabledBasedOnAccessibilityStateCache = cached
+    }
+    return cached
+  }
+
+  override fun shouldSetIsClickableByDefault(): Boolean {
+    var cached = shouldSetIsClickableByDefaultCache
+    if (cached == null) {
+      cached = currentProvider.shouldSetIsClickableByDefault()
+      accessedFeatureFlags.add("shouldSetIsClickableByDefault")
+      shouldSetIsClickableByDefaultCache = cached
     }
     return cached
   }

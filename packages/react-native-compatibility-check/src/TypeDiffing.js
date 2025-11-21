@@ -17,6 +17,7 @@ import type {
   TypeComparisonError,
 } from './ComparisonResult';
 import type {
+  BooleanLiteralTypeAnnotation,
   CompleteReservedTypeAnnotation,
   CompleteTypeAnnotation,
   EventEmitterTypeAnnotation,
@@ -237,6 +238,12 @@ export function compareTypeAnnotation(
         EQUALITY_MSG,
       );
       return compareNumberLiteralTypes(newerAnnotation, olderAnnotation);
+    case 'BooleanLiteralTypeAnnotation':
+      invariant(
+        olderAnnotation.type === 'BooleanLiteralTypeAnnotation',
+        EQUALITY_MSG,
+      );
+      return compareBooleanLiteralTypes(newerAnnotation, olderAnnotation);
     case 'StringLiteralUnionTypeAnnotation':
       invariant(
         olderAnnotation.type === 'StringLiteralUnionTypeAnnotation',
@@ -901,6 +908,21 @@ export function compareStringLiteralTypes(
     : makeError(
         typeAnnotationComparisonError(
           'String literals are not equal',
+          newerType,
+          olderType,
+        ),
+      );
+}
+
+export function compareBooleanLiteralTypes(
+  newerType: BooleanLiteralTypeAnnotation,
+  olderType: BooleanLiteralTypeAnnotation,
+): ComparisonResult {
+  return newerType.value === olderType.value
+    ? {status: 'matching'}
+    : makeError(
+        typeAnnotationComparisonError(
+          'Boolean literals are not equal',
           newerType,
           olderType,
         ),

@@ -32,6 +32,7 @@ using namespace facebook::react;
   UIWindow *_window;
   UILabel *_label;
   UIView *_container;
+  UIButton *_dismissButton;
   NSDate *_showDate;
   BOOL _hiding;
   dispatch_block_t _initialMessageBlock;
@@ -85,7 +86,10 @@ RCT_EXPORT_MODULE()
       dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), self->_initialMessageBlock);
 }
 
-- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor
+- (void)showMessage:(NSString *)message
+              color:(UIColor *)color
+    backgroundColor:(UIColor *)backgroundColor
+      dismissButton:(BOOL)dismissButton
 {
   if (!RCTDevLoadingViewGetEnabled() || _hiding) {
     return;
@@ -117,9 +121,38 @@ RCT_EXPORT_MODULE()
       self->_label.translatesAutoresizingMaskIntoConstraints = NO;
       self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
+      self->_label.numberOfLines = 0;
     }
     self->_label.textColor = color;
     self->_label.text = message;
+    
+    if (!self->_dismissButton) {
+      CGFloat hue = 0.0;
+      CGFloat saturation = 0.0;
+      CGFloat brightness = 0.0;
+      CGFloat alpha = 0.0;
+      [backgroundColor getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
+      UIColor *darkerBackground = [UIColor colorWithHue:hue
+                                             saturation:saturation
+                                             brightness:brightness * 0.7
+                                                  alpha:1.0];
+
+      UIButtonConfiguration *buttonConfig = [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfig.attributedTitle = [[NSAttributedString alloc]
+          initWithString:@"Dismiss ✕"
+              attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:11.0 weight:UIFontWeightRegular]}];
+      buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(6, 12, 6, 12);
+      buttonConfig.background.backgroundColor = darkerBackground;
+      buttonConfig.background.cornerRadius = 10;
+      buttonConfig.baseForegroundColor = color;
+
+      UIAction *dismissAction = [UIAction actionWithHandler:^(__kindof UIAction *_Nonnull action) {
+        [self hide];
+      }];
+      self->_dismissButton = [UIButton buttonWithConfiguration:buttonConfig primaryAction:dismissAction];
+      self->_dismissButton.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    self->_dismissButton.hidden = !dismissButton;
 
     if (!self->_container) {
       self->_container = [[UIView alloc] init];
@@ -128,6 +161,7 @@ RCT_EXPORT_MODULE()
       [self->_container addGestureRecognizer:tapGesture];
       self->_container.userInteractionEnabled = YES;
       [self->_container addSubview:self->_label];
+      [self->_container addSubview:self->_dismissButton];
     }
     self->_container.backgroundColor = backgroundColor;
 
@@ -138,36 +172,53 @@ RCT_EXPORT_MODULE()
       self->_window.rootViewController = [UIViewController new];
       [self->_window.rootViewController.view addSubview:self->_container];
     }
-
     CGFloat topSafeAreaHeight = mainWindow.safeAreaInsets.top;
-    CGFloat height = topSafeAreaHeight + 25;
-    self->_window.frame = CGRectMake(0, 0, mainWindow.frame.size.width, height);
+    
+    // These constraints may update on each call, while the rest are constant
+    // (so only need to be activated once).
+    NSMutableArray *constraints = [NSMutableArray arrayWithArray: @[
+      // Dismiss button constraints
+      [self->_label.trailingAnchor constraintEqualToAnchor:dismissButton ? self->_dismissButton.leadingAnchor : self->_container.trailingAnchor
+                                                  constant:-10],
+      
+      // Label constraints
+      [self->_label.topAnchor constraintEqualToAnchor:self->_container.topAnchor constant:topSafeAreaHeight + 8],
+    ]];
+    
+    if (!self->_constraintsActivated) {
+      [constraints addObjectsFromArray:@[
+        // Dismiss button constraints
+        [self->_dismissButton.trailingAnchor constraintEqualToAnchor:self->_container.trailingAnchor constant:-10],
+        [self->_dismissButton.centerYAnchor constraintEqualToAnchor:self->_label.centerYAnchor],
+        [self->_dismissButton.heightAnchor constraintEqualToConstant:22],
+        
+        // Container constraints
+        [self->_container.topAnchor constraintEqualToAnchor:self->_window.rootViewController.view.topAnchor],
+        [self->_container.leadingAnchor constraintEqualToAnchor:self->_window.rootViewController.view.leadingAnchor],
+        [self->_container.trailingAnchor constraintEqualToAnchor:self->_window.rootViewController.view.trailingAnchor],
+
+        // Label constraints
+        [self->_label.leadingAnchor constraintEqualToAnchor:self->_container.leadingAnchor constant:10],
+        [self->_label.bottomAnchor constraintEqualToAnchor:self->_container.bottomAnchor constant:-8],
+      ]];
+    }
+    [NSLayoutConstraint activateConstraints:constraints];
+    self->_constraintsActivated = YES;
 
     self->_window.hidden = NO;
-
     [self->_window layoutIfNeeded];
-
-    [NSLayoutConstraint activateConstraints:@[
-      // Container constraints
-      [self->_container.topAnchor constraintEqualToAnchor:self->_window.rootViewController.view.topAnchor],
-      [self->_container.leadingAnchor constraintEqualToAnchor:self->_window.rootViewController.view.leadingAnchor],
-      [self->_container.trailingAnchor constraintEqualToAnchor:self->_window.rootViewController.view.trailingAnchor],
-      [self->_container.heightAnchor constraintEqualToConstant:height],
-
-      // Label constraints
-      [self->_label.centerXAnchor constraintEqualToAnchor:self->_container.centerXAnchor],
-      [self->_label.bottomAnchor constraintEqualToAnchor:self->_container.bottomAnchor constant:-5],
-    ]];
   });
 }
 
 RCT_EXPORT_METHOD(
     showMessage : (NSString *)message withColor : (NSNumber *__nonnull)color withBackgroundColor : (NSNumber *__nonnull)
-        backgroundColor)
+        backgroundColor withDismissButton : (NSNumber *)dismissButton)
 {
-  [self showMessage:message color:[RCTConvert UIColor:color] backgroundColor:[RCTConvert UIColor:backgroundColor]];
+  [self showMessage:message
+                color:[RCTConvert UIColor:color]
+      backgroundColor:[RCTConvert UIColor:backgroundColor]
+        dismissButton:[dismissButton boolValue]];
 }
-
 RCT_EXPORT_METHOD(hide)
 {
   if (!RCTDevLoadingViewGetEnabled()) {
@@ -216,7 +267,7 @@ RCT_EXPORT_METHOD(hide)
     backgroundColor = [UIColor colorWithHue:0 saturation:0 brightness:0.98 alpha:1];
   }
 
-  [self showMessage:message color:color backgroundColor:backgroundColor];
+  [self showMessage:message color:color backgroundColor:backgroundColor dismissButton:false];
 }
 
 - (void)showOfflineMessage
@@ -230,7 +281,7 @@ RCT_EXPORT_METHOD(hide)
   }
 
   NSString *message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
-  [self showMessage:message color:color backgroundColor:backgroundColor];
+  [self showMessage:message color:color backgroundColor:backgroundColor dismissButton:false];
 }
 
 - (BOOL)isDarkModeEnabled
@@ -289,10 +340,16 @@ RCT_EXPORT_METHOD(hide)
 + (void)setEnabled:(BOOL)enabled
 {
 }
-- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor
+- (void)showMessage:(NSString *)message
+              color:(UIColor *)color
+    backgroundColor:(UIColor *)backgroundColor
+      dismissButton:(BOOL)dismissButton
 {
 }
-- (void)showMessage:(NSString *)message withColor:(NSNumber *)color withBackgroundColor:(NSNumber *)backgroundColor
+- (void)showMessage:(NSString *)message
+              withColor:(NSNumber *)color
+    withBackgroundColor:(NSNumber *)backgroundColor
+      withDismissButton:(NSNumber *)dismissButton
 {
 }
 - (void)showWithURL:(NSURL *)URL
