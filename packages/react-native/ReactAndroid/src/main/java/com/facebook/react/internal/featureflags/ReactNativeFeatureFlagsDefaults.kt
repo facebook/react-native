@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<50435a85758921672f7c05c6ac6790f9>>
+ * @generated SignedSource<<cfdeb7b6ddf02d0eebd04d6fe55d4775>>
  */
 
 /**
@@ -162,6 +162,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun preventShadowTreeCommitExhaustion(): Boolean = false
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
+
+  override fun shouldResetClickableWhenRecyclingView(): Boolean = false
 
   override fun shouldResetOnClickListenerWhenRecyclingView(): Boolean = false
 

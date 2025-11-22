@@ -23,7 +23,7 @@ class PlatformTimerRegistryImpl : public PlatformTimerRegistry {
   PlatformTimerRegistryImpl &operator=(const PlatformTimerRegistryImpl &) = delete;
   PlatformTimerRegistryImpl(PlatformTimerRegistryImpl &&) noexcept = delete;
   PlatformTimerRegistryImpl &operator=(PlatformTimerRegistryImpl &&) noexcept = delete;
-  ~PlatformTimerRegistryImpl() noexcept override;
+  ~PlatformTimerRegistryImpl() noexcept = default;
 
   void createTimer(uint32_t timerId, double delayMs) override;
 
@@ -32,6 +32,8 @@ class PlatformTimerRegistryImpl : public PlatformTimerRegistry {
   void createRecurringTimer(uint32_t timerID, double delayMs) override;
 
   void setTimerManager(std::weak_ptr<TimerManager> timerManager);
+
+  void quit() override;
 
  private:
   struct Timer {
