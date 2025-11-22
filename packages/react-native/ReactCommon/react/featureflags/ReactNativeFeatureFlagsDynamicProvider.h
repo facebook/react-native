@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<580042ea458e08d35755160b9a93a323>>
+ * @generated SignedSource<<b16aacfadb94364da82463bac1649241>>
  */
 
 /**
@@ -673,6 +673,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::shouldPressibilityUseW3CPointerEventsForHover();
+  }
+
+  bool shouldResetClickableWhenRecyclingView() override {
+    auto value = values_["shouldResetClickableWhenRecyclingView"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldResetClickableWhenRecyclingView();
   }
 
   bool shouldResetOnClickListenerWhenRecyclingView() override {
