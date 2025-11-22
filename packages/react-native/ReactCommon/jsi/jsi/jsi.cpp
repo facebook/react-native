@@ -284,6 +284,10 @@ HostObject::~HostObject() {}
 
 NativeState::~NativeState() {}
 
+#ifdef JSI_UNSTABLE
+Serialized::~Serialized() {}
+#endif
+
 Runtime::~Runtime() {}
 
 ICast* Runtime::castInterface(const UUID& /*interfaceUUID*/) {
