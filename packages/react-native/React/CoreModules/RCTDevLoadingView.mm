@@ -116,58 +116,66 @@ RCT_EXPORT_MODULE()
 
     self->_showDate = [NSDate date];
 
-    UIWindow *mainWindow = RCTKeyWindow();
-    self->_window = [[UIWindow alloc] initWithWindowScene:mainWindow.windowScene];
-    self->_window.windowLevel = UIWindowLevelStatusBar + 1;
-    self->_window.rootViewController = [UIViewController new];
-
-    self->_container = [[UIView alloc] init];
-    self->_container.backgroundColor = backgroundColor;
-    self->_container.translatesAutoresizingMaskIntoConstraints = NO;
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hide)];
-    [self->_container addGestureRecognizer:tapGesture];
-    self->_container.userInteractionEnabled = YES;
-
-    if (dismissButton) {
-      CGFloat hue = 0.0;
-      CGFloat saturation = 0.0;
-      CGFloat brightness = 0.0;
-      CGFloat alpha = 0.0;
-      [backgroundColor getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
-      UIColor *darkerBackground = [UIColor colorWithHue:hue
-                                             saturation:saturation
-                                             brightness:brightness * 0.7
-                                                  alpha:1.0];
-
-      UIButtonConfiguration *buttonConfig = [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfig.attributedTitle = [[NSAttributedString alloc]
-          initWithString:@"Dismiss ✕"
-              attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:11.0 weight:UIFontWeightRegular]}];
-      buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(6, 12, 6, 12);
-      buttonConfig.background.backgroundColor = darkerBackground;
-      buttonConfig.background.cornerRadius = 10;
-      buttonConfig.baseForegroundColor = color;
-
-      UIAction *dismissAction = [UIAction actionWithHandler:^(__kindof UIAction *_Nonnull action) {
-        [self hide];
-      }];
-      self->_dismissButton = [UIButton buttonWithConfiguration:buttonConfig primaryAction:dismissAction];
-      self->_dismissButton.translatesAutoresizingMaskIntoConstraints = NO;
+    if (self->_label == nullptr) {
+      self->_label = [[UILabel alloc] init];
+      self->_label.translatesAutoresizingMaskIntoConstraints = NO;
+      self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
+      self->_label.textAlignment = NSTextAlignmentCenter;
     }
-
-    self->_label = [[UILabel alloc] init];
-    self->_label.translatesAutoresizingMaskIntoConstraints = NO;
-    self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
-    self->_label.textAlignment = NSTextAlignmentCenter;
     self->_label.textColor = color;
     self->_label.text = message;
     self->_label.numberOfLines = 0;
 
-    [self->_window.rootViewController.view addSubview:self->_container];
-    if (dismissButton) {
-      [self->_container addSubview:self->_dismissButton];
+    if (self->_container == nullptr) {
+      self->_container = [[UIView alloc] init];
+      self->_container.translatesAutoresizingMaskIntoConstraints = NO;
+      UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hide)];
+      [self->_container addGestureRecognizer:tapGesture];
+      self->_container.userInteractionEnabled = YES;
+
+      if (dismissButton) {
+        CGFloat hue = 0.0;
+        CGFloat saturation = 0.0;
+        CGFloat brightness = 0.0;
+        CGFloat alpha = 0.0;
+        [backgroundColor getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
+        UIColor *darkerBackground = [UIColor colorWithHue:hue
+                                               saturation:saturation
+                                               brightness:brightness * 0.7
+                                                    alpha:1.0];
+
+        UIButtonConfiguration *buttonConfig = [UIButtonConfiguration plainButtonConfiguration];
+        buttonConfig.attributedTitle = [[NSAttributedString alloc]
+            initWithString:@"Dismiss ✕"
+                attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:11.0 weight:UIFontWeightRegular]}];
+        buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(6, 12, 6, 12);
+        buttonConfig.background.backgroundColor = darkerBackground;
+        buttonConfig.background.cornerRadius = 10;
+        buttonConfig.baseForegroundColor = color;
+
+        UIAction *dismissAction = [UIAction actionWithHandler:^(__kindof UIAction *_Nonnull action) {
+          [self hide];
+        }];
+        self->_dismissButton = [UIButton buttonWithConfiguration:buttonConfig primaryAction:dismissAction];
+        self->_dismissButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [self->_container addSubview:self->_dismissButton];
+      }
+      [self->_container addSubview:self->_label];
     }
-    [self->_container addSubview:self->_label];
+    self->_container.backgroundColor = backgroundColor;
+
+    UIWindow *mainWindow = RCTKeyWindow();
+    if (self->_window == nullptr) {
+      UIWindowScene *windowScene = mainWindow.windowScene;
+      if (windowScene != nil) {
+        self->_window = [[UIWindow alloc] initWithWindowScene:windowScene];
+      } else {
+        self->_window = [[UIWindow alloc] init];
+      }
+      self->_window.windowLevel = UIWindowLevelStatusBar + 1;
+      self->_window.rootViewController = [UIViewController new];
+      [self->_window.rootViewController.view addSubview:self->_container];
+    }
 
     CGFloat topSafeAreaHeight = mainWindow.safeAreaInsets.top;
     self->_window.hidden = NO;
