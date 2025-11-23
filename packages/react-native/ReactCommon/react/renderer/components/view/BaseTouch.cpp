@@ -35,13 +35,18 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
     const BaseTouch& touch,
     DebugStringConvertibleOptions options) {
   return {
-      {"pagePoint", getDebugDescription(touch.pagePoint, options)},
-      {"offsetPoint", getDebugDescription(touch.offsetPoint, options)},
-      {"screenPoint", getDebugDescription(touch.screenPoint, options)},
-      {"identifier", getDebugDescription(touch.identifier, options)},
-      {"target", getDebugDescription(touch.target, options)},
-      {"force", getDebugDescription(touch.force, options)},
-      {"timestamp", getDebugDescription(touch.timestamp, options)},
+      {.name = "pagePoint",
+       .value = getDebugDescription(touch.pagePoint, options)},
+      {.name = "offsetPoint",
+       .value = getDebugDescription(touch.offsetPoint, options)},
+      {.name = "screenPoint",
+       .value = getDebugDescription(touch.screenPoint, options)},
+      {.name = "identifier",
+       .value = getDebugDescription(touch.identifier, options)},
+      {.name = "target", .value = getDebugDescription(touch.target, options)},
+      {.name = "force", .value = getDebugDescription(touch.force, options)},
+      {.name = "timestamp",
+       .value = getDebugDescription(touch.timestamp, options)},
   };
 }
 
