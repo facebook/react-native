@@ -34,9 +34,9 @@ class PreparePrefabHeadersTaskTest {
 
     val project = createProject(projectDir = tempFolder.root)
     val task =
-        createTestTask<PreparePrefabHeadersTask>(project = project) {
-          it.outputDir.set(outputDir)
-          it.input.set(listOf(PrefabPreprocessingEntry("sample_library", "input/" to "")))
+        createTestTask<PreparePrefabHeadersTask>(project = project) { prefabTask ->
+          prefabTask.outputDir.set(outputDir)
+          prefabTask.input.set(listOf(PrefabPreprocessingEntry("sample_library", "input/" to "")))
         }
 
     task.taskAction()
@@ -52,9 +52,9 @@ class PreparePrefabHeadersTaskTest {
 
     val project = createProject(projectDir = tempFolder.root)
     val task =
-        createTestTask<PreparePrefabHeadersTask>(project = project) {
-          it.outputDir.set(outputDir)
-          it.input.set(
+        createTestTask<PreparePrefabHeadersTask>(project = project) { headerTask ->
+          headerTask.outputDir.set(outputDir)
+          headerTask.input.set(
               listOf(PrefabPreprocessingEntry("sample_library", "input/" to expectedPrefix))
           )
         }
@@ -74,9 +74,9 @@ class PreparePrefabHeadersTaskTest {
 
     val project = createProject(projectDir = tempFolder.root)
     val task =
-        createTestTask<PreparePrefabHeadersTask>(project = project) {
-          it.outputDir.set(outputDir)
-          it.input.set(
+        createTestTask<PreparePrefabHeadersTask>(project = project) { ignoreFilesTask ->
+          ignoreFilesTask.outputDir.set(outputDir)
+          ignoreFilesTask.input.set(
               listOf(PrefabPreprocessingEntry("sample_library", "input/" to expectedPrefix))
           )
         }
@@ -96,9 +96,9 @@ class PreparePrefabHeadersTaskTest {
 
     val project = createProject(projectDir = tempFolder.root)
     val task =
-        createTestTask<PreparePrefabHeadersTask>(project = project) {
-          it.outputDir.set(outputDir)
-          it.input.set(
+        createTestTask<PreparePrefabHeadersTask>(project = project) { multiPathTask ->
+          multiPathTask.outputDir.set(outputDir)
+          multiPathTask.input.set(
               listOf(
                   PrefabPreprocessingEntry(
                       "sample_library",
@@ -122,9 +122,9 @@ class PreparePrefabHeadersTaskTest {
 
     val project = createProject(projectDir = tempFolder.root)
     val task =
-        createTestTask<PreparePrefabHeadersTask>(project = project) {
-          it.outputDir.set(outputDir)
-          it.input.set(
+        createTestTask<PreparePrefabHeadersTask>(project = project) { multiEntryTask ->
+          multiEntryTask.outputDir.set(outputDir)
+          multiEntryTask.input.set(
               listOf(
                   PrefabPreprocessingEntry("libraryone", "input/lib1/" to ""),
                   PrefabPreprocessingEntry("librarytwo", "input/lib2/" to ""),
@@ -147,9 +147,9 @@ class PreparePrefabHeadersTaskTest {
 
     val project = createProject(projectDir = tempFolder.root)
     val task =
-        createTestTask<PreparePrefabHeadersTask>(project = project) {
-          it.outputDir.set(outputDir)
-          it.input.set(
+        createTestTask<PreparePrefabHeadersTask>(project = project) { sharedHeaderTask ->
+          sharedHeaderTask.outputDir.set(outputDir)
+          sharedHeaderTask.input.set(
               listOf(
                   PrefabPreprocessingEntry(
                       "libraryone",
