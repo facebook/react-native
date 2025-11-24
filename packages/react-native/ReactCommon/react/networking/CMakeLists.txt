@@ -21,3 +21,10 @@ target_link_libraries(react_networking
         jsinspector_tracing
         react_performance_timeline
         react_timing)
+
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
+  target_compile_options(react_networking PRIVATE
+          -DREACT_NATIVE_DEBUGGER_ENABLED=1
+          -DREACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1
+  )
+endif ()
