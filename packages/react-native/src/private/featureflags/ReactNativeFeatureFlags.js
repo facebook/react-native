@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0559a11a2edeec64fbc00451614e98d9>>
+ * @generated SignedSource<<a324a12013cfab0e52bcdbbea6c6424e>>
  * @flow strict
  * @noformat
  */
@@ -516,7 +516,7 @@ export const shouldResetClickableWhenRecyclingView: Getter<boolean> = createNati
 /**
  * Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
  */
-export const shouldResetOnClickListenerWhenRecyclingView: Getter<boolean> = createNativeFlagGetter('shouldResetOnClickListenerWhenRecyclingView', false);
+export const shouldResetOnClickListenerWhenRecyclingView: Getter<boolean> = createNativeFlagGetter('shouldResetOnClickListenerWhenRecyclingView', true);
 /**
  * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
  */
