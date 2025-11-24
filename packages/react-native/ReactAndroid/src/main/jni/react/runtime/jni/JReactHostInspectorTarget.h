@@ -8,10 +8,15 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
+
 #include <jsinspector-modern/HostTarget.h>
 #include <react/jni/InspectorNetworkRequestListener.h>
 #include <react/jni/JExecutor.h>
+
+#include <mutex>
+#include <optional>
 #include <string>
+#include <vector>
 
 namespace facebook::react {
 
@@ -20,7 +25,11 @@ struct JTaskInterface : public jni::JavaClass<JTaskInterface> {
 };
 
 struct JTracingState : public jni::JavaClass<JTracingState> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/TracingState;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/interfaces/TracingState;";
+};
+
+struct JTracingStateListener : public jni::JavaClass<JTracingStateListener> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/interfaces/TracingStateListener;";
 };
 
 struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
@@ -53,6 +62,71 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
                           "loadNetworkResource");
     return method(self(), jni::make_jstring(url), listener);
   }
+};
+
+enum class TracingState {
+  Disabled,
+  EnabledInBackgroundMode,
+  EnabledInCDPMode,
+};
+
+/**
+ * A callback that will be invoked when tracing state has changed.
+ */
+using TracingStateListener = std::function<void(TracingState state, bool screenshotsCategoryEnabled)>;
+
+class TracingDelegate : public jsinspector_modern::HostTargetTracingDelegate {
+ public:
+  void onTracingStarted(jsinspector_modern::tracing::Mode tracingMode, bool screenshotsCategoryEnabled) override;
+  void onTracingStopped() override;
+
+  /**
+   * A synchronous way to get the current tracing state.
+   * Could be called from any thread.
+   */
+  TracingState getTracingState();
+  /**
+   * Register a listener that will be notified when the tracing state changes.
+   * Could be called from any thread.
+   */
+  size_t registerTracingStateListener(TracingStateListener listener);
+  /**
+   * Unregister previously registered listener with the id returned from
+   * TracingDelegate::registerTracingStateListener().
+   */
+  void unregisterTracingStateListener(size_t subscriptionId);
+
+ private:
+  /**
+   * Covers read / write operations on tracingState_ and subscriptions_.
+   */
+  std::mutex mutex_;
+  /**
+   * Since HostInspectorTarget creates HostTarget, the default value is Disabled.
+   * However, the TracingDelegate is subscribed at the construction of HostTarget, so it will be notified as early as
+   * possible.
+   */
+  TracingState tracingState_ = TracingState::Disabled;
+  /**
+   * Map of subscription ID to listener.
+   */
+  std::unordered_map<size_t, TracingStateListener> subscriptions_;
+  /**
+   * A counter for generating unique subscription IDs.
+   */
+  uint64_t nextSubscriptionId_ = 0;
+  /**
+   * Returns a collection of listeners that are subscribed at the time of the call.
+   * Expected to be only called with mutex_ locked.
+   */
+  std::vector<TracingStateListener> copySubscribedListeners();
+  /**
+   * Notifies specified listeners about the state change.
+   */
+  void notifyListeners(
+      const std::vector<TracingStateListener> &listeners,
+      TracingState state,
+      bool screenshotsCategoryEnabled);
 };
 
 class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTarget>,
@@ -99,6 +173,26 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
 
   jsinspector_modern::HostTarget *getInspectorTarget();
 
+  /**
+   * Get the current tracing state. Could be called from any thread.
+   */
+  jni::local_ref<JTracingState::javaobject> getTracingState();
+
+  /**
+   * Register a listener that will be notified when the tracing state changes.
+   * Could be called from any thread.
+   *
+   * \return A unique subscription ID to use for unregistering the listener.
+   */
+  jlong registerTracingStateListener(jni::alias_ref<JTracingStateListener::javaobject> listener);
+
+  /**
+   * Unregister a previously registered tracing state listener.
+   *
+   * \param subscriptionId The subscription ID returned from JReactHostInspectorTarget::registerTracingStateListener.
+   */
+  void unregisterTracingStateListener(jlong subscriptionId);
+
   // HostTargetDelegate methods
   jsinspector_modern::HostTargetMetadata getMetadata() override;
   void onReload(const PageReloadRequest &request) override;
@@ -109,6 +203,7 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
       jsinspector_modern::ScopedExecutor<jsinspector_modern::NetworkRequestListener> executor) override;
   std::optional<jsinspector_modern::tracing::TraceRecordingState>
   unstable_getTraceRecordingThatWillBeEmittedOnInitialization() override;
+  jsinspector_modern::HostTargetTracingDelegate *getTracingDelegate() override;
 
  private:
   JReactHostInspectorTarget(
@@ -140,6 +235,10 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
    * CDP session is created.
    */
   std::optional<jsinspector_modern::tracing::TraceRecordingState> stashedTraceRecordingState_;
+  /**
+   * Encapsulates the logic around tracing for this HostInspectorTarget.
+   */
+  std::unique_ptr<TracingDelegate> tracingDelegate_;
 
   friend HybridBase;
 };
