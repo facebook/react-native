@@ -132,6 +132,7 @@ public class ReactScrollView extends ScrollView
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
   private int mFadingEdgeLengthStart;
   private int mFadingEdgeLengthEnd;
+  private boolean mEmittedOverScrollSinceScrollBegin;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -194,6 +195,7 @@ public class ReactScrollView extends ScrollView
     mMaintainVisibleContentPositionHelper = null;
     mFadingEdgeLengthStart = 0;
     mFadingEdgeLengthEnd = 0;
+    mEmittedOverScrollSinceScrollBegin = false;
   }
 
   /* package */ void recycleView() {
@@ -621,6 +623,7 @@ public class ReactScrollView extends ScrollView
     }
     ReactScrollViewHelper.emitScrollBeginDragEvent(this);
     mDragging = true;
+    mEmittedOverScrollSinceScrollBegin = false;
     enableFpsListener();
     getFlingAnimator().cancel();
   }
@@ -1278,6 +1281,13 @@ public class ReactScrollView extends ScrollView
       }
 
       // END FB SCROLLVIEW CHANGE
+    }
+
+    if (ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid()
+        && clampedY
+        && mEmittedOverScrollSinceScrollBegin == false) {
+      ReactScrollViewHelper.emitScrollEvent(this, 0f, 0f);
+      mEmittedOverScrollSinceScrollBegin = true;
     }
 
     super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
