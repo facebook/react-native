@@ -76,10 +76,10 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
   return `[${list}]`;
 }
 
-function codegenScripts(appPath /*: string */, outputPath /*: string */) {
-  const relativeAppPath = path.relative(outputPath, appPath);
+function codegenScripts(appPath /*: string */, baseOutputPath /*: string */) {
+  const relativeAppPath = path.relative(baseOutputPath, appPath);
   const relativeReactNativeRootFolder = path.relative(
-    outputPath,
+    baseOutputPath,
     REACT_NATIVE_PACKAGE_ROOT_FOLDER,
   );
   return `<<-SCRIPT
