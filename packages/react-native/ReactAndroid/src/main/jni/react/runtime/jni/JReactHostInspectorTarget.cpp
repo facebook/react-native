@@ -246,9 +246,7 @@ void JReactHostInspectorTarget::registerNatives() {
           "stopAndDiscardBackgroundTrace",
           JReactHostInspectorTarget::stopAndDiscardBackgroundTrace),
       makeNativeMethod(
-          "tracingStateAsInt", JReactHostInspectorTarget::tracingState),
-      makeNativeMethod(
-          "getTracingState_next", JReactHostInspectorTarget::getTracingState),
+          "getTracingState", JReactHostInspectorTarget::getTracingState),
       makeNativeMethod(
           "registerTracingStateListener",
           JReactHostInspectorTarget::registerTracingStateListener),
@@ -256,11 +254,6 @@ void JReactHostInspectorTarget::registerNatives() {
           "unregisterTracingStateListener",
           JReactHostInspectorTarget::unregisterTracingStateListener),
   });
-}
-
-jint JReactHostInspectorTarget::tracingState() {
-  auto state = inspectorTarget_->tracingState();
-  return static_cast<jint>(state);
 }
 
 jni::local_ref<JTracingState::javaobject>

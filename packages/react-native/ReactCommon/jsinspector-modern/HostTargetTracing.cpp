@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/tracing/TracingState.h>
-
 #include "HostTarget.h"
 #include "HostTargetTraceRecording.h"
 
@@ -67,20 +65,6 @@ tracing::TraceRecordingState HostTarget::stopTracing() {
   traceRecording_.reset();
 
   return state;
-}
-
-tracing::TracingState HostTarget::tracingState() const {
-  if (traceRecording_ == nullptr) {
-    return tracing::TracingState::Disabled;
-  }
-
-  if (traceRecording_->isBackgroundInitiated()) {
-    return tracing::TracingState::EnabledInBackgroundMode;
-  }
-
-  // This means we have a traceRecording_, but not running in the background.
-  // CDP initiated this trace so we should report as disabled.
-  return tracing::TracingState::EnabledInCDPMode;
 }
 
 } // namespace facebook::react::jsinspector_modern
