@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cfdeb7b6ddf02d0eebd04d6fe55d4775>>
+ * @generated SignedSource<<c7c15289a7da56ef403691768489b6f6>>
  */
 
 /**
@@ -163,7 +163,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
 
-  override fun shouldResetClickableWhenRecyclingView(): Boolean = false
+  override fun shouldResetClickableWhenRecyclingView(): Boolean = true
 
   override fun shouldResetOnClickListenerWhenRecyclingView(): Boolean = false
 

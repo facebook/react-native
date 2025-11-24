@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3e75c668cf91189c87ccc330d5fc1800>>
+ * @generated SignedSource<<0559a11a2edeec64fbc00451614e98d9>>
  * @flow strict
  * @noformat
  */
@@ -512,7 +512,7 @@ export const shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean> = cr
 /**
  * Reset isClickable to false when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
  */
-export const shouldResetClickableWhenRecyclingView: Getter<boolean> = createNativeFlagGetter('shouldResetClickableWhenRecyclingView', false);
+export const shouldResetClickableWhenRecyclingView: Getter<boolean> = createNativeFlagGetter('shouldResetClickableWhenRecyclingView', true);
 /**
  * Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a50549b6884d7f4671d5167cd4cb38f2>>
+ * @generated SignedSource<<14228fac25bcaaf06f437b5805ef04ce>>
  */
 
 /**
@@ -308,7 +308,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool shouldResetClickableWhenRecyclingView() override {
-    return false;
+    return true;
   }
 
   bool shouldResetOnClickListenerWhenRecyclingView() override {
