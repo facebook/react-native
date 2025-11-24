@@ -25,11 +25,11 @@ struct JTaskInterface : public jni::JavaClass<JTaskInterface> {
 };
 
 struct JTracingState : public jni::JavaClass<JTracingState> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/interfaces/TracingState;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/inspector/TracingState;";
 };
 
 struct JTracingStateListener : public jni::JavaClass<JTracingStateListener> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/interfaces/TracingStateListener;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/inspector/TracingStateListener;";
 };
 
 struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {

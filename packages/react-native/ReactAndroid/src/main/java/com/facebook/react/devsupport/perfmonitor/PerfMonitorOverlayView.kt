@@ -21,7 +21,7 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.R
-import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.inspector.TracingState
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.PixelUtil
 
