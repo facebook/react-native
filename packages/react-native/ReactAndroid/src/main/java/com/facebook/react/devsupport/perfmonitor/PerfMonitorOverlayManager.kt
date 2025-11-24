@@ -10,7 +10,7 @@ package com.facebook.react.devsupport.perfmonitor
 import android.os.Handler
 import android.os.Looper
 import com.facebook.react.bridge.UiThreadUtil
-import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.inspector.TracingState
 
 internal class PerfMonitorOverlayManager(
     private val devHelper: PerfMonitorDevHelper,
