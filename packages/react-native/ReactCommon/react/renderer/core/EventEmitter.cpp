@@ -10,21 +10,19 @@
 #include <cxxreact/TraceSection.h>
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
-
-#include "DynamicEventPayload.h"
-#include "RawEvent.h"
+#include <react/renderer/core/DynamicEventPayload.h>
+#include <react/renderer/core/RawEvent.h>
 
 namespace facebook::react {
-
 static bool hasPrefix(const std::string& str, const std::string& prefix) {
   return str.compare(0, prefix.length(), prefix) == 0;
 }
 
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
- * Replaces "on" with "top" if present. Or capitalizes the first letter and adds
- * "top" prefix. E.g. "eventName" becomes "topEventName", "onEventName" also
- * becomes "topEventName".
+ * Replaces "on" with "top" if present. Or capitalizes the first letter and
+ * adds "top" prefix. E.g. "eventName" becomes "topEventName", "onEventName"
+ * also becomes "topEventName".
  */
 /* static */ std::string EventEmitter::normalizeEventType(std::string type) {
   auto prefixedType = std::move(type);
@@ -61,7 +59,7 @@ void EventEmitter::dispatchEvent(
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      std::make_shared<DynamicEventPayload>(std::move(payload)),
+      DynamicEventPayload::create(std::move(payload)),
       category);
 }
 
@@ -69,8 +67,7 @@ void EventEmitter::dispatchUniqueEvent(
     std::string type,
     folly::dynamic&& payload) const {
   dispatchUniqueEvent(
-      std::move(type),
-      std::make_shared<DynamicEventPayload>(std::move(payload)));
+      std::move(type), DynamicEventPayload::create(std::move(payload)));
 }
 
 void EventEmitter::dispatchEvent(
@@ -139,10 +136,10 @@ void EventEmitter::setEnabled(bool enabled) const {
     }
   }
 
-  // Note: Initially, the state of `eventTarget_` and the value `enableCounter_`
-  // is mismatched intentionally (it's `non-null` and `0` accordingly). We need
-  // this to support an initial nebula state where the event target must be
-  // retained without any associated mounted node.
+  // Note: Initially, the state of `eventTarget_` and the value
+  // `enableCounter_` is mismatched intentionally (it's `non-null` and `0`
+  // accordingly). We need this to support an initial nebula state where the
+  // event target must be retained without any associated mounted node.
   bool shouldBeRetained = enableCounter_ > 0;
   if (shouldBeRetained != (eventTarget_ != nullptr)) {
     if (!shouldBeRetained) {
