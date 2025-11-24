@@ -148,6 +148,7 @@ function findCodegenEnabledLibraries(
   projectRoot /*: string */,
   baseOutputPath /*: ?string */,
   reactNativeConfig /*: $FlowFixMe */,
+  externalLibrariesCache /*: { current?: ?Array<$FlowFixMe> } */ = {},
 ) /*: Array<$FlowFixMe> */ {
   const projectLibraries = findProjectRootLibraries(pkgJson, projectRoot);
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
@@ -157,7 +158,13 @@ function findCodegenEnabledLibraries(
     // If we ran autolinking, we shouldn't try to run our own "autolinking-like"
     // library discovery
     if (!readGeneratedAutolinkingOutput(projectRoot, baseOutputPath)) {
-      libraries.push(...findExternalLibraries(pkgJson, projectRoot));
+      const externalLibraries =
+        externalLibrariesCache.current ??
+        (externalLibrariesCache.current = findExternalLibraries(
+          pkgJson,
+          projectRoot,
+        ));
+      libraries.push(...externalLibraries);
     }
     libraries.push(
       ...findLibrariesFromReactNativeConfig(projectRoot, reactNativeConfig),
