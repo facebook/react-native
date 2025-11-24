@@ -102,23 +102,19 @@ class ReactNativePodsUtils
 
         if ccache_available
             Pod::UI.puts("#{message_prefix}: Ccache found at #{ccache_path}")
-        end
-
-        # Using scripts wrapping the ccache executable, to allow injection of configurations
-        ccache_clang_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang.sh')
-        ccache_clangpp_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang++.sh')
+        end 
 
         if ccache_available and ccache_enabled
             Pod::UI.puts("#{message_prefix}: Setting CC, LD, CXX & LDPLUSPLUS build settings")
 
+            # Using scripts wrapping the ccache executable, to allow injection of configurations
+            c_compiler_launcher = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'c-compiler-launcher.sh')
+
             projects.each do |project|
                 project.build_configurations.each do |config|
                     # Using the un-qualified names means you can swap in different implementations, for example ccache
-                    config.build_settings["CC"] = ccache_clang_sh
-                    config.build_settings["LD"] = ccache_clang_sh
-                    config.build_settings["CXX"] = ccache_clangpp_sh
-                    config.build_settings["LDPLUSPLUS"] = ccache_clangpp_sh
-                    config.build_settings["CCACHE_BINARY"] = ccache_path
+                    config.build_settings["C_COMPILER_LAUNCHER"] = c_compiler_launcher
+                    config.build_settings["CLANG_ENABLE_EXPLICIT_MODULES_WITH_COMPILER_LAUNCHER"] = "YES"
                 end
 
                 project.save()
@@ -128,15 +124,12 @@ class ReactNativePodsUtils
         elsif !ccache_available and ccache_enabled
             Pod::UI.warn("#{message_prefix}: Install ccache or ensure your neither passing ':ccache_enabled => true' nor setting environment variable 'USE_CCACHE=1'")
         else
-            Pod::UI.puts("#{message_prefix}: Removing Ccache from CC, LD, CXX & LDPLUSPLUS build settings")
+            Pod::UI.puts("#{message_prefix}: Removing Ccache compiler launcher build settings")
 
             projects.each do |project|
                 project.build_configurations.each do |config|
-                    # Using the un-qualified names means you can swap in different implementations, for example ccache
-                    config.build_settings["CC"] = config.build_settings["CC"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, '') if config.build_settings["CC"]
-                    config.build_settings["LD"] = config.build_settings["LD"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, "") if config.build_settings["LD"]
-                    config.build_settings["CXX"] = config.build_settings["CXX"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") if config.build_settings["CXX"]
-                    config.build_settings["LDPLUSPLUS"] = config.build_settings["LDPLUSPLUS"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") if config.build_settings["LDPLUSPLUS"]
+                    config.build_settings.delete "C_COMPILER_LAUNCHER"
+                    config.build_settings.delete "CLANG_ENABLE_EXPLICIT_MODULES_WITH_COMPILER_LAUNCHER" 
                 end
 
                 project.save()
