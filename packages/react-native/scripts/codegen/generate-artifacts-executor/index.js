@@ -230,18 +230,10 @@ function computeOutputPath(
     return baseOutputPath;
   }
   if (platform === 'android') {
-    return defaultOutputPathForAndroid(
-      baseOutputPath != null && baseOutputPath.length > 0
-        ? baseOutputPath
-        : projectRoot,
-    );
+    return defaultOutputPathForAndroid(baseOutputPath);
   }
   if (platform === 'ios') {
-    return defaultOutputPathForIOS(
-      baseOutputPath != null && baseOutputPath.length > 0
-        ? baseOutputPath
-        : projectRoot,
-    );
+    return defaultOutputPathForIOS(baseOutputPath);
   }
   return baseOutputPath;
 }
