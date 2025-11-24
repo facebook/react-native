@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.83.0-rc.3
+
+### Fixed
+
+- [RNDT] Enable Network panel on Android and iOS ([eb78fbae27](https://github.com/facebook/react-native/commit/eb78fbae27dea9ff840f24da18ce29100b89b270) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.83.0-rc.2
 
 ### Added
