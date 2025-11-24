@@ -9,8 +9,6 @@ package com.facebook.react.devsupport.interfaces
 
 import com.facebook.proguard.annotations.DoNotStripAny
 
-// Keep in sync with `TracingState.h`
-// JNI wrapper for `jsinspector_modern::Tracing::TracingState`.
 @DoNotStripAny
 public enum class TracingState {
   DISABLED, // There is no active trace

@@ -42,17 +42,11 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
 
   external fun stopAndDiscardBackgroundTrace()
 
-  external fun tracingStateAsInt(): Int
-
-  external fun getTracingState_next(): TracingState
+  external override fun getTracingState(): TracingState
 
   external fun registerTracingStateListener(listener: TracingStateListener): Long
 
   external fun unregisterTracingStateListener(subscriptionId: Long)
-
-  override fun getTracingState(): TracingState {
-    return TracingState.entries[tracingStateAsInt()]
-  }
 
   override fun addPerfMonitorListener(listener: PerfMonitorUpdateListener) {
     perfMonitorListeners.add(listener)
