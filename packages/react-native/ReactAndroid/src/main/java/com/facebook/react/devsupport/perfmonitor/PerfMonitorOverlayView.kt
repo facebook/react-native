@@ -50,12 +50,12 @@ internal class PerfMonitorOverlayView(
   }
 
   fun updateRecordingState(state: TracingState) {
-    if (state == TracingState.ENABLEDINCDPMODE) {
+    if (state == TracingState.ENABLED_IN_CDP_MODE) {
       dialog.hide()
       return
     }
 
-    if (state == TracingState.ENABLEDINBACKGROUNDMODE) {
+    if (state == TracingState.ENABLED_IN_BACKGROUND_MODE) {
       (statusIndicator.background as GradientDrawable).setColor(Color.RED)
       statusLabel.text = "Profiling Active"
       tooltipLabel.text =
