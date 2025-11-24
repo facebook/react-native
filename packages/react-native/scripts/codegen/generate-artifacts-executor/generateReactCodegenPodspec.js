@@ -76,12 +76,12 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
   return `[${list}]`;
 }
 
-function codegenScripts(
-  appPath /*: string */,
-  outputPath /*: string */,
-) {
+function codegenScripts(appPath /*: string */, outputPath /*: string */) {
   const relativeAppPath = path.relative(outputPath, appPath);
-  const relativeReactNativeRootFolder = path.relative(outputPath, REACT_NATIVE_PACKAGE_ROOT_FOLDER);
+  const relativeReactNativeRootFolder = path.relative(
+    outputPath,
+    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  );
   return `<<-SCRIPT
 pushd "$PODS_ROOT/../" > /dev/null
 RCT_SCRIPT_POD_INSTALLATION_ROOT=$(pwd)
