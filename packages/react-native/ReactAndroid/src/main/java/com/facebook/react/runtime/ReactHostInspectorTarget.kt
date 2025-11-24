@@ -13,6 +13,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.interfaces.TracingStateListener
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTarget
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorUpdateListener
 import com.facebook.soloader.SoLoader
@@ -42,6 +43,12 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
   external fun stopAndDiscardBackgroundTrace()
 
   external fun tracingStateAsInt(): Int
+
+  external fun getTracingState_next(): TracingState
+
+  external fun registerTracingStateListener(listener: TracingStateListener): Long
+
+  external fun unregisterTracingStateListener(subscriptionId: Long)
 
   override fun getTracingState(): TracingState {
     return TracingState.entries[tracingStateAsInt()]
