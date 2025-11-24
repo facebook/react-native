@@ -29,7 +29,7 @@ function generateReactCodegenPodspec(
   appPath /*: string */,
   appPkgJson /*: $FlowFixMe */,
   outputPath /*: string */,
-  baseOutputPath /*: ?string */,
+  baseOutputPath /*: string */,
 ) {
   const inputFiles = getInputFiles(appPath, appPkgJson);
   const codegenScript = codegenScripts(appPath, baseOutputPath);
@@ -78,16 +78,10 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
 
 function codegenScripts(
   appPath /*: string */,
-  outputPath /*: ?string */,
+  outputPath /*: string */,
 ) {
-  const relativeAppPath =
-    outputPath != null && outputPath.length > 0
-      ? path.relative(outputPath, appPath)
-      : '';
-  const relativeReactNativeRootFolder =
-    outputPath != null && outputPath.length > 0
-      ? path.relative(outputPath, REACT_NATIVE_PACKAGE_ROOT_FOLDER)
-      : '';
+  const relativeAppPath = path.relative(outputPath, appPath);
+  const relativeReactNativeRootFolder = path.relative(outputPath, REACT_NATIVE_PACKAGE_ROOT_FOLDER);
   return `<<-SCRIPT
 pushd "$PODS_ROOT/../" > /dev/null
 RCT_SCRIPT_POD_INSTALLATION_ROOT=$(pwd)

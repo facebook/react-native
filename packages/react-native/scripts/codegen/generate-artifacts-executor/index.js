@@ -167,7 +167,7 @@ function execute(
           projectRoot,
           pkgJson,
           reactCodegenOutputPath,
-          baseOutputPath,
+          outputPath,
         );
         generatePackageSwift(
           projectRoot,
