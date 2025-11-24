@@ -796,7 +796,7 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
   return commitProps();
 }
 
-folly::dynamic NativeAnimatedNodesManager::managedProps(
+folly::dynamic NativeAnimatedNodesManager::getManagedProps(
     Tag tag) const noexcept {
   std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
   if (const auto iter = connectedAnimatedNodes_.find(tag);

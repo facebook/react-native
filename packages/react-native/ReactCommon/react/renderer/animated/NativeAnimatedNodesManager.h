@@ -179,7 +179,7 @@ class NativeAnimatedNodesManager {
 
   void updateNodes(const std::set<int> &finishedAnimationValueNodes = {}) noexcept;
 
-  folly::dynamic managedProps(Tag tag) const noexcept;
+  folly::dynamic getManagedProps(Tag tag) const noexcept;
 
   bool hasManagedProps() const noexcept;
 
