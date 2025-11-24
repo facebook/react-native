@@ -56,6 +56,36 @@ struct HostTargetMetadata {
 };
 
 /**
+ * Receives any performance-related events from a HostTarget: could be Tracing, Performance Monitor, etc.
+ */
+class HostTargetTracingDelegate {
+ public:
+  HostTargetTracingDelegate() = default;
+  virtual ~HostTargetTracingDelegate() = default;
+
+  /**
+   * Fired when the corresponding HostTarget started recording a tracing session.
+   * The tracing state is expected to be initialized at this point and the delegate should be able to record events
+   * through HostTarget.
+   */
+  virtual void onTracingStarted(tracing::Mode /* tracingMode */, bool /* screenshotsCategoryEnabled */) {}
+
+  /**
+   * Fired when the corresponding HostTarget is about to end recording a tracing session.
+   * The tracing state is expected to be still initialized during the call and the delegate should be able to record
+   * events through HostTarget.
+   *
+   * Any attempts to record events after this callback is finished will fail.
+   */
+  virtual void onTracingStopped() {}
+
+  HostTargetTracingDelegate(const HostTargetTracingDelegate &) = delete;
+  HostTargetTracingDelegate(HostTargetTracingDelegate &&) = delete;
+  HostTargetTracingDelegate &operator=(const HostTargetTracingDelegate &) = delete;
+  HostTargetTracingDelegate &operator=(HostTargetTracingDelegate &&) = delete;
+};
+
+/**
  * Receives events from a HostTarget. This is a shared interface that each
  * React Native platform needs to implement in order to integrate with the
  * debugging stack.
@@ -161,6 +191,14 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
   {
     return std::nullopt;
   }
+
+  /**
+   * An optional delegate that will be used by HostTarget to notify about tracing-related events.
+   */
+  virtual HostTargetTracingDelegate *getTracingDelegate()
+  {
+    return nullptr;
+  }
 };
 
 /**
@@ -230,12 +268,15 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
  public:
   /**
    * Constructs a new HostTarget.
+   *
    * \param delegate The HostTargetDelegate that will
    * receive events from this HostTarget. The caller is responsible for ensuring
    * that the HostTargetDelegate outlives this object.
+   *
    * \param executor An executor that may be used to call methods on this
    * HostTarget while it exists. \c create additionally guarantees that the
    * executor will not be called after the HostTarget is destroyed.
+   *
    * \note Copies of the provided executor may be destroyed on arbitrary
    * threads, including after the HostTarget is destroyed. Callers must ensure
    * that such destructor calls are safe - e.g. if using a lambda as the
@@ -330,6 +371,7 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
   /**
    * Constructs a new HostTarget.
    * The caller must call setExecutor immediately afterwards.
+   *
    * \param delegate The HostTargetDelegate that will
    * receive events from this HostTarget. The caller is responsible for ensuring
    * that the HostTargetDelegate outlives this object.
