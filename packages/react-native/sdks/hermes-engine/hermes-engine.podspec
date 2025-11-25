@@ -72,10 +72,7 @@ Pod::Spec.new do |spec|
     # In other cases, when using Hermes V1, the prebuilt versioned binaries can be used.
     if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL
       hermes_compiler_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
-        'require.resolve(
-        "hermes-compiler",
-        {paths: [process.argv[1]]}
-        )', __dir__]).strip
+        "require.resolve(\"hermes-compiler\", {paths: [\"#{react_native_path}\"]})", __dir__]).strip
       )
 
       spec.user_target_xcconfig = {
