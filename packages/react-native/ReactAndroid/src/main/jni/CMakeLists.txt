@@ -155,7 +155,6 @@ add_react_android_subdir(src/main/jni/react/runtime/cxxreactpackage)
 add_react_android_subdir(src/main/jni/react/runtime/jni)
 add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
 add_react_android_subdir(src/main/jni/react/devsupport)
-add_react_android_subdir(src/main/jni/react/tracing)
 
 # SoMerging Utils
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)

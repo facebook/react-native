@@ -14,7 +14,6 @@ import android.os.Process
 import android.view.FrameMetrics
 import android.view.Window
 import com.facebook.proguard.annotations.DoNotStripAny
-import com.facebook.soloader.SoLoader
 
 @DoNotStripAny
 internal class FrameTimingsObserver(
@@ -23,8 +22,6 @@ internal class FrameTimingsObserver(
 ) {
   private val handler = Handler(Looper.getMainLooper())
   private var frameCounter: Int = 0
-
-  private external fun setLayerTreeId(frame: String, layerTreeId: Int)
 
   private val frameMetricsListener =
       Window.OnFrameMetricsAvailableListener { _, frameMetrics, _dropCount ->
@@ -65,14 +62,5 @@ internal class FrameTimingsObserver(
 
     window.removeOnFrameMetricsAvailableListener(frameMetricsListener)
     handler.removeCallbacksAndMessages(null)
-  }
-
-  private companion object {
-    init {
-      SoLoader.loadLibrary("react_devsupportjni")
-    }
-
-    @JvmStatic
-    private external fun reportFrameTiming(frame: Int, paintStartNanos: Long, paintEndNanos: Long)
   }
 }
