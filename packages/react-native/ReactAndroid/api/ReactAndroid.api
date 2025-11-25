@@ -1833,11 +1833,6 @@ public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate
 	public synthetic fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
 }
 
-public final class com/facebook/react/devsupport/BridgeDevSupportManager : com/facebook/react/devsupport/DevSupportManagerBase {
-	public fun <init> (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)V
-	public fun handleReloadJS ()V
-}
-
 public final class com/facebook/react/devsupport/BundleDownloader {
 	public static final field Companion Lcom/facebook/react/devsupport/BundleDownloader$Companion;
 	public fun <init> (Lokhttp3/OkHttpClient;)V
