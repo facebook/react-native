@@ -294,35 +294,6 @@ class PerformanceTracer {
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
 
-  struct PerformanceTracerSetLayerTreeIdEvent {
-    std::string frame;
-    int layerTreeId;
-    HighResTimeStamp start;
-    ThreadId threadId;
-    HighResTimeStamp createdAt = HighResTimeStamp::now();
-  };
-
-  struct PerformanceTracerFrameBeginDrawEvent {
-    int frameSeqId;
-    HighResTimeStamp start;
-    ThreadId threadId;
-    HighResTimeStamp createdAt = HighResTimeStamp::now();
-  };
-
-  struct PerformanceTracerFrameCommitEvent {
-    int frameSeqId;
-    HighResTimeStamp start;
-    ThreadId threadId;
-    HighResTimeStamp createdAt = HighResTimeStamp::now();
-  };
-
-  struct PerformanceTracerFrameDrawEvent {
-    int frameSeqId;
-    HighResTimeStamp start;
-    ThreadId threadId;
-    HighResTimeStamp createdAt = HighResTimeStamp::now();
-  };
-
   using PerformanceTracerEvent = std::variant<
       PerformanceTracerEventTimeStamp,
       PerformanceTracerEventEventLoopTask,
@@ -331,11 +302,7 @@ class PerformanceTracer {
       PerformanceTracerEventMeasure,
       PerformanceTracerResourceSendRequest,
       PerformanceTracerResourceReceiveResponse,
-      PerformanceTracerResourceFinish,
-      PerformanceTracerSetLayerTreeIdEvent,
-      PerformanceTracerFrameBeginDrawEvent,
-      PerformanceTracerFrameCommitEvent,
-      PerformanceTracerFrameDrawEvent>;
+      PerformanceTracerResourceFinish>;
 
 #pragma mark - Private fields and methods
 

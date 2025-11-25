@@ -750,63 +750,6 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                     .args = folly::dynamic::object("data", std::move(data)),
                 });
           },
-          [&](PerformanceTracerSetLayerTreeIdEvent&& event) {
-            events.emplace_back(
-                TraceEventGenerator::createSetLayerTreeIdEvent(
-                    std::move(event.frame),
-                    event.layerTreeId,
-                    processId_,
-                    event.threadId,
-                    event.start));
-          },
-          [&](PerformanceTracerFrameBeginDrawEvent&& event) {
-            folly::dynamic data = folly::dynamic::object(
-                "frameSeqId", event.frameSeqId)("layerTreeId", 1);
-
-            events.emplace_back(
-                TraceEvent{
-                    .name = "BeginFrame",
-                    .cat = {Category::Timeline},
-                    .ph = 'I',
-                    .ts = event.start,
-                    .pid = processId_,
-                    .s = 't',
-                    .tid = event.threadId,
-                    .args = std::move(data),
-                });
-          },
-          [&](PerformanceTracerFrameCommitEvent&& event) {
-            folly::dynamic data = folly::dynamic::object(
-                "frameSeqId", event.frameSeqId)("layerTreeId", 1);
-
-            events.emplace_back(
-                TraceEvent{
-                    .name = "Commit",
-                    .cat = {Category::Timeline},
-                    .ph = 'I',
-                    .ts = event.start,
-                    .pid = processId_,
-                    .s = 't',
-                    .tid = event.threadId,
-                    .args = std::move(data),
-                });
-          },
-          [&](PerformanceTracerFrameDrawEvent&& event) {
-            folly::dynamic data = folly::dynamic::object(
-                "frameSeqId", event.frameSeqId)("layerTreeId", 1);
-
-            events.emplace_back(
-                TraceEvent{
-                    .name = "DrawFrame",
-                    .cat = {Category::Timeline},
-                    .ph = 'I',
-                    .ts = event.start,
-                    .pid = processId_,
-                    .s = 't',
-                    .tid = event.threadId,
-                    .args = std::move(data),
-                });
-          },
       },
       std::move(event));
 }
