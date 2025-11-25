@@ -2233,15 +2233,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/StackFr
 	public abstract fun toJSON ()Lorg/json/JSONObject;
 }
 
-public final class com/facebook/react/devsupport/interfaces/TracingState : java/lang/Enum {
-	public static final field DISABLED Lcom/facebook/react/devsupport/interfaces/TracingState;
-	public static final field ENABLEDINBACKGROUNDMODE Lcom/facebook/react/devsupport/interfaces/TracingState;
-	public static final field ENABLEDINCDPMODE Lcom/facebook/react/devsupport/interfaces/TracingState;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/devsupport/interfaces/TracingState;
-	public static fun values ()[Lcom/facebook/react/devsupport/interfaces/TracingState;
-}
-
 public final class com/facebook/react/fabric/ComponentFactory {
 	public fun <init> ()V
 }

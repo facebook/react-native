@@ -10,7 +10,7 @@ package com.facebook.react.devsupport.interfaces
 import com.facebook.proguard.annotations.DoNotStripAny
 
 @DoNotStripAny
-public enum class TracingState {
+internal enum class TracingState {
   DISABLED, // There is no active trace
   ENABLEDINBACKGROUNDMODE, // Trace is currently running in background mode
   ENABLEDINCDPMODE, // Trace is currently running in CDP mode
