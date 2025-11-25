@@ -104,8 +104,10 @@ async function buildPackage(packageName /*: string */) {
     const entryPoints = await getEntryPoints(packageName);
 
     const files = glob
-      .sync(path.resolve(PACKAGES_DIR, packageName, SRC_DIR, '**/*'), {
+      .sync('**/*', {
         nodir: true,
+        absolute: true,
+        cwd: path.resolve(PACKAGES_DIR, packageName, SRC_DIR),
       })
       .filter(
         file =>
@@ -429,9 +431,11 @@ function normalizeExportsTarget(target /*: string */) /*: string */ {
 }
 
 function validateTypeScriptDefs(packageName /*: string */) {
-  const files = glob.sync(
-    path.resolve(PACKAGES_DIR, packageName, BUILD_DIR, '**/*.d.ts'),
-  );
+  const files = glob.sync('**/*.d.ts', {
+    nodir: true,
+    absolute: true,
+    cwd: path.resolve(PACKAGES_DIR, packageName, BUILD_DIR),
+  });
   const compilerOptions = {
     ...getTypeScriptCompilerOptions(packageName),
     noEmit: true,

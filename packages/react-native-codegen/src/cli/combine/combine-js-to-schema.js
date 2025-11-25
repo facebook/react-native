@@ -66,13 +66,10 @@ function expandDirectoriesIntoFiles(
       if (!fs.lstatSync(file).isDirectory()) {
         return [file];
       }
-      const filePattern = path.sep === '\\' ? file.replace(/\\/g, '/') : file;
-      return glob.sync(`${filePattern}/**/*{,.fb}.{js,ts,tsx}`, {
+      return glob.sync('**/*{,.fb}.{js,ts,tsx}', {
         nodir: true,
-        // TODO: This will remove the need of slash substitution above for Windows,
-        // but it requires glob@v9+; with the package currenlty relying on
-        // glob@7.1.1; and flow-typed repo not having definitions for glob@9+.
-        // windowsPathsNoEscape: true,
+        absolute: true,
+        cwd: file,
       });
     })
     .filter(element => filterJSFile(element, platform, exclude));

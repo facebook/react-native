@@ -179,17 +179,15 @@ function main() {
 
   let start = performance.now();
 
-  let files /*: string[]*/ = [];
-  for (const searchGlob of config.include) {
-    // glob 7 doesn't support searchGlob as a string[]
-    files = files.concat(
-      glob.sync(searchGlob, {
+  const files = Array.from(
+    new Set(
+      glob.sync(config.include, {
         ignore: config.exclude,
-        root: GLOB_PROJECT_ROOT,
+        cwd: GLOB_PROJECT_ROOT,
+        absolute: true,
       }),
-    );
-  }
-  files = Array.from(new Set(files));
+    ),
+  );
 
   // Sort the files to make the output deterministic
   files.sort();
