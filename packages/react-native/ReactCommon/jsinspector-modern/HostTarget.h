@@ -22,7 +22,6 @@
 
 #include <jsinspector-modern/tracing/TracingCategory.h>
 #include <jsinspector-modern/tracing/TracingMode.h>
-#include <jsinspector-modern/tracing/TracingState.h>
 
 #ifndef JSINSPECTOR_EXPORT
 #ifdef _MSC_VER
@@ -347,11 +346,6 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
    * Stops previously started trace recording.
    */
   tracing::TraceRecordingState stopTracing();
-
-  /**
-   * Returns the state of the background trace, running, stopped, or disabled
-   */
-  tracing::TracingState tracingState() const;
 
   /**
    * Returns whether there is an active session with the Fusebox client, i.e.
