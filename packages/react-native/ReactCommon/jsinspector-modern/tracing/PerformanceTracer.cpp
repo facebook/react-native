@@ -7,6 +7,7 @@
 
 #include "PerformanceTracer.h"
 #include "Timing.h"
+#include "TraceEventGenerator.h"
 #include "TraceEventSerializer.h"
 #include "TracingCategory.h"
 
@@ -794,20 +795,13 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 });
           },
           [&](PerformanceTracerSetLayerTreeIdEvent&& event) {
-            folly::dynamic data = folly::dynamic::object("frame", event.frame)(
-                "layerTreeId", event.layerTreeId);
-
             events.emplace_back(
-                TraceEvent{
-                    .name = "SetLayerTreeId",
-                    .cat = {Category::Timeline},
-                    .ph = 'I',
-                    .ts = event.start,
-                    .pid = processId_,
-                    .s = 't',
-                    .tid = event.threadId,
-                    .args = folly::dynamic::object("data", std::move(data)),
-                });
+                TraceEventGenerator::createSetLayerTreeIdEvent(
+                    std::move(event.frame),
+                    event.layerTreeId,
+                    processId_,
+                    event.threadId,
+                    event.start));
           },
           [&](PerformanceTracerFrameBeginDrawEvent&& event) {
             folly::dynamic data = folly::dynamic::object(
