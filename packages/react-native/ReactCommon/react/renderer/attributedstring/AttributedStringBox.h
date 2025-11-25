@@ -71,6 +71,9 @@ struct std::hash<facebook::react::AttributedStringBox> {
         return std::hash<facebook::react::AttributedString>()(attributedStringBox.getValue());
       case facebook::react::AttributedStringBox::Mode::OpaquePointer:
         return std::hash<std::shared_ptr<void>>()(attributedStringBox.getOpaquePointer());
+      default:
+        react_native_assert(false && "Invalid AttributedStringBox::Mode");
+        return 0;
     }
   }
 };
