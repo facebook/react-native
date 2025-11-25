@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ce3949d3f64bff3c23675b0c17d7f43>>
+ * @generated SignedSource<<ba55223e8f0f536190ee17a82c459134>>
  */
 
 /**
@@ -63,11 +63,6 @@ class ReactNativeFeatureFlags {
    * Dispatch view commands in mount item order.
    */
   RN_EXPORT static bool disableEarlyViewCommandExecution();
-
-  /**
-   * Prevents use of Fabric commit in C++ Animated implementation
-   */
-  RN_EXPORT static bool disableFabricCommitInCXXAnimated();
 
   /**
    * Force disable view preallocation for images triggered from createNode off the main thread on Android

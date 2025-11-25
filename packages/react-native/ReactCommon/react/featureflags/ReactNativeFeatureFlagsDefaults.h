@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ed1bd5b83694d078de26f2c65214fac>>
+ * @generated SignedSource<<1de8bf337f3ea0bf88b21fcd0ec96722>>
  */
 
 /**
@@ -44,10 +44,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableEarlyViewCommandExecution() override {
-    return false;
-  }
-
-  bool disableFabricCommitInCXXAnimated() override {
     return false;
   }
 

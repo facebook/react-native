@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ced7f276dc7402285eb2472094cf2e41>>
+ * @generated SignedSource<<beb262bccd5457244fb5f24a5b74cbdc>>
  */
 
 /**
@@ -45,8 +45,6 @@ class NativeReactNativeFeatureFlags
   bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
 
   bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
-
-  bool disableFabricCommitInCXXAnimated(jsi::Runtime& runtime);
 
   bool disableImageViewPreallocationAndroid(jsi::Runtime& runtime);
 

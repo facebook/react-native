@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a324a12013cfab0e52bcdbbea6c6424e>>
+ * @generated SignedSource<<a4143ac4b1da8f61f5f144362bc40209>>
  * @flow strict
  * @noformat
  */
@@ -56,7 +56,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   cxxNativeAnimatedEnabled: Getter<boolean>,
   cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
   disableEarlyViewCommandExecution: Getter<boolean>,
-  disableFabricCommitInCXXAnimated: Getter<boolean>,
   disableImageViewPreallocationAndroid: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean>,
@@ -249,10 +248,6 @@ export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGe
  * Dispatch view commands in mount item order.
  */
 export const disableEarlyViewCommandExecution: Getter<boolean> = createNativeFlagGetter('disableEarlyViewCommandExecution', false);
-/**
- * Prevents use of Fabric commit in C++ Animated implementation
- */
-export const disableFabricCommitInCXXAnimated: Getter<boolean> = createNativeFlagGetter('disableFabricCommitInCXXAnimated', false);
 /**
  * Force disable view preallocation for images triggered from createNode off the main thread on Android
  */

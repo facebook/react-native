@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1c742f07be860af7f36041b1ae8d681c>>
+ * @generated SignedSource<<c0e50c34e468462ec0b019db612f2d07>>
  */
 
 /**
@@ -59,12 +59,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableEarlyViewCommandExecution(): Boolean = accessor.disableEarlyViewCommandExecution()
-
-  /**
-   * Prevents use of Fabric commit in C++ Animated implementation
-   */
-  @JvmStatic
-  public fun disableFabricCommitInCXXAnimated(): Boolean = accessor.disableFabricCommitInCXXAnimated()
 
   /**
    * Force disable view preallocation for images triggered from createNode off the main thread on Android
