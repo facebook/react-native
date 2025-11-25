@@ -81,6 +81,6 @@ internal class ReactHostImplDevHelper(private val delegate: ReactHostImpl) :
       delegate.loadBundle(bundleLoader)
 
   override fun getTracingState(): TracingState {
-    return delegate.reactHostInspectorTarget?.getTracingState() ?: TracingState.ENABLEDINCDPMODE
+    return delegate.reactHostInspectorTarget?.getTracingState() ?: TracingState.ENABLED_IN_CDP_MODE
   }
 }

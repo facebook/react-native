@@ -399,21 +399,21 @@ public abstract class DevSupportManagerBase(
 
       val analyzePerformanceItemString =
           when (tracingState) {
-            TracingState.ENABLEDINBACKGROUNDMODE ->
+            TracingState.ENABLED_IN_BACKGROUND_MODE ->
                 applicationContext.getString(R.string.catalyst_performance_background)
-            TracingState.ENABLEDINCDPMODE ->
+            TracingState.ENABLED_IN_CDP_MODE ->
                 applicationContext.getString(R.string.catalyst_performance_cdp)
             TracingState.DISABLED ->
                 applicationContext.getString(R.string.catalyst_performance_disabled)
           }
 
-      if (!isConnected || tracingState == TracingState.ENABLEDINCDPMODE) {
+      if (!isConnected || tracingState == TracingState.ENABLED_IN_CDP_MODE) {
         disabledItemKeys.add(analyzePerformanceItemString)
       }
 
       options[analyzePerformanceItemString] =
           when (tracingState) {
-            TracingState.ENABLEDINBACKGROUNDMODE ->
+            TracingState.ENABLED_IN_BACKGROUND_MODE ->
                 DevOptionHandler {
                   UiThreadUtil.runOnUiThread {
                     if (reactInstanceDevHelper is PerfMonitorDevHelper) {
@@ -430,7 +430,7 @@ public abstract class DevSupportManagerBase(
                   if (reactInstanceDevHelper is PerfMonitorDevHelper)
                       reactInstanceDevHelper.inspectorTarget?.resumeBackgroundTrace()
                 }
-            TracingState.ENABLEDINCDPMODE -> DevOptionHandler {}
+            TracingState.ENABLED_IN_CDP_MODE -> DevOptionHandler {}
           }
     }
 

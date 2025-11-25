@@ -33,11 +33,11 @@ jni::local_ref<JTracingState::javaobject> convertCPPTracingStateToJava(
     case TracingState::EnabledInBackgroundMode:
       return valueOfMethod(
           tracingStateClass,
-          jni::make_jstring("ENABLEDINBACKGROUNDMODE").get());
+          jni::make_jstring("ENABLED_IN_BACKGROUND_MODE").get());
 
     case TracingState::EnabledInCDPMode:
       return valueOfMethod(
-          tracingStateClass, jni::make_jstring("ENABLEDINCDPMODE").get());
+          tracingStateClass, jni::make_jstring("ENABLED_IN_CDP_MODE").get());
 
     default:
       jni::throwNewJavaException(

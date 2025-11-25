@@ -64,7 +64,7 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
   override fun resumeBackgroundTrace() {
     startBackgroundTrace()
     perfMonitorListeners.forEach { listener ->
-      listener.onRecordingStateChanged(TracingState.ENABLEDINBACKGROUNDMODE)
+      listener.onRecordingStateChanged(TracingState.ENABLED_IN_BACKGROUND_MODE)
     }
   }
 

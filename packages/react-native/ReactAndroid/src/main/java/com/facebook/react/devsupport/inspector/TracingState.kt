@@ -12,6 +12,6 @@ import com.facebook.proguard.annotations.DoNotStripAny
 @DoNotStripAny
 internal enum class TracingState {
   DISABLED, // There is no active trace
-  ENABLEDINBACKGROUNDMODE, // Trace is currently running in background mode
-  ENABLEDINCDPMODE, // Trace is currently running in CDP mode
+  ENABLED_IN_BACKGROUND_MODE, // Trace is currently running in background mode
+  ENABLED_IN_CDP_MODE, // Trace is currently running in CDP mode
 }
