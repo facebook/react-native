@@ -253,6 +253,8 @@ void JReactHostInspectorTarget::registerNatives() {
       makeNativeMethod(
           "unregisterTracingStateListener",
           JReactHostInspectorTarget::unregisterTracingStateListener),
+      makeNativeMethod(
+          "recordFrameTimings", JReactHostInspectorTarget::recordFrameTimings),
   });
 }
 
@@ -288,6 +290,17 @@ void JReactHostInspectorTarget::unregisterTracingStateListener(
 
 HostTargetTracingDelegate* JReactHostInspectorTarget::getTracingDelegate() {
   return tracingDelegate_.get();
+}
+
+void JReactHostInspectorTarget::recordFrameTimings(
+    jni::alias_ref<JFrameTimingSequence::javaobject> frameTimingSequence) {
+  inspectorTarget_->recordFrameTimings({
+      frameTimingSequence->getId(),
+      frameTimingSequence->getThreadId(),
+      frameTimingSequence->getBeginDrawingTimestamp(),
+      frameTimingSequence->getCommitTimestamp(),
+      frameTimingSequence->getEndDrawingTimestamp(),
+  });
 }
 
 void TracingDelegate::onTracingStarted(
