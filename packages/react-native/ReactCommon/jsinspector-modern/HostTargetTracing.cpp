@@ -35,22 +35,33 @@ bool HostTarget::startTracing(
   if (traceRecording_ != nullptr) {
     if (traceRecording_->isBackgroundInitiated() &&
         tracingMode == tracing::Mode::CDP) {
-      traceRecording_.reset();
+      stopTracing();
     } else {
       return false;
     }
   }
+
+  auto screenshotsCategoryEnabled =
+      enabledCategories.contains(tracing::Category::Screenshot);
 
   traceRecording_ = std::make_unique<HostTargetTraceRecording>(
       *this, tracingMode, std::move(enabledCategories));
   traceRecording_->setTracedInstance(currentInstance_.get());
   traceRecording_->start();
 
+  if (auto tracingDelegate = delegate_.getTracingDelegate()) {
+    tracingDelegate->onTracingStarted(tracingMode, screenshotsCategoryEnabled);
+  }
+
   return true;
 }
 
 tracing::TraceRecordingState HostTarget::stopTracing() {
   assert(traceRecording_ != nullptr && "No tracing in progress");
+
+  if (auto tracingDelegate = delegate_.getTracingDelegate()) {
+    tracingDelegate->onTracingStopped();
+  }
 
   auto state = traceRecording_->stop();
   traceRecording_.reset();
