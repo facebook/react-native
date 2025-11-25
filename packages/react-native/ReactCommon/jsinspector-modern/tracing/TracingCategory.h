@@ -39,6 +39,9 @@ inline std::string tracingCategoryToString(const Category &category)
       return "v8.execute";
     case Category::Screenshot:
       return "disabled-by-default-devtools.screenshot";
+    default:
+      folly::assume_unreachable();
+      return "unknown";
   }
 }
 
