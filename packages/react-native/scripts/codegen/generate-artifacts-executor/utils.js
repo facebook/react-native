@@ -265,7 +265,8 @@ function findExternalLibraries(
           pkgJson.dependencies[dependency],
           'package.json',
         );
-      } else {
+      }
+      if (!configFilePath) {
         return [];
       }
     }
