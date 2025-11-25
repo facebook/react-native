@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "FrameTimingSequence.h"
 #include "InstanceTracingProfile.h"
 #include "RuntimeSamplingProfile.h"
 
@@ -28,6 +29,9 @@ struct HostTracingProfile {
 
   // The timestamp at which this Trace Recording started.
   HighResTimeStamp startTime;
+
+  // Frame timings captured on the Host side.
+  std::vector<FrameTimingSequence> frameTimings;
 
   // All captured Instance Tracing Profiles during this Trace Recording.
   std::vector<InstanceTracingProfile> instanceTracingProfiles;

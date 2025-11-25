@@ -20,7 +20,15 @@ HostTargetTraceRecording::HostTargetTraceRecording(
     : hostTarget_(hostTarget),
       tracingMode_(tracingMode),
       enabledCategories_(std::move(enabledCategories)),
-      windowSize_(windowSize) {}
+      windowSize_(windowSize) {
+  if (windowSize) {
+    frameTimings_ = tracing::TimeWindowedBuffer<tracing::FrameTimingSequence>(
+        [](auto& sequence) { return sequence.beginDrawingTimestamp; },
+        *windowSize);
+  } else {
+    frameTimings_ = tracing::TimeWindowedBuffer<tracing::FrameTimingSequence>();
+  };
+}
 
 void HostTargetTraceRecording::setTracedInstance(
     InstanceTarget* instanceTarget) {
@@ -60,9 +68,19 @@ tracing::HostTracingProfile HostTargetTraceRecording::stop() {
   return tracing::HostTracingProfile{
       .processId = oscompat::getCurrentProcessId(),
       .startTime = startTime,
+      .frameTimings = frameTimings_.pruneExpiredAndExtract(),
       .instanceTracingProfiles = std::move(state.instanceTracingProfiles),
       .runtimeSamplingProfiles = std::move(state.runtimeSamplingProfiles),
   };
+}
+
+void HostTargetTraceRecording::recordFrameTimings(
+    tracing::FrameTimingSequence frameTimingSequence) {
+  assert(
+      state_.has_value() &&
+      "The state for this tracing session has not been initialized.");
+
+  frameTimings_.push(frameTimingSequence);
 }
 
 } // namespace facebook::react::jsinspector_modern

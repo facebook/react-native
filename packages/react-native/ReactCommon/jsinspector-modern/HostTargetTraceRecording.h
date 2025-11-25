@@ -11,7 +11,9 @@
 #include "HostTarget.h"
 #include "InstanceTarget.h"
 
+#include <jsinspector-modern/tracing/FrameTimingSequence.h>
 #include <jsinspector-modern/tracing/HostTracingProfile.h>
+#include <jsinspector-modern/tracing/TimeWindowedBuffer.h>
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
 #include <jsinspector-modern/tracing/TracingCategory.h>
 #include <react/timing/primitives.h>
@@ -67,6 +69,13 @@ class HostTargetTraceRecording {
    */
   tracing::HostTracingProfile stop();
 
+  /**
+   * Adds the frame timing sequence to the current state of this trace recording.
+   *
+   * The caller guarantees the protection from data races. This is protected by the tracing mutex in HostTarget.
+   */
+  void recordFrameTimings(tracing::FrameTimingSequence frameTimingSequence);
+
  private:
   /**
    * The Host for which this Trace Recording is going to happen.
@@ -104,6 +113,11 @@ class HostTargetTraceRecording {
    * The size of the time window for this recording.
    */
   std::optional<HighResDuration> windowSize_;
+
+  /**
+   * Frame timings captured on the Host side.
+   */
+  tracing::TimeWindowedBuffer<tracing::FrameTimingSequence> frameTimings_;
 };
 
 } // namespace facebook::react::jsinspector_modern
