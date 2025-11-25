@@ -10,6 +10,15 @@
 
 namespace facebook::react::jsinspector_modern {
 
+namespace {
+
+// The size of the timeline for the trace recording that happened in the
+// background.
+constexpr HighResDuration kBackgroundTraceWindowSize =
+    HighResDuration::fromMilliseconds(20000);
+
+} // namespace
+
 bool HostTargetController::startTracing(
     tracing::Mode tracingMode,
     std::set<tracing::Category> enabledCategories) {
@@ -39,11 +48,14 @@ bool HostTarget::startTracing(
     }
   }
 
+  auto timeWindow = tracingMode == tracing::Mode::Background
+      ? std::make_optional(kBackgroundTraceWindowSize)
+      : std::nullopt;
   auto screenshotsCategoryEnabled =
       enabledCategories.contains(tracing::Category::Screenshot);
 
   traceRecording_ = std::make_unique<HostTargetTraceRecording>(
-      *this, tracingMode, std::move(enabledCategories));
+      *this, tracingMode, std::move(enabledCategories), timeWindow);
   traceRecording_->setTracedInstance(currentInstance_.get());
   traceRecording_->start();
 

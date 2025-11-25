@@ -14,6 +14,7 @@
 #include <jsinspector-modern/tracing/HostTracingProfile.h>
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
 #include <jsinspector-modern/tracing/TracingCategory.h>
+#include <react/timing/primitives.h>
 
 #include <optional>
 #include <set>
@@ -31,10 +32,11 @@ namespace facebook::react::jsinspector_modern {
  */
 class HostTargetTraceRecording {
  public:
-  explicit HostTargetTraceRecording(
+  HostTargetTraceRecording(
       HostTarget &hostTarget,
       tracing::Mode tracingMode,
-      std::set<tracing::Category> enabledCategories);
+      std::set<tracing::Category> enabledCategories,
+      std::optional<HighResDuration> windowSize = std::nullopt);
 
   inline bool isBackgroundInitiated() const
   {
@@ -97,6 +99,11 @@ class HostTargetTraceRecording {
    * The list of categories that are enabled for this recording.
    */
   std::set<tracing::Category> enabledCategories_;
+
+  /**
+   * The size of the time window for this recording.
+   */
+  std::optional<HighResDuration> windowSize_;
 };
 
 } // namespace facebook::react::jsinspector_modern
