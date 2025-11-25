@@ -192,7 +192,7 @@ bool JReactHostInspectorTarget::startBackgroundTrace() {
   }
 }
 
-tracing::TraceRecordingState JReactHostInspectorTarget::stopTracing() {
+tracing::HostTracingProfile JReactHostInspectorTarget::stopTracing() {
   if (inspectorTarget_) {
     return inspectorTarget_->stopTracing();
   } else {
@@ -205,12 +205,12 @@ tracing::TraceRecordingState JReactHostInspectorTarget::stopTracing() {
 jboolean JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace() {
   auto capturedTrace = inspectorTarget_->stopTracing();
   if (inspectorTarget_->hasActiveSessionWithFuseboxClient()) {
-    inspectorTarget_->emitTraceRecordingForFirstFuseboxClient(
+    inspectorTarget_->emitTracingProfileForFirstFuseboxClient(
         std::move(capturedTrace));
     return jboolean(true);
   }
 
-  stashTraceRecordingState(std::move(capturedTrace));
+  stashTracingProfile(std::move(capturedTrace));
   return jboolean(false);
 }
 
@@ -218,16 +218,16 @@ void JReactHostInspectorTarget::stopAndDiscardBackgroundTrace() {
   inspectorTarget_->stopTracing();
 }
 
-void JReactHostInspectorTarget::stashTraceRecordingState(
-    tracing::TraceRecordingState&& state) {
-  stashedTraceRecordingState_ = std::move(state);
+void JReactHostInspectorTarget::stashTracingProfile(
+    tracing::HostTracingProfile&& hostTracingProfile) {
+  stashedTracingProfile_ = std::move(hostTracingProfile);
 }
 
-std::optional<tracing::TraceRecordingState> JReactHostInspectorTarget::
-    unstable_getTraceRecordingThatWillBeEmittedOnInitialization() {
-  auto state = std::move(stashedTraceRecordingState_);
-  stashedTraceRecordingState_.reset();
-  return state;
+std::optional<tracing::HostTracingProfile> JReactHostInspectorTarget::
+    unstable_getHostTracingProfileThatWillBeEmittedOnInitialization() {
+  auto tracingProfile = std::move(stashedTracingProfile_);
+  stashedTracingProfile_.reset();
+  return tracingProfile;
 }
 
 void JReactHostInspectorTarget::registerNatives() {

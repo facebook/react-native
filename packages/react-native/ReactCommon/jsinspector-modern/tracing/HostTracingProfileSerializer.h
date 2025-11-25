@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include "HostTracingProfile.h"
 #include "TraceEvent.h"
-#include "TraceRecordingState.h"
 
 #include <folly/dynamic.h>
 #include <vector>
@@ -16,19 +16,19 @@
 namespace facebook::react::jsinspector_modern::tracing {
 
 /**
- * A serializer for TraceRecordingState that can be used for tranforming the
- * recording into sequence of serialized Trace Events.
+ * A serializer for HostTracingProfile that can be used for transforming the
+ * profile into sequence of serialized Trace Events.
  */
-class TraceRecordingStateSerializer {
+class HostTracingProfileSerializer {
  public:
   /**
-   * Transforms the recording into a sequence of serialized Trace Events, which
+   * Transforms the profile into a sequence of serialized Trace Events, which
    * is split in chunks of sizes \p performanceTraceEventsChunkSize or
    * \p profileTraceEventsChunkSize, depending on type, and sent with \p
    * chunkCallback.
    */
   static void emitAsDataCollectedChunks(
-      TraceRecordingState &&recording,
+      HostTracingProfile &&hostTracingProfile,
       const std::function<void(folly::dynamic &&chunk)> &chunkCallback,
       uint16_t performanceTraceEventsChunkSize,
       uint16_t profileTraceEventsChunkSize);
