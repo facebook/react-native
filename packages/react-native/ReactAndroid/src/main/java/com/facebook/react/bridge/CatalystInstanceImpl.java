@@ -172,16 +172,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mOuter = new WeakReference<>(outer);
     }
 
-    public void onBatchComplete() {
-      CatalystInstanceImpl impl = mOuter.get();
-      if (impl != null) {
-        impl.mNativeModulesQueueThread.runOnQueue(
-            () -> {
-              impl.mNativeModuleRegistry.onBatchComplete();
-            });
-      }
-    }
-
     public void incrementPendingJSCalls() {
       CatalystInstanceImpl impl = mOuter.get();
       if (impl != null) {
