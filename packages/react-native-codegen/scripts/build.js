@@ -106,8 +106,7 @@ function buildFile(file, silent) {
 }
 
 const srcDir = path.resolve(__dirname, '..', SRC_DIR);
-const pattern = path.resolve(srcDir, '**/*');
-const files = glob.sync(pattern, {nodir: true});
+const files = glob.sync('**/*', {nodir: true, cwd: srcDir});
 
 process.stdout.write(fixedWidth(`${path.basename(PACKAGE_DIR)}\n`));
 

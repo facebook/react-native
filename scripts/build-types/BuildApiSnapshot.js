@@ -202,7 +202,11 @@ async function preparePackagesInTempDir(
     }),
   );
 
-  const typeDefs = glob.sync(`${tempDirectory}/**/*.d.ts`);
+  const typeDefs = glob.sync('**/*.d.ts', {
+    nodir: true,
+    absolute: true,
+    cwd: tempDirectory,
+  });
   await Promise.all(
     typeDefs.map(async file => {
       const source = await fs.readFile(file, 'utf-8');

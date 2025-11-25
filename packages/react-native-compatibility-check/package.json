@@ -33,6 +33,6 @@
   },
   "devDependencies": {
     "flow-remove-types": "^2.237.2",
-    "rimraf": "^3.0.2"
+    "rimraf": "^6.1.2"
   }
 }
