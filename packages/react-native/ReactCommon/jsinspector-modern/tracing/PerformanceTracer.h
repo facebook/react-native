@@ -164,19 +164,6 @@ class PerformanceTracer {
       int decodedBodyLength);
 
   /**
-   * Sets the active layer tree ID in Chrome DevTools. This is needed in
-   * order for frames to be parsed.
-   *
-   * https://chromedevtools.github.io/devtools-protocol/tot/LayerTree/
-   */
-  void setLayerTreeId(std::string frame, int layerTreeId);
-
-  /**
-   * Reports the required frame CDP events for a given native frame.
-   */
-  void reportFrameTiming(int frameSeqId, HighResTimeStamp start, HighResTimeStamp end);
-
-  /**
    * Creates "Profile" Trace Event.
    *
    * Can be serialized to JSON with TraceEventSerializer::serialize.
