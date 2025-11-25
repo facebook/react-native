@@ -193,8 +193,8 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
   void loadNetworkResource(
       const jsinspector_modern::LoadNetworkResourceRequest &params,
       jsinspector_modern::ScopedExecutor<jsinspector_modern::NetworkRequestListener> executor) override;
-  std::optional<jsinspector_modern::tracing::TraceRecordingState>
-  unstable_getTraceRecordingThatWillBeEmittedOnInitialization() override;
+  std::optional<jsinspector_modern::tracing::HostTracingProfile>
+  unstable_getHostTracingProfileThatWillBeEmittedOnInitialization() override;
   jsinspector_modern::HostTargetTracingDelegate *getTracingDelegate() override;
 
  private:
@@ -213,20 +213,19 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
   std::optional<int> inspectorPageId_;
 
   /**
-   * Stops previously started trace recording and returns the captured trace.
+   * Stops previously started trace recording and returns the captured HostTracingProfile.
    */
-  jsinspector_modern::tracing::TraceRecordingState stopTracing();
+  jsinspector_modern::tracing::HostTracingProfile stopTracing();
   /**
-   * Stashes previously recorded trace recording state that will be emitted when
+   * Stashes previously recorded HostTracingProfile that will be emitted when
    * CDP session is created. Once emitted, the value will be cleared from this
    * instance.
    */
-  void stashTraceRecordingState(jsinspector_modern::tracing::TraceRecordingState &&state);
+  void stashTracingProfile(jsinspector_modern::tracing::HostTracingProfile &&hostTracingProfile);
   /**
-   * Previously recorded trace recording state that will be emitted when
-   * CDP session is created.
+   * Previously recorded HostTracingProfile that will be emitted when CDP session is created.
    */
-  std::optional<jsinspector_modern::tracing::TraceRecordingState> stashedTraceRecordingState_;
+  std::optional<jsinspector_modern::tracing::HostTracingProfile> stashedTracingProfile_;
   /**
    * Encapsulates the logic around tracing for this HostInspectorTarget.
    */
