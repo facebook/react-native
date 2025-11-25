@@ -20,10 +20,10 @@ class PlatformTimerRegistryImpl : public PlatformTimerRegistry {
  public:
   PlatformTimerRegistryImpl() noexcept = default;
   PlatformTimerRegistryImpl(const PlatformTimerRegistryImpl &) = delete;
+  PlatformTimerRegistryImpl(PlatformTimerRegistryImpl &&) = delete;
   PlatformTimerRegistryImpl &operator=(const PlatformTimerRegistryImpl &) = delete;
-  PlatformTimerRegistryImpl(PlatformTimerRegistryImpl &&) noexcept = delete;
-  PlatformTimerRegistryImpl &operator=(PlatformTimerRegistryImpl &&) noexcept = delete;
-  ~PlatformTimerRegistryImpl() noexcept = default;
+  PlatformTimerRegistryImpl &operator=(PlatformTimerRegistryImpl &&) = delete;
+  ~PlatformTimerRegistryImpl() noexcept override = default;
 
   void createTimer(uint32_t timerId, double delayMs) override;
 
