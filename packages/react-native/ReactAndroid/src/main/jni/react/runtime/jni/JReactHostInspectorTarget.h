@@ -32,6 +32,43 @@ struct JTracingStateListener : public jni::JavaClass<JTracingStateListener> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/inspector/TracingStateListener;";
 };
 
+struct JFrameTimingSequence : public jni::JavaClass<JFrameTimingSequence> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/inspector/FrameTimingSequence;";
+
+  uint64_t getId() const
+  {
+    auto field = javaClassStatic()->getField<jint>("id");
+    return static_cast<uint64_t>(getFieldValue(field));
+  }
+
+  uint64_t getThreadId() const
+  {
+    auto field = javaClassStatic()->getField<jint>("threadId");
+    return static_cast<uint64_t>(getFieldValue(field));
+  }
+
+  HighResTimeStamp getBeginDrawingTimestamp() const
+  {
+    auto field = javaClassStatic()->getField<jlong>("beginDrawingTimestamp");
+    return HighResTimeStamp::fromChronoSteadyClockTimePoint(
+        std::chrono::steady_clock::time_point(std::chrono::nanoseconds(getFieldValue(field))));
+  }
+
+  HighResTimeStamp getCommitTimestamp() const
+  {
+    auto field = javaClassStatic()->getField<jlong>("commitTimestamp");
+    return HighResTimeStamp::fromChronoSteadyClockTimePoint(
+        std::chrono::steady_clock::time_point(std::chrono::nanoseconds(getFieldValue(field))));
+  }
+
+  HighResTimeStamp getEndDrawingTimestamp() const
+  {
+    auto field = javaClassStatic()->getField<jlong>("endDrawingTimestamp");
+    return HighResTimeStamp::fromChronoSteadyClockTimePoint(
+        std::chrono::steady_clock::time_point(std::chrono::nanoseconds(getFieldValue(field))));
+  }
+};
+
 struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/runtime/ReactHostImpl;";
 
@@ -184,6 +221,11 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
    * \param subscriptionId The subscription ID returned from JReactHostInspectorTarget::registerTracingStateListener.
    */
   void unregisterTracingStateListener(jlong subscriptionId);
+
+  /**
+   * Propagate frame timings information to the Inspector's Tracing subsystem.
+   */
+  void recordFrameTimings(jni::alias_ref<JFrameTimingSequence::javaobject> frameTimingSequence);
 
   // HostTargetDelegate methods
   jsinspector_modern::HostTargetMetadata getMetadata() override;

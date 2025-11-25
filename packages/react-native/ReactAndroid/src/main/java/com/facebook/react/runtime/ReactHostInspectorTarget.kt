@@ -12,6 +12,7 @@ import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.devsupport.inspector.FrameTimingSequence
 import com.facebook.react.devsupport.inspector.TracingState
 import com.facebook.react.devsupport.inspector.TracingStateListener
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTarget
@@ -47,6 +48,8 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
   external fun registerTracingStateListener(listener: TracingStateListener): Long
 
   external fun unregisterTracingStateListener(subscriptionId: Long)
+
+  external fun recordFrameTimings(frameTimingSequence: FrameTimingSequence)
 
   override fun addPerfMonitorListener(listener: PerfMonitorUpdateListener) {
     perfMonitorListeners.add(listener)
