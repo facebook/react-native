@@ -148,12 +148,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     // are the default view flags in View.java:
     // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
     // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
-    // Therefore we set the following options as such:
-    if (ReactNativeFeatureFlags.shouldResetClickableWhenRecyclingView()) {
-      view.setClickable(ReactNativeFeatureFlags.shouldSetIsClickableByDefault());
-    }
+
+    // NOTE: setClickable MUST be called AFTER setOnClickListener because
+    // the latter has the side effect of setting isClickable=true on some views!
     if (ReactNativeFeatureFlags.shouldResetOnClickListenerWhenRecyclingView()) {
       view.setOnClickListener(null);
+    }
+    if (ReactNativeFeatureFlags.shouldResetClickableWhenRecyclingView()) {
+      view.setClickable(ReactNativeFeatureFlags.shouldSetIsClickableByDefault());
     }
     view.setFocusable(false);
     view.setFocusableInTouchMode(false);
