@@ -56,4 +56,24 @@ TEST_F(TracingTest, EnablesSamplingProfilerOnlyCategoryIsSpecified) {
           AtJsonPtr("/cat", "disabled-by-default-v8.cpu_profiler"))));
 }
 
+TEST_F(TracingTest, RecordsFrameTimings) {
+  InSequence s;
+
+  page_->startTracing(tracing::Mode::Background, {tracing::Category::Timeline});
+
+  auto now = HighResTimeStamp::now();
+  auto frameTimingSequence = tracing::FrameTimingSequence(
+      1, // id
+      11, // threadId
+      now,
+      now + HighResDuration::fromNanoseconds(10),
+      now + HighResDuration::fromNanoseconds(50));
+
+  page_->recordFrameTimings(frameTimingSequence);
+
+  auto tracingProfile = page_->stopTracing();
+  EXPECT_EQ(tracingProfile.frameTimings.size(), 1u);
+  EXPECT_EQ(tracingProfile.frameTimings[0].id, frameTimingSequence.id);
+}
+
 } // namespace facebook::react::jsinspector_modern
