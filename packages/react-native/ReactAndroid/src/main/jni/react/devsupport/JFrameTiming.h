@@ -16,7 +16,7 @@ namespace facebook::react::jsinspector_modern {
  */
 class JFrameTiming : public jni::JavaClass<JFrameTiming> {
  public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/FrameTiming;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/inspector/FrameTimingsObserver;";
 
   static void
   reportFrameTiming(jni::alias_ref<jclass> /*unused*/, jint frame, jlong paintStartNanos, jlong paintEndNanos);
