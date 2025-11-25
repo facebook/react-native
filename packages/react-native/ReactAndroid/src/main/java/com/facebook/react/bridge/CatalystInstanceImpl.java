@@ -7,7 +7,6 @@
 
 package com.facebook.react.bridge;
 
-import static com.facebook.infer.annotation.Assertions.assertCondition;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
@@ -119,15 +118,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
-  private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
-
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
-      JSExceptionHandler jSExceptionHandler,
-      @Nullable ReactInstanceManagerInspectorTarget inspectorTarget) {
+      JSExceptionHandler jSExceptionHandler) {
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     Systrace.beginSection(TRACE_TAG_REACT, "createCatalystInstanceImpl");
 
@@ -142,7 +138,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSExceptionHandler = jSExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
-    mInspectorTarget = inspectorTarget;
     Systrace.endSection(TRACE_TAG_REACT);
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
@@ -153,8 +148,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         jsExecutor,
         mReactQueueConfiguration.getJSQueueThread(),
         mNativeModulesQueueThread,
-        mNativeModuleRegistry.getJavaModules(this),
-        mInspectorTarget);
+        mNativeModuleRegistry.getJavaModules(this));
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
     Systrace.endSection(TRACE_TAG_REACT);
 
@@ -219,8 +213,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       JavaScriptExecutor jsExecutor,
       MessageQueueThread jsQueue,
       MessageQueueThread moduleQueue,
-      Collection<JavaModuleWrapper> javaModules,
-      @Nullable ReactInstanceManagerInspectorTarget inspectorTarget);
+      Collection<JavaModuleWrapper> javaModules);
 
   @Override
   public void setSourceURLs(String deviceURL, String remoteURL) {
@@ -350,13 +343,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     if (mDestroyed) {
       return;
     }
-
-    if (mInspectorTarget != null) {
-      assertCondition(
-          mInspectorTarget.isValid(),
-          "ReactInstanceManager inspector target destroyed before instance was unregistered");
-    }
-    unregisterFromInspector();
 
     // TODO: tell all APIs to shut down
     ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_START);
@@ -605,7 +591,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable NativeModuleRegistry mRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable JSExceptionHandler mJSExceptionHandler;
-    private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
 
     public Builder setReactQueueConfigurationSpec(
         ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {
@@ -633,20 +618,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
-    public Builder setInspectorTarget(
-        @Nullable ReactInstanceManagerInspectorTarget inspectorTarget) {
-      mInspectorTarget = inspectorTarget;
-      return this;
-    }
-
     public CatalystInstanceImpl build() {
       return new CatalystInstanceImpl(
           Assertions.assertNotNull(mReactQueueConfigurationSpec),
           Assertions.assertNotNull(mJSExecutor),
           Assertions.assertNotNull(mRegistry),
           Assertions.assertNotNull(mJSBundleLoader),
-          Assertions.assertNotNull(mJSExceptionHandler),
-          mInspectorTarget);
+          Assertions.assertNotNull(mJSExceptionHandler));
     }
   }
 }
