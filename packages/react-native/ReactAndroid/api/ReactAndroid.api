@@ -648,7 +648,6 @@ public class com/facebook/react/bridge/CatalystInstanceImpl : com/facebook/react
 public class com/facebook/react/bridge/CatalystInstanceImpl$Builder {
 	public fun <init> ()V
 	public fun build ()Lcom/facebook/react/bridge/CatalystInstanceImpl;
-	public fun setInspectorTarget (Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
 	public fun setJSBundleLoader (Lcom/facebook/react/bridge/JSBundleLoader;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
 	public fun setJSExceptionHandler (Lcom/facebook/react/bridge/JSExceptionHandler;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
 	public fun setJSExecutor (Lcom/facebook/react/bridge/JavaScriptExecutor;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;

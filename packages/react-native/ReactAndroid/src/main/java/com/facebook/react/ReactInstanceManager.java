@@ -60,7 +60,6 @@ import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactCxxErrorHandler;
-import com.facebook.react.bridge.ReactInstanceManagerInspectorTarget;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -78,14 +77,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
-import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
-import com.facebook.react.devsupport.inspector.InspectorNetworkHelper;
-import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
-import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
@@ -101,7 +96,6 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
@@ -113,7 +107,6 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,7 +180,6 @@ public class ReactInstanceManager {
   private final Context mApplicationContext;
   private @Nullable @ThreadConfined(UI) DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private @Nullable Activity mCurrentActivity;
-  private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
   private final Collection<com.facebook.react.ReactInstanceEventListener>
       mReactInstanceEventListeners =
           Collections.synchronizedList(
@@ -826,15 +818,6 @@ public class ReactInstanceManager {
       }
     }
 
-    // If the host has been invalidated, now that the current context/instance
-    // has been destroyed, we can safely destroy the host's inspector target.
-    if (mInstanceManagerInvalidated) {
-      if (mInspectorTarget != null) {
-        mInspectorTarget.close();
-        mInspectorTarget = null;
-      }
-    }
-
     mHasStartedCreatingInitialContext = false;
     if (!mKeepActivity) {
       mCurrentActivity = null;
@@ -1458,8 +1441,7 @@ public class ReactInstanceManager {
             .setJSExecutor(jsExecutor)
             .setRegistry(nativeModuleRegistry)
             .setJSBundleLoader(jsBundleLoader)
-            .setJSExceptionHandler(exceptionHandler)
-            .setInspectorTarget(getOrCreateInspectorTarget());
+            .setJSExceptionHandler(exceptionHandler);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
@@ -1564,74 +1546,5 @@ public class ReactInstanceManager {
         .flush();
     nativeModuleRegistryBuilder.processPackage(reactPackage);
     SystraceMessage.endSection(TRACE_TAG_REACT).flush();
-  }
-
-  private static class InspectorTargetDelegateImpl
-      implements ReactInstanceManagerInspectorTarget.TargetDelegate {
-    // This weak reference breaks the cycle between the C++ HostTarget and the
-    // Java ReactInstanceManager, preventing memory leaks in apps that create
-    // multiple ReactInstanceManagers over time.
-    private WeakReference<ReactInstanceManager> mReactInstanceManagerWeak;
-
-    public InspectorTargetDelegateImpl(ReactInstanceManager inspectorTarget) {
-      mReactInstanceManagerWeak = new WeakReference<ReactInstanceManager>(inspectorTarget);
-    }
-
-    @Override
-    public Map<String, String> getMetadata() {
-      ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
-
-      return AndroidInfoHelpers.getInspectorHostMetadata(
-          reactInstanceManager != null ? reactInstanceManager.mApplicationContext : null);
-    }
-
-    @Override
-    public void onReload() {
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
-            if (reactInstanceManager != null) {
-              reactInstanceManager.mDevSupportManager.handleReloadJS();
-            }
-          });
-    }
-
-    @Override
-    public void onSetPausedInDebuggerMessage(@Nullable String message) {
-      ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
-      if (reactInstanceManager == null) {
-        return;
-      }
-      if (message == null) {
-        reactInstanceManager.mDevSupportManager.hidePausedInDebuggerOverlay();
-      } else {
-        reactInstanceManager.mDevSupportManager.showPausedInDebuggerOverlay(
-            message,
-            new PausedInDebuggerOverlayCommandListener() {
-              @Override
-              public void onResume() {
-                UiThreadUtil.assertOnUiThread();
-                if (reactInstanceManager.mInspectorTarget != null) {
-                  reactInstanceManager.mInspectorTarget.sendDebuggerResumeCommand();
-                }
-              }
-            });
-      }
-    }
-
-    @Override
-    public void loadNetworkResource(String url, InspectorNetworkRequestListener listener) {
-      InspectorNetworkHelper.loadNetworkResource(url, listener);
-    }
-  }
-
-  private @Nullable ReactInstanceManagerInspectorTarget getOrCreateInspectorTarget() {
-    if (mInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
-
-      mInspectorTarget =
-          new ReactInstanceManagerInspectorTarget(new InspectorTargetDelegateImpl(this));
-    }
-
-    return mInspectorTarget;
   }
 }
