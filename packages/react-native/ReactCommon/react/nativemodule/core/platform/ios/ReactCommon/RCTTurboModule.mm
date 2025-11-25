@@ -461,11 +461,7 @@ void ObjCTurboModule::performVoidMethodInvocation(
       return;
     }
 
-    if (shouldVoidMethodsExecuteSync_) {
-      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodName);
-    } else {
-      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodName, asyncCallCounter);
-    }
+    TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodName, asyncCallCounter);
 
     @try {
       [inv invokeWithTarget:strongModule];
@@ -475,26 +471,18 @@ void ObjCTurboModule::performVoidMethodInvocation(
       [retainedObjectsForInvocation removeAllObjects];
     }
 
-    if (shouldVoidMethodsExecuteSync_) {
-      TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodName);
-    } else {
-      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodName, asyncCallCounter);
-    }
+    TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodName, asyncCallCounter);
 
     return;
   };
 
-  if (shouldVoidMethodsExecuteSync_) {
-    nativeMethodCallInvoker_->invokeSync(methodNameStr, [&]() -> void { block(); });
-  } else {
-    asyncCallCounter = getUniqueId();
-    TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
-    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [moduleName, methodNameStr, block]() -> void {
-      TraceSection s(
-          "RCTTurboModuleAsyncMethodInvocation", "module", moduleName, "method", methodNameStr, "returnType", "void");
-      block();
-    });
-  }
+  asyncCallCounter = getUniqueId();
+  TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
+  nativeMethodCallInvoker_->invokeAsync(methodNameStr, [moduleName, methodNameStr, block]() -> void {
+    TraceSection s(
+        "RCTTurboModuleAsyncMethodInvocation", "module", moduleName, "method", methodNameStr, "returnType", "void");
+    block();
+  });
 }
 
 jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
@@ -757,10 +745,6 @@ bool ObjCTurboModule::isMethodSync(TurboModuleMethodValueKind returnType)
     return true;
   }
 
-  if (returnType == VoidKind && shouldVoidMethodsExecuteSync_) {
-    return true;
-  }
-
   return !(returnType == VoidKind || returnType == PromiseKind);
 }
 
@@ -768,8 +752,7 @@ ObjCTurboModule::ObjCTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(params.instance),
       nativeMethodCallInvoker_(params.nativeMethodCallInvoker),
-      isSyncModule_(params.isSyncModule),
-      shouldVoidMethodsExecuteSync_(params.shouldVoidMethodsExecuteSync)
+      isSyncModule_(params.isSyncModule)
 {
 }
 

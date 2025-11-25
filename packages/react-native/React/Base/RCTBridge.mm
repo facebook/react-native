@@ -242,17 +242,6 @@ void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logL
   bridgeProxyLoggingLevel = logLevel;
 }
 
-// Turn on TurboModule sync execution of void methods
-static BOOL gTurboModuleEnableSyncVoidMethods = NO;
-BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
-{
-  return gTurboModuleEnableSyncVoidMethods;
-}
-void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
-{
-  gTurboModuleEnableSyncVoidMethods = enabled;
-}
-
 BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
 BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void)
 {
