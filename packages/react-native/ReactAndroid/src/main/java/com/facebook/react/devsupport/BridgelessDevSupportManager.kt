@@ -10,12 +10,12 @@ package com.facebook.react.devsupport
 import android.content.Context
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.SurfaceDelegateFactory
+import com.facebook.react.devsupport.inspector.TracingState
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
-import com.facebook.react.devsupport.interfaces.TracingState
 import com.facebook.react.packagerconnection.RequestHandler
 
 /**

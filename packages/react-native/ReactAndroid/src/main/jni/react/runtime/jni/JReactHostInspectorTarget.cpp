@@ -21,7 +21,7 @@ namespace {
 jni::local_ref<JTracingState::javaobject> convertCPPTracingStateToJava(
     TracingState tracingState) {
   auto tracingStateClass = jni::findClassLocal(
-      "com/facebook/react/devsupport/interfaces/TracingState");
+      "com/facebook/react/devsupport/inspector/TracingState");
   auto valueOfMethod =
       tracingStateClass->getStaticMethod<JTracingState(jstring)>("valueOf");
 

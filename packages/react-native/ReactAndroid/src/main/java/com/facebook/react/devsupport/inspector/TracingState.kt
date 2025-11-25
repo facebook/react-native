@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport.interfaces
+package com.facebook.react.devsupport.inspector
 
 import com.facebook.proguard.annotations.DoNotStripAny
 
