@@ -7,6 +7,7 @@
 
 #include "HostTracingProfileSerializer.h"
 #include "RuntimeSamplingProfileTraceEventSerializer.h"
+#include "TraceEventGenerator.h"
 #include "TraceEventSerializer.h"
 
 namespace facebook::react::jsinspector_modern::tracing {
@@ -20,13 +21,26 @@ folly::dynamic generateNewChunk(uint16_t chunkSize) {
   return chunk;
 }
 
+/**
+ * Hardcoded layer tree ID for all recorded frames.
+ * https://chromedevtools.github.io/devtools-protocol/tot/LayerTree/
+ */
+constexpr int FALLBACK_LAYER_TREE_ID = 1;
+
 } // namespace
 
 /* static */ void HostTracingProfileSerializer::emitAsDataCollectedChunks(
     HostTracingProfile&& hostTracingProfile,
     const std::function<void(folly::dynamic&&)>& chunkCallback,
-    uint16_t performanceTraceEventsChunkSize,
+    uint16_t traceEventsChunkSize,
     uint16_t profileTraceEventsChunkSize) {
+  emitFrameTimings(
+      std::move(hostTracingProfile.frameTimings),
+      hostTracingProfile.processId,
+      hostTracingProfile.startTime,
+      chunkCallback,
+      traceEventsChunkSize);
+
   auto instancesProfiles =
       std::move(hostTracingProfile.instanceTracingProfiles);
   IdGenerator profileIdGenerator;
@@ -35,7 +49,7 @@ folly::dynamic generateNewChunk(uint16_t chunkSize) {
     emitPerformanceTraceEvents(
         std::move(instanceProfile.performanceTraceEvents),
         chunkCallback,
-        performanceTraceEventsChunkSize);
+        traceEventsChunkSize);
   }
 
   RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
@@ -59,6 +73,54 @@ folly::dynamic generateNewChunk(uint16_t chunkSize) {
     }
 
     chunk.push_back(TraceEventSerializer::serialize(std::move(event)));
+  }
+
+  if (!chunk.empty()) {
+    chunkCallback(std::move(chunk));
+  }
+}
+
+/* static */ void HostTracingProfileSerializer::emitFrameTimings(
+    std::vector<FrameTimingSequence>&& frameTimings,
+    ProcessId processId,
+    HighResTimeStamp recordingStartTimestamp,
+    const std::function<void(folly::dynamic&& chunk)>& chunkCallback,
+    uint16_t chunkSize) {
+  if (frameTimings.empty()) {
+    return;
+  }
+
+  folly::dynamic chunk = generateNewChunk(chunkSize);
+  auto setLayerTreeIdEvent = TraceEventGenerator::createSetLayerTreeIdEvent(
+      "", // Hardcoded frame name for the default (and only) layer.
+      FALLBACK_LAYER_TREE_ID,
+      processId,
+      frameTimings.front().threadId,
+      recordingStartTimestamp);
+  chunk.push_back(
+      TraceEventSerializer::serialize(std::move(setLayerTreeIdEvent)));
+
+  for (const auto& frameTimingSequence : frameTimings) {
+    if (chunk.size() >= chunkSize) {
+      chunkCallback(std::move(chunk));
+      chunk = generateNewChunk(chunkSize);
+    }
+
+    auto [beginDrawingEvent, commitEvent, endDrawingEvent] =
+        TraceEventGenerator::createFrameTimingsEvents(
+            frameTimingSequence.id,
+            FALLBACK_LAYER_TREE_ID,
+            frameTimingSequence.beginDrawingTimestamp,
+            frameTimingSequence.commitTimestamp,
+            frameTimingSequence.endDrawingTimestamp,
+            processId,
+            frameTimingSequence.threadId);
+
+    chunk.push_back(
+        TraceEventSerializer::serialize(std::move(beginDrawingEvent)));
+    chunk.push_back(TraceEventSerializer::serialize(std::move(commitEvent)));
+    chunk.push_back(
+        TraceEventSerializer::serialize(std::move(endDrawingEvent)));
   }
 
   if (!chunk.empty()) {

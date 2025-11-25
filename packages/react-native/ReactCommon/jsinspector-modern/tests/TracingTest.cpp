@@ -76,4 +76,23 @@ TEST_F(TracingTest, RecordsFrameTimings) {
   EXPECT_EQ(tracingProfile.frameTimings[0].id, frameTimingSequence.id);
 }
 
+TEST_F(TracingTest, EmitsRecordedFrameTimingSequences) {
+  InSequence s;
+
+  startTracing();
+  auto now = HighResTimeStamp::now();
+  page_->recordFrameTimings(
+      tracing::FrameTimingSequence(
+          1, // id
+          11, // threadId
+          now,
+          now + HighResDuration::fromNanoseconds(10),
+          now + HighResDuration::fromNanoseconds(50)));
+
+  auto allTraceEvents = endTracingAndCollectEvents();
+  EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "BeginFrame")));
+  EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "Commit")));
+  EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "DrawFrame")));
+}
+
 } // namespace facebook::react::jsinspector_modern
