@@ -11,6 +11,7 @@
 #include "HostTarget.h"
 #include "InstanceTarget.h"
 
+#include <jsinspector-modern/tracing/HostTracingProfile.h>
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
 #include <jsinspector-modern/tracing/TracingCategory.h>
 
@@ -58,11 +59,11 @@ class HostTargetTraceRecording {
   void start();
 
   /**
-   * Stops the recording and drops the recording state.
+   * Stops the recording and returns the recorded HostTracingProfile.
    *
    * Will deallocate all Tracing Agents.
    */
-  tracing::TraceRecordingState stop();
+  tracing::HostTracingProfile stop();
 
  private:
   /**
@@ -74,6 +75,11 @@ class HostTargetTraceRecording {
    * The mode in which this trace recording was initialized.
    */
   tracing::Mode tracingMode_;
+
+  /**
+   * The timestamp at which this Trace Recording started.
+   */
+  std::optional<HighResTimeStamp> startTime_;
 
   /**
    * The state of the current Trace Recording.
