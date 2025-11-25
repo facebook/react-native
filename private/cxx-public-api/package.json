@@ -12,7 +12,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "glob": "^7.1.1",
+    "glob": "^13.0.0",
     "ini": "^5.0.0"
   }
 }
