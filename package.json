@@ -100,7 +100,7 @@
     "prettier-plugin-hermes-parser": "0.29.1",
     "react": "19.1.0",
     "react-test-renderer": "19.1.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^6.1.2",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
     "supports-color": "^7.1.0",
