@@ -19,7 +19,7 @@ const {wrapOptional: wrapCxxOptional} = require('../../../TypeUtils/Cxx');
 const {
   wrapOptional: wrapObjCOptional,
 } = require('../../../TypeUtils/Objective-C');
-const {capitalize} = require('../../../Utils');
+const {capitalize, parseValidUnionType} = require('../../../Utils');
 const {getNamespacedStructName, getSafePropertyName} = require('../Utils');
 
 const StructTemplate = ({
@@ -87,8 +87,21 @@ function toObjCType(
       return 'NSString *';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *';
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return wrapCxxOptional('bool', isRequired);
+        case 'number':
+          return wrapCxxOptional('double', isRequired);
+        case 'object':
+          return wrapObjCOptional('id<NSObject>', isRequired);
+        case 'string':
+          return 'NSString *';
+        default:
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
+      }
     case 'NumberTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -173,8 +186,21 @@ function toObjCValue(
       return RCTBridgingTo('String');
     case 'StringLiteralTypeAnnotation':
       return RCTBridgingTo('String');
-    case 'StringLiteralUnionTypeAnnotation':
-      return RCTBridgingTo('String');
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return RCTBridgingTo('Bool');
+        case 'number':
+          return RCTBridgingTo('Double');
+        case 'object':
+          return value;
+        case 'string':
+          return RCTBridgingTo('String');
+        default:
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
+      }
     case 'NumberTypeAnnotation':
       return RCTBridgingTo('Double');
     case 'NumberLiteralTypeAnnotation':

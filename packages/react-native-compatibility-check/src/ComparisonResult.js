@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {NativeModuleUnionTypeAnnotationMemberType} from '../../react-native-codegen/src/CodegenSchema';
 import type {
   CompleteTypeAnnotation,
   NamedShape,
@@ -53,12 +54,17 @@ type MemberComparisonError = {
   }>,
   previousError?: TypeComparisonError,
 };
+type UnionMemberComparisonError = {
+  type: 'UnionMemberComparisonError',
+  addedMembers: Array<NativeModuleUnionTypeAnnotationMemberType>,
+};
 export type TypeComparisonError =
   | TypeAnnotationComparisonError
   | TypeInformationComparisonError
   | PropertyComparisonError
   | PositionalComparisonError
-  | MemberComparisonError;
+  | MemberComparisonError
+  | UnionMemberComparisonError;
 
 // Collects changes that may be type safe within parameters, unions, intersections, and tuples
 export type PositionalComparisonResult = {
@@ -189,6 +195,15 @@ export function typeAnnotationComparisonError(
     newerAnnotation,
     olderAnnotation,
     previousError,
+  };
+}
+
+export function unionMemberComparisonError(
+  addedMembers: Array<NativeModuleUnionTypeAnnotationMemberType>,
+): TypeComparisonError {
+  return {
+    type: 'UnionMemberComparisonError',
+    addedMembers,
   };
 }
 

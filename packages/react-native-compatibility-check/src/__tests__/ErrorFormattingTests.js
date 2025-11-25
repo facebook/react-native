@@ -33,6 +33,14 @@ export const okayChanges = [
     'native-component-with-props/NativeComponent',
     'native-component-with-props-default-change/NativeComponent',
   ],
+  [
+    'native-module-with-union-from-native/NativeModule',
+    'native-module-with-union-from-native-changes/NativeModule',
+  ],
+  [
+    'native-module-with-union-object/NativeModule',
+    'native-module-with-union-object-changes/NativeModule',
+  ],
 ];
 
 export const incompatibleChanges = [
@@ -111,12 +119,16 @@ export const incompatibleChanges = [
     'native-module-with-union/NativeModule',
   ],
   [
-    'native-module-with-union-from-native/NativeModule',
-    'native-module-with-union-from-native-changes/NativeModule',
-  ],
-  [
     'native-module-with-union/NativeModule',
     'native-module-with-union-confusing-string-literals/NativeModule',
+  ],
+  [
+    'native-module-with-union-number/NativeModule',
+    'native-module-with-union-number-changes/NativeModule',
+  ],
+  [
+    'native-module-with-union-boolean/NativeModule',
+    'native-module-with-union-boolean-changes/NativeModule',
   ],
   [
     'native-component-with-command/NativeComponent',

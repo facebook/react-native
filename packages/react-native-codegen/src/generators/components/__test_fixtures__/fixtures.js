@@ -1273,7 +1273,7 @@ const EVENT_PROPS: SchemaType = {
                       typeAnnotation: {
                         type: 'ArrayTypeAnnotation',
                         elementType: {
-                          type: 'StringLiteralUnionTypeAnnotation',
+                          type: 'UnionTypeAnnotation',
                           types: [
                             {
                               type: 'StringLiteralTypeAnnotation',
@@ -1383,7 +1383,7 @@ const EVENT_PROPS: SchemaType = {
                       name: 'orientation',
                       optional: false,
                       typeAnnotation: {
-                        type: 'StringLiteralUnionTypeAnnotation',
+                        type: 'UnionTypeAnnotation',
                         types: [
                           {
                             type: 'StringLiteralTypeAnnotation',

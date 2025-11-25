@@ -10,20 +10,33 @@
 
 import type {NativeModuleEventEmitterShape} from '../../../CodegenSchema';
 
-const {toPascalCase} = require('../../Utils');
+const {parseValidUnionType, toPascalCase} = require('../../Utils');
 
 function getEventEmitterTypeObjCType(
   eventEmitter: NativeModuleEventEmitterShape,
 ): string {
-  const type = eventEmitter.typeAnnotation.typeAnnotation.type;
+  const typeAnnotation = eventEmitter.typeAnnotation.typeAnnotation;
 
-  switch (type) {
+  switch (typeAnnotation.type) {
     case 'StringTypeAnnotation':
       return 'NSString *_Nonnull';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *_Nonnull';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *_Nonnull';
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return 'BOOL';
+        case 'number':
+          return 'NSNumber *_Nonnull';
+        case 'object':
+          return 'NSDictionary *';
+        case 'string':
+          return 'NSString *_Nonnull';
+        default:
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
+      }
     case 'NumberTypeAnnotation':
     case 'NumberLiteralTypeAnnotation':
       return 'NSNumber *_Nonnull';
@@ -45,7 +58,7 @@ function getEventEmitterTypeObjCType(
         `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
       );
     default:
-      (type: empty);
+      (typeAnnotation.type: empty);
       throw new Error(
         `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
       );

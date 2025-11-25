@@ -18,10 +18,10 @@ import type {
   NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
+  NativeModuleUnionTypeAnnotationMemberType,
   Nullable,
   PropTypeAnnotation,
   SchemaType,
-  UnionTypeAnnotationMemberType,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {
@@ -146,15 +146,7 @@ export interface Parser {
    */
   remapUnionTypeAnnotationMemberNames(
     types: $FlowFixMe,
-  ): UnionTypeAnnotationMemberType[];
-  /**
-   * Given a union annotation members types, it returns an array of string literals.
-   * @parameter membersTypes: union annotation members types
-   * @returns: an array of string literals.
-   */
-  getStringLiteralUnionTypeAnnotationStringLiterals(
-    types: $FlowFixMe,
-  ): string[];
+  ): NativeModuleUnionTypeAnnotationMemberType[];
   /**
    * Given the name of a file, it returns a Schema.
    * @parameter filename: the name of the file.
