@@ -50,23 +50,18 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
   if (nativeAnimatedNodesManager_ == nullptr) {
     auto* uiManager = &UIManagerBinding::getBinding(runtime)->getUIManager();
 
+    mergedValueDispatcher_ = std::make_unique<MergedValueDispatcher>(
+        [jsInvoker](std::function<void()>&& func) {
+          jsInvoker->invokeAsync(std::move(func));
+        },
+        [uiManager](std::unordered_map<Tag, folly::dynamic>&& tagToProps) {
+          uiManager->updateShadowTree(std::move(tagToProps));
+        });
+
     NativeAnimatedNodesManager::FabricCommitCallback fabricCommitCallback =
-        nullptr;
-
-    if (!ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated()) {
-      mergedValueDispatcher_ = std::make_unique<MergedValueDispatcher>(
-          [jsInvoker](std::function<void()>&& func) {
-            jsInvoker->invokeAsync(std::move(func));
-          },
-          [uiManager](std::unordered_map<Tag, folly::dynamic>&& tagToProps) {
-            uiManager->updateShadowTree(std::move(tagToProps));
-          });
-
-      fabricCommitCallback =
-          [this](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
-            mergedValueDispatcher_->dispatch(tagToProps);
-          };
-    }
+        [this](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+          mergedValueDispatcher_->dispatch(tagToProps);
+        };
 
     auto directManipulationCallback =
         [uiManager](Tag viewTag, const folly::dynamic& props) {
