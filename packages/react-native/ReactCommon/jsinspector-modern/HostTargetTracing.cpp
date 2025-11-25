@@ -39,10 +39,17 @@ std::shared_ptr<HostTracingAgent> HostTarget::createTracingAgent(
 bool HostTarget::startTracing(
     tracing::Mode tracingMode,
     std::set<tracing::Category> enabledCategories) {
+  std::lock_guard lock(tracingMutex_);
+
   if (traceRecording_ != nullptr) {
     if (traceRecording_->isBackgroundInitiated() &&
         tracingMode == tracing::Mode::CDP) {
-      stopTracing();
+      if (auto tracingDelegate = delegate_.getTracingDelegate()) {
+        tracingDelegate->onTracingStopped();
+      }
+
+      traceRecording_->stop();
+      traceRecording_.reset();
     } else {
       return false;
     }
@@ -67,6 +74,8 @@ bool HostTarget::startTracing(
 }
 
 tracing::HostTracingProfile HostTarget::stopTracing() {
+  std::lock_guard lock(tracingMutex_);
+
   assert(traceRecording_ != nullptr && "No tracing in progress");
 
   if (auto tracingDelegate = delegate_.getTracingDelegate()) {
@@ -77,6 +86,19 @@ tracing::HostTracingProfile HostTarget::stopTracing() {
   traceRecording_.reset();
 
   return profile;
+}
+
+void HostTarget::recordFrameTimings(
+    tracing::FrameTimingSequence frameTimingSequence) {
+  std::lock_guard lock(tracingMutex_);
+
+  if (traceRecording_) {
+    traceRecording_->recordFrameTimings(frameTimingSequence);
+  } else {
+    assert(
+        false &&
+        "The HostTarget is not being profiled. Did you call recordFrameTimings() from the native Host side when there is no tracing in progress?");
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern
