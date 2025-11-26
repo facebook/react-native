@@ -63,3 +63,7 @@ See [Running on Device](https://reactnative.dev/docs/running-on-device) for addi
 Building the app on both iOS and Android means building the React Native framework from source. This way you're running the latest native and JS code the way you see it in your clone of the github repo.
 
 This is different from apps created using `react-native init` which have a dependency on a specific version of React Native JS and native code, declared in a `package.json` file (and `build.gradle` for Android apps).
+
+## Running tests (iOS)
+
+RNTester provides both integration and unit tests. You can run them all by hitting `Cmd+U` in Xcode. Alternatively, it is possible to run just unit tests or integration tests using the keybinding after selecting the appropriate scheme (either `RNTesterUnitTests` or `RNTesterIntegrationTests`).

@@ -369,7 +369,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                   moduleProvider:(RCTBridgeModuleListProvider)block
                    launchOptions:(NSDictionary *)launchOptions
 {
-  // Only enabld this assertion in OSS
+  // Only enable this assertion in OSS
 #if COCOAPODS
   [RCTBridge throwIfOnLegacyArch];
 #endif
