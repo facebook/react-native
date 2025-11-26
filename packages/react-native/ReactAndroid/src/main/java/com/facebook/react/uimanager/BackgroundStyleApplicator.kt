@@ -20,7 +20,9 @@ import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import com.facebook.react.R
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.dpToPx
@@ -45,8 +47,12 @@ import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.BoxShadow
+import com.facebook.react.uimanager.style.ClipPath
+import com.facebook.react.uimanager.style.ClipPathUtils
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.uimanager.style.OutlineStyle
+import com.facebook.react.views.view.GeometryBoxUtil
+import com.facebook.react.views.view.GeometryBoxUtil.getGeometryBoxBounds
 
 /**
  * Utility object responsible for applying backgrounds, borders, and related visual effects to
@@ -461,6 +467,73 @@ public object BackgroundStyleApplicator {
       shadowStyles.add(checkNotNull(BoxShadow.parse(shadows.getMap(i), view.context)))
     }
     BackgroundStyleApplicator.setBoxShadow(view, shadowStyles)
+  }
+
+  @JvmStatic
+  public fun setClipPath(view: View, clipPathMap: ReadableMap?) {
+    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
+      return
+    }
+
+    val clipPath = ClipPath.parse(clipPathMap)
+    view.setTag(R.id.clip_path, clipPath)
+    view.invalidate()
+  }
+
+  @JvmStatic
+  public fun applyClipPathIfPresent(view: View, canvas: Canvas) {
+    val clipPath = view.getTag(R.id.clip_path) as? ClipPath ?: return
+    val bounds = getGeometryBoxBounds(view, clipPath.geometryBox, getComputedBorderInsets(view))
+    val drawingRect = Rect()
+    view.getDrawingRect(drawingRect)
+
+    val path: Path? = if (clipPath.shape != null) {
+      ClipPathUtils.createPathFromBasicShape(clipPath.shape, bounds)
+    } else if (clipPath.geometryBox != null) {
+      val composite = getCompositeBackgroundDrawable(view)
+      val borderRadius = composite?.borderRadius
+      val computedBorderInsets =
+        composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
+
+      if (borderRadius != null) {
+        val adjustedBorderRadius = GeometryBoxUtil.adjustBorderRadiusForGeometryBox(
+          clipPath.geometryBox,
+          borderRadius.resolve(
+            composite.layoutDirection,
+            view.context,
+            PixelUtil.toDIPFromPixel(drawingRect.width().toFloat()),
+            PixelUtil.toDIPFromPixel(drawingRect.height().toFloat())
+          ), 
+          computedBorderInsets, 
+          view
+        )
+
+        if (adjustedBorderRadius != null) {
+          ClipPathUtils.createRoundedRectPath(bounds, adjustedBorderRadius)
+        } else {
+          null
+        }
+      } else {
+        null
+      }
+    } else {
+      null
+    }
+
+    if (path != null) {
+      canvas.clipPath(path)
+    } else {
+      canvas.clipRect(bounds)
+    }
+  }
+
+  @JvmStatic
+  public fun getComputedBorderInsets(view: View): RectF? {
+    val composite = getCompositeBackgroundDrawable(view)
+    if (composite == null) {
+      return null
+    }
+    return composite.borderInsets?.resolve(composite.layoutDirection, view.context)
   }
 
   /**

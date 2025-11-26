@@ -22,6 +22,7 @@ import android.graphics.Shader.TileMode
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import androidx.core.graphics.withSave
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
 import com.facebook.drawee.backends.pipeline.Fresco
@@ -370,6 +371,13 @@ public class ReactImageView(
   // Disable rasterizing to offscreen layer in order to preserve background effects like box-shadow
   // or outline which may draw outside of bounds.
   public override fun hasOverlappingRendering(): Boolean = false
+
+  public override fun draw(canvas: Canvas) {
+    canvas.withSave {
+      BackgroundStyleApplicator.applyClipPathIfPresent(this@ReactImageView, this)
+      super.draw(this)
+    }
+  }
 
   public override fun onDraw(canvas: Canvas) {
     BackgroundStyleApplicator.clipToPaddingBoxWithAntiAliasing(this, canvas) {
