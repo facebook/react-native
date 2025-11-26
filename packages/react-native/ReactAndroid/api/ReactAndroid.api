@@ -958,7 +958,6 @@ public final class com/facebook/react/bridge/NativeModuleRegistry {
 	public final fun getModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
 	public final fun hasModule (Ljava/lang/Class;)Z
 	public final fun hasModule (Ljava/lang/String;)Z
-	public final fun onBatchComplete ()V
 }
 
 public final class com/facebook/react/bridge/NoSuchKeyException : java/lang/RuntimeException {
@@ -4334,7 +4333,7 @@ public final class com/facebook/react/uimanager/UIManagerHelper {
 	public static final fun getUIManagerForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/bridge/UIManager;
 }
 
-public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/OnBatchCompleteListener, com/facebook/react/bridge/UIManager {
+public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager {
 	public static final field NAME Ljava/lang/String;
 	public static final field TAG Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/ViewManagerResolver;I)V
@@ -4369,7 +4368,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun measure (ILcom/facebook/react/bridge/Callback;)V
 	public fun measureInWindow (ILcom/facebook/react/bridge/Callback;)V
 	public fun measureLayout (IILcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
-	public fun onBatchComplete ()V
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
 	public fun onHostResume ()V
