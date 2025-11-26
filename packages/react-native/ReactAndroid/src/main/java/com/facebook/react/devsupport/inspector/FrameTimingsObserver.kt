@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport
+package com.facebook.react.devsupport.inspector
 
 import android.os.Build
 import android.os.Handler
@@ -16,11 +16,8 @@ import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.soloader.SoLoader
 
 @DoNotStripAny
-internal class FrameTiming(private val window: Window) {
-  init {
-    SoLoader.loadLibrary("react_devsupportjni")
-  }
-
+internal class FrameTimingsObserver(private val window: Window) {
+  private val handler = Handler(Looper.getMainLooper())
   private var frameCounter: Int = 0
 
   private external fun setLayerTreeId(frame: String, layerTreeId: Int)
@@ -40,18 +37,12 @@ internal class FrameTiming(private val window: Window) {
         )
       }
 
-  companion object {
-    @JvmStatic
-    private external fun reportFrameTiming(frame: Int, paintStartNanos: Long, paintEndNanos: Long)
-  }
-
-  private val handler = Handler(Looper.getMainLooper())
-
-  internal fun startMonitoring() {
+  fun start() {
     frameCounter = 0
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
       return
     }
+
     window.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
 
     // Hardcoded frame identfier and layerTreeId. Needed for DevTools to
@@ -59,10 +50,21 @@ internal class FrameTiming(private val window: Window) {
     setLayerTreeId("", 1)
   }
 
-  internal fun stopMonitoring() {
+  fun stop() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
       return
     }
+
     window.removeOnFrameMetricsAvailableListener(frameMetricsListener)
+    handler.removeCallbacksAndMessages(null)
+  }
+
+  private companion object {
+    init {
+      SoLoader.loadLibrary("react_devsupportjni")
+    }
+
+    @JvmStatic
+    private external fun reportFrameTiming(frame: Int, paintStartNanos: Long, paintEndNanos: Long)
   }
 }
