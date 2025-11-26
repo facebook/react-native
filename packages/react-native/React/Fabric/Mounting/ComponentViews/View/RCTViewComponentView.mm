@@ -17,6 +17,7 @@
 #import <React/RCTBackgroundImageUtils.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTBoxShadow.h>
+#import <React/RCTClipPathUtils.h>
 #import <React/RCTConversions.h>
 #import <React/RCTLinearGradient.h>
 #import <React/RCTLocalizedString.h>
@@ -539,6 +540,11 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   // `boxShadow`
   if (oldViewProps.boxShadow != newViewProps.boxShadow) {
+    needsInvalidateLayer = YES;
+  }
+
+  // `clipPath`
+  if (oldViewProps.clipPath != newViewProps.clipPath) {
     needsInvalidateLayer = YES;
   }
 
@@ -1223,7 +1229,25 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 
   // clipping
   self.currentContainerView.layer.mask = nil;
-  if (self.currentContainerView.clipsToBounds) {
+
+  // Handle clip-path property
+  if (_props->clipPath.has_value()) {
+    CALayer *maskLayer = [RCTClipPathUtils createClipPathLayer:_props->clipPath.value()
+                                                  layoutMetrics:_layoutMetrics
+                                                      yogaStyle:_props->yogaStyle
+                                                         bounds:layer.bounds
+                                                    cornerRadii:RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii)];
+    if (maskLayer != nil) {
+      self.currentContainerView.layer.mask = maskLayer;
+
+      for (UIView *subview in self.currentContainerView.subviews) {
+        if ([subview isKindOfClass:[UIImageView class]]) {
+          subview.layer.mask = maskLayer;
+        }
+      }
+    }
+  } else if (self.currentContainerView.clipsToBounds) {
+    // Handle regular clipsToBounds clipping when no clip-path is specified
     BOOL clipToPaddingBox = ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
     if (!clipToPaddingBox) {
       if (borderMetrics.borderRadii.isUniform()) {
