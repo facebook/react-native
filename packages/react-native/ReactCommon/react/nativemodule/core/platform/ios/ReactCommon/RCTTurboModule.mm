@@ -732,13 +732,19 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
   }
 
   NSMethodSignature *methodSignature = [module methodSignatureForSelector:selector];
+  if (count > methodSignature.numberOfArguments - 2) {
+    throw jsi::JSError(
+        runtime,
+        name_ + "." + methodName + " called with too many arguments, expected up to " +
+            std::to_string(methodSignature.numberOfArguments - 2) + ", got " + std::to_string(count));
+  }
+
   NSInvocation *inv = [NSInvocation invocationWithMethodSignature:methodSignature];
   [inv setSelector:selector];
 
   for (size_t i = 0; i < count; i++) {
     const jsi::Value &arg = args[i];
     const std::string objCArgType = [methodSignature getArgumentTypeAtIndex:i + 2];
-
     setInvocationArg(runtime, methodName, objCArgType, arg, i, inv, retainedObjectsForInvocation);
   }
 
