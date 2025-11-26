@@ -36,6 +36,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.touch.OnInterceptTouchEventListener
 import com.facebook.react.touch.ReactHitSlopView
 import com.facebook.react.touch.ReactInterceptingViewGroup
+import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.BackgroundStyleApplicator.clipToPaddingBox
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBackgroundColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
@@ -212,6 +213,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
 
     // Reset background, borders
     updateBackgroundDrawable(null)
+
+    // Reset clip path
+    setTag(R.id.clip_path, null)
 
     resetPointerEvents()
 
@@ -910,9 +914,11 @@ public open class ReactViewGroup public constructor(context: Context?) :
           (height + -overflowInset.bottom).toFloat(),
           null,
       )
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
       super.draw(canvas)
       canvas.restore()
     } else {
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
       super.draw(canvas)
     }
   }
@@ -921,6 +927,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
     if (_overflow != Overflow.VISIBLE || getTag(R.id.filter) != null) {
       clipToPaddingBox(this, canvas)
     }
+
+    BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
     super.dispatchDraw(canvas)
   }
 

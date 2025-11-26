@@ -49,6 +49,7 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
+import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.BackgroundStyleApplicator.clipToPaddingBox
 import com.facebook.react.uimanager.BackgroundStyleApplicator.getBackgroundColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.getBorderColor
@@ -90,6 +91,7 @@ import com.facebook.react.views.text.internal.span.TextInlineImageSpan
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.max
 import kotlin.math.min
+import androidx.core.graphics.withSave
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -1201,6 +1203,13 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     invalidate()
+  }
+
+  public override fun draw(canvas: Canvas) {
+    canvas.withSave {
+      BackgroundStyleApplicator.applyClipPathIfPresent(this@ReactEditText, this)
+      super.draw(this)
+    }
   }
 
   public override fun onDraw(canvas: Canvas) {
