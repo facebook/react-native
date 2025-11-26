@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "FrameTimingSequence.h"
 #include "HostTracingProfile.h"
 #include "TraceEvent.h"
 
@@ -23,18 +24,25 @@ class HostTracingProfileSerializer {
  public:
   /**
    * Transforms the profile into a sequence of serialized Trace Events, which
-   * is split in chunks of sizes \p performanceTraceEventsChunkSize or
+   * is split in chunks of sizes \p traceEventsChunkSize or
    * \p profileTraceEventsChunkSize, depending on type, and sent with \p
    * chunkCallback.
    */
   static void emitAsDataCollectedChunks(
       HostTracingProfile &&hostTracingProfile,
       const std::function<void(folly::dynamic &&chunk)> &chunkCallback,
-      uint16_t performanceTraceEventsChunkSize,
+      uint16_t traceEventsChunkSize,
       uint16_t profileTraceEventsChunkSize);
 
   static void emitPerformanceTraceEvents(
       std::vector<TraceEvent> &&events,
+      const std::function<void(folly::dynamic &&chunk)> &chunkCallback,
+      uint16_t chunkSize);
+
+  static void emitFrameTimings(
+      std::vector<FrameTimingSequence> &&frameTimings,
+      ProcessId processId,
+      HighResTimeStamp recordingStartTimestamp,
       const std::function<void(folly::dynamic &&chunk)> &chunkCallback,
       uint16_t chunkSize);
 };
