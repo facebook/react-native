@@ -20,6 +20,7 @@
 #include <set>
 #include <string>
 
+#include <jsinspector-modern/tracing/FrameTimingSequence.h>
 #include <jsinspector-modern/tracing/HostTracingProfile.h>
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
 #include <jsinspector-modern/tracing/TracingCategory.h>
@@ -325,6 +326,7 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
    */
   void sendCommand(HostCommand command);
 
+#pragma region Tracing
   /**
    * Creates a new HostTracingAgent.
    * This Agent is not owned by the HostTarget. The Agent will be destroyed at
@@ -363,6 +365,13 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
    */
   void emitTracingProfileForFirstFuseboxClient(tracing::HostTracingProfile tracingProfile) const;
 
+  /**
+   * An endpoint for the Host to report frame timings that will be recorded if and only if there is currently an active
+   * tracing session.
+   */
+  void recordFrameTimings(tracing::FrameTimingSequence frameTimingSequence);
+#pragma endregion
+
  private:
   /**
    * Constructs a new HostTarget.
@@ -386,6 +395,7 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
   std::unique_ptr<PerfMonitorUpdateHandler> perfMonitorUpdateHandler_;
   std::unique_ptr<HostRuntimeBinding> perfMetricsBinding_;
 
+#pragma region Tracing
   /**
    * Current pending trace recording, which encapsulates the configuration of
    * the tracing session and the state.
@@ -393,6 +403,14 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
    * Should only be allocated when there is an active tracing session.
    */
   std::unique_ptr<HostTargetTraceRecording> traceRecording_{nullptr};
+  /**
+   * Protects the state inside traceRecording_.
+   *
+   * Calls to tracing subsystem could happen from different threads, depending on the mode (Background or CDP) and
+   * the method: the Host could report frame timings from any arbitrary thread.
+   */
+  std::mutex tracingMutex_;
+#pragma endregion
 
   inline HostTargetDelegate &getDelegate()
   {
