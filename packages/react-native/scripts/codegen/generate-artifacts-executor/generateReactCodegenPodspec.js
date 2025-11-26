@@ -71,14 +71,18 @@ function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
   return `[${list}]`;
 }
 
-function codegenScripts(appPath /*: string */, outputPath /*: string */) {
-  const relativeAppPath = path.relative(outputPath, appPath);
+function codegenScripts(appPath /*: string */, baseOutputPath /*: string */) {
+  const relativeAppPath = path.relative(baseOutputPath, appPath);
+  const relativeReactNativeRootFolder = path.relative(
+    baseOutputPath,
+    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  );
   return `<<-SCRIPT
 pushd "$PODS_ROOT/../" > /dev/null
 RCT_SCRIPT_POD_INSTALLATION_ROOT=$(pwd)
 popd >/dev/null
 
-export RCT_SCRIPT_RN_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${path.relative(outputPath, REACT_NATIVE_PACKAGE_ROOT_FOLDER)}"
+export RCT_SCRIPT_RN_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${relativeReactNativeRootFolder}"
 export RCT_SCRIPT_APP_PATH="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${relativeAppPath.length === 0 ? '.' : relativeAppPath}"
 export RCT_SCRIPT_OUTPUT_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT"
 export RCT_SCRIPT_TYPE="withCodegenDiscovery"
