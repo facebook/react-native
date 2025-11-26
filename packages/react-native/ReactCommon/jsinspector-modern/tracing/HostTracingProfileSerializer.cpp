@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "TraceRecordingStateSerializer.h"
+#include "HostTracingProfileSerializer.h"
 #include "RuntimeSamplingProfileTraceEventSerializer.h"
 #include "TraceEventSerializer.h"
 
@@ -22,12 +22,13 @@ folly::dynamic generateNewChunk(uint16_t chunkSize) {
 
 } // namespace
 
-/* static */ void TraceRecordingStateSerializer::emitAsDataCollectedChunks(
-    TraceRecordingState&& recording,
+/* static */ void HostTracingProfileSerializer::emitAsDataCollectedChunks(
+    HostTracingProfile&& hostTracingProfile,
     const std::function<void(folly::dynamic&&)>& chunkCallback,
     uint16_t performanceTraceEventsChunkSize,
     uint16_t profileTraceEventsChunkSize) {
-  auto instancesProfiles = std::move(recording.instanceTracingProfiles);
+  auto instancesProfiles =
+      std::move(hostTracingProfile.instanceTracingProfiles);
   IdGenerator profileIdGenerator;
 
   for (auto& instanceProfile : instancesProfiles) {
@@ -38,14 +39,14 @@ folly::dynamic generateNewChunk(uint16_t chunkSize) {
   }
 
   RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
-      std::move(recording.runtimeSamplingProfiles),
+      std::move(hostTracingProfile.runtimeSamplingProfiles),
       profileIdGenerator,
-      recording.startTime,
+      hostTracingProfile.startTime,
       chunkCallback,
       profileTraceEventsChunkSize);
 }
 
-/* static */ void TraceRecordingStateSerializer::emitPerformanceTraceEvents(
+/* static */ void HostTracingProfileSerializer::emitPerformanceTraceEvents(
     std::vector<TraceEvent>&& events,
     const std::function<void(folly::dynamic&&)>& chunkCallback,
     uint16_t chunkSize) {

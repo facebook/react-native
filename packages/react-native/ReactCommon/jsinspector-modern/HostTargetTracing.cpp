@@ -16,7 +16,7 @@ bool HostTargetController::startTracing(
   return target_.startTracing(tracingMode, std::move(enabledCategories));
 }
 
-tracing::TraceRecordingState HostTargetController::stopTracing() {
+tracing::HostTracingProfile HostTargetController::stopTracing() {
   return target_.stopTracing();
 }
 
@@ -54,17 +54,17 @@ bool HostTarget::startTracing(
   return true;
 }
 
-tracing::TraceRecordingState HostTarget::stopTracing() {
+tracing::HostTracingProfile HostTarget::stopTracing() {
   assert(traceRecording_ != nullptr && "No tracing in progress");
 
   if (auto tracingDelegate = delegate_.getTracingDelegate()) {
     tracingDelegate->onTracingStopped();
   }
 
-  auto state = traceRecording_->stop();
+  auto profile = traceRecording_->stop();
   traceRecording_.reset();
 
-  return state;
+  return profile;
 }
 
 } // namespace facebook::react::jsinspector_modern

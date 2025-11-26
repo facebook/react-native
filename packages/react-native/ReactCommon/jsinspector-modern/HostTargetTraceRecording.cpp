@@ -8,6 +8,8 @@
 #include "HostTargetTraceRecording.h"
 #include "HostTarget.h"
 
+#include <oscompat/OSCompat.h>
+
 namespace facebook::react::jsinspector_modern {
 
 HostTargetTraceRecording::HostTargetTraceRecording(
@@ -32,15 +34,15 @@ void HostTargetTraceRecording::start() {
       hostTracingAgent_ == nullptr &&
       "Tracing Agent for the HostTarget was already initialized.");
 
+  startTime_ = HighResTimeStamp::now();
   state_ = tracing::TraceRecordingState{
       .mode = tracingMode_,
-      .startTime = HighResTimeStamp::now(),
       .enabledCategories = enabledCategories_,
   };
   hostTracingAgent_ = hostTarget_.createTracingAgent(*state_);
 }
 
-tracing::TraceRecordingState HostTargetTraceRecording::stop() {
+tracing::HostTracingProfile HostTargetTraceRecording::stop() {
   assert(
       hostTracingAgent_ != nullptr &&
       "TracingAgent for the HostTarget has not been initialized.");
@@ -52,7 +54,15 @@ tracing::TraceRecordingState HostTargetTraceRecording::stop() {
   auto state = std::move(*state_);
   state_.reset();
 
-  return state;
+  auto startTime = *startTime_;
+  startTime_.reset();
+
+  return tracing::HostTracingProfile{
+      .processId = oscompat::getCurrentProcessId(),
+      .startTime = startTime,
+      .instanceTracingProfiles = std::move(state.instanceTracingProfiles),
+      .runtimeSamplingProfiles = std::move(state.runtimeSamplingProfiles),
+  };
 }
 
 } // namespace facebook::react::jsinspector_modern

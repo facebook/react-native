@@ -20,6 +20,8 @@
 #include <set>
 #include <string>
 
+#include <jsinspector-modern/tracing/HostTracingProfile.h>
+#include <jsinspector-modern/tracing/TraceRecordingState.h>
 #include <jsinspector-modern/tracing/TracingCategory.h>
 #include <jsinspector-modern/tracing/TracingMode.h>
 
@@ -183,10 +185,10 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
    * trace recording that may have been stashed by the Host from the previous
    * background session.
    *
-   * \return the trace recording state if there is one that needs to be
+   * \return the HostTracingProfile if there is one that needs to be
    * displayed, otherwise std::nullopt.
    */
-  virtual std::optional<tracing::TraceRecordingState> unstable_getTraceRecordingThatWillBeEmittedOnInitialization()
+  virtual std::optional<tracing::HostTracingProfile> unstable_getHostTracingProfileThatWillBeEmittedOnInitialization()
   {
     return std::nullopt;
   }
@@ -251,7 +253,7 @@ class HostTargetController final {
   /**
    * Stops previously started trace recording.
    */
-  tracing::TraceRecordingState stopTracing();
+  tracing::HostTracingProfile stopTracing();
 
  private:
   HostTarget &target_;
@@ -345,7 +347,7 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
   /**
    * Stops previously started trace recording.
    */
-  tracing::TraceRecordingState stopTracing();
+  tracing::HostTracingProfile stopTracing();
 
   /**
    * Returns whether there is an active session with the Fusebox client, i.e.
@@ -354,12 +356,12 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
   bool hasActiveSessionWithFuseboxClient() const;
 
   /**
-   * Emits the trace recording for the first active session with the Fusebox
+   * Emits the HostTracingProfile for the first active session with the Fusebox
    * client.
    *
    * @see \c hasActiveFrontendSession
    */
-  void emitTraceRecordingForFirstFuseboxClient(tracing::TraceRecordingState traceRecording) const;
+  void emitTracingProfileForFirstFuseboxClient(tracing::HostTracingProfile tracingProfile) const;
 
  private:
   /**
