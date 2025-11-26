@@ -195,7 +195,7 @@ RCT_EXPORT_MODULE()
     ]];
 
     // Add button-specific constraints if button exists
-    if (dismissButton) {
+    if (self->_dismissButton != nullptr) {
       [constraints addObjectsFromArray:@[
         [self->_dismissButton.trailingAnchor constraintEqualToAnchor:self->_container.trailingAnchor constant:-10],
         [self->_dismissButton.centerYAnchor constraintEqualToAnchor:self->_label.centerYAnchor],
