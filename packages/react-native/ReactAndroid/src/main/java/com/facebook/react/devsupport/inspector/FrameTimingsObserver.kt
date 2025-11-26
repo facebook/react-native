@@ -10,30 +10,42 @@ package com.facebook.react.devsupport.inspector
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.Process
 import android.view.FrameMetrics
 import android.view.Window
 import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.soloader.SoLoader
 
 @DoNotStripAny
-internal class FrameTimingsObserver(private val window: Window) {
+internal class FrameTimingsObserver(
+    private val window: Window,
+    onFrameTimingSequence: (sequence: FrameTimingSequence) -> Unit,
+) {
   private val handler = Handler(Looper.getMainLooper())
   private var frameCounter: Int = 0
 
   private external fun setLayerTreeId(frame: String, layerTreeId: Int)
 
   private val frameMetricsListener =
-      Window.OnFrameMetricsAvailableListener { _, frameMetrics, dropCount ->
-        val metrics = FrameMetrics(frameMetrics)
+      Window.OnFrameMetricsAvailableListener { _, frameMetrics, _dropCount ->
+        val beginDrawingTimestamp = frameMetrics.getMetric(FrameMetrics.INTENDED_VSYNC_TIMESTAMP)
+        val commitTimestamp =
+            beginDrawingTimestamp + frameMetrics.getMetric(FrameMetrics.INPUT_HANDLING_DURATION)
+        +frameMetrics.getMetric(FrameMetrics.ANIMATION_DURATION)
+        +frameMetrics.getMetric(FrameMetrics.LAYOUT_MEASURE_DURATION)
+        +frameMetrics.getMetric(FrameMetrics.DRAW_DURATION)
+        +frameMetrics.getMetric(FrameMetrics.SYNC_DURATION)
+        val endDrawingTimestamp =
+            beginDrawingTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
 
-        val paintStartTime = metrics.getMetric(FrameMetrics.INTENDED_VSYNC_TIMESTAMP)
-        val totalDuration = metrics.getMetric(FrameMetrics.TOTAL_DURATION)
-
-        val currentFrame = frameCounter++
-        reportFrameTiming(
-            frame = currentFrame,
-            paintStartNanos = paintStartTime,
-            paintEndNanos = paintStartTime + totalDuration,
+        onFrameTimingSequence(
+            FrameTimingSequence(
+                frameCounter++,
+                Process.myTid(),
+                beginDrawingTimestamp,
+                commitTimestamp,
+                endDrawingTimestamp,
+            )
         )
       }
 
@@ -44,10 +56,6 @@ internal class FrameTimingsObserver(private val window: Window) {
     }
 
     window.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
-
-    // Hardcoded frame identfier and layerTreeId. Needed for DevTools to
-    // begin parsing frame events.
-    setLayerTreeId("", 1)
   }
 
   fun stop() {

@@ -1572,7 +1572,10 @@ public class ReactHostImpl(
             TracingState.ENABLED_IN_BACKGROUND_MODE,
             TracingState.ENABLED_IN_CDP_MODE -> {
               currentActivity?.window?.let { window ->
-                val observer = FrameTimingsObserver(window)
+                val observer =
+                    FrameTimingsObserver(window) { frameTimingsSequence ->
+                      inspectorTarget.recordFrameTimings(frameTimingsSequence)
+                    }
                 observer.start()
                 frameTimingsObserver = observer
               }
