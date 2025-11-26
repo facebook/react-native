@@ -16,6 +16,7 @@ import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -1025,9 +1026,15 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
 
-    boolean shouldBeClickable =
-        !(view instanceof ReactPointerEventsView)
-            || PointerEvents.canBeTouchTarget(((ReactPointerEventsView) view).getPointerEvents());
+    boolean shouldBeClickable;
+    if (view instanceof ReactPointerEventsView) {
+      shouldBeClickable =
+          PointerEvents.canBeTouchTarget(((ReactPointerEventsView) view).getPointerEvents());
+    } else if (view instanceof TextView) {
+      shouldBeClickable = view.hasOnClickListeners();
+    } else {
+      shouldBeClickable = true;
+    }
 
     // NOTE: In Android O+, setClickable(true) has the side effect of setting focusable=true.
     // We need to preserve the original focusable state to respect the focusable prop.
