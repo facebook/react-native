@@ -158,10 +158,9 @@ RCT_EXPORT_MODULE()
       buttonConfig.background.cornerRadius = 10;
       buttonConfig.baseForegroundColor = color;
 
-      UIAction *dismissAction = [UIAction actionWithHandler:^(__kindof UIAction *_Nonnull action) {
-        [self hide];
-      }];
-      self->_dismissButton = [UIButton buttonWithConfiguration:buttonConfig primaryAction:dismissAction];
+      // Button is a visual cue to tap anywhere on the banner to dismiss so no seperate action is needed
+      self->_dismissButton = [UIButton buttonWithConfiguration:buttonConfig primaryAction:nil];
+      self->_dismissButton.userInteractionEnabled = NO;
       self->_dismissButton.translatesAutoresizingMaskIntoConstraints = NO;
 
       // Prevent button from being compressed - force label to wrap instead
