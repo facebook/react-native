@@ -41,16 +41,6 @@ public final class com/facebook/react/HeadlessJsTaskService$Companion {
 	public final fun acquireWakeLockNow (Landroid/content/Context;)V
 }
 
-public abstract class com/facebook/react/LazyReactPackage : com/facebook/react/ReactPackage {
-	public fun <init> ()V
-	public fun createNativeModules (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
-	public fun createViewManagers (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
-	public final fun getNativeModuleIterator (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/lang/Iterable;
-	protected abstract fun getNativeModules (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
-	public abstract fun getReactModuleInfoProvider ()Lcom/facebook/react/module/model/ReactModuleInfoProvider;
-	public fun getViewManagers (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
-}
-
 public final class com/facebook/react/MemoryPressureRouter : android/content/ComponentCallbacks2 {
 	public fun <init> (Landroid/content/Context;)V
 	public final fun addMemoryPressureListener (Lcom/facebook/react/bridge/MemoryPressureListener;)V
