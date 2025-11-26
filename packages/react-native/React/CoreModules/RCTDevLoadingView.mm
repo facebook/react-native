@@ -220,6 +220,9 @@ RCT_EXPORT_MODULE()
     }
 
     [NSLayoutConstraint activateConstraints:constraints];
+
+    [self->_window layoutIfNeeded];
+    self->_window.frame = CGRectMake(0, 0, mainWindow.frame.size.width, self->_container.frame.size.height);
   });
 }
 
