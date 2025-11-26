@@ -30,7 +30,6 @@
 
 #include <logger/react_native_log.h>
 
-#include "JReactCxxErrorHandler.h"
 #include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
@@ -147,7 +146,6 @@ void log(ReactNativeLogLevel level, const char* message) {
       break;
     case ReactNativeLogLevelError:
       LOG(ERROR) << message;
-      JReactCxxErrorHandler::handleError(message);
       break;
     case ReactNativeLogLevelFatal:
       LOG(FATAL) << message;

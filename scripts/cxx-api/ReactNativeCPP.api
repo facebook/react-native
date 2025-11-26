@@ -7182,16 +7182,6 @@ class JMessageQueueThread : public MessageQueueThread {
 };
 } // namespace facebook::react
 
-/// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/JReactCxxErrorHandler.h}:
-namespace facebook::react {
-class JReactCxxErrorHandler : public jni::JavaClass<JReactCxxErrorHandler> {
- public:
-  static constexpr const char* kJavaDescriptor =
-      "Lcom/facebook/react/bridge/ReactCxxErrorHandler;";
-  static void handleError(std::string message);
-};
-} // namespace facebook::react
-
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/JReactMarker.h}:
 namespace facebook::react {
 class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {

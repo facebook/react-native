@@ -55,7 +55,6 @@ add_library(
           InspectorNetworkRequestListener.cpp
           JExecutor.cpp
           JMessageQueueThread.cpp
-          JReactCxxErrorHandler.cpp
           JReactSoftExceptionLogger.cpp
           JRuntimeExecutor.cpp
           JRuntimeScheduler.cpp
