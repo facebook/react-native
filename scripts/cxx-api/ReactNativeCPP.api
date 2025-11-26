@@ -2177,8 +2177,6 @@ BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
 void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
 BOOL RCTFabricInteropLayerEnabled(void);
 void RCTEnableFabricInteropLayer(BOOL enabled);
-BOOL RCTTurboModuleSyncVoidMethodsEnabled(void);
-void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled);
 BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void);
 void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled);
 typedef enum {
@@ -16571,7 +16569,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker;
     bool isSyncModule;
-    bool shouldVoidMethodsExecuteSync;
   };
   ObjCTurboModule(const InitParams &params);
   jsi::Value invokeObjCMethod(
@@ -16648,7 +16645,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker;
     bool isSyncModule;
-    bool shouldVoidMethodsExecuteSync;
   };
   ObjCTurboModule(const InitParams &params);
   jsi::Value invokeObjCMethod(
@@ -16681,7 +16677,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
  private:
   const bool isSyncModule_;
-  const bool shouldVoidMethodsExecuteSync_;
   NSMutableDictionary<NSString *, NSMutableArray *> *methodArgConversionSelectors_;
   NSDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames_;
   bool isMethodSync(TurboModuleMethodValueKind returnType);
