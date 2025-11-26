@@ -26,7 +26,7 @@
     "@react-native/debugger-frontend": "0.84.0-main",
     "@react-native/debugger-shell": "0.84.0-main",
     "chrome-launcher": "^0.15.2",
-    "chromium-edge-launcher": "^0.2.0",
+    "chromium-edge-launcher": "^0.3.0",
     "connect": "^3.6.5",
     "debug": "^4.4.0",
     "invariant": "^2.2.4",
