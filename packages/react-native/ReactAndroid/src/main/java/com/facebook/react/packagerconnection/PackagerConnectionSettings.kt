@@ -5,13 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // PreferenceManager should be migrated to androidx
+
 package com.facebook.react.packagerconnection
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import com.facebook.common.logging.FLog
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 
 public open class PackagerConnectionSettings(private val appContext: Context) {
+  private val preferences: SharedPreferences =
+      PreferenceManager.getDefaultSharedPreferences(appContext)
   public val packageName: String = appContext.packageName
   private val _additionalOptionsForPackager: MutableMap<String, String> = mutableMapOf()
   private var _packagerOptionsUpdater: (Map<String, String>) -> Map<String, String> = { it }
@@ -24,6 +30,12 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
       cachedHost?.let {
         return it
       }
+
+      val hostFromSettings = preferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null)
+      if (!hostFromSettings.isNullOrEmpty()) {
+        return hostFromSettings
+      }
+
       val host = AndroidInfoHelpers.getServerHost(appContext)
       if (host == AndroidInfoHelpers.DEVICE_LOCALHOST) {
         FLog.w(
@@ -63,5 +75,6 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
 
   private companion object {
     private val TAG = PackagerConnectionSettings::class.java.simpleName
+    private const val PREFS_DEBUG_SERVER_HOST_KEY = "debug_http_host"
   }
 }
