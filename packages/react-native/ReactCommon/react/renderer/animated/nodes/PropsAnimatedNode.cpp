@@ -62,6 +62,11 @@ void PropsAnimatedNode::connectToView(Tag viewTag) {
   connectedViewTag_ = viewTag;
 }
 
+void PropsAnimatedNode::connectToFamily(
+    std::shared_ptr<const ShadowNodeFamily>& family) {
+  viewShadowNodeFamily_ = family;
+}
+
 void PropsAnimatedNode::disconnectFromView(Tag viewTag) {
   react_native_assert(
       connectedViewTag_ == viewTag &&
@@ -148,7 +153,11 @@ void PropsAnimatedNode::update(bool forceFabricCommit) {
   layoutStyleUpdated_ = isLayoutStyleUpdated(getConfig()["props"], *manager_);
 
   manager_->schedulePropsCommit(
-      connectedViewTag_, props_, layoutStyleUpdated_, forceFabricCommit);
+      connectedViewTag_,
+      props_,
+      layoutStyleUpdated_,
+      forceFabricCommit,
+      viewShadowNodeFamily_.lock());
 }
 
 } // namespace facebook::react

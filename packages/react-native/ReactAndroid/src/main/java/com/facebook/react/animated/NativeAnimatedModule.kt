@@ -1117,4 +1117,6 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
 
     public const val ANIMATED_MODULE_DEBUG: Boolean = false
   }
+
+  override fun connectAnimatedNodeToShadowNodeFamily(p0: Double, p1: ReadableMap) {}
 }
