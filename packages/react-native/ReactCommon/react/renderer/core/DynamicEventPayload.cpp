@@ -29,7 +29,7 @@ jsi::Value DynamicEventPayload::asJSIValue(jsi::Runtime& runtime) const {
 }
 
 EventPayloadType DynamicEventPayload::getType() const {
-  return EventPayloadType::ValueFactory;
+  return EventPayloadType::Dynamic;
 }
 
 std::optional<double> DynamicEventPayload::extractValue(
