@@ -59,7 +59,6 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactCxxErrorHandler;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -75,7 +74,6 @@ import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
-import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -107,7 +105,6 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -304,8 +301,6 @@ public class ReactInstanceManager {
       mDevSupportManager.startInspector();
     }
 
-    registerCxxErrorHandlerFunc();
-
     // Using `if (true)` just to prevent tests / lint errors.
     if (true) {
       // Legacy architecture of React Native is deprecated and can't be initialized anymore.
@@ -400,24 +395,6 @@ public class ReactInstanceManager {
 
   public void handleCxxError(Exception e) {
     mDevSupportManager.handleException(e);
-  }
-
-  private void registerCxxErrorHandlerFunc() {
-    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      Class[] parameterTypes = new Class[1];
-      parameterTypes[0] = Exception.class;
-      Method handleCxxErrorFunc = null;
-      try {
-        handleCxxErrorFunc = ReactInstanceManager.class.getMethod("handleCxxError", parameterTypes);
-      } catch (NoSuchMethodException e) {
-        FLog.e("ReactInstanceHolder", "Failed to set cxx error handler function", e);
-      }
-      ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
-    }
-  }
-
-  private void unregisterCxxErrorHandlerFunc() {
-    ReactCxxErrorHandler.setHandleErrorFunc(null, null);
   }
 
   static void initializeSoLoaderIfNecessary(Context applicationContext) {
@@ -799,7 +776,6 @@ public class ReactInstanceManager {
 
     moveToBeforeCreateLifecycleState();
     mMemoryPressureRouter.destroy(mApplicationContext);
-    unregisterCxxErrorHandlerFunc();
 
     mCreateReactContextThread = null;
     synchronized (mAttachedReactRoots) {
