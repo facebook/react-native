@@ -168,6 +168,8 @@ val configureBuildForHermes by
               hermesBuildDir.toString(),
               "-DJSI_DIR=" + jsiDir.absolutePath,
               "-DCMAKE_BUILD_TYPE=Release",
+              // Disable test suite to avoid Windows path escaping issues in unittests
+              "-DHERMES_ENABLE_TEST_SUITE=OFF",
           )
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         cmakeCommandLine = cmakeCommandLine + "-GNMake Makefiles"
@@ -284,6 +286,8 @@ android {
             // We intentionally build Hermes with Intl support only. This is to simplify
             // the build setup and to avoid overcomplicating the build-type matrix.
             "-DHERMES_ENABLE_INTL=True",
+            // Disable test suite to avoid Windows path escaping issues in unittests
+            "-DHERMES_ENABLE_TEST_SUITE=OFF",
         )
 
         if (hermesV1Enabled) {

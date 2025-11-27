@@ -190,6 +190,11 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/AppState/AppStateExample'),
   },
   {
+    key: 'BatteryExample',
+    category: 'Basic',
+    module: require('../examples/Battery/BatteryExample'),
+  },
+  {
     key: 'ContentURLAndroid',
     category: 'Android',
     module: require('../examples/ContentURLAndroid/ContentURLAndroid'),

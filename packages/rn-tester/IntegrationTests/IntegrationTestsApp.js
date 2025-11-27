@@ -31,6 +31,7 @@ const TESTS = [
   require('./WebSocketTest'),
   require('./AccessibilityManagerTest'),
   require('./GlobalEvalWithSourceUrlTest'),
+  require('./BatteryTest'),
 ];
 
 TESTS.forEach(test =>

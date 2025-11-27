@@ -447,8 +447,19 @@ val prepareKotlinBuildScriptModel by
 // This is not the case for users of React Native, as we ship a compiled version of the codegen.
 val buildCodegenCLI by
     tasks.registering(BuildCodegenCLITask::class) {
-      codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
-      bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath").toString())
+      // Use source codegen if available, otherwise fall back to node_modules
+      // reactNativeRootDir is packages/react-native, so ../react-native-codegen gets us to packages/react-native-codegen
+      val codegenSourceDir = file("$reactNativeRootDir/../react-native-codegen")
+      val codegenNodeModulesDir = file("$rootDir/node_modules/@react-native/codegen")
+      val finalCodegenDir = if (codegenSourceDir.exists()) {
+        codegenSourceDir
+      } else {
+        codegenNodeModulesDir
+      }
+      codegenDir.set(finalCodegenDir)
+      // Fix null safety and path handling for Windows - use forward slashes as Gradle expects
+      val bashPath = project.findProperty("react.internal.windowsBashPath")?.toString()
+      bashWindowsHome.set(bashPath)
       logFile.set(file("$buildDir/codegen.log"))
       inputFiles.set(fileTree(codegenDir) { include("src/**/*.js") })
       outputFiles.set(
@@ -458,6 +469,31 @@ val buildCodegenCLI by
           }
       )
       rootProjectName.set(rootProject.name)
+      
+      // CRITICAL FIX: Skip task if codegen lib already exists (bypasses tar on Windows)
+      // Check at configuration time and execution time
+      val libDir = file("$finalCodegenDir/lib")
+      val libExistsAtConfig = libDir.exists() && libDir.listFiles()?.isNotEmpty() == true
+      
+      onlyIf {
+        // Re-check at execution time in case path changed
+        val resolvedCodegenDir = try { codegenDir.get().asFile } catch (e: Exception) { finalCodegenDir }
+        val resolvedLibDir = file("$resolvedCodegenDir/lib")
+        val libExists = resolvedLibDir.exists() && resolvedLibDir.listFiles()?.isNotEmpty() == true
+        if (libExists) {
+          logger.lifecycle("Skipping buildCodegenCLI - codegen lib already exists at ${resolvedLibDir.absolutePath}")
+        } else {
+          logger.lifecycle("Running buildCodegenCLI - lib not found at ${resolvedLibDir.absolutePath}")
+        }
+        !libExists
+      }
+      
+      // Also check outputFiles - if they exist, task should be skipped
+      outputs.upToDateWhen {
+        val resolvedCodegenDir = try { codegenDir.get().asFile } catch (e: Exception) { finalCodegenDir }
+        val resolvedLibDir = file("$resolvedCodegenDir/lib")
+        resolvedLibDir.exists() && resolvedLibDir.listFiles()?.isNotEmpty() == true
+      }
     }
 
 /**
