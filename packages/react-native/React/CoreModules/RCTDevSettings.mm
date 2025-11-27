@@ -55,7 +55,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
   devSettingsMenuEnabled = enabled;
 }
 
-#if RCT_DEV || RCT_REMOTE_PROFILE
+#if RCT_DEV_MENU || RCT_DEV || RCT_REMOTE_PROFILE
 
 @interface RCTDevSettingsUserDefaultsDataSource : NSObject <RCTDevSettingsDataSource>
 
@@ -544,7 +544,7 @@ RCT_EXPORT_METHOD(openDebugger)
 
 @end
 
-#else // #if RCT_DEV || RCT_REMOTE_PROFILE
+#else // #if RCT_DEV_MENU || RCT_DEV || RCT_REMOTE_PROFILE
 
 @interface RCTDevSettings () <NativeDevSettingsSpec>
 @end
