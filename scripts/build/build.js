@@ -429,21 +429,19 @@ function normalizeExportsTarget(target /*: string */) /*: string */ {
 }
 
 function validateTypeScriptDefs(packageName /*: string */) {
-  const files = glob.sync(
-    path.resolve(PACKAGES_DIR, packageName, BUILD_DIR, '**/*.d.ts'),
-  );
+ const files = glob.sync(
+   path.resolve(PACKAGES_DIR, packageName, BUILD_DIR, '**/*.d.ts'),
+ );
   const compilerOptions = {
     ...getTypeScriptCompilerOptions(packageName),
     noEmit: true,
     skipLibCheck: false,
   };
-  const program = ts.createProgram(
-    files,
-    ts.convertCompilerOptionsFromJson(
-      compilerOptions,
-      path.resolve(PACKAGES_DIR, packageName),
-    ),
+  const parsed = ts.convertCompilerOptionsFromJson(
+    compilerOptions,
+    path.resolve(PACKAGES_DIR, packageName),
   );
+  const program = ts.createProgram(files, parsed.options);
   const emitResult = program.emit();
 
   if (emitResult.diagnostics.length) {
