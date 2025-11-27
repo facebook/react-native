@@ -3127,6 +3127,7 @@ declare module 'util' {
   declare function isRegExp(object: any): boolean;
   declare function isDate(object: any): boolean;
   declare function isError(object: any): boolean;
+  declare function isDeepStrictEqual(val1: mixed, val2: mixed): boolean;
   declare function inherits(
     constructor: Function,
     superConstructor: Function,

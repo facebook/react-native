@@ -14,12 +14,10 @@ import {schemaDiffExporter} from '../DiffResults.js';
 import {
   addedEnumMessage,
   addedPropertiesMessage,
-  addedUnionMessage,
   buildSchemaDiff,
   hasUpdatesTypes,
   removedEnumMessage,
   removedPropertiesMessage,
-  removedUnionMessage,
   summarizeDiffSet,
   tooOptionalPropertiesMessage,
   typeNullableChangeMessage,
@@ -887,6 +885,7 @@ describe('buildSchemaDiff', () => {
     ).toEqual(
       expect.objectContaining({
         framework: 'ReactNative',
+        name: 'NativeModule',
         status: expect.objectContaining({
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
@@ -894,7 +893,28 @@ describe('buildSchemaDiff', () => {
                 incompatibleChanges: expect.arrayContaining([
                   expect.objectContaining({
                     errorInformation: expect.objectContaining({
-                      message: addedUnionMessage,
+                      message:
+                        'Object contained a property with a type mismatch',
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          property: 'exampleFunction',
+                          fault: expect.objectContaining({
+                            message: 'has conflicting type changes',
+                            previousError: expect.objectContaining({
+                              message: 'Parameter at index 0 did not match',
+                              previousError: expect.objectContaining({
+                                type: 'UnionMemberComparisonError',
+                                addedMembers: expect.arrayContaining([
+                                  expect.objectContaining({
+                                    type: 'StringLiteralTypeAnnotation',
+                                    value: 'd',
+                                  }),
+                                ]),
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
                 ]),
@@ -906,29 +926,8 @@ describe('buildSchemaDiff', () => {
     );
   });
   it('RN with union types, and removal', () => {
-    expect(
-      schemaDiffExporter(
-        Array.from(buildSchemaDiff(schemaWithUnion, schemaWithUnionChanges))[0],
-      ),
-    ).toEqual(
-      expect.objectContaining({
-        status: expect.objectContaining({
-          incompatibleSpecs: expect.arrayContaining([
-            expect.objectContaining({
-              changeInformation: expect.objectContaining({
-                newTypes: expect.not.arrayContaining([expect.anything()]),
-                deprecatedTypes: expect.not.arrayContaining([
-                  expect.anything(),
-                ]),
-                incompatibleChanges: expect.not.arrayContaining([
-                  expect.anything(),
-                ]),
-                objectTypeChanges: expect.any(Object),
-              }),
-            }),
-          ]),
-        }),
-      }),
+    expect(buildSchemaDiff(schemaWithUnion, schemaWithUnionChanges)).toEqual(
+      new Set(),
     );
   });
   it('RN with union types from native, and addition', () => {
@@ -943,38 +942,8 @@ describe('buildSchemaDiff', () => {
       ),
     ).toEqual(
       expect.objectContaining({
-        status: expect.objectContaining({
-          incompatibleSpecs: expect.arrayContaining([
-            expect.objectContaining({
-              changeInformation: expect.objectContaining({
-                newTypes: expect.not.arrayContaining([expect.anything()]),
-                deprecatedTypes: expect.not.arrayContaining([
-                  expect.anything(),
-                ]),
-                incompatibleChanges: expect.not.arrayContaining([
-                  expect.anything(),
-                ]),
-                objectTypeChanges: expect.any(Object),
-              }),
-            }),
-          ]),
-        }),
-      }),
-    );
-  });
-  it('RN with union types from native, and removal', () => {
-    expect(
-      schemaDiffExporter(
-        Array.from(
-          buildSchemaDiff(
-            schemaWithUnionFromNative,
-            schemaWithUnionFromNativeChanges,
-          ),
-        )[0],
-      ),
-    ).toEqual(
-      expect.objectContaining({
         framework: 'ReactNative',
+        name: 'NativeModule',
         status: expect.objectContaining({
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
@@ -982,7 +951,40 @@ describe('buildSchemaDiff', () => {
                 incompatibleChanges: expect.arrayContaining([
                   expect.objectContaining({
                     errorInformation: expect.objectContaining({
-                      message: removedUnionMessage,
+                      message:
+                        'Object contained a property with a type mismatch',
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          property: 'getConstants',
+                          fault: expect.objectContaining({
+                            message: 'has conflicting type changes',
+                            previousError: expect.objectContaining({
+                              message: 'Function return types do not match',
+                              previousError: expect.objectContaining({
+                                message:
+                                  'Object contained a property with a type mismatch',
+                                mismatchedProperties: expect.arrayContaining([
+                                  expect.objectContaining({
+                                    property: 'exampleConstant',
+                                    fault: expect.objectContaining({
+                                      message: 'has conflicting type changes',
+                                      previousError: expect.objectContaining({
+                                        type: 'UnionMemberComparisonError',
+                                        addedMembers: expect.arrayContaining([
+                                          expect.objectContaining({
+                                            type: 'StringLiteralTypeAnnotation',
+                                            value: 'd',
+                                          }),
+                                        ]),
+                                      }),
+                                    }),
+                                  }),
+                                ]),
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
                 ]),
@@ -992,6 +994,14 @@ describe('buildSchemaDiff', () => {
         }),
       }),
     );
+  });
+  it('RN with union types from native, and removal', () => {
+    expect(
+      buildSchemaDiff(
+        schemaWithUnionFromNative,
+        schemaWithUnionFromNativeChanges,
+      ),
+    ).toEqual(new Set());
   });
 
   describe('NativeComponent', () => {
@@ -1330,21 +1340,82 @@ describe('buildSchemaDiff', () => {
         ).toEqual(
           expect.objectContaining({
             framework: 'ReactNative',
-            status: expect.objectContaining({
-              incompatibleSpecs: expect.arrayContaining([
-                expect.objectContaining({
-                  changeInformation: expect.objectContaining({
-                    incompatibleChanges: expect.objectContaining({
-                      '0': expect.objectContaining({
-                        errorInformation: expect.objectContaining({
-                          message: addedUnionMessage,
-                        }),
-                      }),
-                    }),
-                  }),
-                }),
-              ]),
-            }),
+            name: 'NativeComponent',
+            status: {
+              incompatibleSpecs: [
+                {
+                  changeInformation: {
+                    deprecatedTypes: [],
+                    incompatibleChanges: [
+                      {
+                        errorCode: 'incompatibleTypes',
+                        errorInformation: {
+                          message:
+                            'Object contained a property with a type mismatch',
+                          mismatchedProperties: [
+                            {
+                              fault: {
+                                message: 'has conflicting type changes',
+                                newerAnnotation: {
+                                  type: 'UnionTypeAnnotation',
+                                  types: [
+                                    {
+                                      type: 'StringLiteralTypeAnnotation',
+                                      value: 'small',
+                                    },
+                                    {
+                                      type: 'StringLiteralTypeAnnotation',
+                                      value: 'huge',
+                                    },
+                                    {
+                                      type: 'StringLiteralTypeAnnotation',
+                                      value: 'large',
+                                    },
+                                  ],
+                                },
+                                olderAnnotation: {
+                                  type: 'UnionTypeAnnotation',
+                                  types: [
+                                    {
+                                      type: 'StringLiteralTypeAnnotation',
+                                      value: 'small',
+                                    },
+                                    {
+                                      type: 'StringLiteralTypeAnnotation',
+                                      value: 'large',
+                                    },
+                                  ],
+                                },
+                                previousError: {
+                                  addedMembers: [
+                                    {
+                                      type: 'StringLiteralTypeAnnotation',
+                                      value: 'huge',
+                                    },
+                                  ],
+                                  type: 'UnionMemberComparisonError',
+                                },
+                                type: 'TypeAnnotationComparisonError',
+                              },
+                              property: 'size',
+                            },
+                          ],
+                          previousError: undefined,
+                          type: 'PropertyComparisonError',
+                        },
+                        typeName: 'NativeComponent',
+                      },
+                    ],
+                    newTypes: [],
+                    objectTypeChanges: [],
+                  },
+                  errorCode: 'incompatibleTypes',
+                  errorInformation: undefined,
+                  nativeSpecName: 'NativeComponent',
+                  omitted: false,
+                },
+              ],
+            },
           }),
         );
       });
@@ -1373,21 +1444,88 @@ describe('buildSchemaDiff', () => {
         ).toEqual(
           expect.objectContaining({
             framework: 'ReactNative',
-            status: expect.objectContaining({
-              incompatibleSpecs: expect.arrayContaining([
-                expect.objectContaining({
-                  changeInformation: expect.objectContaining({
-                    incompatibleChanges: expect.objectContaining({
-                      '0': expect.objectContaining({
-                        errorInformation: expect.objectContaining({
-                          message: addedUnionMessage,
-                        }),
-                      }),
-                    }),
-                  }),
-                }),
-              ]),
-            }),
+            name: 'NativeComponent',
+            status: {
+              incompatibleSpecs: [
+                {
+                  changeInformation: {
+                    deprecatedTypes: [],
+                    incompatibleChanges: [
+                      {
+                        errorCode: 'incompatibleTypes',
+                        errorInformation: {
+                          message:
+                            'Object contained a property with a type mismatch',
+                          mismatchedProperties: [
+                            {
+                              fault: {
+                                message: 'has conflicting type changes',
+                                newerAnnotation: {
+                                  elementType: {
+                                    type: 'UnionTypeAnnotation',
+                                    types: [
+                                      {
+                                        type: 'StringLiteralTypeAnnotation',
+                                        value: 'small',
+                                      },
+                                      {
+                                        type: 'StringLiteralTypeAnnotation',
+                                        value: 'large',
+                                      },
+                                      {
+                                        type: 'StringLiteralTypeAnnotation',
+                                        value: 'huge',
+                                      },
+                                    ],
+                                  },
+                                  type: 'ArrayTypeAnnotation',
+                                },
+                                olderAnnotation: {
+                                  elementType: {
+                                    type: 'UnionTypeAnnotation',
+                                    types: [
+                                      {
+                                        type: 'StringLiteralTypeAnnotation',
+                                        value: 'small',
+                                      },
+                                      {
+                                        type: 'StringLiteralTypeAnnotation',
+                                        value: 'large',
+                                      },
+                                    ],
+                                  },
+                                  type: 'ArrayTypeAnnotation',
+                                },
+                                previousError: {
+                                  addedMembers: [
+                                    {
+                                      type: 'StringLiteralTypeAnnotation',
+                                      value: 'huge',
+                                    },
+                                  ],
+                                  type: 'UnionMemberComparisonError',
+                                },
+                                type: 'TypeAnnotationComparisonError',
+                              },
+                              property: 'sizes',
+                            },
+                          ],
+                          previousError: undefined,
+                          type: 'PropertyComparisonError',
+                        },
+                        typeName: 'NativeComponent',
+                      },
+                    ],
+                    newTypes: [],
+                    objectTypeChanges: [],
+                  },
+                  errorCode: 'incompatibleTypes',
+                  errorInformation: undefined,
+                  nativeSpecName: 'NativeComponent',
+                  omitted: false,
+                },
+              ],
+            },
           }),
         );
       });

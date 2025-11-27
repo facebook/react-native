@@ -25,7 +25,7 @@ const {
   wrapNullable,
 } = require('../../../parsers/parsers-commons');
 const {wrapOptional} = require('../../TypeUtils/Objective-C');
-const {capitalize} = require('../../Utils');
+const {capitalize, parseValidUnionType} = require('../../Utils');
 const {getNamespacedStructName} = require('./Utils');
 const invariant = require('invariant');
 
@@ -259,8 +259,21 @@ function getParamObjCType(
       return notStruct(wrapOptional('NSString *', !nullable));
     case 'StringLiteralTypeAnnotation':
       return notStruct(wrapOptional('NSString *', !nullable));
-    case 'StringLiteralUnionTypeAnnotation':
-      return notStruct(wrapOptional('NSString *', !nullable));
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(structTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
+        case 'number':
+          return notStruct(isRequired ? 'double' : 'NSNumber *');
+        case 'object':
+          return notStruct(wrapOptional('NSDictionary *', !nullable));
+        case 'string':
+          return notStruct(wrapOptional('NSString *', !nullable));
+        default:
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
+      }
     case 'NumberTypeAnnotation':
       return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'NumberLiteralTypeAnnotation':
@@ -342,10 +355,6 @@ function getReturnObjCType(
       // TODO: Can NSString * returns not be _Nullable?
       // In the legacy codegen, we don't surround NSSTring * with _Nullable
       return wrapOptional('NSString *', isRequired);
-    case 'StringLiteralUnionTypeAnnotation':
-      // TODO: Can NSString * returns not be _Nullable?
-      // In the legacy codegen, we don't surround NSSTring * with _Nullable
-      return wrapOptional('NSString *', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -372,19 +381,21 @@ function getReturnObjCType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
           return wrapOptional('NSNumber *', isRequired);
-        case 'ObjectTypeAnnotation':
+        case 'number':
+          return wrapOptional('NSNumber *', isRequired);
+        case 'object':
           return wrapOptional('NSDictionary *', isRequired);
-        case 'StringTypeAnnotation':
+        case 'string':
           // TODO: Can NSString * returns not be _Nullable?
           // In the legacy codegen, we don't surround NSSTring * with _Nullable
           return wrapOptional('NSString *', isRequired);
         default:
-          throw new Error(
-            `Unsupported union return type for ${methodName}, found: ${typeAnnotation.memberType}"`,
-          );
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
       }
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
@@ -418,8 +429,6 @@ function getReturnJSType(
       return 'StringKind';
     case 'StringLiteralTypeAnnotation':
       return 'StringKind';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'StringKind';
     case 'NumberTypeAnnotation':
       return 'NumberKind';
     case 'NumberLiteralTypeAnnotation':
@@ -448,17 +457,19 @@ function getReturnJSType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return 'BooleanKind';
+        case 'number':
           return 'NumberKind';
-        case 'ObjectTypeAnnotation':
+        case 'object':
           return 'ObjectKind';
-        case 'StringTypeAnnotation':
+        case 'string':
           return 'StringKind';
         default:
-          throw new Error(
-            `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
-          );
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member types`);
       }
     default:
       (typeAnnotation.type: 'MixedTypeAnnotation');

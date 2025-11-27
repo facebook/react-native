@@ -48,15 +48,16 @@ import {
   memberComparisonError,
   propertyComparisonError,
   typeAnnotationComparisonError,
+  unionMemberComparisonError,
 } from './ComparisonResult';
 import {
   compareTypeAnnotationForSorting,
   sortTypeAnnotations,
 } from './SortTypeAnnotations.js';
 import invariant from 'invariant';
+import util from 'util';
 
 const EQUALITY_MSG = 'previousType and afterType differ despite check';
-
 // NOTE: These are module scope type lookup registries. Ideally, they should be local arguments,
 // however that would require threading them through all the hierarchical calls of type
 // annotation processing, which is a lot of boilerplate. Since our logic is serial, having these
@@ -244,12 +245,6 @@ export function compareTypeAnnotation(
         EQUALITY_MSG,
       );
       return compareBooleanLiteralTypes(newerAnnotation, olderAnnotation);
-    case 'StringLiteralUnionTypeAnnotation':
-      invariant(
-        olderAnnotation.type === 'StringLiteralUnionTypeAnnotation',
-        EQUALITY_MSG,
-      );
-      return compareStringLiteralUnionTypes(newerAnnotation, olderAnnotation);
     case 'StringLiteralTypeAnnotation':
       invariant(
         olderAnnotation.type === 'StringLiteralTypeAnnotation',
@@ -819,16 +814,15 @@ export function compareUnionTypes(
   newerType: NativeModuleUnionTypeAnnotation,
   olderType: NativeModuleUnionTypeAnnotation,
 ): ComparisonResult {
-  if (newerType.memberType !== olderType.memberType) {
-    return makeError(
-      typeAnnotationComparisonError(
-        'Union member type does not match',
-        newerType,
-        olderType,
-      ),
-    );
-  }
+  const addedTypes = newerType.types.filter(newUnionMemberType => {
+    return !olderType.types.some(oldUnionMemberType => {
+      return util.isDeepStrictEqual(newUnionMemberType, oldUnionMemberType);
+    });
+  });
 
+  if (addedTypes.length > 0) {
+    return makeError(unionMemberComparisonError(addedTypes));
+  }
   return {status: 'matching'};
 }
 
