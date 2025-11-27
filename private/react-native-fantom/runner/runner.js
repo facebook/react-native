@@ -32,6 +32,7 @@ import {run as runFantomTester} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
 import {
+  COVERAGE_OUTPUT_PATH,
   JS_HEAP_SNAPSHOTS_OUTPUT_PATH,
   JS_TRACES_OUTPUT_PATH,
   buildJSHeapSnapshotsOutputPathTemplate,
@@ -65,6 +66,8 @@ fs.mkdirSync(JS_HEAP_SNAPSHOTS_OUTPUT_PATH, {recursive: true});
 if (EnvironmentOptions.profileJS) {
   fs.mkdirSync(JS_TRACES_OUTPUT_PATH, {recursive: true});
 }
+
+fs.mkdirSync(COVERAGE_OUTPUT_PATH, {recursive: true});
 
 function buildError(
   failureDetail: FailureDetail,
@@ -163,18 +166,20 @@ async function processRNTesterCommandResult(
 function generateBytecodeBundle({
   sourcePath,
   bytecodePath,
-  isOptimizedMode,
+  enableRelease,
   hermesVariant,
+  enableCoverage,
 }: {
-  sourcePath: string,
   bytecodePath: string,
-  isOptimizedMode: boolean,
+  enableCoverage: boolean,
+  enableRelease: boolean,
   hermesVariant: HermesVariant,
+  sourcePath: string,
 }): void {
   const hermesCompilerCommandResult = runHermesCompiler(
     [
       '-emit-binary',
-      isOptimizedMode ? '-O' : null,
+      enableRelease ? '-O' : null,
       '-max-diagnostic-width',
       '80',
       '-out',
@@ -182,8 +187,9 @@ function generateBytecodeBundle({
       sourcePath,
     ].filter(Boolean),
     {
-      isOptimizedMode,
+      enableRelease,
       hermesVariant,
+      enableCoverage,
     },
   );
 
@@ -335,6 +341,12 @@ module.exports = async function runTest(
       path.basename(testJSBundlePath, '.js') + '.map',
     );
 
+    const collectCoverage = shouldCollectCoverage(
+      testPath,
+      testContents,
+      globalConfig,
+    );
+
     const bundleOptions = {
       testPath,
       entry: entrypointPath,
@@ -344,11 +356,7 @@ module.exports = async function runTest(
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
       customTransformOptions: {
-        collectCoverage: shouldCollectCoverage(
-          testPath,
-          testContents,
-          globalConfig,
-        ),
+        collectCoverage,
       },
     };
 
@@ -361,7 +369,8 @@ module.exports = async function runTest(
       generateBytecodeBundle({
         sourcePath: testJSBundlePath,
         bytecodePath: testBytecodeBundlePath,
-        isOptimizedMode: testConfig.isJsOptimized,
+        enableCoverage: collectCoverage,
+        enableRelease: testConfig.isJsOptimized,
         hermesVariant: testConfig.hermesVariant,
       });
     }
@@ -388,8 +397,9 @@ module.exports = async function runTest(
           rnTesterCommandArgs,
         )
       : runFantomTester(rnTesterCommandArgs, {
-          isOptimizedMode: testConfig.isNativeOptimized,
+          enableRelease: testConfig.isNativeOptimized,
           hermesVariant: testConfig.hermesVariant,
+          enableCoverage: collectCoverage,
         });
 
     const [processedResult, benchmarkResult] =

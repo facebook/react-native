@@ -19,7 +19,10 @@ import {Server} from 'net';
 import path from 'path';
 
 export default async function globalSetup(
-  globalConfig: {...},
+  globalConfig: {
+    collectCoverage: boolean,
+    ...
+  },
   projectConfig: {...},
 ): Promise<void> {
   process.env.__FANTOM_RUN_ID__ ??= `run-${Date.now()}`;
@@ -29,7 +32,7 @@ export default async function globalSetup(
   await startMetroServer();
 
   if (!isOSS) {
-    await build();
+    await build(globalConfig.collectCoverage);
   }
 }
 
