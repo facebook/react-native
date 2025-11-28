@@ -684,30 +684,30 @@ internal object TextLayoutManager {
       maxNumberOfLines: Int,
       paint: TextPaint,
   ): Layout {
-      val builder = StaticLayout.Builder.obtain(text, 0, text.length, paint, layoutWidth)
-          .setAlignment(alignment)
-          .setLineSpacing(0f, 1f)
-          .setIncludePad(includeFontPadding)
-          .setBreakStrategy(textBreakStrategy)
-          .setHyphenationFrequency(hyphenationFrequency)
+    val builder = StaticLayout.Builder.obtain(text, 0, text.length, paint, layoutWidth)
+        .setAlignment(alignment)
+        .setLineSpacing(0f, 1f)
+        .setIncludePad(includeFontPadding)
+        .setBreakStrategy(textBreakStrategy)
+        .setHyphenationFrequency(hyphenationFrequency)
 
-      if (maxNumberOfLines != ReactConstants.UNSET && maxNumberOfLines != 0) {
-          builder.setEllipsize(ellipsizeMode).setMaxLines(maxNumberOfLines)
-      }
+    if (maxNumberOfLines != ReactConstants.UNSET && maxNumberOfLines != 0) {
+        builder.setEllipsize(ellipsizeMode).setMaxLines(maxNumberOfLines)
+    }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          builder.setJustificationMode(justificationMode)
-      }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        builder.setJustificationMode(justificationMode)
+    }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-          builder.setUseLineSpacingFromFallbacks(true)
-      }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        builder.setUseLineSpacingFromFallbacks(true)
+    }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-          builder.setUseBoundsForWidth(true)
-      }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        builder.setUseBoundsForWidth(true)
+    }
 
-      return builder.build()
+    return builder.build()
   }
 
   /**
