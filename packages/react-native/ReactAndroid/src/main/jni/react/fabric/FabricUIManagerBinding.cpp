@@ -631,10 +631,18 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
         /* willPerformAsynchronously = */ true);
     if (mountingTransaction.has_value()) {
       auto transaction = std::move(*mountingTransaction);
+      LOG(WARNING) << "⚙️ schedulerShouldRenderTransactions (enableAccumulatedUpdatesInRawPropsAndroid), items: "
+                   << mountingTransaction->getMutations().size()
+                   << " pending mounting transaction(s) for new base revision: "
+                   << mountingCoordinator->getBaseRevision().number;
       mountingManager->executeMount(transaction);
     }
   } else {
     std::vector<MountingTransaction> pendingTransactions;
+    LOG(WARNING) << "⚙️ schedulerShouldRenderTransactions "
+                 << pendingTransactions_.size()
+                 << " pending mounting transaction(s) for new base revision: "
+                 << mountingCoordinator->getBaseRevision().number;
 
     {
       // Retain the lock to access the pending transactions but not to execute

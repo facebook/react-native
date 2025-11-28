@@ -395,9 +395,15 @@ void ShadowTree::mount(ShadowTreeRevision revision, bool mountSynchronously)
     // TODO: can a mount cause another mount, so we have to care about reentrancy?
     lock = std::unique_lock<std::shared_mutex>(mountMutex_);
   }
+
+  LOG(WARNING) << "⚙️ Mounting revision " << revision.number
+               << " (" << (mountSynchronously ? "synchronously" : "asynchronously") << ")"
+               << ", shouldLock: " << (shouldLock ? "true" : "false");
   mountingCoordinator_->push(std::move(revision));
   delegate_.shadowTreeDidFinishTransaction(
       mountingCoordinator_, mountSynchronously);
+  LOG(WARNING) << "☑️ Finished mount-phase revision " << revision.number
+               << " (" << (mountSynchronously ? "synchronously" : "asynchronously") << ")";
 }
 
 void ShadowTree::commitEmptyTree() const {

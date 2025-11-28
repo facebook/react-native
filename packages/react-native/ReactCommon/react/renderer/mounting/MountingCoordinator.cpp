@@ -95,6 +95,8 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction(
 
     telemetry.willDiff();
 
+    LOG(WARNING) << "⚙️ Diffing revision " << baseRevision_.number
+                 << " to " << lastRevision_->number;
     auto mutations = calculateShadowViewMutations(
         *baseRevision_.rootShadowNode, *lastRevision_->rootShadowNode);
 
