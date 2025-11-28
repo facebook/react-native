@@ -620,56 +620,56 @@ internal object TextLayoutManager {
       )
     }
 
-      // Pre-Android 15: Use existing advance-based logic
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-          val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
+    // Pre-Android 15: Use existing advance-based logic
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
 
-          val layoutWidth =
-              when (widthYogaMeasureMode) {
-                YogaMeasureMode.EXACTLY -> floor(width).toInt()
-                YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
-              else -> desiredWidth
-          }
-          return buildLayout(
-              text, layoutWidth, includeFontPadding, textBreakStrategy,
-              hyphenationFrequency, alignment, justificationMode, ellipsizeMode,
-              maxNumberOfLines, paint
-          )
-      }
+        val layoutWidth =
+            when (widthYogaMeasureMode) {
+              YogaMeasureMode.EXACTLY -> floor(width).toInt()
+              YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
+            else -> desiredWidth
+        }
+        return buildLayout(
+            text, layoutWidth, includeFontPadding, textBreakStrategy,
+            hyphenationFrequency, alignment, justificationMode, ellipsizeMode,
+            maxNumberOfLines, paint
+        )
+    }
 
-      // Android 15+: Need to account for visual bounds
-      // Step 1: Create unconstrained layout to get visual bounds width
-      val unconstrainedLayout = buildLayout(
-          text,
-          Int.MAX_VALUE / 2,
-          includeFontPadding,
-          textBreakStrategy,
-          hyphenationFrequency,
-          alignment,
-          justificationMode,
-          null,
-          ReactConstants.UNSET,
-          paint
-      )
+    // Android 15+: Need to account for visual bounds
+    // Step 1: Create unconstrained layout to get visual bounds width
+    val unconstrainedLayout = buildLayout(
+        text,
+        Int.MAX_VALUE / 2,
+        includeFontPadding,
+        textBreakStrategy,
+        hyphenationFrequency,
+        alignment,
+        justificationMode,
+        null,
+        ReactConstants.UNSET,
+        paint
+    )
 
-      // Calculate visual bounds width from unconstrained layout
-      var desiredVisualWidth = 0f
-      for (i in 0 until unconstrainedLayout.lineCount) {
-          val lineWidth = unconstrainedLayout.getLineRight(i) - unconstrainedLayout.getLineLeft(i)
-          desiredVisualWidth = max(desiredVisualWidth, lineWidth)
-      }
+    // Calculate visual bounds width from unconstrained layout
+    var desiredVisualWidth = 0f
+    for (i in 0 until unconstrainedLayout.lineCount) {
+        val lineWidth = unconstrainedLayout.getLineRight(i) - unconstrainedLayout.getLineLeft(i)
+        desiredVisualWidth = max(desiredVisualWidth, lineWidth)
+    }
 
-      val layoutWidth = when (widthYogaMeasureMode) {
-          YogaMeasureMode.AT_MOST -> min(ceil(desiredVisualWidth).toInt(), floor(width).toInt())
-          else -> ceil(desiredVisualWidth).toInt()
-      }
+    val layoutWidth = when (widthYogaMeasureMode) {
+        YogaMeasureMode.AT_MOST -> min(ceil(desiredVisualWidth).toInt(), floor(width).toInt())
+        else -> ceil(desiredVisualWidth).toInt()
+    }
 
-      // Step 2: Create final layout with correct width
-      return buildLayout(
-          text, layoutWidth, includeFontPadding, textBreakStrategy,
-          hyphenationFrequency, alignment, justificationMode, ellipsizeMode,
-          maxNumberOfLines, paint
-      )
+    // Step 2: Create final layout with correct width
+    return buildLayout(
+        text, layoutWidth, includeFontPadding, textBreakStrategy,
+        hyphenationFrequency, alignment, justificationMode, ellipsizeMode,
+        maxNumberOfLines, paint
+    )
   }
 
   private fun buildLayout(
@@ -692,19 +692,19 @@ internal object TextLayoutManager {
         .setHyphenationFrequency(hyphenationFrequency)
 
     if (maxNumberOfLines != ReactConstants.UNSET && maxNumberOfLines != 0) {
-        builder.setEllipsize(ellipsizeMode).setMaxLines(maxNumberOfLines)
+      builder.setEllipsize(ellipsizeMode).setMaxLines(maxNumberOfLines)
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        builder.setJustificationMode(justificationMode)
+      builder.setJustificationMode(justificationMode)
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        builder.setUseLineSpacingFromFallbacks(true)
+      builder.setUseLineSpacingFromFallbacks(true)
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        builder.setUseBoundsForWidth(true)
+      builder.setUseBoundsForWidth(true)
     }
 
     return builder.build()
