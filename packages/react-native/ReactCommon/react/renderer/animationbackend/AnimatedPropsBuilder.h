@@ -35,6 +35,10 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<Transform>>(TRANSFORM, std::move(t)));
   }
+  void setBackgroundColor(SharedColor value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<SharedColor>>(BACKGROUND_COLOR, value));
+  }
   void storeDynamic(folly::dynamic &d)
   {
     rawProps = std::make_unique<RawProps>(std::move(d));

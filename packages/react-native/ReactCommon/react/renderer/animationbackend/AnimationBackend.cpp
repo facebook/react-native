@@ -6,7 +6,9 @@
  */
 
 #include "AnimationBackend.h"
+#include <react/renderer/graphics/Color.h>
 #include <chrono>
+#include "AnimatedPropsSerializer.h"
 
 namespace facebook::react {
 
@@ -156,27 +158,7 @@ void AnimationBackend::commitUpdates(
 void AnimationBackend::synchronouslyUpdateProps(
     const std::unordered_map<Tag, AnimatedProps>& updates) {
   for (auto& [tag, animatedProps] : updates) {
-    auto dyn = animatedProps.rawProps ? animatedProps.rawProps->toDynamic()
-                                      : folly::dynamic::object();
-    for (auto& animatedProp : animatedProps.props) {
-      // TODO: We shouldn't repack it into dynamic, but for that a rewrite of
-      // directManipulationCallback_ is needed
-      switch (animatedProp->propName) {
-        case OPACITY:
-          dyn.insert("opacity", get<Float>(animatedProp));
-          break;
-
-        case BORDER_RADII:
-        case TRANSFORM:
-          // TODO: handle other things than opacity
-          break;
-
-        case WIDTH:
-        case HEIGHT:
-        case FLEX:
-          throw "Tried to synchronously update layout props";
-      }
-    }
+    auto dyn = AnimatedPropsSerializer::packAnimatedProps(animatedProps);
     directManipulationCallback_(tag, dyn);
   }
 }
