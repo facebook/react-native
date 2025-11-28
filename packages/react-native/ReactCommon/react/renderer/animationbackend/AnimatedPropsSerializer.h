@@ -21,6 +21,10 @@ class AnimatedPropsSerializer {
   static void packBorderRadii(folly::dynamic &dyn, const AnimatedPropBase &animatedProp);
   static void packTransform(folly::dynamic &dyn, const AnimatedPropBase &animatedProp);
   static void packBackgroundColor(folly::dynamic &dyn, const AnimatedPropBase &animatedProp);
+  static void packShadowColor(folly::dynamic &dyn, const AnimatedPropBase &animatedProp);
+  static void packShadowOffset(folly::dynamic &dyn, const AnimatedPropBase &animatedProp);
+  static void packShadowOpacity(folly::dynamic &dyn, const AnimatedPropBase &animatedProp);
+  static void packShadowRadius(folly::dynamic &dyn, const AnimatedPropBase &animatedProp);
   static void
   packBorderRadiusCorner(folly::dynamic &dyn, const std::string &propName, const std::optional<ValueUnit> &cornerValue);
 };
