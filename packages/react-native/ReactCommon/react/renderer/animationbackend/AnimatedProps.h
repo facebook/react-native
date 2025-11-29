@@ -12,7 +12,19 @@
 
 namespace facebook::react {
 
-enum PropName { OPACITY, WIDTH, HEIGHT, BORDER_RADII, FLEX, TRANSFORM };
+enum PropName {
+  OPACITY,
+  WIDTH,
+  HEIGHT,
+  BORDER_RADII,
+  FLEX,
+  TRANSFORM,
+  BACKGROUND_COLOR,
+  SHADOW_COLOR,
+  SHADOW_OFFSET,
+  SHADOW_OPACITY,
+  SHADOW_RADIUS
+};
 
 struct AnimatedPropBase {
   PropName propName;
@@ -69,6 +81,29 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case TRANSFORM:
       viewProps.transform = get<Transform>(animatedProp);
+      break;
+
+    case BACKGROUND_COLOR:
+      viewProps.backgroundColor = get<SharedColor>(animatedProp);
+      break;
+
+    case SHADOW_COLOR:
+      viewProps.shadowColor = get<SharedColor>(animatedProp);
+      break;
+
+    case SHADOW_OFFSET:
+      viewProps.shadowOffset = get<Size>(animatedProp);
+      break;
+
+    case SHADOW_OPACITY:
+      viewProps.shadowOpacity = get<Float>(animatedProp);
+      break;
+
+    case SHADOW_RADIUS:
+      viewProps.shadowRadius = get<Float>(animatedProp);
+      break;
+
+    default:
       break;
   }
 }
