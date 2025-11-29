@@ -316,6 +316,7 @@ declare const multiplyImpl: (
 declare const NativeAppEventEmitter: typeof RCTNativeAppEventEmitter_default
 declare const NativeDeviceInfo_default: {
   getConstants(): DeviceInfoConstants
+  getInfo(): DeviceInfoConstants
 }
 declare const NativeDialogManagerAndroid: typeof $$NativeDialogManagerAndroid
 declare const NativeModules: typeof NativeModules_default
