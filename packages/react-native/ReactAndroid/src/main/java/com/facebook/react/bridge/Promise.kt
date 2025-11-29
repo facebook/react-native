@@ -28,7 +28,7 @@ public interface Promise {
    * @param code String
    * @param message String
    */
-  public fun reject(code: String, message: String?)
+  public fun reject(code: String?, message: String?)
 
   /**
    * Report an exception with a custom code.
@@ -36,7 +36,7 @@ public interface Promise {
    * @param code String
    * @param throwable Throwable
    */
-  public fun reject(code: String, throwable: Throwable?)
+  public fun reject(code: String?, throwable: Throwable?)
 
   /**
    * Report an exception with a custom code and error message.
@@ -45,7 +45,7 @@ public interface Promise {
    * @param message String
    * @param throwable Throwable
    */
-  public fun reject(code: String, message: String?, throwable: Throwable?)
+  public fun reject(code: String?, message: String?, throwable: Throwable?)
 
   /**
    * Report an exception, with default error code. Useful in catch-all scenarios where it's unclear
@@ -73,7 +73,7 @@ public interface Promise {
    * @param code String
    * @param userInfo WritableMap
    */
-  public fun reject(code: String, userInfo: WritableMap)
+  public fun reject(code: String?, userInfo: WritableMap)
 
   /**
    * Report an exception with a custom code and userInfo.
@@ -82,7 +82,7 @@ public interface Promise {
    * @param throwable Throwable
    * @param userInfo WritableMap
    */
-  public fun reject(code: String, throwable: Throwable?, userInfo: WritableMap)
+  public fun reject(code: String?, throwable: Throwable?, userInfo: WritableMap)
 
   /**
    * Report an error with a custom code, error message and userInfo, an error not caused by an
@@ -92,7 +92,7 @@ public interface Promise {
    * @param message String
    * @param userInfo WritableMap
    */
-  public fun reject(code: String, message: String?, userInfo: WritableMap)
+  public fun reject(code: String?, message: String?, userInfo: WritableMap)
 
   /**
    * Report an exception with a custom code, error message and userInfo.

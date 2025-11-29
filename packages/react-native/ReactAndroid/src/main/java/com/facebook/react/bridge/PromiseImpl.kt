@@ -38,7 +38,7 @@ constructor(private var resolve: Callback?, private var reject: Callback?) : Pro
    * @param code String
    * @param message String
    */
-  override fun reject(code: String, message: String?) {
+  override fun reject(code: String?, message: String?) {
     reject(code, message, null, null)
   }
 
@@ -48,7 +48,7 @@ constructor(private var resolve: Callback?, private var reject: Callback?) : Pro
    * @param code String
    * @param throwable Throwable
    */
-  override fun reject(code: String, throwable: Throwable?) {
+  override fun reject(code: String?, throwable: Throwable?) {
     reject(code, null, throwable, null)
   }
 
@@ -59,7 +59,7 @@ constructor(private var resolve: Callback?, private var reject: Callback?) : Pro
    * @param message String
    * @param throwable Throwable
    */
-  override fun reject(code: String, message: String?, throwable: Throwable?) {
+  override fun reject(code: String?, message: String?, throwable: Throwable?) {
     reject(code, message, throwable, null)
   }
 
@@ -94,7 +94,7 @@ constructor(private var resolve: Callback?, private var reject: Callback?) : Pro
    * @param code String
    * @param userInfo WritableMap
    */
-  override fun reject(code: String, userInfo: WritableMap) {
+  override fun reject(code: String?, userInfo: WritableMap) {
     reject(code, null, null, userInfo)
   }
 
@@ -105,7 +105,7 @@ constructor(private var resolve: Callback?, private var reject: Callback?) : Pro
    * @param throwable Throwable
    * @param userInfo WritableMap
    */
-  override fun reject(code: String, throwable: Throwable?, userInfo: WritableMap) {
+  override fun reject(code: String?, throwable: Throwable?, userInfo: WritableMap) {
     reject(code, null, throwable, userInfo)
   }
 
@@ -117,7 +117,7 @@ constructor(private var resolve: Callback?, private var reject: Callback?) : Pro
    * @param message String
    * @param userInfo WritableMap
    */
-  override fun reject(code: String, message: String?, userInfo: WritableMap) {
+  override fun reject(code: String?, message: String?, userInfo: WritableMap) {
     reject(code, message, null, userInfo)
   }
 
