@@ -9,6 +9,8 @@
     <string name="combobox_description" gender="unknown">कम्बो बक्स</string>
     <string name="menu_description" gender="unknown">मेनु</string>
     <string name="rn_tab_description" gender="unknown">टयाब</string>
+    <string name="timer_description" gender="unknown">टाइमर</string>
+    <string name="state_busy_description" gender="unknown">व्यस्त</string>
     <string name="state_expanded_description" gender="unknown">विस्तार गरियो</string>
     <string name="state_unselected_description" gender="unknown">चयन हटाइयो</string>
     <string name="state_on_description" gender="unknown">अन</string>
