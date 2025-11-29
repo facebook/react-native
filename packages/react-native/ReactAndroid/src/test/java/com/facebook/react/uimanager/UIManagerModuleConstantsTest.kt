@@ -72,7 +72,7 @@ class UIManagerModuleConstantsTest {
 
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
     val viewManagerConstants =
-        uiManagerModule.constants?.get(VIEW_MANAGER_NAME) as Map<String, Any>?
+        uiManagerModule.getConstants()?.get(VIEW_MANAGER_NAME) as Map<String, Any>?
 
     Assertions.assertThat(viewManagerConstants)
         .containsKey(BUBBLING_EVENTS_TYPES_KEY)
@@ -88,7 +88,7 @@ class UIManagerModuleConstantsTest {
     val viewManagers = listOf(manager)
 
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
-    val viewManagerConstants = uiManagerModule.constants?.get(VIEW_MANAGER_NAME) as Map<String, Any>
+    val viewManagerConstants = uiManagerModule.getConstants()?.get(VIEW_MANAGER_NAME) as Map<String, Any>
 
     Assertions.assertThat(viewManagerConstants).containsKey(BUBBLING_EVENTS_TYPES_KEY)
     val bubblingEventTypes = viewManagerConstants[BUBBLING_EVENTS_TYPES_KEY] as Map<String, Any>
@@ -104,7 +104,7 @@ class UIManagerModuleConstantsTest {
     val viewManagers = listOf(manager)
 
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
-    val viewManagerConstants = uiManagerModule.constants?.get(VIEW_MANAGER_NAME) as Map<String, Any>
+    val viewManagerConstants = uiManagerModule.getConstants()?.get(VIEW_MANAGER_NAME) as Map<String, Any>
 
     Assertions.assertThat(viewManagerConstants).containsKey(DIRECT_EVENTS_TYPES_KEY)
     val directEventTypes = viewManagerConstants[DIRECT_EVENTS_TYPES_KEY] as Map<String, Any>
@@ -120,7 +120,7 @@ class UIManagerModuleConstantsTest {
     val viewManagers = listOf(manager)
 
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
-    val constants = uiManagerModule.constants
+    val constants = uiManagerModule.getConstants()
     Assertions.assertThat(constants).containsKey(VIEW_MANAGER_NAME)
 
     Assertions.assertThat(constants!![VIEW_MANAGER_NAME] as Map<String, Any>)
@@ -138,7 +138,7 @@ class UIManagerModuleConstantsTest {
 
     val viewManagers = listOf(manager)
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
-    val constants = uiManagerModule.constants.orEmpty()
+    val constants = uiManagerModule.getConstants().orEmpty()
     Assertions.assertThat(
             valueAtPath(constants, VIEW_MANAGER_NAME, "NativeProps", "fooProp") as String?
         )
@@ -180,7 +180,7 @@ class UIManagerModuleConstantsTest {
 
     val viewManagers = listOf(managerX, managerY)
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
-    val constants = uiManagerModule.constants
+    val constants = uiManagerModule.getConstants()
     val viewManagerConstants = constants!!["ManagerX"] as Map<String, Any>
     Assertions.assertThat(viewManagerConstants[DIRECT_EVENTS_TYPES_KEY] as Map<String, Any>)
         .containsKey("onTwirl")
