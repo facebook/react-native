@@ -83,6 +83,16 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
 
     {\\"MultiFileIncludedNativeComponent\\", MultiFileIncludedNativeComponentCls}, // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
+
+    {\\"ArrayPropsNativeComponent\\", ArrayPropsNativeComponentCls}, // ARRAY_PROPS_WITH_OPTIONAL_GEN
+
+    {\\"ArrayPropsNativeComponent\\", ArrayPropsNativeComponentCls}, // ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_GEN
+
+    {\\"ObjectProps\\", ObjectPropsCls}, // OBJECT_PROPS_WITH_OPTIONAL_GEN
+
+    {\\"AllProp\\", AllPropCls}, // ALL_PROP
+
+    {\\"AllPropWithOptionalGen\\", AllPropWithOptionalGenCls}, // ALL_PROP_WITH_OPTIONAL_GEN
     #endif
     #endif
   };
