@@ -238,6 +238,20 @@ void NativeAnimatedNodesManager::connectAnimatedNodeToView(
   }
 }
 
+void NativeAnimatedNodesManager::connectAnimatedNodeToShadowNodeFamily(
+    Tag propsNodeTag,
+    std::shared_ptr<const ShadowNodeFamily> family) noexcept {
+  react_native_assert(propsNodeTag);
+  auto node = getAnimatedNode<PropsAnimatedNode>(propsNodeTag);
+  if (node != nullptr) {
+    node->connectToFamily(family);
+    updatedNodeTags_.insert(node->tag());
+  } else {
+    LOG(WARNING)
+        << "Cannot ConnectAnimatedNodeToShadowNodeFamily, animated node has to be props type";
+  }
+}
+
 void NativeAnimatedNodesManager::disconnectAnimatedNodeFromView(
     Tag propsNodeTag,
     Tag viewTag) noexcept {
@@ -886,10 +900,14 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     Tag viewTag,
     const folly::dynamic& props,
     bool layoutStyleUpdated,
-    bool forceFabricCommit) noexcept {
+    bool forceFabricCommit,
+    std::shared_ptr<const ShadowNodeFamily> family) noexcept {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
     if (layoutStyleUpdated) {
       mergeObjects(updateViewProps_[viewTag], props);
+      if (family) {
+        tagToShadowNodeFamily_[viewTag] = std::move(family);
+      }
     } else {
       mergeObjects(updateViewPropsDirect_[viewTag], props);
     }
@@ -997,7 +1015,31 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
             AnimationMutation{tag, nullptr, propsBuilder.get()});
         containsChange = true;
       }
-      updateViewPropsDirect_.clear();
+      for (auto& [tag, props] : updateViewProps_) {
+        auto familyIt = tagToShadowNodeFamily_.find(tag);
+        if (familyIt != tagToShadowNodeFamily_.end()) {
+          if (props.find("width") != props.items().end()) {
+            propsBuilder.setWidth(
+                yoga::Style::SizeLength::points(props["width"].asDouble()));
+          }
+          if (props.find("height") != props.items().end()) {
+            propsBuilder.setHeight(
+                yoga::Style::SizeLength::points(props["height"].asDouble()));
+          }
+          // propsBuilder.storeDynamic(props);
+          mutations.push_back(
+              AnimationMutation{
+                  .tag = tag,
+                  .family = familyIt->second.get(),
+                  .props = propsBuilder.get()});
+        }
+        containsChange = true;
+      }
+      if (containsChange) {
+        updateViewPropsDirect_.clear();
+        updateViewProps_.clear();
+        tagToShadowNodeFamily_.clear();
+      }
     }
 
     if (!containsChange) {
@@ -1017,7 +1059,8 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
         }
       }
 
-      // Step 2: update all nodes that are connected to the finished animations.
+      // Step 2: update all nodes that are connected to the finished
+      // animations.
       updateNodes(finishedAnimationValueNodes);
 
       isEventAnimationInProgress_ = false;
@@ -1027,6 +1070,17 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
         propsBuilder.storeDynamic(props);
         mutations.push_back(
             AnimationMutation{tag, nullptr, propsBuilder.get()});
+      }
+      for (auto& [tag, props] : updateViewProps_) {
+        auto familyIt = tagToShadowNodeFamily_.find(tag);
+        if (familyIt != tagToShadowNodeFamily_.end()) {
+          propsBuilder.storeDynamic(props);
+          mutations.push_back(
+              AnimationMutation{
+                  .tag = tag,
+                  .family = familyIt->second.get(),
+                  .props = propsBuilder.get()});
+        }
       }
     }
   } else {
@@ -1107,7 +1161,8 @@ void NativeAnimatedNodesManager::onRender() {
         }
       }
 
-      // Step 2: update all nodes that are connected to the finished animations.
+      // Step 2: update all nodes that are connected to the finished
+      // animations.
       updateNodes(finishedAnimationValueNodes);
 
       isEventAnimationInProgress_ = false;

@@ -10,6 +10,7 @@
 #import <React/RCTInitializing.h>
 #import <React/RCTNativeAnimatedNodesManager.h>
 #import <React/RCTNativeAnimatedTurboModule.h>
+#import <react/debug/react_native_assert.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import "RCTAnimationPlugins.h"
@@ -163,6 +164,12 @@ RCT_EXPORT_METHOD(connectAnimatedNodeToView : (double)nodeTag viewTag : (double)
                                     viewTag:[NSNumber numberWithDouble:viewTag]
                                    viewName:nil];
   }];
+}
+
+RCT_EXPORT_METHOD(connectAnimatedNodeToShadowNodeFamily : (double)nodeTag shadowNode : (NSDictionary *)shadowNode)
+{
+  // This method should only be called when using CxxNativeAnimated
+  react_native_assert(false);
 }
 
 RCT_EXPORT_METHOD(disconnectAnimatedNodeFromView : (double)nodeTag viewTag : (double)viewTag)
