@@ -10,8 +10,8 @@
 
 const {REPO_ROOT} = require('./consts');
 const {promises: fs} = require('fs');
-const glob = require('glob');
 const path = require('path');
+const {globSync} = require('tinyglobby');
 
 const WORKSPACES_CONFIG = '{packages,private}/*';
 
@@ -57,15 +57,12 @@ async function getPackages(
   const {includeReactNative, includePrivate = false} = filter;
 
   const packagesEntries = await Promise.all(
-    glob
-      .sync(`${WORKSPACES_CONFIG}/package.json`, {
-        cwd: REPO_ROOT,
-        absolute: true,
-        ignore: includeReactNative
-          ? []
-          : ['packages/react-native/package.json'],
-      })
-      .map(parsePackageInfo),
+    globSync(`${WORKSPACES_CONFIG}/package.json`, {
+      cwd: REPO_ROOT,
+      absolute: true,
+      ignore: includeReactNative ? [] : ['packages/react-native/package.json'],
+      expandDirectories: false,
+    }).map(parsePackageInfo),
   );
 
   return Object.fromEntries(
