@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cdd551b82f51be4eb0ca7e90ea5f572f>>
+ * @generated SignedSource<<ceaebd9c6453b8d6a44e5d45343e0ba4>>
  */
 
 /**
@@ -76,7 +76,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableViewRecyclingForScrollViewCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
-  private var enableVirtualViewClippingWithoutScrollViewClippingCache: Boolean? = null
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var enableVirtualViewRenderStateCache: Boolean? = null
@@ -632,16 +631,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableViewRecyclingForView()
       accessedFeatureFlags.add("enableViewRecyclingForView")
       enableViewRecyclingForViewCache = cached
-    }
-    return cached
-  }
-
-  override fun enableVirtualViewClippingWithoutScrollViewClipping(): Boolean {
-    var cached = enableVirtualViewClippingWithoutScrollViewClippingCache
-    if (cached == null) {
-      cached = currentProvider.enableVirtualViewClippingWithoutScrollViewClipping()
-      accessedFeatureFlags.add("enableVirtualViewClippingWithoutScrollViewClipping")
-      enableVirtualViewClippingWithoutScrollViewClippingCache = cached
     }
     return cached
   }

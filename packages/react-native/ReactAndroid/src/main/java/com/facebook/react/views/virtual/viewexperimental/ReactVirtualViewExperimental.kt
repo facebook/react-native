@@ -216,19 +216,10 @@ public class ReactVirtualViewExperimental(context: Context) :
     val clippingRect = checkNotNull(clippingRect)
     val scrollView = checkNotNull(scrollView) as ReactClippingViewGroup
 
-    if (ReactNativeFeatureFlags.enableVirtualViewClippingWithoutScrollViewClipping()) {
-      if (scrollView.removeClippedSubviews) {
-        scrollView.getClippingRect(clippingRect)
-      } else {
-        (scrollView as View).getDrawingRect(clippingRect)
-      }
-    } else {
-      if (!(scrollView.removeClippedSubviews ?: false)) {
-        super.updateClippingRect(excludedViews)
-        return
-      }
-
+    if (scrollView.removeClippedSubviews) {
       scrollView.getClippingRect(clippingRect)
+    } else {
+      (scrollView as View).getDrawingRect(clippingRect)
     }
 
     clippingRect.intersect(containerRelativeRect)

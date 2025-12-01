@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3787bbe53523ccda093277465064d7dc>>
+ * @generated SignedSource<<f055563fdc2085f73eb43a28cd6749af>>
  */
 
 /**
@@ -77,7 +77,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableViewRecyclingForScrollView() = 0;
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
-  virtual bool enableVirtualViewClippingWithoutScrollViewClipping() = 0;
   virtual bool enableVirtualViewContainerStateExperimental() = 0;
   virtual bool enableVirtualViewDebugFeatures() = 0;
   virtual bool enableVirtualViewRenderState() = 0;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9fb3e60f99756f099b573d4fb852d18b>>
+ * @generated SignedSource<<95616bb241e59e35a9f4b3667cbc0822>>
  */
 
 /**
@@ -348,12 +348,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableViewRecyclingForView() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewRecyclingForView");
-    return method(javaProvider_);
-  }
-
-  bool enableVirtualViewClippingWithoutScrollViewClipping() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewClippingWithoutScrollViewClipping");
     return method(javaProvider_);
   }
 
@@ -849,11 +843,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
   return ReactNativeFeatureFlags::enableViewRecyclingForView();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewClippingWithoutScrollViewClipping(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableVirtualViewClippingWithoutScrollViewClipping();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental();
@@ -1231,9 +1220,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableViewRecyclingForView",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView),
-      makeNativeMethod(
-        "enableVirtualViewClippingWithoutScrollViewClipping",
-        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewClippingWithoutScrollViewClipping),
       makeNativeMethod(
         "enableVirtualViewContainerStateExperimental",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental),
