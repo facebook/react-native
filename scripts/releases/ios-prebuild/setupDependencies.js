@@ -17,8 +17,8 @@ const {
 } = require('./constants');
 const {execSync} = require('child_process');
 const fs = require('fs');
-const glob = require('glob');
 const path = require('path');
+const {globSync} = require('tinyglobby');
 const util = require('util');
 
 /*::
@@ -142,7 +142,10 @@ async function createBuildStructure(
   // Now let's use glob to get the final list of files
   const sources = dependency.files.sources;
   sources.forEach(source => {
-    const sourceFiles = glob.sync(source, {cwd: sourceFolder});
+    const sourceFiles = globSync(source, {
+      cwd: sourceFolder,
+      expandDirectories: false,
+    });
     sourceFiles.forEach(sourceFile => {
       const sourcePath = path.join(sourceFolder, sourceFile);
       const targetPath = path.join(targetFolder, sourceFile);
@@ -180,7 +183,10 @@ async function createHeaderStructure(
   // Now let's use glob to get the final list of files
   const headers = dependency.files.headers;
   headers.forEach(source => {
-    const sourceFiles = glob.sync(source, {cwd: sourceFolder});
+    const sourceFiles = globSync(source, {
+      cwd: sourceFolder,
+      expandDirectories: false,
+    });
     sourceFiles.forEach(sourceFile => {
       // get source path
       const sourcePath = path.join(sourceFolder, sourceFile);
@@ -234,7 +240,10 @@ async function copyResources(
 
   // Copy all resources
   resources.forEach(source => {
-    const sourceFiles = glob.sync(source, {cwd: rootFolder});
+    const sourceFiles = globSync(source, {
+      cwd: rootFolder,
+      expandDirectories: false,
+    });
     sourceFiles.forEach(sourceFile => {
       const sourcePath = path.resolve(rootFolder, sourceFile);
       const targetPath = path.join(targetFolder, path.basename(sourceFile));

@@ -10,9 +10,9 @@
 
 const {execSync} = require('child_process');
 const fs = require('fs');
-const glob = require('glob');
 const ini = require('ini');
 const path = require('path');
+const {globSync} = require('tinyglobby');
 const {styleText} = require('util');
 
 const CONFIG_PATH = path.join(__dirname, './public-api.conf');
@@ -183,9 +183,10 @@ function main() {
   for (const searchGlob of config.include) {
     // glob 7 doesn't support searchGlob as a string[]
     files = files.concat(
-      glob.sync(searchGlob, {
+      globSync(searchGlob, {
         ignore: config.exclude,
-        root: GLOB_PROJECT_ROOT,
+        cwd: GLOB_PROJECT_ROOT,
+        expandDirectories: false,
       }),
     );
   }
