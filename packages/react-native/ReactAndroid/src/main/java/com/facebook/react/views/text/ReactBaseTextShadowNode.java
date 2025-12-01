@@ -49,6 +49,7 @@ import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.SetSpanOperation;
 import com.facebook.react.views.text.internal.span.ShadowStyleSpan;
+import com.facebook.react.views.text.internal.span.StrokeStyleSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.yoga.YogaDirection;
@@ -175,7 +176,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       }
       if (textShadowNode.mGradientColors != null && textShadowNode.mGradientColors.length >= 2) {
           int effectiveFontSize = textAttributes.getEffectiveFontSize();
-          ops.add(new SetSpanOperation(start, end, new LinearGradientSpan(start * effectiveFontSize, textShadowNode.mGradientColors)));
+          float gradientAngle = Float.isNaN(textShadowNode.mGradientAngle) ? 0f : textShadowNode.mGradientAngle;
+          ops.add(new SetSpanOperation(start, end, new LinearGradientSpan(start * effectiveFontSize, textShadowNode.mGradientColors, gradientAngle)));
       }
       if (textShadowNode.mIsBackgroundColorSet) {
         ops.add(
@@ -237,6 +239,17 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                     textShadowNode.mTextShadowOffsetDy,
                     textShadowNode.mTextShadowRadius,
                     textShadowNode.mTextShadowColor)));
+      }
+      if (!Float.isNaN(textShadowNode.mTextStrokeWidth)
+          && textShadowNode.mTextStrokeWidth > 0
+          && textShadowNode.mIsTextStrokeColorSet) {
+        ops.add(
+            new SetSpanOperation(
+                start,
+                end,
+                new StrokeStyleSpan(
+                    textShadowNode.mTextStrokeWidth,
+                    textShadowNode.mTextStrokeColor)));
       }
       float effectiveLineHeight = textAttributes.getEffectiveLineHeight();
       if (!Float.isNaN(effectiveLineHeight)
@@ -337,6 +350,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mBackgroundColor;
 
   protected @Nullable int[] mGradientColors = null;
+  protected float mGradientAngle = Float.NaN;
 
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected @Nullable Role mRole = null;
@@ -352,6 +366,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected float mTextShadowOffsetDy = 0;
   protected float mTextShadowRadius = 0;
   protected int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
+
+  protected float mTextStrokeWidth = Float.NaN;
+  protected boolean mIsTextStrokeColorSet = false;
+  protected int mTextStrokeColor;
 
   protected boolean mIsUnderlineTextDecorationSet = false;
   protected boolean mIsLineThroughTextDecorationSet = false;
@@ -523,6 +541,12 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
   }
 
+  @ReactProp(name = "gradientAngle", defaultFloat = Float.NaN)
+  public void setGradientAngle(float gradientAngle) {
+    mGradientAngle = gradientAngle;
+    markUpdated();
+  }
+
   @ReactProp(name = ViewProps.BACKGROUND_COLOR, customType = "Color")
   public void setBackgroundColor(@Nullable Integer color) {
     // Background color needs to be handled here for virtual nodes so it can be incorporated into
@@ -658,6 +682,23 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   public void setTextShadowColor(int textShadowColor) {
     if (textShadowColor != mTextShadowColor) {
       mTextShadowColor = textShadowColor;
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = "textStrokeWidth", defaultFloat = Float.NaN)
+  public void setTextStrokeWidth(float textStrokeWidth) {
+    if (textStrokeWidth != mTextStrokeWidth) {
+      mTextStrokeWidth = textStrokeWidth;
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = "textStrokeColor", customType = "Color")
+  public void setTextStrokeColor(int textStrokeColor) {
+    if (textStrokeColor != mTextStrokeColor) {
+      mTextStrokeColor = textStrokeColor;
+      mIsTextStrokeColorSet = true;
       markUpdated();
     }
   }

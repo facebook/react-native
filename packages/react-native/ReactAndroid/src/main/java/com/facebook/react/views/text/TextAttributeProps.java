@@ -66,6 +66,9 @@ public class TextAttributeProps {
   public static final short TA_KEY_TEXT_TRANSFORM = 27;
   public static final short TA_KEY_MAX_FONT_SIZE_MULTIPLIER = 29;
   public static final short TA_KEY_GRADIENT_COLORS = 30;
+  public static final short TA_KEY_TEXT_STROKE_WIDTH = 31;
+  public static final short TA_KEY_TEXT_STROKE_COLOR = 32;
+  public static final short TA_KEY_GRADIENT_ANGLE = 33;
 
   public static final int UNSET = -1;
 
@@ -109,6 +112,10 @@ public class TextAttributeProps {
   protected float mTextShadowRadius = 0;
   protected int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
 
+  protected float mTextStrokeWidth = Float.NaN;
+  protected boolean mIsTextStrokeColorSet = false;
+  protected int mTextStrokeColor;
+
   protected boolean mIsUnderlineTextDecorationSet = false;
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
@@ -149,8 +156,9 @@ public class TextAttributeProps {
 
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
-  
+
   protected @Nullable int[] mGradientColors = null;
+  protected float mGradientAngle = Float.NaN;
 
   private TextAttributeProps() {}
 
@@ -221,6 +229,12 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_SHADOW_OFFSET_DY:
           result.setTextShadowOffsetDy((float) entry.getDoubleValue());
           break;
+        case TA_KEY_TEXT_STROKE_WIDTH:
+          result.setTextStrokeWidth((float) entry.getDoubleValue());
+          break;
+        case TA_KEY_TEXT_STROKE_COLOR:
+          result.setTextStrokeColor(entry.getIntValue());
+          break;
         case TA_KEY_IS_HIGHLIGHTED:
           break;
         case TA_KEY_LAYOUT_DIRECTION:
@@ -237,6 +251,9 @@ public class TextAttributeProps {
           break;
         case TA_KEY_GRADIENT_COLORS:
           result.setGradientColors(entry.getMapBufferValue());
+          break;
+        case TA_KEY_GRADIENT_ANGLE:
+          result.setGradientAngle((float) entry.getDoubleValue());
           break;
         case TA_KEY_MAX_FONT_SIZE_MULTIPLIER:
           result.setMaxFontSizeMultiplier((float) entry.getDoubleValue());
@@ -285,6 +302,11 @@ public class TextAttributeProps {
     result.setAccessibilityRole(getStringProp(props, ViewProps.ACCESSIBILITY_ROLE));
     result.setRole(getStringProp(props, ViewProps.ROLE));
     result.setGradientColors(getArrayProp(props, "gradientColors"));
+    result.setGradientAngle(getFloatProp(props, "gradientAngle", Float.NaN));
+    result.setTextStrokeWidth(getFloatProp(props, "textStrokeWidth", Float.NaN));
+    if (props.hasKey("textStrokeColor")) {
+      result.setTextStrokeColor(props.getInt("textStrokeColor", 0));
+    }
     return result;
   }
 
@@ -794,6 +816,14 @@ public class TextAttributeProps {
     return mGradientColors;
   }
 
+  public float getGradientAngle() {
+    return mGradientAngle;
+  }
+
+  private void setGradientAngle(float gradientAngle) {
+    mGradientAngle = gradientAngle;
+  }
+
   public static int getTextBreakStrategy(@Nullable String textBreakStrategy) {
     int androidTextBreakStrategy = DEFAULT_BREAK_STRATEGY;
     if (textBreakStrategy != null) {
@@ -848,5 +878,28 @@ public class TextAttributeProps {
       }
     }
     return truncateAt;
+  }
+
+  public float getTextStrokeWidth() {
+    return mTextStrokeWidth;
+  }
+
+  private void setTextStrokeWidth(float textStrokeWidth) {
+    mTextStrokeWidth = textStrokeWidth;
+  }
+
+  public int getTextStrokeColor() {
+    return mTextStrokeColor;
+  }
+
+  public boolean isTextStrokeColorSet() {
+    return mIsTextStrokeColorSet;
+  }
+
+  private void setTextStrokeColor(int textStrokeColor) {
+    if (textStrokeColor != mTextStrokeColor) {
+      mTextStrokeColor = textStrokeColor;
+      mIsTextStrokeColorSet = true;
+    }
   }
 }

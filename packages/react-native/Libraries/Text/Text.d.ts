@@ -223,6 +223,21 @@ export interface TextProps
    * Adds a horizontal gradient using the int based color values.
    */
   gradientColors?: number[] | undefined;
+
+  /**
+   * Gradient angle in degrees. Default is 0 (horizontal).
+   */
+  gradientAngle?: number | undefined;
+
+  /**
+   * Width of the text stroke (outline). Creates an outer stroke effect.
+   */
+  textStrokeWidth?: number | undefined;
+
+  /**
+   * Color of the text stroke (outline).
+   */
+  textStrokeColor?: ColorValue | undefined;
 }
 
 /**

@@ -32,6 +32,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _textShadowRadius = NAN;
     _opacity = NAN;
     _textTransform = RCTTextTransformUndefined;
+    _textStrokeWidth = NAN;
+    _gradientAngle = NAN;
   }
 
   return self;
@@ -47,6 +49,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _foregroundColor = textAttributes->_foregroundColor ?: _foregroundColor;
   _backgroundColor = textAttributes->_backgroundColor ?: _backgroundColor;
   _gradientColors = textAttributes->_gradientColors ?: _gradientColors;
+  _gradientAngle = !isnan(textAttributes->_gradientAngle) ? textAttributes->_gradientAngle : _gradientAngle;
   _opacity =
       !isnan(textAttributes->_opacity) ? (isnan(_opacity) ? 1.0 : _opacity) * textAttributes->_opacity : _opacity;
 
@@ -89,6 +92,10 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
       : _textShadowOffset; // *
   _textShadowRadius = !isnan(textAttributes->_textShadowRadius) ? textAttributes->_textShadowRadius : _textShadowRadius;
   _textShadowColor = textAttributes->_textShadowColor ?: _textShadowColor;
+
+  // Stroke
+  _textStrokeWidth = !isnan(textAttributes->_textStrokeWidth) ? textAttributes->_textStrokeWidth : _textStrokeWidth;
+  _textStrokeColor = textAttributes->_textStrokeColor ?: _textStrokeColor;
 
   // Special
   _isHighlighted = textAttributes->_isHighlighted || _isHighlighted; // *
@@ -210,6 +217,15 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     attributes[NSShadowAttributeName] = shadow;
   }
 
+  // We don't use NSStrokeWidthAttributeName because it centers the stroke on the text path
+  // Instead, we do custom two-pass rendering to get true outer stroke
+  if (!isnan(_textStrokeWidth) && _textStrokeWidth > 0) {
+    UIColor *strokeColorToUse = _textStrokeColor ?: effectiveForegroundColor;
+    attributes[@"RCTTextStrokeWidth"] = @(_textStrokeWidth);
+    attributes[@"RCTTextStrokeColor"] = strokeColorToUse;
+  }
+
+
   // Special
   if (_isHighlighted) {
     attributes[RCTTextAttributesIsHighlightedAttributeName] = @YES;
@@ -303,7 +319,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
               [cgColors addObject:(id)color.CGColor];
           }
       }
-      
+
       if([cgColors count] > 0) {
           [cgColors addObject:cgColors[0]];
           CAGradientLayer *gradient = [CAGradientLayer layer];
@@ -312,8 +328,17 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
           CGFloat height = _lineHeight * self.effectiveFontSizeMultiplier;
           gradient.frame = CGRectMake(0, 0, patternWidth, height);
           gradient.colors = cgColors;
-          gradient.startPoint = CGPointMake(0.0, 0.5);
-          gradient.endPoint = CGPointMake(1.0, 0.5);
+
+          CGFloat angle = !isnan(_gradientAngle) ? _gradientAngle : 0.0;
+          CGFloat radians = angle * M_PI / 180.0;
+
+          CGFloat startX = 0.5 - 0.5 * cos(radians);
+          CGFloat startY = 0.5 - 0.5 * sin(radians);
+          CGFloat endX = 0.5 + 0.5 * cos(radians);
+          CGFloat endY = 0.5 + 0.5 * sin(radians);
+
+          gradient.startPoint = CGPointMake(startX, startY);
+          gradient.endPoint = CGPointMake(endX, endY);
 
           UIGraphicsBeginImageContextWithOptions(gradient.frame.size, NO, 0.0);
           [gradient renderInContext:UIGraphicsGetCurrentContext()];
@@ -397,6 +422,7 @@ static NSString *capitalizeText(NSString *text)
 #define RCTTextAttributesCompareOthers(a) (a == textAttributes->a)
 
   return RCTTextAttributesCompareObjects(_foregroundColor) && RCTTextAttributesCompareObjects(_backgroundColor) &&
+      RCTTextAttributesCompareObjects(_gradientColors) && RCTTextAttributesCompareFloats(_gradientAngle) &&
       RCTTextAttributesCompareFloats(_opacity) &&
       // Font
       RCTTextAttributesCompareObjects(_fontFamily) && RCTTextAttributesCompareFloats(_fontSize) &&
@@ -414,6 +440,8 @@ static NSString *capitalizeText(NSString *text)
       // Shadow
       RCTTextAttributesCompareSize(_textShadowOffset) && RCTTextAttributesCompareFloats(_textShadowRadius) &&
       RCTTextAttributesCompareObjects(_textShadowColor) &&
+      // Stroke
+      RCTTextAttributesCompareFloats(_textStrokeWidth) && RCTTextAttributesCompareObjects(_textStrokeColor) &&
       // Special
       RCTTextAttributesCompareOthers(_isHighlighted) && RCTTextAttributesCompareObjects(_tag) &&
       RCTTextAttributesCompareOthers(_layoutDirection) && RCTTextAttributesCompareOthers(_textTransform);

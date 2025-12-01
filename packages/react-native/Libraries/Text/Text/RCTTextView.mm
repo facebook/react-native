@@ -7,6 +7,7 @@
 
 #import <React/RCTTextView.h>
 
+#import <CoreText/CoreText.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 
 #import <React/RCTUtils.h>
@@ -119,10 +120,88 @@
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
-  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
+
+  // Check if text has custom stroke attribute
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+  __block BOOL hasStroke = NO;
+  __block CGFloat strokeWidth = 0;
+  __block UIColor *strokeColor = nil;
+
+  [_textStorage enumerateAttribute:@"RCTTextStrokeWidth"
+                           inRange:characterRange
+                           options:0
+                        usingBlock:^(id value, NSRange range, BOOL *stop) {
+    if (value && [value isKindOfClass:[NSNumber class]]) {
+      CGFloat width = [value floatValue];
+      if (width > 0) {
+        hasStroke = YES;
+        strokeWidth = width;
+        strokeColor = [_textStorage attribute:@"RCTTextStrokeColor" atIndex:range.location effectiveRange:NULL];
+
+        if (strokeColor) {
+          CGFloat r, g, b, a;
+          [strokeColor getRed:&r green:&g blue:&b alpha:&a];
+        }
+        *stop = YES;
+      }
+    }
+  }];
+
+  if (hasStroke && strokeColor) {
+    CGContextRef context = UIGraphicsGetCurrentContext();
+
+    CGContextSetLineWidth(context, strokeWidth);
+    CGContextSetLineJoin(context, kCGLineJoinRound);
+    CGContextSetLineCap(context, kCGLineCapRound);
+
+    CGFloat strokeInset = strokeWidth / 2;
+
+    // PASS 1: Draw stroke outline
+    CGContextSaveGState(context);
+    CGContextSetTextDrawingMode(context, kCGTextStroke);
+
+    NSMutableAttributedString *strokeText = [_textStorage mutableCopy];
+    [strokeText addAttribute:NSForegroundColorAttributeName
+                       value:strokeColor
+                       range:characterRange];
+
+    CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+    CGContextTranslateCTM(context, _contentFrame.origin.x + strokeInset, self.bounds.size.height - _contentFrame.origin.y + strokeInset);
+    CGContextScaleCTM(context, 1.0, -1.0);
+
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)strokeText);
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathAddRect(path, NULL, CGRectMake(0, 0, _contentFrame.size.width, _contentFrame.size.height));
+    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, NULL);
+    CTFrameDraw(frame, context);
+    CFRelease(frame);
+    CFRelease(path);
+    CFRelease(framesetter);
+    CGContextRestoreGState(context);
+
+    // PASS 2: Draw fill on top
+    CGContextSaveGState(context);
+    CGContextSetTextDrawingMode(context, kCGTextFill);
+
+    CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+    CGContextTranslateCTM(context, _contentFrame.origin.x + strokeInset, self.bounds.size.height - _contentFrame.origin.y + strokeInset);
+    CGContextScaleCTM(context, 1.0, -1.0);
+
+    framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)_textStorage);
+    path = CGPathCreateMutable();
+    CGPathAddRect(path, NULL, CGRectMake(0, 0, _contentFrame.size.width, _contentFrame.size.height));
+    frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, NULL);
+    CTFrameDraw(frame, context);
+    CFRelease(frame);
+    CFRelease(path);
+    CFRelease(framesetter);
+    CGContextRestoreGState(context);
+
+  } else {
+    [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
+  }
 
   __block UIBezierPath *highlightPath = nil;
-  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
   [_textStorage
       enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
                  inRange:characterRange

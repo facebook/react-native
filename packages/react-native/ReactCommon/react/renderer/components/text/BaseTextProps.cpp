@@ -36,6 +36,12 @@ static TextAttributes convertRawProp(
       "gradientColors",
       sourceTextAttributes.gradientColors,
       defaultTextAttributes.gradientColors);
+  textAttributes.gradientAngle = convertRawProp(
+      context,
+      rawProps,
+      "gradientAngle",
+      sourceTextAttributes.gradientAngle,
+      defaultTextAttributes.gradientAngle);
 
   // Font
   textAttributes.fontFamily = convertRawProp(
@@ -177,6 +183,20 @@ static TextAttributes convertRawProp(
       sourceTextAttributes.textShadowColor,
       defaultTextAttributes.textShadowColor);
 
+  // Stroke
+  textAttributes.textStrokeWidth = convertRawProp(
+      context,
+      rawProps,
+      "textStrokeWidth",
+      sourceTextAttributes.textStrokeWidth,
+      defaultTextAttributes.textStrokeWidth);
+  textAttributes.textStrokeColor = convertRawProp(
+      context,
+      rawProps,
+      "textStrokeColor",
+      sourceTextAttributes.textStrokeColor,
+      defaultTextAttributes.textStrokeColor);
+
   // Special
   textAttributes.isHighlighted = convertRawProp(
       context,
@@ -257,6 +277,8 @@ void BaseTextProps::setProp(
         defaults, value, textAttributes, foregroundColor, "color");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, gradientColors, "gradientColors");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, gradientAngle, "gradientAngle");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, fontFamily, "fontFamily");
     REBUILD_FIELD_SWITCH_CASE(

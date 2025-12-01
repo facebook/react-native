@@ -48,6 +48,9 @@ const textViewConfig = {
     android_hyphenationFrequency: true,
     lineBreakStrategyIOS: true,
     gradientColors: true,
+    gradientAngle: true,
+    textStrokeWidth: true,
+    textStrokeColor: true,
   },
   directEventTypes: {
     topTextLayout: {
@@ -63,6 +66,9 @@ const virtualTextViewConfig = {
     isPressable: true,
     maxFontSizeMultiplier: true,
     gradientColors: true,
+    gradientAngle: true,
+    textStrokeWidth: true,
+    textStrokeColor: true,
   },
   uiViewClassName: 'RCTVirtualText',
 };

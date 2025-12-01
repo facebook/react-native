@@ -405,13 +405,28 @@
   [attributedText enumerateAttribute:NSFontAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                          usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
-                            if (maximumDescender > font.descender) {
-                              maximumDescender = font.descender;
-                            }
-                          }];
+                        usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
+                          if (maximumDescender > font.descender) {
+                            maximumDescender = font.descender;
+                          }
+                        }];
 
-  return size.height + maximumDescender;
+  // Account for stroke width in baseline calculation
+  __block CGFloat strokeWidth = 0;
+  [attributedText enumerateAttribute:@"RCTTextStrokeWidth"
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:0
+                          usingBlock:^(id value, NSRange range, BOOL *stop) {
+    if (value && [value isKindOfClass:[NSNumber class]]) {
+      CGFloat width = [value floatValue];
+      if (width > 0) {
+        strokeWidth = MAX(strokeWidth, width);
+        *stop = YES;
+      }
+    }
+  }];
+
+  return size.height + maximumDescender + strokeWidth;
 }
 
 static YGSize RCTTextShadowViewMeasure(
@@ -439,6 +454,27 @@ static YGSize RCTTextShadowViewMeasure(
   CGFloat letterSpacing = shadowTextView.textAttributes.letterSpacing;
   if (!isnan(letterSpacing) && letterSpacing < 0) {
     size.width -= letterSpacing;
+  }
+
+  // Account for text stroke width (similar to Android implementation)
+  // Check if text has custom stroke attribute and add extra space
+  __block CGFloat strokeWidth = 0;
+  [textStorage enumerateAttribute:@"RCTTextStrokeWidth"
+                          inRange:NSMakeRange(0, textStorage.length)
+                          options:0
+                       usingBlock:^(id value, NSRange range, BOOL *stop) {
+    if (value && [value isKindOfClass:[NSNumber class]]) {
+      CGFloat width = [value floatValue];
+      if (width > 0) {
+        strokeWidth = MAX(strokeWidth, width);
+        *stop = YES;
+      }
+    }
+  }];
+
+  if (strokeWidth > 0) {
+    size.width += strokeWidth;
+    size.height += strokeWidth;
   }
 
   size = (CGSize){

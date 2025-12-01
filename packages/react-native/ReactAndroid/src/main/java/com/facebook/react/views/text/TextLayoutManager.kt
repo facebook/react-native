@@ -50,6 +50,7 @@ import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan
 import com.facebook.react.views.text.internal.span.SetSpanOperation
 import com.facebook.react.views.text.internal.span.ShadowStyleSpan
+import com.facebook.react.views.text.internal.span.StrokeStyleSpan
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan
 import com.facebook.yoga.YogaMeasureMode
 import com.facebook.yoga.YogaMeasureOutput
@@ -257,11 +258,12 @@ internal object TextLayoutManager {
         }
         if (textAttributes.gradientColors != null && textAttributes.gradientColors!!.size >= 2) {
           val effectiveFontSize = textAttributes.effectiveFontSize
+          val gradientAngle = if (textAttributes.gradientAngle.isNaN()) 0f else textAttributes.gradientAngle
           ops.add(
               SetSpanOperation(
                   start,
                   end,
-                  LinearGradientSpan(start * effectiveFontSize.toFloat(), textAttributes.gradientColors!!)))
+                  LinearGradientSpan(start * effectiveFontSize.toFloat(), textAttributes.gradientColors!!, gradientAngle)))
         }
         if (textAttributes.mIsBackgroundColorSet) {
           ops.add(
@@ -309,6 +311,17 @@ internal object TextLayoutManager {
                       textAttributes.mTextShadowOffsetDy,
                       textAttributes.mTextShadowRadius,
                       textAttributes.mTextShadowColor)))
+        }
+        if (!textAttributes.textStrokeWidth.isNaN() &&
+            textAttributes.textStrokeWidth > 0 &&
+            textAttributes.isTextStrokeColorSet) {
+          val strokeWidth = textAttributes.textStrokeWidth
+          val strokeColor = textAttributes.textStrokeColor
+          ops.add(
+              SetSpanOperation(
+                  start,
+                  end,
+                  StrokeStyleSpan(strokeWidth, strokeColor)))
         }
         if (!textAttributes.effectiveLineHeight.isNaN()) {
           ops.add(
@@ -404,8 +417,9 @@ internal object TextLayoutManager {
 
         if (fragment.props.gradientColors != null && fragment.props.gradientColors!!.size >= 2) {
           val effectiveFontSize = fragment.props.effectiveFontSize
+          val gradientAngle = if (fragment.props.gradientAngle.isNaN()) 0f else fragment.props.gradientAngle
           spannable.setSpan(
-              LinearGradientSpan(start * effectiveFontSize.toFloat(), fragment.props.gradientColors!!),
+              LinearGradientSpan(start * effectiveFontSize.toFloat(), fragment.props.gradientColors!!, gradientAngle),
               start,
               end,
               spanFlags)
@@ -461,6 +475,17 @@ internal object TextLayoutManager {
                   fragment.props.textShadowOffsetDy,
                   fragment.props.textShadowRadius,
                   fragment.props.textShadowColor),
+              start,
+              end,
+              spanFlags)
+        }
+
+        if (!fragment.props.textStrokeWidth.isNaN() &&
+            fragment.props.textStrokeWidth > 0 &&
+            fragment.props.isTextStrokeColorSet) {
+          System.out.println("[TextLayoutManager] NEW ARCH - Adding StrokeStyleSpan: width=${fragment.props.textStrokeWidth}, color=${Integer.toHexString(fragment.props.textStrokeColor)}, start=$start, end=$end")
+          spannable.setSpan(
+              StrokeStyleSpan(fragment.props.textStrokeWidth, fragment.props.textStrokeColor),
               start,
               end,
               spanFlags)

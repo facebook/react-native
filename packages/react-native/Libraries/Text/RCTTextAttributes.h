@@ -27,6 +27,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, strong, nullable) UIColor *foregroundColor;
 @property (nonatomic, strong, nullable) UIColor *backgroundColor;
 @property (nonatomic, copy, nullable) NSArray *gradientColors;
+@property (nonatomic, assign) CGFloat gradientAngle;
 @property (nonatomic, assign) CGFloat opacity;
 // Font
 @property (nonatomic, copy, nullable) NSString *fontFamily;
@@ -53,6 +54,9 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, assign) CGSize textShadowOffset;
 @property (nonatomic, assign) CGFloat textShadowRadius;
 @property (nonatomic, strong, nullable) UIColor *textShadowColor;
+// Stroke
+@property (nonatomic, assign) CGFloat textStrokeWidth;
+@property (nonatomic, strong, nullable) UIColor *textStrokeColor;
 // Special
 @property (nonatomic, assign) BOOL isHighlighted;
 @property (nonatomic, strong, nullable) NSNumber *tag;

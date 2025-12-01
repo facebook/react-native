@@ -1056,6 +1056,9 @@ constexpr static MapBuffer::Key TA_KEY_TEXT_TRANSFORM = 27;
 constexpr static MapBuffer::Key TA_KEY_ALIGNMENT_VERTICAL = 28;
 constexpr static MapBuffer::Key TA_KEY_MAX_FONT_SIZE_MULTIPLIER = 29;
 constexpr static MapBuffer::Key TA_KEY_GRADIENT_COLORS = 30;
+constexpr static MapBuffer::Key TA_KEY_TEXT_STROKE_WIDTH = 31;
+constexpr static MapBuffer::Key TA_KEY_TEXT_STROKE_COLOR = 32;
+constexpr static MapBuffer::Key TA_KEY_GRADIENT_ANGLE = 33;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1135,6 +1138,9 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
       gradientColorsBuilder.putInt(static_cast<MapBuffer::Key>(i), toAndroidRepr((*textAttributes.gradientColors)[i]));
     }
     builder.putMapBuffer(TA_KEY_GRADIENT_COLORS, gradientColorsBuilder.build());
+  }
+  if (!std::isnan(textAttributes.gradientAngle)) {
+    builder.putDouble(TA_KEY_GRADIENT_ANGLE, textAttributes.gradientAngle);
   }
   if (!std::isnan(textAttributes.opacity)) {
     builder.putDouble(TA_KEY_OPACITY, textAttributes.opacity);
@@ -1223,6 +1229,16 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
         TA_KEY_TEXT_SHADOW_OFFSET_DX, textAttributes.textShadowOffset->width);
     builder.putDouble(
         TA_KEY_TEXT_SHADOW_OFFSET_DY, textAttributes.textShadowOffset->height);
+  }
+  // Stroke
+  if (!std::isnan(textAttributes.textStrokeWidth)) {
+    builder.putDouble(
+        TA_KEY_TEXT_STROKE_WIDTH, textAttributes.textStrokeWidth);
+  }
+  if (textAttributes.textStrokeColor) {
+    builder.putInt(
+        TA_KEY_TEXT_STROKE_COLOR,
+        toAndroidRepr(textAttributes.textStrokeColor));
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {

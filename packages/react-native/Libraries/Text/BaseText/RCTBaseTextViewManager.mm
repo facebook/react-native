@@ -29,6 +29,7 @@ RCT_EXPORT_MODULE(RCTBaseText)
 RCT_REMAP_SHADOW_PROPERTY(color, textAttributes.foregroundColor, UIColor)
 RCT_REMAP_SHADOW_PROPERTY(backgroundColor, textAttributes.backgroundColor, UIColor)
 RCT_REMAP_SHADOW_PROPERTY(gradientColors, textAttributes.gradientColors, NSArray)
+RCT_REMAP_SHADOW_PROPERTY(gradientAngle, textAttributes.gradientAngle, CGFloat)
 RCT_REMAP_SHADOW_PROPERTY(opacity, textAttributes.opacity, CGFloat)
 // Font
 RCT_REMAP_SHADOW_PROPERTY(fontFamily, textAttributes.fontFamily, NSString)
@@ -54,6 +55,9 @@ RCT_REMAP_SHADOW_PROPERTY(textDecorationLine, textAttributes.textDecorationLine,
 RCT_REMAP_SHADOW_PROPERTY(textShadowOffset, textAttributes.textShadowOffset, CGSize)
 RCT_REMAP_SHADOW_PROPERTY(textShadowRadius, textAttributes.textShadowRadius, CGFloat)
 RCT_REMAP_SHADOW_PROPERTY(textShadowColor, textAttributes.textShadowColor, UIColor)
+// Stroke
+RCT_REMAP_SHADOW_PROPERTY(textStrokeWidth, textAttributes.textStrokeWidth, CGFloat)
+RCT_REMAP_SHADOW_PROPERTY(textStrokeColor, textAttributes.textStrokeColor, UIColor)
 // Special
 RCT_REMAP_SHADOW_PROPERTY(isHighlighted, textAttributes.isHighlighted, BOOL)
 RCT_REMAP_SHADOW_PROPERTY(textTransform, textAttributes.textTransform, RCTTextTransform)

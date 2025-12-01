@@ -43,6 +43,7 @@ class TextAttributes : public DebugStringConvertible {
   SharedColor backgroundColor{};
   Float opacity{std::numeric_limits<Float>::quiet_NaN()};
   std::optional<std::vector<SharedColor>> gradientColors{};
+  Float gradientAngle{std::numeric_limits<Float>::quiet_NaN()};
 
   // Font
   std::string fontFamily{""};
@@ -74,6 +75,10 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<Size> textShadowOffset{};
   Float textShadowRadius{std::numeric_limits<Float>::quiet_NaN()};
   SharedColor textShadowColor{};
+
+  // Stroke
+  Float textStrokeWidth{std::numeric_limits<Float>::quiet_NaN()};
+  SharedColor textStrokeColor{};
 
   // Special
   std::optional<bool> isHighlighted{};
@@ -135,6 +140,9 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textShadowOffset,
         textAttributes.textShadowRadius,
         textAttributes.textShadowColor,
+        textAttributes.textStrokeWidth,
+        textAttributes.textStrokeColor,
+        textAttributes.gradientAngle,
         textAttributes.isHighlighted,
         textAttributes.isPressable,
         textAttributes.layoutDirection,
