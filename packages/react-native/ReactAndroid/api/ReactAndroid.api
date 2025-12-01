@@ -4890,19 +4890,6 @@ public final class com/facebook/react/uimanager/events/TouchEventType$Companion 
 	public final fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
 }
 
-public class com/facebook/react/uimanager/layoutanimation/LayoutAnimationController {
-	public fun <init> ()V
-	public fun applyLayoutUpdate (Landroid/view/View;IIII)V
-	public fun deleteView (Landroid/view/View;Lcom/facebook/react/uimanager/layoutanimation/LayoutAnimationListener;)V
-	public final fun initializeFromConfig (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
-	public fun reset ()V
-	public fun shouldAnimateLayout (Landroid/view/View;)Z
-}
-
-public abstract interface class com/facebook/react/uimanager/layoutanimation/LayoutAnimationListener {
-	public abstract fun onAnimationEnd ()V
-}
-
 public final class com/facebook/react/uimanager/style/BackgroundImageLayer {
 	public static final field Companion Lcom/facebook/react/uimanager/style/BackgroundImageLayer$Companion;
 	public fun <init> ()V
