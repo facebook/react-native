@@ -7,7 +7,7 @@
  * @format
  */
 
-import type {ErrorUtils} from '../../Libraries/vendor/core/ErrorUtils';
+import type { ErrorUtils } from '../../Libraries/vendor/core/ErrorUtils';
 
 declare global {
   interface NodeRequire {
@@ -94,7 +94,7 @@ declare global {
 
   var DOMRect: {
     prototype: DOMRect;
-    new (x?: number, y?: number, width?: number, height?: number): DOMRect;
+    new(x?: number, y?: number, width?: number, height?: number): DOMRect;
     /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRect/fromRect_static) */
     fromRect(other?: DOMRectInit): DOMRect;
   };
@@ -165,7 +165,7 @@ declare global {
 
   var Blob: {
     prototype: Blob;
-    new (blobParts?: Array<Blob | string>, options?: BlobOptions): Blob;
+    new(blobParts?: Array<Blob | string>, options?: BlobOptions): Blob;
   };
 
   interface FilePropertyBag extends BlobPropertyBag {
@@ -179,24 +179,24 @@ declare global {
 
   var File: {
     prototype: File;
-    new (fileParts: BlobPart[], name: string, options?: FilePropertyBag): File;
+    new(fileParts: BlobPart[], name: string, options?: FilePropertyBag): File;
   };
 
   type FormDataValue =
     | string
-    | {name?: string | undefined; type?: string | undefined; uri: string};
+    | { name?: string | undefined; type?: string | undefined; uri: string };
 
   type FormDataPart =
     | {
-        string: string;
-        headers: {[name: string]: string};
-      }
+      string: string;
+      headers: { [name: string]: string };
+    }
     | {
-        uri: string;
-        headers: {[name: string]: string};
-        name?: string | undefined;
-        type?: string | undefined;
-      };
+      uri: string;
+      headers: { [name: string]: string };
+      name?: string | undefined;
+      type?: string | undefined;
+    };
 
   class FormData {
     append(key: string, value: any): void;
@@ -231,7 +231,7 @@ declare global {
 
   var Headers: {
     prototype: Headers;
-    new (init?: HeadersInit_): Headers;
+    new(init?: HeadersInit_): Headers;
   };
 
   /**
@@ -288,7 +288,7 @@ declare global {
 
   var Request: {
     prototype: Request;
-    new (input: Request | string, init?: RequestInit): Request;
+    new(input: Request | string, init?: RequestInit): Request;
   };
 
   type RequestInfo = Request | string;
@@ -312,7 +312,7 @@ declare global {
 
   var Response: {
     prototype: Response;
-    new (body?: BodyInit_ | null, init?: ResponseInit): Response;
+    new(body?: BodyInit_ | null, init?: ResponseInit): Response;
     error(): Response;
     json(data: any, init?: ResponseInit): Response;
     redirect: (url: string | URL, status?: number) => Response;
@@ -386,7 +386,7 @@ declare global {
 
   var XMLHttpRequest: {
     prototype: XMLHttpRequest;
-    new (): XMLHttpRequest;
+    new(): XMLHttpRequest;
     readonly DONE: 4;
     readonly HEADERS_RECEIVED: 2;
     readonly LOADING: 3;
@@ -430,7 +430,7 @@ declare global {
 
   interface XMLHttpRequestUpload
     extends EventTarget,
-      XMLHttpRequestEventTarget {
+    XMLHttpRequestEventTarget {
     addEventListener<K extends keyof XMLHttpRequestEventTargetEventMap>(
       type: K,
       listener: (
@@ -449,7 +449,7 @@ declare global {
 
   var XMLHttpRequestUpload: {
     prototype: XMLHttpRequestUpload;
-    new (): XMLHttpRequestUpload;
+    new(): XMLHttpRequestUpload;
   };
 
   type XMLHttpRequestResponseType =
@@ -470,7 +470,7 @@ declare global {
 
   var URL: {
     prototype: URL;
-    new (url: string | URL, base?: string | URL): URL;
+    new(url: string | URL, base?: string | URL): URL;
     createObjectURL(obj: Blob): string;
     revokeObjectURL(url: string): void;
   };
@@ -480,6 +480,19 @@ declare global {
    */
   interface URLSearchParams {
     append(key: string, value: string): void;
+    delete(name: string): void;
+    get(name: string): string | null;
+    getAll(name: string): string[];
+    has(name: string): boolean;
+    set(name: string, value: string): void;
+    sort(): void;
+    keys(): IterableIterator<string>;
+    values(): IterableIterator<string>;
+    entries(): IterableIterator<[string, string]>;
+    forEach(
+      callbackfn: (value: string, key: string, parent: URLSearchParams) => void,
+      thisArg?: any,
+    ): void;
     toString(): string;
 
     [Symbol.iterator](): IterableIterator<[string, string]>;
@@ -487,7 +500,7 @@ declare global {
 
   var URLSearchParams: {
     prototype: URLSearchParams;
-    new (
+    new(
       init?: string[][] | Record<string, string> | string | URLSearchParams,
     ): URLSearchParams;
   };
@@ -541,11 +554,11 @@ declare global {
 
   var WebSocket: {
     prototype: WebSocket;
-    new (
+    new(
       uri: string,
       protocols?: string | string[] | null,
       options?: {
-        headers: {[headerName: string]: string};
+        headers: { [headerName: string]: string };
         [optionName: string]: any;
       } | null,
     ): WebSocket;
@@ -580,10 +593,10 @@ declare global {
       options?:
         | boolean
         | {
-            capture?: boolean | undefined;
-            once?: boolean | undefined;
-            passive?: boolean | undefined;
-          },
+          capture?: boolean | undefined;
+          once?: boolean | undefined;
+          passive?: boolean | undefined;
+        },
     ) => void;
 
     dispatchEvent(event: Event): boolean;
@@ -594,8 +607,8 @@ declare global {
       options?:
         | boolean
         | {
-            capture?: boolean | undefined;
-          },
+          capture?: boolean | undefined;
+        },
     ) => void;
   }
 
@@ -629,14 +642,14 @@ declare global {
     onerror: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null;
     onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null;
     onloadend:
-      | ((this: FileReader, ev: ProgressEvent<FileReader>) => any)
-      | null;
+    | ((this: FileReader, ev: ProgressEvent<FileReader>) => any)
+    | null;
     onloadstart:
-      | ((this: FileReader, ev: ProgressEvent<FileReader>) => any)
-      | null;
+    | ((this: FileReader, ev: ProgressEvent<FileReader>) => any)
+    | null;
     onprogress:
-      | ((this: FileReader, ev: ProgressEvent<FileReader>) => any)
-      | null;
+    | ((this: FileReader, ev: ProgressEvent<FileReader>) => any)
+    | null;
     readonly readyState: number;
     readonly result: string | ArrayBuffer;
     abort(): void;
@@ -660,7 +673,7 @@ declare global {
 
   var FileReader: {
     prototype: FileReader;
-    new (): FileReader;
+    new(): FileReader;
     readonly DONE: 2;
     readonly EMPTY: 0;
     readonly LOADING: 1;
