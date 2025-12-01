@@ -200,7 +200,6 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_newarchdefaults>
           $<TARGET_OBJECTS:react_performance_cdpmetrics>
           $<TARGET_OBJECTS:react_performance_timeline>
-          $<TARGET_OBJECTS:react_performancetracerjni>
           $<TARGET_OBJECTS:react_renderer_animations>
           $<TARGET_OBJECTS:react_renderer_attributedstring>
           $<TARGET_OBJECTS:react_renderer_componentregistry>
@@ -294,7 +293,6 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_performance_cdpmetrics,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_performance_timeline,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_performancetracerjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_animations,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
