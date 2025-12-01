@@ -58,7 +58,7 @@ inline std::optional<Category> getTracingCategoryFromString(const std::string &s
   } else if (str == "v8.execute") {
     return Category::RuntimeExecution;
   } else if (str == "disabled-by-default-devtools.screenshot") {
-    return Category::RuntimeExecution;
+    return Category::Screenshot;
   } else {
     return std::nullopt;
   }
