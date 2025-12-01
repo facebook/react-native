@@ -15,8 +15,8 @@ import type {BuildFlavor, Destination} from './types';
 const {createLogger} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
-const glob = require('glob');
 const path = require('path');
+const {globSync} = require('tinyglobby');
 
 const buildLog = createLogger('SPM');
 
@@ -28,8 +28,9 @@ function computeFrameworkPaths(
   productsFolder /*: string */,
 ) /*: Array<string> */ {
   // The frameworks are in the products folder under a platform/buildType folder and are directories ending with .framework
-  const frameworks = glob.sync('**/*.framework', {
+  const frameworks = globSync('**/*.framework', {
     cwd: productsFolder,
+    expandDirectories: false,
     absolute: true,
   });
 
