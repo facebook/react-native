@@ -69,6 +69,8 @@ import java.util.ArrayList
 import kotlin.concurrent.Volatile
 import kotlin.math.max
 
+import com.facebook.react.bridge.UiThreadUtil
+
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
@@ -1027,6 +1029,137 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   //#region debug helper
+    override fun removeView(view: View?) {
+        UiThreadUtil.assertOnUiThread()
+        getNativeId()?.let { nativeId ->
+            val viewClass = view?.javaClass?.simpleName ?: "null"
+            val viewIndex = indexOfChild(view)
+            val stack = getStack()
+            val hierarchy = viewHierarchyDescription()
+            FLog.w(
+                "ReactViewGroup",
+                "[$nativeId] removeView called for view of class $viewClass at index $viewIndex\nStack trace:\n$stack\nHierarchy:\n$hierarchy",
+            )
+        }
+
+        super.removeView(view)
+    }
+
+    override fun removeViewAt(index: Int) {
+        UiThreadUtil.assertOnUiThread()
+        getNativeId()?.let { nativeId ->
+            val view = getChildAt(index)
+            val viewClass = view?.javaClass?.simpleName ?: "null"
+            val stack = getStack()
+            val hierarchy = viewHierarchyDescription()
+            FLog.w(
+                "ReactViewGroup",
+                "[$nativeId] removeViewAt called for view of class $viewClass at index $index\nStack trace:\n$stack\nHierarchy:\n$hierarchy",
+            )
+        }
+
+        super.removeViewAt(index)
+    }
+
+    override fun removeViews(start: Int, count: Int) {
+        UiThreadUtil.assertOnUiThread()
+        getNativeId()?.let { nativeId ->
+            val views = (start until start + count).map { getChildAt(it) }
+            val viewClasses = views.map { it?.javaClass?.simpleName ?: "null" }
+            val stack = getStack()
+            val hierarchy = viewHierarchyDescription()
+            FLog.w(
+                "ReactViewGroup",
+                "[$nativeId] removeViews called for views of classes $viewClasses starting at index $start count $count\nStack trace:\n$stack\nHierarchy:\n$hierarchy",
+            )
+        }
+
+        super.removeViews(start, count)
+    }
+
+    override fun removeViewInLayout(view: View?) {
+        UiThreadUtil.assertOnUiThread()
+        getNativeId()?.let { nativeId ->
+            val viewClass = view?.javaClass?.simpleName ?: "null"
+            val viewIndex = indexOfChild(view)
+            val stack = getStack()
+            FLog.w(
+                "ReactViewGroup",
+                "[$nativeId] removeViewInLayout called for view of class $viewClass at index $viewIndex\nStack trace:\n$stack",
+            )
+        }
+
+        super.removeViewInLayout(view)
+    }
+
+    override fun removeViewsInLayout(start: Int, count: Int) {
+        UiThreadUtil.assertOnUiThread()
+        getNativeId()?.let { nativeId ->
+            val views = (start until start + count).map { getChildAt(it) }
+            val viewClasses = views.map { it?.javaClass?.simpleName ?: "null" }
+            val stack = getStack()
+            val hierarchy = viewHierarchyDescription()
+            FLog.w(
+                "ReactViewGroup",
+                "[$nativeId] removeViewsInLayout called for views of classes $viewClasses starting at index $start count $count\nStack trace:\n$stack\nHierarchy:\n$hierarchy",
+            )
+        }
+
+        super.removeViewsInLayout(start, count)
+    }
+
+    override fun removeAllViewsInLayout() {
+        UiThreadUtil.assertOnUiThread()
+        getNativeId()?.let { nativeId ->
+            val views = (0 until childCount).map { getChildAt(it) }
+            val viewClasses = views.map { it?.javaClass?.simpleName ?: "null" }
+            val stack = getStack()
+            val hierarchy = viewHierarchyDescription()
+            FLog.w(
+                "ReactViewGroup",
+                "[$nativeId] removeAllViewsInLayout called for views of classes $viewClasses\nStack trace:\n$stack\nHierarchy:\n$hierarchy",
+            )
+        }
+
+        super.removeAllViewsInLayout()
+    }
+
+    override fun removeAllViews() {
+        UiThreadUtil.assertOnUiThread()
+        getNativeId()?.let { nativeId ->
+            val views = (0 until childCount).map { getChildAt(it) }
+            val viewClasses = views.map { it?.javaClass?.simpleName ?: "null" }
+            val stack = getStack()
+            val hierarchy = viewHierarchyDescription()
+            FLog.w(
+                "ReactViewGroup",
+                "[$nativeId] removeAllViews called for views of classes $viewClasses\nStack trace:\n$stack\nHierarchy:\n$hierarchy",
+            )
+        }
+
+        super.removeAllViews()
+    }
+
+    public fun getNativeId(): String? = getTag(com.facebook.react.R.id.view_tag_native_id) as? String
+
+    public fun getStack(): String = Thread
+        .currentThread()
+        .stackTrace
+        .drop(2) // Skip the call itself
+        .joinToString("\n") { "  at ${it.className}.${it.methodName}(${it.fileName}:${it.lineNumber})" }
+
+    private fun viewHierarchyDescription(): String {
+        val childrenViewInfo = describeChildren()
+        val childrenCountInfo = "children count info: getChildCount: $childCount"
+        val ancestry = try {
+            describeViewAncestry(this)
+        } catch (_: Exception) {
+            null
+        }
+
+        return "View ancestry:\n$ancestry\n$childrenCountInfo\n$childrenViewInfo"
+    }
+
   public fun describeViewAncestry(start: View): String {
     val sb = StringBuilder()
     var v: View? = start
