@@ -300,6 +300,7 @@ void JReactHostInspectorTarget::recordFrameTimings(
       frameTimingSequence->getBeginDrawingTimestamp(),
       frameTimingSequence->getCommitTimestamp(),
       frameTimingSequence->getEndDrawingTimestamp(),
+      frameTimingSequence->getScreenshot(),
   });
 }
 

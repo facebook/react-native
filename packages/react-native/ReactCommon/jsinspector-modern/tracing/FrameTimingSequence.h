@@ -24,12 +24,14 @@ struct FrameTimingSequence {
       ThreadId threadId,
       HighResTimeStamp beginDrawingTimestamp,
       HighResTimeStamp commitTimestamp,
-      HighResTimeStamp endDrawingTimestamp)
+      HighResTimeStamp endDrawingTimestamp,
+      std::optional<std::string> screenshot = std::nullopt)
       : id(id),
         threadId(threadId),
         beginDrawingTimestamp(beginDrawingTimestamp),
         commitTimestamp(commitTimestamp),
-        endDrawingTimestamp(endDrawingTimestamp)
+        endDrawingTimestamp(endDrawingTimestamp),
+        screenshot(std::move(screenshot))
   {
   }
 
@@ -46,6 +48,11 @@ struct FrameTimingSequence {
   HighResTimeStamp beginDrawingTimestamp;
   HighResTimeStamp commitTimestamp;
   HighResTimeStamp endDrawingTimestamp;
+
+  /**
+   * Optional screenshot data (base64 encoded) captured during the frame.
+   */
+  std::optional<std::string> screenshot;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

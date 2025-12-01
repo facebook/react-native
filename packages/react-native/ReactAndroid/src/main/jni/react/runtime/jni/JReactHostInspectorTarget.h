@@ -67,6 +67,17 @@ struct JFrameTimingSequence : public jni::JavaClass<JFrameTimingSequence> {
     return HighResTimeStamp::fromChronoSteadyClockTimePoint(
         std::chrono::steady_clock::time_point(std::chrono::nanoseconds(getFieldValue(field))));
   }
+
+  std::optional<std::string> getScreenshot() const
+  {
+    auto field = javaClassStatic()->getField<jstring>("screenshot");
+    auto javaScreenshot = getFieldValue(field);
+    if (javaScreenshot) {
+      auto jstring = jni::static_ref_cast<jni::JString>(javaScreenshot);
+      return jstring->toStdString();
+    }
+    return std::nullopt;
+  }
 };
 
 struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
