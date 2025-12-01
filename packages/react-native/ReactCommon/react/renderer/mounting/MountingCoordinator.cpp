@@ -15,8 +15,8 @@
 #include <condition_variable>
 #include "updateMountedFlag.h"
 
-#ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <glog/logging.h>
+#ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <sstream>
 #endif
 
