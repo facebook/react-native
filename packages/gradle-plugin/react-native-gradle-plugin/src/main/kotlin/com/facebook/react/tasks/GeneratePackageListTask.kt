@@ -34,24 +34,21 @@ abstract class GeneratePackageListTask : DefaultTask() {
         JsonUtils.fromAutolinkingConfigJson(autolinkInputFile.get().asFile)
             ?: error(
                 """
-                  RNGP - Autolinking: Could not parse autolinking config file:
-                  ${autolinkInputFile.get().asFile.absolutePath}
-                  
-                  The file is either missing or not containing valid JSON so the build won't succeed. 
-                """
-                    .trimIndent()
-            )
+                   RNGP - Autolinking: Could not parse autolinking config file:
+                   ${autolinkInputFile.get().asFile.absolutePath}
+                   
+                   The file is either missing or not containing valid JSON so the build won't succeed. 
+                 """
+                    .trimIndent())
 
     val packageName =
         model.project?.android?.packageName
             ?: error(
-                "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field."
-            )
+                "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field.")
 
     val androidPackages = filterAndroidPackages(model)
-    val packageImports = composePackageImports(packageName, androidPackages)
     val packageClassInstance = composePackageInstance(packageName, androidPackages)
-    val generatedFileContents = composeFileContent(packageImports, packageClassInstance)
+    val generatedFileContents = composeFileContent(packageClassInstance)
 
     val outputDir = generatedOutputDirectory.get().asFile
     outputDir.mkdirs()
@@ -61,34 +58,54 @@ abstract class GeneratePackageListTask : DefaultTask() {
     }
   }
 
-  internal fun composePackageImports(
-      packageName: String,
-      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>,
-  ) =
-      packages.entries.joinToString("\n") { (name, dep) ->
-        val packageImportPath =
-            requireNotNull(dep.packageImportPath) {
-              "RNGP - Autolinking: Missing `packageImportPath` in `config` for dependency $name. This is required to generate the autolinking package list."
-            }
-        "// $name\n${interpolateDynamicValues(packageImportPath, packageName)}"
-      }
+  /**
+   * Extracts the fully qualified class name from an import statement. E.g., "import
+   * com.foo.bar.MyClass;" -> "com.foo.bar.MyClass"
+   */
+  internal fun extractFqcnFromImport(importStatement: String): String? {
+    val match = Regex("import\\s+([\\w.]+)\\s*;").find(importStatement)
+    return match?.groupValues?.get(1)
+  }
 
   internal fun composePackageInstance(
       packageName: String,
       packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>,
-  ) =
-      if (packages.isEmpty()) {
-        ""
-      } else {
-        ",\n      " +
-            packages.entries.joinToString(",\n      ") { (name, dep) ->
-              val packageInstance =
-                  requireNotNull(dep.packageInstance) {
-                    "RNGP - Autolinking: Missing `packageInstance` in `config` for dependency $name. This is required to generate the autolinking package list."
-                  }
-              interpolateDynamicValues(packageInstance, packageName)
-            }
-      }
+  ): String {
+    if (packages.isEmpty()) {
+      return ""
+    }
+
+    val instances =
+        packages.entries.map { (name, dep) ->
+          val packageInstance =
+              requireNotNull(dep.packageInstance) {
+                "RNGP - Autolinking: Missing `packageInstance` in `config` for dependency $name. This is required to generate the autolinking package list."
+              }
+          val packageImportPath = dep.packageImportPath
+          val interpolated = interpolateDynamicValues(packageInstance, packageName)
+
+          // Use FQCN to avoid class name collisions between different packages
+          val fqcnInstance =
+              if (packageImportPath != null) {
+                val fqcn =
+                    extractFqcnFromImport(interpolateDynamicValues(packageImportPath, packageName))
+                if (fqcn != null) {
+                  val className = fqcn.substringAfterLast('.')
+                  // Replace the short class name with FQCN in the instance
+                  interpolated.replace(Regex("\\b${Regex.escape(className)}\\b")) { fqcn }
+                } else {
+                  interpolated
+                }
+              } else {
+                interpolated
+              }
+
+          // Add comment with package name before each instance
+          "// $name\n      $fqcnInstance"
+        }
+
+    return ",\n      " + instances.joinToString(",\n      ")
+  }
 
   internal fun filterAndroidPackages(
       model: ModelAutolinkingConfigJson?
@@ -101,9 +118,9 @@ abstract class GeneratePackageListTask : DefaultTask() {
         .associate { it.name to checkNotNull(it.platforms?.android) }
   }
 
-  internal fun composeFileContent(packageImports: String, packageClassInstance: String): String =
+  internal fun composeFileContent(packageClassInstance: String): String =
       generatedFileContentsTemplate
-          .replace("{{ packageImports }}", packageImports)
+          .replace("{{ packageImports }}", "")
           .replace("{{ packageClassInstances }}", packageClassInstance)
 
   companion object {
