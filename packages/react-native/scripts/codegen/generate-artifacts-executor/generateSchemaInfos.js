@@ -13,8 +13,8 @@
 const CodegenUtils = require('../codegen-utils');
 const {codegenLog} = require('./utils');
 const fs = require('fs');
-const glob = require('glob');
 const path = require('path');
+const {globSync} = require('tinyglobby');
 
 function generateSchemaInfos(
   libraries /*: $ReadOnlyArray<$FlowFixMe> */,
@@ -57,17 +57,18 @@ function extractSupportedApplePlatforms(
   dependencyPath /*: string */,
 ) /*: ?{[string]: boolean} */ {
   codegenLog('Searching for podspec in the project dependencies.', true);
-  const podspecs = glob.sync('*.podspec', {cwd: dependencyPath});
+  const podspecs = globSync('*.podspec', {
+    cwd: dependencyPath,
+    onlyFiles: true,
+    absolute: true,
+  });
 
   if (podspecs.length === 0) {
     return;
   }
 
   // Take the first podspec found
-  const podspec = fs.readFileSync(
-    path.join(dependencyPath, podspecs[0]),
-    'utf8',
-  );
+  const podspec = fs.readFileSync(podspecs[0], 'utf8');
 
   /**
    * Podspec can have platforms defined in two ways:
