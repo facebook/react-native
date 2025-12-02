@@ -118,14 +118,16 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     }
   }
 
-  @OptIn(UnstableReactNativeAPI::class)
-  override fun onDraw(canvas: Canvas) {
-    if (overflow != Overflow.VISIBLE) {
-      BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
-    }
+  override fun draw(canvas: Canvas) {
     canvas.withSave {
       BackgroundStyleApplicator.applyClipPathIfPresent(this@PreparedLayoutTextView, this)
       super.onDraw(canvas)
+    }
+  }
+
+  override fun onDraw(canvas: Canvas) {
+    if (overflow != Overflow.VISIBLE) {
+      BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
     }
     canvas.translate(
         paddingLeft.toFloat(),

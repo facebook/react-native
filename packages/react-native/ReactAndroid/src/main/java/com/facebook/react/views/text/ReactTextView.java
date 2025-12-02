@@ -227,6 +227,20 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // correctly in Fabric.
   }
 
+
+  @Override
+  public void draw(Canvas canvas) {
+    ClipPath clipPath = (ClipPath) getTag(R.id.clip_path);
+    if (clipPath != null) {
+      canvas.save();
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas);
+    }
+    super.draw(canvas);
+    if (clipPath != null) {
+      canvas.restore();
+    }
+  }
+
   @Override
   @SuppressWarnings("try")
   protected void onDraw(Canvas canvas) {
@@ -257,12 +271,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
       }
 
-      ClipPath clipPath = (ClipPath) getTag(R.id.clip_path);
-      if (clipPath != null) {
-        canvas.save();
-        BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas);
-      }
-
       if (spanned != null) {
         Layout layout = getLayout();
         if (layout != null) {
@@ -284,10 +292,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         }
       } else {
         super.onDraw(canvas);
-      }
-
-      if (clipPath != null) {
-        canvas.restore();
       }
     }
   }
