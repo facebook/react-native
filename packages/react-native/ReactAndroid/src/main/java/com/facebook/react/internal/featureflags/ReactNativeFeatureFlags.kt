@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2e69f1b64e18567abff05a1f8bc7014d>>
+ * @generated SignedSource<<5685f79f9b08afe94f5b3e8ec8ff6748>>
  */
 
 /**
@@ -47,12 +47,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedEnabled(): Boolean = accessor.cxxNativeAnimatedEnabled()
-
-  /**
-   * Removes JS sync at end of native animation
-   */
-  @JvmStatic
-  public fun cxxNativeAnimatedRemoveJsSync(): Boolean = accessor.cxxNativeAnimatedRemoveJsSync()
 
   /**
    * Dispatch view commands in mount item order.

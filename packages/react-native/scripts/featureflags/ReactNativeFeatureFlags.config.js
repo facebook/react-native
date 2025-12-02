@@ -82,16 +82,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    cxxNativeAnimatedRemoveJsSync: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-06-16',
-        description: 'Removes JS sync at end of native animation',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     disableEarlyViewCommandExecution: {
       defaultValue: false,
       metadata: {

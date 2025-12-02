@@ -136,8 +136,7 @@ export default function createAnimatedPropsHook(
             // Check 2: this is an animation driven by native.
             // In native driven animations, this callback is only called once the animation completes.
             const shouldRemoveJsSync =
-              ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
-              ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync();
+              ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
             if (isFabricNode && !shouldRemoveJsSync) {
               // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
               // Must not be called in Paper.

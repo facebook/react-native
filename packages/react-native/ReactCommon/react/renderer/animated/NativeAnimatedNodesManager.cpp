@@ -764,9 +764,7 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
 
     if (driver->getIsComplete()) {
       hasFinishedAnimations = true;
-      if (ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync()) {
-        finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
-      }
+      finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
     }
   }
 
@@ -962,9 +960,7 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
 
         if (driver->getIsComplete()) {
           hasFinishedAnimations = true;
-          if (ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync()) {
-            finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
-          }
+          finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
         }
       }
 
