@@ -31,6 +31,7 @@ function computeFrameworkPaths(
   const frameworks = globSync('**/*.framework', {
     cwd: productsFolder,
     expandDirectories: false,
+    onlyFiles: false,
     absolute: true,
   });
 
