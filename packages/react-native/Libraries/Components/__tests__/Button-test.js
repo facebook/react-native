@@ -8,7 +8,7 @@
  * @format
  */
 
-import {create} from '../../../jest/renderer';
+import {create} from '@react-native/jest-preset/jest/renderer';
 import Button from '../Button';
 import * as React from 'react';
 

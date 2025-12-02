@@ -10,7 +10,7 @@
 
 'use strict';
 
-const render = require('../../../../jest/renderer');
+const render = require('@react-native/jest-preset/jest/renderer');
 const View = require('../../View/View').default;
 const InputAccessoryView = require('../InputAccessoryView').default;
 const React = require('react');

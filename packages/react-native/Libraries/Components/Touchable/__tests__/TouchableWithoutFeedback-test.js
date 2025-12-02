@@ -10,7 +10,7 @@
 
 'use strict';
 
-import {create} from '../../../../jest/renderer';
+import {create} from '@react-native/jest-preset/jest/renderer';
 import Text from '../../../Text/Text';
 import View from '../../View/View';
 import TouchableWithoutFeedback from '../TouchableWithoutFeedback';

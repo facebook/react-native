@@ -8,7 +8,7 @@
  * @format
  */
 
-const {create, update} = require('../../../../jest/renderer');
+const {create, update} = require('@react-native/jest-preset/jest/renderer');
 const ReactNative = require('../../../ReactNative/RendererProxy');
 const {
   enter,

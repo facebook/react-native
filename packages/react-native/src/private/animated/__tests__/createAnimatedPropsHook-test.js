@@ -8,7 +8,7 @@
  * @format
  */
 
-import {create, update} from '../../../../jest/renderer';
+import {create, update} from '@react-native/jest-preset/jest/renderer';
 import {AnimatedEvent} from '../../../../Libraries/Animated/AnimatedEvent';
 import createAnimatedPropsHook from '../createAnimatedPropsHook';
 import {useLayoutEffect} from 'react';

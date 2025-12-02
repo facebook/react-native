@@ -11,7 +11,7 @@
 import type {ReactTestRendererJSON} from '../../Utilities/ReactNativeTestTools';
 import type {ReactTestRenderer} from 'react-test-renderer';
 
-import {create} from '../../../jest/renderer';
+import {create} from '@react-native/jest-preset/jest/renderer';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import * as React from 'react';
 

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const render = require('../../../jest/renderer');
+const render = require('@react-native/jest-preset/jest/renderer');
 const ImageBackground = require('../ImageBackground').default;
 const React = require('react');
 

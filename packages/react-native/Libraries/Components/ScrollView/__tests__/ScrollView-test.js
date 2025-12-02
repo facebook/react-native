@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {create, unmount, update} = require('../../../../jest/renderer');
+const {create, unmount, update} = require('@react-native/jest-preset/jest/renderer');
 const Text = require('../../../Text/Text').default;
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 const View = require('../../View/View').default;

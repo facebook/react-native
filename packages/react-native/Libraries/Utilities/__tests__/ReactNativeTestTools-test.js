@@ -8,7 +8,7 @@
  * @format
  */
 
-import {create} from '../../../jest/renderer';
+import {create} from '@react-native/jest-preset/jest/renderer';
 import TextInput from '../../Components/TextInput/TextInput';
 import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
 import View from '../../Components/View/View';

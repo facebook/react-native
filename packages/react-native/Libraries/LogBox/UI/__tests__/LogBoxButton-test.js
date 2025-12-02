@@ -10,7 +10,7 @@
 
 import Text from '../../../Text/Text';
 
-const render = require('../../../../jest/renderer');
+const render = require('@react-native/jest-preset/jest/renderer');
 const LogBoxButton = require('../LogBoxButton').default;
 const React = require('react');
 

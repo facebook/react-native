@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {create} = require('../../../jest/renderer');
+const {create} = require('@react-native/jest-preset/jest/renderer');
 const FlatList = require('../FlatList').default;
 const React = require('react');
 const {createRef} = require('react');

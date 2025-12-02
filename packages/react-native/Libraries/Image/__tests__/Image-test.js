@@ -15,7 +15,7 @@ import NativeImageLoaderIOS from '../NativeImageLoaderIOS';
 import * as React from 'react';
 import {act, create} from 'react-test-renderer';
 
-const render = require('../../../jest/renderer');
+const render = require('@react-native/jest-preset/jest/renderer');
 const Image = require('../Image').default;
 const ImageInjection = require('../ImageInjection');
 
