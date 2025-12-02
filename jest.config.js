@@ -22,10 +22,10 @@ const PODS_LOCATIONS = [
 module.exports = {
   transform: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$':
-      '<rootDir>/packages/react-native/jest/assetFileTransformer.js',
+      '<rootDir>/packages/jest-preset/jest/assetFileTransformer.js',
     '.*': './jest/preprocessor.js',
   },
-  setupFiles: ['./packages/react-native/jest/local-setup.js'],
+  setupFiles: ['./packages/jest-preset/jest/local-setup.js'],
   fakeTimers: {
     enableGlobally: true,
     legacyFakeTimers: false,

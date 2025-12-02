@@ -8,10 +8,10 @@
  * @format
  */
 
-import type {RefreshControlProps} from '../../Libraries/Components/RefreshControl/RefreshControl';
-import type {HostComponent} from '../../src/private/types/HostComponent';
+import type {RefreshControlProps} from 'react-native/Libraries/Components/RefreshControl/RefreshControl';
+import type {HostComponent} from 'react-native/src/private/types/HostComponent';
 
-import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
+import requireNativeComponent from 'react-native/Libraries/ReactNative/requireNativeComponent';
 import * as React from 'react';
 
 const RCTRefreshControl: HostComponent<{}> = requireNativeComponent<{}>(

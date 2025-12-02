@@ -8,16 +8,21 @@
  * @format
  */
 
-import typeof TActivityIndicator from '../../Libraries/Components/ActivityIndicator/ActivityIndicator';
+import typeof TView from 'react-native/Libraries/Components/View/View';
+
 import typeof * as TmockComponent from '../mockComponent';
+import typeof * as TMockNativeMethods from '../MockNativeMethods';
 
 const mockComponent =
   jest.requireActual<TmockComponent>('../mockComponent').default;
+const MockNativeMethods = jest.requireActual<TMockNativeMethods>(
+  '../MockNativeMethods',
+).default;
 
-const ActivityIndicator = mockComponent(
-  '../Libraries/Components/ActivityIndicator/ActivityIndicator',
-  null, // instanceMethods
+const View = mockComponent(
+  'react-native/Libraries/Components/View/View',
+  MockNativeMethods, // instanceMethods
   true, // isESModule
-) as TActivityIndicator;
+) as TView;
 
-export default ActivityIndicator;
+export default View;

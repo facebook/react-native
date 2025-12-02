@@ -8,7 +8,7 @@
  * @format
  */
 
-import typeof TText from '../../Libraries/Text/Text';
+import typeof TTextInput from 'react-native/Libraries/Components/TextInput/TextInput';
 import typeof * as TmockComponent from '../mockComponent';
 import typeof * as TMockNativeMethods from '../MockNativeMethods';
 
@@ -18,10 +18,15 @@ const MockNativeMethods = jest.requireActual<TMockNativeMethods>(
   '../MockNativeMethods',
 ).default;
 
-const Text = mockComponent(
-  '../Libraries/Text/Text',
-  MockNativeMethods, // instanceMethods
+const TextInput = mockComponent(
+  'react-native/Libraries/Components/TextInput/TextInput',
+  {
+    ...MockNativeMethods,
+    isFocused: jest.fn(),
+    clear: jest.fn(),
+    getNativeRef: jest.fn(),
+  }, // instanceMethods
   true, // isESModule
-) as TText;
+) as TTextInput;
 
-export default Text;
+export default TextInput;
