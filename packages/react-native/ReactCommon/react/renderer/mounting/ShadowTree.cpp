@@ -19,6 +19,7 @@
 #include "updateMountedFlag.h"
 
 #include "ShadowTreeDelegate.h"
+#include <glog/logging.h>
 
 // Discord - Wrap with ScopeGuard for a function to run on the end of the scope:
 #include <functional>
