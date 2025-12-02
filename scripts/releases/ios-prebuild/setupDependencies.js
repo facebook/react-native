@@ -145,6 +145,7 @@ async function createBuildStructure(
     const sourceFiles = globSync(source, {
       cwd: sourceFolder,
       expandDirectories: false,
+      onlyFiles: false,
     });
     sourceFiles.forEach(sourceFile => {
       const sourcePath = path.join(sourceFolder, sourceFile);
@@ -186,6 +187,7 @@ async function createHeaderStructure(
     const sourceFiles = globSync(source, {
       cwd: sourceFolder,
       expandDirectories: false,
+      onlyFiles: false,
     });
     sourceFiles.forEach(sourceFile => {
       // get source path
@@ -243,6 +245,7 @@ async function copyResources(
     const sourceFiles = globSync(source, {
       cwd: rootFolder,
       expandDirectories: false,
+      onlyFiles: false,
     });
     sourceFiles.forEach(sourceFile => {
       const sourcePath = path.resolve(rootFolder, sourceFile);
