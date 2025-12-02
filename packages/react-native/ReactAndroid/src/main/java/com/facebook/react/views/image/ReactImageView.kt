@@ -22,7 +22,6 @@ import android.graphics.Shader.TileMode
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import androidx.core.graphics.withSave
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
 import com.facebook.drawee.backends.pipeline.Fresco
@@ -373,9 +372,16 @@ public class ReactImageView(
   public override fun hasOverlappingRendering(): Boolean = false
 
   public override fun draw(canvas: Canvas) {
-    canvas.withSave {
-      BackgroundStyleApplicator.applyClipPathIfPresent(this@ReactImageView, this)
-      super.draw(this)
+    val clipPath = BackgroundStyleApplicator.getClipPath(this)
+    if (clipPath != null) {
+      canvas.save()
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
+    }
+
+    super.onDraw(canvas)
+
+    if (clipPath != null) {
+      canvas.restore()
     }
   }
 

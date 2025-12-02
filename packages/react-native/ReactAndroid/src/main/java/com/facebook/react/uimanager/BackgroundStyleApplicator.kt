@@ -481,8 +481,11 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
+  public fun getClipPath(view: View): ClipPath? = view.getTag(R.id.clip_path) as? ClipPath
+
+  @JvmStatic
   public fun applyClipPathIfPresent(view: View, canvas: Canvas) {
-    val clipPath = view.getTag(R.id.clip_path) as? ClipPath ?: return
+    val clipPath = getClipPath(view) ?: return
     val bounds = getGeometryBoxBounds(view, clipPath.geometryBox, getComputedBorderInsets(view))
     val drawingRect = Rect()
     view.getDrawingRect(drawingRect)
