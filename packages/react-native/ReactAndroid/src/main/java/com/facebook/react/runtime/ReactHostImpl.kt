@@ -1266,10 +1266,6 @@ public class ReactHostImpl(
     val method = "getOrCreateReloadTask()"
     stateTracker.enterState(method)
 
-    // Log how React Native is destroyed
-    // TODO(T136397487): Remove after Venice is shipped to 100%
-    raiseSoftException(method, reason)
-
     reloadTask?.let {
       return it
     }
@@ -1420,10 +1416,6 @@ public class ReactHostImpl(
   private fun getOrCreateDestroyTask(reason: String, ex: Exception?): Task<Void> {
     val method = "getOrCreateDestroyTask()"
     stateTracker.enterState(method)
-
-    // Log how React Native is destroyed
-    // TODO(T136397487): Remove after Venice is shipped to 100%
-    raiseSoftException(method, reason, ex)
 
     destroyTask?.let {
       return it
