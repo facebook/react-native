@@ -179,8 +179,10 @@ tasks.withType<KotlinCompile>().configureEach {
 
 afterEvaluate {
   if (
-      project.findProperty("react.internal.useHermesNightly") == null ||
-          project.findProperty("react.internal.useHermesNightly").toString() == "false"
+      (project.findProperty("react.internal.useHermesNightly") == null ||
+          project.findProperty("react.internal.useHermesNightly").toString() == "false") &&
+          (project.findProperty("react.internal.useHermesStable") == null ||
+              project.findProperty("react.internal.useHermesStable").toString() == "false")
   ) {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
