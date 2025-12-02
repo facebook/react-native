@@ -49,10 +49,10 @@ import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.BoxShadow
 import com.facebook.react.uimanager.style.ClipPath
 import com.facebook.react.uimanager.style.ClipPathUtils
+import com.facebook.react.uimanager.style.GeometryBoxUtil
+import com.facebook.react.uimanager.style.GeometryBoxUtil.getGeometryBoxBounds
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.uimanager.style.OutlineStyle
-import com.facebook.react.views.view.GeometryBoxUtil
-import com.facebook.react.views.view.GeometryBoxUtil.getGeometryBoxBounds
 
 /**
  * Utility object responsible for applying backgrounds, borders, and related visual effects to
