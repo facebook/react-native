@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.view
+package com.facebook.react.uimanager.style
 
 import android.graphics.RectF
 import android.view.View
@@ -109,15 +109,15 @@ internal object GeometryBoxUtil {
 
         ComputedBorderRadius(
             topLeft = CornerRadii(
-                    horizontal = max(0f, borderRadius.topLeft.horizontal - paddingLeft).dpToPx(),
+                horizontal = max(0f, borderRadius.topLeft.horizontal - paddingLeft).dpToPx(),
                 vertical = max(0f, borderRadius.topLeft.vertical - paddingTop).dpToPx()
             ),
             topRight = CornerRadii(
-                    horizontal = max(0f, borderRadius.topRight.horizontal - paddingRight).dpToPx(),
+                horizontal = max(0f, borderRadius.topRight.horizontal - paddingRight).dpToPx(),
                 vertical = max(0f, borderRadius.topRight.vertical - paddingTop).dpToPx()
             ),
             bottomLeft = CornerRadii(
-                    horizontal = max(0f, borderRadius.bottomLeft.horizontal - paddingLeft).dpToPx(),
+                horizontal = max(0f, borderRadius.bottomLeft.horizontal - paddingLeft).dpToPx(),
                 vertical = max(0f, borderRadius.bottomLeft.vertical - paddingBottom).dpToPx()
             ),
             bottomRight = CornerRadii(
