@@ -17,6 +17,7 @@ import ensureInstance from '../../../src/private/__tests__/utilities/ensureInsta
 import * as Fantom from '@react-native/fantom';
 import {createRef} from 'react';
 import {Animated, useAnimatedValue} from 'react-native';
+import {allowStyleProp} from 'react-native/Libraries/Animated/NativeAnimatedAllowlist';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 test('animated opacity', () => {
@@ -71,5 +72,62 @@ test('animated opacity', () => {
 
   expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
     <rn-view opacity="0" />,
+  );
+});
+
+test('animate layout props', () => {
+  const viewRef = createRef<HostInstance>();
+  allowStyleProp('height');
+
+  let _animatedHeight;
+  let _heightAnimation;
+
+  function MyApp() {
+    const animatedHeight = useAnimatedValue(0);
+    _animatedHeight = animatedHeight;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: 100,
+            height: animatedHeight,
+          },
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  Fantom.runTask(() => {
+    _heightAnimation = Animated.timing(_animatedHeight, {
+      toValue: 100,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  });
+
+  Fantom.unstable_produceFramesForDuration(100);
+
+  // TODO: getFabricUpdateProps is not working with the cloneMutliple method
+  // expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(100);
+  expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
+    <rn-view height="50.000000" />,
+  );
+
+  Fantom.unstable_produceFramesForDuration(100);
+
+  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  Fantom.runTask(() => {
+    _heightAnimation?.stop();
+  });
+
+  expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
+    <rn-view height="100.000000" />,
   );
 });
