@@ -31,8 +31,13 @@ function computeFrameworkPaths(
   const frameworks = globSync('**/*.framework', {
     cwd: productsFolder,
     expandDirectories: false,
-    onlyFiles: false,
+    onlyDirectories: true,
     absolute: true,
+  }).map(framework => {
+    // NOTE: tinyglobby outputs a trailing slash for directories
+    return framework[framework.length - 1] === '/'
+      ? framework.slice(0, -1)
+      : framework;
   });
 
   if (frameworks.length === 0) {
