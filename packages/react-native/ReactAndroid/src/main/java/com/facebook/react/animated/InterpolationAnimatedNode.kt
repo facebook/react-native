@@ -7,8 +7,11 @@
 
 package com.facebook.react.animated
 
+import android.content.Context
 import androidx.core.graphics.ColorUtils
+import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
@@ -19,10 +22,14 @@ import java.util.regex.Pattern
  *
  * Currently only a linear interpolation is supported on an input range of an arbitrary size.
  */
-internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode() {
+internal class InterpolationAnimatedNode(
+    config: ReadableMap,
+    private val reactApplicationContext: ReactApplicationContext,
+) : ValueAnimatedNode() {
   private enum class OutputType {
     Number,
     Color,
+    PlatformColor,
     String,
   }
 
@@ -35,11 +42,21 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
   private var parent: ValueAnimatedNode? = null
   private var objectValue: Any? = null
 
+  private val context: Context?
+    get() {
+      // There are cases where the activity may not exist (such as for VRShell panel apps). In this
+      // case we will search for a view associated with a PropsAnimatedNode to get the context.
+      return reactApplicationContext.currentActivity ?: getContextHelper(this)
+    }
+
   init {
     val output = config.getArray("outputRange")
     if (COLOR_OUTPUT_TYPE == config.getString("outputType")) {
       outputType = OutputType.Color
       outputRange = fromIntArray(output)
+    } else if (PLATFORM_COLOR_OUTPUT_TYPE == config.getString("outputType")) {
+      outputType = OutputType.PlatformColor
+      outputRange = fromMapArray(output)
     } else if (output?.getType(0) == ReadableType.String) {
       outputType = OutputType.String
       outputRange = fromStringPattern(output)
@@ -77,6 +94,17 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
       OutputType.Color ->
           objectValue =
               Integer.valueOf(interpolateColor(parentValue, inputRange, outputRange as IntArray))
+      OutputType.PlatformColor -> {
+        @Suppress("UNCHECKED_CAST")
+        objectValue =
+            Integer.valueOf(
+                interpolatePlatformColor(
+                    parentValue,
+                    inputRange,
+                    outputRange as List<ReadableMap>,
+                )
+            )
+      }
       OutputType.String ->
           pattern?.let {
             @Suppress("UNCHECKED_CAST")
@@ -100,6 +128,30 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
   override fun prettyPrint(): String =
       "InterpolationAnimatedNode[$tag] super: ${super.prettyPrint()}"
 
+  private fun interpolatePlatformColor(
+      value: Double,
+      inputRange: DoubleArray,
+      outputRange: List<ReadableMap>,
+  ): Int {
+    val rangeIndex = findRangeIndex(value, inputRange)
+    val outputMin =
+        context?.let { ColorPropConverter.getColor(outputRange[rangeIndex], it) ?: 0 } ?: 0
+    val outputMax =
+        context?.let { ColorPropConverter.getColor(outputRange[rangeIndex + 1], it) ?: 0 } ?: 0
+    if (outputMin == outputMax) {
+      return outputMin
+    }
+    val inputMin = inputRange[rangeIndex]
+    val inputMax = inputRange[rangeIndex + 1]
+    if (inputMin == inputMax) {
+      return if (value <= inputMin) {
+        outputMin
+      } else outputMax
+    }
+    val ratio = (value - inputMin) / (inputMax - inputMin)
+    return ColorUtils.blendARGB(outputMin, outputMax, ratio.toFloat())
+  }
+
   companion object {
     const val EXTRAPOLATE_TYPE_IDENTITY: String = "identity"
     const val EXTRAPOLATE_TYPE_CLAMP: String = "clamp"
@@ -108,6 +160,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
     private val numericPattern: Pattern =
         Pattern.compile("[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?")
     private const val COLOR_OUTPUT_TYPE: String = "color"
+    private const val PLATFORM_COLOR_OUTPUT_TYPE: String = "platform_color"
 
     private fun fromDoubleArray(array: ReadableArray?): DoubleArray {
       val size = array?.size() ?: return DoubleArray(0)
@@ -123,6 +176,15 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
       val res = IntArray(size)
       for (i in res.indices) {
         res[i] = array.getInt(i)
+      }
+      return res
+    }
+
+    private fun fromMapArray(array: ReadableArray?): List<ReadableMap> {
+      val size = array?.size() ?: return ArrayList()
+      val res = ArrayList<ReadableMap>(size)
+      for (i in 0 until size) {
+        res.add(checkNotNull(array.getMap(i)))
       }
       return res
     }
