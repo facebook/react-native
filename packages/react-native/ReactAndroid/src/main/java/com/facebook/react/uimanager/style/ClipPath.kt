@@ -19,7 +19,7 @@ private fun getOptionalLengthPercentage(map: ReadableMap, key: String): LengthPe
   }
 }
 
-public data class CircleShape(
+internal data class CircleShape(
     val r: LengthPercentage? = null,
     val cx: LengthPercentage? = null,
     val cy: LengthPercentage? = null,
@@ -34,7 +34,7 @@ public data class CircleShape(
   }
 }
 
-public data class EllipseShape(
+internal data class EllipseShape(
     val rx: LengthPercentage? = null,
     val ry: LengthPercentage? = null,
     val cx: LengthPercentage? = null,
@@ -51,7 +51,7 @@ public data class EllipseShape(
   }
 }
 
-public data class InsetShape(
+internal data class InsetShape(
     val top: LengthPercentage,
     val right: LengthPercentage,
     val bottom: LengthPercentage,
@@ -85,7 +85,7 @@ public enum class FillRule {
   }
 }
 
-public data class PolygonShape(
+internal data class PolygonShape(
     val points: List<Pair<LengthPercentage, LengthPercentage>>,
     val fillRule: FillRule? = null,
 ) {
@@ -114,7 +114,7 @@ public data class PolygonShape(
   }
 }
 
-public data class RectShape(
+internal data class RectShape(
     val top: LengthPercentage,
     val right: LengthPercentage,
     val bottom: LengthPercentage,
@@ -133,7 +133,7 @@ public data class RectShape(
   }
 }
 
-public data class XywhShape(
+internal data class XywhShape(
     val x: LengthPercentage,
     val y: LengthPercentage,
     val width: LengthPercentage,
@@ -153,17 +153,17 @@ public data class XywhShape(
 }
 
 public sealed class BasicShape {
-  public data class Circle(val shape: CircleShape) : BasicShape()
+  internal data class Circle(val shape: CircleShape) : BasicShape()
 
-  public data class Ellipse(val shape: EllipseShape) : BasicShape()
+  internal data class Ellipse(val shape: EllipseShape) : BasicShape()
 
-  public data class Inset(val shape: InsetShape) : BasicShape()
+  internal data class Inset(val shape: InsetShape) : BasicShape()
 
-  public data class Polygon(val shape: PolygonShape) : BasicShape()
+  internal data class Polygon(val shape: PolygonShape) : BasicShape()
 
-  public data class Rect(val shape: RectShape) : BasicShape()
+  internal data class Rect(val shape: RectShape) : BasicShape()
 
-  public data class Xywh(val shape: XywhShape) : BasicShape()
+  internal data class Xywh(val shape: XywhShape) : BasicShape()
 
   public companion object {
     public fun parse(map: ReadableMap): BasicShape? {
@@ -226,7 +226,7 @@ public enum class GeometryBox {
   }
 }
 
-public data class ClipPath(
+internal data class ClipPath(
     val shape: BasicShape? = null,
     val geometryBox: GeometryBox? = null,
 ) {
