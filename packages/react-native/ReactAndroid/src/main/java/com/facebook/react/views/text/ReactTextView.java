@@ -337,6 +337,20 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
   }
 
+
+  @Override
+  public void draw(Canvas canvas) {
+    ClipPath clipPath = (ClipPath) getTag(R.id.clip_path);
+    if (clipPath != null) {
+      canvas.save();
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas);
+    }
+    super.draw(canvas);
+    if (clipPath != null) {
+      canvas.restore();
+    }
+  }
+
   @Override
   protected void onDraw(Canvas canvas) {
     try (SystraceSection s = new SystraceSection("ReactTextView.onDraw")) {
@@ -366,15 +380,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
       }
 
-      ClipPath clipPath = (ClipPath) getTag(R.id.clip_path);
-      if (clipPath != null) {
-        canvas.save();
-        BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas);
-      }
       super.onDraw(canvas);
-      if (clipPath != null) {
-        canvas.restore();
-      }
     }
   }
 
