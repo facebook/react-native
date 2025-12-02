@@ -486,6 +486,7 @@ public object BackgroundStyleApplicator {
     val bounds = getGeometryBoxBounds(view, clipPath.geometryBox, getComputedBorderInsets(view))
     val drawingRect = Rect()
     view.getDrawingRect(drawingRect)
+    bounds.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
 
     val path: Path? = if (clipPath.shape != null) {
       ClipPathUtils.createPathFromBasicShape(clipPath.shape, bounds)
