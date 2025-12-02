@@ -104,6 +104,7 @@ runs:
       shell: bash
       run: |
         echo "zipping tests results"
+        cd /Users/runner/Library/Developer/Xcode
         tar -zcvf xcresults.tar.gz "/tmp/RNTesterTestResults"
     - name: Upload artifact
       uses: actions/upload-artifact@v4.3.4
