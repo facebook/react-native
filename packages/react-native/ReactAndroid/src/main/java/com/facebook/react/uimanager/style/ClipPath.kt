@@ -226,7 +226,7 @@ public enum class GeometryBox {
   }
 }
 
-internal data class ClipPath(
+public data class ClipPath(
     val shape: BasicShape? = null,
     val geometryBox: GeometryBox? = null,
 ) {

@@ -24,7 +24,6 @@ import android.view.ViewParent
 import androidx.annotation.ColorInt
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
-import androidx.core.graphics.withSave
 import androidx.core.view.ViewCompat
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -119,9 +118,16 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   }
 
   override fun draw(canvas: Canvas) {
-    canvas.withSave {
-      BackgroundStyleApplicator.applyClipPathIfPresent(this@PreparedLayoutTextView, this)
-      super.onDraw(canvas)
+    val clipPath = BackgroundStyleApplicator.getClipPath(this)
+    if (clipPath != null) {
+      canvas.save()
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
+    }
+
+    super.draw(canvas)
+
+    if (clipPath != null) {
+      canvas.restore()
     }
   }
 
