@@ -199,6 +199,11 @@ public constructor(
     view.setResizeMultiplier(resizeMultiplier)
   }
 
+  @ReactProp(name = "maxBitmapSize")
+  public fun setMaxBitmapSize(view: ReactImageView, maxBitmapSize: Int) {
+    view.setMaxBitmapSize(maxBitmapSize)
+  }
+
   @ReactProp(name = "tintColor", customType = "Color")
   public fun setTintColor(view: ReactImageView, tintColor: Int?) {
     if (tintColor == null) {

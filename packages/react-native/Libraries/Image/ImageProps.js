@@ -125,6 +125,13 @@ export type ImagePropsAndroid = $ReadOnly<{
    * Defaults to 1.0.
    */
   resizeMultiplier?: ?number,
+
+  /**
+   * The maximum size of the bitmap in pixels.
+   * This is used to limit the size of the bitmap when resizing.
+   * Defaults to 0 (which means no limit).
+   */
+  maxBitmapSize?: ?number,
 }>;
 
 export type ImagePropsBase = $ReadOnly<{
