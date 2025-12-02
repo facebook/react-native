@@ -78,9 +78,40 @@ void packBackgroundColor(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
   const auto& backgroundColor = get<SharedColor>(animatedProp);
-  if (backgroundColor) {
-    dyn.insert("backgroundColor", static_cast<int32_t>(*backgroundColor));
-  }
+  dyn.insert("backgroundColor", static_cast<int32_t>(*backgroundColor));
+}
+
+/* static */
+void AnimatedPropsSerializer::packShadowColor(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& shadowColor = get<SharedColor>(animatedProp);
+  dyn.insert("shadowColor", static_cast<int32_t>(*shadowColor));
+}
+
+/* static */
+void AnimatedPropsSerializer::packShadowOffset(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& shadowOffset = get<Size>(animatedProp);
+  dyn.insert(
+      "shadowOffset",
+      folly::dynamic::object("width", shadowOffset.width)(
+          "height", shadowOffset.height));
+}
+
+/* static */
+void AnimatedPropsSerializer::packShadowOpacity(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  dyn.insert("shadowOpacity", get<Float>(animatedProp));
+}
+
+/* static */
+void AnimatedPropsSerializer::packShadowRadius(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  dyn.insert("shadowRadius", get<Float>(animatedProp));
 }
 
 void packAnimatedProp(
@@ -101,6 +132,22 @@ void packAnimatedProp(
 
     case BORDER_RADII:
       packBorderRadii(dyn, *animatedProp);
+      break;
+
+    case SHADOW_COLOR:
+      packShadowColor(dyn, *animatedProp);
+      break;
+
+    case SHADOW_OFFSET:
+      packShadowOffset(dyn, *animatedProp);
+      break;
+
+    case SHADOW_OPACITY:
+      packShadowOpacity(dyn, *animatedProp);
+      break;
+
+    case SHADOW_RADIUS:
+      packShadowRadius(dyn, *animatedProp);
       break;
 
     case WIDTH:
