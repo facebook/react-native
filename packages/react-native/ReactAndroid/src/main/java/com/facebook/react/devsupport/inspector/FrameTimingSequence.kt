@@ -13,4 +13,5 @@ internal data class FrameTimingSequence(
     val beginDrawingTimestamp: Long,
     val commitTimestamp: Long,
     val endDrawingTimestamp: Long,
+    val screenshot: String? = null,
 )
