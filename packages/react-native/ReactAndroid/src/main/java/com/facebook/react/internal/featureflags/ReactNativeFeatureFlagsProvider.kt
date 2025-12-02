@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<91441ffa16383203cf8ef82e1edf4451>>
+ * @generated SignedSource<<17400be6ee20befd9eafb094455dfb63>>
  */
 
 /**
@@ -28,8 +28,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun cdpInteractionMetricsEnabled(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
-
-  @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
   @DoNotStrip public fun disableEarlyViewCommandExecution(): Boolean
 

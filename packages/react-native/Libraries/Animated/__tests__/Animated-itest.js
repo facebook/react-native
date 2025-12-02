@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags cxxNativeAnimatedRemoveJsSync:*
  * @flow strict-local
  * @format
  */
@@ -18,7 +17,6 @@ import * as Fantom from '@react-native/fantom';
 import {createRef} from 'react';
 import {Animated, View, useAnimatedValue} from 'react-native';
 import {allowStyleProp} from 'react-native/Libraries/Animated/NativeAnimatedAllowlist';
-import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 test('moving box by 100 points', () => {
@@ -76,14 +74,9 @@ test('moving box by 100 points', () => {
   Fantom.unstable_produceFramesForDuration(500);
 
   // Animation is completed now. C++ Animated will commit the final position to the shadow tree.
-  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    // TODO(T232605345): this shouldn't be neccessary once we fix Android's race condition.
-    Fantom.runWorkLoop();
-    expect(viewElement.getBoundingClientRect().x).toBe(100);
-  } else {
-    Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
-    expect(viewElement.getBoundingClientRect().x).toBe(100);
-  }
+  // TODO(T232605345): this shouldn't be neccessary once we fix Android's race condition.
+  Fantom.runWorkLoop();
+  expect(viewElement.getBoundingClientRect().x).toBe(100);
 });
 
 test('animation driven by onScroll event', () => {
@@ -334,21 +327,11 @@ test('moving box by 50 points with offset 10', () => {
       .translateX,
   ).toBeCloseTo(60, 0.001);
 
-  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    // TODO(T232605345): The following line won't be necessary once race condition on Android is fixed.
-    Fantom.runWorkLoop();
-    expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-      <rn-view transform='[{"translateX": 60.000000}]' />,
-    );
-  } else {
-    expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-      <rn-view transform="[]" />,
-    );
-    Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
-    expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-      <rn-view transform='[{"translateX": 60.000000}]' />, // // must include offset.
-    );
-  }
+  // TODO(T232605345): The following line won't be necessary once race condition on Android is fixed.
+  Fantom.runWorkLoop();
+  expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+    <rn-view transform='[{"translateX": 60.000000}]' />,
+  );
 
   expect(finishValue?.finished).toBe(true);
   expect(finishValue?.value).toBe(50); // must not include offset.
@@ -734,16 +717,10 @@ test('Animated.sequence', () => {
     Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
   ).toBeCloseTo(0, 0.001);
 
-  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    // TODO(T232605345): The following two lines won't be necessary once race condition on Android is fixed
-    expect(element.getBoundingClientRect().y).toBe(-16);
-    Fantom.runWorkLoop();
-    expect(element.getBoundingClientRect().y).toBe(0);
-  } else {
-    expect(element.getBoundingClientRect().y).toBe(-16);
-    Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
-    expect(element.getBoundingClientRect().y).toBe(0);
-  }
+  // TODO(T232605345): The following two lines won't be necessary once race condition on Android is fixed
+  expect(element.getBoundingClientRect().y).toBe(-16);
+  Fantom.runWorkLoop();
+  expect(element.getBoundingClientRect().y).toBe(0);
 
   expect(_isSequenceFinished).toBe(true);
 });
