@@ -151,6 +151,7 @@ void packAnimatedProp(
     case FLEX:
     case PADDING:
     case MARGIN:
+    case POSITION:
       throw std::runtime_error("Tried to synchronously update layout props");
   }
 }
