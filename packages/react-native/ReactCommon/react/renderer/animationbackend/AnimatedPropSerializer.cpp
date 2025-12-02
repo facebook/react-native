@@ -81,16 +81,14 @@ void packBackgroundColor(
   dyn.insert("backgroundColor", static_cast<int32_t>(*backgroundColor));
 }
 
-/* static */
-void AnimatedPropsSerializer::packShadowColor(
+void packShadowColor(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
   const auto& shadowColor = get<SharedColor>(animatedProp);
   dyn.insert("shadowColor", static_cast<int32_t>(*shadowColor));
 }
 
-/* static */
-void AnimatedPropsSerializer::packShadowOffset(
+void packShadowOffset(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
   const auto& shadowOffset = get<Size>(animatedProp);
@@ -100,15 +98,13 @@ void AnimatedPropsSerializer::packShadowOffset(
           "height", shadowOffset.height));
 }
 
-/* static */
-void AnimatedPropsSerializer::packShadowOpacity(
+void packShadowOpacity(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
   dyn.insert("shadowOpacity", get<Float>(animatedProp));
 }
 
-/* static */
-void AnimatedPropsSerializer::packShadowRadius(
+void packShadowRadius(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
   dyn.insert("shadowRadius", get<Float>(animatedProp));
@@ -153,6 +149,8 @@ void packAnimatedProp(
     case WIDTH:
     case HEIGHT:
     case FLEX:
+    case PADDING:
+    case MARGIN:
       throw std::runtime_error("Tried to synchronously update layout props");
   }
 }
