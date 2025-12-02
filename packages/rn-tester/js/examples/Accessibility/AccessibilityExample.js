@@ -1293,6 +1293,44 @@ class AnnounceForAccessibility extends React.Component<{}> {
     );
   };
 
+  _handleOnPressHighPriority = () => {
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibilityWithOptions(
+          'High Priority Announcement Test',
+          {priority: 'high'},
+        ),
+      1000,
+    );
+
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibility(
+          'Normal Priority Announcement',
+        ),
+      1100,
+    );
+  };
+
+  _handleOnPressLowPriority = () => {
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibilityWithOptions(
+          'Low Priority Announcement Test',
+          {priority: 'low'},
+        ),
+      1000,
+    );
+
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibility(
+          'Normal Priority Announcement',
+        ),
+      1100,
+    );
+  };
+
   render(): React.Node {
     return Platform.OS === 'ios' ? (
       <View>
@@ -1307,6 +1345,14 @@ class AnnounceForAccessibility extends React.Component<{}> {
         <Button
           onPress={this._handleOnPressQueueMultiple}
           title="Announce for Accessibility Queue Multiple"
+        />
+        <Button
+          onPress={this._handleOnPressHighPriority}
+          title="Announce for Accessibility High Priority"
+        />
+        <Button
+          onPress={this._handleOnPressLowPriority}
+          title="Announce for Accessibility Low Priority"
         />
       </View>
     ) : (

@@ -10,7 +10,7 @@ package com.facebook.react.devsupport.perfmonitor
 import android.os.Handler
 import android.os.Looper
 import com.facebook.react.bridge.UiThreadUtil
-import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.inspector.TracingState
 
 internal class PerfMonitorOverlayManager(
     private val devHelper: PerfMonitorDevHelper,
@@ -23,7 +23,7 @@ internal class PerfMonitorOverlayManager(
     get() = enabled
 
   private var view: PerfMonitorOverlayView? = null
-  private var tracingState: TracingState = TracingState.ENABLEDINCDPMODE
+  private var tracingState: TracingState = TracingState.ENABLED_IN_CDP_MODE
   private var perfIssueCount: Int = 0
   private val handler = Handler(Looper.getMainLooper())
 
@@ -109,7 +109,7 @@ internal class PerfMonitorOverlayManager(
 
   private fun handleRecordingButtonPress() {
     when (tracingState) {
-      TracingState.ENABLEDINBACKGROUNDMODE -> {
+      TracingState.ENABLED_IN_BACKGROUND_MODE -> {
         devHelper.inspectorTarget?.let { target ->
           if (!target.pauseAndAnalyzeBackgroundTrace()) {
             onRequestOpenDevTools()
@@ -119,7 +119,7 @@ internal class PerfMonitorOverlayManager(
       TracingState.DISABLED -> {
         devHelper.inspectorTarget?.resumeBackgroundTrace()
       }
-      TracingState.ENABLEDINCDPMODE -> Unit
+      TracingState.ENABLED_IN_CDP_MODE -> Unit
     }
   }
 

@@ -936,7 +936,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
 
   if (accessibilityState != oldProps->accessibilityState) {
     updateAccessibilityStateProp(
-        result, oldProps->accessibilityState, accessibilityState);
+        result, accessibilityState, oldProps->accessibilityState);
   }
 
   if (accessibilityLabel != oldProps->accessibilityLabel) {

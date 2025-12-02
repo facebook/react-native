@@ -29,7 +29,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaDirection;
@@ -584,7 +583,6 @@ public class UIViewOperationQueue {
   @GuardedBy("mNonBatchedOperationsLock")
   private ArrayDeque<UIOperation> mNonBatchedOperations = new ArrayDeque<>();
 
-  private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
   private boolean mIsDispatchUIFrameCallbackEnqueued = false;
   private boolean mIsInIllegalUIState = false;
   private boolean mIsProfilingNextBatch = false;
@@ -617,13 +615,6 @@ public class UIViewOperationQueue {
 
   /*package*/ NativeViewHierarchyManager getNativeViewHierarchyManager() {
     return mNativeViewHierarchyManager;
-  }
-
-  // NOTE: When converted to Kotlin this method should be `internal` due to
-  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
-  public void setViewHierarchyUpdateDebugListener(
-      @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
-    mViewHierarchyUpdateDebugListener = listener;
   }
 
   public void profileNextBatch() {
@@ -833,10 +824,6 @@ public class UIViewOperationQueue {
         }
       }
 
-      if (mViewHierarchyUpdateDebugListener != null) {
-        mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
-      }
-
       Runnable runOperations =
           new Runnable() {
             @Override
@@ -926,9 +913,6 @@ public class UIViewOperationQueue {
                 // Clear layout animation, as animation only apply to current UI operations batch.
                 mNativeViewHierarchyManager.clearLayoutAnimation();
 
-                if (mViewHierarchyUpdateDebugListener != null) {
-                  mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
-                }
               } catch (Exception e) {
                 mIsInIllegalUIState = true;
                 throw e;

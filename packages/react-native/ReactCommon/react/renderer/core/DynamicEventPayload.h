@@ -12,8 +12,13 @@
 
 namespace facebook::react {
 
+/*
+ * EventPayload sent from android native via JNI.
+ */
 struct DynamicEventPayload : public EventPayload {
   explicit DynamicEventPayload(folly::dynamic &&payload);
+
+  static SharedEventPayload create(folly::dynamic &&payload);
 
   /*
    * EventPayload implementations
@@ -22,7 +27,7 @@ struct DynamicEventPayload : public EventPayload {
   EventPayloadType getType() const override;
   std::optional<double> extractValue(const std::vector<std::string> &path) const override;
 
- private:
+ protected:
   folly::dynamic payload_;
 };
 

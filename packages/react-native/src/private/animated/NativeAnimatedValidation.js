@@ -8,7 +8,10 @@
  * @format
  */
 
-import type {InterpolationConfigType} from '../../../Libraries/Animated/nodes/AnimatedInterpolation';
+import type {
+  InterpolationConfigSupportedOutputType,
+  InterpolationConfigType,
+} from '../../../Libraries/Animated/nodes/AnimatedInterpolation';
 
 import {
   isSupportedInterpolationParam,
@@ -16,9 +19,9 @@ import {
   isSupportedTransformProp,
 } from '../../../Libraries/Animated/NativeAnimatedAllowlist';
 
-export function validateInterpolation<OutputT: number | string>(
-  config: InterpolationConfigType<OutputT>,
-): void {
+export function validateInterpolation<
+  OutputT: InterpolationConfigSupportedOutputType,
+>(config: InterpolationConfigType<OutputT>): void {
   for (const key in config) {
     if (key !== 'debugID' && !isSupportedInterpolationParam(key)) {
       console.error(

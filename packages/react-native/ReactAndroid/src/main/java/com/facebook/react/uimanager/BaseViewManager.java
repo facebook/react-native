@@ -16,6 +16,7 @@ import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -148,7 +149,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     // are the default view flags in View.java:
     // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
     // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`
-    // Therefore we set the following options as such:
+
+    // NOTE: setClickable MUST be called AFTER setOnClickListener because
+    // the latter has the side effect of setting isClickable=true on some views!
+    if (ReactNativeFeatureFlags.shouldResetOnClickListenerWhenRecyclingView()) {
+      view.setOnClickListener(null);
+    }
+    if (ReactNativeFeatureFlags.shouldResetClickableWhenRecyclingView()) {
+      view.setClickable(
+          ReactNativeFeatureFlags.shouldSetIsClickableByDefault() && !(view instanceof TextView));
+    }
     view.setFocusable(false);
     view.setFocusableInTouchMode(false);
 
@@ -678,6 +688,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   protected void onAfterUpdateTransaction(@NonNull T view) {
     super.onAfterUpdateTransaction(view);
+    configureClickableState(view);
     updateViewAccessibility(view);
 
     Boolean invalidateTransform = (Boolean) view.getTag(R.id.invalidate_transform);
@@ -770,6 +781,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
+            .put(
+                "topKeyDown",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyDown", "captured", "onKeyDownCapture")))
+            .put(
+                "topKeyUp",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onKeyUp", "captured", "onKeyUpCapture")))
             .build());
     return eventTypeConstants;
   }
@@ -1000,6 +1021,31 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   // Please add new props to BaseViewManagerDelegate as well!
+
+  private static <T extends View> void configureClickableState(@NonNull T view) {
+    if (!ReactNativeFeatureFlags.shouldSetIsClickableByDefault()) {
+      return;
+    }
+
+    boolean shouldBeClickable;
+    if (view instanceof ReactPointerEventsView) {
+      shouldBeClickable =
+          PointerEvents.canBeTouchTarget(((ReactPointerEventsView) view).getPointerEvents());
+    } else if (view instanceof TextView) {
+      shouldBeClickable = view.hasOnClickListeners();
+    } else {
+      shouldBeClickable = true;
+    }
+
+    // NOTE: In Android O+, setClickable(true) has the side effect of setting focusable=true.
+    // We need to preserve the original focusable state to respect the focusable prop.
+    boolean wasFocusable = view.isFocusable();
+    boolean wasFocusableInTouchMode = view.isFocusableInTouchMode();
+
+    view.setClickable(shouldBeClickable);
+    view.setFocusable(wasFocusable);
+    view.setFocusableInTouchMode(wasFocusableInTouchMode);
+  }
 
   /**
    * A helper class to keep track of the original focus change listener if one is set. This is

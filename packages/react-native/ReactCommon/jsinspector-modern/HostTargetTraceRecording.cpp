@@ -8,15 +8,27 @@
 #include "HostTargetTraceRecording.h"
 #include "HostTarget.h"
 
+#include <oscompat/OSCompat.h>
+
 namespace facebook::react::jsinspector_modern {
 
 HostTargetTraceRecording::HostTargetTraceRecording(
     HostTarget& hostTarget,
     tracing::Mode tracingMode,
-    std::set<tracing::Category> enabledCategories)
+    std::set<tracing::Category> enabledCategories,
+    std::optional<HighResDuration> windowSize)
     : hostTarget_(hostTarget),
       tracingMode_(tracingMode),
-      enabledCategories_(std::move(enabledCategories)) {}
+      enabledCategories_(std::move(enabledCategories)),
+      windowSize_(windowSize) {
+  if (windowSize) {
+    frameTimings_ = tracing::TimeWindowedBuffer<tracing::FrameTimingSequence>(
+        [](auto& sequence) { return sequence.beginDrawingTimestamp; },
+        *windowSize);
+  } else {
+    frameTimings_ = tracing::TimeWindowedBuffer<tracing::FrameTimingSequence>();
+  };
+}
 
 void HostTargetTraceRecording::setTracedInstance(
     InstanceTarget* instanceTarget) {
@@ -32,15 +44,13 @@ void HostTargetTraceRecording::start() {
       hostTracingAgent_ == nullptr &&
       "Tracing Agent for the HostTarget was already initialized.");
 
-  state_ = tracing::TraceRecordingState{
-      .mode = tracingMode_,
-      .startTime = HighResTimeStamp::now(),
-      .enabledCategories = enabledCategories_,
-  };
+  startTime_ = HighResTimeStamp::now();
+  state_ = tracing::TraceRecordingState(
+      tracingMode_, enabledCategories_, windowSize_);
   hostTracingAgent_ = hostTarget_.createTracingAgent(*state_);
 }
 
-tracing::TraceRecordingState HostTargetTraceRecording::stop() {
+tracing::HostTracingProfile HostTargetTraceRecording::stop() {
   assert(
       hostTracingAgent_ != nullptr &&
       "TracingAgent for the HostTarget has not been initialized.");
@@ -52,7 +62,25 @@ tracing::TraceRecordingState HostTargetTraceRecording::stop() {
   auto state = std::move(*state_);
   state_.reset();
 
-  return state;
+  auto startTime = *startTime_;
+  startTime_.reset();
+
+  return tracing::HostTracingProfile{
+      .processId = oscompat::getCurrentProcessId(),
+      .startTime = startTime,
+      .frameTimings = frameTimings_.pruneExpiredAndExtract(),
+      .instanceTracingProfiles = std::move(state.instanceTracingProfiles),
+      .runtimeSamplingProfiles = std::move(state.runtimeSamplingProfiles),
+  };
+}
+
+void HostTargetTraceRecording::recordFrameTimings(
+    tracing::FrameTimingSequence frameTimingSequence) {
+  assert(
+      state_.has_value() &&
+      "The state for this tracing session has not been initialized.");
+
+  frameTimings_.push(frameTimingSequence);
 }
 
 } // namespace facebook::react::jsinspector_modern

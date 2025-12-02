@@ -113,6 +113,12 @@ class MockInspectorPackagerConnectionDelegate : public InspectorPackagerConnecti
   folly::Executor &executor_;
 };
 
+class MockHostTargetTracingDelegate : public HostTargetTracingDelegate {
+ public:
+  MOCK_METHOD(void, onTracingStarted, (tracing::Mode tracingMode, bool screenshotsCategoryEnabled), (override));
+  MOCK_METHOD(void, onTracingStopped, (), (override));
+};
+
 class MockHostTargetDelegate : public HostTargetDelegate {
  public:
   // HostTargetDelegate methods
@@ -131,6 +137,20 @@ class MockHostTargetDelegate : public HostTargetDelegate {
       loadNetworkResource,
       (const LoadNetworkResourceRequest &params, ScopedExecutor<NetworkRequestListener> executor),
       (override));
+
+  HostTargetTracingDelegate *getTracingDelegate() override
+  {
+    return mockTracingDelegate_.get();
+  }
+
+  MockHostTargetTracingDelegate &getTracingDelegateMock()
+  {
+    return *mockTracingDelegate_;
+  }
+
+ private:
+  std::unique_ptr<MockHostTargetTracingDelegate> mockTracingDelegate_ =
+      std::make_unique<MockHostTargetTracingDelegate>();
 };
 
 class MockInstanceTargetDelegate : public InstanceTargetDelegate {};

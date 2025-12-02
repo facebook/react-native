@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ff839b736c1c74b3dccefadb6e278b9>>
+ * @generated SignedSource<<e3acef3e3c9b032fce0902019fa6ff3f>>
  */
 
 /**
@@ -65,11 +65,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool disableEarlyViewCommandExecution();
 
   /**
-   * Prevents use of Fabric commit in C++ Animated implementation
-   */
-  RN_EXPORT static bool disableFabricCommitInCXXAnimated();
-
-  /**
    * Force disable view preallocation for images triggered from createNode off the main thread on Android
    */
   RN_EXPORT static bool disableImageViewPreallocationAndroid();
@@ -108,6 +103,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
+
+  /**
+   * Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing
+   */
+  RN_EXPORT static bool enableAndroidAntialiasedBorderRadiusClipping();
 
   /**
    * Enables linear text rendering on Android wherever subpixel text rendering is enabled
@@ -215,6 +215,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableInteropViewManagerClassLookUpOptimizationIOS();
 
   /**
+   * Enables the IntersectionObserver Web API in React Native.
+   */
+  RN_EXPORT static bool enableIntersectionObserverByDefault();
+
+  /**
    * Enables key up/down/press events to be sent to JS from components
    */
   RN_EXPORT static bool enableKeyEvents();
@@ -293,11 +298,6 @@ class ReactNativeFeatureFlags {
    * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
    */
   RN_EXPORT static bool enableViewRecyclingForView();
-
-  /**
-   * Set clipping to drawingRect of ScrollView.
-   */
-  RN_EXPORT static bool enableVirtualViewClippingWithoutScrollViewClipping();
 
   /**
    * Enables the experimental version of `VirtualViewContainerState`.
@@ -380,9 +380,24 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool shouldPressibilityUseW3CPointerEventsForHover();
 
   /**
+   * Reset isClickable to false when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
+   */
+  RN_EXPORT static bool shouldResetClickableWhenRecyclingView();
+
+  /**
+   * Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
+   */
+  RN_EXPORT static bool shouldResetOnClickListenerWhenRecyclingView();
+
+  /**
    * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
    */
   RN_EXPORT static bool shouldSetEnabledBasedOnAccessibilityState();
+
+  /**
+   * Sets isClickable=true by default on all React Native views on Android to improve UI harvesting detection while maintaining focusable=false to preserve expected behavior.
+   */
+  RN_EXPORT static bool shouldSetIsClickableByDefault();
 
   /**
    * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.

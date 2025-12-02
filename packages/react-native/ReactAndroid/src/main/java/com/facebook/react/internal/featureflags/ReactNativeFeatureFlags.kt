@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9cb554e599417e707c0953baa6adb0c2>>
+ * @generated SignedSource<<2e69f1b64e18567abff05a1f8bc7014d>>
  */
 
 /**
@@ -61,12 +61,6 @@ public object ReactNativeFeatureFlags {
   public fun disableEarlyViewCommandExecution(): Boolean = accessor.disableEarlyViewCommandExecution()
 
   /**
-   * Prevents use of Fabric commit in C++ Animated implementation
-   */
-  @JvmStatic
-  public fun disableFabricCommitInCXXAnimated(): Boolean = accessor.disableFabricCommitInCXXAnimated()
-
-  /**
    * Force disable view preallocation for images triggered from createNode off the main thread on Android
    */
   @JvmStatic
@@ -113,6 +107,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
+
+  /**
+   * Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing
+   */
+  @JvmStatic
+  public fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean = accessor.enableAndroidAntialiasedBorderRadiusClipping()
 
   /**
    * Enables linear text rendering on Android wherever subpixel text rendering is enabled
@@ -241,6 +241,12 @@ public object ReactNativeFeatureFlags {
   public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = accessor.enableInteropViewManagerClassLookUpOptimizationIOS()
 
   /**
+   * Enables the IntersectionObserver Web API in React Native.
+   */
+  @JvmStatic
+  public fun enableIntersectionObserverByDefault(): Boolean = accessor.enableIntersectionObserverByDefault()
+
+  /**
    * Enables key up/down/press events to be sent to JS from components
    */
   @JvmStatic
@@ -335,12 +341,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableViewRecyclingForView(): Boolean = accessor.enableViewRecyclingForView()
-
-  /**
-   * Set clipping to drawingRect of ScrollView.
-   */
-  @JvmStatic
-  public fun enableVirtualViewClippingWithoutScrollViewClipping(): Boolean = accessor.enableVirtualViewClippingWithoutScrollViewClipping()
 
   /**
    * Enables the experimental version of `VirtualViewContainerState`.
@@ -439,10 +439,28 @@ public object ReactNativeFeatureFlags {
   public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = accessor.shouldPressibilityUseW3CPointerEventsForHover()
 
   /**
+   * Reset isClickable to false when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
+   */
+  @JvmStatic
+  public fun shouldResetClickableWhenRecyclingView(): Boolean = accessor.shouldResetClickableWhenRecyclingView()
+
+  /**
+   * Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
+   */
+  @JvmStatic
+  public fun shouldResetOnClickListenerWhenRecyclingView(): Boolean = accessor.shouldResetOnClickListenerWhenRecyclingView()
+
+  /**
    * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
    */
   @JvmStatic
   public fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = accessor.shouldSetEnabledBasedOnAccessibilityState()
+
+  /**
+   * Sets isClickable=true by default on all React Native views on Android to improve UI harvesting detection while maintaining focusable=false to preserve expected behavior.
+   */
+  @JvmStatic
+  public fun shouldSetIsClickableByDefault(): Boolean = accessor.shouldSetIsClickableByDefault()
 
   /**
    * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.

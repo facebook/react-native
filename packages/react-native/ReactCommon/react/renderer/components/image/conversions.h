@@ -163,6 +163,11 @@ inline std::string toString(const ImageResizeMode &value)
       return "repeat";
     case ImageResizeMode::None:
       return "none";
+    default:
+      LOG(ERROR) << "Unsupported ImageResizeMode value: " << (int)value;
+      react_native_expect(false);
+      // "cover" is default in non-Fabric web and iOS
+      return "cover";
   }
 }
 

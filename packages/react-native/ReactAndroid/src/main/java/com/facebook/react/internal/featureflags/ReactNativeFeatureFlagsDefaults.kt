@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<47b33d1a21af24f369e52d3b8f226d73>>
+ * @generated SignedSource<<a5795c5441af8d4e4151e4c89304fb2f>>
  */
 
 /**
@@ -33,8 +33,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableEarlyViewCommandExecution(): Boolean = false
 
-  override fun disableFabricCommitInCXXAnimated(): Boolean = false
-
   override fun disableImageViewPreallocationAndroid(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
@@ -50,6 +48,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableAccessibilityOrder(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
+
+  override fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean = false
 
   override fun enableAndroidLinearText(): Boolean = false
 
@@ -93,6 +93,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
 
+  override fun enableIntersectionObserverByDefault(): Boolean = false
+
   override fun enableKeyEvents(): Boolean = false
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
@@ -124,8 +126,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableViewRecyclingForText(): Boolean = true
 
   override fun enableViewRecyclingForView(): Boolean = true
-
-  override fun enableVirtualViewClippingWithoutScrollViewClipping(): Boolean = true
 
   override fun enableVirtualViewContainerStateExperimental(): Boolean = false
 
@@ -159,7 +159,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
 
-  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = false
+  override fun shouldResetClickableWhenRecyclingView(): Boolean = true
+
+  override fun shouldResetOnClickListenerWhenRecyclingView(): Boolean = true
+
+  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = true
+
+  override fun shouldSetIsClickableByDefault(): Boolean = false
 
   override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 

@@ -43,8 +43,11 @@ import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.InspectorFlags
+import com.facebook.react.devsupport.inspector.FrameTimingsObserver
 import com.facebook.react.devsupport.inspector.InspectorNetworkHelper
 import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener
+import com.facebook.react.devsupport.inspector.TracingState
+import com.facebook.react.devsupport.inspector.TracingStateListener
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener
@@ -147,6 +150,7 @@ public class ReactHostImpl(
   private val beforeDestroyListeners: MutableList<() -> Unit> = CopyOnWriteArrayList()
 
   internal var reactHostInspectorTarget: ReactHostInspectorTarget? = null
+  private var frameTimingsObserver: FrameTimingsObserver? = null
 
   @Volatile private var hostInvalidated = false
 
@@ -1442,8 +1446,7 @@ public class ReactHostImpl(
                 // If the host has been invalidated, now that the current context/instance
                 // has been unregistered, we can safely destroy the host's inspector
                 // target.
-                reactHostInspectorTarget?.close()
-                reactHostInspectorTarget = null
+                destroyReactHostInspectorTarget()
               }
 
               // Step 1: Destroy DevSupportManager
@@ -1554,11 +1557,46 @@ public class ReactHostImpl(
 
   internal fun getOrCreateReactHostInspectorTarget(): ReactHostInspectorTarget? {
     if (reactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
-      // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
-      reactHostInspectorTarget = ReactHostInspectorTarget(this)
+      reactHostInspectorTarget = createReactHostInspectorTarget()
     }
 
     return reactHostInspectorTarget
+  }
+
+  private fun createReactHostInspectorTarget(): ReactHostInspectorTarget {
+    // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
+    val inspectorTarget = ReactHostInspectorTarget(this)
+    inspectorTarget.registerTracingStateListener(
+        TracingStateListener { state: TracingState, _screenshotsEnabled: Boolean ->
+          when (state) {
+            TracingState.ENABLED_IN_BACKGROUND_MODE,
+            TracingState.ENABLED_IN_CDP_MODE -> {
+              currentActivity?.window?.let { window ->
+                val observer =
+                    FrameTimingsObserver(window) { frameTimingsSequence ->
+                      inspectorTarget.recordFrameTimings(frameTimingsSequence)
+                    }
+                observer.start()
+                frameTimingsObserver = observer
+              }
+            }
+            TracingState.DISABLED -> {
+              frameTimingsObserver?.stop()
+              frameTimingsObserver = null
+            }
+          }
+        }
+    )
+
+    return inspectorTarget
+  }
+
+  private fun destroyReactHostInspectorTarget() {
+    frameTimingsObserver?.stop()
+    frameTimingsObserver = null
+
+    reactHostInspectorTarget?.close()
+    reactHostInspectorTarget = null
   }
 
   @ThreadConfined(ThreadConfined.UI)

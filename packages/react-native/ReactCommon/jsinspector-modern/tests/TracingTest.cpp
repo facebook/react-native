@@ -56,4 +56,43 @@ TEST_F(TracingTest, EnablesSamplingProfilerOnlyCategoryIsSpecified) {
           AtJsonPtr("/cat", "disabled-by-default-v8.cpu_profiler"))));
 }
 
+TEST_F(TracingTest, RecordsFrameTimings) {
+  InSequence s;
+
+  page_->startTracing(tracing::Mode::Background, {tracing::Category::Timeline});
+
+  auto now = HighResTimeStamp::now();
+  auto frameTimingSequence = tracing::FrameTimingSequence(
+      1, // id
+      11, // threadId
+      now,
+      now + HighResDuration::fromNanoseconds(10),
+      now + HighResDuration::fromNanoseconds(50));
+
+  page_->recordFrameTimings(frameTimingSequence);
+
+  auto tracingProfile = page_->stopTracing();
+  EXPECT_EQ(tracingProfile.frameTimings.size(), 1u);
+  EXPECT_EQ(tracingProfile.frameTimings[0].id, frameTimingSequence.id);
+}
+
+TEST_F(TracingTest, EmitsRecordedFrameTimingSequences) {
+  InSequence s;
+
+  startTracing();
+  auto now = HighResTimeStamp::now();
+  page_->recordFrameTimings(
+      tracing::FrameTimingSequence(
+          1, // id
+          11, // threadId
+          now,
+          now + HighResDuration::fromNanoseconds(10),
+          now + HighResDuration::fromNanoseconds(50)));
+
+  auto allTraceEvents = endTracingAndCollectEvents();
+  EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "BeginFrame")));
+  EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "Commit")));
+  EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "DrawFrame")));
+}
+
 } // namespace facebook::react::jsinspector_modern

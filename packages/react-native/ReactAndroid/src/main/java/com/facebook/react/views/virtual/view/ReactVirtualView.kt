@@ -195,18 +195,10 @@ public class ReactVirtualView(context: Context) :
     val clippingRect = checkNotNull(clippingRect)
     val parentScrollView = checkNotNull(parentScrollView) as ReactClippingViewGroup
 
-    if (ReactNativeFeatureFlags.enableVirtualViewClippingWithoutScrollViewClipping()) {
-      if (parentScrollView.removeClippedSubviews) {
-        parentScrollView.getClippingRect(clippingRect)
-      } else {
-        (parentScrollView as View).getDrawingRect(clippingRect)
-      }
-    } else {
-      if (!(parentScrollView.removeClippedSubviews ?: false)) {
-        super.updateClippingRect(excludedViews)
-        return
-      }
+    if (parentScrollView.removeClippedSubviews) {
       parentScrollView.getClippingRect(clippingRect)
+    } else {
+      (parentScrollView as View).getDrawingRect(clippingRect)
     }
 
     clippingRect.intersect(targetRect)

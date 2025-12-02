@@ -83,7 +83,7 @@ public class SurfaceMountingManager {
       new ConcurrentHashMap<>(); // any thread
   private final Queue<MountItem> mOnViewAttachMountItems = new ArrayDeque<>();
   private JSResponderHandler mJSResponderHandler;
-  private ViewManagerRegistry mViewManagerRegistry;
+  private final ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
   private MountItemExecutor mMountItemExecutor;
 
@@ -336,6 +336,7 @@ public class SurfaceMountingManager {
           mMountItemExecutor = null;
           mThemedReactContext = null;
           mOnViewAttachMountItems.clear();
+          mTagToSynchronousMountProps.clear();
 
           FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
         };

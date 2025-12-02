@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<316d877ef7aac59c840cb2b6e659891d>>
+ * @generated SignedSource<<46aafe1d22354ad53f81db7ab41b967e>>
  */
 
 /**
@@ -46,10 +46,6 @@ bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {
   return getAccessor().disableEarlyViewCommandExecution();
 }
 
-bool ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated() {
-  return getAccessor().disableFabricCommitInCXXAnimated();
-}
-
 bool ReactNativeFeatureFlags::disableImageViewPreallocationAndroid() {
   return getAccessor().disableImageViewPreallocationAndroid();
 }
@@ -80,6 +76,10 @@ bool ReactNativeFeatureFlags::enableAccessibilityOrder() {
 
 bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {
   return getAccessor().enableAccumulatedUpdatesInRawPropsAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableAndroidAntialiasedBorderRadiusClipping() {
+  return getAccessor().enableAndroidAntialiasedBorderRadiusClipping();
 }
 
 bool ReactNativeFeatureFlags::enableAndroidLinearText() {
@@ -166,6 +166,10 @@ bool ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS
   return getAccessor().enableInteropViewManagerClassLookUpOptimizationIOS();
 }
 
+bool ReactNativeFeatureFlags::enableIntersectionObserverByDefault() {
+  return getAccessor().enableIntersectionObserverByDefault();
+}
+
 bool ReactNativeFeatureFlags::enableKeyEvents() {
   return getAccessor().enableKeyEvents();
 }
@@ -228,10 +232,6 @@ bool ReactNativeFeatureFlags::enableViewRecyclingForText() {
 
 bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
   return getAccessor().enableViewRecyclingForView();
-}
-
-bool ReactNativeFeatureFlags::enableVirtualViewClippingWithoutScrollViewClipping() {
-  return getAccessor().enableVirtualViewClippingWithoutScrollViewClipping();
 }
 
 bool ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental() {
@@ -298,8 +298,20 @@ bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {
   return getAccessor().shouldPressibilityUseW3CPointerEventsForHover();
 }
 
+bool ReactNativeFeatureFlags::shouldResetClickableWhenRecyclingView() {
+  return getAccessor().shouldResetClickableWhenRecyclingView();
+}
+
+bool ReactNativeFeatureFlags::shouldResetOnClickListenerWhenRecyclingView() {
+  return getAccessor().shouldResetOnClickListenerWhenRecyclingView();
+}
+
 bool ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState() {
   return getAccessor().shouldSetEnabledBasedOnAccessibilityState();
+}
+
+bool ReactNativeFeatureFlags::shouldSetIsClickableByDefault() {
+  return getAccessor().shouldSetIsClickableByDefault();
 }
 
 bool ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid() {

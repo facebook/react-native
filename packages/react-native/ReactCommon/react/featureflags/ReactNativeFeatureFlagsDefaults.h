@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bce5d52ac8a180d1750bb64dd21c1bd3>>
+ * @generated SignedSource<<5a2e55d5f195183e708dd802dcafcd47>>
  */
 
 /**
@@ -47,10 +47,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool disableFabricCommitInCXXAnimated() override {
-    return false;
-  }
-
   bool disableImageViewPreallocationAndroid() override {
     return false;
   }
@@ -80,6 +76,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
+    return false;
+  }
+
+  bool enableAndroidAntialiasedBorderRadiusClipping() override {
     return false;
   }
 
@@ -167,6 +167,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableIntersectionObserverByDefault() override {
+    return false;
+  }
+
   bool enableKeyEvents() override {
     return false;
   }
@@ -228,10 +232,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableViewRecyclingForView() override {
-    return true;
-  }
-
-  bool enableVirtualViewClippingWithoutScrollViewClipping() override {
     return true;
   }
 
@@ -299,7 +299,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool shouldResetClickableWhenRecyclingView() override {
+    return true;
+  }
+
+  bool shouldResetOnClickListenerWhenRecyclingView() override {
+    return true;
+  }
+
   bool shouldSetEnabledBasedOnAccessibilityState() override {
+    return true;
+  }
+
+  bool shouldSetIsClickableByDefault() override {
     return false;
   }
 

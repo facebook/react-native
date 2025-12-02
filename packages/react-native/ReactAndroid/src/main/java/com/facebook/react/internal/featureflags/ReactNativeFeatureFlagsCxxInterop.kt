@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f57b2ecf22eabb7f207b86c472059084>>
+ * @generated SignedSource<<c94da1f2b880dbcbd02b2ccc1da0c387>>
  */
 
 /**
@@ -38,8 +38,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun disableEarlyViewCommandExecution(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun disableFabricCommitInCXXAnimated(): Boolean
-
   @DoNotStrip @JvmStatic public external fun disableImageViewPreallocationAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableMountItemReorderingAndroid(): Boolean
@@ -55,6 +53,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAndroidLinearText(): Boolean
 
@@ -98,6 +98,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableIntersectionObserverByDefault(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableKeyEvents(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnAndroid(): Boolean
@@ -129,8 +131,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForText(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForView(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableVirtualViewClippingWithoutScrollViewClipping(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableVirtualViewContainerStateExperimental(): Boolean
 
@@ -164,7 +164,13 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun shouldResetClickableWhenRecyclingView(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun shouldResetOnClickListenerWhenRecyclingView(): Boolean
+
   @DoNotStrip @JvmStatic public external fun shouldSetEnabledBasedOnAccessibilityState(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun shouldSetIsClickableByDefault(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 

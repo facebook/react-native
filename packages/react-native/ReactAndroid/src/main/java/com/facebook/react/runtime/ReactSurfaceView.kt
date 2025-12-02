@@ -12,6 +12,7 @@ package com.facebook.react.runtime
 import android.content.Context
 import android.graphics.Point
 import android.graphics.Rect
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import com.facebook.common.logging.FLog
@@ -20,7 +21,9 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.IllegalViewOperationException
+import com.facebook.react.uimanager.JSKeyDispatcher
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.common.UIManagerType
@@ -37,6 +40,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     ReactRootView(context) {
   private val jsTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
   private var jsPointerDispatcher: JSPointerDispatcher? = null
+  private var jsKeyDispatcher: JSKeyDispatcher? = null
   private var wasMeasured = false
   private var widthMeasureSpec = 0
   private var heightMeasureSpec = 0
@@ -44,6 +48,9 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   init {
     if (ReactFeatureFlags.dispatchPointerEvents) {
       jsPointerDispatcher = JSPointerDispatcher(this)
+    }
+    if (ReactNativeFeatureFlags.enableKeyEvents()) {
+      jsKeyDispatcher = JSKeyDispatcher()
     }
   }
 
@@ -185,6 +192,51 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
           TAG,
           "Unable to dispatch pointer events to JS as the React instance has not been attached",
       )
+    }
+  }
+
+  override fun dispatchJSKeyEvent(event: KeyEvent) {
+    if (jsKeyDispatcher == null) {
+      if (!ReactNativeFeatureFlags.enableKeyEvents()) {
+        return
+      }
+      FLog.w(TAG, "Unable to dispatch key events to JS before the dispatcher is available")
+      return
+    }
+    val eventDispatcher = surface.eventDispatcher
+    if (eventDispatcher != null) {
+      jsKeyDispatcher?.handleKeyEvent(event, eventDispatcher, surface.surfaceID)
+    } else {
+      FLog.w(
+          TAG,
+          "Unable to dispatch key events to JS as the React instance has not been attached",
+      )
+    }
+  }
+
+  override fun requestChildFocus(child: View?, focused: View?) {
+    super.requestChildFocus(child, focused)
+
+    if (ReactNativeFeatureFlags.enableKeyEvents()) {
+      val focusedViewTag = focused?.id
+      if (focusedViewTag != null) {
+        jsKeyDispatcher?.setFocusedView(focusedViewTag)
+      }
+    }
+  }
+
+  override fun onFocusChanged(gainFocus: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
+
+    if (ReactNativeFeatureFlags.enableKeyEvents()) {
+      if (gainFocus) {
+        val focusedViewTag = focusedChild?.id
+        if (focusedViewTag != null) {
+          jsKeyDispatcher?.setFocusedView(focusedViewTag)
+        }
+      } else {
+        jsKeyDispatcher?.clearFocus()
+      }
     }
   }
 

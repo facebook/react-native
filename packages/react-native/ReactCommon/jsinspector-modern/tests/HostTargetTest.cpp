@@ -1526,4 +1526,57 @@ TEST_F(HostTargetTest, IOReadSizeValidation) {
       })");
 }
 
+TEST_F(HostTargetTest, TracingDelegateIsNotifiedOnCDPRequest) {
+  connect();
+  InSequence s;
+
+  EXPECT_CALL(
+      hostTargetDelegate_.getTracingDelegateMock(),
+      onTracingStarted(Eq(tracing::Mode::CDP), Eq(false)))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")));
+  toPage_->sendMessage(R"({
+                        "id": 1,
+                        "method": "Tracing.start"
+                      })");
+
+  EXPECT_CALL(hostTargetDelegate_.getTracingDelegateMock(), onTracingStopped())
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")));
+  EXPECT_CALL(
+      fromPage(),
+      onMessage(JsonParsed(
+          testing::AllOf(
+              AtJsonPtr("/method", "Tracing.tracingComplete"),
+              AtJsonPtr("/params/dataLossOccurred", false)))));
+  toPage_->sendMessage(R"({
+                        "id": 1,
+                        "method": "Tracing.end"
+                      })");
+}
+
+TEST_F(HostTargetTest, TracingDelegateIsNotifiedOnDirectTracingCall) {
+  connect();
+
+  EXPECT_CALL(
+      hostTargetDelegate_.getTracingDelegateMock(),
+      onTracingStarted(Eq(tracing::Mode::Background), Eq(false)))
+      .Times(1)
+      .RetiresOnSaturation();
+  page_->startTracing(tracing::Mode::Background, {});
+
+  EXPECT_CALL(hostTargetDelegate_.getTracingDelegateMock(), onTracingStopped())
+      .Times(1)
+      .RetiresOnSaturation();
+  page_->stopTracing();
+}
+
 } // namespace facebook::react::jsinspector_modern

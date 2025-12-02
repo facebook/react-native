@@ -29,8 +29,9 @@
 // #define RN_SHADOW_TREE_INTROSPECTION 1
 
 // This enables certain object-to-string debug conversions to be compiled.
-// Enable if `REACT_NATIVE_DEBUG` is enabled.
-#ifdef REACT_NATIVE_DEBUG
+// Enable if either `REACT_NATIVE_DEBUG` or `RN_ENABLE_DEBUG_STRING_CONVERTIBLE`
+// is defined
+#if defined(REACT_NATIVE_DEBUG) || defined(RN_ENABLE_DEBUG_STRING_CONVERTIBLE)
 #define RN_DEBUG_STRING_CONVERTIBLE 1
 #else
 #define RN_DEBUG_STRING_CONVERTIBLE 0

@@ -102,17 +102,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableFabricCommitInCXXAnimated: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-10-26',
-        description:
-          'Prevents use of Fabric commit in C++ Animated implementation',
-        expectedReleaseValue: false,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     disableImageViewPreallocationAndroid: {
       defaultValue: false,
       metadata: {
@@ -196,6 +185,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-12-10',
         description:
           'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableAndroidAntialiasedBorderRadiusClipping: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-14',
+        description:
+          'Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -423,6 +423,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableIntersectionObserverByDefault: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables the IntersectionObserver Web API in React Native.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'canary',
+    },
     enableKeyEvents: {
       defaultValue: false,
       metadata: {
@@ -589,16 +599,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-02-05',
         description:
           'Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableVirtualViewClippingWithoutScrollViewClipping: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-10-30',
-        description: 'Set clipping to drawingRect of ScrollView.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -774,14 +774,43 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    shouldSetEnabledBasedOnAccessibilityState: {
-      defaultValue: false,
+    shouldResetClickableWhenRecyclingView: {
+      defaultValue: true,
       metadata: {
-        dateAdded: '2025-11-11',
+        description:
+          'Reset isClickable to false when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldResetOnClickListenerWhenRecyclingView: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldSetEnabledBasedOnAccessibilityState: {
+      defaultValue: true,
+      metadata: {
         description:
           'Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldSetIsClickableByDefault: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Sets isClickable=true by default on all React Native views on Android to improve UI harvesting detection while maintaining focusable=false to preserve expected behavior.',
+        expectedReleaseValue: true,
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -1098,13 +1127,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     shouldUseLinkRoleForPressableText: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2025-11-10',
         description:
           'Set accessibilityRole to "link" for pressable Text components by default.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },

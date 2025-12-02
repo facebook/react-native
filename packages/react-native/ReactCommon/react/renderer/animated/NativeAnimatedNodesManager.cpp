@@ -73,11 +73,13 @@ thread_local bool NativeAnimatedNodesManager::isOnRenderThread_{false};
 NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     DirectManipulationCallback&& directManipulationCallback,
     FabricCommitCallback&& fabricCommitCallback,
+    ResolvePlatformColor&& resolvePlatformColor,
     StartOnRenderCallback&& startOnRenderCallback,
     StopOnRenderCallback&& stopOnRenderCallback,
     FrameRateListenerCallback&& frameRateListenerCallback) noexcept
     : directManipulationCallback_(std::move(directManipulationCallback)),
       fabricCommitCallback_(std::move(fabricCommitCallback)),
+      resolvePlatformColor_(std::move(resolvePlatformColor)),
       startOnRenderCallback_(std::move(startOnRenderCallback)),
       stopOnRenderCallback_(std::move(stopOnRenderCallback)),
       frameRateListenerCallback_(std::move(frameRateListenerCallback)) {
@@ -762,10 +764,7 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
 
     if (driver->getIsComplete()) {
       hasFinishedAnimations = true;
-      const auto shouldRemoveJsSync =
-          ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() &&
-          !ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
-      if (shouldRemoveJsSync) {
+      if (ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync()) {
         finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
       }
     }
@@ -794,7 +793,7 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
   return commitProps();
 }
 
-folly::dynamic NativeAnimatedNodesManager::managedProps(
+folly::dynamic NativeAnimatedNodesManager::getManagedProps(
     Tag tag) const noexcept {
   std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
   if (const auto iter = connectedAnimatedNodes_.find(tag);
@@ -845,6 +844,15 @@ void NativeAnimatedNodesManager::onManagedPropsRemoved(Tag tag) noexcept {
 
 bool NativeAnimatedNodesManager::isOnRenderThread() const noexcept {
   return isOnRenderThread_;
+}
+
+void NativeAnimatedNodesManager::resolvePlatformColor(
+    SurfaceId surfaceId,
+    const RawValue& value,
+    SharedColor& result) const {
+  if (resolvePlatformColor_) {
+    resolvePlatformColor_(surfaceId, value, result);
+  }
 }
 
 #pragma mark - Listeners
@@ -954,10 +962,7 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
 
         if (driver->getIsComplete()) {
           hasFinishedAnimations = true;
-          const auto shouldRemoveJsSync =
-              ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() &&
-              !ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
-          if (shouldRemoveJsSync) {
+          if (ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync()) {
             finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
           }
         }

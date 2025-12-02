@@ -15,3 +15,10 @@ target_include_directories(react_renderer_debug PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_renderer_debug folly_runtime react_debug)
 target_compile_reactnative_options(react_renderer_debug PRIVATE)
 target_compile_options(react_renderer_debug PRIVATE -Wpedantic)
+
+# Enable debug string convertible for Debug builds or when explicitly requested
+# This allows getRenderedOutput() to include props in tests
+# Set RN_ENABLE_DEBUG_STRING_CONVERTIBLE=ON to enable for Release builds
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR RN_ENABLE_DEBUG_STRING_CONVERTIBLE)
+  target_compile_definitions(react_renderer_debug PUBLIC RN_ENABLE_DEBUG_STRING_CONVERTIBLE)
+endif()

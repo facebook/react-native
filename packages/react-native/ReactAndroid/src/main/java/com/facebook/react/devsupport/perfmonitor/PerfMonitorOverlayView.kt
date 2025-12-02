@@ -21,7 +21,7 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.R
-import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.inspector.TracingState
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.PixelUtil
 
@@ -50,12 +50,12 @@ internal class PerfMonitorOverlayView(
   }
 
   fun updateRecordingState(state: TracingState) {
-    if (state == TracingState.ENABLEDINCDPMODE) {
+    if (state == TracingState.ENABLED_IN_CDP_MODE) {
       dialog.hide()
       return
     }
 
-    if (state == TracingState.ENABLEDINBACKGROUNDMODE) {
+    if (state == TracingState.ENABLED_IN_BACKGROUND_MODE) {
       (statusIndicator.background as GradientDrawable).setColor(Color.RED)
       statusLabel.text = "Profiling Active"
       tooltipLabel.text =

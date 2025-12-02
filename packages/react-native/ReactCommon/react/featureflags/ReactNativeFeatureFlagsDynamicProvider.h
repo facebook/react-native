@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b89ea8b8456bc8d19b35220e492d41fb>>
+ * @generated SignedSource<<db573411b908b6d2ca5a8dad88866535>>
  */
 
 /**
@@ -90,15 +90,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::disableEarlyViewCommandExecution();
   }
 
-  bool disableFabricCommitInCXXAnimated() override {
-    auto value = values_["disableFabricCommitInCXXAnimated"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::disableFabricCommitInCXXAnimated();
-  }
-
   bool disableImageViewPreallocationAndroid() override {
     auto value = values_["disableImageViewPreallocationAndroid"];
     if (!value.isNull()) {
@@ -169,6 +160,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableAccumulatedUpdatesInRawPropsAndroid();
+  }
+
+  bool enableAndroidAntialiasedBorderRadiusClipping() override {
+    auto value = values_["enableAndroidAntialiasedBorderRadiusClipping"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableAndroidAntialiasedBorderRadiusClipping();
   }
 
   bool enableAndroidLinearText() override {
@@ -360,6 +360,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableInteropViewManagerClassLookUpOptimizationIOS();
   }
 
+  bool enableIntersectionObserverByDefault() override {
+    auto value = values_["enableIntersectionObserverByDefault"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableIntersectionObserverByDefault();
+  }
+
   bool enableKeyEvents() override {
     auto value = values_["enableKeyEvents"];
     if (!value.isNull()) {
@@ -502,15 +511,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableViewRecyclingForView();
-  }
-
-  bool enableVirtualViewClippingWithoutScrollViewClipping() override {
-    auto value = values_["enableVirtualViewClippingWithoutScrollViewClipping"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableVirtualViewClippingWithoutScrollViewClipping();
   }
 
   bool enableVirtualViewContainerStateExperimental() override {
@@ -657,6 +657,24 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::shouldPressibilityUseW3CPointerEventsForHover();
   }
 
+  bool shouldResetClickableWhenRecyclingView() override {
+    auto value = values_["shouldResetClickableWhenRecyclingView"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldResetClickableWhenRecyclingView();
+  }
+
+  bool shouldResetOnClickListenerWhenRecyclingView() override {
+    auto value = values_["shouldResetOnClickListenerWhenRecyclingView"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldResetOnClickListenerWhenRecyclingView();
+  }
+
   bool shouldSetEnabledBasedOnAccessibilityState() override {
     auto value = values_["shouldSetEnabledBasedOnAccessibilityState"];
     if (!value.isNull()) {
@@ -664,6 +682,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::shouldSetEnabledBasedOnAccessibilityState();
+  }
+
+  bool shouldSetIsClickableByDefault() override {
+    auto value = values_["shouldSetIsClickableByDefault"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldSetIsClickableByDefault();
   }
 
   bool shouldTriggerResponderTransferOnScrollAndroid() override {

@@ -95,7 +95,7 @@ ReactInstance::ReactInstance(
               jsErrorHandler->handleError(jsiRuntime, originalError, true);
             } catch (std::exception& ex) {
               jsi::JSError error(
-                  jsiRuntime, std::string("Non-js exception: ") + ex.what());
+                  jsiRuntime, std::string("Non-JS exception: ") + ex.what());
               jsErrorHandler->handleError(jsiRuntime, error, true);
             }
           });
@@ -162,6 +162,11 @@ ReactInstance::ReactInstance(
         runtimeScheduler->scheduleWork(std::move(callback));
       });
 }
+ReactInstance::~ReactInstance() noexcept {
+  if (timerManager_ != nullptr) {
+    timerManager_->quit();
+  }
+}
 
 void ReactInstance::unregisterFromInspector() {
   if (inspectorTarget_ != nullptr) {
@@ -184,8 +189,8 @@ RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
 
 // This BufferedRuntimeExecutor ensures that the main JS bundle finished
 // execution before any JS queued into it from C++ are executed. Use
-// getUnbufferedRuntimeExecutor() instead if you do not need the main JS bundle
-// to have finished. e.g. setting global variables into JS runtime.
+// getUnbufferedRuntimeExecutor() instead if you do not need the main JS
+// bundle to have finished. e.g. setting global variables into JS runtime.
 RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
   return [weakBufferedRuntimeExecutor_ =
               std::weak_ptr<BufferedRuntimeExecutor>(bufferedRuntimeExecutor_)](
@@ -219,8 +224,8 @@ std::string simpleBasename(const std::string& path) {
  * Load the JS bundle and flush buffered JS calls, future JS calls won't be
  * buffered after calling this.
  * Note that this method is asynchronous. However, a completion callback
- * isn't needed because all calls into JS should be dispatched to the JSThread,
- * preferably via the runtimeExecutor_.
+ * isn't needed because all calls into JS should be dispatched to the
+ * JSThread, preferably via the runtimeExecutor_.
  */
 void ReactInstance::loadScript(
     std::unique_ptr<const JSBigString> script,

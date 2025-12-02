@@ -116,6 +116,9 @@ export function compareTypeAnnotationForSorting(
     case 'NumberLiteralTypeAnnotation':
       invariant(typeB.type === 'NumberLiteralTypeAnnotation', EQUALITY_MSG);
       return typeA.value - typeB.value;
+    case 'BooleanLiteralTypeAnnotation':
+      invariant(typeB.type === 'BooleanLiteralTypeAnnotation', EQUALITY_MSG);
+      return originalPositionA - originalPositionB;
     case 'ObjectTypeAnnotation':
       invariant(typeB.type === 'ObjectTypeAnnotation', EQUALITY_MSG);
       return compareNameAnnotationArraysForSorting(
@@ -261,6 +264,8 @@ function typeAnnotationArbitraryOrder(annotation: CompleteTypeAnnotation) {
       return 14;
     case 'ObjectTypeAnnotation':
       return 15;
+    case 'BooleanLiteralTypeAnnotation':
+      return 16;
     case 'StringLiteralUnionTypeAnnotation':
       return 17;
     case 'StringTypeAnnotation':

@@ -11,8 +11,12 @@
 #include "HostTarget.h"
 #include "InstanceTarget.h"
 
+#include <jsinspector-modern/tracing/FrameTimingSequence.h>
+#include <jsinspector-modern/tracing/HostTracingProfile.h>
+#include <jsinspector-modern/tracing/TimeWindowedBuffer.h>
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
 #include <jsinspector-modern/tracing/TracingCategory.h>
+#include <react/timing/primitives.h>
 
 #include <optional>
 #include <set>
@@ -30,10 +34,11 @@ namespace facebook::react::jsinspector_modern {
  */
 class HostTargetTraceRecording {
  public:
-  explicit HostTargetTraceRecording(
+  HostTargetTraceRecording(
       HostTarget &hostTarget,
       tracing::Mode tracingMode,
-      std::set<tracing::Category> enabledCategories);
+      std::set<tracing::Category> enabledCategories,
+      std::optional<HighResDuration> windowSize = std::nullopt);
 
   inline bool isBackgroundInitiated() const
   {
@@ -58,11 +63,18 @@ class HostTargetTraceRecording {
   void start();
 
   /**
-   * Stops the recording and drops the recording state.
+   * Stops the recording and returns the recorded HostTracingProfile.
    *
    * Will deallocate all Tracing Agents.
    */
-  tracing::TraceRecordingState stop();
+  tracing::HostTracingProfile stop();
+
+  /**
+   * Adds the frame timing sequence to the current state of this trace recording.
+   *
+   * The caller guarantees the protection from data races. This is protected by the tracing mutex in HostTarget.
+   */
+  void recordFrameTimings(tracing::FrameTimingSequence frameTimingSequence);
 
  private:
   /**
@@ -74,6 +86,11 @@ class HostTargetTraceRecording {
    * The mode in which this trace recording was initialized.
    */
   tracing::Mode tracingMode_;
+
+  /**
+   * The timestamp at which this Trace Recording started.
+   */
+  std::optional<HighResTimeStamp> startTime_;
 
   /**
    * The state of the current Trace Recording.
@@ -91,6 +108,16 @@ class HostTargetTraceRecording {
    * The list of categories that are enabled for this recording.
    */
   std::set<tracing::Category> enabledCategories_;
+
+  /**
+   * The size of the time window for this recording.
+   */
+  std::optional<HighResDuration> windowSize_;
+
+  /**
+   * Frame timings captured on the Host side.
+   */
+  tracing::TimeWindowedBuffer<tracing::FrameTimingSequence> frameTimings_;
 };
 
 } // namespace facebook::react::jsinspector_modern

@@ -43,6 +43,8 @@ function getAndroidAssetSuffix(scale /*: number */) /*: string */ {
 // See https://developer.android.com/guide/topics/resources/drawable-resource.html
 const drawableFileTypes = new Set([
   'gif',
+  'heic',
+  'heif',
   'jpeg',
   'jpg',
   'ktx',

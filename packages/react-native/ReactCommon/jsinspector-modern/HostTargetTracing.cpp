@@ -5,12 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/tracing/TracingState.h>
-
 #include "HostTarget.h"
 #include "HostTargetTraceRecording.h"
 
 namespace facebook::react::jsinspector_modern {
+
+namespace {
+
+// The size of the timeline for the trace recording that happened in the
+// background.
+constexpr HighResDuration kBackgroundTraceWindowSize =
+    HighResDuration::fromMilliseconds(20000);
+
+} // namespace
 
 bool HostTargetController::startTracing(
     tracing::Mode tracingMode,
@@ -18,7 +25,7 @@ bool HostTargetController::startTracing(
   return target_.startTracing(tracingMode, std::move(enabledCategories));
 }
 
-tracing::TraceRecordingState HostTargetController::stopTracing() {
+tracing::HostTracingProfile HostTargetController::stopTracing() {
   return target_.stopTracing();
 }
 
@@ -32,44 +39,66 @@ std::shared_ptr<HostTracingAgent> HostTarget::createTracingAgent(
 bool HostTarget::startTracing(
     tracing::Mode tracingMode,
     std::set<tracing::Category> enabledCategories) {
+  std::lock_guard lock(tracingMutex_);
+
   if (traceRecording_ != nullptr) {
     if (traceRecording_->isBackgroundInitiated() &&
         tracingMode == tracing::Mode::CDP) {
+      if (auto tracingDelegate = delegate_.getTracingDelegate()) {
+        tracingDelegate->onTracingStopped();
+      }
+
+      traceRecording_->stop();
       traceRecording_.reset();
     } else {
       return false;
     }
   }
 
+  auto timeWindow = tracingMode == tracing::Mode::Background
+      ? std::make_optional(kBackgroundTraceWindowSize)
+      : std::nullopt;
+  auto screenshotsCategoryEnabled =
+      enabledCategories.contains(tracing::Category::Screenshot);
+
   traceRecording_ = std::make_unique<HostTargetTraceRecording>(
-      *this, tracingMode, std::move(enabledCategories));
+      *this, tracingMode, std::move(enabledCategories), timeWindow);
   traceRecording_->setTracedInstance(currentInstance_.get());
   traceRecording_->start();
+
+  if (auto tracingDelegate = delegate_.getTracingDelegate()) {
+    tracingDelegate->onTracingStarted(tracingMode, screenshotsCategoryEnabled);
+  }
 
   return true;
 }
 
-tracing::TraceRecordingState HostTarget::stopTracing() {
+tracing::HostTracingProfile HostTarget::stopTracing() {
+  std::lock_guard lock(tracingMutex_);
+
   assert(traceRecording_ != nullptr && "No tracing in progress");
 
-  auto state = traceRecording_->stop();
+  if (auto tracingDelegate = delegate_.getTracingDelegate()) {
+    tracingDelegate->onTracingStopped();
+  }
+
+  auto profile = traceRecording_->stop();
   traceRecording_.reset();
 
-  return state;
+  return profile;
 }
 
-tracing::TracingState HostTarget::tracingState() const {
-  if (traceRecording_ == nullptr) {
-    return tracing::TracingState::Disabled;
-  }
+void HostTarget::recordFrameTimings(
+    tracing::FrameTimingSequence frameTimingSequence) {
+  std::lock_guard lock(tracingMutex_);
 
-  if (traceRecording_->isBackgroundInitiated()) {
-    return tracing::TracingState::EnabledInBackgroundMode;
+  if (traceRecording_) {
+    traceRecording_->recordFrameTimings(frameTimingSequence);
+  } else {
+    assert(
+        false &&
+        "The HostTarget is not being profiled. Did you call recordFrameTimings() from the native Host side when there is no tracing in progress?");
   }
-
-  // This means we have a traceRecording_, but not running in the background.
-  // CDP initiated this trace so we should report as disabled.
-  return tracing::TracingState::EnabledInCDPMode;
 }
 
 } // namespace facebook::react::jsinspector_modern

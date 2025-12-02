@@ -15,12 +15,14 @@ import AnimatedNode from '../../../Libraries/Animated/nodes/AnimatedNode';
 import AnimatedProps from '../../../Libraries/Animated/nodes/AnimatedProps';
 import AnimatedValue from '../../../Libraries/Animated/nodes/AnimatedValue';
 import {isPublicInstance as isFabricPublicInstance} from '../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
+import {RootTagContext} from '../../../Libraries/ReactNative/RootTag';
 import useRefEffect from '../../../Libraries/Utilities/useRefEffect';
 import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
 import {createAnimatedPropsMemoHook} from './createAnimatedPropsMemoHook';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
 import {
   useCallback,
+  useContext,
   useEffect,
   useInsertionEffect,
   useReducer,
@@ -60,8 +62,16 @@ export default function createAnimatedPropsHook(
     const onUpdateRef = useRef<UpdateCallback | null>(null);
     const timerRef = useRef<TimeoutID | null>(null);
 
+    const rootTag = useContext(RootTagContext);
+
     const node = useAnimatedPropsMemo(
-      () => new AnimatedProps(props, () => onUpdateRef.current?.(), allowlist),
+      () =>
+        new AnimatedProps(
+          props,
+          () => onUpdateRef.current?.(),
+          allowlist,
+          rootTag,
+        ),
       props,
     );
 
@@ -127,7 +137,6 @@ export default function createAnimatedPropsHook(
             // In native driven animations, this callback is only called once the animation completes.
             const shouldRemoveJsSync =
               ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
-              !ReactNativeFeatureFlags.disableFabricCommitInCXXAnimated() &&
               ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync();
             if (isFabricNode && !shouldRemoveJsSync) {
               // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.

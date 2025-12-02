@@ -152,7 +152,6 @@ export default class Animation {
 
             const isJsSyncRemoved =
               ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
-              !ReactNativeFeatureFlags.disableFabricCommitInCXXAnimated() &&
               ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync();
             if (!isJsSyncRemoved) {
               if (this.__isLooping === true) {

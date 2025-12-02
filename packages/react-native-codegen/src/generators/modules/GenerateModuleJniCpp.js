@@ -171,6 +171,8 @@ function translateReturnTypeToKind(
       return 'StringKind';
     case 'BooleanTypeAnnotation':
       return 'BooleanKind';
+    case 'BooleanLiteralTypeAnnotation':
+      return 'BooleanKind';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -256,6 +258,8 @@ function translateParamTypeToJniType(
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
+    case 'BooleanLiteralTypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -337,6 +341,8 @@ function translateReturnTypeToJniType(
     case 'StringLiteralUnionTypeAnnotation':
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
+      return nullable ? 'Ljava/lang/Boolean;' : 'Z';
+    case 'BooleanLiteralTypeAnnotation':
       return nullable ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {

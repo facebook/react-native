@@ -6,6 +6,8 @@
  */
 
 #include "AnimationBackend.h"
+#include <react/renderer/animationbackend/AnimatedPropsSerializer.h>
+#include <react/renderer/graphics/Color.h>
 #include <chrono>
 
 namespace facebook::react {
@@ -41,34 +43,7 @@ static inline Props::Shared cloneProps(
   auto viewProps = std::const_pointer_cast<BaseViewProps>(
       std::static_pointer_cast<const BaseViewProps>(newProps));
   for (auto& animatedProp : animatedProps.props) {
-    switch (animatedProp->propName) {
-      case OPACITY:
-        viewProps->opacity = get<Float>(animatedProp);
-        break;
-
-      case WIDTH:
-        viewProps->yogaStyle.setDimension(
-            yoga::Dimension::Width, get<yoga::Style::SizeLength>(animatedProp));
-        break;
-
-      case HEIGHT:
-        viewProps->yogaStyle.setDimension(
-            yoga::Dimension::Height,
-            get<yoga::Style::SizeLength>(animatedProp));
-        break;
-
-      case BORDER_RADII:
-        viewProps->borderRadii = get<CascadedBorderRadii>(animatedProp);
-        break;
-
-      case FLEX:
-        viewProps->yogaStyle.setFlex(get<yoga::FloatOptional>(animatedProp));
-        break;
-
-      case TRANSFORM:
-        viewProps->transform = get<Transform>(animatedProp);
-        break;
-    }
+    cloneProp(*viewProps, *animatedProp);
   }
   return newProps;
 }
@@ -183,28 +158,10 @@ void AnimationBackend::commitUpdates(
 void AnimationBackend::synchronouslyUpdateProps(
     const std::unordered_map<Tag, AnimatedProps>& updates) {
   for (auto& [tag, animatedProps] : updates) {
-    auto dyn = animatedProps.rawProps ? animatedProps.rawProps->toDynamic()
-                                      : folly::dynamic::object();
-    for (auto& animatedProp : animatedProps.props) {
-      // TODO: We shouldn't repack it into dynamic, but for that a rewrite of
-      // directManipulationCallback_ is needed
-      switch (animatedProp->propName) {
-        case OPACITY:
-          dyn.insert("opacity", get<Float>(animatedProp));
-          break;
-
-        case BORDER_RADII:
-        case TRANSFORM:
-          // TODO: handle other things than opacity
-          break;
-
-        case WIDTH:
-        case HEIGHT:
-        case FLEX:
-          throw "Tried to synchronously update layout props";
-      }
-    }
-    directManipulationCallback_(tag, dyn);
+    // TODO: We shouldn't repack it into dynamic, but for that a rewrite of
+    // directManipulationCallback_ is needed
+    auto dyn = animationbackend::packAnimatedProps(animatedProps);
+    directManipulationCallback_(tag, std::move(dyn));
   }
 }
 
