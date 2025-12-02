@@ -94,7 +94,7 @@ React Native frameworks may pass an `unstable_experiments` option to `createDevM
 
 ### `unstable_experiments.enableStandaloneFuseboxShell`
 
-When `true`, the debugger frontend will launch in a standalone app shell (provided by the `@react-native/debugger-shell` package) rather than in a browser window. The standalone shell provides an improved experience and will become the default in a future version of React Native.
+Enables launching the debugger frontend in a standalone app shell (provided by the `@react-native/debugger-shell` package) rather than in a browser window. Since React Native 0.83 this defaults to `true`, and may be disabled by explicitly passing `false`.
 
 The shell is powered by a separate binary that is downloaded and cached in the background (immediately after the call to `createDevMiddleware`). If there is a problem downloading or invoking this binary for the first time, the debugger frontend will revert to launching in a browser window until the next time `createDevMiddleware` is called (typically, on the next dev server start).
 
