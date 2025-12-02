@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 
-public object ClipPathUtils {
+internal object ClipPathUtils {
 
   private fun resolveLengthPercentage(lengthPercentage: LengthPercentage, referenceDimension: Float): Float {
     return when (lengthPercentage.type) {
