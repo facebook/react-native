@@ -179,18 +179,13 @@ function main() {
 
   let start = performance.now();
 
-  let files /*: string[]*/ = [];
-  for (const searchGlob of config.include) {
-    // glob 7 doesn't support searchGlob as a string[]
-    files = files.concat(
-      globSync(searchGlob, {
-        ignore: config.exclude,
-        cwd: GLOB_PROJECT_ROOT,
-        expandDirectories: false,
-      }),
-    );
-  }
-  files = Array.from(new Set(files));
+  const files = globSync(config.include, {
+    // WARN: Unlike glob, this will exclude directories to be traversed too right now
+    // This means that glob patterns in here must match exact files only
+    ignore: config.exclude,
+    cwd: GLOB_PROJECT_ROOT,
+    expandDirectories: false,
+  });
 
   // Sort the files to make the output deterministic
   files.sort();
