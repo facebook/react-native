@@ -16,12 +16,13 @@
 namespace facebook::react::jsinspector_modern::tracing {
 
 enum class Category {
-  HiddenTimeline, /*     disabled-by-default-devtools.timeline    */
-  JavaScriptSampling, /* disabled-by-default-v8.cpu_profiler      */
-  RuntimeExecution, /*   v8.execute                               */
-  Timeline, /*           devtools.timeline                        */
-  UserTiming, /*         blink.user_timing                        */
-  Screenshot, /*         disabled-by-default-devtools.screenshot  */
+  HiddenTimeline, /*     disabled-by-default-devtools.timeline       */
+  JavaScriptSampling, /* disabled-by-default-v8.cpu_profiler         */
+  RuntimeExecution, /*   v8.execute                                  */
+  Timeline, /*           devtools.timeline                           */
+  UserTiming, /*         blink.user_timing                           */
+  Frame, /*              disabled-by-default-devtools.timeline.frame */
+  Screenshot, /*         disabled-by-default-devtools.screenshot     */
 };
 
 inline std::string tracingCategoryToString(const Category &category)
@@ -37,6 +38,8 @@ inline std::string tracingCategoryToString(const Category &category)
       return "disabled-by-default-v8.cpu_profiler";
     case Category::RuntimeExecution:
       return "v8.execute";
+    case Category::Frame:
+      return "disabled-by-default-devtools.timeline.frame";
     case Category::Screenshot:
       return "disabled-by-default-devtools.screenshot";
     default:
@@ -57,6 +60,8 @@ inline std::optional<Category> getTracingCategoryFromString(const std::string &s
     return Category::JavaScriptSampling;
   } else if (str == "v8.execute") {
     return Category::RuntimeExecution;
+  } else if (str == "disabled-by-default-devtools.timeline.frame") {
+    return Category::Frame;
   } else if (str == "disabled-by-default-devtools.screenshot") {
     return Category::Screenshot;
   } else {
