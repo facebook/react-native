@@ -163,7 +163,7 @@ class NewArchitectureHelper
             .uniq{ |p| p.path }
             .map{ |p| p.path }
 
-        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle", "build/", "DerivedData/"]
+        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle", "build/", "DerivedData/", ".framework", ".xcframework"]
         projectPaths.each do |projectPath|
             projectFolderPath = File.dirname(projectPath)
             infoPlistFiles = `find #{projectFolderPath} -name "Info.plist"`
@@ -179,8 +179,31 @@ class NewArchitectureHelper
                 end
                 next if should_skip
 
+                # Skip binary plist files to avoid UTF-8 encoding errors
+                begin
+                    # Check if file is readable as UTF-8 text
+                    File.open(infoPlistFile, 'r:UTF-8') do |file|
+                        # Try to read first few bytes to detect binary format
+                        first_bytes = file.read(6)
+                        # Binary plist files start with 'bplist'
+                        if first_bytes && first_bytes.start_with?('bplist')
+                            next
+                        end
+                    end
+                rescue Encoding::InvalidByteSequenceError, Encoding::UndefinedConversionError
+                    # Skip files that can't be read as UTF-8
+                    next
+                end
+                
                 # Read the file as a plist
-                info_plist = Xcodeproj::Plist.read_from_path(infoPlistFile)
+                begin
+                    info_plist = Xcodeproj::Plist.read_from_path(infoPlistFile)
+                rescue => e
+                    # Skip files that can't be parsed as plist
+                    Pod::UI.warn("Skipping Info.plist file that could not be parsed: #{infoPlistFile}")
+                    next
+                end
+                
                 # Check if it contains the RCTNewArchEnabled key
                 if info_plist["RCTNewArchEnabled"] and info_plist["RCTNewArchEnabled"] == new_arch_enabled
                     next
