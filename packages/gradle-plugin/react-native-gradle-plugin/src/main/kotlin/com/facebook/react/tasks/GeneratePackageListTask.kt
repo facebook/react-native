@@ -85,17 +85,13 @@ abstract class GeneratePackageListTask : DefaultTask() {
           val interpolated = interpolateDynamicValues(packageInstance, packageName)
 
           // Use FQCN to avoid class name collisions between different packages
+          val fqcn =
+              extractFqcnFromImport(interpolateDynamicValues(packageImportPath, packageName))
           val fqcnInstance =
-              if (packageImportPath != null) {
-                val fqcn =
-                    extractFqcnFromImport(interpolateDynamicValues(packageImportPath, packageName))
-                if (fqcn != null) {
-                  val className = fqcn.substringAfterLast('.')
-                  // Replace the short class name with FQCN in the instance
-                  interpolated.replace(Regex("\\b${Regex.escape(className)}\\b")) { fqcn }
-                } else {
-                  interpolated
-                }
+              if (fqcn != null) {
+                val className = fqcn.substringAfterLast('.')
+                // Replace the short class name with FQCN in the instance
+                interpolated.replace(Regex("\\b${Regex.escape(className)}\\b")) { fqcn }
               } else {
                 interpolated
               }
