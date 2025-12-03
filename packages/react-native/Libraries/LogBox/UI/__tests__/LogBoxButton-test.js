@@ -10,8 +10,8 @@
 
 import Text from '../../../Text/Text';
 
-const render = require('@react-native/jest-preset/jest/renderer');
 const LogBoxButton = require('../LogBoxButton').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 // Mock `TouchableWithoutFeedback` because we are interested in snapshotting the

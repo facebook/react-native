@@ -10,9 +10,9 @@
 
 'use strict';
 
-const render = require('@react-native/jest-preset/jest/renderer');
 const View = require('../../Components/View/View').default;
 const Modal = require('../Modal').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 describe('Modal', () => {

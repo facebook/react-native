@@ -14,8 +14,8 @@ import LogBoxInspectorStackFrames, {
   getCollapseMessage,
 } from '../LogBoxInspectorStackFrames';
 
-const render = require('@react-native/jest-preset/jest/renderer');
 const LogBoxLog = require('../../Data/LogBoxLog').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 // Mock `LogBoxInspectorSection` because we are interested in snapshotting the

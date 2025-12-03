@@ -15,9 +15,9 @@ import NativeImageLoaderIOS from '../NativeImageLoaderIOS';
 import * as React from 'react';
 import {act, create} from 'react-test-renderer';
 
-const render = require('@react-native/jest-preset/jest/renderer');
 const Image = require('../Image').default;
 const ImageInjection = require('../ImageInjection');
+const render = require('@react-native/jest-preset/jest/renderer');
 
 describe('Image', () => {
   it('should render as <Image> when mocked', async () => {

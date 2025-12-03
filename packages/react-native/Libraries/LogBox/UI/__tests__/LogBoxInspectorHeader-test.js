@@ -10,8 +10,8 @@
 
 'use strict';
 
-const render = require('@react-native/jest-preset/jest/renderer');
 const LogBoxInspectorHeader = require('../LogBoxInspectorHeader').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 // Mock `LogBoxInspectorHeaderButton` because we are interested in snapshotting

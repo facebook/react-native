@@ -10,11 +10,11 @@
 
 'use strict';
 
-const render = require('@react-native/jest-preset/jest/renderer');
 const LogBoxLog = require('../Data/LogBoxLog').default;
 const {
   _LogBoxNotificationContainer: LogBoxNotificationContainer,
 } = require('../LogBoxNotificationContainer');
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 // Mock `LogBoxLogNotification` because we are interested in snapshotting the

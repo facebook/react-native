@@ -10,10 +10,14 @@
 
 import * as React from 'react';
 
-const {create, unmount, update} = require('@react-native/jest-preset/jest/renderer');
 const {PlatformColor} = require('../../StyleSheet/PlatformColorValueTypes');
 let Animated = require('../Animated').default;
 const AnimatedProps = require('../nodes/AnimatedProps').default;
+const {
+  create,
+  unmount,
+  update,
+} = require('@react-native/jest-preset/jest/renderer');
 const TestRenderer = require('react-test-renderer');
 
 // WORKAROUND: `jest.runAllTicks` skips tasks scheduled w/ `queueMicrotask`.

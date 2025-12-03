@@ -12,9 +12,9 @@
 
 jest.disableAutomock();
 
-const {create} = require('@react-native/jest-preset/jest/renderer');
 const View = require('../../Components/View/View').default;
 const Image = require('../Image').default;
+const {create} = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 it('renders assets based on relative path', async () => {

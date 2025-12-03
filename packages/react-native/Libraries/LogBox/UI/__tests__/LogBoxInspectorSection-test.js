@@ -10,8 +10,8 @@
 
 import Text from '../../../Text/Text';
 
-const render = require('@react-native/jest-preset/jest/renderer');
 const LogBoxInspectorSection = require('../LogBoxInspectorSection').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 describe('LogBoxInspectorSection', () => {

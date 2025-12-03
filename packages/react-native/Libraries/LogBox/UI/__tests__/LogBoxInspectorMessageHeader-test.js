@@ -10,9 +10,9 @@
 
 'use strict';
 
-const render = require('@react-native/jest-preset/jest/renderer');
 const LogBoxInspectorMessageHeader =
   require('../LogBoxInspectorMessageHeader').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 // Mock `LogBoxMessage` because we are interested in snapshotting the
