@@ -234,8 +234,6 @@ class GeneratePackageListTaskTest {
             import java.util.Arrays;
             import java.util.ArrayList;
 
-            
-
             @SuppressWarnings("deprecation")
             public class PackageList {
               private Application application;
@@ -310,8 +308,6 @@ class GeneratePackageListTaskTest {
             import com.facebook.react.shell.MainReactPackage;
             import java.util.Arrays;
             import java.util.ArrayList;
-
-            
 
             @SuppressWarnings("deprecation")
             public class PackageList {

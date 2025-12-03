@@ -119,9 +119,7 @@ abstract class GeneratePackageListTask : DefaultTask() {
   }
 
   internal fun composeFileContent(packageClassInstance: String): String =
-      generatedFileContentsTemplate
-          .replace("{{ packageImports }}", "")
-          .replace("{{ packageClassInstances }}", packageClassInstance)
+      generatedFileContentsTemplate.replace("{{ packageClassInstances }}", packageClassInstance)
 
   companion object {
     const val GENERATED_FILENAME = "com/facebook/react/PackageList.java"
@@ -164,8 +162,6 @@ abstract class GeneratePackageListTask : DefaultTask() {
         import com.facebook.react.shell.MainReactPackage;
         import java.util.Arrays;
         import java.util.ArrayList;
-
-        {{ packageImports }}
 
         @SuppressWarnings("deprecation")
         public class PackageList {
