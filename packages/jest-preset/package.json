@@ -15,7 +15,7 @@
   "engines": {
     "node": ">= 20.19.4"
   },
-  "main": "index.js",
+  "main": "jest-preset.js",
   "files": [
     "jest",
     "index.js",
