@@ -138,6 +138,23 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                    completion:(void (^)(void))completion
 {
   UIViewController *controller = [self reactViewController];
+  
+  // Walk up to find a controller whose view is actually in the window hierarchy
+  while (controller && !controller.view.window) {
+    controller = controller.parentViewController ?: controller.presentingViewController;
+  }
+
+  // If we still don't have a valid controller, try to get the root view controller
+  if (!controller || !controller.view.window) {
+    UIWindow *keyWindow = RCTKeyWindow();
+    controller = keyWindow.rootViewController;
+  }
+
+  // Now find the topmost presented view controller from this valid base
+  while (controller.presentedViewController) {
+    controller = controller.presentedViewController;
+  }
+
   [controller presentViewController:modalViewController animated:animated completion:completion];
 }
 
@@ -150,7 +167,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 - (void)ensurePresentedOnlyIfNeeded
 {
-  BOOL shouldBePresented = !_isPresented && _shouldPresent && self.window;
+  UIViewController *presentingVC = [self reactViewController];
+  BOOL shouldBePresented = !_isPresented && _shouldPresent && presentingVC != nil;
   if (shouldBePresented) {
     [self saveAccessibilityFocusedView];
     self.viewController.presentationController.delegate = self;
