@@ -12,12 +12,17 @@
 
 const deprecated = () => {
   throw new Error(
-    'react-native/jest-preset is deprecated, please use @react-native/jest-preset instead',
+    'react-native/jest-preset is deprecated.\n' +
+      'To continue using the React Native Jest preset, Install "@react-native/jest-preset" and optionally update Jest\'s "preset" configuration.',
   );
 };
 
 try {
   module.exports = require('@react-native/jest-preset');
-} catch {
-  deprecated();
+} catch (error) {
+  if (error.code === 'MODULE_NOT_FOUND') {
+    deprecated();
+  } else {
+    throw error;
+  }
 }
