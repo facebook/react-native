@@ -25,7 +25,7 @@ internal class FrameTimingsObserver(
 
   private val frameMetricsListener =
       Window.OnFrameMetricsAvailableListener { _, frameMetrics, _dropCount ->
-        val beginDrawingTimestamp = frameMetrics.getMetric(FrameMetrics.INTENDED_VSYNC_TIMESTAMP)
+        val beginDrawingTimestamp = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP)
         val commitTimestamp =
             beginDrawingTimestamp + frameMetrics.getMetric(FrameMetrics.INPUT_HANDLING_DURATION)
         +frameMetrics.getMetric(FrameMetrics.ANIMATION_DURATION)
