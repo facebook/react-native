@@ -13,6 +13,8 @@
 
 namespace facebook::react::jsinspector_modern::tracing {
 
+using FrameSequenceId = uint64_t;
+
 /**
  * A struct representing a sequence of frame timings that happened on the Host side.
  */
@@ -20,7 +22,7 @@ struct FrameTimingSequence {
   FrameTimingSequence() = delete;
 
   FrameTimingSequence(
-      uint64_t id,
+      FrameSequenceId id,
       ThreadId threadId,
       HighResTimeStamp beginDrawingTimestamp,
       HighResTimeStamp commitTimestamp,
@@ -38,7 +40,7 @@ struct FrameTimingSequence {
   /**
    * Unique ID of the sequence, used by Chrome DevTools Frontend to identify the events that form one sequence.
    */
-  uint64_t id;
+  FrameSequenceId id;
 
   /**
    * The ID of the native thread that is associated with the frame.

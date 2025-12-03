@@ -95,4 +95,22 @@ TEST_F(TracingTest, EmitsRecordedFrameTimingSequences) {
   EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "DrawFrame")));
 }
 
+TEST_F(TracingTest, EmitsScreenshotEventWhenScreenshotValuePassed) {
+  InSequence s;
+
+  startTracing({tracing::Category::Screenshot});
+  auto now = HighResTimeStamp::now();
+  page_->recordFrameTimings(
+      tracing::FrameTimingSequence(
+          1, // id
+          11, // threadId
+          now,
+          now + HighResDuration::fromNanoseconds(10),
+          now + HighResDuration::fromNanoseconds(50),
+          "base64EncodedScreenshotData"));
+
+  auto allTraceEvents = endTracingAndCollectEvents();
+  EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "Screenshot")));
+}
+
 } // namespace facebook::react::jsinspector_modern

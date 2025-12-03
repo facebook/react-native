@@ -6,6 +6,7 @@
  */
 
 #include "TraceEventGenerator.h"
+#include "Timing.h"
 #include "TracingCategory.h"
 
 namespace facebook::react::jsinspector_modern::tracing {
@@ -75,6 +76,29 @@ TraceEventGenerator::createFrameTimingsEvents(
   };
 
   return {std::move(beginEvent), std::move(commitEvent), std::move(drawEvent)};
+}
+
+/* static */ TraceEvent TraceEventGenerator::createScreenshotEvent(
+    FrameSequenceId frameSequenceId,
+    int sourceId,
+    std::string&& snapshot,
+    HighResTimeStamp expectedDisplayTime,
+    ProcessId processId,
+    ThreadId threadId) {
+  folly::dynamic args = folly::dynamic::object("snapshot", std::move(snapshot))(
+      "source_id", sourceId)("frame_sequence", frameSequenceId)(
+      "expected_display_time",
+      highResTimeStampToTracingClockTimeStamp(expectedDisplayTime));
+
+  return TraceEvent{
+      .name = "Screenshot",
+      .cat = {Category::Screenshot},
+      .ph = 'O',
+      .ts = expectedDisplayTime,
+      .pid = processId,
+      .tid = threadId,
+      .args = std::move(args),
+  };
 }
 
 }; // namespace facebook::react::jsinspector_modern::tracing
