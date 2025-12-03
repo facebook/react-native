@@ -22,7 +22,7 @@ namespace facebook::react::jsinspector_modern::tracing {
 
   return TraceEvent{
       .name = "SetLayerTreeId",
-      .cat = {Category::Timeline},
+      .cat = {Category::HiddenTimeline},
       .ph = 'I',
       .ts = timestamp,
       .pid = processId,
