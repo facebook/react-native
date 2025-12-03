@@ -1,5 +1,114 @@
 # Changelog
 
+## v0.83.0-rc.4
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Fixed `hermes-compiler` not being resolved correctly when your repo is set up as a monorepo using pnpm. ([e23e9add80](https://github.com/facebook/react-native/commit/e23e9add8080a0204221edd4d8cc5e2f1a2f621b) by [@tido64](https://github.com/tido64))
+- Ensure codegen CLI supports unspecified `--outputPath` argument and respects `codegenConfig.outputDir` configurations ([716303362a](https://github.com/facebook/react-native/commit/716303362aead08310e2101f15a319b64a602026) by [@kitten](https://github.com/kitten))
+- Fixed an `ENOENT` exception when a dependency does not export `package.json`, and your repo is set up as a monorepo using pnpm ([20550c45d2](https://github.com/facebook/react-native/commit/20550c45d276a9cb348116a24cddc20415449e0e) by [@tido64](https://github.com/tido64))
+
+#### Android specific
+
+- Revert removal of checking shared preferences for `debug_http_host`. ([2ac54881f3](https://github.com/facebook/react-native/commit/2ac54881f3967346faafa4e5a6bc3b9a68c29e46) by [@coado](https://github.com/coado))
+
+#### iOS specific
+
+- Fixed copying symbol bundles into correct slice folder ([ac31e96e49](https://github.com/facebook/react-native/commit/ac31e96e4925b3238ab548c91584a7e608a2e17c) by [@chrfalch](https://github.com/chrfalch))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.0-rc.4 ([c8dd7d4973](https://github.com/facebook/react-native/commit/c8dd7d4973791f9997dd134916f8aa4c90b4955f) by [@react-native-bot](https://github.com/react-native-bot))
+- Fix root gitignore, add remaining debugger-frontend assets ([83a3741c54](https://github.com/facebook/react-native/commit/83a3741c54ac5f6792d214a34235d38c31e1bb83) by [@huntie](https://github.com/huntie))
+- Update debugger-frontend from e1dd7af...7d3b734 ([fccbc53733](https://github.com/facebook/react-native/commit/fccbc537331f43d255f82b108e234a39771188a5) by [@huntie](https://github.com/huntie))
+- Bump Podfile.lock ([8713f2ab5f](https://github.com/facebook/react-native/commit/8713f2ab5fd2c8c8cdef69b8ec36286ea01376c6) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.83.0-rc.3 ([67e9b5743d](https://github.com/facebook/react-native/commit/67e9b5743de05cf9a09b8abcd53128a2b44aafb5) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.83.0-rc.3
 
 ### Fixed
