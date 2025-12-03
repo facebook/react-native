@@ -8,9 +8,8 @@
  * @format
  */
 
-import typeof TActivityIndicator from 'react-native/Libraries/Components/ActivityIndicator/ActivityIndicator';
-
 import typeof * as TmockComponent from '../mockComponent';
+import typeof TActivityIndicator from 'react-native/Libraries/Components/ActivityIndicator/ActivityIndicator';
 
 const mockComponent =
   jest.requireActual<TmockComponent>('../mockComponent').default;

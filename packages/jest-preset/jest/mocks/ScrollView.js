@@ -8,14 +8,14 @@
  * @format
  */
 
-import typeof TScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
-import type {ScrollViewNativeProps} from 'react-native/Libraries/Components/ScrollView/ScrollViewNativeComponentType';
 import typeof * as TmockComponent from '../mockComponent';
 import typeof * as TMockNativeMethods from '../MockNativeMethods';
+import typeof TScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import type {ScrollViewNativeProps} from 'react-native/Libraries/Components/ScrollView/ScrollViewNativeComponentType';
 
+import * as React from 'react';
 import View from 'react-native/Libraries/Components/View/View';
 import requireNativeComponent from 'react-native/Libraries/ReactNative/requireNativeComponent';
-import * as React from 'react';
 
 const mockComponent =
   jest.requireActual<TmockComponent>('../mockComponent').default;

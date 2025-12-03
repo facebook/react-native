@@ -8,9 +8,9 @@
  * @format
  */
 
-import typeof TText from 'react-native/Libraries/Text/Text';
 import typeof * as TmockComponent from '../mockComponent';
 import typeof * as TMockNativeMethods from '../MockNativeMethods';
+import typeof TText from 'react-native/Libraries/Text/Text';
 
 const mockComponent =
   jest.requireActual<TmockComponent>('../mockComponent').default;
