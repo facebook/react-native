@@ -29,9 +29,4 @@ target_link_libraries(jsinspector
         react_utils
 )
 target_compile_reactnative_options(jsinspector PRIVATE)
-if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
-  target_compile_options(jsinspector PRIVATE
-          -DREACT_NATIVE_DEBUGGER_ENABLED=1
-          -DREACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1
-  )
-endif ()
+

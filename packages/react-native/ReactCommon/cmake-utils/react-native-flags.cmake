@@ -32,4 +32,11 @@ function(target_compile_reactnative_options target_name scope)
   if(ANDROID)
     target_compile_definitions(${target_name} ${scope} RN_SERIALIZABLE_STATE)
   endif()
+  if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
+  # We enable REACT_NATIVE_DEBUGGER_ENABLED for Debug builds on the whole codebase.
+  target_compile_options(${target_name} ${scope}
+          -DREACT_NATIVE_DEBUGGER_ENABLED=1
+          -DREACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1
+  )
+endif ()
 endfunction()
