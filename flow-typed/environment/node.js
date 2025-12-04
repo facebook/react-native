@@ -1917,6 +1917,7 @@ type http$agentOptions = {
 declare class http$Agent<+SocketT = net$Socket> {
   constructor(options: http$agentOptions): void;
   destroy(): void;
+  // $FlowFixMe[incompatible-variance]
   freeSockets: {[name: string]: $ReadOnlyArray<SocketT>, ...};
   getName(options: {
     host: string,
@@ -1926,7 +1927,9 @@ declare class http$Agent<+SocketT = net$Socket> {
   }): string;
   maxFreeSockets: number;
   maxSockets: number;
+  // $FlowFixMe[incompatible-variance]
   requests: {[name: string]: $ReadOnlyArray<http$ClientRequest<SocketT>>, ...};
+  // $FlowFixMe[incompatible-variance]
   sockets: {[name: string]: $ReadOnlyArray<SocketT>, ...};
 }
 
