@@ -54,7 +54,7 @@ TracingAgent::~TracingAgent() {
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
     auto& inspector = getInspectorInstance();
-    if (inspector.getSystemState().registeredPagesCount > 1) {
+    if (inspector.getSystemState().registeredHostsCount > 1) {
       frontendChannel_(
           cdp::jsonError(
               req.id,
