@@ -12,20 +12,72 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Text, Button, Modal} from 'react-native';
+
+
+function Example() {
+  const [isOpen, setOpen] = React.useState(false);
+  const [isOpenTwo, setOpenTwo] = React.useState(false);
+  const openModal = () => setOpen(true);
+  const closeModal = () => setOpen(false);
+
+  const openModalTwo = () => setOpenTwo(true);
+  const closeModalTwo = () => setOpenTwo(false);
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: 'lightblue',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Text>Take Over</Text>
+      <Button title="open modal" onPress={openModal} />
+      <Button title="open modal two" onPress={openModalTwo} />
+      <Modal visible={isOpenTwo} animationType="slide">
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'lightgreen',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Text>Hello second modal</Text>
+          <Button title="dismiss" onPress={closeModalTwo} />
+        </View>
+      </Modal>
+      <Modal visible={isOpen} animationType="slide">
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'lightyellow',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Text>Hello world again</Text>
+          <Button title="dismiss" onPress={closeModal} />
+          <Button title="open second modal" onPress={openModalTwo} />
+        </View>
+      </Modal>
+
+    </View>
+  );
+}
 
 function Playground() {
   return (
     <View style={styles.container}>
-      <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
-      </RNTesterText>
+      <Example />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 10,
   },
 });
