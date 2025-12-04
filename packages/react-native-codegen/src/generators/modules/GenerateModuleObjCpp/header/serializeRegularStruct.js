@@ -87,8 +87,9 @@ function toObjCType(
       return 'NSString *';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *';
+    case 'UnionTypeAnnotation':
+      // TODO(T247151345): Implement proper heterogeneous union support. This is unsafe.
+      return 'NSObject *';
     case 'NumberTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -173,8 +174,10 @@ function toObjCValue(
       return RCTBridgingTo('String');
     case 'StringLiteralTypeAnnotation':
       return RCTBridgingTo('String');
-    case 'StringLiteralUnionTypeAnnotation':
-      return RCTBridgingTo('String');
+    case 'UnionTypeAnnotation':
+      return !isRequired
+        ? `!RCTNilIfNull(${value}) ? std::optional<NSObject *>{} : std::optional<NSObject *>(${value})`
+        : value;
     case 'NumberTypeAnnotation':
       return RCTBridgingTo('Double');
     case 'NumberLiteralTypeAnnotation':

@@ -318,10 +318,8 @@ export interface StringLiteralTypeAnnotation {
   readonly value: string;
 }
 
-export interface StringLiteralUnionTypeAnnotation {
-  readonly type: 'StringLiteralUnionTypeAnnotation';
-  readonly types: StringLiteralTypeAnnotation[];
-}
+export type StringLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<StringLiteralTypeAnnotation>;
 
 export interface NativeModuleNumberTypeAnnotation {
   readonly type: 'NumberTypeAnnotation';
@@ -383,11 +381,6 @@ export interface NativeModulePromiseTypeAnnotation {
   readonly elementType: Nullable<NativeModuleBaseTypeAnnotation> | VoidTypeAnnotation;
 }
 
-export type UnionTypeAnnotationMemberType =
-  | 'NumberTypeAnnotation'
-  | 'ObjectTypeAnnotation'
-  | 'StringTypeAnnotation';
-
 export type NativeModuleUnionTypeAnnotationMemberType =
   | NativeModuleObjectTypeAnnotation
   | StringLiteralTypeAnnotation
@@ -397,10 +390,8 @@ export type NativeModuleUnionTypeAnnotationMemberType =
   | StringTypeAnnotation
   | NumberTypeAnnotation;
 
-export interface NativeModuleUnionTypeAnnotation {
-  readonly type: 'UnionTypeAnnotation';
-  readonly memberType: UnionTypeAnnotationMemberType;
-}
+export type NativeModuleUnionTypeAnnotation =
+  UnionTypeAnnotation<NativeModuleUnionTypeAnnotationMemberType>;
 
 export interface NativeModuleMixedTypeAnnotation {
   readonly type: 'MixedTypeAnnotation';

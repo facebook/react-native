@@ -18,7 +18,7 @@ import type {
   SchemaType,
 } from '../../CodegenSchema';
 
-const {indent, toSafeCppString} = require('../Utils');
+const {indent, parseValidUnionType, toSafeCppString} = require('../Utils');
 const {
   generateEventStructName,
   getCppArrayTypeForAnnotation,
@@ -118,17 +118,21 @@ function getNativeTypeFromAnnotation(
   eventProperty: NamedShape<EventTypeAnnotation>,
   nameParts: $ReadOnlyArray<string>,
 ): string {
-  const {type} = eventProperty.typeAnnotation;
-
-  switch (type) {
+  const {typeAnnotation} = eventProperty;
+  switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
     case 'StringTypeAnnotation':
     case 'Int32TypeAnnotation':
     case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'MixedTypeAnnotation':
-      return getCppTypeForAnnotation(type);
-    case 'StringLiteralUnionTypeAnnotation':
+      return getCppTypeForAnnotation(typeAnnotation.type);
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      if (validUnionType !== 'string') {
+        throw new Error('Invalid since it is a union of non strings');
+      }
+      return generateEventStructName([...nameParts, eventProperty.name]);
     case 'ObjectTypeAnnotation':
       return generateEventStructName([...nameParts, eventProperty.name]);
     case 'ArrayTypeAnnotation':
@@ -143,8 +147,10 @@ function getNativeTypeFromAnnotation(
         eventProperty.name,
       ]);
     default:
-      (type: empty);
-      throw new Error(`Received invalid event property type ${type}`);
+      (typeAnnotation.type: empty);
+      throw new Error(
+        `Received invalid event property type ${typeAnnotation.type}`,
+      );
   }
 }
 function generateEnum(
@@ -188,7 +194,11 @@ function handleGenerateStructForArray(
       nameParts.concat([name]),
       nullthrows(elementType.properties),
     );
-  } else if (elementType.type === 'StringLiteralUnionTypeAnnotation') {
+  } else if (elementType.type === 'UnionTypeAnnotation') {
+    const validUnionType = parseValidUnionType(elementType);
+    if (validUnionType !== 'string') {
+      throw new Error('Invalid since it is a union of non strings');
+    }
     generateEnum(
       structs,
       elementType.types.map(literal => literal.value),
@@ -251,7 +261,11 @@ function generateStruct(
           nullthrows(typeAnnotation.properties),
         );
         return;
-      case 'StringLiteralUnionTypeAnnotation':
+      case 'UnionTypeAnnotation':
+        const validUnionType = parseValidUnionType(typeAnnotation);
+        if (validUnionType !== 'string') {
+          throw new Error('Invalid since it is a union of non strings');
+        }
         generateEnum(
           structs,
           typeAnnotation.types.map(literal => literal.value),

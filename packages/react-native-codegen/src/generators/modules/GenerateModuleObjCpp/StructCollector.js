@@ -23,11 +23,11 @@ import type {
   NativeModuleNumberTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
+  NativeModuleUnionTypeAnnotation,
   Nullable,
   NumberLiteralTypeAnnotation,
   ReservedTypeAnnotation,
   StringLiteralTypeAnnotation,
-  StringLiteralUnionTypeAnnotation,
   StringTypeAnnotation,
 } from '../../../CodegenSchema';
 import type {AliasResolver} from '../Utils';
@@ -36,7 +36,11 @@ const {
   unwrapNullable,
   wrapNullable,
 } = require('../../../parsers/parsers-commons');
-const {capitalize} = require('../../Utils');
+const {
+  HeterogeneousUnionError,
+  capitalize,
+  parseValidUnionType,
+} = require('../../Utils');
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 
@@ -63,7 +67,7 @@ export type StructProperty = $ReadOnly<{
 export type StructTypeAnnotation =
   | StringTypeAnnotation
   | StringLiteralTypeAnnotation
-  | StringLiteralUnionTypeAnnotation
+  | NativeModuleUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NumberLiteralTypeAnnotation
   | BooleanLiteralTypeAnnotation
@@ -129,27 +133,38 @@ class StructCollector {
       case 'MixedTypeAnnotation':
         throw new Error('Mixed types are unsupported in structs');
       case 'UnionTypeAnnotation':
-        switch (typeAnnotation.memberType) {
-          case 'StringTypeAnnotation':
-            return wrapNullable(nullable, {
-              type: 'StringTypeAnnotation',
-            });
-          case 'NumberTypeAnnotation':
-            return wrapNullable(nullable, {
-              type: 'NumberTypeAnnotation',
-            });
-          case 'ObjectTypeAnnotation':
-            // This isn't smart enough to actually know how to generate the
-            // options on the native side. So we just treat it as an unknown object type
-            return wrapNullable(nullable, {
-              type: 'GenericObjectTypeAnnotation',
-            });
-          default:
-            (typeAnnotation.memberType: empty);
-            throw new Error(
-              'Union types are unsupported in structs' +
-                JSON.stringify(typeAnnotation),
-            );
+        try {
+          const validUnionType = parseValidUnionType(typeAnnotation);
+          switch (validUnionType) {
+            case 'boolean':
+              return wrapNullable(nullable, {
+                type: 'BooleanTypeAnnotation',
+              });
+            case 'number':
+              return wrapNullable(nullable, {
+                type: 'NumberTypeAnnotation',
+              });
+            case 'object':
+              // This isn't smart enough to actually know how to generate the
+              // options on the native side. So we just treat it as an unknown object type
+              return wrapNullable(nullable, {
+                type: 'GenericObjectTypeAnnotation',
+              });
+            case 'string':
+              return wrapNullable(nullable, {
+                type: 'StringTypeAnnotation',
+              });
+            default:
+              (validUnionType: empty);
+              throw new Error(`Unsupported union member types`);
+          }
+        } catch (ex) {
+          // TODO(T247151345): Implement proper heterogeneous union support.
+          if (ex instanceof HeterogeneousUnionError) {
+            return wrapNullable(nullable, typeAnnotation);
+          }
+
+          throw ex;
         }
       default: {
         return wrapNullable(nullable, typeAnnotation);

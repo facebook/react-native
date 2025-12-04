@@ -2353,7 +2353,11 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   optional: false,
                   typeAnnotation: {
                     type: 'UnionTypeAnnotation',
-                    memberType: 'NumberTypeAnnotation',
+                    types: [
+                      {
+                        type: 'NumberTypeAnnotation',
+                      },
+                    ],
                   },
                 },
                 {
@@ -2361,14 +2365,18 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   optional: false,
                   typeAnnotation: {
                     type: 'UnionTypeAnnotation',
-                    memberType: 'StringTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringTypeAnnotation',
+                      },
+                    ],
                   },
                 },
                 {
                   name: 'y-literal',
                   optional: false,
                   typeAnnotation: {
-                    type: 'StringLiteralUnionTypeAnnotation',
+                    type: 'UnionTypeAnnotation',
                     types: [
                       {
                         type: 'StringLiteralTypeAnnotation',
@@ -2386,7 +2394,11 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   optional: false,
                   typeAnnotation: {
                     type: 'UnionTypeAnnotation',
-                    memberType: 'ObjectTypeAnnotation',
+                    types: [
+                      {
+                        type: 'ObjectTypeAnnotation',
+                      },
+                    ],
                   },
                 },
               ],
@@ -2656,7 +2668,20 @@ const UNION_MODULE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'UnionTypeAnnotation',
-                memberType: 'ObjectTypeAnnotation',
+                types: [
+                  {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        name: 'low',
+                        optional: false,
+                        typeAnnotation: {
+                          type: 'StringTypeAnnotation',
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
               params: [
                 {
@@ -2664,7 +2689,15 @@ const UNION_MODULE: SchemaType = {
                   optional: false,
                   typeAnnotation: {
                     type: 'UnionTypeAnnotation',
-                    memberType: 'NumberTypeAnnotation',
+                    types: [
+                      {
+                        type: 'NumberTypeAnnotation',
+                      },
+                      {
+                        type: 'NumberLiteralTypeAnnotation',
+                        value: 1,
+                      },
+                    ],
                   },
                 },
                 {
@@ -2672,7 +2705,15 @@ const UNION_MODULE: SchemaType = {
                   optional: false,
                   typeAnnotation: {
                     type: 'UnionTypeAnnotation',
-                    memberType: 'NumberTypeAnnotation',
+                    types: [
+                      {
+                        type: 'NumberTypeAnnotation',
+                      },
+                      {
+                        type: 'NumberLiteralTypeAnnotation',
+                        value: 2.88,
+                      },
+                    ],
                   },
                 },
                 {
@@ -2680,7 +2721,20 @@ const UNION_MODULE: SchemaType = {
                   optional: false,
                   typeAnnotation: {
                     type: 'UnionTypeAnnotation',
-                    memberType: 'ObjectTypeAnnotation',
+                    types: [
+                      {
+                        type: 'ObjectTypeAnnotation',
+                        properties: [
+                          {
+                            name: 'low',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'StringTypeAnnotation',
+                            },
+                          },
+                        ],
+                      },
+                    ],
                   },
                 },
                 {
@@ -2688,14 +2742,22 @@ const UNION_MODULE: SchemaType = {
                   optional: false,
                   typeAnnotation: {
                     type: 'UnionTypeAnnotation',
-                    memberType: 'StringTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'One',
+                      },
+                      {
+                        type: 'StringTypeAnnotation',
+                      },
+                    ],
                   },
                 },
                 {
                   name: 'chooseStringLiteral',
                   optional: false,
                   typeAnnotation: {
-                    type: 'StringLiteralUnionTypeAnnotation',
+                    type: 'UnionTypeAnnotation',
                     types: [
                       {
                         type: 'StringLiteralTypeAnnotation',
