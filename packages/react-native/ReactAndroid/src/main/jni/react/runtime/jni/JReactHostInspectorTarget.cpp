@@ -297,9 +297,8 @@ void JReactHostInspectorTarget::recordFrameTimings(
   inspectorTarget_->recordFrameTimings({
       frameTimingSequence->getId(),
       frameTimingSequence->getThreadId(),
-      frameTimingSequence->getBeginDrawingTimestamp(),
-      frameTimingSequence->getCommitTimestamp(),
-      frameTimingSequence->getEndDrawingTimestamp(),
+      frameTimingSequence->getBeginTimestamp(),
+      frameTimingSequence->getEndTimestamp(),
       frameTimingSequence->getScreenshot(),
   });
 }

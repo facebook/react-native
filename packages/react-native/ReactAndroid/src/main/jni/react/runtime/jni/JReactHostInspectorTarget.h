@@ -47,23 +47,16 @@ struct JFrameTimingSequence : public jni::JavaClass<JFrameTimingSequence> {
     return static_cast<uint64_t>(getFieldValue(field));
   }
 
-  HighResTimeStamp getBeginDrawingTimestamp() const
+  HighResTimeStamp getBeginTimestamp() const
   {
-    auto field = javaClassStatic()->getField<jlong>("beginDrawingTimestamp");
+    auto field = javaClassStatic()->getField<jlong>("beginTimestamp");
     return HighResTimeStamp::fromChronoSteadyClockTimePoint(
         std::chrono::steady_clock::time_point(std::chrono::nanoseconds(getFieldValue(field))));
   }
 
-  HighResTimeStamp getCommitTimestamp() const
+  HighResTimeStamp getEndTimestamp() const
   {
-    auto field = javaClassStatic()->getField<jlong>("commitTimestamp");
-    return HighResTimeStamp::fromChronoSteadyClockTimePoint(
-        std::chrono::steady_clock::time_point(std::chrono::nanoseconds(getFieldValue(field))));
-  }
-
-  HighResTimeStamp getEndDrawingTimestamp() const
-  {
-    auto field = javaClassStatic()->getField<jlong>("endDrawingTimestamp");
+    auto field = javaClassStatic()->getField<jlong>("endTimestamp");
     return HighResTimeStamp::fromChronoSteadyClockTimePoint(
         std::chrono::steady_clock::time_point(std::chrono::nanoseconds(getFieldValue(field))));
   }

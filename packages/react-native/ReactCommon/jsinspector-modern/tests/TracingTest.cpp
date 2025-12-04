@@ -66,7 +66,6 @@ TEST_F(TracingTest, RecordsFrameTimings) {
       1, // id
       11, // threadId
       now,
-      now + HighResDuration::fromNanoseconds(10),
       now + HighResDuration::fromNanoseconds(50));
 
   page_->recordFrameTimings(frameTimingSequence);
@@ -86,12 +85,10 @@ TEST_F(TracingTest, EmitsRecordedFrameTimingSequences) {
           1, // id
           11, // threadId
           now,
-          now + HighResDuration::fromNanoseconds(10),
           now + HighResDuration::fromNanoseconds(50)));
 
   auto allTraceEvents = endTracingAndCollectEvents();
   EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "BeginFrame")));
-  EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "Commit")));
   EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "DrawFrame")));
 }
 
@@ -105,7 +102,6 @@ TEST_F(TracingTest, EmitsScreenshotEventWhenScreenshotValuePassed) {
           1, // id
           11, // threadId
           now,
-          now + HighResDuration::fromNanoseconds(10),
           now + HighResDuration::fromNanoseconds(50),
           "base64EncodedScreenshotData"));
 

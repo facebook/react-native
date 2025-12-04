@@ -32,13 +32,12 @@ namespace facebook::react::jsinspector_modern::tracing {
   };
 }
 
-/* static */ std::tuple<TraceEvent, TraceEvent, TraceEvent>
+/* static */ std::pair<TraceEvent, TraceEvent>
 TraceEventGenerator::createFrameTimingsEvents(
     uint64_t sequenceId,
     int layerTreeId,
-    HighResTimeStamp beginDrawingTimestamp,
-    HighResTimeStamp commitTimestamp,
-    HighResTimeStamp endDrawingTimestamp,
+    HighResTimeStamp beginTimestamp,
+    HighResTimeStamp endTimestamp,
     ProcessId processId,
     ThreadId threadId) {
   folly::dynamic args = folly::dynamic::object("frameSeqId", sequenceId)(
@@ -48,17 +47,7 @@ TraceEventGenerator::createFrameTimingsEvents(
       .name = "BeginFrame",
       .cat = {Category::Frame},
       .ph = 'I',
-      .ts = beginDrawingTimestamp,
-      .pid = processId,
-      .s = 't',
-      .tid = threadId,
-      .args = args,
-  };
-  auto commitEvent = TraceEvent{
-      .name = "Commit",
-      .cat = {Category::Frame},
-      .ph = 'I',
-      .ts = commitTimestamp,
+      .ts = beginTimestamp,
       .pid = processId,
       .s = 't',
       .tid = threadId,
@@ -68,14 +57,14 @@ TraceEventGenerator::createFrameTimingsEvents(
       .name = "DrawFrame",
       .cat = {Category::Frame},
       .ph = 'I',
-      .ts = endDrawingTimestamp,
+      .ts = endTimestamp,
       .pid = processId,
       .s = 't',
       .tid = threadId,
       .args = args,
   };
 
-  return {std::move(beginEvent), std::move(commitEvent), std::move(drawEvent)};
+  return {std::move(beginEvent), std::move(drawEvent)};
 }
 
 /* static */ TraceEvent TraceEventGenerator::createScreenshotEvent(
