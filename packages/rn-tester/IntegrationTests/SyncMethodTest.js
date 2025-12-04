@@ -46,4 +46,4 @@ function SyncMethodTest(): React.Node {
   return <View />;
 }
 
-export default SyncMethodTest;
+module.exports = SyncMethodTest;
