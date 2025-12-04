@@ -23,7 +23,7 @@ class BundleWrapper : public jni::HybridClass<BundleWrapper> {
 
   static void registerNatives();
 
-  [[nodiscard]] const std::shared_ptr<const BigStringBuffer> getBundle() const;
+  [[nodiscard]] std::shared_ptr<const JSBigString> getBundle() const;
 
  private:
   static jni::local_ref<BundleWrapper::jhybriddata> initHybridFromFile(
@@ -37,9 +37,9 @@ class BundleWrapper : public jni::HybridClass<BundleWrapper> {
 
   friend HybridBase;
 
-  explicit BundleWrapper(const std::shared_ptr<const BigStringBuffer>& bundle);
+  explicit BundleWrapper(const std::shared_ptr<const JSBigString>& bundle);
 
-  const std::shared_ptr<const BigStringBuffer> bundle_;
+  const std::shared_ptr<const JSBigString> bundle_;
 };
 
 } // namespace facebook::react

@@ -79,6 +79,7 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
+                  bundleProvider:(RCTBundleProvider *)bundleProvider
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget

@@ -10,16 +10,16 @@
 using namespace facebook::react;
 
 @implementation RCTBundleProvider{
-  std::shared_ptr<const BigStringBuffer> _bundleBuffer;
+  std::shared_ptr<const JSBigString> _bundle;
   NSString *_sourceURL;
 }
 
-- (std::shared_ptr<const BigStringBuffer>)getBundle {
-  return _bundleBuffer;
+- (std::shared_ptr<const JSBigString>)getBundle {
+  return _bundle;
 }
 
-- (void)setBundle:(std::shared_ptr<const BigStringBuffer>)bundle {
-  _bundleBuffer = bundle;
+- (void)setBundle:(std::shared_ptr<const JSBigString>)bundle {
+  _bundle = bundle;
 }
 
 - (NSString *)getSourceURL {

@@ -6,7 +6,10 @@
  */
 
 #import <Foundation/Foundation.h>
+
+#ifdef __cplusplus
 #import <jsireact/JSIExecutor.h>
+#endif // __cplusplus
 
 @class NSBundleWrapper;
 
@@ -15,7 +18,11 @@
  */
 @interface RCTBundleProvider : NSObject
 
-- (std::shared_ptr<const facebook::react::BigStringBuffer>)getBundle;
+#ifdef __cplusplus
+
+- (std::shared_ptr<const facebook::react::JSBigString>)getBundle;
 - (NSString *)getSourceURL;
+
+#endif // __cplusplus
 
 @end

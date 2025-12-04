@@ -228,7 +228,7 @@ std::string simpleBasename(const std::string& path) {
  * JSThread, preferably via the runtimeExecutor_.
  */
 void ReactInstance::loadScript(
-    const std::shared_ptr<const BigStringBuffer>& script,
+    const std::shared_ptr<const JSBigString>& script,
     const std::string& sourceURL,
     std::function<void(jsi::Runtime& runtime)>&& beforeLoad,
     std::function<void(jsi::Runtime& runtime)>&& afterLoad) {

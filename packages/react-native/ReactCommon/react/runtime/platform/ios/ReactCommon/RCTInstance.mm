@@ -73,7 +73,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 }
 
 @interface RCTBundleProvider : NSObject
-- (void)setBundle:(std::shared_ptr<const BigStringBuffer>)bundleBuffer;
+- (void)setBundle:(std::shared_ptr<const JSBigString>)bundleBuffer;
 - (void)setSourceURL:(NSString *)sourceURL;
 @end
 
@@ -146,6 +146,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   return [self initWithDelegate:delegate
                 jsRuntimeFactory:jsRuntimeFactory
                    bundleManager:bundleManager
+                  bundleProvider:bundleProvider
       turboModuleManagerDelegate:tmmDelegate
                   moduleRegistry:moduleRegistry
            parentInspectorTarget:parentInspectorTarget
@@ -156,6 +157,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
+                  bundleProvider:(RCTBundleProvider *)bundleProvider
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
@@ -610,11 +612,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     return;
   }
 
-  auto script = std::make_unique<NSDataBigString>(source.data);
-  const auto scriptBuffer = std::make_shared<const BigStringBuffer>(std::move(script));
+  auto script = std::make_shared<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
 
-  [_bundleProvider setBundle:scriptBuffer];
+  [_bundleProvider setBundle:script];
   [_bundleProvider setSourceURL:@(url)];
 
   auto beforeLoad = [waitUntilModuleSetupComplete = self->_waitUntilModuleSetupComplete](jsi::Runtime &_) {
@@ -625,7 +626,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto afterLoad = [](jsi::Runtime &_) {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
   };
-  _reactInstance->loadScript(scriptBuffer, url, beforeLoad, afterLoad);
+  _reactInstance->loadScript(script, url, beforeLoad, afterLoad);
 }
 
 - (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime

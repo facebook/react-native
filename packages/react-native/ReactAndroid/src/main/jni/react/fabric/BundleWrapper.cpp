@@ -18,8 +18,7 @@ jni::local_ref<BundleWrapper::jhybriddata> BundleWrapper::initHybridFromFile(
   std::unique_ptr<const JSBigFileString> script;
   RecoverableError::runRethrowingAsRecoverable<std::system_error>(
       [&fileName, &script]() { script = JSBigFileString::fromPath(fileName); });
-  auto bundle = std::make_shared<BigStringBuffer>(std::move(script));
-  return makeCxxInstance(bundle);
+  return makeCxxInstance(std::move(script));
 }
 
 jni::local_ref<BundleWrapper::jhybriddata> BundleWrapper::initHybridFromAssets(
@@ -28,15 +27,14 @@ jni::local_ref<BundleWrapper::jhybriddata> BundleWrapper::initHybridFromAssets(
     const std::string& sourceURL) {
   auto manager = extractAssetManager(assetManager);
   auto script = loadScriptFromAssets(manager, sourceURL);
-  auto bundle = std::make_shared<BigStringBuffer>(std::move(script));
-  return makeCxxInstance(bundle);
+  return makeCxxInstance(std::move(script));
 }
 
 BundleWrapper::BundleWrapper(
-    const std::shared_ptr<const BigStringBuffer>& bundle)
+    const std::shared_ptr<const JSBigString>& bundle)
     : bundle_(bundle) {}
 
-const std::shared_ptr<const BigStringBuffer> BundleWrapper::getBundle() const {
+std::shared_ptr<const JSBigString> BundleWrapper::getBundle() const {
   return bundle_;
 }
 
