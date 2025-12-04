@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<46e1f708d91d5ec45c866b8192192e72>>
+ * @generated SignedSource<<58cb08dbd188ec64d3738f548567bcde>>
  */
 
 /**
@@ -136,6 +136,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableWebPerformanceAPIsByDefault(): Boolean = true
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
+
+  override fun fixTextClippingAndroid15useBoundsForWidth(): Boolean = false
 
   override fun fuseboxAssertSingleHostState(): Boolean = true
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1732204fe9acf34158e7f9e4aec04161>>
+ * @generated SignedSource<<b16ca6ca4e47b347e4f5cb8555d3308f>>
  * @flow strict
  * @noformat
  */
@@ -108,6 +108,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableVirtualViewWindowFocusDetection: Getter<boolean>,
   enableWebPerformanceAPIsByDefault: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
+  fixTextClippingAndroid15useBoundsForWidth: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
@@ -454,6 +455,10 @@ export const enableWebPerformanceAPIsByDefault: Getter<boolean> = createNativeFl
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
+/**
+ * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
+ */
+export const fixTextClippingAndroid15useBoundsForWidth: Getter<boolean> = createNativeFlagGetter('fixTextClippingAndroid15useBoundsForWidth', false);
 /**
  * Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.
  */

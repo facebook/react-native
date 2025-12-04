@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<502fa8935abd547231be7980d768b817>>
+ * @generated SignedSource<<4f6913d92515fd817a167ef2a505c777>>
  */
 
 /**
@@ -323,6 +323,11 @@ class ReactNativeFeatureFlags {
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+
+  /**
+   * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
+   */
+  RN_EXPORT static bool fixTextClippingAndroid15useBoundsForWidth();
 
   /**
    * Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.
