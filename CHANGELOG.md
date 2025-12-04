@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.83.0-rc.4
+
+### Fixed
+
+- **Codegen**: Ensure codegen CLI supports unspecified --outputPath argument and respects codegenConfig.outputDir configurations (https://github.com/facebook/react-native/commit/f8207d6c757552ddac472aa278d7dd56ad04fb7e by [@kitten](https://github.com/kitten))
+- Fixed an `ENOENT` exception when a dependency does not export `package.json`, and your repo is set up as a monorepo using pnpm (https://github.com/facebook/react-native/commit/ad5e2680c8e491d89d7544ffb2fff45190cd5ef6 by [@tido64](https://github.com/tido64))
+- Fixed `hermes-compiler` not being resolved correctly when your repo is set up as a monorepo using pnpm (https://github.com/facebook/react-native/commit/45281ba48fc17508539c0b881327ef8b4bf8e530 by [@tido64](https://github.com/tido64))
+- Fix loading bundle using `debug_http_host` preferences (https://github.com/facebook/react-native/commit/2ac54881f3967346faafa4e5a6bc3b9a68c29e46 by [@coado](https://github.com/coado))
+- Fixed copying symbol bundles into correct slice folder (https://github.com/facebook/react-native/commit/2bc6b0083237839b224d5427407d33cab3e2de6b by [@chrfalch](https://github.com/chrfalch))
+
+### Changed
+
+- **React Native DevTools**: Enable standalone app shell by default (https://github.com/facebook/react-native/commit/3341bb57b188d0e20ac6e9ebb1e8b1fbb6b26514 by [@huntie](https://github.com/huntie))
+- **React Native DevTools**: Add "What's new" highlight to welcome panel (https://github.com/facebook/react-native-devtools-frontend/pull/226 by [@huntie](https://github.com/huntie))
+
 ## v0.83.0-rc.3
 
 ### Fixed
