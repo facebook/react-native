@@ -58,7 +58,6 @@ class StubNativeMethodCallInvoker : public NativeMethodCallInvoker {
       .jsInvoker = nullptr,
       .nativeMethodCallInvoker = std::make_shared<StubNativeMethodCallInvoker>(),
       .isSyncModule = false,
-      .shouldVoidMethodsExecuteSync = true,
   };
   module_ = std::make_unique<ObjCTurboModule>(params);
 }

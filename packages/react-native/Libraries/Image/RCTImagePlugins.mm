@@ -13,24 +13,37 @@
 
 #import "RCTImagePlugins.h"
 
-#import <string>
-#import <unordered_map>
+#import <string_view>
 
-Class RCTImageClassProvider(const char *name) {
-  // Intentionally leak to avoid crashing after static destructors are run.
-  static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
-    {"GIFImageDecoder", RCTGIFImageDecoderCls},
-    {"ImageEditingManager", RCTImageEditingManagerCls},
-    {"ImageLoader", RCTImageLoaderCls},
-    {"ImageStoreManager", RCTImageStoreManagerCls},
-    {"LocalAssetImageLoader", RCTLocalAssetImageLoaderCls},
-  };
+using namespace std::literals;
 
-  auto p = sCoreModuleClassMap->find(name);
-  if (p != sCoreModuleClassMap->end()) {
-    auto classFunc = p->second;
-    return classFunc();
+Class RCTImageClassProvider(const char *name)
+{
+
+  if (name == "BundleAssetImageLoader"sv) {
+    return RCTBundleAssetImageLoaderCls();
   }
+
+  if (name == "GIFImageDecoder"sv) {
+    return RCTGIFImageDecoderCls();
+  }
+
+  if (name == "ImageEditingManager"sv) {
+    return RCTImageEditingManagerCls();
+  }
+
+  if (name == "ImageLoader"sv) {
+    return RCTImageLoaderCls();
+  }
+
+  if (name == "ImageStoreManager"sv) {
+    return RCTImageStoreManagerCls();
+  }
+
+  if (name == "LocalAssetImageLoader"sv) {
+    return RCTLocalAssetImageLoaderCls();
+  }
+
   return nil;
 }
 

@@ -347,8 +347,23 @@ internal class JavaMethodWrapper(
               if (jsArguments.isNull(atIndex)) {
                 null
               } else {
-                val id = jsArguments.getDouble(atIndex).toInt()
-                @Suppress("DEPRECATION") CallbackImpl(jsInstance, id)
+                object : Callback {
+                  private var invoked = false
+
+                  override fun invoke(vararg args: Any?) {
+                    if (invoked) {
+                      error(
+                          "Illegal callback invocation from native module. This callback type only permits a single invocation from native code."
+                      )
+                    }
+                    @Suppress("UNCHECKED_CAST")
+                    jsInstance.invokeCallback(
+                        callbackID = jsArguments.getDouble(atIndex).toInt(),
+                        arguments = Arguments.fromJavaArgs(args as Array<Any?>),
+                    )
+                    invoked = true
+                  }
+                }
               }
         }
 

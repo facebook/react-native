@@ -7,7 +7,6 @@
 
 package com.facebook.react.bridge;
 
-import static com.facebook.infer.annotation.Assertions.assertCondition;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
@@ -40,7 +39,6 @@ import com.facebook.systrace.TraceListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -89,7 +87,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   // Access from any thread
   private final ReactQueueConfigurationImpl mReactQueueConfiguration;
-  private final CopyOnWriteArrayList<NotThreadSafeBridgeIdleDebugListener> mBridgeIdleListeners;
   private final AtomicInteger mPendingJSCalls = new AtomicInteger(0);
   private final String mJsPendingCallsTitleForTrace =
       "pending_js_calls_instance" + sNextInstanceIdForTrace.getAndIncrement();
@@ -123,15 +120,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
-  private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
-
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
-      JSExceptionHandler jSExceptionHandler,
-      @Nullable ReactInstanceManagerInspectorTarget inspectorTarget) {
+      JSExceptionHandler jSExceptionHandler) {
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     Systrace.beginSection(TRACE_TAG_REACT, "createCatalystInstanceImpl");
 
@@ -140,14 +134,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mReactQueueConfiguration =
         ReactQueueConfigurationImpl.create(
             reactQueueConfigurationSpec, new NativeExceptionHandler());
-    mBridgeIdleListeners = new CopyOnWriteArrayList<>();
     mNativeModuleRegistry = nativeModuleRegistry;
     mJSModuleRegistry = new JavaScriptModuleRegistry();
     mJSBundleLoader = jsBundleLoader;
     mJSExceptionHandler = jSExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
-    mInspectorTarget = inspectorTarget;
     Systrace.endSection(TRACE_TAG_REACT);
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
@@ -158,9 +150,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         jsExecutor,
         mReactQueueConfiguration.getJSQueueThread(),
         mNativeModulesQueueThread,
-        mNativeModuleRegistry.getJavaModules(this),
-        mNativeModuleRegistry.getCxxModules(),
-        mInspectorTarget);
+        mNativeModuleRegistry.getJavaModules(this));
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
     Systrace.endSection(TRACE_TAG_REACT);
 
@@ -176,16 +166,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     InstanceCallback(CatalystInstanceImpl outer) {
       mOuter = new WeakReference<>(outer);
-    }
-
-    public void onBatchComplete() {
-      CatalystInstanceImpl impl = mOuter.get();
-      if (impl != null) {
-        impl.mNativeModulesQueueThread.runOnQueue(
-            () -> {
-              impl.mNativeModuleRegistry.onBatchComplete();
-            });
-      }
     }
 
     public void incrementPendingJSCalls() {
@@ -214,22 +194,18 @@ public class CatalystInstanceImpl implements CatalystInstance {
     // Extend the Java-visible registry of modules
     mNativeModuleRegistry.registerModules(modules);
     Collection<JavaModuleWrapper> javaModules = modules.getJavaModules(this);
-    Collection<ModuleHolder> cxxModules = modules.getCxxModules();
     // Extend the Cxx-visible registry of modules wrapped in appropriate interfaces
-    jniExtendNativeModules(javaModules, cxxModules);
+    jniExtendNativeModules(javaModules);
   }
 
-  private native void jniExtendNativeModules(
-      Collection<JavaModuleWrapper> javaModules, Collection<ModuleHolder> cxxModules);
+  private native void jniExtendNativeModules(Collection<JavaModuleWrapper> javaModules);
 
   private native void initializeBridge(
       InstanceCallback callback,
       JavaScriptExecutor jsExecutor,
       MessageQueueThread jsQueue,
       MessageQueueThread moduleQueue,
-      Collection<JavaModuleWrapper> javaModules,
-      Collection<ModuleHolder> cxxModules,
-      @Nullable ReactInstanceManagerInspectorTarget inspectorTarget);
+      Collection<JavaModuleWrapper> javaModules);
 
   @Override
   public void setSourceURLs(String deviceURL, String remoteURL) {
@@ -365,13 +341,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return;
     }
 
-    if (mInspectorTarget != null) {
-      assertCondition(
-          mInspectorTarget.isValid(),
-          "ReactInstanceManager inspector target destroyed before instance was unregistered");
-    }
-    unregisterFromInspector();
-
     // TODO: tell all APIs to shut down
     ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_START);
     mDestroyed = true;
@@ -383,14 +352,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
             mFabricUIManager.invalidate();
           }
           boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
-          if (!mBridgeIdleListeners.isEmpty()) {
-            for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-              if (!wasIdle) {
-                listener.onTransitionToBridgeIdle();
-              }
-              listener.onBridgeDestroyed();
-            }
-          }
 
           getReactQueueConfiguration()
               .getJSQueueThread()
@@ -532,30 +493,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniHandleMemoryPressure(level);
   }
 
-  /**
-   * Adds a idle listener for this Catalyst instance. The listener will receive notifications
-   * whenever the bridge transitions from idle to busy and vice-versa, where the busy state is
-   * defined as there being some non-zero number of calls to JS that haven't resolved via a
-   * onBatchComplete call. The listener should be purely passive and not affect application logic.
-   *
-   * @noinspection deprecation
-   */
-  @Override
-  public void addBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener) {
-    mBridgeIdleListeners.add(listener);
-  }
-
-  /**
-   * Removes a NotThreadSafeBridgeIdleDebugListener previously added with {@link
-   * #addBridgeIdleDebugListener}
-   *
-   * @noinspection deprecation
-   */
-  @Override
-  public void removeBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener) {
-    mBridgeIdleListeners.remove(listener);
-  }
-
   @Override
   public native void setGlobalVariable(String propName, String jsonValue);
 
@@ -572,16 +509,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();
-    boolean wasIdle = oldPendingCalls == 0;
     Systrace.traceCounter(TRACE_TAG_REACT, mJsPendingCallsTitleForTrace, oldPendingCalls + 1);
-    if (wasIdle && !mBridgeIdleListeners.isEmpty()) {
-      mNativeModulesQueueThread.runOnQueue(
-          () -> {
-            for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-              listener.onTransitionToBridgeBusy();
-            }
-          });
-    }
   }
 
   @Override
@@ -603,17 +531,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     int newPendingCalls = mPendingJSCalls.decrementAndGet();
     // TODO(9604406): handle case of web workers injecting messages to main thread
     // Assertions.assertCondition(newPendingCalls >= 0);
-    boolean isNowIdle = newPendingCalls == 0;
     Systrace.traceCounter(TRACE_TAG_REACT, mJsPendingCallsTitleForTrace, newPendingCalls);
-
-    if (isNowIdle && !mBridgeIdleListeners.isEmpty()) {
-      mNativeModulesQueueThread.runOnQueue(
-          () -> {
-            for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-              listener.onTransitionToBridgeIdle();
-            }
-          });
-    }
   }
 
   private void onNativeException(Exception e) {
@@ -670,7 +588,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable NativeModuleRegistry mRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable JSExceptionHandler mJSExceptionHandler;
-    private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
 
     public Builder setReactQueueConfigurationSpec(
         ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {
@@ -698,20 +615,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
-    public Builder setInspectorTarget(
-        @Nullable ReactInstanceManagerInspectorTarget inspectorTarget) {
-      mInspectorTarget = inspectorTarget;
-      return this;
-    }
-
     public CatalystInstanceImpl build() {
       return new CatalystInstanceImpl(
           Assertions.assertNotNull(mReactQueueConfigurationSpec),
           Assertions.assertNotNull(mJSExecutor),
           Assertions.assertNotNull(mRegistry),
           Assertions.assertNotNull(mJSBundleLoader),
-          Assertions.assertNotNull(mJSExceptionHandler),
-          mInspectorTarget);
+          Assertions.assertNotNull(mJSExceptionHandler));
     }
   }
 }

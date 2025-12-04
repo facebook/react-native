@@ -1,8 +1,13 @@
-name: Prebuild iOS Dependencies
+name: Prebuild iOS Core
 
 on:
   workflow_call: # this directive allow us to call this workflow from other workflows
     inputs:
+      version-type:
+        description: 'The version type to set for the prebuild (nightly or release)'
+        type: string
+        required: false
+        default: ''
       use-hermes-nightly:
         description: 'Whether to use the hermes nightly build or read the version from the versions.properties file'
         type: boolean
@@ -51,6 +56,12 @@ jobs:
           fi
           echo "Using Hermes version: $HERMES_VERSION"
           echo "HERMES_VERSION=$HERMES_VERSION" >> $GITHUB_ENV
+      - name: Set React Native version
+        shell: bash
+        run: |
+          if [ "${{ inputs.version-type }}" != "" ]; then
+            node ./scripts/releases/set-rn-artifacts-version.js --build-type "${{ inputs.version-type }}"
+          fi
       - name: Download ReactNativeDependencies
         uses: actions/download-artifact@v4
         with:

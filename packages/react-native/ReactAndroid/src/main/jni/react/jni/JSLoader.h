@@ -10,10 +10,11 @@
 #include <string>
 
 #include <android/asset_manager.h>
-#include <cxxreact/JSExecutor.h>
 #include <fbjni/fbjni.h>
 
 namespace facebook::react {
+
+class JSBigString;
 
 struct JAssetManager : jni::JavaClass<JAssetManager> {
   static constexpr auto kJavaDescriptor = "Landroid/content/res/AssetManager;";

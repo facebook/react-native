@@ -16,6 +16,8 @@
 
 namespace facebook::react {
 
+extern const char ImageFetcherKey[];
+
 class ImageFetcher {
  public:
   ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer);
@@ -25,14 +27,15 @@ class ImageFetcher {
   ImageFetcher(ImageFetcher &&) = delete;
   ImageFetcher &operator=(ImageFetcher &&) = delete;
 
+  void flushImageRequests();
+
+ private:
+  friend class ImageManager;
   ImageRequest requestImage(
       const ImageSource &imageSource,
       SurfaceId surfaceId,
       const ImageRequestParams &imageRequestParams,
       Tag tag);
-
- private:
-  void flushImageRequests();
 
   std::unordered_map<SurfaceId, std::vector<ImageRequestItem>> items_;
   std::shared_ptr<const ContextContainer> contextContainer_;

@@ -1394,6 +1394,26 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
             }
           },
           {
+            'name': 'passBooleanLiteral',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'BooleanLiteralTypeAnnotation',
+                    'value': true
+                  }
+                }
+              ]
+            }
+          },
+          {
             'name': 'passNumberLiteral',
             'optional': false,
             'typeAnnotation': {

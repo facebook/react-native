@@ -39,7 +39,7 @@ static std::string GetMutationInstructionString(
       ? mutation.newChildShadowView.tag
       : mutation.oldChildShadowView.tag;
   return getDebugName(mutation) + " [" + std::to_string(tag) + "]->[" +
-      std::to_string(mutation.parentShadowView.tag) + "] @" +
+      std::to_string(mutation.parentTag) + "] @" +
       std::to_string(mutation.index);
 }
 
@@ -1162,7 +1162,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     const AnimationKeyFrame& keyframe,
     ShadowViewMutation::List& mutationsList,
     bool interrupted,
-    const std::string& /*logPrefix*/) const {
+    [[maybe_unused]] const std::string& logPrefix) const {
   if (!keyframe.finalMutationsForKeyFrame.empty()) {
     // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
     // as well.

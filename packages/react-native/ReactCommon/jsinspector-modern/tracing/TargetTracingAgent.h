@@ -27,6 +27,11 @@ class TargetTracingAgent {
     (void)state_;
   }
 
+  bool isRunningInBackgroundMode()
+  {
+    return state_.mode == tracing::Mode::Background;
+  }
+
  protected:
   TraceRecordingState &state_;
 };

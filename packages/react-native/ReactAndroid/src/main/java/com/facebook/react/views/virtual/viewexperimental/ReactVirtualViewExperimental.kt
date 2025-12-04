@@ -208,17 +208,20 @@ public class ReactVirtualViewExperimental(context: Context) :
     }
 
     // If no ScrollView, or ScrollView has disabled removeClippedSubviews, use default behavior
-    if (
-        scrollView == null ||
-            !((scrollView as ReactClippingViewGroup).removeClippedSubviews ?: false)
-    ) {
+    if (scrollView == null) {
       super.updateClippingRect(excludedViews)
       return
     }
 
     val clippingRect = checkNotNull(clippingRect)
+    val scrollView = checkNotNull(scrollView) as ReactClippingViewGroup
 
-    (scrollView as ReactClippingViewGroup).getClippingRect(clippingRect)
+    if (scrollView.removeClippedSubviews) {
+      scrollView.getClippingRect(clippingRect)
+    } else {
+      (scrollView as View).getDrawingRect(clippingRect)
+    }
+
     clippingRect.intersect(containerRelativeRect)
     clippingRect.offset(-containerRelativeRect.left, -containerRelativeRect.top)
 

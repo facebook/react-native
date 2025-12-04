@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.TouchTargetHelper.ViewTarget;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.PointerEvent;
@@ -133,9 +134,17 @@ public class JSPointerDispatcher {
     boolean listeningForUp =
         isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.UP, EVENT.UP_CAPTURE);
     if (listeningForUp) {
+      List<Integer> activeHitPathViewIds =
+          ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()
+              ? eventState.getHitPathViewIdsForActivePointer()
+              : null;
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(
-              PointerEventHelper.POINTER_UP, activeTargetTag, eventState, motionEvent));
+              PointerEventHelper.POINTER_UP,
+              activeTargetTag,
+              eventState,
+              motionEvent,
+              activeHitPathViewIds));
     }
 
     boolean supportsHover = mHoveringPointerIds.contains(activePointerId);
@@ -230,9 +239,17 @@ public class JSPointerDispatcher {
     boolean listeningForDown =
         isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
     if (listeningForDown) {
+      List<Integer> activeHitPathViewIds =
+          ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()
+              ? eventState.getHitPathViewIdsForActivePointer()
+              : null;
       eventDispatcher.dispatchEvent(
           PointerEvent.obtain(
-              PointerEventHelper.POINTER_DOWN, activeTargetTag, eventState, motionEvent));
+              PointerEventHelper.POINTER_DOWN,
+              activeTargetTag,
+              eventState,
+              motionEvent,
+              activeHitPathViewIds));
     }
   }
 

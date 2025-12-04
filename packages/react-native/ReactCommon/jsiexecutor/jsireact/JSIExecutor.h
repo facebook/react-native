@@ -12,6 +12,7 @@
 #include <cxxreact/RAMBundleRegistry.h>
 #include <jsi/jsi.h>
 #include <jsireact/JSINativeModules.h>
+#include <react/runtime/JSRuntimeBindings.h>
 #include <functional>
 #include <mutex>
 #include <optional>
@@ -49,7 +50,7 @@ namespace facebook::react {
 using JSIScopedTimeoutInvoker =
     std::function<void(const std::function<void()> &invokee, std::function<std::string()> errorMessageProducer)>;
 
-class BigStringBuffer : public jsi::Buffer {
+class [[deprecated("JSBigString implements jsi::Buffer directly")]] BigStringBuffer : public jsi::Buffer {
  public:
   BigStringBuffer(std::unique_ptr<const JSBigString> script) : script_(std::move(script)) {}
 
@@ -60,7 +61,7 @@ class BigStringBuffer : public jsi::Buffer {
 
   const uint8_t *data() const override
   {
-    return reinterpret_cast<const uint8_t *>(script_->c_str());
+    return script_->data();
   }
 
  private:
@@ -127,10 +128,4 @@ class [[deprecated("This API will be removed along with the legacy architecture.
 #endif // RCT_REMOVE_LEGACY_ARCH
 };
 
-using Logger = std::function<void(const std::string &message, unsigned int logLevel)>;
-void bindNativeLogger(jsi::Runtime &runtime, Logger logger);
-
-void bindNativePerformanceNow(jsi::Runtime &runtime);
-
-double performanceNow();
 } // namespace facebook::react

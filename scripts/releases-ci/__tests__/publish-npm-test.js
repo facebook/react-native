@@ -21,6 +21,7 @@ const getNpmInfoMock = jest.fn();
 const generateAndroidArtifactsMock = jest.fn();
 const getPackagesMock = jest.fn();
 const updateHermesVersionsToNightlyMock = jest.fn();
+const getBranchName = jest.fn();
 
 const {REPO_ROOT} = require('../../shared/consts');
 const {publishNpm} = require('../publish-npm');
@@ -38,6 +39,7 @@ describe('publish-npm', () => {
         exitIfNotOnGit: command => command(),
         getCurrentCommit: () => 'currentco_mmit',
         isTaggedLatest: isTaggedLatestMock,
+        getBranchName: getBranchName,
       }))
       .mock('../../releases/utils/release-utils', () => ({
         generateAndroidArtifacts: generateAndroidArtifactsMock,
@@ -78,27 +80,35 @@ describe('publish-npm', () => {
     jest.resetAllMocks();
   });
 
-  describe('publish-npm.js', () => {
-    it('should fail when invalid build type is passed', async () => {
-      // Call actual function
-      // $FlowExpectedError[underconstrained-implicit-instantiation]
-      const npmUtils = jest.requireActual('../../releases/utils/npm-utils');
-      getNpmInfoMock.mockImplementation(npmUtils.getNpmInfo);
+  it('should fail when invalid build type is passed', async () => {
+    // Call actual function
+    // $FlowExpectedError[underconstrained-implicit-instantiation]
+    const npmUtils = jest.requireActual('../../releases/utils/npm-utils');
+    getNpmInfoMock.mockImplementation(npmUtils.getNpmInfo);
 
-      await expect(async () => {
-        // $FlowExpectedError[incompatible-type]
-        await publishNpm('invalid');
-      }).rejects.toThrow('Unsupported build type: invalid');
-    });
+    await expect(async () => {
+      // $FlowExpectedError[incompatible-type]
+      await publishNpm('invalid');
+    }).rejects.toThrow('Unsupported build type: invalid');
   });
 
-  describe("publishNpm('dry-run')", () => {
-    it('should set version and not publish', async () => {
+  describe('dry-run', () => {
+    beforeEach(() => {
+      jest.mock('../../shared/monorepoUtils', () => ({
+        ...jest.requireActual('../../shared/monorepoUtils'),
+        getReactNativePackage: jest
+          .fn()
+          .mockResolvedValue({version: '1000.0.0'}),
+      }));
+    });
+
+    it('should set version, hermes version, and not publish', async () => {
       const version = '1000.0.0-currentco';
       getNpmInfoMock.mockReturnValueOnce({
         version,
         tag: null,
       });
+      getBranchName.mockReturnValueOnce('main');
 
       await publishNpm('dry-run');
 
@@ -118,9 +128,74 @@ describe('publish-npm', () => {
       expect(publishExternalArtifactsToMavenMock).not.toHaveBeenCalled();
       expect(publishPackageMock).not.toHaveBeenCalled();
     });
+
+    describe('when on stable branch', () => {
+      it('main → RC0: should skip Hermes version', async () => {
+        const version = '1000.0.0-currentco';
+        getNpmInfoMock.mockReturnValueOnce({
+          version,
+          tag: null,
+        });
+        getBranchName.mockReturnValueOnce('0.83-stable');
+
+        await publishNpm('dry-run');
+
+        expect(updateHermesVersionsToNightlyMock).not.toHaveBeenCalled();
+        expect(setVersionMock).not.toBeCalled();
+        expect(updateReactNativeArtifactsMock).toBeCalledWith(
+          version,
+          'dry-run',
+        );
+
+        // Generate Android artifacts is now delegate to build_android entirely
+        expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
+        expect(consoleLogMock).toHaveBeenCalledWith(
+          'Skipping `npm publish` because --dry-run is set.',
+        );
+
+        // Expect termination
+        expect(publishAndroidArtifactsToMavenMock).not.toHaveBeenCalled();
+        expect(publishExternalArtifactsToMavenMock).not.toHaveBeenCalled();
+        expect(publishPackageMock).not.toHaveBeenCalled();
+      });
+
+      it('RC0 → RC1: should skip Hermes version and artifacts', async () => {
+        const version = '0.83.0-rc.0';
+        getNpmInfoMock.mockReturnValueOnce({
+          version,
+          tag: null,
+        });
+        getBranchName.mockReturnValueOnce('0.83-stable');
+        jest.mock('../../shared/monorepoUtils', () => ({
+          ...jest.requireActual('../../shared/monorepoUtils'),
+          getReactNativePackage: jest
+            .fn()
+            .mockResolvedValue({version: '0.83.0-rc.0'}),
+        }));
+
+        await publishNpm('dry-run');
+
+        expect(updateHermesVersionsToNightlyMock).not.toHaveBeenCalled();
+        expect(setVersionMock).not.toBeCalled();
+        expect(updateReactNativeArtifactsMock).not.toBeCalled();
+
+        // Generate Android artifacts is now delegate to build_android entirely
+        expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
+        expect(consoleLogMock).toHaveBeenCalledWith(
+          'Skipping `npm publish` because --dry-run is set.',
+        );
+
+        // Expect termination
+        expect(publishAndroidArtifactsToMavenMock).not.toHaveBeenCalled();
+        expect(publishExternalArtifactsToMavenMock).not.toHaveBeenCalled();
+        expect(publishPackageMock).not.toHaveBeenCalled();
+      });
+    });
   });
 
-  describe("publishNpm('nightly')", () => {
+  describe('nightly', () => {
     beforeAll(() => {
       jest.mock('../../shared/monorepoUtils', () => ({
         ...jest.requireActual('../../shared/monorepoUtils'),
@@ -278,7 +353,7 @@ describe('publish-npm', () => {
     });
   });
 
-  describe("publishNpm('release')", () => {
+  describe('release', () => {
     it('should publish non-latest', async () => {
       const expectedVersion = '0.81.1';
       getNpmInfoMock.mockImplementation(() => ({

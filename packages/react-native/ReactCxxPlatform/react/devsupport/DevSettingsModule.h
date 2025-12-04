@@ -21,7 +21,7 @@ class DevSettingsModule : public NativeDevSettingsCxxSpec<DevSettingsModule> {
   DevSettingsModule(
       std::shared_ptr<CallInvoker> jsInvoker,
       std::weak_ptr<DevServerHelper> devServerHelper,
-      LiveReloadCallback &&liveReloadCallback)
+      LiveReloadCallback liveReloadCallback)
       : NativeDevSettingsCxxSpec(jsInvoker),
         devServerHelper_(std::move(devServerHelper)),
         liveReloadCallback_(std::move(liveReloadCallback))

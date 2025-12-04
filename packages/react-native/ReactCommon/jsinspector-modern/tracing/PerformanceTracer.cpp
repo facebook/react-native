@@ -7,7 +7,9 @@
 
 #include "PerformanceTracer.h"
 #include "Timing.h"
+#include "TraceEventGenerator.h"
 #include "TraceEventSerializer.h"
+#include "TracingCategory.h"
 
 #include <jsinspector-modern/network/CdpNetwork.h>
 #include <jsinspector-modern/network/HttpUtils.h>
@@ -57,26 +59,39 @@ bool PerformanceTracer::startTracing(HighResDuration maxDuration) {
 
 bool PerformanceTracer::startTracingImpl(
     std::optional<HighResDuration> maxDuration) {
-  std::lock_guard lock(mutex_);
+  std::vector<TracingStateCallback> callbacksToNotify;
 
-  if (tracingAtomic_) {
-    return false;
+  {
+    std::lock_guard lock(mutex_);
+
+    if (tracingAtomic_) {
+      return false;
+    }
+
+    tracingAtomic_ = true;
+
+    if (maxDuration && *maxDuration < MIN_VALUE_FOR_MAX_TRACE_DURATION_OPTION) {
+      throw std::invalid_argument("maxDuration should be at least 1 second");
+    }
+
+    currentTraceStartTime_ = HighResTimeStamp::now();
+    currentTraceMaxDuration_ = maxDuration;
+
+    for (const auto& [id, callback] : tracingStateCallbacks_) {
+      callbacksToNotify.push_back(callback);
+    }
   }
 
-  tracingAtomic_ = true;
-
-  if (maxDuration && *maxDuration < MIN_VALUE_FOR_MAX_TRACE_DURATION_OPTION) {
-    throw std::invalid_argument("maxDuration should be at least 1 second");
+  for (const auto& callback : callbacksToNotify) {
+    callback(true);
   }
-
-  currentTraceStartTime_ = HighResTimeStamp::now();
-  currentTraceMaxDuration_ = maxDuration;
 
   return true;
 }
 
 std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
   std::vector<TraceEvent> events;
+  std::vector<TracingStateCallback> callbacksToNotify;
 
   auto currentTraceEndTime = HighResTimeStamp::now();
 
@@ -86,6 +101,21 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
     if (!tracingAtomic_) {
       return std::nullopt;
     }
+
+    // Collect callbacks before disabling tracing
+    for (const auto& [id, callback] : tracingStateCallbacks_) {
+      callbacksToNotify.push_back(callback);
+    }
+  }
+
+  // Notify callbacks while tracing is still enabled, so they can send final
+  // events
+  for (const auto& callback : callbacksToNotify) {
+    callback(false);
+  }
+
+  {
+    std::lock_guard lock(mutex_);
 
     tracingAtomic_ = false;
     performanceMeasureCount_ = 0;
@@ -110,7 +140,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
   events.emplace_back(
       TraceEvent{
           .name = "TracingStartedInPage",
-          .cat = "disabled-by-default-devtools.timeline",
+          .cat = {Category::HiddenTimeline},
           .ph = 'I',
           .ts = currentTraceStartTime,
           .pid = processId_,
@@ -121,7 +151,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
   events.emplace_back(
       TraceEvent{
           .name = "ReactNative-TracingStopped",
-          .cat = "disabled-by-default-devtools.timeline",
+          .cat = {Category::HiddenTimeline},
           .ph = 'I',
           .ts = currentTraceEndTime,
           .pid = processId_,
@@ -129,6 +159,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
       });
 
   currentTraceMaxDuration_ = std::nullopt;
+
   return events;
 }
 
@@ -158,7 +189,8 @@ void PerformanceTracer::reportMeasure(
     const std::string& name,
     HighResTimeStamp start,
     HighResDuration duration,
-    folly::dynamic&& detail) {
+    folly::dynamic&& detail,
+    std::optional<folly::dynamic> stackTrace) {
   if (!tracingAtomic_) {
     return;
   }
@@ -175,6 +207,7 @@ void PerformanceTracer::reportMeasure(
           .duration = duration,
           .detail = std::move(detail),
           .threadId = getCurrentThreadId(),
+          .stackTrace = std::move(stackTrace),
       });
 }
 
@@ -184,7 +217,9 @@ void PerformanceTracer::reportTimeStamp(
     std::optional<ConsoleTimeStampEntry> end,
     std::optional<std::string> trackName,
     std::optional<std::string> trackGroup,
-    std::optional<ConsoleTimeStampColor> color) {
+    std::optional<ConsoleTimeStampColor> color,
+    std::optional<folly::dynamic> detail,
+    std::optional<folly::dynamic> stackTrace) {
   if (!tracingAtomic_) {
     return;
   }
@@ -202,6 +237,8 @@ void PerformanceTracer::reportTimeStamp(
           .trackName = std::move(trackName),
           .trackGroup = std::move(trackGroup),
           .color = std::move(color),
+          .detail = std::move(detail),
+          .stackTrace = std::move(stackTrace),
           .threadId = getCurrentThreadId(),
       });
 }
@@ -339,7 +376,7 @@ void PerformanceTracer::reportResourceFinish(
   return TraceEvent{
       .id = profileId,
       .name = "Profile",
-      .cat = "disabled-by-default-v8.cpu_profiler",
+      .cat = {Category::JavaScriptSampling},
       .ph = 'P',
       .ts = profileTimestamp,
       .pid = processId,
@@ -362,7 +399,7 @@ PerformanceTracer::constructRuntimeProfileChunkTraceEvent(
   return TraceEvent{
       .id = profileId,
       .name = "ProfileChunk",
-      .cat = "disabled-by-default-v8.cpu_profiler",
+      .cat = {Category::JavaScriptSampling},
       .ph = 'P',
       .ts = chunkTimestamp,
       .pid = processId,
@@ -494,7 +531,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "RunTask",
-                    .cat = "disabled-by-default-devtools.timeline",
+                    .cat = {Category::HiddenTimeline},
                     .ph = 'X',
                     .ts = event.start,
                     .pid = processId_,
@@ -506,7 +543,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "RunMicrotasks",
-                    .cat = "v8.execute",
+                    .cat = {Category::RuntimeExecution},
                     .ph = 'X',
                     .ts = event.start,
                     .pid = processId_,
@@ -526,7 +563,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = std::move(event.name),
-                    .cat = "blink.user_timing",
+                    .cat = {Category::UserTiming},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -540,6 +577,10 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
               beginEventArgs =
                   folly::dynamic::object("detail", folly::toJson(event.detail));
             }
+            if (event.stackTrace) {
+              beginEventArgs["data"] = folly::dynamic::object(
+                  "rnStackTrace", std::move(*event.stackTrace));
+            }
 
             auto eventId = ++performanceMeasureCount_;
 
@@ -547,7 +588,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 TraceEvent{
                     .id = eventId,
                     .name = event.name,
-                    .cat = "blink.user_timing",
+                    .cat = {Category::UserTiming},
                     .ph = 'b',
                     .ts = event.start,
                     .pid = processId_,
@@ -558,7 +599,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 TraceEvent{
                     .id = eventId,
                     .name = std::move(event.name),
-                    .cat = "blink.user_timing",
+                    .cat = {Category::UserTiming},
                     .ph = 'e',
                     .ts = event.start + event.duration,
                     .pid = processId_,
@@ -598,7 +639,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 events.emplace_back(
                     TraceEvent{
                         .name = "TimeStamp",
-                        .cat = "devtools.timeline",
+                        .cat = {Category::Timeline},
                         .ph = 'I',
                         .ts = event.createdAt,
                         .pid = processId_,
@@ -622,11 +663,21 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             if (event.color) {
               data["color"] = consoleTimeStampColorToString(*event.color);
             }
+            if (event.detail) {
+              folly::dynamic devtoolsDetail = folly::dynamic::object();
+              for (const auto& [key, value] : event.detail->items()) {
+                devtoolsDetail[key] = value;
+              }
+              data["devtools"] = folly::toJson(devtoolsDetail);
+            }
+            if (event.stackTrace) {
+              data["rnStackTrace"] = std::move(*event.stackTrace);
+            }
 
             events.emplace_back(
                 TraceEvent{
                     .name = "TimeStamp",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.createdAt,
                     .pid = processId_,
@@ -646,7 +697,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "ResourceSendRequest",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -672,7 +723,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "ResourceReceiveResponse",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -690,7 +741,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "ResourceFinish",
-                    .cat = "devtools.timeline",
+                    .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
                     .pid = processId_,
@@ -701,6 +752,20 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
           },
       },
       std::move(event));
+}
+
+uint32_t PerformanceTracer::subscribeToTracingStateChanges(
+    TracingStateCallback callback) {
+  std::lock_guard lock(mutex_);
+  uint32_t subscriptionId = nextCallbackId_++;
+  tracingStateCallbacks_[subscriptionId] = std::move(callback);
+  return subscriptionId;
+}
+
+void PerformanceTracer::unsubscribeFromTracingStateChanges(
+    uint32_t subscriptionId) {
+  std::lock_guard lock(mutex_);
+  tracingStateCallbacks_.erase(subscriptionId);
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing

@@ -69,6 +69,16 @@ test('animated opacity', () => {
     _opacityAnimation?.stop();
   });
 
+  // TODO: T246961305 rendered output should be <rn-view opacity="0" /> at this point
+  expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
+    <rn-view />,
+  );
+
+  // Re-render
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
   expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
     <rn-view opacity="0" />,
   );

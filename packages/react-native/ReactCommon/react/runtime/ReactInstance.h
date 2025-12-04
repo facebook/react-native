@@ -13,7 +13,6 @@
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
 #include <jsinspector-modern/ReactCdp.h>
-#include <jsireact/JSIExecutor.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/runtime/BufferedRuntimeExecutor.h>
 #include <react/runtime/JSRuntimeFactory.h>
@@ -31,6 +30,11 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
       std::shared_ptr<TimerManager> timerManager,
       JsErrorHandler::OnJsError onJsError,
       jsinspector_modern::HostTarget *parentInspectorTarget = nullptr);
+  ReactInstance(const ReactInstance &) = delete;
+  ReactInstance(ReactInstance &&) = delete;
+  ReactInstance &operator=(const ReactInstance &) = delete;
+  ReactInstance &operator=(ReactInstance &&) = delete;
+  ~ReactInstance() noexcept override;
 
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
 

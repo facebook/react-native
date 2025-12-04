@@ -13,7 +13,6 @@
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #endif
 #include <jsinspector-modern/network/HttpUtils.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 
 namespace facebook::react {
@@ -180,27 +179,25 @@ void NetworkReporter::reportResponseEnd(
     int encodedDataLength) {
   auto now = HighResTimeStamp::now();
 
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    // All builds: Report PerformanceResourceTiming event
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      auto it = perfTimingsBuffer_.find(requestId);
-      if (it != perfTimingsBuffer_.end()) {
-        auto& eventData = it->second;
-        PerformanceEntryReporter::getInstance()->reportResourceTiming(
-            eventData.url,
-            eventData.fetchStart,
-            eventData.requestStart,
-            eventData.connectStart.value_or(now),
-            eventData.connectEnd.value_or(now),
-            eventData.responseStart.value_or(now),
-            now,
-            eventData.responseStatus,
-            eventData.contentType,
-            eventData.encodedBodySize,
-            eventData.decodedBodySize);
-        perfTimingsBuffer_.erase(requestId);
-      }
+  // All builds: Report PerformanceResourceTiming event
+  {
+    std::lock_guard<std::mutex> lock(perfTimingsMutex_);
+    auto it = perfTimingsBuffer_.find(requestId);
+    if (it != perfTimingsBuffer_.end()) {
+      auto& eventData = it->second;
+      PerformanceEntryReporter::getInstance()->reportResourceTiming(
+          eventData.url,
+          eventData.fetchStart,
+          eventData.requestStart,
+          eventData.connectStart.value_or(now),
+          eventData.connectEnd.value_or(now),
+          eventData.responseStart.value_or(now),
+          now,
+          eventData.responseStatus,
+          eventData.contentType,
+          eventData.encodedBodySize,
+          eventData.decodedBodySize);
+      perfTimingsBuffer_.erase(requestId);
     }
   }
 

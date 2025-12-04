@@ -322,3 +322,34 @@ export type MouseEvent = NativeSyntheticEvent<
     timestamp: number,
   }>,
 >;
+
+export type KeyEvent = $ReadOnly<{
+  /**
+   * The actual key that was pressed. For example, F would be "f" or "F" depending on the shift key.
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+   */
+  key: string,
+  /**
+   * The key code of the key that was pressed. For example, F would be "KeyF"
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code
+   */
+  code: string,
+  altKey: boolean,
+  ctrlKey: boolean,
+  metaKey: boolean,
+  shiftKey: boolean,
+  /**
+   * A boolean value that is true if the given key is being held down such that it is automatically repeating.
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat
+   */
+  repeat?: boolean,
+  /**
+   * Returns a boolean value indicating if the event is fired within a composition session
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent/isComposing
+   */
+  isComposing?: boolean,
+}>;
+
+export type KeyUpEvent = NativeSyntheticEvent<KeyEvent>;
+
+export type KeyDownEvent = NativeSyntheticEvent<KeyEvent>;

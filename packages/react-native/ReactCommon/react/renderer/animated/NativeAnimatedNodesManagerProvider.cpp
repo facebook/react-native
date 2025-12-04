@@ -14,46 +14,34 @@
 #ifdef RN_USE_ANIMATION_BACKEND
 #include <react/renderer/animationbackend/AnimationBackend.h>
 #endif
+#include <react/renderer/animated/internal/primitives.h>
+#include <react/renderer/components/view/conversions.h>
+#include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 namespace facebook::react {
 
 UIManagerNativeAnimatedDelegateImpl::UIManagerNativeAnimatedDelegateImpl(
-    NativeAnimatedNodesManagerProvider::FrameRateListenerCallback
-        frameRateListenerCallback)
-    : frameRateListenerCallback_(std::move(frameRateListenerCallback)) {}
+    std::weak_ptr<NativeAnimatedNodesManager> manager)
+    : nativeAnimatedNodesManager_(manager) {}
 
 void UIManagerNativeAnimatedDelegateImpl::runAnimationFrame() {
   if (auto nativeAnimatedNodesManagerStrong =
           nativeAnimatedNodesManager_.lock()) {
-    if (frameRateListenerCallback_) {
-      frameRateListenerCallback_(true);
-    }
     nativeAnimatedNodesManagerStrong->onRender();
   }
 }
 
 NativeAnimatedNodesManagerProvider::NativeAnimatedNodesManagerProvider(
-    StartOnRenderCallback startOnRenderCallback,
-    StopOnRenderCallback stopOnRenderCallback,
-    FrameRateListenerCallback frameRateListenerCallback)
+    NativeAnimatedNodesManager::StartOnRenderCallback startOnRenderCallback,
+    NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback,
+    NativeAnimatedNodesManager::FrameRateListenerCallback
+        frameRateListenerCallback)
     : eventEmitterListenerContainer_(
           std::make_shared<EventEmitterListenerContainer>()),
-      frameRateListenerCallback_(std::move(frameRateListenerCallback)),
-      startOnRenderCallback_(std::move(startOnRenderCallback)) {
-  if (frameRateListenerCallback_) {
-    stopOnRenderCallback_ = [this, stopOnRenderCallback](bool isAsync) {
-      if (stopOnRenderCallback) {
-        stopOnRenderCallback(isAsync);
-      }
-      if (frameRateListenerCallback_) {
-        frameRateListenerCallback_(false);
-      }
-    };
-  } else {
-    stopOnRenderCallback_ = std::move(stopOnRenderCallback);
-  }
-}
+      startOnRenderCallback_(std::move(startOnRenderCallback)),
+      stopOnRenderCallback_(std::move(stopOnRenderCallback)),
+      frameRateListenerCallback_(std::move(frameRateListenerCallback)) {}
 
 std::shared_ptr<NativeAnimatedNodesManager>
 NativeAnimatedNodesManagerProvider::getOrCreate(
@@ -62,32 +50,41 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
   if (nativeAnimatedNodesManager_ == nullptr) {
     auto* uiManager = &UIManagerBinding::getBinding(runtime)->getUIManager();
 
+    mergedValueDispatcher_ = std::make_unique<MergedValueDispatcher>(
+        [jsInvoker](std::function<void()>&& func) {
+          jsInvoker->invokeAsync(std::move(func));
+        },
+        [uiManager](std::unordered_map<Tag, folly::dynamic>&& tagToProps) {
+          uiManager->updateShadowTree(std::move(tagToProps));
+        });
+
     NativeAnimatedNodesManager::FabricCommitCallback fabricCommitCallback =
-        nullptr;
-
-    if (!ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated()) {
-      mergedValueDispatcher_ = std::make_unique<MergedValueDispatcher>(
-          [jsInvoker](std::function<void()>&& func) {
-            jsInvoker->invokeAsync(std::move(func));
-          },
-          [uiManager](std::unordered_map<Tag, folly::dynamic>&& tagToProps) {
-            uiManager->updateShadowTree(std::move(tagToProps));
-          });
-
-      fabricCommitCallback =
-          [this](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
-            mergedValueDispatcher_->dispatch(tagToProps);
-          };
-    }
+        [this](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+          mergedValueDispatcher_->dispatch(tagToProps);
+        };
 
     auto directManipulationCallback =
         [uiManager](Tag viewTag, const folly::dynamic& props) {
           uiManager->synchronouslyUpdateViewOnUIThread(viewTag, props);
         };
 
-    nativeAnimatedDelegate_ =
-        std::make_shared<UIManagerNativeAnimatedDelegateImpl>(
-            frameRateListenerCallback_);
+    // TODO: remove force casting.
+    auto* scheduler = (Scheduler*)uiManager->getDelegate();
+    auto resolvePlatformColor = [scheduler, uiManager](
+                                    SurfaceId surfaceId,
+                                    const RawValue& value,
+                                    SharedColor& result) {
+      if (uiManager) {
+        if (surfaceId != animated::undefinedAnimatedNodeIdentifier) {
+          PropsParserContext propsParserContext{
+              surfaceId, *scheduler->getContextContainer()};
+          fromRawValue(propsParserContext, value, result);
+        } else {
+          LOG(ERROR)
+              << "Cannot resolve platformColor because surfaceId is unavailable.";
+        }
+      }
+    };
 
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
@@ -99,37 +96,30 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           std::move(directManipulationCallback),
           std::move(fabricCommitCallback),
           uiManager);
-#endif
 
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(animationBackend_);
 
+      nativeAnimatedDelegate_ =
+          std::make_shared<UIManagerNativeAnimatedDelegateBackendImpl>(
+              animationBackend_);
+
       uiManager->unstable_setAnimationBackend(animationBackend_);
+#endif
     } else {
-      auto startOnRenderCallback =
-          [this, startOnRenderCallbackFn = std::move(startOnRenderCallback_)](
-              bool isAsync) {
-            if (startOnRenderCallbackFn) {
-              startOnRenderCallbackFn(
-                  [this]() {
-                    if (nativeAnimatedDelegate_) {
-                      nativeAnimatedDelegate_->runAnimationFrame();
-                    }
-                  },
-                  isAsync);
-            }
-          };
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(
               std::move(directManipulationCallback),
               std::move(fabricCommitCallback),
-              std::move(startOnRenderCallback),
-              std::move(stopOnRenderCallback_));
-    }
+              std::move(resolvePlatformColor),
+              std::move(startOnRenderCallback_),
+              std::move(stopOnRenderCallback_),
+              std::move(frameRateListenerCallback_));
 
-    std::static_pointer_cast<UIManagerNativeAnimatedDelegateImpl>(
-        nativeAnimatedDelegate_)
-        ->setNativeAnimatedNodesManager(nativeAnimatedNodesManager_);
+      nativeAnimatedDelegate_ =
+          std::make_shared<UIManagerNativeAnimatedDelegateImpl>(
+              nativeAnimatedNodesManager_);
+    }
 
     addEventEmitterListener(
         nativeAnimatedNodesManager_->getEventEmitterListener());
@@ -155,8 +145,6 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
     uiManager->setNativeAnimatedDelegate(nativeAnimatedDelegate_);
 
-    // TODO: remove force casting.
-    auto* scheduler = (Scheduler*)uiManager->getDelegate();
     animatedMountingOverrideDelegate_ =
         std::make_shared<AnimatedMountingOverrideDelegate>(
             *nativeAnimatedNodesManager_, *scheduler);

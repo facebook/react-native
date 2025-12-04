@@ -111,8 +111,9 @@ class HostTargetSession {
     return hostAgent_.hasFuseboxClientConnected();
   }
 
-  void emitTraceRecording(tracing::TraceRecordingState traceRecording) const {
-    hostAgent_.emitExternalTraceRecording(std::move(traceRecording));
+  void emitHostTracingProfile(
+      tracing::HostTracingProfile tracingProfile) const {
+    hostAgent_.emitExternalTracingProfile(std::move(tracingProfile));
   }
 
  private:
@@ -206,6 +207,9 @@ std::shared_ptr<HostTarget> HostTarget::create(
     VoidExecutor executor) {
   std::shared_ptr<HostTarget> hostTarget{new HostTarget(delegate)};
   hostTarget->setExecutor(std::move(executor));
+  if (InspectorFlags::getInstance().getPerfIssuesEnabled()) {
+    hostTarget->installPerfIssuesBinding();
+  }
   return hostTarget;
 }
 
@@ -289,6 +293,17 @@ void HostTarget::sendCommand(HostCommand command) {
   });
 }
 
+void HostTarget::installPerfIssuesBinding() {
+  perfMonitorUpdateHandler_ =
+      std::make_unique<PerfMonitorUpdateHandler>(delegate_);
+  perfMetricsBinding_ = std::make_unique<HostRuntimeBinding>(
+      *this, // Used immediately
+      "__react_native_perf_issues_reporter",
+      [this](const std::string& message) {
+        perfMonitorUpdateHandler_->handlePerfIssueAdded(message);
+      });
+}
+
 HostTargetController::HostTargetController(HostTarget& target)
     : target_(target) {}
 
@@ -368,13 +383,13 @@ bool HostTarget::hasActiveSessionWithFuseboxClient() const {
   return hasActiveFuseboxSession;
 }
 
-void HostTarget::emitTraceRecordingForFirstFuseboxClient(
-    tracing::TraceRecordingState traceRecording) const {
+void HostTarget::emitTracingProfileForFirstFuseboxClient(
+    tracing::HostTracingProfile tracingProfile) const {
   bool emitted = false;
   sessions_.forEach([&](HostTargetSession& session) {
     if (emitted) {
       /**
-       * TraceRecordingState object is not copiable for performance reasons,
+       * HostTracingProfile object is not copiable for performance reasons,
        * because it could contain large Runtime sampling profile object.
        *
        * This approach would not work with multi-client debugger setup.
@@ -382,7 +397,7 @@ void HostTarget::emitTraceRecordingForFirstFuseboxClient(
       return;
     }
     if (session.hasFuseboxClient()) {
-      session.emitTraceRecording(std::move(traceRecording));
+      session.emitHostTracingProfile(std::move(tracingProfile));
       emitted = true;
     }
   });

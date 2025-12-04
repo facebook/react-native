@@ -41,7 +41,12 @@ Scheduler::Scheduler(
   if (ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
       ReactNativeFeatureFlags::cdpInteractionMetricsEnabled()) {
     cdpMetricsReporter_.emplace(CdpMetricsReporter{runtimeExecutor_});
-    performanceEntryReporter_->addEventTimingListener(&*cdpMetricsReporter_);
+    performanceEntryReporter_->addEventListener(&*cdpMetricsReporter_);
+  }
+
+  if (ReactNativeFeatureFlags::perfIssuesEnabled()) {
+    cdpPerfIssuesReporter_.emplace(CdpPerfIssuesReporter{runtimeExecutor_});
+    performanceEntryReporter_->addEventListener(&*cdpPerfIssuesReporter_);
   }
 
   eventPerformanceLogger_ =
@@ -172,7 +177,10 @@ Scheduler::~Scheduler() {
   uiManager_->setAnimationDelegate(nullptr);
 
   if (cdpMetricsReporter_) {
-    performanceEntryReporter_->removeEventTimingListener(&*cdpMetricsReporter_);
+    performanceEntryReporter_->removeEventListener(&*cdpMetricsReporter_);
+  }
+  if (cdpPerfIssuesReporter_) {
+    performanceEntryReporter_->removeEventListener(&*cdpPerfIssuesReporter_);
   }
 
   // Then, let's verify that the requirement was satisfied.
@@ -283,8 +291,8 @@ void Scheduler::uiManagerDidDispatchCommand(
     const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
-  TraceSection s("Scheduler::uiManagerDispatchCommand");
-
+  TraceSection s(
+      "Scheduler::uiManagerDispatchCommand", "commandName", commandName);
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
     runtimeScheduler_->scheduleRenderingUpdate(

@@ -24,11 +24,13 @@
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/imagemanager/ImageFetcher.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
+#include <string_view>
 
 namespace facebook::react {
 
@@ -166,33 +168,38 @@ void FabricUIManagerBinding::startSurface(
     return;
   }
 
+  SurfaceHandler* surfaceHandler = nullptr;
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    auto [it, _] = surfaceHandlerRegistry_.try_emplace(
+        surfaceId,
+        std::in_place_index<0>,
+        moduleName->toStdString(),
+        surfaceId);
+    surfaceHandler = &std::get<SurfaceHandler>(it->second);
+  }
+
+  surfaceHandler->setContextContainer(scheduler->getContextContainer());
+  if (initialProps != nullptr) {
+    surfaceHandler->setProps(initialProps->consume());
+  }
+
   auto layoutContext = LayoutContext{};
   layoutContext.pointScaleFactor = pointScaleFactor_;
+  surfaceHandler->constraintLayout({}, layoutContext);
 
-  auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
-  surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler.setProps(initialProps->consume());
-  }
-  surfaceHandler.constraintLayout({}, layoutContext);
-
-  scheduler->registerSurface(surfaceHandler);
+  scheduler->registerSurface(*surfaceHandler);
 
   auto mountingManager = getMountingManager("startSurface");
   if (mountingManager != nullptr) {
     mountingManager->onSurfaceStart(surfaceId);
   }
 
-  surfaceHandler.start();
+  surfaceHandler->start();
 
   if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
-    surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+    surfaceHandler->getMountingCoordinator()->setMountingOverrideDelegate(
         animationDriver_);
-  }
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
 
@@ -338,30 +345,35 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
   constraints.layoutDirection =
       isRTL != 0 ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
-  auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
-  surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler.setProps(initialProps->consume());
+  SurfaceHandler* surfaceHandler = nullptr;
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    auto [it, _] = surfaceHandlerRegistry_.try_emplace(
+        surfaceId,
+        std::in_place_index<0>,
+        moduleName->toStdString(),
+        surfaceId);
+    surfaceHandler = &std::get<SurfaceHandler>(it->second);
   }
-  surfaceHandler.constraintLayout(constraints, context);
 
-  scheduler->registerSurface(surfaceHandler);
+  surfaceHandler->setContextContainer(scheduler->getContextContainer());
+  if (initialProps != nullptr) {
+    surfaceHandler->setProps(initialProps->consume());
+  }
+  surfaceHandler->constraintLayout(constraints, context);
+
+  scheduler->registerSurface(*surfaceHandler);
 
   auto mountingManager = getMountingManager("startSurfaceWithConstraints");
   if (mountingManager != nullptr) {
     mountingManager->onSurfaceStart(surfaceId);
   }
 
-  surfaceHandler.start();
+  surfaceHandler->start();
 
   if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
-    surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+    surfaceHandler->getMountingCoordinator()->setMountingOverrideDelegate(
         animationDriver_);
-  }
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
 
@@ -630,6 +642,19 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
   if (!mountingManager) {
     return;
   }
+
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    auto weakImageFetcher =
+        scheduler_->getContextContainer()->find<std::weak_ptr<ImageFetcher>>(
+            ImageFetcherKey);
+    auto imageFetcher = weakImageFetcher.has_value()
+        ? weakImageFetcher.value().lock()
+        : nullptr;
+    if (imageFetcher != nullptr) {
+      imageFetcher->flushImageRequests();
+    }
+  }
+
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
     auto mountingTransaction = mountingCoordinator->pullTransaction(
         /* willPerformAsynchronously = */ true);
@@ -662,6 +687,17 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
 
 void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {
+  using namespace std::literals::string_view_literals;
+
+  if (ReactNativeFeatureFlags::disableViewPreallocationAndroid()) {
+    return;
+  }
+
+  if (ReactNativeFeatureFlags::disableImageViewPreallocationAndroid() &&
+      std::string_view(shadowNode.getComponentName()) == "Image"sv) {
+    return;
+  }
+
   auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;

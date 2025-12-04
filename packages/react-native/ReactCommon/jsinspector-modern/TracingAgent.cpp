@@ -7,10 +7,10 @@
 
 #include "TracingAgent.h"
 
+#include <jsinspector-modern/tracing/HostTracingProfileSerializer.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
 #include <jsinspector-modern/tracing/TraceEventSerializer.h>
-#include <jsinspector-modern/tracing/TraceRecordingStateSerializer.h>
 #include <jsinspector-modern/tracing/TracingMode.h>
 
 namespace facebook::react::jsinspector_modern {
@@ -26,12 +26,8 @@ const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
 /**
  * The maximum number of ProfileChunk trace events
  * that will be sent in a single CDP Tracing.dataCollected message.
- * TODO(T219394401): Increase the size once we manage the queue on OkHTTP
- side
- * properly and avoid WebSocket disconnections when sending a message larger
- * than 16MB.
  */
-const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
+const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 10;
 
 } // namespace
 
@@ -53,7 +49,17 @@ TracingAgent::~TracingAgent() {
 
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
-    // @cdp Tracing.start support is experimental.
+    auto& inspector = getInspectorInstance();
+    if (inspector.getSystemState().registeredPagesCount > 1) {
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "The Tracing domain is unavailable when multiple React Native hosts are registered."));
+
+      return true;
+    }
+
     if (sessionState_.isDebuggerDomainEnabled) {
       frontendChannel_(
           cdp::jsonError(
@@ -64,8 +70,25 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
       return true;
     }
 
-    bool didNotHaveAlreadyRunningRecording =
-        hostTargetController_.startTracing(tracing::Mode::CDP);
+    /**
+     * This logic has to be updated with the next upgrade of Chrome
+     * DevTools Frotnend fork.
+     *
+     * At the moment of writing this, our fork uses categories field, which is
+     * marked as depreacted in CDP spec.
+     *
+     * Latest versions of Chrome DevTools in stable channel of Chromium are
+     * already using traceConfig field.
+     */
+    std::set<tracing::Category> enabledCategories;
+    if (req.params.isObject() && req.params.count("categories") != 0 &&
+        req.params["categories"].isString()) {
+      enabledCategories = tracing::parseSerializedTracingCategories(
+          req.params["categories"].getString());
+    }
+
+    bool didNotHaveAlreadyRunningRecording = hostTargetController_.startTracing(
+        tracing::Mode::CDP, std::move(enabledCategories));
     if (!didNotHaveAlreadyRunningRecording) {
       frontendChannel_(
           cdp::jsonError(
@@ -81,37 +104,36 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     return true;
   } else if (req.method == "Tracing.end") {
-    // @cdp Tracing.end support is experimental.
-    auto state = hostTargetController_.stopTracing();
+    auto tracingProfile = hostTargetController_.stopTracing();
 
     sessionState_.hasPendingTraceRecording = false;
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
 
-    emitTraceRecording(std::move(state));
+    emitHostTracingProfile(std::move(tracingProfile));
     return true;
   }
 
   return false;
 }
 
-void TracingAgent::emitExternalTraceRecording(
-    tracing::TraceRecordingState traceRecording) const {
+void TracingAgent::emitExternalHostTracingProfile(
+    tracing::HostTracingProfile tracingProfile) const {
   frontendChannel_(
       cdp::jsonNotification("ReactNativeApplication.traceRequested"));
-  emitTraceRecording(std::move(traceRecording));
+  emitHostTracingProfile(std::move(tracingProfile));
 }
 
-void TracingAgent::emitTraceRecording(
-    tracing::TraceRecordingState traceRecording) const {
+void TracingAgent::emitHostTracingProfile(
+    tracing::HostTracingProfile tracingProfile) const {
   auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
     frontendChannel_(
         cdp::jsonNotification(
             "Tracing.dataCollected",
             folly::dynamic::object("value", std::move(eventsChunk))));
   };
-  tracing::TraceRecordingStateSerializer::emitAsDataCollectedChunks(
-      std::move(traceRecording),
+  tracing::HostTracingProfileSerializer::emitAsDataCollectedChunks(
+      std::move(tracingProfile),
       dataCollectedCallback,
       TRACE_EVENT_CHUNK_SIZE,
       PROFILE_TRACE_EVENT_CHUNK_SIZE);

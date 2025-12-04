@@ -55,18 +55,28 @@ class NativeAnimatedNodesManager {
  public:
   using DirectManipulationCallback = std::function<void(Tag, const folly::dynamic &)>;
   using FabricCommitCallback = std::function<void(std::unordered_map<Tag, folly::dynamic> &)>;
-  using StartOnRenderCallback = std::function<void(bool isAsync)>;
+  using StartOnRenderCallback = std::function<void(std::function<void()> &&, bool isAsync)>;
   using StopOnRenderCallback = std::function<void(bool isAsync)>;
+  using FrameRateListenerCallback = std::function<void(bool /* shouldEnableListener */)>;
+  using ResolvePlatformColor = std::function<void(SurfaceId surfaceId, const RawValue &value, SharedColor &result)>;
 
   explicit NativeAnimatedNodesManager(
       DirectManipulationCallback &&directManipulationCallback,
       FabricCommitCallback &&fabricCommitCallback,
+      ResolvePlatformColor &&resolvePlatformColor,
       StartOnRenderCallback &&startOnRenderCallback = nullptr,
-      StopOnRenderCallback &&stopOnRenderCallback = nullptr) noexcept;
+      StopOnRenderCallback &&stopOnRenderCallback = nullptr,
+      FrameRateListenerCallback &&frameRateListenerCallback = nullptr) noexcept;
 
   explicit NativeAnimatedNodesManager(std::shared_ptr<UIManagerAnimationBackend> animationBackend) noexcept;
 
   ~NativeAnimatedNodesManager() noexcept;
+
+  // Non-copyable and non-movable to prevent accidental copies or moves of this resource-heavy manager
+  NativeAnimatedNodesManager(const NativeAnimatedNodesManager &) = delete;
+  NativeAnimatedNodesManager &operator=(const NativeAnimatedNodesManager &) = delete;
+  NativeAnimatedNodesManager(NativeAnimatedNodesManager &&) = delete;
+  NativeAnimatedNodesManager &operator=(NativeAnimatedNodesManager &&) = delete;
 
   template <typename T, typename = std::enable_if_t<std::is_base_of_v<AnimatedNode, T>>>
   T *getAnimatedNode(Tag tag) const
@@ -175,13 +185,15 @@ class NativeAnimatedNodesManager {
 
   void updateNodes(const std::set<int> &finishedAnimationValueNodes = {}) noexcept;
 
-  folly::dynamic managedProps(Tag tag) const noexcept;
+  folly::dynamic getManagedProps(Tag tag) const noexcept;
 
   bool hasManagedProps() const noexcept;
 
   void onManagedPropsRemoved(Tag tag) noexcept;
 
   bool isOnRenderThread() const noexcept;
+
+  void resolvePlatformColor(SurfaceId surfaceId, const RawValue &value, SharedColor &result) const;
 
  private:
   void stopRenderCallbackIfNeeded(bool isAsync) noexcept;
@@ -231,12 +243,15 @@ class NativeAnimatedNodesManager {
   const DirectManipulationCallback directManipulationCallback_;
   const FabricCommitCallback fabricCommitCallback_;
 
+  const ResolvePlatformColor resolvePlatformColor_;
+
   /*
    * Tracks whether the render callback loop for animations is currently active.
    */
   std::atomic_bool isRenderCallbackStarted_{false};
   const StartOnRenderCallback startOnRenderCallback_;
   const StopOnRenderCallback stopOnRenderCallback_;
+  const FrameRateListenerCallback frameRateListenerCallback_;
 
   std::shared_ptr<EventEmitterListener> eventEmitterListener_{nullptr};
 

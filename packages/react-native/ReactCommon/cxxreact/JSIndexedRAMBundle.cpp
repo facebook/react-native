@@ -60,8 +60,8 @@ void JSIndexedRAMBundle::init() {
       "header size must exactly match the input file format");
 
   readBundle(reinterpret_cast<char*>(header), sizeof(header));
-  const size_t numTableEntries = folly::Endian::little(header[1]);
-  const size_t startupCodeSize = folly::Endian::little(header[2]);
+  size_t numTableEntries = folly::Endian::little(header[1]);
+  std::streamsize startupCodeSize = folly::Endian::little(header[2]);
 
   // allocate memory for meta data and lookup table.
   m_table = ModuleTable(numTableEntries);
@@ -73,7 +73,7 @@ void JSIndexedRAMBundle::init() {
   // read the startup code
   m_startupCode = std::make_unique<JSBigBufferString>(startupCodeSize - 1);
 
-  readBundle(m_startupCode->data(), startupCodeSize - 1);
+  readBundle(m_startupCode->mutableData(), startupCodeSize - 1);
 }
 
 JSIndexedRAMBundle::Module JSIndexedRAMBundle::getModule(
@@ -109,8 +109,7 @@ std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
   return ret;
 }
 
-void JSIndexedRAMBundle::readBundle(char* buffer, const std::streamsize bytes)
-    const {
+void JSIndexedRAMBundle::readBundle(char* buffer, std::streamsize bytes) const {
   if (!m_bundle->read(buffer, bytes)) {
     if ((m_bundle->rdstate() & std::ios::eofbit) != 0) {
       throw std::ios_base::failure("Unexpected end of RAM Bundle file");

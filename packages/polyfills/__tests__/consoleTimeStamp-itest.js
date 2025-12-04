@@ -26,7 +26,9 @@ describe('console.timeStamp()', () => {
 
   it("doesn't throw when additional arguments are specified", () => {
     expect(() =>
-      console.timeStamp('label', 100, 500, 'Track', 'Group', 'error'),
+      console.timeStamp('label', 100, 500, 'Track', 'Group', 'error', {
+        tooltipText: 'Image processing failed',
+      }),
     ).not.toThrow();
   });
 

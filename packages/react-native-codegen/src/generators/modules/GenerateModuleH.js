@@ -96,6 +96,8 @@ function serializeArg(
       return wrap(val => `${val}.asString(rt)`);
     case 'BooleanTypeAnnotation':
       return wrap(val => `${val}.asBool()`);
+    case 'BooleanLiteralTypeAnnotation':
+      return wrap(val => `${val}.asBool()`);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -265,6 +267,8 @@ function translatePrimitiveJSTypeToCpp(
       return wrapOptional('int', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
+      return wrapOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -374,7 +378,7 @@ function createStructsString(
 
 template <${templateParameterWithTypename}>
 struct ${structName} {
-${templateMemberTypes.map(v => '  ' + v).join(';\n')};
+${templateMemberTypes.map(v => '  ' + v).join('{};\n')};
   bool operator==(const ${structName} &other) const {
     return ${value.properties
       .map(v => `${v.name} == other.${v.name}`)

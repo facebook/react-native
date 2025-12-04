@@ -273,6 +273,8 @@ function getParamObjCType(
       return notStruct(isRequired ? 'NSInteger' : 'NSNumber *');
     case 'BooleanTypeAnnotation':
       return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
+    case 'BooleanLiteralTypeAnnotation':
+      return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -356,6 +358,8 @@ function getReturnObjCType(
       return wrapOptional('NSNumber *', isRequired);
     case 'BooleanTypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
+      return wrapOptional('NSNumber *', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -427,6 +431,8 @@ function getReturnJSType(
     case 'Int32TypeAnnotation':
       return 'NumberKind';
     case 'BooleanTypeAnnotation':
+      return 'BooleanKind';
+    case 'BooleanLiteralTypeAnnotation':
       return 'BooleanKind';
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';

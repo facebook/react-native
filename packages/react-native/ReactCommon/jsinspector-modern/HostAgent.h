@@ -74,10 +74,16 @@ class HostAgent final {
   bool hasFuseboxClientConnected() const;
 
   /**
-   * Emits the trace recording that was captured externally, not via the
+   * Emits the HostTracingProfile that was captured externally, not via the
    * CDP-initiated request.
    */
-  void emitExternalTraceRecording(tracing::TraceRecordingState traceRecording) const;
+  void emitExternalTracingProfile(tracing::HostTracingProfile tracingProfile) const;
+
+  /**
+   * Emits a system state changed event when the number of ReactHost instances
+   * changes.
+   */
+  void emitSystemStateChanged(bool isSingleHost) const;
 
  private:
   // We use the private implementation idiom to ensure this class has the same

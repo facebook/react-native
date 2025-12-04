@@ -73,12 +73,16 @@ thread_local bool NativeAnimatedNodesManager::isOnRenderThread_{false};
 NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     DirectManipulationCallback&& directManipulationCallback,
     FabricCommitCallback&& fabricCommitCallback,
+    ResolvePlatformColor&& resolvePlatformColor,
     StartOnRenderCallback&& startOnRenderCallback,
-    StopOnRenderCallback&& stopOnRenderCallback) noexcept
+    StopOnRenderCallback&& stopOnRenderCallback,
+    FrameRateListenerCallback&& frameRateListenerCallback) noexcept
     : directManipulationCallback_(std::move(directManipulationCallback)),
       fabricCommitCallback_(std::move(fabricCommitCallback)),
+      resolvePlatformColor_(std::move(resolvePlatformColor)),
       startOnRenderCallback_(std::move(startOnRenderCallback)),
-      stopOnRenderCallback_(std::move(stopOnRenderCallback)) {
+      stopOnRenderCallback_(std::move(stopOnRenderCallback)),
+      frameRateListenerCallback_(std::move(frameRateListenerCallback)) {
   if (!fabricCommitCallback_) {
     LOG(WARNING)
         << "C++ Animated was setup without commit callback. This may lead to issue where buttons are not tappable when animation is driven by onScroll event.";
@@ -517,6 +521,17 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 }
 
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
+  // This method can be called from either the UI thread or JavaScript thread.
+  // It ensures `startOnRenderCallback_` is called exactly once using atomic
+  // operations. We use std::atomic_bool rather than std::mutex to avoid
+  // potential deadlocks that could occur if we called external code while
+  // holding a mutex.
+  auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(true);
+  if (isRenderCallbackStarted) {
+    // onRender callback is already started.
+    return;
+  }
+
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
     if (auto animationBackend = animationBackend_.lock()) {
@@ -529,39 +544,36 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
 
     return;
   }
-  // This method can be called from either the UI thread or JavaScript thread.
-  // It ensures `startOnRenderCallback_` is called exactly once using atomic
-  // operations. We use std::atomic_bool rather than std::mutex to avoid
-  // potential deadlocks that could occur if we called external code while
-  // holding a mutex.
-  auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(true);
-  if (isRenderCallbackStarted) {
-    // onRender callback is already started.
-    return;
-  }
 
   if (startOnRenderCallback_) {
-    startOnRenderCallback_(isAsync);
+    startOnRenderCallback_([this]() { onRender(); }, isAsync);
   }
 }
 
 void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded(
     bool isAsync) noexcept {
-  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    if (auto animationBackend = animationBackend_.lock()) {
-      animationBackend->stop(isAsync);
-    }
-    return;
-  }
   // When multiple threads reach this point, only one thread should call
   // stopOnRenderCallback_. This synchronization is primarily needed during
   // destruction of NativeAnimatedNodesManager. In normal operation,
   // stopRenderCallbackIfNeeded is always called from the UI thread.
   auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(false);
 
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    if (isRenderCallbackStarted) {
+      if (auto animationBackend = animationBackend_.lock()) {
+        animationBackend->stop(isAsync);
+      }
+    }
+    return;
+  }
+
   if (isRenderCallbackStarted) {
     if (stopOnRenderCallback_) {
       stopOnRenderCallback_(isAsync);
+
+      if (frameRateListenerCallback_) {
+        frameRateListenerCallback_(false);
+      }
     }
   }
 }
@@ -752,12 +764,7 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
 
     if (driver->getIsComplete()) {
       hasFinishedAnimations = true;
-      const auto shouldRemoveJsSync =
-          ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() &&
-          !ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
-      if (shouldRemoveJsSync) {
-        finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
-      }
+      finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
     }
   }
 
@@ -784,7 +791,7 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
   return commitProps();
 }
 
-folly::dynamic NativeAnimatedNodesManager::managedProps(
+folly::dynamic NativeAnimatedNodesManager::getManagedProps(
     Tag tag) const noexcept {
   std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
   if (const auto iter = connectedAnimatedNodes_.find(tag);
@@ -835,6 +842,15 @@ void NativeAnimatedNodesManager::onManagedPropsRemoved(Tag tag) noexcept {
 
 bool NativeAnimatedNodesManager::isOnRenderThread() const noexcept {
   return isOnRenderThread_;
+}
+
+void NativeAnimatedNodesManager::resolvePlatformColor(
+    SurfaceId surfaceId,
+    const RawValue& value,
+    SharedColor& result) const {
+  if (resolvePlatformColor_) {
+    resolvePlatformColor_(surfaceId, value, result);
+  }
 }
 
 #pragma mark - Listeners
@@ -944,12 +960,7 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
 
         if (driver->getIsComplete()) {
           hasFinishedAnimations = true;
-          const auto shouldRemoveJsSync =
-              ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() &&
-              !ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
-          if (shouldRemoveJsSync) {
-            finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
-          }
+          finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
         }
       }
 
@@ -982,6 +993,7 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
             AnimationMutation{tag, nullptr, propsBuilder.get()});
         containsChange = true;
       }
+      updateViewPropsDirect_.clear();
     }
 
     if (!containsChange) {
@@ -1030,17 +1042,28 @@ void NativeAnimatedNodesManager::onRender() {
       "numActiveAnimations",
       activeAnimations_.size());
 
+  if (frameRateListenerCallback_) {
+    frameRateListenerCallback_(true);
+  }
+
   isOnRenderThread_ = true;
 
   {
     // Flush async created animated nodes
-    std::lock_guard<std::mutex> lock(animatedNodesCreatedAsyncMutex_);
-    std::lock_guard<std::mutex> lockCreateAsync(connectedAnimatedNodesMutex_);
-    for (auto& [tag, node] : animatedNodesCreatedAsync_) {
-      animatedNodes_.insert({tag, std::move(node)});
-      updatedNodeTags_.insert(tag);
+    std::unordered_map<Tag, std::unique_ptr<AnimatedNode>>
+        animatedNodesCreatedAsync;
+    {
+      std::lock_guard<std::mutex> lock(animatedNodesCreatedAsyncMutex_);
+      std::swap(animatedNodesCreatedAsync, animatedNodesCreatedAsync_);
     }
-    animatedNodesCreatedAsync_.clear();
+
+    if (!animatedNodesCreatedAsync.empty()) {
+      std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
+      for (auto& [tag, node] : animatedNodesCreatedAsync) {
+        animatedNodes_.insert({tag, std::move(node)});
+        updatedNodeTags_.insert(tag);
+      }
+    }
   }
 
   // Run operations scheduled from AnimatedModule

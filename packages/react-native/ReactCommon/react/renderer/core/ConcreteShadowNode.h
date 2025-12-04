@@ -78,6 +78,20 @@ class ConcreteShadowNode : public BaseShadowNodeT {
         context, baseProps ? static_cast<const PropsT &>(*baseProps) : *defaultSharedProps(), rawProps);
   }
 
+#ifdef RN_SERIALIZABLE_STATE
+  static void initializeDynamicProps(
+      UnsharedConcreteProps props,
+      const RawProps &rawProps,
+      const Props::Shared &baseProps = nullptr)
+  {
+    if (baseProps) {
+      props->initializeDynamicProps(static_cast<const PropsT &>(*baseProps), rawProps);
+    } else {
+      props->initializeDynamicProps(*defaultSharedProps(), rawProps);
+    }
+  }
+#endif
+
   static const SharedConcreteProps &defaultSharedProps()
   {
     static const SharedConcreteProps defaultSharedProps = std::make_shared<const PropsT>();

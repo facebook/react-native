@@ -623,6 +623,26 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     self.layer.opacity = (float)props.opacity;
   }
 
+  // Clean up box shadow layers to prevent cross-component contamination
+  if (_boxShadowLayers != nullptr) {
+    for (CALayer *boxShadowLayer = nullptr in _boxShadowLayers) {
+      [boxShadowLayer removeFromSuperlayer];
+    }
+    [_boxShadowLayers removeAllObjects];
+    _boxShadowLayers = nil;
+  }
+
+  // Clean up other visual layers
+  [_backgroundColorLayer removeFromSuperlayer];
+  _backgroundColorLayer = nil;
+  [_borderLayer removeFromSuperlayer];
+  _borderLayer = nil;
+  [_outlineLayer removeFromSuperlayer];
+  _outlineLayer = nil;
+  [_filterLayer removeFromSuperlayer];
+  _filterLayer = nil;
+  [self clearExistingBackgroundImageLayers];
+
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
   _isJSResponder = NO;
@@ -1088,6 +1108,16 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
             Float saturation = std::get<Float>(primitive.parameters);
             [_swiftUIWrapper updateSaturation:@(saturation)];
           }
+        } else if (primitive.type == FilterType::Contrast) {
+          if (_swiftUIWrapper != nullptr) {
+            Float contrast = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateContrast:@(contrast)];
+          }
+        } else if (primitive.type == FilterType::HueRotate) {
+          if (_swiftUIWrapper != nullptr) {
+            Float hueRotateDegrees = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateHueRotate:@(hueRotateDegrees)];
+          }
         }
       }
     }
@@ -1545,7 +1575,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   if (!_props->filter.empty()) {
     for (const auto &primitive : _props->filter) {
       if (primitive.type == FilterType::Blur || primitive.type == FilterType::Grayscale ||
-          primitive.type == FilterType::DropShadow || primitive.type == FilterType::Saturate) {
+          primitive.type == FilterType::DropShadow || primitive.type == FilterType::Saturate ||
+          primitive.type == FilterType::Contrast || primitive.type == FilterType::HueRotate) {
         return YES;
       }
     }

@@ -52,6 +52,8 @@ import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener
 import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
 import com.facebook.react.devsupport.StackTraceHelper.convertJavaStackTrace
 import com.facebook.react.devsupport.StackTraceHelper.convertJsStackTrace
+import com.facebook.react.devsupport.inspector.TracingState
+import com.facebook.react.devsupport.inspector.TracingStateProvider
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
 import com.facebook.react.devsupport.interfaces.DebuggerFrontendPanelName
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
@@ -66,8 +68,6 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.devsupport.interfaces.StackFrame
-import com.facebook.react.devsupport.interfaces.TracingState
-import com.facebook.react.devsupport.interfaces.TracingStateProvider
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorOverlayManager
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -85,7 +85,7 @@ import java.util.Locale
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
     public val reactInstanceDevHelper: ReactInstanceDevHelper,
-    @get:JvmName("getJSAppBundleName") public val jsAppBundleName: String?,
+    @get:JvmName("getJSAppBundleName") public var jsAppBundleName: String?,
     enableOnCreate: Boolean,
     public override val redBoxHandler: RedBoxHandler?,
     private val devBundleDownloadListener: DevBundleDownloadListener?,
@@ -145,6 +145,12 @@ public abstract class DevSupportManagerBase(
         stopShakeDetector()
       }
 
+      field = value
+    }
+
+  override var bundleFilePath: String? = null
+    get() = field
+    set(value) {
       field = value
     }
 
@@ -390,21 +396,21 @@ public abstract class DevSupportManagerBase(
 
       val analyzePerformanceItemString =
           when (tracingState) {
-            TracingState.ENABLEDINBACKGROUNDMODE ->
+            TracingState.ENABLED_IN_BACKGROUND_MODE ->
                 applicationContext.getString(R.string.catalyst_performance_background)
-            TracingState.ENABLEDINCDPMODE ->
+            TracingState.ENABLED_IN_CDP_MODE ->
                 applicationContext.getString(R.string.catalyst_performance_cdp)
             TracingState.DISABLED ->
                 applicationContext.getString(R.string.catalyst_performance_disabled)
           }
 
-      if (!isConnected || tracingState == TracingState.ENABLEDINCDPMODE) {
+      if (!isConnected || tracingState == TracingState.ENABLED_IN_CDP_MODE) {
         disabledItemKeys.add(analyzePerformanceItemString)
       }
 
       options[analyzePerformanceItemString] =
           when (tracingState) {
-            TracingState.ENABLEDINBACKGROUNDMODE ->
+            TracingState.ENABLED_IN_BACKGROUND_MODE ->
                 DevOptionHandler {
                   UiThreadUtil.runOnUiThread {
                     if (reactInstanceDevHelper is PerfMonitorDevHelper) {
@@ -421,7 +427,7 @@ public abstract class DevSupportManagerBase(
                   if (reactInstanceDevHelper is PerfMonitorDevHelper)
                       reactInstanceDevHelper.inspectorTarget?.resumeBackgroundTrace()
                 }
-            TracingState.ENABLEDINCDPMODE -> DevOptionHandler {}
+            TracingState.ENABLED_IN_CDP_MODE -> DevOptionHandler {}
           }
     }
 

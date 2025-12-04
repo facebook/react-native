@@ -290,22 +290,26 @@ internal class ReactTextViewAccessibilityDelegate(
     init {
       val accessibleLinks = mutableListOf<AccessibleLink>()
       val spans = text.getSpans(0, text.length, ClickableSpan::class.java)
-      spans.sortBy { text.getSpanStart(it) }
-      for (i in spans.indices) {
-        val span = spans[i]
-        val start = text.getSpanStart(span)
-        val end = text.getSpanEnd(span)
-        // zero length spans, and out of range spans should not be included.
-        if (start == end || start < 0 || end < 0 || start > text.length || end > text.length) {
-          continue
-        }
 
-        val link = AccessibleLink()
-        link.description = text.subSequence(start, end).toString()
-        link.start = start
-        link.end = end
-        link.id = i
-        accessibleLinks.add(link)
+      // Do not generate virtual views if whole text is a single link
+      if (!isWholeTextSingleLink(text, spans)) {
+        spans.sortBy { text.getSpanStart(it) }
+        for (i in spans.indices) {
+          val span = spans[i]
+          val start = text.getSpanStart(span)
+          val end = text.getSpanEnd(span)
+          // zero length spans, and out of range spans should not be included.
+          if (start == end || start < 0 || end < 0 || start > text.length || end > text.length) {
+            continue
+          }
+
+          val link = AccessibleLink()
+          link.description = text.subSequence(start, end).toString()
+          link.start = start
+          link.end = end
+          link.id = i
+          accessibleLinks.add(link)
+        }
       }
       links = accessibleLinks
     }
@@ -341,4 +345,15 @@ internal class ReactTextViewAccessibilityDelegate(
       var id: Int = 0
     }
   }
+}
+
+private fun isWholeTextSingleLink(text: Spanned, spans: Array<ClickableSpan>): Boolean {
+  if (spans.size != 1) {
+    return false
+  }
+
+  val span = spans[0]
+  val start = text.getSpanStart(span)
+  val end = text.getSpanEnd(span)
+  return start == 0 && end == text.length
 }

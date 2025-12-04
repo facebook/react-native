@@ -11,10 +11,12 @@
 import type {ArrayLike} from '../../utils/ArrayLikeUtils';
 
 declare export default class HTMLCollection<+T>
+  // $FlowFixMe[incompatible-variance]
   implements Iterable<T>, ArrayLike<T>
 {
   // This property should've been read-only as well, but Flow doesn't handle
   // read-only indexers correctly (thinks reads are writes and fails).
+  // $FlowFixMe[incompatible-variance]
   [index: number]: T;
   +length: number;
   item(index: number): T | null;

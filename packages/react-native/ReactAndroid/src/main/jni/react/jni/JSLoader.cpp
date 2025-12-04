@@ -72,7 +72,7 @@ loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
       }
 
       auto buf = std::make_unique<JSBigBufferString>(script->size());
-      memcpy(buf->data(), script->c_str(), script->size());
+      memcpy(buf->mutableData(), script->c_str(), script->size());
       return buf;
     }
   }

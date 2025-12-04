@@ -233,7 +233,16 @@ class ReactNativeCoreUtils
 
             # Add the dSYMs folder to the framework folder
             rncore_log("  Adding dSYMs to framework tarball")
-            `(cd "$(dirname "#{dsyms_tmp_dir}")" && mkdir -p React.xcframework && cp -r "$(basename "#{dsyms_tmp_dir}")" React.xcframework/dSYMs && tar -rf "#{frameworkTarPath}" React.xcframework/dSYMs && rm -rf React.xcframework)`
+
+            # Move symbol bundles into each of the slices in the xcframework
+            # Example:
+            # move dSYMs/ios-arm64/. into React.xcframework/ios-arm64/React.framework/dSYMs/.
+            Dir.glob(File.join(dsyms_tmp_dir, "*")).each do |dsym_path|
+                slice_name = File.basename(dsym_path)
+                slice_dsym_dest = File.join("React.xcframework", slice_name, "React.framework", "dSYMs")
+                rncore_log("    Adding dSYM slice #{slice_name} into tarball at #{slice_dsym_dest}")
+                `(cd "#{File.dirname(frameworkTarPath)}" && mkdir -p "#{slice_dsym_dest}" && cp -R "#{dsym_path}/." "#{slice_dsym_dest}" && tar -rf "#{frameworkTarPath}" "#{slice_dsym_dest}")`
+            end
 
             # Now gzip the framework tarball again - remember to use the .tar file and not the .gz file
             rncore_log("  Packing #{Pathname.new(frameworkTarPath).relative_path_from(Pathname.pwd).to_s}")
@@ -245,6 +254,10 @@ class ReactNativeCoreUtils
 
             # Remove backup of original tarballs
             FileUtils.rm_f("#{frameworkTarball}.orig")
+
+            # Remove temp dSYMs folder and the temp Framework folder
+            FileUtils.rm_rf(dsyms_tmp_dir)
+            FileUtils.rm_rf(File.join(artifacts_dir, "React.xcframework"))
 
         rescue => e
             rncore_log("Failed to process dSYMs: #{e.message}", :error)
@@ -271,9 +284,10 @@ class ReactNativeCoreUtils
         return if dsym_bundles.empty?
 
         # Define source path mappings - from absolute build paths to relative framework paths
+        # Expand the path relative to the installation root (project root, parent of ios/)
+        react_native_absolute_path = File.expand_path(@@react_native_path, Pod::Config.instance.installation_root)
         mappings = [
-            # Make sure to make react_native_path absolute
-            ["/Users/runner/work/react-native/react-native/packages/react-native", "#{File.expand_path(@@react_native_path)}"],
+            ["/Users/runner/work/react-native/react-native/packages/react-native", react_native_absolute_path],
         ]
 
         dsym_bundles.each do |dsym_path| begin

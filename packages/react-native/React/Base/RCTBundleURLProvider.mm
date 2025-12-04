@@ -313,6 +313,54 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                             additionalOptions:(NSDictionary<NSString *, NSString *> *__nullable)additionalOptions
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
+  NSArray<NSURLQueryItem *> *queryItems = [self createJSBundleURLQuery:packagerHost
+                                                        packagerScheme:scheme
+                                                             enableDev:enableDev
+                                                    enableMinification:enableMinification
+                                                       inlineSourceMap:inlineSourceMap
+                                                           modulesOnly:modulesOnly
+                                                             runModule:runModule
+                                                     additionalOptions:additionalOptions];
+
+  return [RCTBundleURLProvider resourceURLForResourcePath:path
+                                             packagerHost:packagerHost
+                                                   scheme:scheme
+                                               queryItems:[queryItems copy]];
+}
+
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+               packagerServerScheme:(NSString *)packagerServerScheme
+                 packagerServerHost:(NSString *)packagerServerHost
+             packagerOptionsUpdater:(RCTPackagerOptionsUpdater)packagerOptionsUpdater
+{
+  NSArray<NSURLQueryItem *> *queryItems = [RCTBundleURLProvider createJSBundleURLQuery:packagerServerHost
+                                                                        packagerScheme:packagerServerScheme
+                                                                             enableDev:[self enableDev]
+                                                                    enableMinification:[self enableMinification]
+                                                                       inlineSourceMap:[self inlineSourceMap]
+                                                                           modulesOnly:NO
+                                                                             runModule:YES
+                                                                     additionalOptions:nil];
+
+  NSArray<NSURLQueryItem *> *updatedQueryItems = packagerOptionsUpdater((NSMutableArray *)queryItems);
+  NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
+
+  return [RCTBundleURLProvider resourceURLForResourcePath:path
+                                             packagerHost:packagerServerHost
+                                                   scheme:packagerServerScheme
+                                               queryItems:updatedQueryItems];
+}
+
++ (NSArray<NSURLQueryItem *> *)createJSBundleURLQuery:(NSString *)packagerHost
+                                       packagerScheme:(NSString *__nullable)scheme
+                                            enableDev:(BOOL)enableDev
+                                   enableMinification:(BOOL)enableMinification
+                                      inlineSourceMap:(BOOL)inlineSourceMap
+                                          modulesOnly:(BOOL)modulesOnly
+                                            runModule:(BOOL)runModule
+                                    additionalOptions:
+                                        (NSDictionary<NSString *, NSString *> *__nullable)additionalOptions
+{
   BOOL lazy = enableDev;
   NSMutableArray<NSURLQueryItem *> *queryItems = [[NSMutableArray alloc] initWithArray:@[
     [[NSURLQueryItem alloc] initWithName:@"platform" value:RCTPlatformName],
@@ -345,10 +393,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
     }
   }
 
-  return [[self class] resourceURLForResourcePath:path
-                                     packagerHost:packagerHost
-                                           scheme:scheme
-                                       queryItems:[queryItems copy]];
+  return queryItems;
 }
 
 + (NSURL *)resourceURLForResourcePath:(NSString *)path

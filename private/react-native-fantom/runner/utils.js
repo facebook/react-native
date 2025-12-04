@@ -32,7 +32,7 @@ export function getBuckOptionsForHermes(
     : [];
   switch (variant) {
     case HermesVariant.Hermes:
-      return baseOptions;
+      return [...baseOptions, '-c hermes.static_hermes=legacy'];
     case HermesVariant.StaticHermesStable:
       return [...baseOptions, '-c hermes.static_hermes=stable'];
     case HermesVariant.StaticHermesExperimental:

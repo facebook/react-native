@@ -11,6 +11,7 @@
 import type {FeatureFlagValue} from '../../../packages/react-native/scripts/featureflags/types';
 
 import ReactNativeFeatureFlags from '../../../packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config';
+import * as EnvironmentOptions from './EnvironmentOptions';
 import {HermesVariant} from './utils';
 // $FlowExpectedError[untyped-import]
 import {extract, parse} from 'jest-docblock';
@@ -59,13 +60,13 @@ export const FantomTestConfigHermesVariant = HermesVariant;
 export const DEFAULT_IS_NATIVE_OPTIMIZED: boolean = false;
 export const DEFAULT_IS_JS_OPTIMIZED: boolean = false;
 export const DEFAULT_IS_JS_BYTECODE: boolean = false;
-export const DEFAULT_HERMES_VARIANT: HermesVariant = HermesVariant.Hermes;
+export const DEFAULT_OSS_HERMES_VARIANT: HermesVariant = HermesVariant.Hermes;
+export const DEFAULT_HERMES_VARIANT: HermesVariant =
+  HermesVariant.StaticHermesStable;
 
 export const DEFAULT_FEATURE_FLAGS: FantomTestConfigFeatureFlags = {
   common: {},
-  jsOnly: {
-    enableAccessToHostTreeInFabric: true,
-  },
+  jsOnly: {},
   reactInternal: {},
 };
 
@@ -172,7 +173,9 @@ export default function getFantomTestConfigs(
     isNativeOptimized: DEFAULT_IS_NATIVE_OPTIMIZED,
     isJsOptimized: DEFAULT_IS_JS_OPTIMIZED,
     isJsBytecode: DEFAULT_IS_JS_BYTECODE,
-    hermesVariant: DEFAULT_HERMES_VARIANT,
+    hermesVariant: EnvironmentOptions.isOSS
+      ? DEFAULT_OSS_HERMES_VARIANT
+      : DEFAULT_HERMES_VARIANT,
     flags: {
       common: {
         ...DEFAULT_FEATURE_FLAGS.common,

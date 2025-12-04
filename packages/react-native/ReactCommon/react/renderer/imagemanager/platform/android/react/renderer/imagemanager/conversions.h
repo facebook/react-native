@@ -24,8 +24,8 @@ constexpr MapBuffer::Key IS_KEY_DEFAULT_SRC = 1;
 constexpr MapBuffer::Key IS_KEY_RESIZE_MODE = 2;
 constexpr MapBuffer::Key IS_KEY_RESIZE_METHOD = 3;
 constexpr MapBuffer::Key IS_KEY_BLUR_RADIUS = 4;
-constexpr MapBuffer::Key IS_KEY_VIEW_WIDTH = 5;
-constexpr MapBuffer::Key IS_KEY_VIEW_HEIGHT = 6;
+constexpr MapBuffer::Key IS_KEY_IMAGE_WIDTH = 5;
+constexpr MapBuffer::Key IS_KEY_IMAGE_HEIGHT = 6;
 constexpr MapBuffer::Key IS_KEY_RESIZE_MULTIPLIER = 7;
 constexpr MapBuffer::Key IS_KEY_SHOULD_NOTIFY_LOAD_EVENTS = 8;
 constexpr MapBuffer::Key IS_KEY_OVERLAY_COLOR = 9;
@@ -35,16 +35,20 @@ constexpr MapBuffer::Key IS_KEY_PROGRESSIVE_RENDERING_ENABLED = 12;
 constexpr MapBuffer::Key IS_KEY_LOADING_INDICATOR_SRC = 13;
 constexpr MapBuffer::Key IS_KEY_ANALYTIC_TAG = 14;
 constexpr MapBuffer::Key IS_KEY_TAG = 15;
+constexpr MapBuffer::Key IS_KEY_VIEW_WIDTH = 16;
+constexpr MapBuffer::Key IS_KEY_VIEW_HEIGHT = 17;
 
 inline void serializeImageSource(MapBufferBuilder &builder, const ImageSource &imageSource)
 {
   builder.putString(IS_KEY_URI, imageSource.uri);
-  builder.putInt(IS_KEY_VIEW_WIDTH, static_cast<int32_t>(imageSource.size.width));
-  builder.putInt(IS_KEY_VIEW_HEIGHT, static_cast<int32_t>(imageSource.size.height));
+  builder.putInt(IS_KEY_IMAGE_WIDTH, static_cast<int32_t>(imageSource.size.width));
+  builder.putInt(IS_KEY_IMAGE_HEIGHT, static_cast<int32_t>(imageSource.size.height));
 }
 
 inline void serializeImageRequestParams(MapBufferBuilder &builder, const ImageRequestParams &imageRequestParams)
 {
+  builder.putInt(IS_KEY_VIEW_WIDTH, static_cast<int32_t>(imageRequestParams.size.width));
+  builder.putInt(IS_KEY_VIEW_HEIGHT, static_cast<int32_t>(imageRequestParams.size.height));
   builder.putString(IS_KEY_DEFAULT_SRC, imageRequestParams.defaultSource.uri);
   builder.putInt(IS_KEY_RESIZE_MODE, to_underlying(imageRequestParams.resizeMode));
   builder.putString(IS_KEY_RESIZE_METHOD, imageRequestParams.resizeMethod);

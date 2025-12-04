@@ -8,7 +8,7 @@
  * @format
  */
 
-/*:: import type {BuildFlavor} from './types'; */
+/*:: import type {BuildFlavor, MavenSubGroup} from './types'; */
 
 const {execSync} = require('child_process');
 const fs = require('fs');
@@ -62,10 +62,11 @@ function createLogger(
 async function computeNightlyTarballURL(
   version /*: string */,
   buildType /*: BuildFlavor */,
+  subGroup /*: MavenSubGroup */,
   artifactCoordinate /*: string */,
   artifactName /*: string */,
 ) /*: Promise<string> */ {
-  const xmlUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/hermes/${artifactCoordinate}/${version}-SNAPSHOT/maven-metadata.xml`;
+  const xmlUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/${subGroup}/${artifactCoordinate}/${version}-SNAPSHOT/maven-metadata.xml`;
 
   const response = await fetch(xmlUrl);
   if (!response.ok) {
@@ -97,7 +98,7 @@ async function computeNightlyTarballURL(
   const buildNumber = buildNumberMatch[1];
 
   const fullVersion = `${version}-${timestamp}-${buildNumber}`;
-  const finalUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/hermes/${artifactCoordinate}/${version}-SNAPSHOT/${artifactCoordinate}-${fullVersion}-${artifactName}`;
+  const finalUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/${subGroup}/${artifactCoordinate}/${version}-SNAPSHOT/${artifactCoordinate}-${fullVersion}-${artifactName}`;
   return finalUrl;
 }
 

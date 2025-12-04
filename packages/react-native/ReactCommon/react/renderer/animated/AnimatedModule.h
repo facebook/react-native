@@ -194,11 +194,11 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>, publi
 
  private:
   std::shared_ptr<NativeAnimatedNodesManagerProvider> nodesManagerProvider_;
-  std::shared_ptr<NativeAnimatedNodesManager> nodesManager_;
+  std::weak_ptr<NativeAnimatedNodesManager> nodesManager_;
   std::vector<Operation> preOperations_;
   std::vector<Operation> operations_;
 
-  void executeOperation(const Operation &operation);
+  void executeOperation(const Operation &operation, std::weak_ptr<NativeAnimatedNodesManager> nodesManagerWeak);
   void installJSIBindingsWithRuntime(jsi::Runtime &runtime) override;
 };
 

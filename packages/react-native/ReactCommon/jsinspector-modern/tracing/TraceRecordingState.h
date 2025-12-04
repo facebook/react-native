@@ -18,22 +18,33 @@
 
 namespace facebook::react::jsinspector_modern::tracing {
 
+/**
+ * The global state for the given Trace Recording.
+ * Shared with Tracing Agents, which could use it to stash the corresponding target profiles during reloads.
+ */
 struct TraceRecordingState {
+  TraceRecordingState(
+      tracing::Mode tracingMode,
+      std::set<tracing::Category> enabledCategories,
+      std::optional<HighResDuration> windowSize = std::nullopt)
+      : mode(tracingMode), enabledCategories(std::move(enabledCategories)), windowSize(windowSize)
+  {
+  }
+
   // The mode of this Trace Recording.
   tracing::Mode mode;
-
-  // The ID of the OS-level process that this Trace Recording is associated
-  // with.
-  ProcessId processId = oscompat::getCurrentProcessId();
-
-  // The timestamp at which this Trace Recording started.
-  HighResTimeStamp startTime;
 
   // All captured Runtime Sampling Profiles during this Trace Recording.
   std::vector<RuntimeSamplingProfile> runtimeSamplingProfiles{};
 
   // All captures Instance Tracing Profiles during this Trace Recording.
   std::vector<InstanceTracingProfile> instanceTracingProfiles{};
+
+  // The list of categories that are enabled for this recording.
+  std::set<tracing::Category> enabledCategories;
+
+  // The size of the time window for this recording.
+  std::optional<HighResDuration> windowSize;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

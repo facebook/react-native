@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ac15ead28cac3a969854f339d625dca>>
+ * @generated SignedSource<<3caa7ab068af35b4b198bce5925dea1d>>
  */
 
 /**
@@ -42,21 +42,25 @@ class NativeReactNativeFeatureFlags
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
-  bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
-
   bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
 
-  bool disableFabricCommitInCXXAnimated(jsi::Runtime& runtime);
+  bool disableImageViewPreallocationAndroid(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool disableOldAndroidAttachmentMetricsWorkarounds(jsi::Runtime& runtime);
 
+  bool disableSubviewClippingAndroid(jsi::Runtime& runtime);
+
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
+
+  bool disableViewPreallocationAndroid(jsi::Runtime& runtime);
 
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
+
+  bool enableAndroidAntialiasedBorderRadiusClipping(jsi::Runtime& runtime);
 
   bool enableAndroidLinearText(jsi::Runtime& runtime);
 
@@ -76,6 +80,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
+  bool enableExclusivePropsUpdateAndroid(jsi::Runtime& runtime);
+
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
@@ -88,6 +94,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
 
+  bool enableImagePrefetchingJNIBatchingAndroid(jsi::Runtime& runtime);
+
   bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
 
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
@@ -95,6 +103,10 @@ class NativeReactNativeFeatureFlags
   bool enableImperativeFocus(jsi::Runtime& runtime);
 
   bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
+
+  bool enableIntersectionObserverByDefault(jsi::Runtime& runtime);
+
+  bool enableKeyEvents(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
@@ -111,8 +123,6 @@ class NativeReactNativeFeatureFlags
   bool enablePreparedTextLayout(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
-
-  bool enableResourceTimingAPI(jsi::Runtime& runtime);
 
   bool enableSwiftUIBasedFilters(jsi::Runtime& runtime);
 
@@ -140,6 +150,10 @@ class NativeReactNativeFeatureFlags
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
+  bool fixTextClippingAndroid15useBoundsForWidth(jsi::Runtime& runtime);
+
+  bool fuseboxAssertSingleHostState(jsi::Runtime& runtime);
+
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
@@ -147,6 +161,8 @@ class NativeReactNativeFeatureFlags
   bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
 
   bool overrideBySynchronousMountPropsAtMountingAndroid(jsi::Runtime& runtime);
+
+  bool perfIssuesEnabled(jsi::Runtime& runtime);
 
   bool perfMonitorV2Enabled(jsi::Runtime& runtime);
 
@@ -156,11 +172,17 @@ class NativeReactNativeFeatureFlags
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
+  bool shouldResetClickableWhenRecyclingView(jsi::Runtime& runtime);
+
+  bool shouldResetOnClickListenerWhenRecyclingView(jsi::Runtime& runtime);
+
+  bool shouldSetEnabledBasedOnAccessibilityState(jsi::Runtime& runtime);
+
+  bool shouldSetIsClickableByDefault(jsi::Runtime& runtime);
+
   bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 
   bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
-
-  bool sweepActiveTouchOnChildNativeGesturesAndroid(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
@@ -175,8 +197,6 @@ class NativeReactNativeFeatureFlags
   bool useNativeTransformHelperAndroid(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
-
-  bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
 

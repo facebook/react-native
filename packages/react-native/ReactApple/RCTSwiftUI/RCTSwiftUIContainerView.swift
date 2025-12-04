@@ -53,6 +53,14 @@ import UIKit
     containerViewModel.saturationAmount = CGFloat(saturation.floatValue)
   }
 
+  @objc public func updateContrast(_ contrast: NSNumber) {
+    containerViewModel.contrastAmount = CGFloat(contrast.floatValue)
+  }
+
+  @objc public func updateHueRotate(_ degrees: NSNumber) {
+    containerViewModel.hueRotationDegrees = CGFloat(degrees.floatValue)
+  }
+
   @objc public func updateLayout(withBounds bounds: CGRect) {
     hostingController?.view.frame = bounds
     containerViewModel.contentView?.frame = bounds
@@ -66,6 +74,8 @@ import UIKit
     containerViewModel.shadowY = 0
     containerViewModel.shadowColor = Color.clear
     containerViewModel.saturationAmount = 1
+    containerViewModel.contrastAmount = 1
+    containerViewModel.hueRotationDegrees = 0
   }
 }
 
@@ -85,6 +95,12 @@ class ContainerViewModel: ObservableObject {
   // saturation filter properties
   @Published var saturationAmount: CGFloat = 1
 
+  // contrast filter properties
+  @Published var contrastAmount: CGFloat = 1
+
+  // hue-rotate filter properties
+  @Published var hueRotationDegrees: CGFloat = 0
+
   @Published var contentView: UIView?
 }
 
@@ -98,6 +114,8 @@ struct SwiftUIContainerView: View {
         .grayscale(viewModel.grayscale)
         .shadow(color: viewModel.shadowColor, radius: viewModel.shadowRadius, x: viewModel.shadowX, y: viewModel.shadowY)
         .saturation(viewModel.saturationAmount)
+        .contrast(viewModel.contrastAmount)
+        .hueRotation(.degrees(viewModel.hueRotationDegrees))
     }
   }
 }

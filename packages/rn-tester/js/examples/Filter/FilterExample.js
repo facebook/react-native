@@ -135,7 +135,6 @@ exports.examples = [
     title: 'Contrast',
     description: 'contrast(0.5)',
     name: 'contrast',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison style={{filter: [{contrast: 0.5}]}} />
@@ -173,7 +172,6 @@ exports.examples = [
     title: 'Hue Rotate',
     description: 'hueRotate(-90deg)',
     name: 'hueRotate',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison
