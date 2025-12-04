@@ -46,7 +46,7 @@ TraceEventGenerator::createFrameTimingsEvents(
 
   auto beginEvent = TraceEvent{
       .name = "BeginFrame",
-      .cat = {Category::Timeline},
+      .cat = {Category::Frame},
       .ph = 'I',
       .ts = beginDrawingTimestamp,
       .pid = processId,
@@ -56,7 +56,7 @@ TraceEventGenerator::createFrameTimingsEvents(
   };
   auto commitEvent = TraceEvent{
       .name = "Commit",
-      .cat = {Category::Timeline},
+      .cat = {Category::Frame},
       .ph = 'I',
       .ts = commitTimestamp,
       .pid = processId,
@@ -66,7 +66,7 @@ TraceEventGenerator::createFrameTimingsEvents(
   };
   auto drawEvent = TraceEvent{
       .name = "DrawFrame",
-      .cat = {Category::Timeline},
+      .cat = {Category::Frame},
       .ph = 'I',
       .ts = endDrawingTimestamp,
       .pid = processId,
