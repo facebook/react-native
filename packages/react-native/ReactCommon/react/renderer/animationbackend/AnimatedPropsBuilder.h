@@ -39,6 +39,22 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<SharedColor>>(BACKGROUND_COLOR, value));
   }
+  void setShadowColor(SharedColor value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<SharedColor>>(SHADOW_COLOR, value));
+  }
+  void setShadowOpacity(Float value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Float>>(SHADOW_OPACITY, value));
+  }
+  void setShadowRadius(Float value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Float>>(SHADOW_RADIUS, value));
+  }
+  void setShadowOffset(Size value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Size>>(SHADOW_OFFSET, value));
+  }
   void storeDynamic(folly::dynamic &d)
   {
     rawProps = std::make_unique<RawProps>(std::move(d));
