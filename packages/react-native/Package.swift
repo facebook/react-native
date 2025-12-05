@@ -594,7 +594,11 @@ let reactRCTBlob = RNTarget(
 let reactRCTNetwork = RNTarget(
   name: .reactRCTNetwork,
   path: "Libraries/Network",
-  dependencies: [.yoga, .jsi, .reactTurboModuleCore]
+  dependencies: [.yoga, .jsi, .reactTurboModuleCore],
+  defines: [
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
+  ]
 )
 
 /// React-RCTVibration.podspec
