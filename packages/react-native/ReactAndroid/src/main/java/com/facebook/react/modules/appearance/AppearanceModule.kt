@@ -28,13 +28,40 @@ constructor(
 
   private var lastEmittedColorScheme: String? = null
 
+  init {
+    // Register as a listener for color scheme changes if override is provided
+    overrideColorScheme?.addSchemeChangeListener {
+      val activity = reactApplicationContext.getCurrentActivity()
+      onConfigurationChanged(activity ?: reactApplicationContext)
+    }
+  }
+
   /** Optional override to the current color scheme */
-  public fun interface OverrideColorScheme {
+  public interface OverrideColorScheme {
     /**
      * Color scheme will use the return value instead of the current system configuration. Available
      * scheme: {light, dark}
      */
     public fun getScheme(): String
+
+    /**
+     * Register a listener to be notified when the color scheme changes. The listener will be
+     * invoked whenever the underlying theme preference changes.
+     *
+     * Default implementation does nothing. Override this method if you want to support dynamic
+     * color scheme updates.
+     */
+    public fun addSchemeChangeListener(listener: () -> Unit) {
+      // no-op
+    }
+
+    /**
+     * Unregisters a previously added color scheme change listener. Default implementation is a
+     * no-op; override to remove the listener from your source.
+     */
+    public fun removeSchemeChangeListener(listener: () -> Unit) {
+      // no-op
+    }
   }
 
   private fun colorSchemeForCurrentConfiguration(context: Context): String {
