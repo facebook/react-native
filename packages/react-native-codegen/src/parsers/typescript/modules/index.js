@@ -399,7 +399,18 @@ function translateTypeAnnotation(
       );
     }
     case 'TSUnionType': {
-      return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
+      return emitUnion(
+        nullable,
+        hasteModuleName,
+        typeAnnotation,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        translateTypeAnnotation,
+        parser,
+      );
     }
     case 'TSLiteralType': {
       const literal = typeAnnotation.literal;

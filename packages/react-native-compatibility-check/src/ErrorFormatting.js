@@ -20,6 +20,8 @@ import type {
 } from './DiffResults';
 import type {CompleteTypeAnnotation} from '@react-native/codegen/src/CodegenSchema';
 
+import {parseValidUnionType} from '@react-native/codegen/src/generators/Utils';
+
 function indentedLineStart(indent: number): string {
   return '\n' + '  '.repeat(indent);
 }
@@ -196,25 +198,66 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
         annotation.value.includes(' ')
         ? `'${annotation.value}'`
         : annotation.value;
-    case 'StringLiteralUnionTypeAnnotation':
-      return (
-        '(' +
-        annotation.types
-          .map(stringLit => formatTypeAnnotation(stringLit))
-          .join(' | ') +
-        ')'
-      );
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(annotation);
+      switch (validUnionType) {
+        case 'boolean':
+          if (
+            annotation.types.every(
+              ({type}) => type === 'BooleanLiteralTypeAnnotation',
+            )
+          ) {
+            return (
+              '(' +
+              // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+              (annotation.types: $ReadOnlyArray<CompleteTypeAnnotation>)
+                .map(boolLit => formatTypeAnnotation(boolLit))
+                .join(' | ') +
+              ')'
+            );
+          }
+          return `Union<boolean>`;
+        case 'number':
+          if (
+            annotation.types.every(
+              ({type}) => type === 'NumberLiteralTypeAnnotation',
+            )
+          ) {
+            return (
+              '(' +
+              // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+              (annotation.types: $ReadOnlyArray<CompleteTypeAnnotation>)
+                .map(numLit => formatTypeAnnotation(numLit))
+                .join(' | ') +
+              ')'
+            );
+          }
+          return `Union<number>`;
+        case 'object':
+          return `Union<Object>`;
+        case 'string':
+          if (
+            annotation.types.every(
+              ({type}) => type === 'StringLiteralTypeAnnotation',
+            )
+          ) {
+            return (
+              '(' +
+              // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+              (annotation.types: $ReadOnlyArray<CompleteTypeAnnotation>)
+                .map(stringLit => formatTypeAnnotation(stringLit))
+                .join(' | ') +
+              ')'
+            );
+          }
+          // Unions of strings and string literals are treated as just strings
+          return `Union<string>`;
+        default:
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
+      }
     case 'StringTypeAnnotation':
       return 'string';
-    case 'UnionTypeAnnotation': {
-      const shortHandType =
-        annotation.memberType === 'StringTypeAnnotation'
-          ? 'string'
-          : annotation.memberType === 'ObjectTypeAnnotation'
-            ? 'Object'
-            : 'number';
-      return `Union<${shortHandType}>`;
-    }
     case 'PromiseTypeAnnotation':
       return 'Promise<' + formatTypeAnnotation(annotation.elementType) + '>';
     case 'EventEmitterTypeAnnotation':

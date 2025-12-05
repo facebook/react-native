@@ -109,6 +109,14 @@ export type MembersComparisonResult = {
     fault?: TypeComparisonError,
   }>,
 };
+export type UnionMembersComparisonResult = {
+  addedMembers?: Array<CompleteTypeAnnotation>,
+  missingMembers?: Array<CompleteTypeAnnotation>,
+  errorMembers?: Array<{
+    member: string,
+    fault?: TypeComparisonError,
+  }>,
+};
 export type NullableComparisonResult = {
   /* Four possible cases of change:
      void goes to T?   :: typeRefined !optionsReduced
@@ -130,6 +138,7 @@ export type ComparisonResult =
   | {status: 'nullableChange', nullableLog: NullableComparisonResult}
   | {status: 'properties', propertyLog: PropertiesComparisonResult}
   | {status: 'members', memberLog: MembersComparisonResult}
+  | {status: 'unionMembers', memberLog: UnionMembersComparisonResult}
   | {status: 'functionChange', functionChangeLog: FunctionComparisonResult}
   | {status: 'positionalTypeChange', changeLog: PositionalComparisonResult}
   | {status: 'error', errorLog: TypeComparisonError};
@@ -148,6 +157,12 @@ export function isPropertyLogEmpty(
 }
 
 export function isMemberLogEmpty(result: MembersComparisonResult): boolean {
+  return !(result.addedMembers || result.missingMembers || result.errorMembers);
+}
+
+export function isUnionMemberLogEmpty(
+  result: UnionMembersComparisonResult,
+): boolean {
   return !(result.addedMembers || result.missingMembers || result.errorMembers);
 }
 

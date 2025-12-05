@@ -278,7 +278,7 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
     PromiseTypeAnnotation: 'Promise',
     // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
     // Right now they are partially treated as UnionTypeAnnotation
-    UnionTypeAnnotation: 'UnionTypeAnnotation',
+    // UnionTypeAnnotation: 'UnionTypeAnnotation',
   };
 
   if (type in TypeMap) {

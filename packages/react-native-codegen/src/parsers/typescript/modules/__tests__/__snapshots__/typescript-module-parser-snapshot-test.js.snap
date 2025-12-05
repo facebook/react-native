@@ -388,7 +388,24 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
                 'type': 'UnionTypeAnnotation',
-                'memberType': 'ObjectTypeAnnotation'
+                'types': [
+                  {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': []
+                  },
+                  {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'low',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                ]
               },
               'params': [
                 {
@@ -396,7 +413,20 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'NumberTypeAnnotation'
+                    'types': [
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 1
+                      },
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 2
+                      },
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 3
+                      }
+                    ]
                   }
                 },
                 {
@@ -404,7 +434,20 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'NumberTypeAnnotation'
+                    'types': [
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 1.44
+                      },
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 2.88
+                      },
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 5.76
+                      }
+                    ]
                   }
                 },
                 {
@@ -412,14 +455,31 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'ObjectTypeAnnotation'
+                    'types': [
+                      {
+                        'type': 'ObjectTypeAnnotation',
+                        'properties': []
+                      },
+                      {
+                        'type': 'ObjectTypeAnnotation',
+                        'properties': [
+                          {
+                            'name': 'low',
+                            'optional': false,
+                            'typeAnnotation': {
+                              'type': 'StringTypeAnnotation'
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   }
                 },
                 {
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'type': 'UnionTypeAnnotation',
                     'types': [
                       {
                         'type': 'StringLiteralTypeAnnotation',
@@ -1098,7 +1158,18 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
               'returnTypeAnnotation': {
                 'type': 'ArrayTypeAnnotation',
                 'elementType': {
-                  'type': 'AnyTypeAnnotation'
+                  'type': 'UnionTypeAnnotation',
+                  'types': [
+                    {
+                      'type': 'StringTypeAnnotation'
+                    },
+                    {
+                      'type': 'NumberTypeAnnotation'
+                    },
+                    {
+                      'type': 'BooleanTypeAnnotation'
+                    }
+                  ]
                 }
               },
               'params': [
@@ -1184,7 +1255,18 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_AR
               'returnTypeAnnotation': {
                 'type': 'ArrayTypeAnnotation',
                 'elementType': {
-                  'type': 'AnyTypeAnnotation'
+                  'type': 'UnionTypeAnnotation',
+                  'types': [
+                    {
+                      'type': 'StringTypeAnnotation'
+                    },
+                    {
+                      'type': 'NumberTypeAnnotation'
+                    },
+                    {
+                      'type': 'BooleanTypeAnnotation'
+                    }
+                  ]
                 }
               },
               'params': [
@@ -3058,7 +3140,24 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
                 'type': 'UnionTypeAnnotation',
-                'memberType': 'ObjectTypeAnnotation'
+                'types': [
+                  {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': []
+                  },
+                  {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'low',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'StringTypeAnnotation'
+                        }
+                      }
+                    ]
+                  }
+                ]
               },
               'params': [
                 {
@@ -3066,7 +3165,20 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'NumberTypeAnnotation'
+                    'types': [
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 1
+                      },
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 2
+                      },
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 3
+                      }
+                    ]
                   }
                 },
                 {
@@ -3074,7 +3186,20 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'NumberTypeAnnotation'
+                    'types': [
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 1.44
+                      },
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 2.88
+                      },
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 5.76
+                      }
+                    ]
                   }
                 },
                 {
@@ -3082,14 +3207,31 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'ObjectTypeAnnotation'
+                    'types': [
+                      {
+                        'type': 'ObjectTypeAnnotation',
+                        'properties': []
+                      },
+                      {
+                        'type': 'ObjectTypeAnnotation',
+                        'properties': [
+                          {
+                            'name': 'low',
+                            'optional': false,
+                            'typeAnnotation': {
+                              'type': 'StringTypeAnnotation'
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   }
                 },
                 {
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'type': 'UnionTypeAnnotation',
                     'types': [
                       {
                         'type': 'StringLiteralTypeAnnotation',
@@ -3133,7 +3275,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'StringLiteralUnionTypeAnnotation',
+                'type': 'UnionTypeAnnotation',
                 'types': [
                   {
                     'type': 'StringLiteralTypeAnnotation',
@@ -3161,7 +3303,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
                   'name': 'strings',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'type': 'UnionTypeAnnotation',
                     'types': [
                       {
                         'type': 'StringLiteralTypeAnnotation',
@@ -3184,7 +3326,16 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
                 'type': 'UnionTypeAnnotation',
-                'memberType': 'NumberTypeAnnotation'
+                'types': [
+                  {
+                    'type': 'NumberLiteralTypeAnnotation',
+                    'value': 1
+                  },
+                  {
+                    'type': 'NumberLiteralTypeAnnotation',
+                    'value': 2
+                  }
+                ]
               },
               'params': []
             }
@@ -3203,7 +3354,16 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'NumberTypeAnnotation'
+                    'types': [
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 1
+                      },
+                      {
+                        'type': 'NumberLiteralTypeAnnotation',
+                        'value': 2
+                      }
+                    ]
                   }
                 }
               ]
@@ -3216,7 +3376,34 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
                 'type': 'UnionTypeAnnotation',
-                'memberType': 'ObjectTypeAnnotation'
+                'types': [
+                  {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'a',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'NumberLiteralTypeAnnotation',
+                          'value': 1
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    'type': 'ObjectTypeAnnotation',
+                    'properties': [
+                      {
+                        'name': 'b',
+                        'optional': false,
+                        'typeAnnotation': {
+                          'type': 'NumberLiteralTypeAnnotation',
+                          'value': 2
+                        }
+                      }
+                    ]
+                  }
+                ]
               },
               'params': []
             }
@@ -3235,7 +3422,34 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'ObjectTypeAnnotation'
+                    'types': [
+                      {
+                        'type': 'ObjectTypeAnnotation',
+                        'properties': [
+                          {
+                            'name': 'a',
+                            'optional': false,
+                            'typeAnnotation': {
+                              'type': 'NumberLiteralTypeAnnotation',
+                              'value': 1
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        'type': 'ObjectTypeAnnotation',
+                        'properties': [
+                          {
+                            'name': 'b',
+                            'optional': false,
+                            'typeAnnotation': {
+                              'type': 'NumberLiteralTypeAnnotation',
+                              'value': 2
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   }
                 }
               ]

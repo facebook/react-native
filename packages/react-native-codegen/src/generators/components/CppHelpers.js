@@ -15,7 +15,7 @@ import type {
   PropTypeAnnotation,
 } from '../../CodegenSchema';
 
-const {getEnumName, toSafeCppString} = require('../Utils');
+const {getEnumName, parseValidUnionType, toSafeCppString} = require('../Utils');
 
 function toIntEnumValueName(propName: string, value: number): string {
   return `${toSafeCppString(propName)}${value}`;
@@ -61,7 +61,40 @@ function getCppArrayTypeForAnnotation(
     case 'Int32TypeAnnotation':
     case 'MixedTypeAnnotation':
       return `std::vector<${getCppTypeForAnnotation(typeElement.type)}>`;
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeElement);
+      switch (validUnionType) {
+        case 'boolean':
+          return `std::vector<${getCppTypeForAnnotation('BooleanTypeAnnotation')}>`;
+        case 'number':
+          // Have type-upgraded Number to Double in this case to match the Int32TypeAnnotation, FloatTypeAnnotation & DoubleTypeAnnotation
+          return `std::vector<${getCppTypeForAnnotation('DoubleTypeAnnotation')}>`;
+        case 'object':
+          if (!structParts) {
+            throw new Error(
+              `Trying to generate the event emitter for an Array of ${typeElement.type} without informations to generate the generic type`,
+            );
+          }
+          return `std::vector<${generateEventStructName(structParts)}>`;
+        case 'string':
+          if (
+            typeElement.types.every(
+              ({type}) => type === 'StringLiteralTypeAnnotation',
+            )
+          ) {
+            if (!structParts) {
+              throw new Error(
+                `Trying to generate the event emitter for an Array of ${typeElement.type} without informations to generate the generic type`,
+              );
+            }
+            return `std::vector<${generateEventStructName(structParts)}>`;
+          }
+          // Unions of strings and string literals are treated as just strings
+          return `std::vector<${getCppTypeForAnnotation('StringTypeAnnotation')}>`;
+        default:
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
+      }
     case 'ObjectTypeAnnotation':
       if (!structParts) {
         throw new Error(
