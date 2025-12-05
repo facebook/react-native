@@ -21,6 +21,7 @@
 #include <react/renderer/animationbackend/AnimationBackend.h>
 #endif
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <chrono>
 #include <memory>
@@ -100,6 +101,8 @@ class NativeAnimatedNodesManager {
   void connectAnimatedNodes(Tag parentTag, Tag childTag) noexcept;
 
   void connectAnimatedNodeToView(Tag propsNodeTag, Tag viewTag) noexcept;
+
+  void connectAnimatedNodeToShadowNodeFamily(Tag propsNodeTag, std::shared_ptr<const ShadowNodeFamily> family) noexcept;
 
   void disconnectAnimatedNodes(Tag parentTag, Tag childTag) noexcept;
 
@@ -257,6 +260,9 @@ class NativeAnimatedNodesManager {
 
   std::unordered_map<Tag, folly::dynamic> updateViewProps_{};
   std::unordered_map<Tag, folly::dynamic> updateViewPropsDirect_{};
+
+  mutable std::mutex tagToShadowNodeFamilyMutex_;
+  std::unordered_map<Tag, std::weak_ptr<const ShadowNodeFamily>> tagToShadowNodeFamily_{};
 
   /*
    * Sometimes a view is not longer connected to a PropsAnimatedNode, but

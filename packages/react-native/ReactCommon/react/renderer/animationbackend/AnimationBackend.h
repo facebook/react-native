@@ -32,7 +32,7 @@ class UIManagerNativeAnimatedDelegateBackendImpl : public UIManagerNativeAnimate
 
 struct AnimationMutation {
   Tag tag;
-  const ShadowNodeFamily *family;
+  std::shared_ptr<const ShadowNodeFamily> family;
   AnimatedProps props;
 };
 
