@@ -9,6 +9,7 @@
 #include <react/renderer/animationbackend/AnimatedPropsSerializer.h>
 #include <react/renderer/graphics/Color.h>
 #include <chrono>
+#include "AnimatedPropsRegistry.h"
 
 namespace facebook::react {
 
@@ -70,12 +71,14 @@ AnimationBackend::AnimationBackend(
       stopOnRenderCallback_(std::move(stopOnRenderCallback)),
       directManipulationCallback_(std::move(directManipulationCallback)),
       fabricCommitCallback_(std::move(fabricCommitCallback)),
-      uiManager_(uiManager) {}
+      animatedPropsRegistry_(std::make_shared<AnimatedPropsRegistry>()),
+      uiManager_(uiManager),
+      commitHook_(uiManager, animatedPropsRegistry_) {}
 
 void AnimationBackend::onAnimationFrame(double timestamp) {
-  std::unordered_map<Tag, AnimatedProps> updates;
-  std::unordered_map<SurfaceId, std::unordered_set<const ShadowNodeFamily*>>
-      surfaceToFamilies;
+  std::unordered_map<Tag, AnimatedProps> synchronousUpdates;
+  std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
+
   bool hasAnyLayoutUpdates = false;
   for (auto& callback : callbacks) {
     auto muatations = callback(static_cast<float>(timestamp));
@@ -83,22 +86,28 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
       hasAnyLayoutUpdates |= mutationHasLayoutUpdates(mutation);
       const auto family = mutation.family;
       if (family != nullptr) {
-        surfaceToFamilies[family->getSurfaceId()].insert(family.get());
+        auto& [families, updates] = surfaceUpdates[family->getSurfaceId()];
+        families.insert(family.get());
+        updates[mutation.tag] = std::move(mutation.props);
+      } else {
+        synchronousUpdates[mutation.tag] = std::move(mutation.props);
       }
-      updates[mutation.tag] = std::move(mutation.props);
     }
   }
 
+  animatedPropsRegistry_->update(surfaceUpdates);
+
   if (hasAnyLayoutUpdates) {
-    commitUpdates(surfaceToFamilies, updates);
+    commitUpdates(surfaceUpdates);
   } else {
-    synchronouslyUpdateProps(updates);
+    synchronouslyUpdateProps(synchronousUpdates);
   }
 }
 
 void AnimationBackend::start(const Callback& callback, bool isAsync) {
   callbacks.push_back(callback);
-  // TODO: startOnRenderCallback_ should provide the timestamp from the platform
+  // TODO: startOnRenderCallback_ should provide the timestamp from the
+  // platform
   if (startOnRenderCallback_) {
     startOnRenderCallback_(
         [this]() {
@@ -117,13 +126,11 @@ void AnimationBackend::stop(bool isAsync) {
 }
 
 void AnimationBackend::commitUpdates(
-    const std::unordered_map<
-        SurfaceId,
-        std::unordered_set<const ShadowNodeFamily*>>& surfaceToFamilies,
-    std::unordered_map<Tag, AnimatedProps>& updates) {
-  for (const auto& surfaceEntry : surfaceToFamilies) {
+    std::unordered_map<SurfaceId, SurfaceUpdates>& surfaceUpdates) {
+  for (auto& surfaceEntry : surfaceUpdates) {
     const auto& surfaceId = surfaceEntry.first;
-    const auto& surfaceFamilies = surfaceEntry.second;
+    const auto& surfaceFamilies = surfaceEntry.second.families;
+    auto& updates = surfaceEntry.second.propsMap;
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId, [&surfaceFamilies, &updates](const ShadowTree& shadowTree) {
           shadowTree.commit(
@@ -163,6 +170,10 @@ void AnimationBackend::synchronouslyUpdateProps(
     auto dyn = animationbackend::packAnimatedProps(animatedProps);
     directManipulationCallback_(tag, std::move(dyn));
   }
+}
+
+void AnimationBackend::clearRegistry(SurfaceId surfaceId) {
+  animatedPropsRegistry_->clear(surfaceId);
 }
 
 } // namespace facebook::react
