@@ -513,7 +513,7 @@ function serializeConstantsProtocolMethods(
     "Unable to generate C++ struct from module's getConstants() method return type.",
   );
 
-  const returnObjCType = `facebook::react::ModuleConstants<JS::${hasteModuleName}::Constants::Builder>`;
+  const returnObjCType = `facebook::react::ModuleConstants<JS::${hasteModuleName}::Constants>`;
 
   // $FlowFixMe[missing-type-arg]
   return ['constantsToExport', 'getConstants'].map<MethodSerializationOutput>(
