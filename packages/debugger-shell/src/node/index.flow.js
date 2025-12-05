@@ -29,7 +29,7 @@ async function unstable_spawnDebuggerShellWithArgs(
   args: string[],
   {
     mode = 'detached',
-    flavor = 'prebuilt',
+    flavor = process.env.RNDT_DEV === '1' ? 'dev' : 'prebuilt',
     prebuiltBinaryPath,
   }: $ReadOnly<{
     // In 'syncAndExit' mode, the current process will block until the spawned process exits, and then it will exit
@@ -38,7 +38,7 @@ async function unstable_spawnDebuggerShellWithArgs(
     // continue to run normally.
     mode?: 'syncThenExit' | 'detached',
     flavor?: DebuggerShellFlavor,
-    prebuiltBinaryPath?: string,
+    prebuiltBinaryPath?: ?string,
   }> = {},
 ): Promise<void> {
   const [binaryPath, baseArgs] = getShellBinaryAndArgs(
@@ -119,10 +119,13 @@ export type DebuggerShellPreparationResult = $ReadOnly<{
  * instantly when the user tries to open it (and conversely, the user is
  * informed ASAP if it is not ready to use).
  */
-async function unstable_prepareDebuggerShell(
-  flavor: DebuggerShellFlavor,
-  {prebuiltBinaryPath}: {prebuiltBinaryPath?: string} = {},
-): Promise<DebuggerShellPreparationResult> {
+async function unstable_prepareDebuggerShell({
+  prebuiltBinaryPath,
+  flavor = process.env.RNDT_DEV === '1' ? 'dev' : 'prebuilt',
+}: {
+  prebuiltBinaryPath?: ?string,
+  flavor?: DebuggerShellFlavor,
+} = {}): Promise<DebuggerShellPreparationResult> {
   try {
     switch (flavor) {
       case 'prebuilt':
