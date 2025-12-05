@@ -9,9 +9,9 @@
 
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
+#include <react/renderer/bridging/bridging.h>
 
 namespace facebook::react {
-
 AnimatedModule::AnimatedModule(
     std::shared_ptr<CallInvoker> jsInvoker,
     std::shared_ptr<NativeAnimatedNodesManagerProvider> nodesManagerProvider)
@@ -160,6 +160,19 @@ void AnimatedModule::connectAnimatedNodeToView(
       ConnectAnimatedNodeToViewOp{.nodeTag = nodeTag, .viewTag = viewTag});
 }
 
+void AnimatedModule::connectAnimatedNodeToShadowNodeFamily(
+    jsi::Runtime& rt,
+    Tag nodeTag,
+    jsi::Object shadowNodeObj) {
+  const auto& shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+      rt, jsi::Value(rt, shadowNodeObj));
+
+  operations_.emplace_back(
+      ConnectAnimatedNodeToShadowNodeFamilyOp{
+          .nodeTag = nodeTag,
+          .shadowNodeFamily = shadowNode->getFamilyShared()});
+}
+
 void AnimatedModule::disconnectAnimatedNodeFromView(
     jsi::Runtime& /*rt*/,
     Tag nodeTag,
@@ -282,6 +295,11 @@ void AnimatedModule::executeOperation(
                                    DisconnectAnimatedNodeFromViewOp>) {
             nodesManager->disconnectAnimatedNodeFromView(
                 op.nodeTag, op.viewTag);
+          } else if constexpr (std::is_same_v<
+                                   T,
+                                   ConnectAnimatedNodeToShadowNodeFamilyOp>) {
+            nodesManager->connectAnimatedNodeToShadowNodeFamily(
+                op.nodeTag, op.shadowNodeFamily);
           } else if constexpr (std::is_same_v<T, RestoreDefaultValuesOp>) {
             nodesManager->restoreDefaultValues(op.nodeTag);
           } else if constexpr (std::is_same_v<T, DropAnimatedNodeOp>) {

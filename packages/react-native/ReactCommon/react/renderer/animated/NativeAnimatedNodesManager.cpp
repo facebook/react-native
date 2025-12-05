@@ -238,6 +238,20 @@ void NativeAnimatedNodesManager::connectAnimatedNodeToView(
   }
 }
 
+void NativeAnimatedNodesManager::connectAnimatedNodeToShadowNodeFamily(
+    Tag propsNodeTag,
+    std::shared_ptr<const ShadowNodeFamily> family) noexcept {
+  react_native_assert(propsNodeTag);
+  auto node = getAnimatedNode<PropsAnimatedNode>(propsNodeTag);
+  if (node != nullptr && family != nullptr) {
+    std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
+    tagToShadowNodeFamily_[family->getTag()] = family;
+  } else {
+    LOG(WARNING)
+        << "Cannot ConnectAnimatedNodeToShadowNodeFamily, animated node has to be props type";
+  }
+}
+
 void NativeAnimatedNodesManager::disconnectAnimatedNodeFromView(
     Tag propsNodeTag,
     Tag viewTag) noexcept {
@@ -250,6 +264,10 @@ void NativeAnimatedNodesManager::disconnectAnimatedNodeFromView(
     {
       std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
       connectedAnimatedNodes_.erase(viewTag);
+    }
+    {
+      std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
+      tagToShadowNodeFamily_.erase(viewTag);
     }
     updatedNodeTags_.insert(node->tag());
 
@@ -985,15 +1003,47 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
       }
 
       for (auto& [tag, props] : updateViewPropsDirect_) {
-        // TODO: also handle layout props (updateViewProps_). It is skipped for
-        // now, because the backend requires shadowNodeFamilies to be able to
-        // commit to the ShadowTree
         propsBuilder.storeDynamic(props);
         mutations.push_back(
             AnimationMutation{tag, nullptr, propsBuilder.get()});
         containsChange = true;
       }
-      updateViewPropsDirect_.clear();
+      {
+        std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
+        for (auto& [tag, props] : updateViewProps_) {
+          auto familyIt = tagToShadowNodeFamily_.find(tag);
+          if (familyIt == tagToShadowNodeFamily_.end()) {
+            continue;
+          }
+          if (auto family = familyIt->second.lock()) {
+            // C++ Animated produces props in the form of a folly::dynamic, so
+            // it wouldn't make sense to unpack it here. However, for the
+            // purposes of testing, we want to be able to use the statically
+            // typed AnimationMutation. At a later stage we will instead just
+            // pass the dynamic directly to propsBuilder and the new API could
+            // be used by 3rd party libraries or in the fututre by Animated.
+            if (props.find("width") != props.items().end()) {
+              propsBuilder.setWidth(
+                  yoga::Style::SizeLength::points(props["width"].asDouble()));
+            }
+            if (props.find("height") != props.items().end()) {
+              propsBuilder.setHeight(
+                  yoga::Style::SizeLength::points(props["height"].asDouble()));
+            }
+            mutations.push_back(
+                AnimationMutation{
+                    .tag = tag,
+                    .family = family,
+                    .props = propsBuilder.get(),
+                });
+          }
+          containsChange = true;
+        }
+      }
+      if (containsChange) {
+        updateViewPropsDirect_.clear();
+        updateViewProps_.clear();
+      }
     }
 
     if (!containsChange) {
@@ -1013,16 +1063,38 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
         }
       }
 
-      // Step 2: update all nodes that are connected to the finished animations.
+      // Step 2: update all nodes that are connected to the finished
+      // animations.
       updateNodes(finishedAnimationValueNodes);
 
       isEventAnimationInProgress_ = false;
 
       for (auto& [tag, props] : updateViewPropsDirect_) {
-        // TODO: handle layout props
         propsBuilder.storeDynamic(props);
         mutations.push_back(
-            AnimationMutation{tag, nullptr, propsBuilder.get()});
+            AnimationMutation{
+                .tag = tag,
+                .family = nullptr,
+                .props = propsBuilder.get(),
+            });
+      }
+      {
+        std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
+        for (auto& [tag, props] : updateViewProps_) {
+          auto familyIt = tagToShadowNodeFamily_.find(tag);
+          if (familyIt == tagToShadowNodeFamily_.end()) {
+            continue;
+          }
+          if (auto family = familyIt->second.lock()) {
+            propsBuilder.storeDynamic(props);
+            mutations.push_back(
+                AnimationMutation{
+                    .tag = tag,
+                    .family = family,
+                    .props = propsBuilder.get(),
+                });
+          }
+        }
       }
     }
   } else {
@@ -1103,7 +1175,8 @@ void NativeAnimatedNodesManager::onRender() {
         }
       }
 
-      // Step 2: update all nodes that are connected to the finished animations.
+      // Step 2: update all nodes that are connected to the finished
+      // animations.
       updateNodes(finishedAnimationValueNodes);
 
       isEventAnimationInProgress_ = false;

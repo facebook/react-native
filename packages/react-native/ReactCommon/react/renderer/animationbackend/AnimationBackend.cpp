@@ -83,7 +83,7 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
       hasAnyLayoutUpdates |= mutationHasLayoutUpdates(mutation);
       const auto family = mutation.family;
       if (family != nullptr) {
-        surfaceToFamilies[family->getSurfaceId()].insert(family);
+        surfaceToFamilies[family->getSurfaceId()].insert(family.get());
       }
       updates[mutation.tag] = std::move(mutation.props);
     }
