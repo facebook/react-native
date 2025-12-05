@@ -219,6 +219,7 @@ internal class ReactTextViewAccessibilityDelegate(
     node.contentDescription = accessibleTextSpan.description
     node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK)
     node.setBoundsInParent(bounds)
+    node.setClickable(true)
     node.roleDescription = hostView.resources.getString(R.string.link_description)
     node.className = AccessibilityRole.getValue(AccessibilityRole.BUTTON)
   }
