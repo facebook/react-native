@@ -37,13 +37,6 @@ function diffApiSnapshot(prevSnapshot: string, newSnapshot: string): Output {
   const prevSpecHashPair = getExportedSymbols(prevSnapshotAST);
   const newSpecHashPair = getExportedSymbols(newSnapshotAST);
 
-  if (prevSpecHashPair == null || newSpecHashPair == null) {
-    return {
-      result: Result.BREAKING,
-      changedApis: [],
-    };
-  }
-
   return analyzeSpecHashPairs(prevSpecHashPair, newSpecHashPair);
 }
 
@@ -90,9 +83,9 @@ function analyzeSpecHashPairs(
   return output;
 }
 
-function getExportedSymbols(
-  ast: BabelNodeFile,
-): Array<[APISpecifier, Hash]> | null {
+function getExportedSymbols(ast: BabelNodeFile): Array<[APISpecifier, Hash]> {
+  const result: Array<[APISpecifier, Hash]> = [];
+
   for (const nodePath of ast.program.body) {
     if (
       t.isExportNamedDeclaration(nodePath) &&
@@ -100,7 +93,6 @@ function getExportedSymbols(
       nodePath.specifiers != null
     ) {
       const specifiers = nodePath.specifiers;
-      const result: Array<[APISpecifier, Hash]> = [];
       for (let i = 0; i < specifiers.length; i++) {
         const specifier = specifiers[i];
         const name = specifier.exported.name || '';
@@ -121,11 +113,10 @@ function getExportedSymbols(
           ? lastSpec.trailingComments[0]?.value
           : '';
       result[result.length - 1][1] = comment;
-      return result;
     }
   }
 
-  return null;
+  return result;
 }
 
 module.exports = {diffApiSnapshot, Result};
