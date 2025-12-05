@@ -723,7 +723,8 @@ void NativeAnimatedNodesManager::updateNodes(
     for (auto childTag : nextNode.node->getChildren()) {
       auto child = getAnimatedNode<AnimatedNode>(childTag);
       child->activeIncomingNodes--;
-      if (child->activeIncomingNodes == 0 && child->activeIncomingNodes == 0) {
+      if (child->activeIncomingNodes == 0 &&
+          child->bfsColor != animatedGraphBFSColor_) {
         child->bfsColor = animatedGraphBFSColor_;
 #ifdef REACT_NATIVE_DEBUG
         updatedNodesCount++;
