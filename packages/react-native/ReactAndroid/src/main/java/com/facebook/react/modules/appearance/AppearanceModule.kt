@@ -28,12 +28,14 @@ constructor(
 
   private var lastEmittedColorScheme: String? = null
 
+  private val schemeChangeListener: () -> Unit = {
+    val activity = reactApplicationContext.getCurrentActivity()
+    onConfigurationChanged(activity ?: reactApplicationContext)
+  }
+
   init {
     // Register as a listener for color scheme changes if override is provided
-    overrideColorScheme?.addSchemeChangeListener {
-      val activity = reactApplicationContext.getCurrentActivity()
-      onConfigurationChanged(activity ?: reactApplicationContext)
-    }
+    overrideColorScheme?.addSchemeChangeListener(schemeChangeListener)
   }
 
   /** Optional override to the current color scheme */
@@ -123,6 +125,12 @@ constructor(
   public fun invalidatePlatformColorCache() {
     // call into static invalidatePlatformColorCache?.run() method
     Companion.invalidatePlatformColorCache?.run()
+  }
+
+  public override fun invalidate() {
+    overrideColorScheme?.removeSchemeChangeListener(schemeChangeListener)
+    invalidatePlatformColorCache()
+    super.invalidate()
   }
 
   public companion object {
