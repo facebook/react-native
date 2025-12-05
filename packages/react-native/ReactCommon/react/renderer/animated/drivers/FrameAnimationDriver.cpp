@@ -43,6 +43,7 @@ void FrameAnimationDriver::updateConfig(folly::dynamic config) {
 void FrameAnimationDriver::onConfigChanged() {
   auto frames = config_["frames"];
   react_native_assert(frames.type() == folly::dynamic::ARRAY);
+  frames_.clear();
   for (const auto& frame : frames) {
     auto frameValue = frame.asDouble();
     frames_.push_back(frameValue);
