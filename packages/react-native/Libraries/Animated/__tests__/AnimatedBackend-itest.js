@@ -15,7 +15,7 @@ import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
-import {createRef} from 'react';
+import {createRef, useEffect, useState} from 'react';
 import {Animated, useAnimatedValue} from 'react-native';
 import {allowStyleProp} from 'react-native/Libraries/Animated/NativeAnimatedAllowlist';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
@@ -139,5 +139,162 @@ test('animate layout props', () => {
 
   expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
     <rn-view height="100.000000" />,
+  );
+});
+
+test('animate layout props and rerender', () => {
+  const viewRef = createRef<HostInstance>();
+  allowStyleProp('height');
+
+  let _animatedHeight;
+  let _heightAnimation;
+  let _setWidth;
+
+  function MyApp() {
+    const animatedHeight = useAnimatedValue(0);
+    const [width, setWidth] = useState(100);
+    _animatedHeight = animatedHeight;
+    _setWidth = setWidth;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: width,
+            height: animatedHeight,
+          },
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  Fantom.runTask(() => {
+    _heightAnimation = Animated.timing(_animatedHeight, {
+      toValue: 100,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  });
+
+  Fantom.unstable_produceFramesForDuration(500);
+  expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
+    <rn-view height="50.000000" width="100.000000" />,
+  );
+
+  Fantom.runTask(() => {
+    _setWidth(200);
+  });
+
+  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  Fantom.runTask(() => {
+    _heightAnimation?.stop();
+  });
+
+  // TODO: getFabricUpdateProps is not working with the cloneMutliple method
+  // expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(50);
+  expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
+    <rn-view height="50.000000" width="200.000000" />,
+  );
+});
+
+test('animate layout props and rerender in many components', () => {
+  const viewRef = createRef<HostInstance>();
+  allowStyleProp('height');
+
+  let _animatedHeight;
+  let _heightAnimation;
+  let _setWidth;
+  const N = 100;
+
+  function AnimatedComponent() {
+    const animatedHeight = useAnimatedValue(0);
+
+    useEffect(() => {
+      Animated.timing(animatedHeight, {
+        toValue: 100,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+    });
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: 100,
+            height: animatedHeight,
+          },
+        ]}
+      />
+    );
+  }
+
+  function MyApp() {
+    const animatedHeight = useAnimatedValue(0);
+    const [width, setWidth] = useState(100);
+    _animatedHeight = animatedHeight;
+    _setWidth = setWidth;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: width,
+            height: animatedHeight,
+          },
+        ]}>
+        {Array.from({length: N}, (_, i) => (
+          <AnimatedComponent key={i} />
+        ))}
+      </Animated.View>
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  Fantom.runTask(() => {
+    _heightAnimation = Animated.timing(_animatedHeight, {
+      toValue: 100,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  });
+
+  Fantom.unstable_produceFramesForDuration(500);
+  expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
+    <rn-view height="50.000000" width="100.000000">
+      {Array.from({length: N}, (_, i) => (
+        <rn-view key={i} height="50.000000" width="100.000000" />
+      ))}
+    </rn-view>,
+  );
+
+  Fantom.runTask(() => {
+    _setWidth(200);
+  });
+
+  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  Fantom.runTask(() => {
+    _heightAnimation?.stop();
+  });
+
+  // TODO: getFabricUpdateProps is not working with the cloneMutliple method
+  // expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(50);
+  expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
+    <rn-view height="50.000000" width="200.000000">
+      {Array.from({length: N}, (_, i) => (
+        <rn-view key={i} height="50.000000" width="100.000000" />
+      ))}
+    </rn-view>,
   );
 });
