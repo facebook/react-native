@@ -179,51 +179,51 @@ class FileReader extends EventTarget {
     return this._result;
   }
 
-  get onabort(): EventCallback | null {
+  get onabort(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'abort');
   }
 
-  set onabort(listener: ?EventCallback) {
+  set onabort(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'abort', listener);
   }
 
-  get onerror(): EventCallback | null {
+  get onerror(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'error');
   }
 
-  set onerror(listener: ?EventCallback) {
+  set onerror(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'error', listener);
   }
 
-  get onload(): EventCallback | null {
+  get onload(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'load');
   }
 
-  set onload(listener: ?EventCallback) {
+  set onload(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'load', listener);
   }
 
-  get onloadstart(): EventCallback | null {
+  get onloadstart(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'loadstart');
   }
 
-  set onloadstart(listener: ?EventCallback) {
+  set onloadstart(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'loadstart', listener);
   }
 
-  get onloadend(): EventCallback | null {
+  get onloadend(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'loadend');
   }
 
-  set onloadend(listener: ?EventCallback) {
+  set onloadend(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'loadend', listener);
   }
 
-  get onprogress(): EventCallback | null {
+  get onprogress(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'progress');
   }
 
-  set onprogress(listener: ?EventCallback) {
+  set onprogress(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'progress', listener);
   }
 }
