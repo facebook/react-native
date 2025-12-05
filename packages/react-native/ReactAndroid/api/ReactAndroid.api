@@ -2465,6 +2465,7 @@ public final class com/facebook/react/modules/appearance/AppearanceModule : com/
 	public fun addListener (Ljava/lang/String;)V
 	public final fun emitAppearanceChanged (Ljava/lang/String;)V
 	public fun getColorScheme ()Ljava/lang/String;
+	public fun invalidate ()V
 	public final fun invalidatePlatformColorCache ()V
 	public final fun onConfigurationChanged (Landroid/content/Context;)V
 	public fun removeListeners (D)V
@@ -2475,7 +2476,14 @@ public final class com/facebook/react/modules/appearance/AppearanceModule$Compan
 }
 
 public abstract interface class com/facebook/react/modules/appearance/AppearanceModule$OverrideColorScheme {
+	public abstract fun addSchemeChangeListener (Lkotlin/jvm/functions/Function0;)V
 	public abstract fun getScheme ()Ljava/lang/String;
+	public abstract fun removeSchemeChangeListener (Lkotlin/jvm/functions/Function0;)V
+}
+
+public final class com/facebook/react/modules/appearance/AppearanceModule$OverrideColorScheme$DefaultImpls {
+	public static fun addSchemeChangeListener (Lcom/facebook/react/modules/appearance/AppearanceModule$OverrideColorScheme;Lkotlin/jvm/functions/Function0;)V
+	public static fun removeSchemeChangeListener (Lcom/facebook/react/modules/appearance/AppearanceModule$OverrideColorScheme;Lkotlin/jvm/functions/Function0;)V
 }
 
 public abstract interface class com/facebook/react/modules/appregistry/AppRegistry : com/facebook/react/bridge/JavaScriptModule {
