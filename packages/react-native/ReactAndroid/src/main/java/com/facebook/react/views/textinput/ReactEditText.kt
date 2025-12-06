@@ -49,6 +49,7 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
+import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.BackgroundStyleApplicator.clipToPaddingBox
 import com.facebook.react.uimanager.BackgroundStyleApplicator.getBackgroundColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.getBorderColor
@@ -1201,6 +1202,20 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     invalidate()
+  }
+
+  public override fun draw(canvas: Canvas) {
+    val clipPath = BackgroundStyleApplicator.getClipPath(this)
+    if (clipPath != null) {
+      canvas.save()
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
+    }
+
+    super.draw(canvas)
+
+    if (clipPath != null) {
+      canvas.restore()
+    }
   }
 
   public override fun onDraw(canvas: Canvas) {
