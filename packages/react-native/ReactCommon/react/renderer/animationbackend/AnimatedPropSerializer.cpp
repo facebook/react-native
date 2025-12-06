@@ -78,9 +78,36 @@ void packBackgroundColor(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
   const auto& backgroundColor = get<SharedColor>(animatedProp);
-  if (backgroundColor) {
-    dyn.insert("backgroundColor", static_cast<int32_t>(*backgroundColor));
-  }
+  dyn.insert("backgroundColor", static_cast<int32_t>(*backgroundColor));
+}
+
+void packShadowColor(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& shadowColor = get<SharedColor>(animatedProp);
+  dyn.insert("shadowColor", static_cast<int32_t>(*shadowColor));
+}
+
+void packShadowOffset(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& shadowOffset = get<Size>(animatedProp);
+  dyn.insert(
+      "shadowOffset",
+      folly::dynamic::object("width", shadowOffset.width)(
+          "height", shadowOffset.height));
+}
+
+void packShadowOpacity(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  dyn.insert("shadowOpacity", get<Float>(animatedProp));
+}
+
+void packShadowRadius(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  dyn.insert("shadowRadius", get<Float>(animatedProp));
 }
 
 void packAnimatedProp(
@@ -103,9 +130,28 @@ void packAnimatedProp(
       packBorderRadii(dyn, *animatedProp);
       break;
 
+    case SHADOW_COLOR:
+      packShadowColor(dyn, *animatedProp);
+      break;
+
+    case SHADOW_OFFSET:
+      packShadowOffset(dyn, *animatedProp);
+      break;
+
+    case SHADOW_OPACITY:
+      packShadowOpacity(dyn, *animatedProp);
+      break;
+
+    case SHADOW_RADIUS:
+      packShadowRadius(dyn, *animatedProp);
+      break;
+
     case WIDTH:
     case HEIGHT:
     case FLEX:
+    case PADDING:
+    case MARGIN:
+    case POSITION:
       throw std::runtime_error("Tried to synchronously update layout props");
   }
 }
