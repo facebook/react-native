@@ -672,6 +672,14 @@ static RCTImageLoaderCancellationBlock RCTLoadImageURLFromLoader(
                                                 size:size
                                                scale:scale
                                           resizeMode:resizeMode];
+        // Retrieve original image and resize it
+        if (!image && !(CGSizeEqualToSize(size, CGSizeZero) && scale == 1 && resizeMode == RCTResizeModeStretch)) {
+          image = [[strongSelf imageCache] imageForUrl:request.URL.absoluteString
+                                                  size:CGSizeZero
+                                                 scale:1
+                                            resizeMode:RCTResizeModeStretch];
+          image = RCTResizeImageIfNeeded(image, size, scale, resizeMode);
+        }
       }
 
       if (image) {
@@ -1136,6 +1144,14 @@ static RCTImageLoaderCancellationBlock RCTLoadImageURLFromLoader(
           results[urlRequest.URL.absoluteString] = @"disk";
         } else {
           results[urlRequest.URL.absoluteString] = @"disk/memory";
+        }
+      } else {
+        UIImage *image = [_imageCache imageForUrl:urlRequest.URL.absoluteString
+                                             size:CGSizeZero
+                                            scale:1
+                                       resizeMode:RCTResizeModeStretch];
+        if (image) {
+          results[urlRequest.URL.absoluteString] = @"memory";
         }
       }
     }
