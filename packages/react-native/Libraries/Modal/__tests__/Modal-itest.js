@@ -57,6 +57,9 @@ describe('<Modal>', () => {
             <rn-view />
           </rn-modalHostView>,
         );
+
+        // Flush message queue to handle Modal's componentDidMount event listener setup
+        Fantom.runWorkLoop();
       });
 
       (['slide', 'fade'] as const).forEach(animationType => {
