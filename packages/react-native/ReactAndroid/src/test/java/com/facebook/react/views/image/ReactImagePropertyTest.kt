@@ -232,4 +232,17 @@ class ReactImagePropertyTest {
     viewManager.setHeaders(mockView, headers)
     verify(mockView).setHeaders(headers)
   }
+
+  @Test
+  fun testMaxBitmapSize() {
+    val viewManager = ReactImageManager()
+    val mockView = mock<ReactImageView>()
+
+    viewManager.setMaxBitmapSize(mockView, 2048)
+    verify(mockView).setMaxBitmapSize(2048)
+    reset(mockView)
+
+    viewManager.setMaxBitmapSize(mockView, 4096)
+    verify(mockView).setMaxBitmapSize(4096)
+  }
 }
