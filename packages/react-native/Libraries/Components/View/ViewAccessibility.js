@@ -211,6 +211,38 @@ export type AccessibilityValue = $ReadOnly<{
   text?: Stringish,
 }>;
 
+/**
+ * Accessibility collection info for screen readers.
+ * Used to describe a collection of items (e.g., list, grid).
+ *
+ * @platform android
+ */
+export type AccessibilityCollection = $ReadOnly<{
+  // The number of rows in the collection
+  rowCount: number,
+  // The number of columns in the collection
+  columnCount: number,
+}>;
+
+/**
+ * Accessibility collection item info for screen readers.
+ * Used to announce position in collection (e.g., "item 3 of 10").
+ *
+ * @platform android
+ */
+export type AccessibilityCollectionItem = $ReadOnly<{
+  // The row index of this item in the collection
+  rowIndex: number,
+  // The column index of this item in the collection
+  columnIndex: number,
+  // The number of rows this item spans
+  rowSpan: number,
+  // The number of columns this item spans
+  columnSpan: number,
+  // Whether this item is a heading
+  heading: boolean,
+}>;
+
 export type AccessibilityPropsAndroid = $ReadOnly<{
   /**
    * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
@@ -219,6 +251,22 @@ export type AccessibilityPropsAndroid = $ReadOnly<{
    * @platform android
    */
   accessibilityLabelledBy?: ?string | ?Array<string>,
+
+  /**
+   * Describes a collection of items for screen readers.
+   * Used on container elements like lists and grids.
+   *
+   * @platform android
+   */
+  accessibilityCollection?: ?AccessibilityCollection,
+
+  /**
+   * Describes the position of an item within a collection for screen readers.
+   * Enables TalkBack to announce "item X of Y" when navigating.
+   *
+   * @platform android
+   */
+  accessibilityCollectionItem?: ?AccessibilityCollectionItem,
 
   /**
    * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
