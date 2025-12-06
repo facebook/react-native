@@ -44,7 +44,10 @@ void BlobCollector::nativeInstall(
     jni::alias_ref<jclass> /*unused*/,
     jni::alias_ref<jobject> blobModule,
     jlong jsContextNativePointer) {
-  auto& runtime = *((jsi::Runtime*)jsContextNativePointer);
+  auto& runtime =
+      *reinterpret_cast< // NOLINT(performance-no-int-to-ptr,cppcoreguidelines-pro-type-reinterpret-cast):
+                         // JNI bridge requires casting jlong to runtime pointer
+          jsi::Runtime*>(jsContextNativePointer);
   auto blobModuleRef = jni::make_global(blobModule);
   runtime.global().setProperty(
       runtime,
