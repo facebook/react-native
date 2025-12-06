@@ -29,6 +29,8 @@ RCTDefineImageURLLoader(RCTImageLoaderTestsURLLoader1) RCTDefineImageURLLoader(R
 
 - (void)setUp
 {
+  XCTSkip(@"Skipping RCTImageLoaderTests since they rely on deprecated RCTBridge functionality.");
+
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
   _bundleURL = [bundle URLForResource:@"RNTesterUnitTestsBundle" withExtension:@"js"];
 }

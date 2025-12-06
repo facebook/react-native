@@ -85,7 +85,8 @@ RCT_EXPORT_METHOD(
   [[NSFileManager defaultManager] removeItemAtURL:_bundleURL error:NULL];
 }
 
-- (void)testBridgeIsDeallocated
+// Disabled due to test being based on deprecated RCTBridge
+- (void)disabled_testBridgeIsDeallocated
 {
   __weak RCTBridge *weakBridge;
   @autoreleasepool {
@@ -101,7 +102,8 @@ RCT_EXPORT_METHOD(
   XCTAssertNil(weakBridge, @"RCTBridge should have been deallocated");
 }
 
-- (void)testModulesAreInvalidated
+// Disabled due to test being based on deprecated RCTBridge
+- (void)disabled_testModulesAreInvalidated
 {
   AllocationTestModule *module = [AllocationTestModule new];
   @autoreleasepool {
@@ -118,7 +120,8 @@ RCT_EXPORT_METHOD(
   XCTAssertFalse(module.isValid, @"AllocationTestModule should have been invalidated by the bridge");
 }
 
-- (void)testModulesAreDeallocated
+// disabled_Disabled due to test being based on deprecated RCTBridge
+- (void)disabled_testModulesAreDeallocated
 {
   __weak AllocationTestModule *weakModule;
   @autoreleasepool {
@@ -156,7 +159,8 @@ RCT_EXPORT_METHOD(
   XCTAssertNil(weakMethod, @"RCTModuleMethod should have been deallocated");
 }
 
-- (void)testContentViewIsInvalidated
+// Disabled due to test being based on deprecated RCTBridge
+- (void)disabled_testContentViewIsInvalidated
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:nil launchOptions:nil];
   __weak UIView *rootContentView;

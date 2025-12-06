@@ -53,11 +53,6 @@
                BlueprintName = "RNTesterIntegrationTests"
                ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "RCTLoggingTests/testLogging">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

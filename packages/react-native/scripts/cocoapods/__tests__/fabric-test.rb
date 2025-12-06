@@ -52,6 +52,6 @@ class FabricTest < Test::Unit::TestCase
         if modular_headers != nil then expected_params[:modular_headers] = modular_headers end
         if podspec != nil then expected_params[:podspec] = podspec end
 
-        assert_equal(params, expected_params)
+        assert_equal(expected_params, params)
     end
 end
