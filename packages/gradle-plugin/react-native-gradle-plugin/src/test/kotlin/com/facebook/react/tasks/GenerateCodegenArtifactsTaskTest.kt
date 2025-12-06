@@ -183,10 +183,10 @@ class GenerateCodegenArtifactsTaskTest {
         }
 
     val task =
-        createTestTask<GenerateCodegenArtifactsTask> {
-          it.packageJsonFile.set(packageJsonFile)
-          it.codegenJavaPackageName.set("com.example.test")
-          it.libraryName.set("a-library-name-from-gradle")
+        createTestTask<GenerateCodegenArtifactsTask> { taskConfig ->
+          taskConfig.packageJsonFile.set(packageJsonFile)
+          taskConfig.codegenJavaPackageName.set("com.example.test")
+          taskConfig.libraryName.set("a-library-name-from-gradle")
         }
 
     val (libraryName, javaPackageName) = task.resolveTaskParameters()
