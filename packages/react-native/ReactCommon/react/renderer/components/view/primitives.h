@@ -21,6 +21,8 @@ namespace facebook::react {
 
 enum class PointerEventsMode : uint8_t { Auto, None, BoxNone, BoxOnly };
 
+enum class ContentSensitivityMode : uint8_t { Auto, NotSensitive, Sensitive };
+
 struct ViewEvents {
   std::bitset<64> bits{};
 
