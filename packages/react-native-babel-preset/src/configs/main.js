@@ -49,13 +49,15 @@ const getPreset = (src, options) => {
   const isHermesCanary = transformProfile === 'hermes-canary';
   const isHermes = isHermesStable || isHermesCanary;
 
-  // We enable regenerator for !isHermes. Additionally, in dev mode we also
-  // enable regenerator for the time being because Static Hermes doesn't yet
-  // support debugging native generators. However, some apps have native
-  // generators in release mode because it has already yielded perf wins. The
-  // next release of Static Hermes will close this gap, so this won't be
-  // permanent.
-  const enableRegenerator = !isHermes || options.dev;
+  // We enable regenerator in dev builds for the time being because
+  // Static Hermes doesn't yet fully support debugging native generators.
+  // (e.g. - it's not possible to inspect local variables when paused in a
+  // generator).
+  //
+  // Use native generators in release mode because it has already yielded perf
+  // wins. The next release of Static Hermes will close this gap, so this won't
+  // be permanent.
+  const enableRegenerator = isHermes && options.dev;
 
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
@@ -102,48 +104,20 @@ const getPreset = (src, options) => {
     extraPlugins.push([require('@babel/plugin-transform-classes')]);
   }
 
-  if (!isHermes && (isNull || src.includes('=>'))) {
-    extraPlugins.push([require('@babel/plugin-transform-arrow-functions')]);
-  }
-
-  if (!isHermes) {
-    extraPlugins.push([require('@babel/plugin-transform-computed-properties')]);
-    extraPlugins.push([require('@babel/plugin-transform-parameters')]);
-    extraPlugins.push([
-      require('@babel/plugin-transform-shorthand-properties'),
-    ]);
+  extraPlugins.push([
+    require('@babel/plugin-transform-named-capturing-groups-regex'),
+  ]);
+  // Needed for regenerator
+  if (enableRegenerator) {
     extraPlugins.push([
       require('@babel/plugin-transform-optional-catch-binding'),
     ]);
-    extraPlugins.push([require('@babel/plugin-transform-function-name')]);
-    extraPlugins.push([require('@babel/plugin-transform-literals')]);
-    extraPlugins.push([require('@babel/plugin-transform-numeric-separator')]);
-    extraPlugins.push([require('@babel/plugin-transform-sticky-regex')]);
-  } else {
-    extraPlugins.push([
-      require('@babel/plugin-transform-named-capturing-groups-regex'),
-    ]);
-    // Needed for regenerator
-    if (isHermes && enableRegenerator) {
-      extraPlugins.push([
-        require('@babel/plugin-transform-optional-catch-binding'),
-      ]);
-    }
   }
+
   extraPlugins.push([
     require('@babel/plugin-transform-destructuring'),
     {useBuiltIns: true},
   ]);
-  if (!isHermes && (isNull || hasClass || src.indexOf('...') !== -1)) {
-    extraPlugins.push(
-      [require('@babel/plugin-transform-spread')],
-      [
-        require('@babel/plugin-transform-object-rest-spread'),
-        // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
-        {loose: true, useBuiltIns: true},
-      ],
-    );
-  }
   if (isNull || src.indexOf('async') !== -1) {
     extraPlugins.push([
       require('@babel/plugin-transform-async-generator-functions'),
@@ -171,18 +145,6 @@ const getPreset = (src, options) => {
       {loose: true},
     ]);
   }
-  if (
-    !isHermes &&
-    (isNull ||
-      src.indexOf('??=') !== -1 ||
-      src.indexOf('||=') !== -1 ||
-      src.indexOf('&&=') !== -1)
-  ) {
-    extraPlugins.push([
-      require('@babel/plugin-transform-logical-assignment-operators'),
-      {loose: true},
-    ]);
-  }
 
   if (options && options.dev && !options.disableDeepImportWarnings) {
     firstPartyPlugins.push([require('../plugin-warn-on-deep-imports.js')]);
@@ -193,16 +155,15 @@ const getPreset = (src, options) => {
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-self')]);
   }
 
-  if (isHermes && enableRegenerator) {
-    const hasForOf =
-      isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1);
-    if (hasForOf) {
-      // Needed for regenerator
-      extraPlugins.push([
-        require('@babel/plugin-transform-for-of'),
-        {loose: true},
-      ]);
-    }
+  if (
+    enableRegenerator &&
+    (isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1))
+  ) {
+    // Needed for regenerator
+    extraPlugins.push([
+      require('@babel/plugin-transform-for-of'),
+      {loose: true},
+    ]);
   }
 
   if (!options || options.enableBabelRuntime !== false) {
@@ -217,7 +178,7 @@ const getPreset = (src, options) => {
         ...(isVersion && {version: options.enableBabelRuntime}),
       },
     ]);
-  } else if (isHermes && enableRegenerator) {
+  } else if (enableRegenerator) {
     extraPlugins.push([require('@babel/plugin-transform-regenerator')]);
   }
 
