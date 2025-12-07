@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type { ColorValue } from '../../StyleSheet/StyleSheet';
 
 import processColor from '../../StyleSheet/processColor';
 import Platform from '../../Utilities/Platform';
@@ -148,7 +148,7 @@ function mergePropsStack(
       }
       return prev;
     },
-    {...defaultValues},
+    { ...defaultValues },
   );
 }
 
@@ -163,25 +163,25 @@ function createStackEntry(props: StatusBarProps): StackProps {
     backgroundColor:
       props.backgroundColor != null
         ? {
-            value: props.backgroundColor,
-            animated,
-          }
+          value: props.backgroundColor,
+          animated,
+        }
         : null,
     barStyle:
       props.barStyle != null
         ? {
-            value: props.barStyle,
-            animated,
-          }
+          value: props.barStyle,
+          animated,
+        }
         : null,
     translucent: props.translucent,
     hidden:
       props.hidden != null
         ? {
-            value: props.hidden,
-            animated,
-            transition: showHideTransition,
-          }
+          value: props.hidden,
+          animated,
+          transition: showHideTransition,
+        }
         : null,
     networkActivityIndicatorVisible: props.networkActivityIndicatorVisible,
   };
@@ -236,7 +236,7 @@ class StatusBar extends React.Component<StatusBarProps> {
     backgroundColor:
       Platform.OS === 'android'
         ? (NativeStatusBarManagerAndroid.getConstants()
-            .DEFAULT_BACKGROUND_COLOR ?? 'black')
+          .DEFAULT_BACKGROUND_COLOR ?? 'black')
         : 'black',
     barStyle: 'default',
     translucent: false,
@@ -462,30 +462,38 @@ class StatusBar extends React.Component<StatusBarProps> {
         if (
           !oldProps ||
           oldProps.networkActivityIndicatorVisible !==
-            mergedProps.networkActivityIndicatorVisible
+          mergedProps.networkActivityIndicatorVisible
         ) {
           NativeStatusBarManagerIOS.setNetworkActivityIndicatorVisible(
             mergedProps.networkActivityIndicatorVisible,
           );
         }
       } else if (Platform.OS === 'android') {
-        //todo(T60684787): Add back optimization to only update bar style and
-        //background color if the new value is different from the old value.
-        NativeStatusBarManagerAndroid.setStyle(mergedProps.barStyle.value);
-        const processedColor = processColor(mergedProps.backgroundColor.value);
-        if (processedColor == null) {
-          console.warn(
-            `\`StatusBar._updatePropsStack\`: Color ${mergedProps.backgroundColor.value} parsed to null or undefined`,
-          );
-        } else {
-          invariant(
-            typeof processedColor === 'number',
-            'Unexpected color given in StatusBar._updatePropsStack',
-          );
-          NativeStatusBarManagerAndroid.setColor(
-            processedColor,
-            mergedProps.backgroundColor.animated,
-          );
+        if (
+          !oldProps ||
+          oldProps.barStyle.value !== mergedProps.barStyle.value
+        ) {
+          NativeStatusBarManagerAndroid.setStyle(mergedProps.barStyle.value);
+        }
+        if (
+          !oldProps ||
+          oldProps.backgroundColor.value !== mergedProps.backgroundColor.value
+        ) {
+          const processedColor = processColor(mergedProps.backgroundColor.value);
+          if (processedColor == null) {
+            console.warn(
+              `\`StatusBar._updatePropsStack\`: Color ${mergedProps.backgroundColor.value} parsed to null or undefined`,
+            );
+          } else {
+            invariant(
+              typeof processedColor === 'number',
+              'Unexpected color given in StatusBar._updatePropsStack',
+            );
+            NativeStatusBarManagerAndroid.setColor(
+              processedColor,
+              mergedProps.backgroundColor.animated,
+            );
+          }
         }
         if (!oldProps || oldProps.hidden?.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerAndroid.setHidden(mergedProps.hidden.value);
