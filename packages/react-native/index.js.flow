@@ -408,6 +408,11 @@ export * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistr
 export {default as UIManager} from './Libraries/ReactNative/UIManager';
 export {unstable_batchedUpdates} from './Libraries/ReactNative/RendererProxy';
 export {default as useAnimatedValue} from './Libraries/Animated/useAnimatedValue';
+export type {
+  PressabilityConfig,
+  EventHandlers as PressabilityEventHandlers,
+} from './Libraries/Pressability/Pressability';
+export {default as usePressability} from './Libraries/Pressability/usePressability';
 export {default as useColorScheme} from './Libraries/Utilities/useColorScheme';
 export {default as useWindowDimensions} from './Libraries/Utilities/useWindowDimensions';
 export {default as UTFSequence} from './Libraries/UTFSequence';

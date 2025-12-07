@@ -338,6 +338,9 @@ module.exports = {
   get useAnimatedValue() {
     return require('./Libraries/Animated/useAnimatedValue').default;
   },
+  get usePressability() {
+    return require('./Libraries/Pressability/usePressability').default;
+  },
   get useColorScheme() {
     return require('./Libraries/Utilities/useColorScheme').default;
   },
