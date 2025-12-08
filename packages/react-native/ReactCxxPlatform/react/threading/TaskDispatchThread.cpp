@@ -70,7 +70,7 @@ void TaskDispatchThread::runAsync(
   if (!running_) {
     return;
   }
-  std::lock_guard<std::mutex> guard(queueLock_);
+  std::lock_guard<std::mutex> guard(mutex_);
   auto dispatchTime = std::chrono::system_clock::now() + delayMs;
   queue_.emplace(dispatchTime, std::move(task));
   loopCv_.notify_one();
@@ -91,9 +91,16 @@ void TaskDispatchThread::runSync(TaskFn&& task) noexcept {
 }
 
 void TaskDispatchThread::quit() noexcept {
-  bool expected = true;
-  if (!running_.compare_exchange_strong(expected, false)) {
-    return;
+  {
+    /*
+      We should hold lock even when changing atomic variable to correctly
+      publish the modificatino to the waiting thread
+      from: https://en.cppreference.com/w/cpp/thread/condition_variable.html
+    */
+    std::unique_lock<std::mutex> lock(mutex_);
+    if (!running_.exchange(false)) {
+      return;
+    }
   }
 
   loopCv_.notify_one();
@@ -107,7 +114,7 @@ void TaskDispatchThread::loop() noexcept {
     folly::setThreadName(threadName_);
   }
   while (running_) {
-    std::unique_lock<std::mutex> lock(queueLock_);
+    std::unique_lock<std::mutex> lock(mutex_);
     loopCv_.wait(lock, [&]() { return !running_ || !queue_.empty(); });
 
     while (!queue_.empty()) {
