@@ -13,6 +13,7 @@ import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 
+import {KeyboardAvoidingView} from '../..';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import {type ColorValue} from '../StyleSheet/StyleSheet';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
@@ -153,6 +154,11 @@ export type ModalPropsIOS = {
    * This requires you to implement the `onRequestClose` prop to handle the dismissal.
    */
   allowSwipeDismissal?: ?boolean,
+
+  /**
+   * Controls whether the modal adjusts its position when the vurtual keyboard is displayed.
+   */
+  avoidKeyboard?: boolean,
 };
 
 export type ModalPropsAndroid = {
@@ -305,10 +311,23 @@ class Modal extends React.Component<ModalProps, ModalState> {
       }
     }
 
-    const innerChildren = __DEV__ ? (
+    let innerChildren = __DEV__ ? (
       <AppContainer rootTag={this.context}>{this.props.children}</AppContainer>
     ) : (
       this.props.children
+    );
+
+    innerChildren = (
+      <VirtualizedListContextResetter>
+        <ScrollView.Context.Provider value={null}>
+          <View
+            // $FlowFixMe[incompatible-type]
+            style={[styles.container, containerStyles]}
+            collapsable={false}>
+            {innerChildren}
+          </View>
+        </ScrollView.Context.Provider>
+      </VirtualizedListContextResetter>
     );
 
     const onDismiss = () => {
@@ -321,6 +340,18 @@ class Modal extends React.Component<ModalProps, ModalState> {
         });
       }
     };
+
+    const children =
+      this.props.avoidKeyboard === true ? (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          pointerEvents="box-none"
+          style={styles.keyboardAvoidingView}>
+          {innerChildren}
+        </KeyboardAvoidingView>
+      ) : (
+        innerChildren
+      );
 
     return (
       <RCTModalHostView
@@ -345,16 +376,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
         onOrientationChange={this.props.onOrientationChange}
         allowSwipeDismissal={this.props.allowSwipeDismissal}
         testID={this.props.testID}>
-        <VirtualizedListContextResetter>
-          <ScrollView.Context.Provider value={null}>
-            <View
-              // $FlowFixMe[incompatible-type]
-              style={[styles.container, containerStyles]}
-              collapsable={false}>
-              {innerChildren}
-            </View>
-          </ScrollView.Context.Provider>
-        </VirtualizedListContextResetter>
+        {children}
       </RCTModalHostView>
     );
   }
@@ -380,6 +402,11 @@ const styles = StyleSheet.create({
     [side]: 0,
     top: 0,
     flex: 1,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+    margin: 0,
+    justifyContent: 'center',
   },
 });
 
