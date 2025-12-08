@@ -12,6 +12,17 @@ runs:
         git fetch --depth=1 origin ${{ github.event.pull_request.head.sha }}
         git show ${{ github.event.pull_request.head.sha }}:packages/react-native/ReactNativeApi.d.ts > $SCRATCH_DIR/ReactNativeApi-after.d.ts \
           || echo "" > $SCRATCH_DIR/ReactNativeApi.d.ts
+
+    - name: Print PR head SHA
+      shell: bash
+      run: echo "${{ github.event.pull_request.head.sha }}"
+
+    - name: Print file contents
+      shell: bash
+      env:
+        SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-breaking-changes
+      run: cat $SCRATCH_DIR/ReactNativeApi-after.d.ts
+
     - name: Run breaking change detection
       shell: bash
       env:
