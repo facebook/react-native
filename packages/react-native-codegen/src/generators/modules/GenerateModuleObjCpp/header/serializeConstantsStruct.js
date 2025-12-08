@@ -96,8 +96,9 @@ function toObjCType(
       return 'NSString *';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *';
+    case 'UnionTypeAnnotation':
+      // TODO(T247151345): Implement proper heterogeneous union support. This is unsafe.
+      return 'NSObject *';
     case 'NumberTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -183,7 +184,7 @@ function toObjCValue(
       return value;
     case 'StringLiteralTypeAnnotation':
       return value;
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'UnionTypeAnnotation':
       return value;
     case 'NumberTypeAnnotation':
       return wrapPrimitive('double');

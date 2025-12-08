@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea0d60a91e71cf1053b02e06f4d283d3>>
+ * @generated SignedSource<<b16ca6ca4e47b347e4f5cb8555d3308f>>
  * @flow strict
  * @noformat
  */
@@ -54,7 +54,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   cdpInteractionMetricsEnabled: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
-  cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
   disableEarlyViewCommandExecution: Getter<boolean>,
   disableImageViewPreallocationAndroid: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
@@ -109,6 +108,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableVirtualViewWindowFocusDetection: Getter<boolean>,
   enableWebPerformanceAPIsByDefault: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
+  fixTextClippingAndroid15useBoundsForWidth: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
@@ -239,10 +239,6 @@ export const cdpInteractionMetricsEnabled: Getter<boolean> = createNativeFlagGet
  * Use a C++ implementation of Native Animated instead of the platform implementation.
  */
 export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
-/**
- * Removes JS sync at end of native animation
- */
-export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedRemoveJsSync', false);
 /**
  * Dispatch view commands in mount item order.
  */
@@ -459,6 +455,10 @@ export const enableWebPerformanceAPIsByDefault: Getter<boolean> = createNativeFl
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
+/**
+ * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
+ */
+export const fixTextClippingAndroid15useBoundsForWidth: Getter<boolean> = createNativeFlagGetter('fixTextClippingAndroid15useBoundsForWidth', false);
 /**
  * Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.
  */

@@ -9,6 +9,7 @@
 
 #include "TraceEvent.h"
 
+#include <jsinspector-modern/tracing/FrameTimingSequence.h>
 #include <react/timing/primitives.h>
 
 #include <tuple>
@@ -35,11 +36,22 @@ class TraceEventGenerator {
    * Creates canonical "BeginFrame", "Commit", "DrawFrame" trace events.
    */
   static std::tuple<TraceEvent, TraceEvent, TraceEvent> createFrameTimingsEvents(
-      uint64_t sequenceId,
+      FrameSequenceId sequenceId,
       int layerTreeId,
       HighResTimeStamp beginDrawingTimestamp,
       HighResTimeStamp commitTimestamp,
       HighResTimeStamp endDrawingTimestamp,
+      ProcessId processId,
+      ThreadId threadId);
+
+  /**
+   * Creates canonical "Screenshot" trace event.
+   */
+  static TraceEvent createScreenshotEvent(
+      FrameSequenceId frameSequenceId,
+      int sourceId,
+      std::string &&snapshot,
+      HighResTimeStamp expectedDisplayTime,
       ProcessId processId,
       ThreadId threadId);
 };

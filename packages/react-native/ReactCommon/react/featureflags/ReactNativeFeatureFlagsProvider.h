@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f055563fdc2085f73eb43a28cd6749af>>
+ * @generated SignedSource<<4c2b82eb2fc7f82b09b7b0b489f3d447>>
  */
 
 /**
@@ -28,7 +28,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool commonTestFlag() = 0;
   virtual bool cdpInteractionMetricsEnabled() = 0;
   virtual bool cxxNativeAnimatedEnabled() = 0;
-  virtual bool cxxNativeAnimatedRemoveJsSync() = 0;
   virtual bool disableEarlyViewCommandExecution() = 0;
   virtual bool disableImageViewPreallocationAndroid() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
@@ -83,6 +82,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableVirtualViewWindowFocusDetection() = 0;
   virtual bool enableWebPerformanceAPIsByDefault() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
+  virtual bool fixTextClippingAndroid15useBoundsForWidth() = 0;
   virtual bool fuseboxAssertSingleHostState() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;

@@ -780,8 +780,6 @@ public class ReactScrollView extends ScrollView
     if (mPagingEnabled) {
       flingAndSnap(correctedVelocityY);
     } else if (mScroller != null) {
-      // FB SCROLLVIEW CHANGE
-
       // We provide our own version of fling that uses a different call to the standard OverScroller
       // which takes into account the possibility of adding new content while the ScrollView is
       // animating. Because we give essentially no max Y for the fling, the fling will continue as
@@ -806,8 +804,6 @@ public class ReactScrollView extends ScrollView
           );
 
       ViewCompat.postInvalidateOnAnimation(this);
-
-      // END FB SCROLLVIEW CHANGE
     } else {
       super.fling(correctedVelocityY);
     }
@@ -1266,11 +1262,8 @@ public class ReactScrollView extends ScrollView
   @Override
   protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
     if (mScroller != null && mContentView != null) {
-      // FB SCROLLVIEW CHANGE
-
       // This is part two of the reimplementation of fling to fix the bounce-back bug. See #fling()
-      // for
-      // more information.
+      // for more information.
 
       if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
         int scrollRange = getMaxScrollY();
@@ -1279,8 +1272,6 @@ public class ReactScrollView extends ScrollView
           scrollY = scrollRange;
         }
       }
-
-      // END FB SCROLLVIEW CHANGE
     }
 
     if (ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid()

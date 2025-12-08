@@ -136,18 +136,12 @@ export function compareTypeAnnotationForSorting(
     case 'StringLiteralTypeAnnotation':
       invariant(typeB.type === 'StringLiteralTypeAnnotation', EQUALITY_MSG);
       return typeA.value.localeCompare(typeB.value);
-    case 'StringLiteralUnionTypeAnnotation':
-      invariant(
-        typeB.type === 'StringLiteralUnionTypeAnnotation',
-        EQUALITY_MSG,
-      );
+    case 'UnionTypeAnnotation':
+      invariant(typeB.type === 'UnionTypeAnnotation', EQUALITY_MSG);
       return compareAnnotationArraysForSorting(
         [originalPositionA, typeA.types],
         [originalPositionB, typeB.types],
       );
-    case 'UnionTypeAnnotation':
-      invariant(typeB.type === 'UnionTypeAnnotation', EQUALITY_MSG);
-      return 0;
     case 'VoidTypeAnnotation':
       return 0;
     case 'ReservedTypeAnnotation':
@@ -266,8 +260,6 @@ function typeAnnotationArbitraryOrder(annotation: CompleteTypeAnnotation) {
       return 15;
     case 'BooleanLiteralTypeAnnotation':
       return 16;
-    case 'StringLiteralUnionTypeAnnotation':
-      return 17;
     case 'StringTypeAnnotation':
       return 18;
     case 'StringLiteralTypeAnnotation':

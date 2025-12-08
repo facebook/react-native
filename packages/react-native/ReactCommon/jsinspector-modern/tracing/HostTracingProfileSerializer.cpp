@@ -100,7 +100,7 @@ constexpr int FALLBACK_LAYER_TREE_ID = 1;
   chunk.push_back(
       TraceEventSerializer::serialize(std::move(setLayerTreeIdEvent)));
 
-  for (const auto& frameTimingSequence : frameTimings) {
+  for (auto&& frameTimingSequence : frameTimings) {
     if (chunk.size() >= chunkSize) {
       chunkCallback(std::move(chunk));
       chunk = generateNewChunk(chunkSize);
@@ -121,6 +121,19 @@ constexpr int FALLBACK_LAYER_TREE_ID = 1;
     chunk.push_back(TraceEventSerializer::serialize(std::move(commitEvent)));
     chunk.push_back(
         TraceEventSerializer::serialize(std::move(endDrawingEvent)));
+
+    if (frameTimingSequence.screenshot.has_value()) {
+      auto screenshotEvent = TraceEventGenerator::createScreenshotEvent(
+          frameTimingSequence.id,
+          FALLBACK_LAYER_TREE_ID,
+          std::move(frameTimingSequence.screenshot.value()),
+          frameTimingSequence.endDrawingTimestamp,
+          processId,
+          frameTimingSequence.threadId);
+
+      chunk.push_back(
+          TraceEventSerializer::serialize(std::move(screenshotEvent)));
+    }
   }
 
   if (!chunk.empty()) {

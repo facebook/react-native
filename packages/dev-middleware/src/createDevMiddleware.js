@@ -138,7 +138,7 @@ function getExperiments(config: ExperimentsConfig): Experiments {
   return {
     enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
     enableNetworkInspector: config.enableNetworkInspector ?? false,
-    enableStandaloneFuseboxShell: config.enableStandaloneFuseboxShell ?? false,
+    enableStandaloneFuseboxShell: config.enableStandaloneFuseboxShell ?? true,
   };
 }
 

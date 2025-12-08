@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db573411b908b6d2ca5a8dad88866535>>
+ * @generated SignedSource<<543338d7b54991244389bca238b2078d>>
  */
 
 /**
@@ -70,15 +70,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedEnabled();
-  }
-
-  bool cxxNativeAnimatedRemoveJsSync() override {
-    auto value = values_["cxxNativeAnimatedRemoveJsSync"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedRemoveJsSync();
   }
 
   bool disableEarlyViewCommandExecution() override {
@@ -565,6 +556,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  }
+
+  bool fixTextClippingAndroid15useBoundsForWidth() override {
+    auto value = values_["fixTextClippingAndroid15useBoundsForWidth"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::fixTextClippingAndroid15useBoundsForWidth();
   }
 
   bool fuseboxAssertSingleHostState() override {

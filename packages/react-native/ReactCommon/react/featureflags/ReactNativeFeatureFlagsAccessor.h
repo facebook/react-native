@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dad57f078e433b2fe7fc278f22a0acc9>>
+ * @generated SignedSource<<1bcf3e91c74400c90689e350fab7b4ce>>
  */
 
 /**
@@ -35,7 +35,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool commonTestFlag();
   bool cdpInteractionMetricsEnabled();
   bool cxxNativeAnimatedEnabled();
-  bool cxxNativeAnimatedRemoveJsSync();
   bool disableEarlyViewCommandExecution();
   bool disableImageViewPreallocationAndroid();
   bool disableMountItemReorderingAndroid();
@@ -90,6 +89,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableVirtualViewWindowFocusDetection();
   bool enableWebPerformanceAPIsByDefault();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  bool fixTextClippingAndroid15useBoundsForWidth();
   bool fuseboxAssertSingleHostState();
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
@@ -138,7 +138,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
-  std::atomic<std::optional<bool>> cxxNativeAnimatedRemoveJsSync_;
   std::atomic<std::optional<bool>> disableEarlyViewCommandExecution_;
   std::atomic<std::optional<bool>> disableImageViewPreallocationAndroid_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -193,6 +192,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableVirtualViewWindowFocusDetection_;
   std::atomic<std::optional<bool>> enableWebPerformanceAPIsByDefault_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
+  std::atomic<std::optional<bool>> fixTextClippingAndroid15useBoundsForWidth_;
   std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;

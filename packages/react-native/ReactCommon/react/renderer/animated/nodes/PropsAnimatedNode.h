@@ -14,6 +14,7 @@
 #include "AnimatedNode.h"
 
 #include <react/renderer/animated/internal/primitives.h>
+#include <react/renderer/core/ShadowNode.h>
 #include <mutex>
 
 namespace facebook::react {

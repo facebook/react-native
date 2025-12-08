@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<755ab323ad2d8bb64d0030c9e77ebfeb>>
+ * @generated SignedSource<<c43da900298aae909ac525053b5ba848>>
  * @flow strict
  * @noformat
  */
@@ -28,7 +28,6 @@ export interface Spec extends TurboModule {
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
   +cdpInteractionMetricsEnabled?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
-  +cxxNativeAnimatedRemoveJsSync?: () => boolean;
   +disableEarlyViewCommandExecution?: () => boolean;
   +disableImageViewPreallocationAndroid?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
@@ -83,6 +82,7 @@ export interface Spec extends TurboModule {
   +enableVirtualViewWindowFocusDetection?: () => boolean;
   +enableWebPerformanceAPIsByDefault?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
+  +fixTextClippingAndroid15useBoundsForWidth?: () => boolean;
   +fuseboxAssertSingleHostState?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;

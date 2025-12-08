@@ -31,12 +31,12 @@ import type {
   NativeModuleTypeAliasTypeAnnotation,
   NativeModuleTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
+  NativeModuleUnionTypeAnnotationMemberType,
   Nullable,
   NumberLiteralTypeAnnotation,
   ObjectTypeAnnotation,
   ReservedTypeAnnotation,
   StringLiteralTypeAnnotation,
-  StringLiteralUnionTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
 } from '../CodegenSchema';
@@ -52,11 +52,7 @@ const {
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
 } = require('./error-utils');
-const {
-  ParserError,
-  UnsupportedTypeAnnotationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
-} = require('./errors');
+const {ParserError, UnsupportedTypeAnnotationParserError} = require('./errors');
 const {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   translateFunctionTypeAnnotation,
@@ -431,61 +427,53 @@ function emitUnion(
   nullable: boolean,
   hasteModuleName: string,
   typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  translateTypeAnnotation: $FlowFixMe,
   parser: Parser,
-): Nullable<
-  NativeModuleUnionTypeAnnotation | StringLiteralUnionTypeAnnotation,
-> {
-  // Get all the literals by type
-  // Verify they are all the same
-  // If string, persist as StringLiteralUnionType
-  // If number, persist as NumberTypeAnnotation (TODO: Number literal)
+): Nullable<NativeModuleUnionTypeAnnotation> {
+  const unparsedMemberTypes: $ReadOnlyArray<$FlowFixMe> =
+    (typeAnnotation.types: $ReadOnlyArray<$FlowFixMe>);
 
-  const unionTypes = parser.remapUnionTypeAnnotationMemberNames(
-    typeAnnotation.types,
+  const memberTypes = unparsedMemberTypes.map(
+    (memberType: $FlowFixMe): NativeModuleUnionTypeAnnotationMemberType => {
+      const memberTypeAnnotation = translateTypeAnnotation(
+        hasteModuleName,
+        memberType,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        parser,
+      );
+
+      switch (memberTypeAnnotation.type) {
+        case 'StringTypeAnnotation':
+        case 'NumberTypeAnnotation':
+        case 'BooleanTypeAnnotation':
+        case 'NumberLiteralTypeAnnotation':
+        case 'StringLiteralTypeAnnotation':
+        case 'BooleanLiteralTypeAnnotation':
+        case 'ObjectTypeAnnotation':
+        case 'TypeAliasTypeAnnotation':
+          return memberTypeAnnotation;
+        default:
+          throw new UnsupportedTypeAnnotationParserError(
+            hasteModuleName,
+            memberType,
+            parser.language(),
+          );
+      }
+    },
   );
-
-  // Only support unionTypes of the same kind
-  if (unionTypes.length > 1) {
-    throw new UnsupportedUnionTypeAnnotationParserError(
-      hasteModuleName,
-      typeAnnotation,
-      unionTypes,
-    );
-  }
-
-  if (unionTypes[0] === 'StringTypeAnnotation') {
-    // Reprocess as a string literal union
-    return emitStringLiteralUnion(
-      nullable,
-      hasteModuleName,
-      typeAnnotation,
-      parser,
-    );
-  }
 
   return wrapNullable(nullable, {
     type: 'UnionTypeAnnotation',
-    memberType: unionTypes[0],
-  });
-}
-
-function emitStringLiteralUnion(
-  nullable: boolean,
-  hasteModuleName: string,
-  typeAnnotation: $FlowFixMe,
-  parser: Parser,
-): Nullable<StringLiteralUnionTypeAnnotation> {
-  const stringLiterals =
-    parser.getStringLiteralUnionTypeAnnotationStringLiterals(
-      typeAnnotation.types,
-    );
-
-  return wrapNullable(nullable, {
-    type: 'StringLiteralUnionTypeAnnotation',
-    types: stringLiterals.map(stringLiteral => ({
-      type: 'StringLiteralTypeAnnotation',
-      value: stringLiteral,
-    })),
+    types: memberTypes,
   });
 }
 
@@ -675,6 +663,7 @@ function emitCommonTypes(
     VoidTypeAnnotation: emitVoid,
     StringTypeAnnotation: emitString,
     MixedTypeAnnotation: cxxOnly ? emitMixed : emitGenericObject,
+    UnsafeMixed: cxxOnly ? emitMixed : emitGenericObject,
   };
 
   const typeAnnotationName = parser.convertKeywordToTypeAnnotation(
@@ -763,7 +752,7 @@ function emitUnionProp(
     name,
     optional,
     typeAnnotation: {
-      type: 'StringLiteralUnionTypeAnnotation',
+      type: 'UnionTypeAnnotation',
       types: typeAnnotation.types.map(option => ({
         type: 'StringLiteralTypeAnnotation',
         value: parser.getLiteralValue(option),

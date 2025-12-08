@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5a2e55d5f195183e708dd802dcafcd47>>
+ * @generated SignedSource<<5586a2963cb339f4d5241c790da60d62>>
  */
 
 /**
@@ -36,10 +36,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool cxxNativeAnimatedEnabled() override {
-    return false;
-  }
-
-  bool cxxNativeAnimatedRemoveJsSync() override {
     return false;
   }
 
@@ -256,6 +252,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    return false;
+  }
+
+  bool fixTextClippingAndroid15useBoundsForWidth() override {
     return false;
   }
 

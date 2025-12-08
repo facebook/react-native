@@ -23,6 +23,7 @@ import type {
 import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
+const {parseValidUnionType} = require('../Utils');
 const {createAliasResolver, getModules} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
@@ -167,8 +168,6 @@ function translateReturnTypeToKind(
       return 'StringKind';
     case 'StringLiteralTypeAnnotation':
       return 'StringKind';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'StringKind';
     case 'BooleanTypeAnnotation':
       return 'BooleanKind';
     case 'BooleanLiteralTypeAnnotation':
@@ -185,17 +184,19 @@ function translateReturnTypeToKind(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return 'BooleanKind';
+        case 'number':
           return 'NumberKind';
-        case 'ObjectTypeAnnotation':
+        case 'object':
           return 'ObjectKind';
-        case 'StringTypeAnnotation':
+        case 'string':
           return 'StringKind';
         default:
-          throw new Error(
-            `Unsupported union member returning value, found: ${realTypeAnnotation.memberType}"`,
-          );
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
       }
     case 'NumberTypeAnnotation':
       return 'NumberKind';
@@ -254,8 +255,6 @@ function translateParamTypeToJniType(
       return 'Ljava/lang/String;';
     case 'StringLiteralTypeAnnotation':
       return 'Ljava/lang/String;';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'BooleanLiteralTypeAnnotation':
@@ -272,17 +271,19 @@ function translateParamTypeToJniType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
+        case 'number':
           return !isRequired ? 'Ljava/lang/Double;' : 'D';
-        case 'ObjectTypeAnnotation':
+        case 'object':
           return 'Lcom/facebook/react/bridge/ReadableMap;';
-        case 'StringTypeAnnotation':
+        case 'string':
           return 'Ljava/lang/String;';
         default:
-          throw new Error(
-            `Unsupported union prop value, found: ${realTypeAnnotation.memberType}"`,
-          );
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
       }
     case 'NumberTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
@@ -338,8 +339,6 @@ function translateReturnTypeToJniType(
       return 'Ljava/lang/String;';
     case 'StringLiteralTypeAnnotation':
       return 'Ljava/lang/String;';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return nullable ? 'Ljava/lang/Boolean;' : 'Z';
     case 'BooleanLiteralTypeAnnotation':
@@ -356,17 +355,19 @@ function translateReturnTypeToJniType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(realTypeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return nullable ? 'Ljava/lang/Boolean;' : 'Z';
+        case 'number':
           return nullable ? 'Ljava/lang/Double;' : 'D';
-        case 'ObjectTypeAnnotation':
-          return 'Lcom/facebook/react/bridge/WritableMap;';
-        case 'StringTypeAnnotation':
+        case 'object':
+          return 'Lcom/facebook/react/bridge/ReadableMap;';
+        case 'string':
           return 'Ljava/lang/String;';
         default:
-          throw new Error(
-            `Unsupported union member type, found: ${realTypeAnnotation.memberType}"`,
-          );
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
       }
     case 'NumberTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';

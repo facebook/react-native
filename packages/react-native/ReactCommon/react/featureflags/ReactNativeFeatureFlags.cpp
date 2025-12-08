@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<46aafe1d22354ad53f81db7ab41b967e>>
+ * @generated SignedSource<<08d50062a88a227aa8800e549b6dfe57>>
  */
 
 /**
@@ -36,10 +36,6 @@ bool ReactNativeFeatureFlags::cdpInteractionMetricsEnabled() {
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
   return getAccessor().cxxNativeAnimatedEnabled();
-}
-
-bool ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() {
-  return getAccessor().cxxNativeAnimatedRemoveJsSync();
 }
 
 bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {
@@ -256,6 +252,10 @@ bool ReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault() {
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth() {
+  return getAccessor().fixTextClippingAndroid15useBoundsForWidth();
 }
 
 bool ReactNativeFeatureFlags::fuseboxAssertSingleHostState() {

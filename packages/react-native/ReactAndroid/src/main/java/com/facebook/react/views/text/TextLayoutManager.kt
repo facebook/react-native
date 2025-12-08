@@ -620,15 +620,89 @@ internal object TextLayoutManager {
       )
     }
 
-    val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
+    // Pre-Android 15: Use existing advance-based logic
+    if (
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
+            !ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
+    ) {
+      val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
+
+      val layoutWidth =
+          when (widthYogaMeasureMode) {
+            YogaMeasureMode.EXACTLY -> floor(width).toInt()
+            YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
+            else -> desiredWidth
+          }
+      return buildLayout(
+          text,
+          layoutWidth,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency,
+          alignment,
+          justificationMode,
+          ellipsizeMode,
+          maxNumberOfLines,
+          paint,
+      )
+    }
+
+    // Android 15+: Need to account for visual bounds
+    // Step 1: Create unconstrained layout to get visual bounds width
+    val unconstrainedLayout =
+        buildLayout(
+            text,
+            Int.MAX_VALUE / 2,
+            includeFontPadding,
+            textBreakStrategy,
+            hyphenationFrequency,
+            alignment,
+            justificationMode,
+            null,
+            ReactConstants.UNSET,
+            paint,
+        )
+
+    // Calculate visual bounds width from unconstrained layout
+    var desiredVisualWidth = 0f
+    for (i in 0 until unconstrainedLayout.lineCount) {
+      val lineWidth = unconstrainedLayout.getLineRight(i) - unconstrainedLayout.getLineLeft(i)
+      desiredVisualWidth = max(desiredVisualWidth, lineWidth)
+    }
 
     val layoutWidth =
         when (widthYogaMeasureMode) {
-          YogaMeasureMode.EXACTLY -> floor(width).toInt()
-          YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
-          else -> desiredWidth
+          YogaMeasureMode.AT_MOST -> min(ceil(desiredVisualWidth).toInt(), floor(width).toInt())
+          else -> ceil(desiredVisualWidth).toInt()
         }
 
+    // Step 2: Create final layout with correct width
+    return buildLayout(
+        text,
+        layoutWidth,
+        includeFontPadding,
+        textBreakStrategy,
+        hyphenationFrequency,
+        alignment,
+        justificationMode,
+        ellipsizeMode,
+        maxNumberOfLines,
+        paint,
+    )
+  }
+
+  private fun buildLayout(
+      text: Spannable,
+      layoutWidth: Int,
+      includeFontPadding: Boolean,
+      textBreakStrategy: Int,
+      hyphenationFrequency: Int,
+      alignment: Layout.Alignment,
+      justificationMode: Int,
+      ellipsizeMode: TextUtils.TruncateAt?,
+      maxNumberOfLines: Int,
+      paint: TextPaint,
+  ): Layout {
     val builder =
         StaticLayout.Builder.obtain(text, 0, text.length, paint, layoutWidth)
             .setAlignment(alignment)
@@ -647,6 +721,13 @@ internal object TextLayoutManager {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       builder.setUseLineSpacingFromFallbacks(true)
+    }
+
+    if (
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM &&
+            ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
+    ) {
+      builder.setUseBoundsForWidth(true)
     }
 
     return builder.build()
@@ -902,21 +983,7 @@ internal object TextLayoutManager {
       paint: TextPaint,
   ): Unit {
     var boring = isBoring(text, paint)
-    var layout =
-        createLayout(
-            text,
-            boring,
-            width,
-            widthYogaMeasureMode,
-            includeFontPadding,
-            textBreakStrategy,
-            hyphenationFrequency,
-            alignment,
-            justificationMode,
-            null,
-            ReactConstants.UNSET,
-            paint,
-        )
+    var layout: Layout
 
     // Minimum font size is 4pts to match the iOS implementation.
     val minimumFontSize =
@@ -929,20 +996,20 @@ internal object TextLayoutManager {
       currentFontSize = max(currentFontSize, span.size).toInt()
     }
 
-    val initialFontSize = currentFontSize
-    while (
-        currentFontSize > minimumFontSize &&
-            ((maximumNumberOfLines != ReactConstants.UNSET &&
-                maximumNumberOfLines != 0 &&
-                layout.lineCount > maximumNumberOfLines) ||
-                (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.height > height) ||
-                (text.length == 1 && layout.getLineWidth(0) > width))
-    ) {
-      // TODO: We could probably use a smarter algorithm here. This will require 0(n)
-      // measurements based on the number of points the font size needs to be reduced by.
-      currentFontSize -= max(1, 1.dpToPx().toInt())
+    var intervalStart = minimumFontSize
+    var intervalEnd = currentFontSize
+    var previousFontSize = currentFontSize
 
-      val ratio = currentFontSize.toFloat() / initialFontSize.toFloat()
+    // `true` instead of `intervalStart != intervalEnd` so that the last iteration where both are at
+    // the same size goes through and updates all relevant objects with the final font size
+    while (true) {
+      // Always use the point closer to the end of the interval, this way at the end when
+      // end - start == 1, we land at current = end instead of current = start. In the first case
+      // one measurement may be enough if intervalEnd is small enough to fit. In the second case
+      // we always end up doing two measurements to check whether intervalEnd would fit.
+      val currentFontSize = (intervalStart + intervalEnd + 1) / 2
+
+      val ratio = currentFontSize.toFloat() / previousFontSize.toFloat()
       paint.textSize = max((paint.textSize * ratio).toInt(), minimumFontSize).toFloat()
 
       val sizeSpans = text.getSpans(0, text.length, ReactAbsoluteSizeSpan::class.java)
@@ -973,6 +1040,34 @@ internal object TextLayoutManager {
               ReactConstants.UNSET,
               paint,
           )
+
+      if (intervalStart == intervalEnd) {
+        // everything is updated at this point
+        break
+      }
+
+      val singleLineTextExceedsWidth = text.length == 1 && layout.getLineWidth(0) > width
+      val exceedsHeight =
+          heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.height > height
+      val exceedsMaximumNumberOfLines =
+          maximumNumberOfLines != ReactConstants.UNSET &&
+              maximumNumberOfLines != 0 &&
+              layout.lineCount > maximumNumberOfLines
+
+      if (
+          currentFontSize > minimumFontSize &&
+              (exceedsMaximumNumberOfLines || exceedsHeight || singleLineTextExceedsWidth)
+      ) {
+        // Text doesn't fit the constraints. If intervalEnd - intervalStart == 1, it's known that
+        // the correct font size is intervalStart. Set intervalEnd to match intervalStart and do one
+        // more iteration to update layout correctly.
+        intervalEnd = if (intervalEnd - intervalStart == 1) intervalStart else currentFontSize
+      } else {
+        // Text fits the constraints
+        intervalStart = currentFontSize
+      }
+
+      previousFontSize = currentFontSize
     }
   }
 

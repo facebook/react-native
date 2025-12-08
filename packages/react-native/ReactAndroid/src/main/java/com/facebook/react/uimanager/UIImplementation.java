@@ -729,9 +729,7 @@ public class UIImplementation {
       return;
     }
 
-    while (node.getNativeKind() == NativeKind.NONE) {
-      node = node.getParent();
-    }
+    // While loop removed due to NativeKind removal
     mOperationsQueue.enqueueSetJSResponder(node.getReactTag(), reactTag, blockNativeResponder);
   }
 

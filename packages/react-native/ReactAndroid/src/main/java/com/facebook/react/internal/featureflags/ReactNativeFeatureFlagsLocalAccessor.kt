@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ceaebd9c6453b8d6a44e5d45343e0ba4>>
+ * @generated SignedSource<<f9ee0d1f23024b026d065ffc3d48cfcf>>
  */
 
 /**
@@ -27,7 +27,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var commonTestFlagCache: Boolean? = null
   private var cdpInteractionMetricsEnabledCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
-  private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableEarlyViewCommandExecutionCache: Boolean? = null
   private var disableImageViewPreallocationAndroidCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
@@ -82,6 +81,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewWindowFocusDetectionCache: Boolean? = null
   private var enableWebPerformanceAPIsByDefaultCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
+  private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
@@ -141,16 +141,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.cxxNativeAnimatedEnabled()
       accessedFeatureFlags.add("cxxNativeAnimatedEnabled")
       cxxNativeAnimatedEnabledCache = cached
-    }
-    return cached
-  }
-
-  override fun cxxNativeAnimatedRemoveJsSync(): Boolean {
-    var cached = cxxNativeAnimatedRemoveJsSyncCache
-    if (cached == null) {
-      cached = currentProvider.cxxNativeAnimatedRemoveJsSync()
-      accessedFeatureFlags.add("cxxNativeAnimatedRemoveJsSync")
-      cxxNativeAnimatedRemoveJsSyncCache = cached
     }
     return cached
   }
@@ -691,6 +681,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       accessedFeatureFlags.add("fixMappingOfEventPrioritiesBetweenFabricAndReact")
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
+    }
+    return cached
+  }
+
+  override fun fixTextClippingAndroid15useBoundsForWidth(): Boolean {
+    var cached = fixTextClippingAndroid15useBoundsForWidthCache
+    if (cached == null) {
+      cached = currentProvider.fixTextClippingAndroid15useBoundsForWidth()
+      accessedFeatureFlags.add("fixTextClippingAndroid15useBoundsForWidth")
+      fixTextClippingAndroid15useBoundsForWidthCache = cached
     }
     return cached
   }

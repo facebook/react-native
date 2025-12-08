@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3722cc54f167a5f107ae7d1ee611bc26>>
+ * @generated SignedSource<<f22bdf728cccaf9d95e62256f630ee1b>>
  */
 
 /**
@@ -57,11 +57,6 @@ bool NativeReactNativeFeatureFlags::cdpInteractionMetricsEnabled(
 bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
-}
-
-bool NativeReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
 }
 
 bool NativeReactNativeFeatureFlags::disableEarlyViewCommandExecution(
@@ -332,6 +327,11 @@ bool NativeReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault(
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool NativeReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxAssertSingleHostState(

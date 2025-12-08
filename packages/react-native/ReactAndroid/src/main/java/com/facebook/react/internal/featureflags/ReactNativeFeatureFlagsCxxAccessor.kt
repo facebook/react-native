@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82bc3d80b3f36ee448ede8f69ba90248>>
+ * @generated SignedSource<<3ebb3c265193b4f61e5bf43082c5be54>>
  */
 
 /**
@@ -23,7 +23,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var commonTestFlagCache: Boolean? = null
   private var cdpInteractionMetricsEnabledCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
-  private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableEarlyViewCommandExecutionCache: Boolean? = null
   private var disableImageViewPreallocationAndroidCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
@@ -78,6 +77,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableVirtualViewWindowFocusDetectionCache: Boolean? = null
   private var enableWebPerformanceAPIsByDefaultCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
+  private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
@@ -134,15 +134,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.cxxNativeAnimatedEnabled()
       cxxNativeAnimatedEnabledCache = cached
-    }
-    return cached
-  }
-
-  override fun cxxNativeAnimatedRemoveJsSync(): Boolean {
-    var cached = cxxNativeAnimatedRemoveJsSyncCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.cxxNativeAnimatedRemoveJsSync()
-      cxxNativeAnimatedRemoveJsSyncCache = cached
     }
     return cached
   }
@@ -629,6 +620,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
+    }
+    return cached
+  }
+
+  override fun fixTextClippingAndroid15useBoundsForWidth(): Boolean {
+    var cached = fixTextClippingAndroid15useBoundsForWidthCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.fixTextClippingAndroid15useBoundsForWidth()
+      fixTextClippingAndroid15useBoundsForWidthCache = cached
     }
     return cached
   }

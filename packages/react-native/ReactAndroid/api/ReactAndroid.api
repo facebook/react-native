@@ -3842,7 +3842,6 @@ public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
 	public abstract fun getLayoutX ()F
 	public abstract fun getLayoutY ()F
 	public abstract fun getNativeChildCount ()I
-	public abstract fun getNativeKind ()Lcom/facebook/react/uimanager/NativeKind;
 	public abstract fun getNativeOffsetForChild (Lcom/facebook/react/uimanager/ReactShadowNode;)I
 	public abstract fun getNativeParent ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	public abstract fun getPadding (I)F
@@ -3971,7 +3970,6 @@ public class com/facebook/react/uimanager/ReactShadowNodeImpl : com/facebook/rea
 	public final fun getLayoutX ()F
 	public final fun getLayoutY ()F
 	public final fun getNativeChildCount ()I
-	public fun getNativeKind ()Lcom/facebook/react/uimanager/NativeKind;
 	public synthetic fun getNativeOffsetForChild (Lcom/facebook/react/uimanager/ReactShadowNode;)I
 	public final fun getNativeOffsetForChild (Lcom/facebook/react/uimanager/ReactShadowNodeImpl;)I
 	public synthetic fun getNativeParent ()Lcom/facebook/react/uimanager/ReactShadowNode;

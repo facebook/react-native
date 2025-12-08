@@ -82,16 +82,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    cxxNativeAnimatedRemoveJsSync: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-06-16',
-        description: 'Removes JS sync at end of native animation',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     disableEarlyViewCommandExecution: {
       defaultValue: false,
       metadata: {
@@ -663,6 +653,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-06-18',
         description:
           'Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    fixTextClippingAndroid15useBoundsForWidth: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-12-03',
+        description:
+          'Fix text clipping starting in Android 15 due to usage of useBoundsForWidth',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

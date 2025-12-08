@@ -17,6 +17,8 @@ import type {
   AnimatedNodeConfig,
   EventMapping,
 } from '../../../Libraries/Animated/NativeAnimatedModule';
+import type {Spec as NativeAnimatedTurboModuleSpec} from '../../../Libraries/Animated/NativeAnimatedTurboModule';
+import type {Node} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {EventSubscription} from '../../../Libraries/vendor/emitter/EventEmitter';
 
 import NativeAnimatedNonTurboModule from '../../../Libraries/Animated/NativeAnimatedModule';
@@ -28,8 +30,17 @@ import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlag
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 
+interface NativeAnimatedModuleSpec extends NativeAnimatedTurboModuleSpec {
+  // connectAnimatedNodeToShadowNodeFamily is available only in NativeAnimatedNonTurboModule
+  +connectAnimatedNodeToShadowNodeFamily?: (
+    nodeTag: number,
+    // $FlowExpectedError[unclear-type].
+    shadowNode: Object,
+  ) => void;
+}
+
 // TODO T69437152 @petetheheat - Delete this fork when Fabric ships to 100%.
-const NativeAnimatedModule: typeof NativeAnimatedTurboModule =
+const NativeAnimatedModule: ?NativeAnimatedModuleSpec =
   NativeAnimatedNonTurboModule ?? NativeAnimatedTurboModule;
 
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
@@ -84,6 +95,13 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
     'addListener', // 20
     'removeListener', // 21
   ];
+  if (
+    ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
+    //eslint-disable-next-line
+    ReactNativeFeatureFlags.useSharedAnimatedBackend()
+  ) {
+    methodNames.push('connectAnimatedNodeToShadowNodeFamily');
+  }
   const nativeOperations: {
     [$Values<typeof methodNames>]: (...$ReadOnlyArray<mixed>) => void,
   } = {};
@@ -310,6 +328,16 @@ const API = {
 
   connectAnimatedNodeToView(nodeTag: number, viewTag: number): void {
     NativeOperations.connectAnimatedNodeToView(nodeTag, viewTag);
+  },
+
+  connectAnimatedNodeToShadowNodeFamily(
+    nodeTag: number,
+    shadowNode: Node,
+  ): void {
+    NativeOperations.connectAnimatedNodeToShadowNodeFamily?.(
+      nodeTag,
+      shadowNode,
+    );
   },
 
   disconnectAnimatedNodeFromView(nodeTag: number, viewTag: number): void {

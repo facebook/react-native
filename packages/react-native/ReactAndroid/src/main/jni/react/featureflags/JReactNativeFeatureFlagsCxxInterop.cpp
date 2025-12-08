@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95616bb241e59e35a9f4b3667cbc0822>>
+ * @generated SignedSource<<b9af351de972ddff807bd25f98f3ff42>>
  */
 
 /**
@@ -54,12 +54,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool cxxNativeAnimatedEnabled() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedEnabled");
-    return method(javaProvider_);
-  }
-
-  bool cxxNativeAnimatedRemoveJsSync() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedRemoveJsSync");
     return method(javaProvider_);
   }
 
@@ -387,6 +381,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool fixTextClippingAndroid15useBoundsForWidth() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixTextClippingAndroid15useBoundsForWidth");
+    return method(javaProvider_);
+  }
+
   bool fuseboxAssertSingleHostState() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxAssertSingleHostState");
@@ -596,11 +596,6 @@ bool JReactNativeFeatureFlagsCxxInterop::cdpInteractionMetricsEnabled(
 bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution(
@@ -873,6 +868,11 @@ bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabri
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fixTextClippingAndroid15useBoundsForWidth(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxAssertSingleHostState(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fuseboxAssertSingleHostState();
@@ -1074,9 +1074,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
       makeNativeMethod(
-        "cxxNativeAnimatedRemoveJsSync",
-        JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync),
-      makeNativeMethod(
         "disableEarlyViewCommandExecution",
         JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution),
       makeNativeMethod(
@@ -1238,6 +1235,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
+      makeNativeMethod(
+        "fixTextClippingAndroid15useBoundsForWidth",
+        JReactNativeFeatureFlagsCxxInterop::fixTextClippingAndroid15useBoundsForWidth),
       makeNativeMethod(
         "fuseboxAssertSingleHostState",
         JReactNativeFeatureFlagsCxxInterop::fuseboxAssertSingleHostState),

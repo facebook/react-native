@@ -1266,10 +1266,6 @@ public class ReactHostImpl(
     val method = "getOrCreateReloadTask()"
     stateTracker.enterState(method)
 
-    // Log how React Native is destroyed
-    // TODO(T136397487): Remove after Venice is shipped to 100%
-    raiseSoftException(method, reason)
-
     reloadTask?.let {
       return it
     }
@@ -1421,10 +1417,6 @@ public class ReactHostImpl(
     val method = "getOrCreateDestroyTask()"
     stateTracker.enterState(method)
 
-    // Log how React Native is destroyed
-    // TODO(T136397487): Remove after Venice is shipped to 100%
-    raiseSoftException(method, reason, ex)
-
     destroyTask?.let {
       return it
     }
@@ -1573,9 +1565,13 @@ public class ReactHostImpl(
             TracingState.ENABLED_IN_CDP_MODE -> {
               currentActivity?.window?.let { window ->
                 val observer =
-                    FrameTimingsObserver(window) { frameTimingsSequence ->
-                      inspectorTarget.recordFrameTimings(frameTimingsSequence)
-                    }
+                    FrameTimingsObserver(
+                        window,
+                        _screenshotsEnabled,
+                        { frameTimingsSequence ->
+                          inspectorTarget.recordFrameTimings(frameTimingsSequence)
+                        },
+                    )
                 observer.start()
                 frameTimingsObserver = observer
               }
