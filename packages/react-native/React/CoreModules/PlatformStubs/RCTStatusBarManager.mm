@@ -35,7 +35,7 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible) {}
 
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)constantsToExport
 {
-  return (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)[self getConstants];
+  return [self getConstants];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

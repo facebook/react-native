@@ -392,8 +392,8 @@ namespace JS {
 - (NSDictionary *)getGenericObjectReadOnly:(NSDictionary *)arg;
 - (NSDictionary *)getGenericObjectWithAlias:(NSDictionary *)arg;
 - (NSDictionary *)difficultObject:(JS::NativeObjectTurboModule::SpecDifficultObjectA &)A;
-- (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants>)getConstants;
 
 @end
 
@@ -534,8 +534,8 @@ namespace JS {
 }
 @protocol NativeOptionalObjectTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
-- (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants>)getConstants;
 
 @end
 
@@ -734,14 +734,14 @@ namespace JS {
 - (NSDictionary *)getAlias:(JS::NativeSampleTurboModule::Animal &)arg;
 - (NSNumber *)getRootTag:(double)arg;
 - (NSDictionary *)getValue:(double)x
-getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuegetValuegetValuey
+                         y:(NSString *)y
                          z:(NSDictionary *)z;
 - (void)getValueWithCallback:(RCTResponseSenderBlock)callback;
 - (void)getValueWithPromise:(BOOL)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)getConstants;
 
 @end
 
@@ -838,8 +838,8 @@ namespace JS {
 - (void)getValueWithPromise:(NSArray *)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants>)getConstants;
 
 @end
 
@@ -938,8 +938,8 @@ namespace JS {
 - (void)getValueWithPromise:(NSNumber *)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants>)getConstants;
 
 @end
 
@@ -1038,8 +1038,8 @@ namespace JS {
 - (void)getValueWithPromise:(NSNumber *)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants>)getConstants;
 
 @end
 
@@ -1138,8 +1138,8 @@ namespace JS {
 - (void)getValueWithPromise:(NSNumber *)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants>)getConstants;
 
 @end
 
@@ -1904,8 +1904,8 @@ namespace JS {
 - (NSDictionary *)getGenericObjectReadOnly:(NSDictionary *)arg;
 - (NSDictionary *)getGenericObjectWithAlias:(NSDictionary *)arg;
 - (NSDictionary *)difficultObject:(JS::NativeObjectTurboModule::SpecDifficultObjectA &)A;
-- (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants>)getConstants;
 
 @end
 
@@ -2046,8 +2046,8 @@ namespace JS {
 }
 @protocol NativeOptionalObjectTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
-- (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants>)getConstants;
 
 @end
 
@@ -2246,14 +2246,14 @@ namespace JS {
 - (NSDictionary *)getAlias:(JS::NativeSampleTurboModule::Animal &)arg;
 - (NSNumber *)getRootTag:(double)arg;
 - (NSDictionary *)getValue:(double)x
-getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuegetValuegetValuey
+                         y:(NSString *)y
                          z:(NSDictionary *)z;
 - (void)getValueWithCallback:(RCTResponseSenderBlock)callback;
 - (void)getValueWithPromise:(BOOL)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)getConstants;
 
 @end
 
@@ -2350,8 +2350,8 @@ namespace JS {
 - (void)getValueWithPromise:(NSArray *)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants>)getConstants;
 
 @end
 
@@ -2450,8 +2450,8 @@ namespace JS {
 - (void)getValueWithPromise:(NSNumber *)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants>)getConstants;
 
 @end
 
@@ -2550,8 +2550,8 @@ namespace JS {
 - (void)getValueWithPromise:(NSNumber *)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants>)getConstants;
 
 @end
 
@@ -2650,8 +2650,8 @@ namespace JS {
 - (void)getValueWithPromise:(NSNumber *)error
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants>)getConstants;
 
 @end
 
@@ -3541,7 +3541,7 @@ namespace facebook::react {
     }
 
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getValue\\", @selector(getValue:getValuegetValuegetValuegetValuegetValuey:z:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getValue\\", @selector(getValue:y:z:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
