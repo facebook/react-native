@@ -70,7 +70,7 @@ jobs:
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
-          flavor: Debug
+          flavor: ${{ matrix.flavor }}
           use-frameworks: true
           run-unit-tests: false # tests for dynamic frameworks are already run in the test_ios_rntester job; this is to just a test build from source (no prebuilds)
 
