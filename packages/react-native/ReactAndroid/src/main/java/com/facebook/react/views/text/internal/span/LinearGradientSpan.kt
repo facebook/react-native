@@ -18,7 +18,7 @@ public class LinearGradientSpan(
         tp.setColor(colors[0])
 
         val radians = Math.toRadians(angle.toDouble())
-        val width = 150.0f
+        val width = 100.0f
         val height = tp.textSize
 
         val centerX = start + width / 2
@@ -30,13 +30,18 @@ public class LinearGradientSpan(
         val endX = centerX + length * Math.cos(radians).toFloat()
         val endY = centerY + length * Math.sin(radians).toFloat()
 
+        // Match iOS: duplicate first color at end (RCTTextAttributes.mm:324)
+        val adjustedColors = IntArray(colors.size + 1)
+        System.arraycopy(colors, 0, adjustedColors, 0, colors.size)
+        adjustedColors[colors.size] = colors[0]
+
         val textShader: Shader =
             LinearGradient(
                 startX,
                 startY,
                 endX,
                 endY,
-                colors,
+                adjustedColors,
                 null,
                 Shader.TileMode.MIRROR,
             )

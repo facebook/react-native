@@ -47,9 +47,9 @@ import com.facebook.react.views.text.internal.span.ReactOpacitySpan
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
 import com.facebook.react.views.text.internal.span.ReactTagSpan
 import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan
+import com.facebook.react.views.text.internal.span.DiscordShadowStyleSpan
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan
 import com.facebook.react.views.text.internal.span.SetSpanOperation
-import com.facebook.react.views.text.internal.span.ShadowStyleSpan
 import com.facebook.react.views.text.internal.span.StrokeStyleSpan
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan
 import com.facebook.yoga.YogaMeasureMode
@@ -306,7 +306,7 @@ internal object TextLayoutManager {
               SetSpanOperation(
                   start,
                   end,
-                  ShadowStyleSpan(
+                  DiscordShadowStyleSpan(
                       textAttributes.mTextShadowOffsetDx,
                       textAttributes.mTextShadowOffsetDy,
                       textAttributes.mTextShadowRadius,
@@ -315,7 +315,7 @@ internal object TextLayoutManager {
         if (!textAttributes.textStrokeWidth.isNaN() &&
             textAttributes.textStrokeWidth > 0 &&
             textAttributes.isTextStrokeColorSet) {
-          val strokeWidth = textAttributes.textStrokeWidth
+          val strokeWidth = PixelUtil.toPixelFromDIP(textAttributes.textStrokeWidth.toDouble()).toFloat()
           val strokeColor = textAttributes.textStrokeColor
           ops.add(
               SetSpanOperation(
@@ -470,7 +470,7 @@ internal object TextLayoutManager {
             fragment.props.textShadowRadius != 0f) &&
             Color.alpha(fragment.props.textShadowColor) != 0) {
           spannable.setSpan(
-              ShadowStyleSpan(
+              DiscordShadowStyleSpan(
                   fragment.props.textShadowOffsetDx,
                   fragment.props.textShadowOffsetDy,
                   fragment.props.textShadowRadius,
@@ -483,9 +483,9 @@ internal object TextLayoutManager {
         if (!fragment.props.textStrokeWidth.isNaN() &&
             fragment.props.textStrokeWidth > 0 &&
             fragment.props.isTextStrokeColorSet) {
-          System.out.println("[TextLayoutManager] NEW ARCH - Adding StrokeStyleSpan: width=${fragment.props.textStrokeWidth}, color=${Integer.toHexString(fragment.props.textStrokeColor)}, start=$start, end=$end")
+          val strokeWidth = PixelUtil.toPixelFromDIP(fragment.props.textStrokeWidth.toDouble()).toFloat()
           spannable.setSpan(
-              StrokeStyleSpan(fragment.props.textStrokeWidth, fragment.props.textStrokeColor),
+              StrokeStyleSpan(strokeWidth, fragment.props.textStrokeColor),
               start,
               end,
               spanFlags)

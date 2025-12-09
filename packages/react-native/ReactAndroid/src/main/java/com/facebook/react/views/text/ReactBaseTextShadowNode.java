@@ -48,7 +48,7 @@ import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.SetSpanOperation;
-import com.facebook.react.views.text.internal.span.ShadowStyleSpan;
+import com.facebook.react.views.text.internal.span.DiscordShadowStyleSpan;
 import com.facebook.react.views.text.internal.span.StrokeStyleSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
@@ -234,7 +234,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start,
                 end,
-                new ShadowStyleSpan(
+                new DiscordShadowStyleSpan(
                     textShadowNode.mTextShadowOffsetDx,
                     textShadowNode.mTextShadowOffsetDy,
                     textShadowNode.mTextShadowRadius,

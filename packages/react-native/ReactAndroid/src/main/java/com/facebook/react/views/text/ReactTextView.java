@@ -52,6 +52,7 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
+import com.facebook.react.views.text.internal.span.DiscordShadowStyleSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
@@ -360,11 +361,19 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         setText(spanned);
       }
 
-      if (mOverflow != Overflow.VISIBLE) {
+      // Get shadow adjustment from custom span if configured
+      DiscordShadowStyleSpan.ShadowAdjustment shadowAdj =
+          DiscordShadowStyleSpan.getShadowAdjustment(spanned);
+
+      canvas.save();
+      canvas.translate(shadowAdj.getLeftOffset(), 0);
+
+      if (mOverflow != Overflow.VISIBLE && !shadowAdj.getHasShadow()) {
         BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
       }
 
       super.onDraw(canvas);
+      canvas.restore();
     }
   }
 

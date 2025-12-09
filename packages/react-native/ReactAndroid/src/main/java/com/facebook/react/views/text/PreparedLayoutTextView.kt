@@ -27,6 +27,7 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
+import com.facebook.react.views.text.internal.span.DiscordShadowStyleSpan
 import com.facebook.react.views.text.internal.span.ReactTagSpan
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
@@ -99,15 +100,22 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   }
 
   override fun onDraw(canvas: Canvas) {
-    if (overflow != Overflow.VISIBLE) {
+    val layout = preparedLayout?.layout
+
+    // Get shadow adjustment from custom span if configured
+    val spanned = layout?.text as? Spanned
+    val shadowAdj = DiscordShadowStyleSpan.getShadowAdjustment(spanned)
+
+    if (overflow != Overflow.VISIBLE && !shadowAdj.hasShadow) {
       BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
     }
 
     super.onDraw(canvas)
-    canvas.translate(
-        paddingLeft.toFloat(), paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f))
 
-    val layout = preparedLayout?.layout
+    canvas.translate(
+        paddingLeft.toFloat() + shadowAdj.leftOffset,
+        paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f))
+
     if (layout != null) {
       if (selection != null) {
         selectionPaint.setColor(
