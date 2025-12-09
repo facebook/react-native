@@ -61,7 +61,7 @@ class TaskDispatchThread {
 
   void loop() noexcept;
 
-  std::mutex queueLock_;
+  std::mutex mutex_;
   std::condition_variable loopCv_;
   std::priority_queue<Task> queue_;
   std::atomic<bool> running_{true};
