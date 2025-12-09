@@ -87,7 +87,8 @@ private fun detectCliFile(
   // 2. node module path
   val nodeProcess =
       project.providers.exec {
-        it.commandLine("node", "--print", "require.resolve('react-native/package.json')")
+        it.commandLine("node", "--print", "require.resolve('react-native/cli');")
+        it.workingDir(reactNativeRoot)
       }
 
   val nodeProcessOutput = nodeProcess.standardOutput.asText.get().trim()
