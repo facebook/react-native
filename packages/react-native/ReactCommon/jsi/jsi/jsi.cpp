@@ -231,8 +231,9 @@ inline char hexDigit(unsigned x) {
 // ASCII characters
 bool isAllASCII(const char16_t* utf16, size_t length) {
   for (const char16_t* e = utf16 + length; utf16 != e; ++utf16) {
-    if (*utf16 > 0x7F)
+    if (*utf16 > 0x7F) {
       return false;
+    }
   }
   return true;
 }

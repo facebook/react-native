@@ -1497,8 +1497,15 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
   for (const auto &accessibilityAction : accessibilityActions) {
+    NSString *actionName = RCTNSStringFromString(accessibilityAction.name);
+    NSString *actionLabel = actionName;
+
+    if (accessibilityAction.label.has_value()) {
+      actionLabel = RCTNSStringFromString(accessibilityAction.label.value());
+    }
+
     [customActions
-        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction.name)
+        addObject:[[UIAccessibilityCustomAction alloc] initWithName:actionLabel
                                                              target:self
                                                            selector:@selector(didActivateAccessibilityCustomAction:)]];
   }
@@ -1553,7 +1560,17 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
-    _eventEmitter->onAccessibilityAction(RCTStringFromNSString(action.name));
+    // iOS defines the name as the localized label, so iterate through accessibilityActions to find the matching
+    // non-localized action name when passing to JS. This allows for standard action names across platforms.
+    NSString *actionName = action.name;
+    for (const auto &accessibilityAction : _props->accessibilityActions) {
+      if (accessibilityAction.label.has_value() &&
+          [RCTNSStringFromString(accessibilityAction.label.value()) isEqualToString:action.name]) {
+        actionName = RCTNSStringFromString(accessibilityAction.name);
+        break;
+      }
+    }
+    _eventEmitter->onAccessibilityAction(RCTStringFromNSString(actionName));
     return YES;
   } else {
     return NO;

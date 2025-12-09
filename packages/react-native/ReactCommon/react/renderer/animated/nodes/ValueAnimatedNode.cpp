@@ -55,7 +55,7 @@ bool ValueAnimatedNode::setOffset(double offset) noexcept {
     offset_ = offset;
     return true;
   }
-  return true;
+  return false;
 }
 
 double ValueAnimatedNode::getValue() const noexcept {

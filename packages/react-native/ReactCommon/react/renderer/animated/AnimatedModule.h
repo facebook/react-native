@@ -87,6 +87,11 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>, publi
     Tag viewTag{};
   };
 
+  struct ConnectAnimatedNodeToShadowNodeFamilyOp {
+    Tag nodeTag{};
+    std::shared_ptr<const ShadowNodeFamily> shadowNodeFamily{};
+  };
+
   struct DisconnectAnimatedNodeFromViewOp {
     Tag nodeTag{};
     Tag viewTag{};
@@ -124,6 +129,7 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>, publi
       SetAnimatedNodeOffsetOp,
       SetAnimatedNodeValueOp,
       ConnectAnimatedNodeToViewOp,
+      ConnectAnimatedNodeToShadowNodeFamilyOp,
       DisconnectAnimatedNodeFromViewOp,
       RestoreDefaultValuesOp,
       FlattenAnimatedNodeOffsetOp,
@@ -175,6 +181,8 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>, publi
   void extractAnimatedNodeOffset(jsi::Runtime &rt, Tag nodeTag);
 
   void connectAnimatedNodeToView(jsi::Runtime &rt, Tag nodeTag, Tag viewTag);
+
+  void connectAnimatedNodeToShadowNodeFamily(jsi::Runtime &rt, Tag nodeTag, jsi::Object shadowNode);
 
   void disconnectAnimatedNodeFromView(jsi::Runtime &rt, Tag nodeTag, Tag viewTag);
 

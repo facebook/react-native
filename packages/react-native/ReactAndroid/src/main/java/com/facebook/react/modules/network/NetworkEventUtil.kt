@@ -35,7 +35,8 @@ internal object NetworkEventUtil {
           request.url().toString(),
           request.method(),
           headersMap,
-          request.body()?.toString().orEmpty(),
+          (request.body() as? ProgressRequestBody)?.getBodyPreview()
+              ?: request.body()?.toString().orEmpty(),
           request.body()?.contentLength() ?: 0,
       )
       InspectorNetworkReporter.reportConnectionTiming(devToolsRequestId, headersMap)

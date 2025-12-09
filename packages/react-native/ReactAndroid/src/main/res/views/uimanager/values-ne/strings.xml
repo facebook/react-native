@@ -9,6 +9,7 @@
     <string name="header_description" gender="unknown">शीर्षक</string>
     <string name="combobox_description" gender="unknown">कम्बो बक्स</string>
     <string name="menu_description" gender="unknown">मेनु</string>
+    <string name="menubar_description" gender="unknown">मेनु बार</string>
     <string name="menuitem_description" gender="unknown">मेनु वस्तु</string>
     <string name="scrollbar_description" gender="unknown">स्क्रोल बार</string>
     <string name="rn_tab_description" gender="unknown">टयाब</string>

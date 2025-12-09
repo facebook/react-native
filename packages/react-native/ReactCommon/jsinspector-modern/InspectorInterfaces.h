@@ -53,7 +53,7 @@ using InspectorPage = InspectorPageDescription;
 
 struct InspectorSystemState {
   /** The total count of pages registered during the app lifetime. */
-  int registeredPagesCount;
+  int registeredHostsCount;
 };
 
 /// IRemoteConnection allows the VM to send debugger messages to the client.
@@ -83,7 +83,7 @@ class JSINSPECTOR_EXPORT ILocalConnection : public IDestructible {
 class JSINSPECTOR_EXPORT IPageStatusListener : public IDestructible {
  public:
   virtual ~IPageStatusListener() = 0;
-  virtual void onPageAdded(int /*pageId*/) {}
+  virtual void unstable_onHostTargetAdded() {}
   virtual void onPageRemoved(int /*pageId*/) {}
 };
 

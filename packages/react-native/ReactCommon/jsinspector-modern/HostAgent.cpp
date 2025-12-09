@@ -147,7 +147,7 @@ class HostAgent::Impl final {
     if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
       if (req.method == "Network.enable") {
         auto& inspector = getInspectorInstance();
-        if (inspector.getSystemState().registeredPagesCount > 1) {
+        if (inspector.getSystemState().registeredHostsCount > 1) {
           frontendChannel_(
               cdp::jsonError(
                   req.id,
@@ -231,7 +231,7 @@ class HostAgent::Impl final {
               "ReactNativeApplication.metadataUpdated",
               createHostMetadataPayload(hostMetadata_)));
       auto& inspector = getInspectorInstance();
-      bool isSingleHost = inspector.getSystemState().registeredPagesCount <= 1;
+      bool isSingleHost = inspector.getSystemState().registeredHostsCount <= 1;
       if (!isSingleHost) {
         emitSystemStateChanged(isSingleHost);
       }

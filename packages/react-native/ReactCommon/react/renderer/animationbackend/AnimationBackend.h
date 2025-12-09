@@ -15,6 +15,8 @@
 #include <vector>
 #include "AnimatedProps.h"
 #include "AnimatedPropsBuilder.h"
+#include "AnimatedPropsRegistry.h"
+#include "AnimationBackendCommitHook.h"
 
 namespace facebook::react {
 
@@ -32,7 +34,7 @@ class UIManagerNativeAnimatedDelegateBackendImpl : public UIManagerNativeAnimate
 
 struct AnimationMutation {
   Tag tag;
-  const ShadowNodeFamily *family;
+  std::shared_ptr<const ShadowNodeFamily> family;
   AnimatedProps props;
 };
 
@@ -51,7 +53,9 @@ class AnimationBackend : public UIManagerAnimationBackend {
   const StopOnRenderCallback stopOnRenderCallback_;
   const DirectManipulationCallback directManipulationCallback_;
   const FabricCommitCallback fabricCommitCallback_;
+  std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry_;
   UIManager *uiManager_;
+  AnimationBackendCommitHook commitHook_;
 
   AnimationBackend(
       StartOnRenderCallback &&startOnRenderCallback,
@@ -59,10 +63,9 @@ class AnimationBackend : public UIManagerAnimationBackend {
       DirectManipulationCallback &&directManipulationCallback,
       FabricCommitCallback &&fabricCommitCallback,
       UIManager *uiManager);
-  void commitUpdates(
-      const std::unordered_map<SurfaceId, std::unordered_set<const ShadowNodeFamily *>> &surfaceToFamilies,
-      std::unordered_map<Tag, AnimatedProps> &updates);
+  void commitUpdates(std::unordered_map<SurfaceId, SurfaceUpdates> &surfaceUpdates);
   void synchronouslyUpdateProps(const std::unordered_map<Tag, AnimatedProps> &updates);
+  void clearRegistry(SurfaceId surfaceId) override;
 
   void onAnimationFrame(double timestamp) override;
   void start(const Callback &callback, bool isAsync);

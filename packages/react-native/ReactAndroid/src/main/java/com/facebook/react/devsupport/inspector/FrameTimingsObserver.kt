@@ -92,17 +92,21 @@ internal class FrameTimingsObserver(
           if (copyResult == PixelCopy.SUCCESS) {
             CoroutineScope(Dispatchers.Default).launch {
               try {
-                val scaleFactor = 0.5f
+                val scaleFactor = 0.25f
                 val scaledWidth = (width * scaleFactor).toInt()
                 val scaledHeight = (height * scaleFactor).toInt()
                 val scaledBitmap =
                     Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
 
                 val outputStream = ByteArrayOutputStream()
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
-                val jpegBytes = outputStream.toByteArray()
-                val jpegBase64 = Base64.encodeToString(jpegBytes, Base64.NO_WRAP)
-                continuation.resume(jpegBase64)
+                val compressFormat =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                        Bitmap.CompressFormat.WEBP_LOSSY
+                    else Bitmap.CompressFormat.WEBP
+                scaledBitmap.compress(compressFormat, 0, outputStream)
+                val bytes = outputStream.toByteArray()
+                val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
+                continuation.resume(base64)
 
                 scaledBitmap.recycle()
               } catch (e: Exception) {
