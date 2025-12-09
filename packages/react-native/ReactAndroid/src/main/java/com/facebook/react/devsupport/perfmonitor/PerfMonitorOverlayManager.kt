@@ -83,7 +83,11 @@ internal class PerfMonitorOverlayManager(
     UiThreadUtil.runOnUiThread {
       view?.updateRecordingState(state)
       view?.updatePerfIssueCount(perfIssueCount)
-      view?.show()
+      if (state == TracingState.ENABLED_IN_CDP_MODE) {
+        view?.hide()
+      } else {
+        view?.show()
+      }
     }
   }
 
