@@ -653,20 +653,22 @@ void NativeAnimatedNodesManager::updateNodes(
     // in Animated, value nodes like RGBA are parents and Color node is child
     // (the opposite of tree structure)
     for (const auto childTag : nextNode.node->getChildren()) {
-      auto child = getAnimatedNode<AnimatedNode>(childTag);
-      child->activeIncomingNodes++;
-      if (child->bfsColor != animatedGraphBFSColor_) {
-        child->bfsColor = animatedGraphBFSColor_;
+      if (auto child = getAnimatedNode<AnimatedNode>(childTag)) {
+        child->activeIncomingNodes++;
+        if (child->bfsColor != animatedGraphBFSColor_) {
+          child->bfsColor = animatedGraphBFSColor_;
 #ifdef REACT_NATIVE_DEBUG
-        activeNodesCount++;
+          activeNodesCount++;
 #endif
-        const auto connectedToFinishedAnimation =
-            is_node_connected_to_finished_animation(
-                child, childTag, nextNode.connectedToFinishedAnimation);
-        nodesQueue.emplace_back(
-            NodesQueueItem{
-                .node = child,
-                .connectedToFinishedAnimation = connectedToFinishedAnimation});
+          const auto connectedToFinishedAnimation =
+              is_node_connected_to_finished_animation(
+                  child, childTag, nextNode.connectedToFinishedAnimation);
+          nodesQueue.emplace_back(
+              NodesQueueItem{
+                  .node = child,
+                  .connectedToFinishedAnimation =
+                      connectedToFinishedAnimation});
+        }
       }
     }
   }
@@ -721,27 +723,29 @@ void NativeAnimatedNodesManager::updateNodes(
     }
 
     for (auto childTag : nextNode.node->getChildren()) {
-      auto child = getAnimatedNode<AnimatedNode>(childTag);
-      child->activeIncomingNodes--;
-      if (child->activeIncomingNodes == 0 &&
-          child->bfsColor != animatedGraphBFSColor_) {
-        child->bfsColor = animatedGraphBFSColor_;
+      if (auto child = getAnimatedNode<AnimatedNode>(childTag)) {
+        child->activeIncomingNodes--;
+        if (child->activeIncomingNodes == 0 &&
+            child->bfsColor != animatedGraphBFSColor_) {
+          child->bfsColor = animatedGraphBFSColor_;
 #ifdef REACT_NATIVE_DEBUG
-        updatedNodesCount++;
+          updatedNodesCount++;
 #endif
-        const auto connectedToFinishedAnimation =
-            is_node_connected_to_finished_animation(
-                child, childTag, nextNode.connectedToFinishedAnimation);
-        nodesQueue.emplace_back(
-            NodesQueueItem{
-                .node = child,
-                .connectedToFinishedAnimation = connectedToFinishedAnimation});
-      }
+          const auto connectedToFinishedAnimation =
+              is_node_connected_to_finished_animation(
+                  child, childTag, nextNode.connectedToFinishedAnimation);
+          nodesQueue.emplace_back(
+              NodesQueueItem{
+                  .node = child,
+                  .connectedToFinishedAnimation =
+                      connectedToFinishedAnimation});
+        }
 #ifdef REACT_NATIVE_DEBUG
-      else if (child->bfsColor == animatedGraphBFSColor_) {
-        cyclesDetected++;
-      }
+        else if (child->bfsColor == animatedGraphBFSColor_) {
+          cyclesDetected++;
+        }
 #endif
+      }
     }
   }
 
