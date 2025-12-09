@@ -288,62 +288,51 @@ using namespace facebook::react;
     };
   }
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+  // When the Legacy Arch is removed, the Delegate does not have a extraLazyModuleClassesForBridge method
   if ([self.delegate respondsToSelector:@selector(extraLazyModuleClassesForBridge:)]) {
     configuration.extraLazyModuleClassesForBridge =
         ^NSDictionary<NSString *, Class> *_Nonnull(RCTBridge *_Nonnull bridge)
     {
-#ifndef RCT_REMOVE_LEGACY_ARCH
       return [weakSelf.delegate extraLazyModuleClassesForBridge:bridge];
-#else
-      // When the Legacy Arch is removed, the Delegate does not have a extraLazyModuleClassesForBridge method
-      return @{};
-#endif
     };
   }
+#endif
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+  // When the Legacy Arch is removed, the Delegate does not have a bridge:didNotFindModule method
+  // We return NO, because if we have invoked this method is unlikely that the module will be actually registered
   if ([self.delegate respondsToSelector:@selector(bridge:didNotFindModule:)]) {
     configuration.bridgeDidNotFindModule = ^BOOL(RCTBridge *_Nonnull bridge, NSString *_Nonnull moduleName) {
-#ifndef RCT_REMOVE_LEGACY_ARCH
       return [weakSelf.delegate bridge:bridge didNotFindModule:moduleName];
-#else
-      // When the Legacy Arch is removed, the Delegate does not have a bridge:didNotFindModule method
-      // We return NO, because if we have invoked this method is unlikely that the module will be actually registered
-      return NO;
-#endif
     };
   }
+#endif
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+  // When the Legacy Arch is removed, the Delegate does not have a
+  // loadSourceForBridge:onProgress:onComplete: method
+  // We then call the loadBundleAtURL:onProgress:onComplete: instead
   if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
     configuration.loadSourceForBridgeWithProgress =
         ^(RCTBridge *_Nonnull bridge,
           RCTSourceLoadProgressBlock _Nonnull onProgress,
           RCTSourceLoadBlock _Nonnull loadCallback) {
-#ifndef RCT_REMOVE_LEGACY_ARCH
           [weakSelf.delegate loadSourceForBridge:bridge onProgress:onProgress onComplete:loadCallback];
-#else
-          // When the Legacy Arch is removed, the Delegate does not have a
-          // loadSourceForBridge:onProgress:onComplete: method
-          // We then call the loadBundleAtURL:onProgress:onComplete: instead
-          [weakSelf.delegate loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:loadCallback];
-#endif
         };
   }
+#endif
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+  // When the Legacy Arch is removed, the Delegate does not have a
+  // loadSourceForBridge:withBlock: method
+  // We then call the loadBundleAtURL:onProgress:onComplete: instead
   if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
     configuration.loadSourceForBridge = ^(RCTBridge *_Nonnull bridge, RCTSourceLoadBlock _Nonnull loadCallback) {
-#ifndef RCT_REMOVE_LEGACY_ARCH
       [weakSelf.delegate loadSourceForBridge:bridge withBlock:loadCallback];
-#else
-      // When the Legacy Arch is removed, the Delegate does not have a
-      // loadSourceForBridge:withBlock: method
-      // We then call the loadBundleAtURL:onProgress:onComplete: instead
-      [weakSelf.delegate loadBundleAtURL:self.bundleURL
-                              onProgress:^(RCTLoadingProgress *progressData) {
-                              }
-                              onComplete:loadCallback];
-#endif
     };
   }
+#endif
 
   configuration.jsRuntimeConfiguratorDelegate = self;
 
@@ -371,14 +360,15 @@ using namespace facebook::react;
   static dispatch_once_t setupFeatureFlagsToken;
   dispatch_once(&setupFeatureFlagsToken, ^{
     switch (releaseLevel) {
-      case Stable:
-        ReactNativeFeatureFlags::override(std::make_unique<ReactNativeFeatureFlagsOverridesOSSStable>());
-        break;
       case Canary:
         ReactNativeFeatureFlags::override(std::make_unique<ReactNativeFeatureFlagsOverridesOSSCanary>());
         break;
       case Experimental:
         ReactNativeFeatureFlags::override(std::make_unique<ReactNativeFeatureFlagsOverridesOSSExperimental>());
+        break;
+      case Stable:
+      default:
+        ReactNativeFeatureFlags::override(std::make_unique<ReactNativeFeatureFlagsOverridesOSSStable>());
         break;
     }
   });
