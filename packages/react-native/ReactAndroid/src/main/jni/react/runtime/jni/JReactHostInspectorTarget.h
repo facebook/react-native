@@ -20,16 +20,53 @@
 
 namespace facebook::react {
 
-struct JTaskInterface : public jni::JavaClass<JTaskInterface> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/interfaces/TaskInterface;";
-};
-
 struct JTracingState : public jni::JavaClass<JTracingState> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/inspector/TracingState;";
 };
 
+namespace {
+
+enum class TracingState {
+  Disabled,
+  EnabledInBackgroundMode,
+  EnabledInCDPMode,
+};
+
+jni::local_ref<JTracingState::javaobject> convertCPPTracingStateToJava(TracingState tracingState)
+{
+  auto tracingStateClass = jni::findClassLocal("com/facebook/react/devsupport/inspector/TracingState");
+  auto valueOfMethod = tracingStateClass->getStaticMethod<JTracingState(jstring)>("valueOf");
+
+  switch (tracingState) {
+    case TracingState::Disabled:
+      return valueOfMethod(tracingStateClass, jni::make_jstring("DISABLED").get());
+
+    case TracingState::EnabledInBackgroundMode:
+      return valueOfMethod(tracingStateClass, jni::make_jstring("ENABLED_IN_BACKGROUND_MODE").get());
+
+    case TracingState::EnabledInCDPMode:
+      return valueOfMethod(tracingStateClass, jni::make_jstring("ENABLED_IN_CDP_MODE").get());
+
+    default:
+      jni::throwNewJavaException("java/lang/IllegalStateException", "Unexpected new TracingState.");
+  }
+}
+
+} // namespace
+
+struct JTaskInterface : public jni::JavaClass<JTaskInterface> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/interfaces/TaskInterface;";
+};
+
 struct JTracingStateListener : public jni::JavaClass<JTracingStateListener> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/devsupport/inspector/TracingStateListener;";
+
+  void onStateChanged(TracingState tracingState, bool screenshotsEnabled) const
+  {
+    static auto method =
+        javaClassStatic()->getMethod<void(jni::local_ref<JTracingState::javaobject>, jboolean)>("onStateChanged");
+    return method(self(), convertCPPTracingStateToJava(tracingState), static_cast<jboolean>(screenshotsEnabled));
+  }
 };
 
 struct JFrameTimingSequence : public jni::JavaClass<JFrameTimingSequence> {
@@ -110,12 +147,6 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
                           "loadNetworkResource");
     return method(self(), jni::make_jstring(url), listener);
   }
-};
-
-enum class TracingState {
-  Disabled,
-  EnabledInBackgroundMode,
-  EnabledInCDPMode,
 };
 
 /**
