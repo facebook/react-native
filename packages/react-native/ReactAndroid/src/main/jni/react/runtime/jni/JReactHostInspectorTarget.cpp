@@ -17,35 +17,6 @@ using namespace facebook::react::jsinspector_modern;
 
 namespace facebook::react {
 
-namespace {
-jni::local_ref<JTracingState::javaobject> convertCPPTracingStateToJava(
-    TracingState tracingState) {
-  auto tracingStateClass = jni::findClassLocal(
-      "com/facebook/react/devsupport/inspector/TracingState");
-  auto valueOfMethod =
-      tracingStateClass->getStaticMethod<JTracingState(jstring)>("valueOf");
-
-  switch (tracingState) {
-    case TracingState::Disabled:
-      return valueOfMethod(
-          tracingStateClass, jni::make_jstring("DISABLED").get());
-
-    case TracingState::EnabledInBackgroundMode:
-      return valueOfMethod(
-          tracingStateClass,
-          jni::make_jstring("ENABLED_IN_BACKGROUND_MODE").get());
-
-    case TracingState::EnabledInCDPMode:
-      return valueOfMethod(
-          tracingStateClass, jni::make_jstring("ENABLED_IN_CDP_MODE").get());
-
-    default:
-      jni::throwNewJavaException(
-          "java/lang/IllegalStateException", "Unexpected new TracingState.");
-  }
-}
-} // namespace
-
 JReactHostInspectorTarget::JReactHostInspectorTarget(
     alias_ref<JReactHostInspectorTarget::javaobject> jobj,
     alias_ref<JReactHostImpl> reactHostImpl,
@@ -266,17 +237,8 @@ JReactHostInspectorTarget::getTracingState() {
 jlong JReactHostInspectorTarget::registerTracingStateListener(
     jni::alias_ref<JTracingStateListener::javaobject> listener) {
   auto cppListener = [globalRef = make_global(listener)](
-                         TracingState state, bool screenshotsEnabled) {
-    static auto method =
-        globalRef->getClass()
-            ->getMethod<void(
-                jni::local_ref<JTracingState::javaobject>, jboolean)>(
-                "onStateChanged");
-
-    method(
-        globalRef,
-        convertCPPTracingStateToJava(state),
-        static_cast<jboolean>(screenshotsEnabled));
+                         TracingState tracingState, bool screenshotsEnabled) {
+    globalRef->onStateChanged(tracingState, screenshotsEnabled);
   };
 
   return static_cast<jlong>(
