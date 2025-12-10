@@ -178,13 +178,10 @@ public open class ReactDelegate {
     if (
         ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() && reactHost != null
     ) {
-      reactHost?.onBackPressed()
+      return reactHost?.onBackPressed() == true
+    } else if (reactNativeHost?.hasInstance() == true) {
+      reactNativeHost?.reactInstanceManager?.onBackPressed()
       return true
-    } else {
-      if (reactNativeHost?.hasInstance() == true) {
-        reactNativeHost?.reactInstanceManager?.onBackPressed()
-        return true
-      }
     }
     return false
   }
