@@ -31,6 +31,26 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<CascadedBorderRadii>>(BORDER_RADII, value));
   }
+  void setBorderWidth(CascadedRectangleEdges<yoga::StyleLength> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(BORDER_WIDTH, value));
+  }
+  void setBorderColor(CascadedBorderColors &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedBorderColors>>(BORDER_COLOR, value));
+  }
+  void setMargin(CascadedRectangleEdges<yoga::StyleLength> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(MARGIN, value));
+  }
+  void setPadding(CascadedRectangleEdges<yoga::StyleLength> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(PADDING, value));
+  }
+  void setPosition(CascadedRectangleEdges<yoga::StyleLength> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(POSITION, value));
+  }
   void setTransform(Transform &t)
   {
     props.push_back(std::make_unique<AnimatedProp<Transform>>(TRANSFORM, std::move(t)));
@@ -38,6 +58,22 @@ struct AnimatedPropsBuilder {
   void setBackgroundColor(SharedColor value)
   {
     props.push_back(std::make_unique<AnimatedProp<SharedColor>>(BACKGROUND_COLOR, value));
+  }
+  void setShadowColor(SharedColor value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<SharedColor>>(SHADOW_COLOR, value));
+  }
+  void setShadowOpacity(Float value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Float>>(SHADOW_OPACITY, value));
+  }
+  void setShadowRadius(Float value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Float>>(SHADOW_RADIUS, value));
+  }
+  void setShadowOffset(Size value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Size>>(SHADOW_OFFSET, value));
   }
   void storeDynamic(folly::dynamic &d)
   {

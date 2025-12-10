@@ -12,7 +12,24 @@
 
 namespace facebook::react {
 
-enum PropName { OPACITY, WIDTH, HEIGHT, BORDER_RADII, FLEX, TRANSFORM, BACKGROUND_COLOR };
+enum PropName {
+  OPACITY,
+  WIDTH,
+  HEIGHT,
+  BORDER_RADII,
+  BORDER_WIDTH,
+  BORDER_COLOR,
+  MARGIN,
+  PADDING,
+  POSITION,
+  FLEX,
+  TRANSFORM,
+  BACKGROUND_COLOR,
+  SHADOW_COLOR,
+  SHADOW_OFFSET,
+  SHADOW_OPACITY,
+  SHADOW_RADIUS
+};
 
 struct AnimatedPropBase {
   PropName propName;
@@ -63,6 +80,102 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
       viewProps.borderRadii = get<CascadedBorderRadii>(animatedProp);
       break;
 
+    case BORDER_WIDTH: {
+      const auto &borderWidths = get<CascadedRectangleEdges<yoga::StyleLength>>(animatedProp);
+      if (borderWidths.left.has_value())
+        viewProps.yogaStyle.setBorder(yoga::Edge::Left, borderWidths.left.value());
+      if (borderWidths.top.has_value())
+        viewProps.yogaStyle.setBorder(yoga::Edge::Top, borderWidths.top.value());
+      if (borderWidths.right.has_value())
+        viewProps.yogaStyle.setBorder(yoga::Edge::Right, borderWidths.right.value());
+      if (borderWidths.bottom.has_value())
+        viewProps.yogaStyle.setBorder(yoga::Edge::Bottom, borderWidths.bottom.value());
+      if (borderWidths.start.has_value())
+        viewProps.yogaStyle.setBorder(yoga::Edge::Start, borderWidths.start.value());
+      if (borderWidths.end.has_value())
+        viewProps.yogaStyle.setBorder(yoga::Edge::End, borderWidths.end.value());
+      if (borderWidths.horizontal.has_value())
+        viewProps.yogaStyle.setBorder(yoga::Edge::Horizontal, borderWidths.horizontal.value());
+      if (borderWidths.vertical.has_value())
+        viewProps.yogaStyle.setBorder(yoga::Edge::Vertical, borderWidths.vertical.value());
+      if (borderWidths.all.has_value())
+        viewProps.yogaStyle.setBorder(yoga::Edge::All, borderWidths.all.value());
+      break;
+    }
+
+    case BORDER_COLOR:
+      viewProps.borderColors = get<CascadedBorderColors>(animatedProp);
+      break;
+
+    case MARGIN: {
+      const auto &margins = get<CascadedRectangleEdges<yoga::StyleLength>>(animatedProp);
+      if (margins.left.has_value())
+        viewProps.yogaStyle.setMargin(yoga::Edge::Left, margins.left.value());
+      if (margins.top.has_value())
+        viewProps.yogaStyle.setMargin(yoga::Edge::Top, margins.top.value());
+      if (margins.right.has_value())
+        viewProps.yogaStyle.setMargin(yoga::Edge::Right, margins.right.value());
+      if (margins.bottom.has_value())
+        viewProps.yogaStyle.setMargin(yoga::Edge::Bottom, margins.bottom.value());
+      if (margins.start.has_value())
+        viewProps.yogaStyle.setMargin(yoga::Edge::Start, margins.start.value());
+      if (margins.end.has_value())
+        viewProps.yogaStyle.setMargin(yoga::Edge::End, margins.end.value());
+      if (margins.horizontal.has_value())
+        viewProps.yogaStyle.setMargin(yoga::Edge::Horizontal, margins.horizontal.value());
+      if (margins.vertical.has_value())
+        viewProps.yogaStyle.setMargin(yoga::Edge::Vertical, margins.vertical.value());
+      if (margins.all.has_value())
+        viewProps.yogaStyle.setMargin(yoga::Edge::All, margins.all.value());
+      break;
+    }
+
+    case PADDING: {
+      const auto &paddings = get<CascadedRectangleEdges<yoga::StyleLength>>(animatedProp);
+      if (paddings.left.has_value())
+        viewProps.yogaStyle.setPadding(yoga::Edge::Left, paddings.left.value());
+      if (paddings.top.has_value())
+        viewProps.yogaStyle.setPadding(yoga::Edge::Top, paddings.top.value());
+      if (paddings.right.has_value())
+        viewProps.yogaStyle.setPadding(yoga::Edge::Right, paddings.right.value());
+      if (paddings.bottom.has_value())
+        viewProps.yogaStyle.setPadding(yoga::Edge::Bottom, paddings.bottom.value());
+      if (paddings.start.has_value())
+        viewProps.yogaStyle.setPadding(yoga::Edge::Start, paddings.start.value());
+      if (paddings.end.has_value())
+        viewProps.yogaStyle.setPadding(yoga::Edge::End, paddings.end.value());
+      if (paddings.horizontal.has_value())
+        viewProps.yogaStyle.setPadding(yoga::Edge::Horizontal, paddings.horizontal.value());
+      if (paddings.vertical.has_value())
+        viewProps.yogaStyle.setPadding(yoga::Edge::Vertical, paddings.vertical.value());
+      if (paddings.all.has_value())
+        viewProps.yogaStyle.setPadding(yoga::Edge::All, paddings.all.value());
+      break;
+    }
+
+    case POSITION: {
+      const auto &positions = get<CascadedRectangleEdges<yoga::StyleLength>>(animatedProp);
+      if (positions.left.has_value())
+        viewProps.yogaStyle.setPosition(yoga::Edge::Left, positions.left.value());
+      if (positions.top.has_value())
+        viewProps.yogaStyle.setPosition(yoga::Edge::Top, positions.top.value());
+      if (positions.right.has_value())
+        viewProps.yogaStyle.setPosition(yoga::Edge::Right, positions.right.value());
+      if (positions.bottom.has_value())
+        viewProps.yogaStyle.setPosition(yoga::Edge::Bottom, positions.bottom.value());
+      if (positions.start.has_value())
+        viewProps.yogaStyle.setPosition(yoga::Edge::Start, positions.start.value());
+      if (positions.end.has_value())
+        viewProps.yogaStyle.setPosition(yoga::Edge::End, positions.end.value());
+      if (positions.horizontal.has_value())
+        viewProps.yogaStyle.setPosition(yoga::Edge::Horizontal, positions.horizontal.value());
+      if (positions.vertical.has_value())
+        viewProps.yogaStyle.setPosition(yoga::Edge::Vertical, positions.vertical.value());
+      if (positions.all.has_value())
+        viewProps.yogaStyle.setPosition(yoga::Edge::All, positions.all.value());
+      break;
+    }
+
     case FLEX:
       viewProps.yogaStyle.setFlex(get<yoga::FloatOptional>(animatedProp));
       break;
@@ -73,6 +186,25 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case BACKGROUND_COLOR:
       viewProps.backgroundColor = get<SharedColor>(animatedProp);
+      break;
+
+    case SHADOW_COLOR:
+      viewProps.shadowColor = get<SharedColor>(animatedProp);
+      break;
+
+    case SHADOW_OFFSET:
+      viewProps.shadowOffset = get<Size>(animatedProp);
+      break;
+
+    case SHADOW_OPACITY:
+      viewProps.shadowOpacity = get<Float>(animatedProp);
+      break;
+
+    case SHADOW_RADIUS:
+      viewProps.shadowRadius = get<Float>(animatedProp);
+      break;
+
+    default:
       break;
   }
 }
