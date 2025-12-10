@@ -24,15 +24,13 @@ struct FrameTimingSequence {
   FrameTimingSequence(
       FrameSequenceId id,
       ThreadId threadId,
-      HighResTimeStamp beginDrawingTimestamp,
-      HighResTimeStamp commitTimestamp,
-      HighResTimeStamp endDrawingTimestamp,
+      HighResTimeStamp beginTimestamp,
+      HighResTimeStamp endTimestamp,
       std::optional<std::string> screenshot = std::nullopt)
       : id(id),
         threadId(threadId),
-        beginDrawingTimestamp(beginDrawingTimestamp),
-        commitTimestamp(commitTimestamp),
-        endDrawingTimestamp(endDrawingTimestamp),
+        beginTimestamp(beginTimestamp),
+        endTimestamp(endTimestamp),
         screenshot(std::move(screenshot))
   {
   }
@@ -47,9 +45,8 @@ struct FrameTimingSequence {
    */
   ThreadId threadId;
 
-  HighResTimeStamp beginDrawingTimestamp;
-  HighResTimeStamp commitTimestamp;
-  HighResTimeStamp endDrawingTimestamp;
+  HighResTimeStamp beginTimestamp;
+  HighResTimeStamp endTimestamp;
 
   /**
    * Optional screenshot data (base64 encoded) captured during the frame.
