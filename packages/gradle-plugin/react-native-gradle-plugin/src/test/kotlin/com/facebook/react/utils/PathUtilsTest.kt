@@ -14,6 +14,7 @@ import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
 import java.io.File
 import org.assertj.core.api.Assertions.assertThat
+import org.gradle.process.ProcessExecutionException
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
@@ -99,7 +100,7 @@ class PathUtilsTest {
     assertThat(actual.readText()).isEqualTo("<!-- nothing to see here -->")
   }
 
-  @Test(expected = IllegalStateException::class)
+  @Test(expected = ProcessExecutionException::class)
   fun detectedCliPath_failsIfNotFound() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)

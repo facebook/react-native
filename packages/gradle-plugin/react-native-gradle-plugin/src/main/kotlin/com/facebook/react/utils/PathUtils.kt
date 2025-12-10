@@ -42,6 +42,7 @@ internal fun detectedEntryFile(config: ReactExtension, envVariableOverride: Stri
  */
 internal fun detectedCliFile(config: ReactExtension): File =
     detectCliFile(
+        project = config.project,
         reactNativeRoot = config.root.get().asFile,
         preconfiguredCliFile = config.cliFile.asFile.orNull,
     )
@@ -71,7 +72,11 @@ private fun detectEntryFile(
       else -> File(reactRoot, "index.js")
     }
 
-private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): File {
+private fun detectCliFile(
+    project: Project,
+    reactNativeRoot: File,
+    preconfiguredCliFile: File?,
+): File {
   // 1. preconfigured path
   if (preconfiguredCliFile != null) {
     if (preconfiguredCliFile.exists()) {
@@ -81,14 +86,12 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
 
   // 2. node module path
   val nodeProcess =
-      Runtime.getRuntime()
-          .exec(
-              arrayOf("node", "--print", "require.resolve('react-native/cli');"),
-              emptyArray(),
-              reactNativeRoot,
-          )
+      project.providers.exec { exec ->
+        exec.commandLine("node", "--print", "require.resolve('react-native/cli');")
+        exec.workingDir(reactNativeRoot)
+      }
 
-  val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
+  val nodeProcessOutput = nodeProcess.standardOutput.asText.get().trim()
 
   if (nodeProcessOutput.isNotEmpty()) {
     val nodeModuleCliJs = File(nodeProcessOutput)
