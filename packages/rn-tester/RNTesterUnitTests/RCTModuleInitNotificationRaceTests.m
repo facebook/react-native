@@ -89,6 +89,8 @@ RCT_EXPORT_MODULE()
 {
   [super setUp];
 
+  XCTSkip(@"Skipping RCTModuleInitNotificationRaceTests since they rely on deprecated RCTBridge functionality.");
+
   _notificationObserver = [RCTNotificationObserverModule new];
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:nil];
 

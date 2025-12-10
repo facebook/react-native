@@ -11,7 +11,7 @@
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 
-extern BOOL RCTIsGzippedData(NSData *data);
+extern BOOL RCTIsGzippedData(NSData *__nullable data);
 
 @interface RCTNetworking (Private)
 
@@ -52,7 +52,8 @@ extern BOOL RCTIsGzippedData(NSData *data);
   XCTAssertEqualObjects(outputString, inputString);
 }
 
-- (void)testRequestBodyEncoding
+// Disabled due to test being based on deprecated RCTBridge
+- (void)disabled_testRequestBodyEncoding
 {
   NSDictionary *query = @{
     @"url" : @"http://example.com",

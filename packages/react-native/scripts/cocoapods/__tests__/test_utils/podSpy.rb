@@ -14,8 +14,8 @@
 # variable. A $podInvocationCount counter is increased as well.
 #
 # You can assert against these variables to check:
-# * The `pod` function has been invoked X times: `assert_equal($podInvocationCount, X)`
-# * A specific pod has been installed: `assert_equal($podInvocation["MyPod"][:version], "15.4.6")`
+# * The `pod` function has been invoked X times: `assert_equal(X, $podInvocationCount)`
+# * A specific pod has been installed: `assert_equal("15.4.6", $podInvocation["MyPod"][:version])`
 
 
 $podInvocation = {}
