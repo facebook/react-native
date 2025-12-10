@@ -628,7 +628,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
       mActivelyScrolling = true;
 
-      if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+      if (mOnScrollDispatchHelper.onScrollChanged(x, y, mDragging)) {
         if (mRemoveClippedSubviews) {
           updateClippingRect();
         }
