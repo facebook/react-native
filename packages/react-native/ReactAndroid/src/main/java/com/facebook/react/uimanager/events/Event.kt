@@ -40,6 +40,9 @@ public abstract class Event<T : Event<T>> {
   public var viewTag: Int = 0
     private set
 
+  /** @return whether this event is dispatched during a drawing pass */
+  public var isDrawing: Boolean = false
+
   /**
    * @return the time at which the event happened in the [android.os.SystemClock.uptimeMillis] base.
    */

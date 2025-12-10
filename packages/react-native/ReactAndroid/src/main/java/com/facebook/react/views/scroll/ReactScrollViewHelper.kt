@@ -65,10 +65,10 @@ public object ReactScrollViewHelper {
 
   /** Shared by [ReactScrollView] and [ReactHorizontalScrollView]. */
   @JvmStatic
-  public fun <T> emitScrollEvent(scrollView: T, xVelocity: Float, yVelocity: Float) where
+  public fun <T> emitScrollEvent(scrollView: T, xVelocity: Float, yVelocity: Float, isDrawing: Boolean = false) where
   T : HasScrollEventThrottle?,
   T : ViewGroup {
-    emitScrollEvent(scrollView, ScrollEventType.SCROLL, xVelocity, yVelocity)
+    emitScrollEvent(scrollView, ScrollEventType.SCROLL, xVelocity, yVelocity, isDrawing)
   }
 
   @JvmStatic
@@ -111,6 +111,7 @@ public object ReactScrollViewHelper {
       scrollEventType: ScrollEventType,
       xVelocity: Float,
       yVelocity: Float,
+      isDrawing: Boolean = false
   ) where T : HasScrollEventThrottle?, T : ViewGroup {
     val now = System.currentTimeMillis()
     // Throttle the scroll event if scrollEventThrottle is set to be equal or more than 17 ms.
@@ -146,7 +147,9 @@ public object ReactScrollViewHelper {
               contentView.width,
               contentView.height,
               scrollView.width,
-              scrollView.height))
+              scrollView.height).also {
+                  it.isDrawing = isDrawing
+          })
       if (scrollEventType == ScrollEventType.SCROLL) {
         scrollView.lastScrollDispatchTime = now
       }
@@ -368,7 +371,8 @@ public object ReactScrollViewHelper {
   public fun <T> updateStateOnScrollChanged(
       scrollView: T,
       xVelocity: Float,
-      yVelocity: Float
+      yVelocity: Float,
+      isDrawing: Boolean = false
   ) where
   T : HasFlingAnimator?,
   T : HasScrollEventThrottle?,
@@ -380,7 +384,7 @@ public object ReactScrollViewHelper {
     // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
     // the error as much as possible.
     updateFabricScrollState(scrollView, scrollView.scrollX, scrollView.scrollY)
-    emitScrollEvent(scrollView, xVelocity, yVelocity)
+    emitScrollEvent(scrollView, xVelocity, yVelocity, isDrawing)
   }
 
   public fun <T> registerFlingAnimator(scrollView: T) where

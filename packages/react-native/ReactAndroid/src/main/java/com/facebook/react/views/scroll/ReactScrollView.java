@@ -463,24 +463,29 @@ public class ReactScrollView extends ScrollView
 
   @Override
   protected void onScrollChanged(int x, int y, int oldX, int oldY) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactScrollView.onScrollChanged");
-    try {
-      super.onScrollChanged(x, y, oldX, oldY);
+    onScrollChanged(x, y, oldX, oldY, false);
+  }
 
-      mActivelyScrolling = true;
+  protected void onScrollChanged(int x, int y, int oldX, int oldY, boolean isDrawing) {
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactScrollView.onScrollChanged");
+      try {
+          super.onScrollChanged(x, y, oldX, oldY);
 
-      if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
-        if (mRemoveClippedSubviews) {
-          updateClippingRect();
-        }
-        ReactScrollViewHelper.updateStateOnScrollChanged(
-            this,
-            mOnScrollDispatchHelper.getXFlingVelocity(),
-            mOnScrollDispatchHelper.getYFlingVelocity());
+          mActivelyScrolling = true;
+
+          if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+              if (mRemoveClippedSubviews) {
+                  updateClippingRect();
+              }
+              ReactScrollViewHelper.updateStateOnScrollChanged(
+                      this,
+                      mOnScrollDispatchHelper.getXFlingVelocity(),
+                      mOnScrollDispatchHelper.getYFlingVelocity(),
+                      isDrawing);
+          }
+      } finally {
+          Systrace.endSection(Systrace.TRACE_TAG_REACT);
       }
-    } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT);
-    }
   }
 
   @Override
