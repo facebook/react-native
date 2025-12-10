@@ -407,6 +407,7 @@ export type Role =
   | 'summary'
   | 'switch'
   | 'tab'
+  | 'tabbar'
   | 'table'
   | 'tablist'
   | 'tabpanel'
