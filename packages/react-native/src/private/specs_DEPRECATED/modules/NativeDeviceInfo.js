@@ -45,14 +45,20 @@ export interface Spec extends TurboModule {
 }
 
 const NativeModule: Spec = TurboModuleRegistry.getEnforcing<Spec>('DeviceInfo');
-let constants: ?DeviceInfoConstants = null;
 
 const NativeDeviceInfo = {
+  /**
+   * Please note that on iOS, if the application is using SceneDelegate, the dimensions
+   * may not be constant, in which case calling this method returns the dimensions valid
+   * at the time of invocation.
+   * @deprecated Use `NativeDeviceInfo.getInfo()` instead; this method will be removed in a future version of React Native.
+   * @returns {DeviceInfoConstants} the dimensions at the moment of invocation
+   */
   getConstants(): DeviceInfoConstants {
-    if (constants == null) {
-      constants = NativeModule.getConstants();
-    }
-    return constants;
+    return NativeModule.getConstants();
+  },
+  getInfo(): DeviceInfoConstants {
+    return NativeModule.getConstants();
   },
 };
 

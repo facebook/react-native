@@ -11,7 +11,7 @@
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 
-extern BOOL RCTIsGzippedData(NSData *data);
+extern BOOL RCTIsGzippedData(NSData *__nullable data);
 
 @interface RCTNetworking (Private)
 

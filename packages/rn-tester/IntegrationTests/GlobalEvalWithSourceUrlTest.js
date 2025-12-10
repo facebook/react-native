@@ -80,4 +80,4 @@ function GlobalEvalWithSourceUrlTest(): React.Node {
   return <View />;
 }
 
-export default GlobalEvalWithSourceUrlTest;
+module.exports = GlobalEvalWithSourceUrlTest;

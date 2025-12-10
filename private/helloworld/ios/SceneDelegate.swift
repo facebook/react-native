@@ -5,44 +5,30 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import React
+import React_RCTAppDelegate
+import ReactAppDependencyProvider
 import UIKit
 
-@main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
-
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
-
-  func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-  ) -> Bool {
+  
+  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    guard let windowScene = (scene as? UIWindowScene) else { return }
+    window = UIWindow(windowScene: windowScene)
     let delegate = ReactNativeDelegate()
     let factory = RCTReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
-
+    
     reactNativeDelegate = delegate
     reactNativeFactory = factory
-
-    #if DEBUG
-    let devMenuConfiguration = RCTDevMenuConfiguration(
-      devMenuEnabled: true,
-      shakeGestureEnabled: true,
-      keyboardShortcutsEnabled: true
-    )
-    reactNativeFactory?.devMenuConfiguration = devMenuConfiguration
-    #endif
-
-    window = UIWindow(frame: UIScreen.main.bounds)
-
+    
     factory.startReactNative(
       withModuleName: "HelloWorld",
-      in: window,
-      launchOptions: launchOptions
+      in: window
     )
-
-    return true
   }
 }
 
@@ -52,10 +38,10 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
   }
 
   override func bundleURL() -> URL? {
-    #if DEBUG
+#if DEBUG
     RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
-    #else
+#else
     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-    #endif
+#endif
   }
 }
