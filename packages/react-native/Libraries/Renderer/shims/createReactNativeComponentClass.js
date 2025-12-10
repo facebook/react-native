@@ -7,7 +7,6 @@
  * @noformat
  * @nolint
  * @flow strict-local
- * @generated SignedSource<<52163887de05f1cff05388145cf85b3b>>
  */
 
 'use strict';
