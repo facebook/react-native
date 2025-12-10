@@ -44,11 +44,13 @@ function LogBoxInspectorStackFrame(props: Props): React.Node {
         onPress={onPress}
         style={styles.frame}>
         <Text
+          selectable={true}
           id="logbox_stack_frame_text"
           style={[styles.name, frame.collapse === true && styles.dim]}>
           {frame.methodName}
         </Text>
         <Text
+          selectable={true}
           ellipsizeMode="middle"
           numberOfLines={1}
           style={[styles.location, frame.collapse === true && styles.dim]}>

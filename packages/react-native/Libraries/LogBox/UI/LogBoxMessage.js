@@ -97,7 +97,11 @@ function TappableLinks(props: {
     );
   }
 
-  return <Text style={props.style}>{fragments}</Text>;
+  return (
+    <Text selectable={true} style={props.style}>
+      {fragments}
+    </Text>
+  );
 }
 
 const cleanContent = (content: string) =>
@@ -107,7 +111,7 @@ function LogBoxMessage(props: Props): React.Node {
   const {content, substitutions}: Message = props.message;
 
   if (props.plaintext === true) {
-    return <Text>{cleanContent(content)}</Text>;
+    return <Text selectable={true}>{cleanContent(content)}</Text>;
   }
 
   const maxLength = props.maxLength != null ? props.maxLength : Infinity;
