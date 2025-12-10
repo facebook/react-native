@@ -133,9 +133,13 @@ class NewArchitectureHelper
 
         depend_on_js_engine(spec)
         add_rn_third_party_dependencies(spec)
-        add_rncore_dependency(spec)
 
         spec.pod_target_xcconfig = current_config
+
+        # add_rncore_dependency must be called after setting pod_target_xcconfig
+        # because it reads and modifies the xcconfig. If called before, its changes
+        # would be overwritten by the assignment above.
+        add_rncore_dependency(spec)
     end
 
     def self.extract_react_native_version(react_native_path, file_manager: File, json_parser: JSON)
