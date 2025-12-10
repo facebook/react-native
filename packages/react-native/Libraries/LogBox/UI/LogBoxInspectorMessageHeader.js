@@ -11,7 +11,6 @@
 import type {LogLevel} from '../Data/LogBoxLog';
 import type {Message} from '../Data/parseLogBoxLog';
 
-import Clipboard from '../../Components/Clipboard/Clipboard';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
@@ -26,6 +25,7 @@ type Props = $ReadOnly<{
   level: LogLevel,
   title: string,
   onPress: () => void,
+  onCopy: () => void,
 }>;
 
 const SHOW_MORE_MESSAGE_LENGTH = 300;
@@ -59,9 +59,7 @@ function LogBoxInspectorMessageHeader(props: Props): React.Node {
             default: 'transparent',
             pressed: LogBoxStyle.getBackgroundDarkColor(1),
           }}
-          onPress={() => {
-            Clipboard.setString(props.message.content);
-          }}
+          onPress={props.onCopy}
           style={messageStyles.copyButton}>
           <Text style={messageStyles.copyButtonText}>Copy</Text>
         </LogBoxButton>
