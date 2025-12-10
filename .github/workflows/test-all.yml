@@ -282,7 +282,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
 
-  run_fantom_tests:
+  build_fantom_runner:
     runs-on: 8-core-ubuntu
     needs: [set_release_type]
     container:
@@ -295,11 +295,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build and Test Fantom
-        uses: ./.github/actions/run-fantom-tests
+      - name: Build Fantom Runner
+        uses: ./.github/actions/build-fantom-runner
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
+  run_fantom_tests:
+    runs-on: 8-core-ubuntu
+    needs: [set_release_type, build_fantom_runner]
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        TERM: "dumb"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
+        ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run Fantom Tests
+        uses: ./.github/actions/run-fantom-tests
 
   build_android:
     runs-on: 8-core-ubuntu
