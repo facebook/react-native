@@ -1,5 +1,112 @@
 # Changelog
 
+## v0.83.0-rc.5
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.0-rc.5 ([015b567ab7](https://github.com/facebook/react-native/commit/015b567ab736d7168a4dd85c7892f2b6e44f30f9) by [@react-native-bot](https://github.com/react-native-bot))
+- Fix remaining missing debugger build flags for open source builds ([75f4c83828](https://github.com/facebook/react-native/commit/75f4c838283f9c7227f11d7b091a6c0b0e6efe0e) by [@huntie](https://github.com/huntie))
+- Exclude legacy Hermes targets from single host assertion ([30cbe978da](https://github.com/facebook/react-native/commit/30cbe978daecc3082819e2aa1d9861f46cb7ff8a) by [@huntie](https://github.com/huntie))
+- Bump Podfile.lock ([6227d99c57](https://github.com/facebook/react-native/commit/6227d99c570140699bc6386c1319c700febeb0ff) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.83.0-rc.4 ([c8dd7d4973](https://github.com/facebook/react-native/commit/c8dd7d4973791f9997dd134916f8aa4c90b4955f) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.83.0-rc.4
 
 ### Fixed
