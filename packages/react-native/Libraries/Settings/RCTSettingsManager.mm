@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE()
 
 - (facebook::react::ModuleConstants<JS::NativeSettingsManager::Constants>)constantsToExport
 {
-  return (facebook::react::ModuleConstants<JS::NativeSettingsManager::Constants>)[self getConstants];
+  return [self getConstants];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeSettingsManager::Constants>)getConstants
