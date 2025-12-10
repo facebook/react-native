@@ -31,7 +31,7 @@ const frameworkLog = createLogger('XCFramework');
  */
 const REACT_CORE_UMBRELLA_HEADER_PATH /*: string*/ = path.join(
   __dirname,
-  'Templates',
+  'templates',
   'React-umbrella.h',
 );
 
@@ -41,13 +41,13 @@ const REACT_CORE_UMBRELLA_HEADER_PATH /*: string*/ = path.join(
  */
 const RCT_APP_DELEGATE_UMBRELLA_HEADER_PATH /*: string*/ = path.join(
   __dirname,
-  'Templates',
+  'templates',
   'React_RCTAppDelegate-umbrella.h',
 );
 
 const RN_MODULEMAP_PATH /*: string*/ = path.join(
   __dirname,
-  'Templates',
+  'templates',
   'module.modulemap',
 );
 
