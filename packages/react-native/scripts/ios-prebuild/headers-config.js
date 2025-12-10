@@ -16,168 +16,16 @@ export type PodSpecConfiguration = $ReadOnly<{
   excludePatterns?: Array<string>,
   subSpecs?: $ReadOnlyArray<PodSpecConfiguration>,
   preservePaths?: Array<string>,
-}>;
+} | {disabled: true}>;
 */
 
-// Remember that our GLOB library doesn't like {h} in its patterns, so we use **/*.h instead of **/*.{h}
-const PodSpecConfigurations /*: {[key: string]: PodSpecConfiguration} */ = {
-  'Libraries/ActionSheetIOS/React-RCTActionSheet.podspec': {
-    name: 'React-RCTActionSheet',
-    headerPatterns: [],
-    headerDir: 'RCTActionSheet',
-  },
-
-  'Libraries/AppDelegate/React-RCTAppDelegate.podspec': {
-    name: 'React-RCTAppDelegate',
+const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
+  'ReactCommon/jsi/React-jsi.podspec': {
+    name: 'React-jsi',
     headerPatterns: ['**/*.h'],
-    headerDir: '',
+    headerDir: 'jsi',
+    excludePatterns: ['**/test/*'],
   },
-
-  'Libraries/Blob/React-RCTBlob.podspec': {
-    name: 'React-RCTBlob',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'RCTBlob',
-  },
-
-  'Libraries/FBLazyVector/FBLazyVector.podspec': {
-    name: 'FBLazyVector',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'FBLazyVector',
-  },
-
-  'Libraries/Image/React-RCTImage.podspec': {
-    name: 'React-RCTImage',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'RCTImage',
-  },
-
-  'Libraries/LinkingIOS/React-RCTLinking.podspec': {
-    name: 'React-RCTLinking',
-    headerPatterns: [],
-    headerDir: 'RCTLinking',
-  },
-
-  'Libraries/NativeAnimation/React-RCTAnimation.podspec': {
-    name: 'React-RCTAnimation',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'RCTAnimation',
-  },
-
-  'Libraries/Network/React-RCTNetwork.podspec': {
-    name: 'React-RCTNetwork',
-    headerPatterns: [],
-    headerDir: 'RCTNetwork',
-  },
-
-  'Libraries/PushNotificationIOS/React-RCTPushNotification.podspec': {
-    name: '',
-    headerPatterns: [],
-    headerDir: '',
-  },
-
-  'Libraries/Required/RCTRequired.podspec': {
-    name: 'RCTRequired',
-    headerPatterns: ['*.h'],
-    headerDir: 'RCTRequired',
-  },
-
-  'Libraries/Settings/React-RCTSettings.podspec': {
-    name: 'React-RCTSettings',
-    headerPatterns: ['*.h'],
-    headerDir: 'RCTSettings',
-  },
-
-  'Libraries/Text/React-RCTText.podspec': {
-    name: 'React-RCTText',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'RCTText',
-  },
-
-  'Libraries/TypeSafety/RCTTypeSafety.podspec': {
-    name: 'RCTTypeSafety',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'RCTTypeSafety',
-  },
-
-  'Libraries/Vibration/React-RCTVibration.podspec': {
-    name: 'React-RCTVibration',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'RCTVibration',
-  },
-
-  'React.podspec': {name: '', headerPatterns: [], headerDir: ''},
-
-  'React/CoreModules/React-CoreModules.podspec': {
-    name: 'React-CoreModules',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'CoreModules',
-    excludePatterns: ['PlatformStubs/**/*'], // TODO: Only for iOS!
-  },
-
-  'React/React-RCTFabric.podspec': {
-    name: 'React-RCTFabric',
-    headerPatterns: ['Fabric/**/*.h'],
-    headerDir: 'React',
-    excludePatterns: ['**/tests/*', '**/android/*'],
-  },
-
-  'React/React-RCTFBReactNativeSpec.podspec': {
-    name: 'React-RCTFBReactNativeSpec',
-    headerPatterns: ['FBReactNativeSpec/**/*.h'],
-    headerDir: 'FBReactNativeSpec',
-    excludePatterns: ['FBReactNativeSpec/react/renderer/components/**'],
-    subSpecs: [
-      {
-        name: 'components',
-        headerPatterns: [
-          'FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.h',
-        ],
-        headerDir: 'react/renderer/components/FBReactNativeSpec',
-      },
-    ],
-  },
-
-  'React/Runtime/React-RCTRuntime.podspec': {
-    name: 'React-RCTRuntime',
-    headerPatterns: ['*.h'],
-    headerDir: 'React',
-  },
-
-  'ReactApple/Libraries/RCTFoundation/RCTDeprecation/RCTDeprecation.podspec': {
-    name: 'RCTDeprecation',
-    headerPatterns: ['Exported/*.h'],
-    headerDir: '',
-  },
-
-  'ReactApple/RCTSwiftUI/RCTSwiftUI.podspec': {
-    name: 'RCTSwiftUI',
-    headerPatterns: ['*.h'],
-    headerDir: 'RCTSwiftUI',
-  },
-
-  'ReactApple/RCTSwiftUIWrapper/RCTSwiftUIWrapper.podspec': {
-    name: 'RCTSwiftUIWrapper',
-    headerPatterns: ['*.h'],
-    headerDir: 'RCTSwiftUIWrapper',
-  },
-
-  'ReactCommon/callinvoker/React-callinvoker.podspec': {
-    name: 'React-callinvoker',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'ReactCommon',
-  },
-
-  'ReactCommon/cxxreact/React-cxxreact.podspec': {
-    name: 'React-cxxreact',
-    headerPatterns: ['*.h'],
-    headerDir: 'cxxreact',
-  },
-
-  'ReactCommon/hermes/executor/React-jsitracing.podspec': {
-    name: 'React-jsitracing',
-    headerPatterns: ['JSITracing.h'],
-  },
-
   'ReactCommon/hermes/React-hermes.podspec': {
     name: 'React-hermes',
     headerPatterns: [
@@ -187,68 +35,6 @@ const PodSpecConfigurations /*: {[key: string]: PodSpecConfiguration} */ = {
     ],
     headerDir: 'reacthermes',
   },
-
-  'ReactCommon/jserrorhandler/React-jserrorhandler.podspec': {
-    name: 'React-jserrorhandler',
-    headerPatterns: ['JsErrorHandler.h', 'StackTraceParser.h'],
-    headerDir: 'jserrorhandler',
-  },
-
-  'ReactCommon/jsi/React-jsi.podspec': {
-    name: 'React-jsi',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'jsi',
-    excludePatterns: ['**/test/*'],
-  },
-
-  'ReactCommon/jsiexecutor/React-jsiexecutor.podspec': {
-    name: 'React-jsiexecutor',
-    headerPatterns: ['jsireact/*.h'],
-    headerDir: 'jsireact',
-  },
-
-  'ReactCommon/jsinspector-modern/cdp/React-jsinspectorcdp.podspec': {
-    name: 'React-jsinspectorcdp',
-    headerPatterns: ['*.h'],
-    headerDir: 'jsinspector-modern/cdp',
-  },
-
-  'ReactCommon/jsinspector-modern/network/React-jsinspectornetwork.podspec': {
-    name: 'React-jsinspectornetwork',
-    headerPatterns: ['*.h'],
-    headerDir: 'jsinspector-modern/network',
-  },
-
-  'ReactCommon/jsinspector-modern/React-jsinspector.podspec': {
-    name: 'React-jsinspector',
-    headerPatterns: ['*.h'],
-    headerDir: 'jsinspector-modern',
-  },
-
-  'ReactCommon/jsinspector-modern/tracing/React-jsinspectortracing.podspec': {
-    name: 'React-jsinspectortracing',
-    headerPatterns: ['*.h'],
-    headerDir: 'jsinspector-modern/tracing',
-  },
-
-  'ReactCommon/jsitooling/React-jsitooling.podspec': {
-    name: 'React-jsitooling',
-    headerPatterns: ['react/runtime/*.h'],
-    headerDir: 'react/runtime',
-  },
-
-  'ReactCommon/logger/React-logger.podspec': {
-    name: 'React-logger',
-    headerPatterns: ['*.h'],
-    headerDir: 'logger',
-  },
-
-  'ReactCommon/oscompat/React-oscompat.podspec': {
-    name: 'React-oscompat',
-    headerPatterns: ['*.h'],
-    headerDir: 'oscompat',
-  },
-
   'ReactCommon/React-Fabric.podspec': {
     name: 'React-Fabric',
     headerPatterns: [],
@@ -431,7 +217,21 @@ const PodSpecConfigurations /*: {[key: string]: PodSpecConfiguration} */ = {
       },
     ],
   },
-
+  'React/React-RCTFBReactNativeSpec.podspec': {
+    name: 'React-RCTFBReactNativeSpec',
+    headerPatterns: ['FBReactNativeSpec/**/*.h'],
+    headerDir: 'FBReactNativeSpec',
+    excludePatterns: ['FBReactNativeSpec/react/renderer/components/**'],
+    subSpecs: [
+      {
+        name: 'components',
+        headerPatterns: [
+          'FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.h',
+        ],
+        headerDir: 'react/renderer/components/FBReactNativeSpec',
+      },
+    ],
+  },
   'ReactCommon/React-FabricComponents.podspec': {
     name: 'React-FabricComponents',
     headerPatterns: [],
@@ -562,264 +362,6 @@ const PodSpecConfigurations /*: {[key: string]: PodSpecConfiguration} */ = {
       },
     ],
   },
-
-  'ReactCommon/React-FabricImage.podspec': {
-    name: 'React-FabricImage',
-    headerPatterns: ['react/renderer/components/image/**/*.h'],
-    excludePatterns: ['react/renderer/components/image/tests'],
-    headerDir: 'react/renderer/components/image',
-  },
-
-  'ReactCommon/React-Mapbuffer.podspec': {
-    name: 'React-Mapbuffer',
-    headerPatterns: ['react/renderer/mapbuffer/*.h'],
-    headerDir: 'react/renderer/mapbuffer',
-  },
-
-  'ReactCommon/react/debug/React-debug.podspec': {
-    name: 'React-debug',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'react/debug',
-  },
-
-  'ReactCommon/react/featureflags/React-featureflags.podspec': {
-    name: 'React-featureflags',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'react/featureflags',
-  },
-
-  'ReactCommon/react/nativemodule/core/platform/ios/React-NativeModulesApple.podspec':
-    {
-      name: 'React-NativeModulesApple',
-      headerPatterns: ['ReactCommon/**/*.h'],
-      headerDir: 'ReactCommon',
-    },
-
-  'ReactCommon/react/nativemodule/defaults/React-defaultsnativemodule.podspec':
-    {
-      name: 'React-defaultsnativemodule',
-      headerPatterns: ['*.h'],
-      headerDir: 'react/nativemodule/defaults',
-    },
-
-  'ReactCommon/react/nativemodule/dom/React-domnativemodule.podspec': {
-    name: 'React-domnativemodule',
-    headerPatterns: ['*.h'],
-    headerDir: 'react/nativemodule/dom',
-  },
-
-  'ReactCommon/react/nativemodule/featureflags/React-featureflagsnativemodule.podspec':
-    {
-      name: 'React-featureflagsnativemodule',
-      headerPatterns: ['*.h'],
-      headerDir: 'react/nativemodule/featureflags',
-    },
-
-  'ReactCommon/react/nativemodule/idlecallbacks/React-idlecallbacksnativemodule.podspec':
-    {
-      name: 'React-idlecallbacksnativemodule',
-      headerPatterns: ['*.h'],
-      headerDir: 'react/nativemodule/idlecallbacks',
-    },
-
-  'ReactCommon/react/nativemodule/microtasks/React-microtasksnativemodule.podspec':
-    {
-      name: 'React-microtasksnativemodule',
-      headerPatterns: ['*.h'],
-      headerDir: 'react/nativemodule/microtasks',
-    },
-  // We don't need to include samples in our header file structure.
-  //   'ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec':
-  //     {
-  //       name: 'ReactCommon-Samples',
-  //       headerPatterns: ['**/*.h'],
-  //       headerDir: 'react/nativemodule/samples',
-  //     },
-
-  'ReactCommon/react/nativemodule/webperformance/React-webperformancenativemodule.podspec':
-    {
-      name: 'React-webperformancenativemodule',
-      headerPatterns: ['*.h'],
-      headerDir: 'react/nativemodule/webperformance',
-    },
-
-  'ReactCommon/react/networking/React-networking.podspec': {
-    name: 'React-networking',
-    headerPatterns: ['*.h'],
-    headerDir: 'react/networking',
-  },
-
-  'ReactCommon/react/performance/cdpmetrics/React-performancecdpmetrics.podspec':
-    {
-      name: 'React-performancecdpmetrics',
-      headerPatterns: ['*.h'],
-      headerDir: 'react/performance/cdpmetrics',
-    },
-
-  'ReactCommon/react/performance/timeline/React-performancetimeline.podspec': {
-    name: 'React-performancetimeline',
-    headerPatterns: ['*.h'],
-    headerDir: 'react/performance/timeline',
-  },
-
-  'ReactCommon/react/renderer/consistency/React-rendererconsistency.podspec': {
-    name: 'React-rendererconsistency',
-    headerPatterns: ['*.h'],
-    headerDir: 'react/renderer/consistency',
-  },
-
-  'ReactCommon/react/renderer/css/React-renderercss.podspec': {
-    name: 'React-renderercss',
-    headerPatterns: ['*.h'],
-    headerDir: 'react/renderer/css',
-  },
-
-  'ReactCommon/react/renderer/debug/React-rendererdebug.podspec': {
-    name: 'React-rendererdebug',
-    headerPatterns: ['*.h'],
-    headerDir: 'react/renderer/debug',
-  },
-
-  'ReactCommon/react/renderer/graphics/React-graphics.podspec': {
-    name: 'React-graphics',
-    headerPatterns: ['*.h', 'platform/ios/**/*.h'],
-    headerDir: 'react/renderer/graphics',
-  },
-
-  'ReactCommon/react/renderer/imagemanager/platform/ios/React-ImageManager.podspec':
-    {
-      name: 'React-ImageManager',
-      headerPatterns: ['**/*.h'],
-      headerDir: 'react/renderer/imagemanager',
-    },
-
-  'ReactCommon/react/renderer/runtimescheduler/React-runtimescheduler.podspec':
-    {
-      name: 'React-runtimescheduler',
-      headerPatterns: ['*.h'],
-      headerDir: 'react/renderer/runtimescheduler',
-    },
-
-  'ReactCommon/react/runtime/platform/ios/React-RuntimeApple.podspec': {
-    name: 'React-RuntimeApple',
-    headerPatterns: ['ReactCommon/*.h'],
-    headerDir: 'ReactCommon',
-    excludePatterns: ['ReactCommon/RCTJscInstance.h'],
-  },
-
-  'ReactCommon/react/runtime/React-RuntimeCore.podspec': {
-    name: 'React-RuntimeCore',
-    headerPatterns: ['*.h', 'nativeviewconfig/*.h'],
-    headerDir: 'react/runtime',
-  },
-
-  'ReactCommon/react/runtime/React-RuntimeHermes.podspec': {
-    name: 'React-RuntimeHermes',
-    headerPatterns: ['hermes/*.h'],
-    headerDir: 'react/runtime/hermes',
-  },
-
-  'ReactCommon/react/timing/React-timing.podspec': {
-    name: 'React-timing',
-    headerPatterns: ['**/*.h'],
-    headerDir: 'react/timing',
-  },
-
-  'ReactCommon/react/utils/React-utils.podspec': {
-    name: 'React-utils',
-    headerPatterns: ['*.h', 'platform/ios/**/*.h'],
-    headerDir: 'react/utils',
-    excludePatterns: ['tests'],
-  },
-
-  'ReactCommon/ReactCommon.podspec': {
-    name: 'ReactCommon',
-    headerPatterns: [],
-    headerDir: 'ReactCommon',
-    subSpecs: [
-      {
-        name: 'turbomodule',
-        headerPatterns: [],
-        subSpecs: [
-          {
-            name: 'bridging',
-            headerPatterns: ['react/bridging/**/*.h'],
-            headerDir: 'react/bridging',
-            excludePatterns: ['react/bridging/tests/**/*'],
-          },
-          {
-            name: 'core',
-            headerPatterns: ['react/nativemodule/core/ReactCommon/**/*.h'],
-          },
-        ],
-      },
-    ],
-  },
-
-  'ReactCommon/reactperflogger/React-perflogger.podspec': {
-    name: 'React-perflogger',
-    headerPatterns: ['reactperflogger/*.h', 'fusebox/*.h'],
-    headerDir: 'reactperflogger',
-  },
-
-  'ReactCommon/runtimeexecutor/React-runtimeexecutor.podspec': {
-    name: 'React-runtimeexecutor',
-    headerPatterns: ['ReactCommon/*.h', 'platform/ios/**/*.h'],
-    headerDir: 'ReactCommon',
-  },
-
-  'ReactCommon/yoga/Yoga.podspec': {
-    name: 'Yoga',
-    headerPatterns: ['yoga/**/*.h'],
-    headerDir: 'yoga',
-    preservePaths: ['yoga/**/*.h'],
-  },
-  // These should be distributed through the Hermes xcframework.
-  //   'sdks/hermes/hermes-engine.podspec':
-  //     {
-  //       name: 'hermes-engine',
-  //       headerPatterns: [],
-  //       headerDir: '',
-  //       preservePaths: ['**/*.*'],
-  //       subSpecs: [
-  //         {
-  //           name: 'Hermes',
-  //           headerPatterns: ['destroot/include/hermes/*.h'],
-  //           headerDir: 'hermes',
-  //         },
-
-  //         {
-  //           name: 'cdp',
-  //           headerPatterns: ['destroot/include/hermes/cdp/*.h'],
-  //           headerDir: 'hermes/cdp',
-  //         },
-
-  //         {
-  //           name: 'inspector',
-  //           headerPatterns: ['destroot/include/hermes/inspector/*.h'],
-  //           headerDir: 'hermes/inspector',
-  //         },
-
-  //         {
-  //           name: 'inspector_chrome',
-  //           headerPatterns: ['destroot/include/hermes/inspector/chrome/*.h'],
-  //           headerDir: 'hermes/inspector/chrome',
-  //         },
-
-  //         {
-  //           name: 'jsi',
-  //           headerPatterns: ['destroot/include/jsi/*.h'],
-  //           headerDir: 'jsi',
-  //         },
-
-  //         {
-  //           name: 'Public',
-  //           headerPatterns: ['public/hermes/Public/*.h'],
-  //           headerDir: 'hermes/Public',
-  //         },
-  //       ],
-  //     },
-
   'React-Core.podspec': {
     name: 'React-Core',
     headerPatterns: [],
@@ -883,6 +425,10 @@ const PodSpecConfigurations /*: {[key: string]: PodSpecConfiguration} */ = {
       },
     ],
   },
+  'React.podspec': {disabled: true},
+  'Libraries/PushNotificationIOS/React-RCTPushNotification.podspec': {
+    disabled: true,
+  },
 };
 
-module.exports = PodSpecConfigurations;
+module.exports = {PodspecExceptions};
