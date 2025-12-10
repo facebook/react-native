@@ -8,83 +8,146 @@
  * @format
  */
 
-const fs = require('fs');
+const PodSpecConfigurations = require('./headers-config');
+const utils = require('./utils');
 const path = require('path');
 const {globSync} = require('tinyglobby');
 
-/**
- * This regular expression is designed to match function calls to `podspec_sources` within a podspec file.
- *
- * Example matches:
- * 1. `podspec_sources("source1", "sourceForPrebuilds1")`
- *    - Captures: "source1" as the first argument, "sourceForPrebuilds1" as the second argument.
- *
- * 2. `podspec_sources(["source1", "source2"], ["sourceForPrebuilds1", "sourceForPrebuilds2"])`
- *    - Captures: ["source1", "source2"] as the first argument, ["sourceForPrebuilds1", "sourceForPrebuilds2"] as the second argument.
- *
- * 3. `podspec_sources('source1', ['sourceForPrebuilds1', 'sourceForPrebuilds2'])`
- *    - Captures: 'source1' as the first argument, ['sourceForPrebuilds1', 'sourceForPrebuilds2'] as the second argument.
- */
-const regex =
-  /podspec_sources\s*\(\s*((?:\[[^\]]*\]|"[^"]*"|'[^']*'|[^,])+)\s*,\s*((?:\[[^\]]*\]|"[^"]*"|'[^']*'|[^)])+)\s*\)/gs;
+const {createLogger} = utils;
+const headersLog = createLogger('headers');
 
+/*::
+import type {PodSpecConfiguration} from './headers-config';
+type HeaderMap = { headerDir: string, specName: string, headers: {source: string, target: string}[]};
+*/
+
+/**
+ * Enumerates all podspec files in the PodSpecConfigurations structure above and maps them to
+ * their header files based on the configuration.
+ * @param {*} rootFolder Root folder to search for podspec files
+ * @param {*} testHeadersFlag Flag to indicate whether to test headers against a test directory
+ * @param {*} targetTestFolder Target folder to test headers against
+ * @returns
+ */
 function getHeaderFilesFromPodspecs(
   rootFolder /*:string*/,
-) /*: { [key: string]: string[] }*/ {
-  // Find podspec files
-  const podSpecFiles = globSync('**/*.podspec', {
-    cwd: rootFolder,
-    absolute: true,
-    onlyFiles: true,
-  });
+) /*: { [key: string]: HeaderMap[] }*/ {
+  // Get podspec files in the configuration mapped to configurations
+  const podSpecFiles = Object.keys(PodSpecConfigurations).map(podspecPath =>
+    path.resolve(rootFolder, podspecPath),
+  );
 
-  const headers /*: { [key: string]: string[] }*/ = {};
+  headersLog('🔍 Collecting header files from podspec configurations...');
 
-  podSpecFiles.forEach(podspec => {
-    const content = fs.readFileSync(podspec, 'utf8');
-    // Find all podspec_sources calls
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-      if (match) {
-        let globPatterns /*: string[] */;
-        let arg2 = match[2]?.trim().replace(/['"]/g, '');
-        if (!arg2) {
-          // Skip
-          continue;
-        }
-        // Check if arg2 is an array (e.g., ['a', 'b'])
-        if (arg2.startsWith('[') && arg2.endsWith(']')) {
-          // Remove the brackets and split by comma
-          globPatterns = arg2
-            .slice(1, -1)
-            .split(',')
-            .map(item => item.trim());
-        } else {
-          globPatterns = [arg2];
-        }
+  const headerMaps /*: { [key: string]: HeaderMap[] }*/ = {};
 
-        // Do the glob!
-        const p = path.resolve(process.cwd(), path.dirname(podspec));
-        const results = globPatterns
-          .map(g => {
-            return globSync(g.replace('{h}', 'h'), {
-              cwd: p,
-              absolute: true,
-              expandDirectories: false,
-            });
-          })
-          .flat();
+  podSpecFiles.forEach(podspecPath => {
+    const key = path.relative(rootFolder, podspecPath);
+    const podSpecConfig = PodSpecConfigurations[key];
+    if (
+      !podSpecConfig ||
+      'name' in podSpecConfig === false ||
+      podSpecConfig.name === ''
+    ) {
+      headersLog(
+        `⚠️ Skipping podspec at ${podspecPath} due to missing or invalid configuration.`,
+      );
+      return;
+    }
 
-        if (!headers[podspec]) {
-          headers[podspec] = results;
-        } else {
-          headers[podspec].push(...results);
+    const podSpecDirectory = path.dirname(podspecPath);
+
+    // Now we can start collecting header files
+    const processConfig = (
+      config /*: PodSpecConfiguration */,
+      parents /*: Array<PodSpecConfiguration>*/,
+    ) => {
+      const {headerDir, headerPatterns, excludePatterns, subSpecs} = config;
+
+      // Find header files for configuration
+      const foundHeaderFiles = headerPatterns
+        .map(pattern =>
+          globSync(pattern, {
+            cwd: podSpecDirectory,
+            absolute: true,
+            ignore: excludePatterns || [],
+          }),
+        )
+        .flat();
+
+      let resolvedHeaderDir /*:string */ = headerDir || '';
+
+      // If headerDir is not set, we need to resolve it against parent specs
+      if (parents.length > 0 && !headerDir) {
+        for (let i = parents.length - 1; i >= 0; i--) {
+          const parentHeaderDir = parents[i].headerDir;
+          if (parentHeaderDir) {
+            resolvedHeaderDir = parentHeaderDir;
+            break;
+          }
         }
       }
-    }
+
+      // If still not resolved, default to spec name
+      if (!resolvedHeaderDir) {
+        resolvedHeaderDir = '';
+      }
+
+      // Resolve preservePaths from parent specs too
+      let resolvedPreservePaths = config.preservePaths || [];
+      if (resolvedPreservePaths.length === 0 && parents.length > 0) {
+        for (let i = parents.length - 1; i >= 0; i--) {
+          const parentPreservePaths = parents[i].preservePaths;
+          if (parentPreservePaths && parentPreservePaths.length > 0) {
+            resolvedPreservePaths = parentPreservePaths;
+            break;
+          }
+        }
+      }
+
+      headerMaps[podspecPath] = (headerMaps[podspecPath] || []).concat({
+        headerDir: resolvedHeaderDir,
+        specName: podSpecConfig.name,
+        headers: foundHeaderFiles.map(headerFile => {
+          // Check if we have preservePath set for this file - then we need to get the subfolder structure too
+          // and not just copy to the root of headerDir - we should also ignore the headerDir part of the path
+          const isPreserved = resolvedPreservePaths.some(preservePattern => {
+            return globSync(preservePattern, {
+              cwd: podSpecDirectory,
+              absolute: true,
+              ignore: excludePatterns || [],
+            }).includes(headerFile);
+          });
+
+          if (isPreserved) {
+            // Get the subfolder for the header file
+            const relativePath = path.dirname(
+              path.relative(podSpecDirectory, headerFile),
+            );
+            return {
+              source: headerFile,
+              target: path.join(relativePath, path.basename(headerFile)),
+            };
+          }
+          return {
+            source: headerFile,
+            target: path.join(resolvedHeaderDir, path.basename(headerFile)),
+          };
+        }),
+      });
+
+      // Process subSpecs recursively
+      if (subSpecs && subSpecs.length > 0) {
+        subSpecs.forEach(subSpecConfig => {
+          processConfig(subSpecConfig, [config, ...parents]);
+        });
+      }
+    };
+
+    processConfig(podSpecConfig, []);
   });
 
-  return headers;
+  return headerMaps;
 }
 
 module.exports = {
