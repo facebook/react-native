@@ -174,10 +174,7 @@ function generateEntryYAML(
  */
 function createVFSOverlayContents(rootFolder /*: string */) /*: VFSOverlay */ {
   // Get header files from podspecs (disable testing since we just need the mappings)
-  const podSpecsWithHeaderFiles = getHeaderFilesFromPodspecs(
-    rootFolder,
-    false, // testHeadersFlag
-  );
+  const podSpecsWithHeaderFiles = getHeaderFilesFromPodspecs(rootFolder);
 
   const mappings /*: Array<HeaderMapping> */ = [];
 
