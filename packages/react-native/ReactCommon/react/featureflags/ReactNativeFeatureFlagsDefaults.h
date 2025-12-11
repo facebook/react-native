@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62cd6308b20f7426192ba02b7c3e86d1>>
+ * @generated SignedSource<<20176ba5419dc79d6aef4ab819667907>>
  */
 
 /**
@@ -269,10 +269,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   double virtualViewPrerenderRatio() override {
     return 5.0;
-  }
-
-  bool shadowTreeLockMountPhase() override {
-    return false;
   }
 };
 
