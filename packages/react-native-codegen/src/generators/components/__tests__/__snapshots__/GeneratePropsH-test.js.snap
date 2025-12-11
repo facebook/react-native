@@ -112,6 +112,12 @@ static inline folly::dynamic toDynamic(const AllPropObjectArrayPropStruct &value
 #endif
 
 struct AllPropObjectPrimitiveRequiredPropStruct {
+  std::string string{std::string{\\"defaultString\\"}};
+  bool boolean{false};
+  Float float{3.14};
+  std::string stringNoDefault{};
+  bool booleanNoDefault{};
+  Float floatNoDefault{};
   ImageSource image{};
   SharedColor color{};
   Point point{};
@@ -122,6 +128,12 @@ struct AllPropObjectPrimitiveRequiredPropStruct {
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
+    result[\\"string\\"] = string;
+    result[\\"boolean\\"] = boolean;
+    result[\\"float\\"] = float;
+    result[\\"stringNoDefault\\"] = stringNoDefault;
+    result[\\"booleanNoDefault\\"] = booleanNoDefault;
+    result[\\"floatNoDefault\\"] = floatNoDefault;
     result[\\"image\\"] = ::facebook::react::toDynamic(image);
     result[\\"color\\"] = ::facebook::react::toDynamic(color);
     result[\\"point\\"] = ::facebook::react::toDynamic(point);
@@ -133,6 +145,30 @@ struct AllPropObjectPrimitiveRequiredPropStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropObjectPrimitiveRequiredPropStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
+  auto tmp_string = map.find(\\"string\\");
+  if (tmp_string != map.end()) {
+    fromRawValue(context, tmp_string->second, result.string);
+  }
+  auto tmp_boolean = map.find(\\"boolean\\");
+  if (tmp_boolean != map.end()) {
+    fromRawValue(context, tmp_boolean->second, result.boolean);
+  }
+  auto tmp_float = map.find(\\"float\\");
+  if (tmp_float != map.end()) {
+    fromRawValue(context, tmp_float->second, result.float);
+  }
+  auto tmp_stringNoDefault = map.find(\\"stringNoDefault\\");
+  if (tmp_stringNoDefault != map.end()) {
+    fromRawValue(context, tmp_stringNoDefault->second, result.stringNoDefault);
+  }
+  auto tmp_booleanNoDefault = map.find(\\"booleanNoDefault\\");
+  if (tmp_booleanNoDefault != map.end()) {
+    fromRawValue(context, tmp_booleanNoDefault->second, result.booleanNoDefault);
+  }
+  auto tmp_floatNoDefault = map.find(\\"floatNoDefault\\");
+  if (tmp_floatNoDefault != map.end()) {
+    fromRawValue(context, tmp_floatNoDefault->second, result.floatNoDefault);
+  }
   auto tmp_image = map.find(\\"image\\");
   if (tmp_image != map.end()) {
     fromRawValue(context, tmp_image->second, result.image);
@@ -453,6 +489,12 @@ static inline folly::dynamic toDynamic(const AllPropWithOptionalGenObjectArrayPr
 #endif
 
 struct AllPropWithOptionalGenObjectPrimitiveRequiredPropStruct {
+  std::string string{std::string{\\"defaultString\\"}};
+  bool boolean{false};
+  Float float{3.14};
+  std::string stringNoDefault{};
+  bool booleanNoDefault{};
+  Float floatNoDefault{};
   ImageSource image{};
   SharedColor color{};
   Point point{};
@@ -463,6 +505,12 @@ struct AllPropWithOptionalGenObjectPrimitiveRequiredPropStruct {
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
+    result[\\"string\\"] = string;
+    result[\\"boolean\\"] = boolean;
+    result[\\"float\\"] = float;
+    result[\\"stringNoDefault\\"] = stringNoDefault;
+    result[\\"booleanNoDefault\\"] = booleanNoDefault;
+    result[\\"floatNoDefault\\"] = floatNoDefault;
     result[\\"image\\"] = ::facebook::react::toDynamic(image);
     result[\\"color\\"] = ::facebook::react::toDynamic(color);
     result[\\"point\\"] = ::facebook::react::toDynamic(point);
@@ -474,6 +522,30 @@ struct AllPropWithOptionalGenObjectPrimitiveRequiredPropStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropWithOptionalGenObjectPrimitiveRequiredPropStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
+  auto tmp_string = map.find(\\"string\\");
+  if (tmp_string != map.end()) {
+    fromRawValue(context, tmp_string->second, result.string);
+  }
+  auto tmp_boolean = map.find(\\"boolean\\");
+  if (tmp_boolean != map.end()) {
+    fromRawValue(context, tmp_boolean->second, result.boolean);
+  }
+  auto tmp_float = map.find(\\"float\\");
+  if (tmp_float != map.end()) {
+    fromRawValue(context, tmp_float->second, result.float);
+  }
+  auto tmp_stringNoDefault = map.find(\\"stringNoDefault\\");
+  if (tmp_stringNoDefault != map.end()) {
+    fromRawValue(context, tmp_stringNoDefault->second, result.stringNoDefault);
+  }
+  auto tmp_booleanNoDefault = map.find(\\"booleanNoDefault\\");
+  if (tmp_booleanNoDefault != map.end()) {
+    fromRawValue(context, tmp_booleanNoDefault->second, result.booleanNoDefault);
+  }
+  auto tmp_floatNoDefault = map.find(\\"floatNoDefault\\");
+  if (tmp_floatNoDefault != map.end()) {
+    fromRawValue(context, tmp_floatNoDefault->second, result.floatNoDefault);
+  }
   auto tmp_image = map.find(\\"image\\");
   if (tmp_image != map.end()) {
     fromRawValue(context, tmp_image->second, result.image);
@@ -667,6 +739,397 @@ class AllPropWithOptionalGenProps final : public ViewProps {
   AllPropWithOptionalGenObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
   AllPropWithOptionalGenNestedPropAStruct nestedPropA{};
   AllPropWithOptionalGenNestedArrayAsPropertyStruct nestedArrayAsProperty{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+  
+};
+
+} // namespace facebook::react
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture ALL_PROP_WITH_OPTIONAL_OBJECT_GEN 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
+ *
+ * Do not edit this file as changes may cause incorrect behavior and will be lost
+ * once the code is regenerated.
+ *
+ * @generated by codegen project: GeneratePropsH.js
+ */
+#pragma once
+
+#include <react/renderer/components/image/conversions.h>
+#include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Point.h>
+#include <react/renderer/imagemanager/primitives.h>
+#include <vector>
+
+namespace facebook::react {
+
+enum class AllPropWithOptionalObjectGenStringEnumProp { Option1 };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropWithOptionalObjectGenStringEnumProp &result) {
+  auto string = (std::string)value;
+  if (string == \\"option1\\") { result = AllPropWithOptionalObjectGenStringEnumProp::Option1; return; }
+  abort();
+}
+
+static inline std::string toString(const AllPropWithOptionalObjectGenStringEnumProp &value) {
+  switch (value) {
+    case AllPropWithOptionalObjectGenStringEnumProp::Option1: return \\"option1\\";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const AllPropWithOptionalObjectGenStringEnumProp &value) {
+  return toString(value);
+}
+#endif
+enum class AllPropWithOptionalObjectGenIntEnumProp { IntEnumProp0 = 0 };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropWithOptionalObjectGenIntEnumProp &result) {
+  assert(value.hasType<int>());
+  auto integerValue = (int)value;
+  switch (integerValue) {
+    case 0:
+      result = AllPropWithOptionalObjectGenIntEnumProp::IntEnumProp0;
+      return;
+    default:
+      abort();
+  }
+}
+
+static inline std::string toString(const AllPropWithOptionalObjectGenIntEnumProp &value) {
+  switch (value) {
+    case AllPropWithOptionalObjectGenIntEnumProp::IntEnumProp0: return \\"0\\";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const AllPropWithOptionalObjectGenIntEnumProp &value) {
+  switch (value) {
+    case AllPropWithOptionalObjectGenIntEnumProp::IntEnumProp0: return 0;
+    default:
+      abort();
+  }
+}
+#endif
+struct AllPropWithOptionalObjectGenObjectArrayPropStruct {
+  std::optional<std::vector<std::string>> array{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const AllPropWithOptionalObjectGenObjectArrayPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    if (array.has_value()) {
+      result[\\"array\\"] = ::facebook::react::toDynamic(array.value());
+    }
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropWithOptionalObjectGenObjectArrayPropStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_array = map.find(\\"array\\");
+  if (tmp_array != map.end()) {
+    fromRawValue(context, tmp_array->second, result.array);
+  }
+}
+
+static inline std::string toString(const AllPropWithOptionalObjectGenObjectArrayPropStruct &value) {
+  return \\"[Object AllPropWithOptionalObjectGenObjectArrayPropStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const AllPropWithOptionalObjectGenObjectArrayPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct AllPropWithOptionalObjectGenObjectPrimitiveRequiredPropStruct {
+  std::string string{std::string{\\"defaultString\\"}};
+  bool boolean{false};
+  Float float{3.14};
+  std::optional<std::string> stringNoDefault{};
+  std::optional<bool> booleanNoDefault{};
+  std::optional<Float> floatNoDefault{};
+  std::optional<ImageSource> image{};
+  std::optional<SharedColor> color{};
+  std::optional<Point> point{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const AllPropWithOptionalObjectGenObjectPrimitiveRequiredPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"string\\"] = string;
+    result[\\"boolean\\"] = boolean;
+    result[\\"float\\"] = float;
+    if (stringNoDefault.has_value()) {
+      result[\\"stringNoDefault\\"] = stringNoDefault.value();
+    }
+    if (booleanNoDefault.has_value()) {
+      result[\\"booleanNoDefault\\"] = booleanNoDefault.value();
+    }
+    if (floatNoDefault.has_value()) {
+      result[\\"floatNoDefault\\"] = floatNoDefault.value();
+    }
+    if (image.has_value()) {
+      result[\\"image\\"] = ::facebook::react::toDynamic(image.value());
+    }
+    if (color.has_value()) {
+      result[\\"color\\"] = ::facebook::react::toDynamic(color.value());
+    }
+    if (point.has_value()) {
+      result[\\"point\\"] = ::facebook::react::toDynamic(point.value());
+    }
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropWithOptionalObjectGenObjectPrimitiveRequiredPropStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_string = map.find(\\"string\\");
+  if (tmp_string != map.end()) {
+    fromRawValue(context, tmp_string->second, result.string);
+  }
+  auto tmp_boolean = map.find(\\"boolean\\");
+  if (tmp_boolean != map.end()) {
+    fromRawValue(context, tmp_boolean->second, result.boolean);
+  }
+  auto tmp_float = map.find(\\"float\\");
+  if (tmp_float != map.end()) {
+    fromRawValue(context, tmp_float->second, result.float);
+  }
+  auto tmp_stringNoDefault = map.find(\\"stringNoDefault\\");
+  if (tmp_stringNoDefault != map.end()) {
+    fromRawValue(context, tmp_stringNoDefault->second, result.stringNoDefault);
+  }
+  auto tmp_booleanNoDefault = map.find(\\"booleanNoDefault\\");
+  if (tmp_booleanNoDefault != map.end()) {
+    fromRawValue(context, tmp_booleanNoDefault->second, result.booleanNoDefault);
+  }
+  auto tmp_floatNoDefault = map.find(\\"floatNoDefault\\");
+  if (tmp_floatNoDefault != map.end()) {
+    fromRawValue(context, tmp_floatNoDefault->second, result.floatNoDefault);
+  }
+  auto tmp_image = map.find(\\"image\\");
+  if (tmp_image != map.end()) {
+    fromRawValue(context, tmp_image->second, result.image);
+  }
+  auto tmp_color = map.find(\\"color\\");
+  if (tmp_color != map.end()) {
+    fromRawValue(context, tmp_color->second, result.color);
+  }
+  auto tmp_point = map.find(\\"point\\");
+  if (tmp_point != map.end()) {
+    fromRawValue(context, tmp_point->second, result.point);
+  }
+}
+
+static inline std::string toString(const AllPropWithOptionalObjectGenObjectPrimitiveRequiredPropStruct &value) {
+  return \\"[Object AllPropWithOptionalObjectGenObjectPrimitiveRequiredPropStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const AllPropWithOptionalObjectGenObjectPrimitiveRequiredPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct AllPropWithOptionalObjectGenNestedPropANestedPropBStruct {
+  std::string nestedPropC{std::string{\\"\\"}};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const AllPropWithOptionalObjectGenNestedPropANestedPropBStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"nestedPropC\\"] = nestedPropC;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropWithOptionalObjectGenNestedPropANestedPropBStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_nestedPropC = map.find(\\"nestedPropC\\");
+  if (tmp_nestedPropC != map.end()) {
+    fromRawValue(context, tmp_nestedPropC->second, result.nestedPropC);
+  }
+}
+
+static inline std::string toString(const AllPropWithOptionalObjectGenNestedPropANestedPropBStruct &value) {
+  return \\"[Object AllPropWithOptionalObjectGenNestedPropANestedPropBStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const AllPropWithOptionalObjectGenNestedPropANestedPropBStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct AllPropWithOptionalObjectGenNestedPropAStruct {
+  AllPropWithOptionalObjectGenNestedPropANestedPropBStruct nestedPropB{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const AllPropWithOptionalObjectGenNestedPropAStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"nestedPropB\\"] = ::facebook::react::toDynamic(nestedPropB);
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropWithOptionalObjectGenNestedPropAStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_nestedPropB = map.find(\\"nestedPropB\\");
+  if (tmp_nestedPropB != map.end()) {
+    fromRawValue(context, tmp_nestedPropB->second, result.nestedPropB);
+  }
+}
+
+static inline std::string toString(const AllPropWithOptionalObjectGenNestedPropAStruct &value) {
+  return \\"[Object AllPropWithOptionalObjectGenNestedPropAStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const AllPropWithOptionalObjectGenNestedPropAStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct AllPropWithOptionalObjectGenNestedArrayAsPropertyArrayPropStruct {
+  std::string stringProp{std::string{\\"\\"}};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const AllPropWithOptionalObjectGenNestedArrayAsPropertyArrayPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropWithOptionalObjectGenNestedArrayAsPropertyArrayPropStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const AllPropWithOptionalObjectGenNestedArrayAsPropertyArrayPropStruct &value) {
+  return \\"[Object AllPropWithOptionalObjectGenNestedArrayAsPropertyArrayPropStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const AllPropWithOptionalObjectGenNestedArrayAsPropertyArrayPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<AllPropWithOptionalObjectGenNestedArrayAsPropertyArrayPropStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    AllPropWithOptionalObjectGenNestedArrayAsPropertyArrayPropStruct newItem;
+    fromRawValue(context, item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
+struct AllPropWithOptionalObjectGenNestedArrayAsPropertyStruct {
+  std::vector<AllPropWithOptionalObjectGenNestedArrayAsPropertyArrayPropStruct> arrayProp{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const AllPropWithOptionalObjectGenNestedArrayAsPropertyStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"arrayProp\\"] = ::facebook::react::toDynamic(arrayProp);
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, AllPropWithOptionalObjectGenNestedArrayAsPropertyStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_arrayProp = map.find(\\"arrayProp\\");
+  if (tmp_arrayProp != map.end()) {
+    fromRawValue(context, tmp_arrayProp->second, result.arrayProp);
+  }
+}
+
+static inline std::string toString(const AllPropWithOptionalObjectGenNestedArrayAsPropertyStruct &value) {
+  return \\"[Object AllPropWithOptionalObjectGenNestedArrayAsPropertyStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const AllPropWithOptionalObjectGenNestedArrayAsPropertyStruct &value) {
+  return value.toDynamic();
+}
+#endif
+class AllPropWithOptionalObjectGenProps final : public ViewProps {
+ public:
+  AllPropWithOptionalObjectGenProps() = default;
+  AllPropWithOptionalObjectGenProps(const PropsParserContext& context, const AllPropWithOptionalObjectGenProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  std::optional<std::string> stringPropNoDefault{};
+  std::optional<bool> booleanPropNoDefault{};
+  std::optional<Float> floatPropNoDefault{};
+  std::string stringProp{std::string{\\"\\"}};
+  bool booleanProp{false};
+  Float floatProp{0.0};
+  int intProp{0};
+  std::string stringUserDefaultProp{std::string{\\"user_default\\"}};
+  bool booleanUserDefaultProp{true};
+  Float floatUserDefaultProp{3.14};
+  int intUserDefaultProp{9999};
+  AllPropWithOptionalObjectGenStringEnumProp stringEnumProp{AllPropWithOptionalObjectGenStringEnumProp::Option1};
+  AllPropWithOptionalObjectGenIntEnumProp intEnumProp{AllPropWithOptionalObjectGenIntEnumProp::IntEnumProp0};
+  AllPropWithOptionalObjectGenObjectArrayPropStruct objectArrayProp{};
+  AllPropWithOptionalObjectGenObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
+  AllPropWithOptionalObjectGenNestedPropAStruct nestedPropA{};
+  AllPropWithOptionalObjectGenNestedArrayAsPropertyStruct nestedArrayAsProperty{};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1110,14 +1573,14 @@ Map {
 
 namespace facebook::react {
 
-struct ArrayPropsNativeComponentNativePrimitivesStruct {
+struct ArrayPropsOptionalGenNativeComponentNativePrimitivesStruct {
   std::vector<SharedColor> colors{};
   std::vector<ImageSource> srcs{};
   std::vector<Point> points{};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ArrayPropsNativeComponentNativePrimitivesStruct&) const = default;
+  bool operator==(const ArrayPropsOptionalGenNativeComponentNativePrimitivesStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -1129,7 +1592,7 @@ struct ArrayPropsNativeComponentNativePrimitivesStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentNativePrimitivesStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsOptionalGenNativeComponentNativePrimitivesStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_colors = map.find(\\"colors\\");
@@ -1146,33 +1609,142 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentNativePrimitivesStruct &value) {
-  return \\"[Object ArrayPropsNativeComponentNativePrimitivesStruct]\\";
+static inline std::string toString(const ArrayPropsOptionalGenNativeComponentNativePrimitivesStruct &value) {
+  return \\"[Object ArrayPropsOptionalGenNativeComponentNativePrimitivesStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentNativePrimitivesStruct &value) {
+static inline folly::dynamic toDynamic(const ArrayPropsOptionalGenNativeComponentNativePrimitivesStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsOptionalGenNativeComponentNativePrimitivesStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
-    ArrayPropsNativeComponentNativePrimitivesStruct newItem;
+    ArrayPropsOptionalGenNativeComponentNativePrimitivesStruct newItem;
     fromRawValue(context, item, newItem);
     result.emplace_back(newItem);
   }
 }
 
-class ArrayPropsNativeComponentProps final : public ViewProps {
+class ArrayPropsOptionalGenNativeComponentProps final : public ViewProps {
  public:
-  ArrayPropsNativeComponentProps() = default;
-  ArrayPropsNativeComponentProps(const PropsParserContext& context, const ArrayPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
+  ArrayPropsOptionalGenNativeComponentProps() = default;
+  ArrayPropsOptionalGenNativeComponentProps(const PropsParserContext& context, const ArrayPropsOptionalGenNativeComponentProps &sourceProps, const RawProps &rawProps);
 
 #pragma mark - Props
 
-  std::optional<std::vector<ArrayPropsNativeComponentNativePrimitivesStruct>> nativePrimitives{};
+  std::optional<std::vector<ArrayPropsOptionalGenNativeComponentNativePrimitivesStruct>> nativePrimitives{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+  
+};
+
+} // namespace facebook::react
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_OBJECT_GEN 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
+ *
+ * Do not edit this file as changes may cause incorrect behavior and will be lost
+ * once the code is regenerated.
+ *
+ * @generated by codegen project: GeneratePropsH.js
+ */
+#pragma once
+
+#include <react/renderer/components/image/conversions.h>
+#include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Point.h>
+#include <react/renderer/imagemanager/primitives.h>
+#include <vector>
+
+namespace facebook::react {
+
+struct ArrayPropsOptionalObjectGenNativeComponentNativePrimitivesStruct {
+  std::optional<std::vector<SharedColor>> colors{};
+  std::optional<std::vector<ImageSource>> srcs{};
+  std::optional<std::vector<Point>> points{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsOptionalObjectGenNativeComponentNativePrimitivesStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    if (colors.has_value()) {
+      result[\\"colors\\"] = ::facebook::react::toDynamic(colors.value());
+    }
+    if (srcs.has_value()) {
+      result[\\"srcs\\"] = ::facebook::react::toDynamic(srcs.value());
+    }
+    if (points.has_value()) {
+      result[\\"points\\"] = ::facebook::react::toDynamic(points.value());
+    }
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsOptionalObjectGenNativeComponentNativePrimitivesStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_colors = map.find(\\"colors\\");
+  if (tmp_colors != map.end()) {
+    fromRawValue(context, tmp_colors->second, result.colors);
+  }
+  auto tmp_srcs = map.find(\\"srcs\\");
+  if (tmp_srcs != map.end()) {
+    fromRawValue(context, tmp_srcs->second, result.srcs);
+  }
+  auto tmp_points = map.find(\\"points\\");
+  if (tmp_points != map.end()) {
+    fromRawValue(context, tmp_points->second, result.points);
+  }
+}
+
+static inline std::string toString(const ArrayPropsOptionalObjectGenNativeComponentNativePrimitivesStruct &value) {
+  return \\"[Object ArrayPropsOptionalObjectGenNativeComponentNativePrimitivesStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsOptionalObjectGenNativeComponentNativePrimitivesStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsOptionalObjectGenNativeComponentNativePrimitivesStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ArrayPropsOptionalObjectGenNativeComponentNativePrimitivesStruct newItem;
+    fromRawValue(context, item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+class ArrayPropsOptionalObjectGenNativeComponentProps final : public ViewProps {
+ public:
+  ArrayPropsOptionalObjectGenNativeComponentProps() = default;
+  ArrayPropsOptionalObjectGenNativeComponentProps(const PropsParserContext& context, const ArrayPropsOptionalObjectGenNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  std::optional<std::vector<ArrayPropsOptionalObjectGenNativeComponentNativePrimitivesStruct>> nativePrimitives{};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1215,58 +1787,58 @@ Map {
 
 namespace facebook::react {
 
-using ArrayPropsNativeComponentSizesMask = uint32_t;
+using ArrayPropsWithOptionalGenNativeComponentSizesMask = uint32_t;
 
-struct ArrayPropsNativeComponentSizesMaskWrapped {
-  ArrayPropsNativeComponentSizesMask value;
+struct ArrayPropsWithOptionalGenNativeComponentSizesMaskWrapped {
+  ArrayPropsWithOptionalGenNativeComponentSizesMask value;
 };
 
-enum class ArrayPropsNativeComponentSizes: ArrayPropsNativeComponentSizesMask {
+enum class ArrayPropsWithOptionalGenNativeComponentSizes: ArrayPropsWithOptionalGenNativeComponentSizesMask {
   Small = 1 << 0,
   Large = 1 << 1
 };
 
 constexpr bool operator&(
-  ArrayPropsNativeComponentSizesMask const lhs,
-  enum ArrayPropsNativeComponentSizes const rhs) {
-  return lhs & static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
+  ArrayPropsWithOptionalGenNativeComponentSizesMask const lhs,
+  enum ArrayPropsWithOptionalGenNativeComponentSizes const rhs) {
+  return lhs & static_cast<ArrayPropsWithOptionalGenNativeComponentSizesMask>(rhs);
 }
 
-constexpr ArrayPropsNativeComponentSizesMask operator|(
-  ArrayPropsNativeComponentSizesMask const lhs,
-  enum ArrayPropsNativeComponentSizes const rhs) {
-  return lhs | static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
+constexpr ArrayPropsWithOptionalGenNativeComponentSizesMask operator|(
+  ArrayPropsWithOptionalGenNativeComponentSizesMask const lhs,
+  enum ArrayPropsWithOptionalGenNativeComponentSizes const rhs) {
+  return lhs | static_cast<ArrayPropsWithOptionalGenNativeComponentSizesMask>(rhs);
 }
 
 constexpr void operator|=(
-  ArrayPropsNativeComponentSizesMask &lhs,
-  enum ArrayPropsNativeComponentSizes const rhs) {
-  lhs = lhs | static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
+  ArrayPropsWithOptionalGenNativeComponentSizesMask &lhs,
+  enum ArrayPropsWithOptionalGenNativeComponentSizes const rhs) {
+  lhs = lhs | static_cast<ArrayPropsWithOptionalGenNativeComponentSizesMask>(rhs);
 }
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentSizesMaskWrapped &wrapped) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalGenNativeComponentSizesMaskWrapped &wrapped) {
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
     if (item == \\"small\\") {
-      wrapped.value |= ArrayPropsNativeComponentSizes::Small;
+      wrapped.value |= ArrayPropsWithOptionalGenNativeComponentSizes::Small;
       continue;
     }
     if (item == \\"large\\") {
-      wrapped.value |= ArrayPropsNativeComponentSizes::Large;
+      wrapped.value |= ArrayPropsWithOptionalGenNativeComponentSizes::Large;
       continue;
     }
     abort();
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentSizesMaskWrapped &wrapped) {
+static inline std::string toString(const ArrayPropsWithOptionalGenNativeComponentSizesMaskWrapped &wrapped) {
     auto result = std::string{};
     auto separator = std::string{\\", \\"};
 
-    if (wrapped.value & ArrayPropsNativeComponentSizes::Small) {
+    if (wrapped.value & ArrayPropsWithOptionalGenNativeComponentSizes::Small) {
       result += \\"small\\" + separator;
     }
-    if (wrapped.value & ArrayPropsNativeComponentSizes::Large) {
+    if (wrapped.value & ArrayPropsWithOptionalGenNativeComponentSizes::Large) {
       result += \\"large\\" + separator;
     }
     if (!result.empty()) {
@@ -1274,12 +1846,12 @@ static inline std::string toString(const ArrayPropsNativeComponentSizesMaskWrapp
     }
     return result;
 }
-struct ArrayPropsNativeComponentObjectStruct {
+struct ArrayPropsWithOptionalGenNativeComponentObjectStruct {
   std::string stringProp{std::string{\\"\\"}};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ArrayPropsNativeComponentObjectStruct&) const = default;
+  bool operator==(const ArrayPropsWithOptionalGenNativeComponentObjectStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -1289,7 +1861,7 @@ struct ArrayPropsNativeComponentObjectStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentObjectStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalGenNativeComponentObjectStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
@@ -1298,32 +1870,32 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentObjectStruct &value) {
-  return \\"[Object ArrayPropsNativeComponentObjectStruct]\\";
+static inline std::string toString(const ArrayPropsWithOptionalGenNativeComponentObjectStruct &value) {
+  return \\"[Object ArrayPropsWithOptionalGenNativeComponentObjectStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentObjectStruct &value) {
+static inline folly::dynamic toDynamic(const ArrayPropsWithOptionalGenNativeComponentObjectStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentObjectStruct> &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsWithOptionalGenNativeComponentObjectStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
-    ArrayPropsNativeComponentObjectStruct newItem;
+    ArrayPropsWithOptionalGenNativeComponentObjectStruct newItem;
     fromRawValue(context, item, newItem);
     result.emplace_back(newItem);
   }
 }
 
 
-struct ArrayPropsNativeComponentArrayObjectStruct {
+struct ArrayPropsWithOptionalGenNativeComponentArrayObjectStruct {
   std::string stringProp{std::string{\\"\\"}};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ArrayPropsNativeComponentArrayObjectStruct&) const = default;
+  bool operator==(const ArrayPropsWithOptionalGenNativeComponentArrayObjectStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -1333,7 +1905,7 @@ struct ArrayPropsNativeComponentArrayObjectStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayObjectStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalGenNativeComponentArrayObjectStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
@@ -1342,32 +1914,32 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentArrayObjectStruct &value) {
-  return \\"[Object ArrayPropsNativeComponentArrayObjectStruct]\\";
+static inline std::string toString(const ArrayPropsWithOptionalGenNativeComponentArrayObjectStruct &value) {
+  return \\"[Object ArrayPropsWithOptionalGenNativeComponentArrayObjectStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentArrayObjectStruct &value) {
+static inline folly::dynamic toDynamic(const ArrayPropsWithOptionalGenNativeComponentArrayObjectStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentArrayObjectStruct> &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsWithOptionalGenNativeComponentArrayObjectStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
-    ArrayPropsNativeComponentArrayObjectStruct newItem;
+    ArrayPropsWithOptionalGenNativeComponentArrayObjectStruct newItem;
     fromRawValue(context, item, newItem);
     result.emplace_back(newItem);
   }
 }
 
 
-struct ArrayPropsNativeComponentArrayStruct {
-  std::vector<ArrayPropsNativeComponentArrayObjectStruct> object{};
+struct ArrayPropsWithOptionalGenNativeComponentArrayStruct {
+  std::vector<ArrayPropsWithOptionalGenNativeComponentArrayObjectStruct> object{};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ArrayPropsNativeComponentArrayStruct&) const = default;
+  bool operator==(const ArrayPropsWithOptionalGenNativeComponentArrayStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -1377,7 +1949,7 @@ struct ArrayPropsNativeComponentArrayStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalGenNativeComponentArrayStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_object = map.find(\\"object\\");
@@ -1386,32 +1958,32 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentArrayStruct &value) {
-  return \\"[Object ArrayPropsNativeComponentArrayStruct]\\";
+static inline std::string toString(const ArrayPropsWithOptionalGenNativeComponentArrayStruct &value) {
+  return \\"[Object ArrayPropsWithOptionalGenNativeComponentArrayStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentArrayStruct &value) {
+static inline folly::dynamic toDynamic(const ArrayPropsWithOptionalGenNativeComponentArrayStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentArrayStruct> &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsWithOptionalGenNativeComponentArrayStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
-    ArrayPropsNativeComponentArrayStruct newItem;
+    ArrayPropsWithOptionalGenNativeComponentArrayStruct newItem;
     fromRawValue(context, item, newItem);
     result.emplace_back(newItem);
   }
 }
 
 
-struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
+struct ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct {
   std::string stringProp{std::string{\\"\\"}};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ArrayPropsNativeComponentArrayOfArrayOfObjectStruct&) const = default;
+  bool operator==(const ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -1421,7 +1993,7 @@ struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
@@ -1430,22 +2002,22 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &value) {
-  return \\"[Object ArrayPropsNativeComponentArrayOfArrayOfObjectStruct]\\";
+static inline std::string toString(const ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct &value) {
+  return \\"[Object ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &value) {
+static inline folly::dynamic toDynamic(const ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<std::vector<ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct>> &result) {
   auto items = (std::vector<std::vector<RawValue>>)value;
   for (const std::vector<RawValue> &item : items) {
-    auto nestedArray = std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>{};
+    auto nestedArray = std::vector<ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct>{};
     for (const RawValue &nestedItem : item) {
-      ArrayPropsNativeComponentArrayOfArrayOfObjectStruct newItem;
+      ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct newItem;
       fromRawValue(context, nestedItem, newItem);
       nestedArray.emplace_back(newItem);
     }
@@ -1453,10 +2025,10 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-class ArrayPropsNativeComponentProps final : public ViewProps {
+class ArrayPropsWithOptionalGenNativeComponentProps final : public ViewProps {
  public:
-  ArrayPropsNativeComponentProps() = default;
-  ArrayPropsNativeComponentProps(const PropsParserContext& context, const ArrayPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
+  ArrayPropsWithOptionalGenNativeComponentProps() = default;
+  ArrayPropsWithOptionalGenNativeComponentProps(const PropsParserContext& context, const ArrayPropsWithOptionalGenNativeComponentProps &sourceProps, const RawProps &rawProps);
 
 #pragma mark - Props
 
@@ -1468,10 +2040,312 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   std::optional<std::vector<ImageSource>> srcs{};
   std::optional<std::vector<Point>> points{};
   std::optional<std::vector<YGValue>> dimensions{};
-  std::optional<ArrayPropsNativeComponentSizesMask> sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
-  std::optional<std::vector<ArrayPropsNativeComponentObjectStruct>> object{};
-  std::optional<std::vector<ArrayPropsNativeComponentArrayStruct>> array{};
-  std::optional<std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>>> arrayOfArrayOfObject{};
+  std::optional<ArrayPropsWithOptionalGenNativeComponentSizesMask> sizes{static_cast<ArrayPropsWithOptionalGenNativeComponentSizesMask>(ArrayPropsWithOptionalGenNativeComponentSizes::Small)};
+  std::optional<std::vector<ArrayPropsWithOptionalGenNativeComponentObjectStruct>> object{};
+  std::optional<std::vector<ArrayPropsWithOptionalGenNativeComponentArrayStruct>> array{};
+  std::optional<std::vector<std::vector<ArrayPropsWithOptionalGenNativeComponentArrayOfArrayOfObjectStruct>>> arrayOfArrayOfObject{};
+  std::optional<std::vector<folly::dynamic>> arrayOfMixed{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+  
+};
+
+} // namespace facebook::react
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture ARRAY_PROPS_WITH_OPTIONAL_OBJECT_GEN 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
+ *
+ * Do not edit this file as changes may cause incorrect behavior and will be lost
+ * once the code is regenerated.
+ *
+ * @generated by codegen project: GeneratePropsH.js
+ */
+#pragma once
+
+#include <cinttypes>
+#include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/graphicsConversions.h>
+#include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Point.h>
+#include <react/renderer/imagemanager/primitives.h>
+#include <vector>
+#include <yoga/Yoga.h>
+
+namespace facebook::react {
+
+using ArrayPropsWithOptionalObjectGenNativeComponentSizesMask = uint32_t;
+
+struct ArrayPropsWithOptionalObjectGenNativeComponentSizesMaskWrapped {
+  ArrayPropsWithOptionalObjectGenNativeComponentSizesMask value;
+};
+
+enum class ArrayPropsWithOptionalObjectGenNativeComponentSizes: ArrayPropsWithOptionalObjectGenNativeComponentSizesMask {
+  Small = 1 << 0,
+  Large = 1 << 1
+};
+
+constexpr bool operator&(
+  ArrayPropsWithOptionalObjectGenNativeComponentSizesMask const lhs,
+  enum ArrayPropsWithOptionalObjectGenNativeComponentSizes const rhs) {
+  return lhs & static_cast<ArrayPropsWithOptionalObjectGenNativeComponentSizesMask>(rhs);
+}
+
+constexpr ArrayPropsWithOptionalObjectGenNativeComponentSizesMask operator|(
+  ArrayPropsWithOptionalObjectGenNativeComponentSizesMask const lhs,
+  enum ArrayPropsWithOptionalObjectGenNativeComponentSizes const rhs) {
+  return lhs | static_cast<ArrayPropsWithOptionalObjectGenNativeComponentSizesMask>(rhs);
+}
+
+constexpr void operator|=(
+  ArrayPropsWithOptionalObjectGenNativeComponentSizesMask &lhs,
+  enum ArrayPropsWithOptionalObjectGenNativeComponentSizes const rhs) {
+  lhs = lhs | static_cast<ArrayPropsWithOptionalObjectGenNativeComponentSizesMask>(rhs);
+}
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalObjectGenNativeComponentSizesMaskWrapped &wrapped) {
+  auto items = std::vector<std::string>{value};
+  for (const auto &item : items) {
+    if (item == \\"small\\") {
+      wrapped.value |= ArrayPropsWithOptionalObjectGenNativeComponentSizes::Small;
+      continue;
+    }
+    if (item == \\"large\\") {
+      wrapped.value |= ArrayPropsWithOptionalObjectGenNativeComponentSizes::Large;
+      continue;
+    }
+    abort();
+  }
+}
+
+static inline std::string toString(const ArrayPropsWithOptionalObjectGenNativeComponentSizesMaskWrapped &wrapped) {
+    auto result = std::string{};
+    auto separator = std::string{\\", \\"};
+
+    if (wrapped.value & ArrayPropsWithOptionalObjectGenNativeComponentSizes::Small) {
+      result += \\"small\\" + separator;
+    }
+    if (wrapped.value & ArrayPropsWithOptionalObjectGenNativeComponentSizes::Large) {
+      result += \\"large\\" + separator;
+    }
+    if (!result.empty()) {
+      result.erase(result.length() - separator.length());
+    }
+    return result;
+}
+struct ArrayPropsWithOptionalObjectGenNativeComponentObjectStruct {
+  std::string stringProp{std::string{\\"\\"}};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsWithOptionalObjectGenNativeComponentObjectStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalObjectGenNativeComponentObjectStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ArrayPropsWithOptionalObjectGenNativeComponentObjectStruct &value) {
+  return \\"[Object ArrayPropsWithOptionalObjectGenNativeComponentObjectStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsWithOptionalObjectGenNativeComponentObjectStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsWithOptionalObjectGenNativeComponentObjectStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ArrayPropsWithOptionalObjectGenNativeComponentObjectStruct newItem;
+    fromRawValue(context, item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
+struct ArrayPropsWithOptionalObjectGenNativeComponentArrayObjectStruct {
+  std::string stringProp{std::string{\\"\\"}};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsWithOptionalObjectGenNativeComponentArrayObjectStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalObjectGenNativeComponentArrayObjectStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ArrayPropsWithOptionalObjectGenNativeComponentArrayObjectStruct &value) {
+  return \\"[Object ArrayPropsWithOptionalObjectGenNativeComponentArrayObjectStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsWithOptionalObjectGenNativeComponentArrayObjectStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsWithOptionalObjectGenNativeComponentArrayObjectStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ArrayPropsWithOptionalObjectGenNativeComponentArrayObjectStruct newItem;
+    fromRawValue(context, item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
+struct ArrayPropsWithOptionalObjectGenNativeComponentArrayStruct {
+  std::optional<std::vector<ArrayPropsWithOptionalObjectGenNativeComponentArrayObjectStruct>> object{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsWithOptionalObjectGenNativeComponentArrayStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    if (object.has_value()) {
+      result[\\"object\\"] = ::facebook::react::toDynamic(object.value());
+    }
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalObjectGenNativeComponentArrayStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_object = map.find(\\"object\\");
+  if (tmp_object != map.end()) {
+    fromRawValue(context, tmp_object->second, result.object);
+  }
+}
+
+static inline std::string toString(const ArrayPropsWithOptionalObjectGenNativeComponentArrayStruct &value) {
+  return \\"[Object ArrayPropsWithOptionalObjectGenNativeComponentArrayStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsWithOptionalObjectGenNativeComponentArrayStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsWithOptionalObjectGenNativeComponentArrayStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ArrayPropsWithOptionalObjectGenNativeComponentArrayStruct newItem;
+    fromRawValue(context, item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
+struct ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct {
+  std::string stringProp{std::string{\\"\\"}};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct &value) {
+  return \\"[Object ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<std::vector<ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct>> &result) {
+  auto items = (std::vector<std::vector<RawValue>>)value;
+  for (const std::vector<RawValue> &item : items) {
+    auto nestedArray = std::vector<ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct>{};
+    for (const RawValue &nestedItem : item) {
+      ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct newItem;
+      fromRawValue(context, nestedItem, newItem);
+      nestedArray.emplace_back(newItem);
+    }
+    result.emplace_back(nestedArray);
+  }
+}
+
+class ArrayPropsWithOptionalObjectGenNativeComponentProps final : public ViewProps {
+ public:
+  ArrayPropsWithOptionalObjectGenNativeComponentProps() = default;
+  ArrayPropsWithOptionalObjectGenNativeComponentProps(const PropsParserContext& context, const ArrayPropsWithOptionalObjectGenNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  std::optional<std::vector<std::string>> names{};
+  std::optional<std::vector<bool>> disableds{};
+  std::optional<std::vector<int>> progress{};
+  std::optional<std::vector<Float>> radii{};
+  std::optional<std::vector<SharedColor>> colors{};
+  std::optional<std::vector<ImageSource>> srcs{};
+  std::optional<std::vector<Point>> points{};
+  std::optional<std::vector<YGValue>> dimensions{};
+  std::optional<ArrayPropsWithOptionalObjectGenNativeComponentSizesMask> sizes{static_cast<ArrayPropsWithOptionalObjectGenNativeComponentSizesMask>(ArrayPropsWithOptionalObjectGenNativeComponentSizes::Small)};
+  std::optional<std::vector<ArrayPropsWithOptionalObjectGenNativeComponentObjectStruct>> object{};
+  std::optional<std::vector<ArrayPropsWithOptionalObjectGenNativeComponentArrayStruct>> array{};
+  std::optional<std::vector<std::vector<ArrayPropsWithOptionalObjectGenNativeComponentArrayOfArrayOfObjectStruct>>> arrayOfArrayOfObject{};
   std::optional<std::vector<folly::dynamic>> arrayOfMixed{};
 
   #ifdef RN_SERIALIZABLE_STATE
@@ -2915,64 +3789,64 @@ Map {
 
 namespace facebook::react {
 
-enum class ObjectPropsStringEnumProp { Option1 };
+enum class ObjectPropsWithOptionalGenStringEnumProp { Option1 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsStringEnumProp &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalGenStringEnumProp &result) {
   auto string = (std::string)value;
-  if (string == \\"option1\\") { result = ObjectPropsStringEnumProp::Option1; return; }
+  if (string == \\"option1\\") { result = ObjectPropsWithOptionalGenStringEnumProp::Option1; return; }
   abort();
 }
 
-static inline std::string toString(const ObjectPropsStringEnumProp &value) {
+static inline std::string toString(const ObjectPropsWithOptionalGenStringEnumProp &value) {
   switch (value) {
-    case ObjectPropsStringEnumProp::Option1: return \\"option1\\";
+    case ObjectPropsWithOptionalGenStringEnumProp::Option1: return \\"option1\\";
     default:
       abort();
   }
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ObjectPropsStringEnumProp &value) {
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalGenStringEnumProp &value) {
   return toString(value);
 }
 #endif
-enum class ObjectPropsIntEnumProp { IntEnumProp0 = 0 };
+enum class ObjectPropsWithOptionalGenIntEnumProp { IntEnumProp0 = 0 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsIntEnumProp &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalGenIntEnumProp &result) {
   assert(value.hasType<int>());
   auto integerValue = (int)value;
   switch (integerValue) {
     case 0:
-      result = ObjectPropsIntEnumProp::IntEnumProp0;
+      result = ObjectPropsWithOptionalGenIntEnumProp::IntEnumProp0;
       return;
     default:
       abort();
   }
 }
 
-static inline std::string toString(const ObjectPropsIntEnumProp &value) {
+static inline std::string toString(const ObjectPropsWithOptionalGenIntEnumProp &value) {
   switch (value) {
-    case ObjectPropsIntEnumProp::IntEnumProp0: return \\"0\\";
+    case ObjectPropsWithOptionalGenIntEnumProp::IntEnumProp0: return \\"0\\";
     default:
       abort();
   }
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ObjectPropsIntEnumProp &value) {
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalGenIntEnumProp &value) {
   switch (value) {
-    case ObjectPropsIntEnumProp::IntEnumProp0: return 0;
+    case ObjectPropsWithOptionalGenIntEnumProp::IntEnumProp0: return 0;
     default:
       abort();
   }
 }
 #endif
-struct ObjectPropsObjectPropObjectArrayPropStruct {
+struct ObjectPropsWithOptionalGenObjectPropObjectArrayPropStruct {
   std::vector<std::string> array{};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ObjectPropsObjectPropObjectArrayPropStruct&) const = default;
+  bool operator==(const ObjectPropsWithOptionalGenObjectPropObjectArrayPropStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -2982,7 +3856,7 @@ struct ObjectPropsObjectPropObjectArrayPropStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectArrayPropStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalGenObjectPropObjectArrayPropStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_array = map.find(\\"array\\");
@@ -2991,24 +3865,24 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ObjectPropsObjectPropObjectArrayPropStruct &value) {
-  return \\"[Object ObjectPropsObjectPropObjectArrayPropStruct]\\";
+static inline std::string toString(const ObjectPropsWithOptionalGenObjectPropObjectArrayPropStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalGenObjectPropObjectArrayPropStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ObjectPropsObjectPropObjectArrayPropStruct &value) {
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalGenObjectPropObjectArrayPropStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
+struct ObjectPropsWithOptionalGenObjectPropObjectPrimitiveRequiredPropStruct {
   ImageSource image{};
   SharedColor color{};
   Point point{};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct&) const = default;
+  bool operator==(const ObjectPropsWithOptionalGenObjectPropObjectPrimitiveRequiredPropStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -3020,7 +3894,7 @@ struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalGenObjectPropObjectPrimitiveRequiredPropStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_image = map.find(\\"image\\");
@@ -3037,22 +3911,22 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &value) {
-  return \\"[Object ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct]\\";
+static inline std::string toString(const ObjectPropsWithOptionalGenObjectPropObjectPrimitiveRequiredPropStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalGenObjectPropObjectPrimitiveRequiredPropStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &value) {
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalGenObjectPropObjectPrimitiveRequiredPropStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
+struct ObjectPropsWithOptionalGenObjectPropNestedPropANestedPropBStruct {
   std::string nestedPropC{std::string{\\"\\"}};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ObjectPropsObjectPropNestedPropANestedPropBStruct&) const = default;
+  bool operator==(const ObjectPropsWithOptionalGenObjectPropNestedPropANestedPropBStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -3062,7 +3936,7 @@ struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropANestedPropBStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalGenObjectPropNestedPropANestedPropBStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_nestedPropC = map.find(\\"nestedPropC\\");
@@ -3071,22 +3945,22 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ObjectPropsObjectPropNestedPropANestedPropBStruct &value) {
-  return \\"[Object ObjectPropsObjectPropNestedPropANestedPropBStruct]\\";
+static inline std::string toString(const ObjectPropsWithOptionalGenObjectPropNestedPropANestedPropBStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalGenObjectPropNestedPropANestedPropBStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedPropANestedPropBStruct &value) {
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalGenObjectPropNestedPropANestedPropBStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-struct ObjectPropsObjectPropNestedPropAStruct {
-  ObjectPropsObjectPropNestedPropANestedPropBStruct nestedPropB{};
+struct ObjectPropsWithOptionalGenObjectPropNestedPropAStruct {
+  ObjectPropsWithOptionalGenObjectPropNestedPropANestedPropBStruct nestedPropB{};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ObjectPropsObjectPropNestedPropAStruct&) const = default;
+  bool operator==(const ObjectPropsWithOptionalGenObjectPropNestedPropAStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -3096,7 +3970,7 @@ struct ObjectPropsObjectPropNestedPropAStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropAStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalGenObjectPropNestedPropAStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_nestedPropB = map.find(\\"nestedPropB\\");
@@ -3105,22 +3979,22 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ObjectPropsObjectPropNestedPropAStruct &value) {
-  return \\"[Object ObjectPropsObjectPropNestedPropAStruct]\\";
+static inline std::string toString(const ObjectPropsWithOptionalGenObjectPropNestedPropAStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalGenObjectPropNestedPropAStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedPropAStruct &value) {
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalGenObjectPropNestedPropAStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
+struct ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyArrayPropStruct {
   std::string stringProp{std::string{\\"\\"}};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct&) const = default;
+  bool operator==(const ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyArrayPropStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -3130,7 +4004,7 @@ struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
@@ -3139,32 +4013,32 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &value) {
-  return \\"[Object ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct]\\";
+static inline std::string toString(const ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyArrayPropStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyArrayPropStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &value) {
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyArrayPropStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyArrayPropStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
-    ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct newItem;
+    ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyArrayPropStruct newItem;
     fromRawValue(context, item, newItem);
     result.emplace_back(newItem);
   }
 }
 
 
-struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
-  std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp{};
+struct ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyStruct {
+  std::vector<ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp{};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ObjectPropsObjectPropNestedArrayAsPropertyStruct&) const = default;
+  bool operator==(const ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -3174,7 +4048,7 @@ struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_arrayProp = map.find(\\"arrayProp\\");
@@ -3183,17 +4057,17 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPropertyStruct &value) {
-  return \\"[Object ObjectPropsObjectPropNestedArrayAsPropertyStruct]\\";
+static inline std::string toString(const ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedArrayAsPropertyStruct &value) {
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyStruct &value) {
   return value.toDynamic();
 }
 #endif
 
-struct ObjectPropsObjectPropStruct {
+struct ObjectPropsWithOptionalGenObjectPropStruct {
   std::string stringProp{std::string{\\"\\"}};
   bool booleanProp{false};
   Float floatProp{0.0};
@@ -3202,16 +4076,16 @@ struct ObjectPropsObjectPropStruct {
   bool booleanUserDefaultProp{true};
   Float floatUserDefaultProp{3.14};
   int intUserDefaultProp{9999};
-  ObjectPropsStringEnumProp stringEnumProp{ObjectPropsStringEnumProp::Option1};
-  ObjectPropsIntEnumProp intEnumProp{ObjectPropsIntEnumProp::IntEnumProp0};
-  ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp{};
-  ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
-  ObjectPropsObjectPropNestedPropAStruct nestedPropA{};
-  ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty{};
+  ObjectPropsWithOptionalGenStringEnumProp stringEnumProp{ObjectPropsWithOptionalGenStringEnumProp::Option1};
+  ObjectPropsWithOptionalGenIntEnumProp intEnumProp{ObjectPropsWithOptionalGenIntEnumProp::IntEnumProp0};
+  ObjectPropsWithOptionalGenObjectPropObjectArrayPropStruct objectArrayProp{};
+  ObjectPropsWithOptionalGenObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
+  ObjectPropsWithOptionalGenObjectPropNestedPropAStruct nestedPropA{};
+  ObjectPropsWithOptionalGenObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty{};
 
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const ObjectPropsObjectPropStruct&) const = default;
+  bool operator==(const ObjectPropsWithOptionalGenObjectPropStruct&) const = default;
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
@@ -3234,7 +4108,7 @@ struct ObjectPropsObjectPropStruct {
 #endif
 };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropStruct &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalGenObjectPropStruct &result) {
   auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
@@ -3295,23 +4169,468 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-static inline std::string toString(const ObjectPropsObjectPropStruct &value) {
-  return \\"[Object ObjectPropsObjectPropStruct]\\";
+static inline std::string toString(const ObjectPropsWithOptionalGenObjectPropStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalGenObjectPropStruct]\\";
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const ObjectPropsObjectPropStruct &value) {
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalGenObjectPropStruct &value) {
   return value.toDynamic();
 }
 #endif
-class ObjectPropsProps final : public ViewProps {
+class ObjectPropsWithOptionalGenProps final : public ViewProps {
  public:
-  ObjectPropsProps() = default;
-  ObjectPropsProps(const PropsParserContext& context, const ObjectPropsProps &sourceProps, const RawProps &rawProps);
+  ObjectPropsWithOptionalGenProps() = default;
+  ObjectPropsWithOptionalGenProps(const PropsParserContext& context, const ObjectPropsWithOptionalGenProps &sourceProps, const RawProps &rawProps);
 
 #pragma mark - Props
 
-  std::optional<ObjectPropsObjectPropStruct> objectProp{};
+  std::optional<ObjectPropsWithOptionalGenObjectPropStruct> objectProp{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+  
+};
+
+} // namespace facebook::react
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture OBJECT_PROPS_WITH_OPTIONAL_OBJECT_GEN 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
+ *
+ * Do not edit this file as changes may cause incorrect behavior and will be lost
+ * once the code is regenerated.
+ *
+ * @generated by codegen project: GeneratePropsH.js
+ */
+#pragma once
+
+#include <react/renderer/components/image/conversions.h>
+#include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Point.h>
+#include <react/renderer/imagemanager/primitives.h>
+#include <vector>
+
+namespace facebook::react {
+
+enum class ObjectPropsWithOptionalObjectGenStringEnumProp { Option1 };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalObjectGenStringEnumProp &result) {
+  auto string = (std::string)value;
+  if (string == \\"option1\\") { result = ObjectPropsWithOptionalObjectGenStringEnumProp::Option1; return; }
+  abort();
+}
+
+static inline std::string toString(const ObjectPropsWithOptionalObjectGenStringEnumProp &value) {
+  switch (value) {
+    case ObjectPropsWithOptionalObjectGenStringEnumProp::Option1: return \\"option1\\";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalObjectGenStringEnumProp &value) {
+  return toString(value);
+}
+#endif
+enum class ObjectPropsWithOptionalObjectGenIntEnumProp { IntEnumProp0 = 0 };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalObjectGenIntEnumProp &result) {
+  assert(value.hasType<int>());
+  auto integerValue = (int)value;
+  switch (integerValue) {
+    case 0:
+      result = ObjectPropsWithOptionalObjectGenIntEnumProp::IntEnumProp0;
+      return;
+    default:
+      abort();
+  }
+}
+
+static inline std::string toString(const ObjectPropsWithOptionalObjectGenIntEnumProp &value) {
+  switch (value) {
+    case ObjectPropsWithOptionalObjectGenIntEnumProp::IntEnumProp0: return \\"0\\";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalObjectGenIntEnumProp &value) {
+  switch (value) {
+    case ObjectPropsWithOptionalObjectGenIntEnumProp::IntEnumProp0: return 0;
+    default:
+      abort();
+  }
+}
+#endif
+struct ObjectPropsWithOptionalObjectGenObjectPropObjectArrayPropStruct {
+  std::optional<std::vector<std::string>> array{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsWithOptionalObjectGenObjectPropObjectArrayPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    if (array.has_value()) {
+      result[\\"array\\"] = ::facebook::react::toDynamic(array.value());
+    }
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalObjectGenObjectPropObjectArrayPropStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_array = map.find(\\"array\\");
+  if (tmp_array != map.end()) {
+    fromRawValue(context, tmp_array->second, result.array);
+  }
+}
+
+static inline std::string toString(const ObjectPropsWithOptionalObjectGenObjectPropObjectArrayPropStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalObjectGenObjectPropObjectArrayPropStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalObjectGenObjectPropObjectArrayPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct ObjectPropsWithOptionalObjectGenObjectPropObjectPrimitiveRequiredPropStruct {
+  std::optional<ImageSource> image{};
+  std::optional<SharedColor> color{};
+  std::optional<Point> point{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsWithOptionalObjectGenObjectPropObjectPrimitiveRequiredPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    if (image.has_value()) {
+      result[\\"image\\"] = ::facebook::react::toDynamic(image.value());
+    }
+    if (color.has_value()) {
+      result[\\"color\\"] = ::facebook::react::toDynamic(color.value());
+    }
+    if (point.has_value()) {
+      result[\\"point\\"] = ::facebook::react::toDynamic(point.value());
+    }
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalObjectGenObjectPropObjectPrimitiveRequiredPropStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_image = map.find(\\"image\\");
+  if (tmp_image != map.end()) {
+    fromRawValue(context, tmp_image->second, result.image);
+  }
+  auto tmp_color = map.find(\\"color\\");
+  if (tmp_color != map.end()) {
+    fromRawValue(context, tmp_color->second, result.color);
+  }
+  auto tmp_point = map.find(\\"point\\");
+  if (tmp_point != map.end()) {
+    fromRawValue(context, tmp_point->second, result.point);
+  }
+}
+
+static inline std::string toString(const ObjectPropsWithOptionalObjectGenObjectPropObjectPrimitiveRequiredPropStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalObjectGenObjectPropObjectPrimitiveRequiredPropStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalObjectGenObjectPropObjectPrimitiveRequiredPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct ObjectPropsWithOptionalObjectGenObjectPropNestedPropANestedPropBStruct {
+  std::string nestedPropC{std::string{\\"\\"}};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsWithOptionalObjectGenObjectPropNestedPropANestedPropBStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"nestedPropC\\"] = nestedPropC;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalObjectGenObjectPropNestedPropANestedPropBStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_nestedPropC = map.find(\\"nestedPropC\\");
+  if (tmp_nestedPropC != map.end()) {
+    fromRawValue(context, tmp_nestedPropC->second, result.nestedPropC);
+  }
+}
+
+static inline std::string toString(const ObjectPropsWithOptionalObjectGenObjectPropNestedPropANestedPropBStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalObjectGenObjectPropNestedPropANestedPropBStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalObjectGenObjectPropNestedPropANestedPropBStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct ObjectPropsWithOptionalObjectGenObjectPropNestedPropAStruct {
+  ObjectPropsWithOptionalObjectGenObjectPropNestedPropANestedPropBStruct nestedPropB{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsWithOptionalObjectGenObjectPropNestedPropAStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"nestedPropB\\"] = ::facebook::react::toDynamic(nestedPropB);
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalObjectGenObjectPropNestedPropAStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_nestedPropB = map.find(\\"nestedPropB\\");
+  if (tmp_nestedPropB != map.end()) {
+    fromRawValue(context, tmp_nestedPropB->second, result.nestedPropB);
+  }
+}
+
+static inline std::string toString(const ObjectPropsWithOptionalObjectGenObjectPropNestedPropAStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalObjectGenObjectPropNestedPropAStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalObjectGenObjectPropNestedPropAStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyArrayPropStruct {
+  std::string stringProp{std::string{\\"\\"}};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyArrayPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyArrayPropStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyArrayPropStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyArrayPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyArrayPropStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyArrayPropStruct newItem;
+    fromRawValue(context, item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
+struct ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyStruct {
+  std::vector<ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"arrayProp\\"] = ::facebook::react::toDynamic(arrayProp);
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_arrayProp = map.find(\\"arrayProp\\");
+  if (tmp_arrayProp != map.end()) {
+    fromRawValue(context, tmp_arrayProp->second, result.arrayProp);
+  }
+}
+
+static inline std::string toString(const ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct ObjectPropsWithOptionalObjectGenObjectPropStruct {
+  std::string stringProp{std::string{\\"\\"}};
+  bool booleanProp{false};
+  Float floatProp{0.0};
+  int intProp{0};
+  std::string stringUserDefaultProp{std::string{\\"user_default\\"}};
+  bool booleanUserDefaultProp{true};
+  Float floatUserDefaultProp{3.14};
+  int intUserDefaultProp{9999};
+  ObjectPropsWithOptionalObjectGenStringEnumProp stringEnumProp{ObjectPropsWithOptionalObjectGenStringEnumProp::Option1};
+  ObjectPropsWithOptionalObjectGenIntEnumProp intEnumProp{ObjectPropsWithOptionalObjectGenIntEnumProp::IntEnumProp0};
+  ObjectPropsWithOptionalObjectGenObjectPropObjectArrayPropStruct objectArrayProp{};
+  ObjectPropsWithOptionalObjectGenObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
+  ObjectPropsWithOptionalObjectGenObjectPropNestedPropAStruct nestedPropA{};
+  ObjectPropsWithOptionalObjectGenObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty{};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsWithOptionalObjectGenObjectPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    result[\\"booleanProp\\"] = booleanProp;
+    result[\\"floatProp\\"] = floatProp;
+    result[\\"intProp\\"] = intProp;
+    result[\\"stringUserDefaultProp\\"] = stringUserDefaultProp;
+    result[\\"booleanUserDefaultProp\\"] = booleanUserDefaultProp;
+    result[\\"floatUserDefaultProp\\"] = floatUserDefaultProp;
+    result[\\"intUserDefaultProp\\"] = intUserDefaultProp;
+    result[\\"stringEnumProp\\"] = ::facebook::react::toDynamic(stringEnumProp);
+    result[\\"intEnumProp\\"] = ::facebook::react::toDynamic(intEnumProp);
+    result[\\"objectArrayProp\\"] = ::facebook::react::toDynamic(objectArrayProp);
+    result[\\"objectPrimitiveRequiredProp\\"] = ::facebook::react::toDynamic(objectPrimitiveRequiredProp);
+    result[\\"nestedPropA\\"] = ::facebook::react::toDynamic(nestedPropA);
+    result[\\"nestedArrayAsProperty\\"] = ::facebook::react::toDynamic(nestedArrayAsProperty);
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsWithOptionalObjectGenObjectPropStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
+  }
+  auto tmp_booleanProp = map.find(\\"booleanProp\\");
+  if (tmp_booleanProp != map.end()) {
+    fromRawValue(context, tmp_booleanProp->second, result.booleanProp);
+  }
+  auto tmp_floatProp = map.find(\\"floatProp\\");
+  if (tmp_floatProp != map.end()) {
+    fromRawValue(context, tmp_floatProp->second, result.floatProp);
+  }
+  auto tmp_intProp = map.find(\\"intProp\\");
+  if (tmp_intProp != map.end()) {
+    fromRawValue(context, tmp_intProp->second, result.intProp);
+  }
+  auto tmp_stringUserDefaultProp = map.find(\\"stringUserDefaultProp\\");
+  if (tmp_stringUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_stringUserDefaultProp->second, result.stringUserDefaultProp);
+  }
+  auto tmp_booleanUserDefaultProp = map.find(\\"booleanUserDefaultProp\\");
+  if (tmp_booleanUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_booleanUserDefaultProp->second, result.booleanUserDefaultProp);
+  }
+  auto tmp_floatUserDefaultProp = map.find(\\"floatUserDefaultProp\\");
+  if (tmp_floatUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_floatUserDefaultProp->second, result.floatUserDefaultProp);
+  }
+  auto tmp_intUserDefaultProp = map.find(\\"intUserDefaultProp\\");
+  if (tmp_intUserDefaultProp != map.end()) {
+    fromRawValue(context, tmp_intUserDefaultProp->second, result.intUserDefaultProp);
+  }
+  auto tmp_stringEnumProp = map.find(\\"stringEnumProp\\");
+  if (tmp_stringEnumProp != map.end()) {
+    fromRawValue(context, tmp_stringEnumProp->second, result.stringEnumProp);
+  }
+  auto tmp_intEnumProp = map.find(\\"intEnumProp\\");
+  if (tmp_intEnumProp != map.end()) {
+    fromRawValue(context, tmp_intEnumProp->second, result.intEnumProp);
+  }
+  auto tmp_objectArrayProp = map.find(\\"objectArrayProp\\");
+  if (tmp_objectArrayProp != map.end()) {
+    fromRawValue(context, tmp_objectArrayProp->second, result.objectArrayProp);
+  }
+  auto tmp_objectPrimitiveRequiredProp = map.find(\\"objectPrimitiveRequiredProp\\");
+  if (tmp_objectPrimitiveRequiredProp != map.end()) {
+    fromRawValue(context, tmp_objectPrimitiveRequiredProp->second, result.objectPrimitiveRequiredProp);
+  }
+  auto tmp_nestedPropA = map.find(\\"nestedPropA\\");
+  if (tmp_nestedPropA != map.end()) {
+    fromRawValue(context, tmp_nestedPropA->second, result.nestedPropA);
+  }
+  auto tmp_nestedArrayAsProperty = map.find(\\"nestedArrayAsProperty\\");
+  if (tmp_nestedArrayAsProperty != map.end()) {
+    fromRawValue(context, tmp_nestedArrayAsProperty->second, result.nestedArrayAsProperty);
+  }
+}
+
+static inline std::string toString(const ObjectPropsWithOptionalObjectGenObjectPropStruct &value) {
+  return \\"[Object ObjectPropsWithOptionalObjectGenObjectPropStruct]\\";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsWithOptionalObjectGenObjectPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+class ObjectPropsWithOptionalObjectGenProps final : public ViewProps {
+ public:
+  ObjectPropsWithOptionalObjectGenProps() = default;
+  ObjectPropsWithOptionalObjectGenProps(const PropsParserContext& context, const ObjectPropsWithOptionalObjectGenProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  std::optional<ObjectPropsWithOptionalObjectGenObjectPropStruct> objectProp{};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
