@@ -7,21 +7,25 @@
  * @noformat
  * @nolint
  * @flow strict
- * @generated SignedSource<<deb7924d11c790f99448a1c2f0edddb9>>
+ * @generated SignedSource<<5c76b092e0c981f96ca894e381ee593b>>
  */
 
 import type {
-  // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
-  HostInstance as PublicInstance,
+  Component as ReactComponent,
+  ElementRef,
+  ElementType,
+  MixedElement,
+} from 'react';
+import type {
   // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
   MeasureOnSuccessCallback,
+  // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
+  PublicInstance,
   // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
   PublicRootInstance,
   // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
   PublicTextInstance,
-} from 'react-native';
-
-import * as React from 'react';
+} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 
 export type AttributeType<T, V> =
   | true
@@ -35,7 +39,16 @@ export type AttributeType<T, V> =
 export type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
 
 export type AttributeConfiguration = $ReadOnly<{
-  [propName: string]: AnyAttributeType | void,
+  [propName: string]: AnyAttributeType,
+  style: $ReadOnly<{
+    [propName: string]: AnyAttributeType,
+    ...
+  }>,
+  ...
+}>;
+
+export type PartialAttributeConfiguration = $ReadOnly<{
+  [propName: string]: AnyAttributeType,
   style?: $ReadOnly<{
     [propName: string]: AnyAttributeType,
     ...
@@ -71,11 +84,11 @@ export type ViewConfig = $ReadOnly<{
 }>;
 
 export type PartialViewConfig = $ReadOnly<{
-  bubblingEventTypes?: ViewConfig['bubblingEventTypes'],
-  directEventTypes?: ViewConfig['directEventTypes'],
+  bubblingEventTypes?: $PropertyType<ViewConfig, 'bubblingEventTypes'>,
+  directEventTypes?: $PropertyType<ViewConfig, 'directEventTypes'>,
   supportsRawText?: boolean,
   uiViewClassName: string,
-  validAttributes?: AttributeConfiguration,
+  validAttributes?: PartialAttributeConfiguration,
 }>;
 
 type InspectorDataProps = $ReadOnly<{
@@ -84,8 +97,8 @@ type InspectorDataProps = $ReadOnly<{
 }>;
 
 type InspectorDataGetter = (
-  <TElementType: React.ElementType>(
-    componentOrHandle: React.ElementRef<TElementType> | number,
+  <TElementType: ElementType>(
+    componentOrHandle: ElementRef<TElementType> | number,
   ) => ?number,
 ) => $ReadOnly<{
   measure: (callback: MeasureOnSuccessCallback) => void,
@@ -128,7 +141,7 @@ export type RenderRootOptions = {
       +componentStack?: ?string,
       // $FlowFixMe[unclear-type] unknown props and state.
       // $FlowFixMe[value-as-type] Component in react repo is any-typed, but it will be well typed externally.
-      +errorBoundary?: ?React.Component<any, any>,
+      +errorBoundary?: ?ReactComponent<any, any>,
     },
   ) => void,
   onRecoverableError?: (
@@ -142,11 +155,11 @@ export type RenderRootOptions = {
  * Provide minimal Flow typing for the high-level RN API and call it a day.
  */
 export type ReactNativeType = {
-  findHostInstance_DEPRECATED<TElementType: React.ElementType>(
-    componentOrHandle: ?(React.ElementRef<TElementType> | number),
+  findHostInstance_DEPRECATED<TElementType: ElementType>(
+    componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?PublicInstance,
-  findNodeHandle<TElementType: React.ElementType>(
-    componentOrHandle: ?(React.ElementRef<TElementType> | number),
+  findNodeHandle<TElementType: ElementType>(
+    componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?number,
   isChildPublicInstance(parent: PublicInstance, child: PublicInstance): boolean,
   dispatchCommand(
@@ -156,11 +169,11 @@ export type ReactNativeType = {
   ): void,
   sendAccessibilityEvent(handle: PublicInstance, eventType: string): void,
   render(
-    element: React.MixedElement,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
     options: ?RenderRootOptions,
-  ): ?React.ElementRef<React.ElementType>,
+  ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
   +unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
@@ -171,11 +184,11 @@ export opaque type Node = mixed;
 export opaque type InternalInstanceHandle = mixed;
 
 export type ReactFabricType = {
-  findHostInstance_DEPRECATED<TElementType: React.ElementType>(
-    componentOrHandle: ?(React.ElementRef<TElementType> | number),
+  findHostInstance_DEPRECATED<TElementType: ElementType>(
+    componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?PublicInstance,
-  findNodeHandle<TElementType: React.ElementType>(
-    componentOrHandle: ?(React.ElementRef<TElementType> | number),
+  findNodeHandle<TElementType: ElementType>(
+    componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?number,
   dispatchCommand(
     handle: PublicInstance,
@@ -185,12 +198,12 @@ export type ReactFabricType = {
   isChildPublicInstance(parent: PublicInstance, child: PublicInstance): boolean,
   sendAccessibilityEvent(handle: PublicInstance, eventType: string): void,
   render(
-    element: React.MixedElement,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
     concurrentRoot: ?boolean,
     options: ?RenderRootOptions,
-  ): ?React.ElementRef<React.ElementType>,
+  ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   getNodeFromInternalInstanceHandle(
     internalInstanceHandle: InternalInstanceHandle,
