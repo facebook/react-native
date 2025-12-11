@@ -47,17 +47,18 @@ async function unstable_spawnDebuggerShellWithArgs(
   );
 
   return new Promise((resolve, reject) => {
+    const {
+      // If this package is used in an Electron app (e.g. inside a VS Code extension),
+      // ELECTRON_RUN_AS_NODE=1 can leak from the parent process.
+      // Since this is never the right way to launch the Fusebox shell, we guard against it here.
+      ELECTRON_RUN_AS_NODE: _,
+      ...env
+    } = process.env;
     const child = spawn(binaryPath, [...baseArgs, ...args], {
       stdio: 'inherit',
       windowsHide: true,
       detached: mode === 'detached',
-      env: {
-        ...process.env,
-        // If this package is used in an Electron app (e.g. inside a VS Code extension),
-        // ELECTRON_RUN_AS_NODE=1 can leak from the parent process.
-        // Since this is never the right way to launch the Fusebox shell, we guard against it here.
-        ELECTRON_RUN_AS_NODE: '',
-      },
+      env,
     });
     if (mode === 'detached') {
       child.on('spawn', () => {
