@@ -1139,6 +1139,11 @@ public class SurfaceMountingManager {
   }
 
   public void printSurfaceState() {
+    if (!ReactBuildConfig.DEBUG) {
+        // this is too noisy in prod and is overloading our breadcrumbs
+        return;
+    }
+
     FLog.e(TAG, "Views created for surface {%d}:", getSurfaceId());
     for (ViewState viewState : mTagToViewState.values()) {
       String viewManagerName =
