@@ -19,15 +19,16 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
   private val preferences: SharedPreferences =
       PreferenceManager.getDefaultSharedPreferences(appContext)
   public val packageName: String = appContext.packageName
-  private val _additionalOptionsForPackager: MutableMap<String, String> = mutableMapOf()
-  private var _packagerOptionsUpdater: (Map<String, String>) -> Map<String, String> = { it }
-  private var cachedHost: String? = null
+
+  init {
+    resetDebugServerHost()
+  }
 
   public open var debugServerHost: String
     get() {
       // Check cached host first. If empty try to detect emulator type and use default
       // hostname for those
-      cachedHost?.let {
+      _cachedOrOverrideHost?.let {
         return it
       }
 
@@ -44,19 +45,19 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
         )
       }
 
-      cachedHost = host
+      _cachedOrOverrideHost = host
       return host
     }
     set(host) {
       if (host.isEmpty()) {
-        cachedHost = null
+        _cachedOrOverrideHost = null
       } else {
-        cachedHost = host
+        _cachedOrOverrideHost = host
       }
     }
 
   public open fun resetDebugServerHost() {
-    cachedHost = null
+    _cachedOrOverrideHost = null
   }
 
   public fun setPackagerOptionsUpdater(queryMapper: (Map<String, String>) -> Map<String, String>) {
@@ -76,5 +77,11 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
   private companion object {
     private val TAG = PackagerConnectionSettings::class.java.simpleName
     private const val PREFS_DEBUG_SERVER_HOST_KEY = "debug_http_host"
+
+    // The state for this class needs to be retained in the companion object.
+    // That's necessary in the case when there are multiple instances of PackagerConnectionSettings
+    private var _cachedOrOverrideHost: String? = null
+    private val _additionalOptionsForPackager: MutableMap<String, String> = mutableMapOf()
+    private var _packagerOptionsUpdater: (Map<String, String>) -> Map<String, String> = { it }
   }
 }
