@@ -529,6 +529,7 @@ function generatePropsString(
   componentName: string,
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
   nameParts: $ReadOnlyArray<string>,
+  generateOptionalProperties?: boolean = false,
 ) {
   return props
     .map(prop => {
@@ -541,6 +542,14 @@ function generatePropsString(
         componentName,
         prop,
       );
+
+      if (
+        prop.optional &&
+        prop.typeAnnotation.default == null &&
+        generateOptionalProperties
+      ) {
+        return `std::optional<${nativeType}> ${prop.name}${defaultInitializer};`;
+      }
 
       return `${nativeType} ${prop.name}${defaultInitializer};`;
     })
@@ -834,6 +843,7 @@ module.exports = {
               componentName,
               component.props,
               [],
+              component.generateOptionalProperties,
             );
             const extendString = getClassExtendString(component);
             const extendsImports = getExtendsImports(component.extendsProps);
