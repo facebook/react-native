@@ -168,13 +168,13 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       callback.onFailure(
           DebugServerException(
               ("""
-                    Error while reading multipart response.
-                    
-                    Response body was empty: ${response.code()}
-                    
-                    URL: $url
-                    
-                    
+              Error while reading multipart response.
+              
+              Response body was empty: ${response.code()}
+              
+              URL: $url
+              
+              
                     """
                   .trimIndent())
           )
@@ -189,7 +189,7 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
               @Throws(IOException::class)
               override fun onChunkComplete(
                   headers: Map<String, String>,
-                  body: Buffer,
+                  body: BufferedSource,
                   isLastChunk: Boolean,
               ) {
                 // This will get executed for every chunk of the multipart response. The last chunk
@@ -212,9 +212,8 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                       callback,
                   )
                 } else {
-                  if (
-                      !headers.containsKey("Content-Type") ||
-                          headers["Content-Type"] != "application/json"
+                  if (!headers.containsKey("Content-Type") ||
+                      headers["Content-Type"] != "application/json"
                   ) {
                     return
                   }
@@ -306,13 +305,8 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       populateBundleInfo(url, headers, bundleInfo)
     }
 
-    val tmpFile = File(outputFile.path + ".tmp")
-
-    if (storePlainJSInFile(body, tmpFile)) {
-      // If we have received a new bundle from the server, move it to its final destination.
-      if (!tmpFile.renameTo(outputFile)) {
-        throw IOException("Couldn't rename $tmpFile to $outputFile")
-      }
+    Okio.buffer(Okio.sink(outputFile)).use { sink ->
+      sink.writeAll(body)
     }
 
     callback.onSuccess()
@@ -323,12 +317,6 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
 
     // Should be kept in sync with constants in RCTJavaScriptLoader.h
     private const val FILES_CHANGED_COUNT_NOT_BUILT_BY_BUNDLER = -2
-
-    @Throws(IOException::class)
-    private fun storePlainJSInFile(body: BufferedSource, outputFile: File): Boolean {
-      Okio.sink(outputFile).use { it -> body.readAll(it) }
-      return true
-    }
 
     private fun populateBundleInfo(url: String, headers: Headers, bundleInfo: BundleInfo) {
       bundleInfo._url = url

@@ -23,9 +23,9 @@ internal class MultipartStreamReader(
   private var lastProgressEvent: Long = 0
 
   interface ChunkListener {
-    /** Invoked when a chunk of a multipart response is fully downloaded. */
+     /** Invoked when a chunk of a multipart response is fully downloaded. */
     @Throws(IOException::class)
-    fun onChunkComplete(headers: Map<String, String>, body: Buffer, isLastChunk: Boolean)
+    fun onChunkComplete(headers: Map<String, String>, body: BufferedSource, isLastChunk: Boolean)
 
     /** Invoked as bytes of the current chunk are read. */
     @Throws(IOException::class)
@@ -92,11 +92,10 @@ internal class MultipartStreamReader(
 
       // Ignore preamble
       if (chunkStart > 0) {
-        val chunk = Buffer()
         content.skip(chunkStart)
-        content.read(chunk, length)
-        emitProgress(currentHeaders, chunk.size() - currentHeadersLength, true, listener)
-        emitChunk(chunk, isCloseDelimiter, listener)
+        val chunkBodyLength = currentHeaders?.get("Content-Length")?.toLongOrNull() ?: 0L
+        emitProgress(currentHeaders, chunkBodyLength, true, listener)
+        emitChunk(content, length, chunkBodyLength, isCloseDelimiter, listener)
         currentHeaders = null
         currentHeadersLength = 0
       } else {
@@ -127,17 +126,30 @@ internal class MultipartStreamReader(
   }
 
   @Throws(IOException::class)
-  private fun emitChunk(chunk: Buffer, done: Boolean, listener: ChunkListener) {
+  private fun emitChunk(
+      content: Buffer,
+      chunkLength: Long,
+      chunkBodyLength: Long,
+      done: Boolean,
+      listener: ChunkListener
+  ) {
     val marker: ByteString = ByteString.encodeUtf8(CRLF + CRLF)
-    val indexOfMarker = chunk.indexOf(marker)
+    val indexOfMarker = content.indexOf(marker, 0, chunkLength)
     if (indexOfMarker == -1L) {
-      listener.onChunkComplete(emptyMap(), chunk, done)
+      val body = Buffer()
+      content.read(body, chunkLength)
+      listener.onChunkComplete(emptyMap(), body, done)
     } else {
       val headers = Buffer()
+      content.read(headers, indexOfMarker)
+      content.skip(marker.size().toLong())
+      val bodyLength = if (chunkBodyLength > 0) chunkBodyLength else chunkLength - indexOfMarker - marker.size()
       val body = Buffer()
-      chunk.read(headers, indexOfMarker)
-      chunk.skip(marker.size().toLong())
-      chunk.readAll(body)
+      content.read(body, bodyLength)
+      val remaining = chunkLength - indexOfMarker - marker.size() - bodyLength
+      if (remaining > 0) {
+        content.skip(remaining)
+      }
       listener.onChunkComplete(parseHeaders(headers), body, done)
     }
   }
