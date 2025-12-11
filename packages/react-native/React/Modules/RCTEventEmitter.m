@@ -89,6 +89,7 @@
 
   if (_listenerCount > 0) {
     [self stopObserving];
+    _listenerCount = 0;
   }
 }
 
