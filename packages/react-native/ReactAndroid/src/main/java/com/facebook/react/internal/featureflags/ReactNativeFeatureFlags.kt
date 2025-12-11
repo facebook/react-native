@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c52f3977ea07f976e36177f13c1ec684>>
+ * @generated SignedSource<<21b64dde474f052173af1442e222e62c>>
  */
 
 /**
@@ -395,6 +395,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun virtualViewPrerenderRatio(): Double = accessor.virtualViewPrerenderRatio()
+
+  /**
+   * Instead of logging a soft exception crash the app in UiThreadUtils.
+   */
+  @JvmStatic
+  public fun runtimeCrashUiThreadUtils(): Boolean = accessor.runtimeCrashUiThreadUtils()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

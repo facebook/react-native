@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20176ba5419dc79d6aef4ab819667907>>
+ * @generated SignedSource<<2a54f4c7b1e548f6efec9dbf69628964>>
  */
 
 /**
@@ -269,6 +269,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   double virtualViewPrerenderRatio() override {
     return 5.0;
+  }
+
+  bool runtimeCrashUiThreadUtils() override {
+    return false;
   }
 };
 

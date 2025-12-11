@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7ae9a203a94e3a22197bc9eda69b741c>>
+ * @generated SignedSource<<0b1c7aa30d0a6ac67cb7d9fbec1f4782>>
  */
 
 /**
@@ -1122,6 +1122,24 @@ double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
 
     flagValue = currentProvider_->virtualViewPrerenderRatio();
     virtualViewPrerenderRatio_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::runtimeCrashUiThreadUtils() {
+  auto flagValue = runtimeCrashUiThreadUtils_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(61, "runtimeCrashUiThreadUtils");
+
+    flagValue = currentProvider_->runtimeCrashUiThreadUtils();
+    runtimeCrashUiThreadUtils_ = flagValue;
   }
 
   return flagValue.value();

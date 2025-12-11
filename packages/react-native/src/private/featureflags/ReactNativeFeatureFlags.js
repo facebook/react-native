@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c669013c9760f95739f6b33fb5610958>>
+ * @generated SignedSource<<3f339630fb5cff04f64898f7140dd78d>>
  * @flow strict
  * @noformat
  */
@@ -112,6 +112,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   virtualViewPrerenderRatio: Getter<number>,
+  runtimeCrashUiThreadUtils: Getter<boolean>,
 }>;
 
 /**
@@ -442,6 +443,10 @@ export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurbo
  * Initial prerender ratio for VirtualView.
  */
 export const virtualViewPrerenderRatio: Getter<number> = createNativeFlagGetter('virtualViewPrerenderRatio', 5);
+/**
+ * Instead of logging a soft exception crash the app in UiThreadUtils.
+ */
+export const runtimeCrashUiThreadUtils: Getter<boolean> = createNativeFlagGetter('runtimeCrashUiThreadUtils', false);
 
 /**
  * Overrides the feature flags with the provided methods.

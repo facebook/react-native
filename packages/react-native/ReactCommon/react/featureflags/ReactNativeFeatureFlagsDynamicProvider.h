@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<244db790cc754f31402981967cd902b5>>
+ * @generated SignedSource<<b971582cf9fe8c4be09e8284e2504c30>>
  */
 
 /**
@@ -592,6 +592,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::virtualViewPrerenderRatio();
+  }
+
+  bool runtimeCrashUiThreadUtils() override {
+    auto value = values_["runtimeCrashUiThreadUtils"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::runtimeCrashUiThreadUtils();
   }
 };
 

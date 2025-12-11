@@ -9,7 +9,9 @@ package com.facebook.react.bridge
 
 import android.os.Handler
 import android.os.Looper
+import com.facebook.infer.annotation.Assertions
 import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 
 /** Utility for interacting with the UI thread. */
 public object UiThreadUtil {
@@ -35,6 +37,10 @@ public object UiThreadUtil {
    */
   @JvmStatic
   public fun assertOnUiThread() {
+    if (ReactNativeFeatureFlags.runtimeCrashUiThreadUtils()) {
+      Assertions.assertCondition(isOnUiThread(), "Expected to run on UI thread!")
+      return
+    }
     if (ReactBuildConfig.DEBUG) {
       SoftAssertions.assertCondition(isOnUiThread(), "Expected to run on UI thread!")
     }
@@ -47,6 +53,10 @@ public object UiThreadUtil {
    */
   @JvmStatic
   public fun assertNotOnUiThread() {
+    if (ReactNativeFeatureFlags.runtimeCrashUiThreadUtils()) {
+      Assertions.assertCondition(!isOnUiThread(), "Expected not to run on UI thread!")
+      return
+    }
     if (ReactBuildConfig.DEBUG) {
       SoftAssertions.assertCondition(!isOnUiThread(), "Expected not to run on UI thread!")
     }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bbad4ee8cacd33099874d0c3078ea716>>
+ * @generated SignedSource<<b8a7de1fe60597e5f2e6b4ccb0eccbc3>>
  */
 
 /**
@@ -405,6 +405,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool runtimeCrashUiThreadUtils() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("runtimeCrashUiThreadUtils");
+    return method(javaProvider_);
+  }
+
  private:
   jni::global_ref<jobject> javaProvider_;
 };
@@ -714,6 +720,11 @@ double JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio(
   return ReactNativeFeatureFlags::virtualViewPrerenderRatio();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::runtimeCrashUiThreadUtils(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::runtimeCrashUiThreadUtils();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -928,6 +939,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "virtualViewPrerenderRatio",
         JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio),
+      makeNativeMethod(
+        "runtimeCrashUiThreadUtils",
+        JReactNativeFeatureFlagsCxxInterop::runtimeCrashUiThreadUtils),
   });
 }
 

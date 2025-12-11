@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<74560113d0b23c05d7822eeba1c0dee4>>
+ * @generated SignedSource<<9390960564d09a73a63256c0d70c0fe3>>
  */
 
 /**
@@ -93,6 +93,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useTurboModuleInterop();
   bool useTurboModules();
   double virtualViewPrerenderRatio();
+  bool runtimeCrashUiThreadUtils();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
   std::optional<std::string> getAccessedFeatureFlagNames() const;
@@ -104,7 +105,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 61> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 62> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -167,6 +168,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;
+  std::atomic<std::optional<bool>> runtimeCrashUiThreadUtils_;
 };
 
 } // namespace facebook::react

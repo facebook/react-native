@@ -691,6 +691,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    runtimeCrashUiThreadUtils: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-12-11',
+        description: 'Instead of logging a soft exception crash the app in UiThreadUtils.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
   },
 
   jsOnly: {
