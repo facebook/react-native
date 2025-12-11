@@ -367,7 +367,7 @@ export type BlendMode =
   | 'color'
   | 'luminosity';
 
-export type GradientValue = {
+export type LinearGradientValue = {
   type: 'linear-gradient';
   // Angle or direction enums
   direction?: string | undefined;
@@ -375,6 +375,89 @@ export type GradientValue = {
     color: ColorValue | null;
     positions?: ReadonlyArray<string> | undefined;
   }>;
+};
+
+export type GradientValue = LinearGradientValue;
+
+type RadialExtent =
+  | 'closest-corner'
+  | 'closest-side'
+  | 'farthest-corner'
+  | 'farthest-side';
+export type RadialGradientPosition =
+  | {
+      top: number | string;
+      left: number | string;
+    }
+  | {
+      top: number | string;
+      right: number | string;
+    }
+  | {
+      bottom: number | string;
+      left: number | string;
+    }
+  | {
+      bottom: number | string;
+      right: number | string;
+    };
+
+export type RadialGradientShape = 'circle' | 'ellipse';
+export type RadialGradientSize =
+  | RadialExtent
+  | {
+      x: string | number;
+      y: string | number;
+    };
+
+type RadialGradientValue = {
+  type: 'radial-gradient';
+  shape: RadialGradientShape;
+  size: RadialGradientSize;
+  position: RadialGradientPosition;
+  colorStops: ReadonlyArray<{
+    color: ColorValue | null;
+    positions?: ReadonlyArray<string> | undefined;
+  }>;
+};
+
+export type BackgroundImageValue = LinearGradientValue | RadialGradientValue;
+
+export type BackgroundSizeValue =
+  | {
+      x: string | number;
+      y: string | number;
+    }
+  | 'cover'
+  | 'contain';
+
+export type BackgroundRepeatKeyword =
+  | 'repeat'
+  | 'space'
+  | 'round'
+  | 'no-repeat';
+
+export type BackgroundPositionValue =
+  | {
+      top: number | string;
+      left: number | string;
+    }
+  | {
+      top: number | string;
+      right: number | string;
+    }
+  | {
+      bottom: number | string;
+      left: number | string;
+    }
+  | {
+      bottom: number | string;
+      right: number | string;
+    };
+
+export type BackgroundRepeatValue = {
+  x: BackgroundRepeatKeyword;
+  y: BackgroundRepeatKeyword;
 };
 
 /**
@@ -437,7 +520,19 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
 
   mixBlendMode?: BlendMode | undefined;
   experimental_backgroundImage?:
-    | ReadonlyArray<GradientValue>
+    | ReadonlyArray<BackgroundImageValue>
+    | string
+    | undefined;
+  experimental_backgroundSize?:
+    | ReadonlyArray<BackgroundSizeValue>
+    | string
+    | undefined;
+  experimental_backgroundPosition?:
+    | ReadonlyArray<BackgroundPositionValue>
+    | string
+    | undefined;
+  experimental_backgroundRepeat?:
+    | ReadonlyArray<BackgroundRepeatValue>
     | string
     | undefined;
 }
