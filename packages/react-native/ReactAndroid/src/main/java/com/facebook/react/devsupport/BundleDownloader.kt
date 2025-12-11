@@ -168,13 +168,13 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       callback.onFailure(
           DebugServerException(
               ("""
-              Error while reading multipart response.
-              
-              Response body was empty: ${response.code()}
-              
-              URL: $url
-              
-              
+                    Error while reading multipart response.
+                    
+                    Response body was empty: ${response.code()}
+                    
+                    URL: $url
+                    
+                    
                     """
                   .trimIndent())
           )

@@ -134,8 +134,8 @@ internal class MultipartStreamReader(
       listener: ChunkListener
   ) {
       val marker: ByteString = ByteString.encodeUtf8(CRLF + CRLF)
-      val indexOfMarker = content.indexOf(marker, 0, chunkLength)
-      if (indexOfMarker == -1L) {
+      val indexOfMarker = content.indexOf(marker, 0)
+      if (indexOfMarker == -1L || indexOfMarker >= chunkLength) {
           val body = Buffer()
           content.read(body, chunkLength)
           listener.onChunkComplete(emptyMap(), body, done)
