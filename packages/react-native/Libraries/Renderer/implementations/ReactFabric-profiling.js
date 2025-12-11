@@ -7,6 +7,9 @@
  * @noflow
  * @nolint
  * @preventMunge
+ * @generated SignedSource<<fc2f288ab072597f952d4767e0d785ff>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
 
 "use strict";
