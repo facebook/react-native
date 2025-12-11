@@ -77,6 +77,22 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case BACKGROUND_COLOR:
       viewProps.backgroundColor = snapshot.props.backgroundColor;
       break;
+
+    case SHADOW_COLOR:
+      viewProps.shadowColor = snapshot.props.shadowColor;
+      break;
+
+    case SHADOW_OFFSET:
+      viewProps.shadowOffset = snapshot.props.shadowOffset;
+      break;
+
+    case SHADOW_OPACITY:
+      viewProps.shadowOpacity = snapshot.props.shadowOpacity;
+      break;
+
+    case SHADOW_RADIUS:
+      viewProps.shadowRadius = snapshot.props.shadowRadius;
+      break;
   }
 }
 
