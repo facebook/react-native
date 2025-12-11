@@ -133,25 +133,24 @@ internal class MultipartStreamReader(
       done: Boolean,
       listener: ChunkListener
   ) {
-    val marker: ByteString = ByteString.encodeUtf8(CRLF + CRLF)
-    val indexOfMarker = content.indexOf(marker, 0, chunkLength)
-    if (indexOfMarker == -1L) {
-      val body = Buffer()
-      content.read(body, chunkLength)
-      listener.onChunkComplete(emptyMap(), body, done)
-    } else {
-      val headers = Buffer()
-      content.read(headers, indexOfMarker)
-      content.skip(marker.size().toLong())
-      val bodyLength = if (chunkBodyLength > 0) chunkBodyLength else chunkLength - indexOfMarker - marker.size()
-      val body = Buffer()
-      content.read(body, bodyLength)
-      val remaining = chunkLength - indexOfMarker - marker.size() - bodyLength
-      if (remaining > 0) {
-        content.skip(remaining)
+      val marker: ByteString = ByteString.encodeUtf8(CRLF + CRLF)
+      val indexOfMarker = content.indexOf(marker, 0, chunkLength)
+      if (indexOfMarker == -1L) {
+          val body = Buffer()
+          content.read(body, chunkLength)
+          listener.onChunkComplete(emptyMap(), body, done)
+      } else {
+          val headers = Buffer()
+          content.read(headers, indexOfMarker)
+          content.skip(marker.size().toLong())
+          val bodyLength = if (chunkBodyLength > 0) chunkBodyLength else chunkLength - indexOfMarker - marker.size()
+          // Listener must read exactly bodyLength bytes (via Content-Length header)
+          listener.onChunkComplete(parseHeaders(headers), content, done)
+          val remaining = chunkLength - indexOfMarker - marker.size() - bodyLength
+          if (remaining > 0) {
+              content.skip(remaining)
+          }
       }
-      listener.onChunkComplete(parseHeaders(headers), body, done)
-    }
   }
 
   @Throws(IOException::class)
