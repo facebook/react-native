@@ -30,6 +30,7 @@ struct SurfaceContext {
 struct SurfaceUpdates {
   std::unordered_set<const ShadowNodeFamily *> families;
   std::unordered_map<Tag, AnimatedProps> propsMap;
+  bool hasLayoutUpdates{false};
 };
 
 using SnapshotMap = std::unordered_map<Tag, std::unique_ptr<PropsSnapshot>>;
