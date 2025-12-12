@@ -9,6 +9,9 @@ runs:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
 
+    - name: Run yarn install
+      uses: ./.github/actions/yarn-install
+
     - name: Get merge base commit with main
       id: merge_base
       shell: bash
