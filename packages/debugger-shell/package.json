@@ -17,8 +17,19 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "exports": {
+      ".": {
+        "node": "./dist/node/index.js",
+        "electron": "./dist/electron/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
-    "dev": "electron src/electron"
+    "dev": "electron src/electron",
+    "prepack": "node ../../scripts/build/prepack.js"
   },
   "repository": {
     "type": "git",
