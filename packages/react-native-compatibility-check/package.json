@@ -25,9 +25,18 @@
     ".": "./src/index.js",
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "files": [
     "dist"
   ],
+  "scripts": {
+    "prepack": "node ../../scripts/build/prepack.js"
+  },
   "dependencies": {
     "@react-native/codegen": "0.84.0-main"
   },
