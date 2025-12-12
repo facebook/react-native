@@ -312,6 +312,27 @@ void PerformanceTracer::reportResourceSendRequest(
       });
 }
 
+void PerformanceTracer::reportResourceReceivedData(
+    const std::string& devtoolsRequestId,
+    HighResTimeStamp start,
+    int encodedDataLength) {
+  if (!tracingAtomic_) {
+    return;
+  };
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  enqueueEvent(
+      PerformanceTracerResourceReceivedData{
+          .requestId = devtoolsRequestId,
+          .start = start,
+          .encodedDataLength = encodedDataLength,
+          .threadId = getCurrentThreadId()});
+}
+
 void PerformanceTracer::reportResourceReceiveResponse(
     const std::string& devtoolsRequestId,
     HighResTimeStamp start,
@@ -697,6 +718,23 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             events.emplace_back(
                 TraceEvent{
                     .name = "ResourceSendRequest",
+                    .cat = {Category::Timeline},
+                    .ph = 'I',
+                    .ts = event.start,
+                    .pid = processId_,
+                    .s = 't',
+                    .tid = event.threadId,
+                    .args = folly::dynamic::object("data", std::move(data)),
+                });
+          },
+          [&](PerformanceTracerResourceReceivedData&& event) {
+            folly::dynamic data = folly::dynamic::object(
+                "encodedDataLength", event.encodedDataLength)(
+                "requestId", std::move(event.requestId));
+
+            events.emplace_back(
+                TraceEvent{
+                    .name = "ResourceReceivedData",
                     .cat = {Category::Timeline},
                     .ph = 'I',
                     .ts = event.start,
