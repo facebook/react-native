@@ -284,7 +284,7 @@ class XMLHttpRequest extends EventTarget {
       case 'json':
         try {
           this._cachedResponse = JSON.parse(this._response);
-        } catch (_) {
+        } catch {
           this._cachedResponse = null;
         }
         break;
