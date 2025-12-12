@@ -28,11 +28,11 @@ class LazyShadowTreeRevisionConsistencyManager : public ShadowTreeRevisionConsis
  public:
   explicit LazyShadowTreeRevisionConsistencyManager(ShadowTreeRegistry &shadowTreeRegistry);
 
-  void updateCurrentRevision(SurfaceId surfaceId, RootShadowNode::Shared rootShadowNode);
+  std::shared_ptr<const RootShadowNode> updateCurrentRevision(SurfaceId surfaceId);
 
 #pragma mark - ShadowTreeRevisionProvider
 
-  RootShadowNode::Shared getCurrentRevision(SurfaceId surfaceId) override;
+  std::shared_ptr<const RootShadowNode> getCurrentRevision(SurfaceId surfaceId) override;
 
 #pragma mark - ShadowTreeRevisionConsistencyManager
 
