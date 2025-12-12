@@ -1008,34 +1008,28 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
       }
 
       for (auto& [tag, props] : updateViewPropsDirect_) {
-        propsBuilder.storeDynamic(props);
-        mutations.push_back(
-            AnimationMutation{tag, nullptr, propsBuilder.get()});
+        auto weakFamily = tagToShadowNodeFamily_[tag];
+
+        if (auto family = weakFamily.lock()) {
+          propsBuilder.storeDynamic(props);
+          mutations.batch.push_back(
+              AnimationMutation{
+                  .tag = tag,
+                  .family = family,
+                  .props = propsBuilder.get(),
+              });
+        }
         containsChange = true;
       }
       {
         std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
         for (auto& [tag, props] : updateViewProps_) {
-          auto familyIt = tagToShadowNodeFamily_.find(tag);
-          if (familyIt == tagToShadowNodeFamily_.end()) {
-            continue;
-          }
-          if (auto family = familyIt->second.lock()) {
-            // C++ Animated produces props in the form of a folly::dynamic, so
-            // it wouldn't make sense to unpack it here. However, for the
-            // purposes of testing, we want to be able to use the statically
-            // typed AnimationMutation. At a later stage we will instead just
-            // pass the dynamic directly to propsBuilder and the new API could
-            // be used by 3rd party libraries or in the fututre by Animated.
-            if (props.find("width") != props.items().end()) {
-              propsBuilder.setWidth(
-                  yoga::Style::SizeLength::points(props["width"].asDouble()));
-            }
-            if (props.find("height") != props.items().end()) {
-              propsBuilder.setHeight(
-                  yoga::Style::SizeLength::points(props["height"].asDouble()));
-            }
-            mutations.push_back(
+          auto weakFamily = tagToShadowNodeFamily_[tag];
+
+          if (auto family = weakFamily.lock()) {
+            propsBuilder.storeDynamic(props);
+            mutations.hasLayoutUpdates = true;
+            mutations.batch.push_back(
                 AnimationMutation{
                     .tag = tag,
                     .family = family,
@@ -1075,24 +1069,27 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
       isEventAnimationInProgress_ = false;
 
       for (auto& [tag, props] : updateViewPropsDirect_) {
-        propsBuilder.storeDynamic(props);
-        mutations.push_back(
-            AnimationMutation{
-                .tag = tag,
-                .family = nullptr,
-                .props = propsBuilder.get(),
-            });
+        auto weakFamily = tagToShadowNodeFamily_[tag];
+
+        if (auto family = weakFamily.lock()) {
+          propsBuilder.storeDynamic(props);
+          mutations.batch.push_back(
+              AnimationMutation{
+                  .tag = tag,
+                  .family = family,
+                  .props = propsBuilder.get(),
+              });
+        }
       }
       {
         std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
         for (auto& [tag, props] : updateViewProps_) {
-          auto familyIt = tagToShadowNodeFamily_.find(tag);
-          if (familyIt == tagToShadowNodeFamily_.end()) {
-            continue;
-          }
-          if (auto family = familyIt->second.lock()) {
+          auto weakFamily = tagToShadowNodeFamily_[tag];
+
+          if (auto family = weakFamily.lock()) {
             propsBuilder.storeDynamic(props);
-            mutations.push_back(
+            mutations.hasLayoutUpdates = true;
+            mutations.batch.push_back(
                 AnimationMutation{
                     .tag = tag,
                     .family = family,

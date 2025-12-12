@@ -19,6 +19,7 @@ namespace facebook::react {
 struct PropsSnapshot {
   BaseViewProps props;
   std::unordered_set<PropName> propNames;
+  std::unique_ptr<folly::dynamic> rawProps;
 };
 
 struct SurfaceContext {

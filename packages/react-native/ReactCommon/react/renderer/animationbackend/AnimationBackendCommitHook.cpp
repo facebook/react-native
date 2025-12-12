@@ -43,13 +43,19 @@ RootShadowNode::Unshared AnimationBackendCommitHook::shadowTreeWillCommit(
             if (surfaceFamilies.contains(&shadowNode.getFamily()) &&
                 updates.contains(shadowNode.getTag())) {
               auto& snapshot = updates.at(shadowNode.getTag());
-              if (!snapshot->propNames.empty()) {
+              if (!snapshot->propNames.empty() || snapshot->rawProps) {
                 PropsParserContext propsParserContext{
                     shadowNode.getSurfaceId(),
                     *shadowNode.getContextContainer()};
-
-                newProps = shadowNode.getComponentDescriptor().cloneProps(
-                    propsParserContext, shadowNode.getProps(), {});
+                if (snapshot->rawProps) {
+                  newProps = shadowNode.getComponentDescriptor().cloneProps(
+                      propsParserContext,
+                      shadowNode.getProps(),
+                      RawProps(*snapshot->rawProps));
+                } else {
+                  newProps = shadowNode.getComponentDescriptor().cloneProps(
+                      propsParserContext, shadowNode.getProps(), {});
+                }
                 viewProps = std::const_pointer_cast<BaseViewProps>(
                     std::static_pointer_cast<const BaseViewProps>(newProps));
               }
