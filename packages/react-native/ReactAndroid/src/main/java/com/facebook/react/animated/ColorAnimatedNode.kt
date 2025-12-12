@@ -90,22 +90,4 @@ internal class ColorAnimatedNode(
       // case we will search for a view associated with a PropsAnimatedNode to get the context.
       return reactApplicationContext.currentActivity ?: getContextHelper(this)
     }
-
-  companion object {
-    private fun getContextHelper(node: AnimatedNode): Context? {
-      // Search children depth-first until we get to a PropsAnimatedNode, from which we can
-      // get the view and its context
-      node.children?.let { children ->
-        for (child in children) {
-          return if (child is PropsAnimatedNode) {
-            val view = child.connectedView
-            view?.context
-          } else {
-            getContextHelper(child)
-          }
-        }
-      }
-      return null
-    }
-  }
 }
