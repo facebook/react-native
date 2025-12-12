@@ -15,16 +15,10 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {useState} from 'react';
-import {
-  Button,
-  DeviceInfo,
-  Modal,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Button, DeviceInfo, Modal, StyleSheet, View} from 'react-native';
 
 function SafeAreaViewExample(): React.Node {
+  const {SafeAreaView} = require('react-native');
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const toggleModal = (visible: boolean) => {

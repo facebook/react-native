@@ -97,7 +97,7 @@ describe('View compat with web', () => {
       'aria-valuetext': '3',
     };
 
-    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-type]
     const instance = await create(<View {...props} />);
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`

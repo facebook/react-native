@@ -23,6 +23,6 @@ data class PrefabPreprocessingEntry(
 ) : Serializable {
   constructor(
       libraryName: String,
-      pathToPrefixCouple: Pair<String, String>
+      pathToPrefixCouple: Pair<String, String>,
   ) : this(libraryName, listOf(pathToPrefixCouple))
 }

@@ -28,7 +28,7 @@ namespace facebook::react {
 
 Sealable::Sealable() : sealed_(false) {}
 
-Sealable::Sealable(const Sealable& /*other*/) : sealed_(false){};
+Sealable::Sealable(const Sealable& /*other*/) : sealed_(false) {};
 
 Sealable::Sealable(Sealable&& other) noexcept : sealed_(false) {
   other.ensureUnsealed();

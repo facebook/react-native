@@ -151,10 +151,29 @@ Rect getScrollableContentBounds(
       : std::max(
             paddingFrame.getMaxX(), contentBounds.getMaxX() + paddingRight);
 
-  return Rect{Point{minX, minY}, Size{maxX - minX, maxY - minY}};
+  return Rect{
+      .origin = Point{.x = minX, .y = minY},
+      .size = Size{.width = maxX - minX, .height = maxY - minY}};
 }
 
 } // namespace
+
+std::shared_ptr<const ShadowNode> getElementById(
+    const std::shared_ptr<const ShadowNode>& shadowNode,
+    const std::string& id) {
+  if (shadowNode->getProps()->nativeId == id) {
+    return shadowNode;
+  }
+
+  for (const auto& childNode : shadowNode->getChildren()) {
+    auto result = getElementById(childNode, id);
+    if (result != nullptr) {
+      return result;
+    }
+  }
+
+  return nullptr;
+}
 
 std::shared_ptr<const ShadowNode> getParentNode(
     const RootShadowNode::Shared& currentRevision,

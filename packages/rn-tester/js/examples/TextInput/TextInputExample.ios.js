@@ -32,7 +32,7 @@ import {
   View,
 } from 'react-native';
 
-class WithLabel extends React.Component<$FlowFixMeProps> {
+class WithLabel extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View style={styles.labelContainer}>
@@ -50,7 +50,7 @@ class TextInputAccessoryViewChangeTextExample extends React.Component<
   {text: string},
 > {
   constructor(props: void | {...}) {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     super(props);
     this.state = {text: 'Placeholder Text'};
   }
@@ -85,7 +85,7 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
   {keyboardType: string, text: string},
 > {
   constructor(props: void | {...}) {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     super(props);
     this.state = {text: '', keyboardType: 'default'};
   }
@@ -130,7 +130,7 @@ class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
   {text: string},
 > {
   constructor(props: void | $ReadOnly<{keyboardType: KeyboardTypeOptions}>) {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     super(props);
     this.state = {text: ''};
   }
@@ -147,7 +147,7 @@ class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
   }
 }
 
-class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
+class RewriteExampleKana extends React.Component<$FlowFixMe, any> {
   constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
@@ -167,7 +167,7 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
   }
 }
 
-class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
+class SecureEntryExample extends React.Component<$FlowFixMe, any> {
   constructor(props: any | void) {
     super(props);
     this.state = {
@@ -1032,6 +1032,21 @@ const textInputExamples: Array<RNTesterModuleExample> = [
               </View>
             );
           })}
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Accessibility',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="accessibilityLabel">
+            <ExampleTextInput accessibilityLabel="This is Accessibility Label" />
+          </WithLabel>
+          <WithLabel label="aria-label">
+            <ExampleTextInput aria-label="This is Aria Label" />
+          </WithLabel>
         </View>
       );
     },

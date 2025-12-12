@@ -45,7 +45,7 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
         else -> input
       }
 
-  public override fun invokeJniOnload(libraryName: String): Unit {
+  public override fun invokeJniOnload(libraryName: String) {
     when (libraryName) {
       "fabricjni" -> libfabricjni_so()
       "hermes_executor" -> libhermes_executor_so()

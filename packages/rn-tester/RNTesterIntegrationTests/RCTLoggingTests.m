@@ -30,6 +30,8 @@ const int64_t LOGGER_TIMEOUT = 10 * NSEC_PER_SEC;
 
 - (void)setUp
 {
+  XCTSkip(@"Skipping RCTLoggingTests since they rely on deprecated RCTBridge functionality.");
+
   NSURL *scriptURL;
   if (getenv("CI_USE_PACKAGER")) {
     NSString *app = @"IntegrationTests/IntegrationTestsApp";

@@ -21,7 +21,7 @@ const MAX_DEPTH = 5;
 
 export function isPlainObject(
   value: mixed,
-  /* $FlowIssue[incompatible-type-guard] - Flow does not know that the prototype
+  /* $FlowFixMe[incompatible-type-guard] - Flow does not know that the prototype
      and ReactElement checks preserve the type refinement of `value`. */
 ): value is $ReadOnly<{[string]: mixed}> {
   return (
@@ -82,7 +82,7 @@ function mapAnimatedNodes(value: any, fn: any => any, depth: number = 0): any {
 }
 
 export default class AnimatedObject extends AnimatedWithChildren {
-  #nodes: $ReadOnlyArray<AnimatedNode>;
+  _nodes: $ReadOnlyArray<AnimatedNode>;
   _value: mixed;
 
   /**
@@ -106,7 +106,7 @@ export default class AnimatedObject extends AnimatedWithChildren {
     config?: ?AnimatedNodeConfig,
   ) {
     super(config);
-    this.#nodes = nodes;
+    this._nodes = nodes;
     this._value = value;
   }
 
@@ -117,7 +117,7 @@ export default class AnimatedObject extends AnimatedWithChildren {
   }
 
   __getValueWithStaticObject(staticObject: mixed): any {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     let index = 0;
     // NOTE: We can depend on `this._value` and `staticObject` sharing a
     // structure because of `useAnimatedPropsMemo`.
@@ -131,7 +131,7 @@ export default class AnimatedObject extends AnimatedWithChildren {
   }
 
   __attach(): void {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__addChild(this);
@@ -140,7 +140,7 @@ export default class AnimatedObject extends AnimatedWithChildren {
   }
 
   __detach(): void {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__removeChild(this);
@@ -149,7 +149,7 @@ export default class AnimatedObject extends AnimatedWithChildren {
   }
 
   __makeNative(platformConfig: ?PlatformConfig): void {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__makeNative(platformConfig);

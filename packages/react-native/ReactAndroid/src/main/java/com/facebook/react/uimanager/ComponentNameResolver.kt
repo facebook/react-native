@@ -9,8 +9,18 @@ package com.facebook.react.uimanager
 
 import com.facebook.proguard.annotations.DoNotStripAny
 
+/**
+ * Interface for resolving component names registered in React Native.
+ *
+ * This interface provides access to all registered component names in the React Native runtime,
+ * which is useful for debugging and inspection purposes.
+ */
 @DoNotStripAny
 internal interface ComponentNameResolver {
-  /* returns a list of all the component names that are registered in React Native. */
+  /**
+   * Gets the list of all component names registered in React Native.
+   *
+   * @return An array of all registered component names
+   */
   val componentNames: Array<String>
 }

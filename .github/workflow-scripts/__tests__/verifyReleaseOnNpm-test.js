@@ -83,13 +83,13 @@ describe('#verifyReleaseOnNPM', () => {
     it('will timeout if npm does not update package version after a set number of retries', async () => {
       const RETRIES = 2;
 
-      await verifyReleaseOnNpm('0.77.0', true, RETRIES),
+      (await verifyReleaseOnNpm('0.77.0', true, RETRIES),
         expect(mockVerifyPublishedPackage).toHaveBeenCalledWith(
           'react-native',
           '0.77.0',
           'latest',
           2,
-        );
+        ));
     });
 
     it('will timeout if npm does not update latest tag after a set number of retries', async () => {

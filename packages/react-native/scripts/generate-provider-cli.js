@@ -34,10 +34,10 @@ const argv = yargs
     'Please provide platform, schema path, and output directory.',
   ).argv;
 
-const GENERATORS = {
-    android: [],
-    ios: ['providerIOS'],
-  } /*:: as {[string]: $ReadOnlyArray<string>} */;
+const GENERATORS /*: {[string]: $ReadOnlyArray<string>} */ = {
+  android: [],
+  ios: ['providerIOS'],
+};
 
 function generateProvider(
   platform /*: string */,
@@ -62,7 +62,7 @@ function generateProvider(
     throw new Error(`Can't parse schema to JSON. ${schemaListPath}`);
   }
 
-  const schemas = {} /*:: as {[string]: $FlowFixMe} */;
+  const schemas /*: {[string]: $FlowFixMe} */ = {};
   try {
     for (const libraryName of Object.keys(schemaPaths)) {
       const tmpSchemaText = fs.readFileSync(schemaPaths[libraryName], 'utf-8');

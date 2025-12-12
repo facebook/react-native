@@ -10,7 +10,7 @@
 #include <React/RCTLog.h>
 #include <cxxreact/MessageQueueThread.h>
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 
@@ -18,7 +18,8 @@ namespace facebook::react {
 // is not the JS thread.  C++ modules don't use RCTNativeModule, so this little
 // adapter does the work.
 
-class DispatchMessageQueueThread : public MessageQueueThread {
+class [[deprecated("This API will be removed along with the legacy architecture.")]] DispatchMessageQueueThread
+    : public MessageQueueThread {
  public:
   DispatchMessageQueueThread(RCTModuleData *moduleData) : moduleData_(moduleData) {}
 
@@ -46,4 +47,4 @@ class DispatchMessageQueueThread : public MessageQueueThread {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

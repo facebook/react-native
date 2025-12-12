@@ -14,7 +14,7 @@ import kotlin.math.min
 
 internal class DiffClampAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
   private val inputNodeTag: Int
   private val minValue: Double
@@ -40,7 +40,8 @@ internal class DiffClampAnimatedNode(
       val animatedNode = nativeAnimatedNodesManager.getNodeById(inputNodeTag)
       if (animatedNode == null || animatedNode !is ValueAnimatedNode) {
         throw JSApplicationCausedNativeException(
-            "Illegal node ID set as an input for Animated.DiffClamp node")
+            "Illegal node ID set as an input for Animated.DiffClamp node"
+        )
       }
       return animatedNode.getValue()
     }

@@ -106,7 +106,8 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           val blob = checkNotNull(map.getMap("blob"))
           val bytes =
               checkNotNull(
-                  resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size")))
+                  resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"))
+              )
 
           return RequestBody.create(MediaType.parse(type), bytes)
         }
@@ -132,8 +133,8 @@ public class BlobModule(reactContext: ReactApplicationContext) :
   }
 
   public override fun getTypedExportedConstants(): Map<String, Any> {
-    val resources = getReactApplicationContext().resources
-    val packageName = getReactApplicationContext().packageName
+    val resources = reactApplicationContext.resources
+    val packageName = reactApplicationContext.packageName
     val resourceId = resources.getIdentifier("blob_provider_authority", "string", packageName)
     if (resourceId == 0) {
       return mapOf()
@@ -296,7 +297,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  public override fun createFromParts(parts: ReadableArray, blobId: String): Unit {
+  public override fun createFromParts(parts: ReadableArray, blobId: String) {
     var totalBlobSize = 0
     val partList = ArrayList<ByteArray>(parts.size())
 

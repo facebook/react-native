@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react
 
 import android.app.Activity
@@ -17,7 +19,6 @@ import com.facebook.react.ReactInstanceManager.initializeSoLoaderIfNecessary
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.JSExceptionHandler
 import com.facebook.react.bridge.JavaScriptExecutorFactory
-import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener
 import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.SurfaceDelegateFactory
@@ -38,12 +39,15 @@ import com.facebook.react.packagerconnection.RequestHandler
 
 /** Builder class for [ReactInstanceManager]. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 public class ReactInstanceManagerBuilder {
   private val packages: MutableList<ReactPackage> = mutableListOf()
   private var jsBundleAssetUrl: String? = null
   private var jsBundleLoader: JSBundleLoader? = null
   private var jsMainModulePath: String? = null
-  private var bridgeIdleDebugListener: NotThreadSafeBridgeIdleDebugListener? = null
   private var application: Application? = null
   private var useDeveloperSupport = false
   private var devSupportManagerFactory: DevSupportManagerFactory? = null
@@ -136,13 +140,6 @@ public class ReactInstanceManagerBuilder {
 
   public fun addPackages(reactPackages: List<ReactPackage>): ReactInstanceManagerBuilder {
     packages.addAll(reactPackages)
-    return this
-  }
-
-  public fun setBridgeIdleDebugListener(
-      bridgeIdleDebugListener: NotThreadSafeBridgeIdleDebugListener
-  ): ReactInstanceManagerBuilder {
-    this.bridgeIdleDebugListener = bridgeIdleDebugListener
     return this
   }
 
@@ -342,7 +339,10 @@ public class ReactInstanceManagerBuilder {
             ?: getDefaultJSExecutorFactory(appName, deviceName, application.applicationContext),
         if ((jsBundleLoader == null && safeJSBundleAssetUrl != null))
             JSBundleLoader.createAssetLoader(
-                application, safeJSBundleAssetUrl, loadSynchronously = false)
+                application,
+                safeJSBundleAssetUrl,
+                loadSynchronously = false,
+            )
         else jsBundleLoader,
         jsMainModulePath,
         packages,
@@ -350,7 +350,6 @@ public class ReactInstanceManagerBuilder {
         devSupportManagerFactory ?: DefaultDevSupportManagerFactory(),
         requireActivity,
         keepActivity,
-        bridgeIdleDebugListener,
         checkNotNull(initialLifecycleState) { "Initial lifecycle state was not set" },
         jsExceptionHandler,
         redBoxHandler,
@@ -364,13 +363,14 @@ public class ReactInstanceManagerBuilder {
         surfaceDelegateFactory,
         devLoadingViewManager,
         choreographerProvider,
-        pausedInDebuggerOverlayManager)
+        pausedInDebuggerOverlayManager,
+    )
   }
 
   private fun getDefaultJSExecutorFactory(
       appName: String,
       deviceName: String,
-      applicationContext: Context
+      applicationContext: Context,
   ): JavaScriptExecutorFactory? {
     ReactInstanceManager.initializeSoLoaderIfNecessary(applicationContext)
     // Hermes has been enabled by default in OSS since React Native 0.70.
@@ -380,7 +380,8 @@ public class ReactInstanceManagerBuilder {
     } catch (error: UnsatisfiedLinkError) {
       FLog.e(
           TAG,
-          "Unable to load Hermes. Your application is not built correctly and will fail to execute")
+          "Unable to load Hermes. Your application is not built correctly and will fail to execute",
+      )
       return null
     }
   }
@@ -388,7 +389,9 @@ public class ReactInstanceManagerBuilder {
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ReactInstanceManagerBuilder", LegacyArchitectureLogLevel.ERROR)
+          "ReactInstanceManagerBuilder",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
 
     private val TAG: String = ReactInstanceManagerBuilder::class.java.simpleName

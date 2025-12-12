@@ -43,8 +43,7 @@ UIDeviceOrientation RCTDeviceOrientation(void);
 // Whether the New Architecture is enabled or not
 BOOL RCTIsNewArchEnabled(void)
 {
-  NSNumber *rctNewArchEnabled = (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTNewArchEnabled"];
-  return rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+  return YES;
 }
 void RCTSetNewArchEnabled(BOOL enabled)
 {
@@ -147,7 +146,7 @@ static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL isMutab
         if (strchr("{[", c)) {
           static const int options = (1 << 2); // loose unicode
           SEL selector = isMutable ? JSONKitMutableSelector : JSONKitSelector;
-          return ((id(*)(id, SEL, int, NSError **))objc_msgSend)(jsonString, selector, options, error);
+          return ((id (*)(id, SEL, int, NSError **))objc_msgSend)(jsonString, selector, options, error);
         }
         if (!strchr(" \r\n\t", c)) {
           break;
@@ -409,6 +408,18 @@ CGSize RCTViewportSize(void)
 {
   UIWindow *window = RCTKeyWindow();
   return window ? window.bounds.size : RCTScreenSize();
+}
+
+CGSize RCTSwitchSize(void)
+{
+  static CGSize rctSwitchSize;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      rctSwitchSize = [UISwitch new].intrinsicContentSize;
+    });
+  });
+  return rctSwitchSize;
 }
 
 CGFloat RCTRoundPixelValue(CGFloat value)
@@ -695,7 +706,7 @@ NSURL *RCTDataURL(NSString *mimeType, NSData *data)
                                                [data base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0]]];
 }
 
-BOOL RCTIsGzippedData(NSData *__nullable); // exposed for unit testing purposes
+extern "C" BOOL RCTIsGzippedData(NSData *__nullable /*data*/); // exposed for unit testing purposes
 BOOL RCTIsGzippedData(NSData *__nullable data)
 {
   UInt8 *bytes = (UInt8 *)data.bytes;
@@ -710,13 +721,13 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
 
   void *libz = dlopen("/usr/lib/libz.dylib", RTLD_LAZY);
 
-  typedef int (*DeflateInit2_)(z_streamp, int, int, int, int, int, const char *, int);
+  using DeflateInit2_ = int (*)(z_streamp, int, int, int, int, int, const char *, int);
   DeflateInit2_ deflateInit2_ = (DeflateInit2_)dlsym(libz, "deflateInit2_");
 
-  typedef int (*Deflate)(z_streamp, int);
+  using Deflate = int (*)(z_streamp, int);
   Deflate deflate = (Deflate)dlsym(libz, "deflate");
 
-  typedef int (*DeflateEnd)(z_streamp);
+  using DeflateEnd = int (*)(z_streamp);
   DeflateEnd deflateEnd = (DeflateEnd)dlsym(libz, "deflateEnd");
 
   z_stream stream;

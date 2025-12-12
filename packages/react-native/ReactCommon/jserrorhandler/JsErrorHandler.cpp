@@ -219,7 +219,7 @@ std::ostream& operator<<(
 
 JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
     : _onJsError(std::move(onJsError)),
-      _inErrorHandler(std::make_shared<bool>(false)){
+      _inErrorHandler(std::make_shared<bool>(false)) {
 
       };
 

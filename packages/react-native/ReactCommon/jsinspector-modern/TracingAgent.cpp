@@ -7,8 +7,11 @@
 
 #include "TracingAgent.h"
 
+#include <jsinspector-modern/tracing/HostTracingProfileSerializer.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
+#include <jsinspector-modern/tracing/TraceEventSerializer.h>
+#include <jsinspector-modern/tracing/TracingMode.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -23,115 +26,122 @@ const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
 /**
  * The maximum number of ProfileChunk trace events
  * that will be sent in a single CDP Tracing.dataCollected message.
- * TODO(T219394401): Increase the size once we manage the queue on OkHTTP side
- * properly and avoid WebSocket disconnections when sending a message larger
- * than 16MB.
  */
-const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
+const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 10;
 
 } // namespace
 
 TracingAgent::TracingAgent(
     FrontendChannel frontendChannel,
-    const SessionState& sessionState)
+    SessionState& sessionState,
+    HostTargetController& hostTargetController)
     : frontendChannel_(std::move(frontendChannel)),
-      sessionState_(sessionState) {}
+      sessionState_(sessionState),
+      hostTargetController_(hostTargetController) {}
+
+TracingAgent::~TracingAgent() {
+  // Agents are owned by the session. If the agent is destroyed, it means that
+  // the session was destroyed. We should stop pending recording.
+  if (sessionState_.hasPendingTraceRecording) {
+    hostTargetController_.stopTracing();
+  }
+}
 
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
-    // @cdp Tracing.start support is experimental.
+    auto& inspector = getInspectorInstance();
+    if (inspector.getSystemState().registeredHostsCount > 1) {
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "The Tracing domain is unavailable when multiple React Native hosts are registered."));
+
+      return true;
+    }
+
     if (sessionState_.isDebuggerDomainEnabled) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Debugger domain is expected to be disabled before starting Tracing"));
-
-      return true;
-    }
-    if (!instanceAgent_) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Couldn't find instance available for Tracing"));
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InternalError,
+              "Debugger domain is expected to be disabled before starting Tracing"));
 
       return true;
     }
 
-    bool correctlyStartedPerformanceTracer =
-        tracing::PerformanceTracer::getInstance().startTracing();
+    /**
+     * This logic has to be updated with the next upgrade of Chrome
+     * DevTools Frotnend fork.
+     *
+     * At the moment of writing this, our fork uses categories field, which is
+     * marked as depreacted in CDP spec.
+     *
+     * Latest versions of Chrome DevTools in stable channel of Chromium are
+     * already using traceConfig field.
+     */
+    std::set<tracing::Category> enabledCategories;
+    if (req.params.isObject() && req.params.count("categories") != 0 &&
+        req.params["categories"].isString()) {
+      enabledCategories = tracing::parseSerializedTracingCategories(
+          req.params["categories"].getString());
+    }
 
-    if (!correctlyStartedPerformanceTracer) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Tracing session already started"));
+    bool didNotHaveAlreadyRunningRecording = hostTargetController_.startTracing(
+        tracing::Mode::CDP, std::move(enabledCategories));
+    if (!didNotHaveAlreadyRunningRecording) {
+      frontendChannel_(
+          cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidRequest,
+              "Tracing has already been started"));
 
       return true;
     }
 
-    instanceAgent_->startTracing();
-    instanceTracingStartTimestamp_ = HighResTimeStamp::now();
+    sessionState_.hasPendingTraceRecording = true;
     frontendChannel_(cdp::jsonResult(req.id));
 
     return true;
   } else if (req.method == "Tracing.end") {
-    // @cdp Tracing.end support is experimental.
-    if (!instanceAgent_) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Couldn't find instance available for Tracing"));
+    auto tracingProfile = hostTargetController_.stopTracing();
 
-      return true;
-    }
-
-    instanceAgent_->stopTracing();
-
-    tracing::PerformanceTracer& performanceTracer =
-        tracing::PerformanceTracer::getInstance();
-    bool correctlyStopped = performanceTracer.stopTracing();
-    if (!correctlyStopped) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Tracing session not started"));
-
-      return true;
-    }
-
+    sessionState_.hasPendingTraceRecording = false;
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
 
-    auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
-      frontendChannel_(cdp::jsonNotification(
-          "Tracing.dataCollected",
-          folly::dynamic::object("value", std::move(eventsChunk))));
-    };
-    performanceTracer.collectEvents(
-        dataCollectedCallback, TRACE_EVENT_CHUNK_SIZE);
-
-    tracing::RuntimeSamplingProfileTraceEventSerializer serializer(
-        performanceTracer,
-        dataCollectedCallback,
-        PROFILE_TRACE_EVENT_CHUNK_SIZE);
-    auto tracingProfile = instanceAgent_->collectTracingProfile();
-    serializer.serializeAndNotify(
-        std::move(tracingProfile.runtimeSamplingProfile),
-        instanceTracingStartTimestamp_);
-
-    frontendChannel_(cdp::jsonNotification(
-        "Tracing.tracingComplete",
-        folly::dynamic::object("dataLossOccurred", false)));
-
+    emitHostTracingProfile(std::move(tracingProfile));
     return true;
   }
 
   return false;
 }
 
-void TracingAgent::setCurrentInstanceAgent(
-    std::shared_ptr<InstanceAgent> instanceAgent) {
-  instanceAgent_ = std::move(instanceAgent);
+void TracingAgent::emitExternalHostTracingProfile(
+    tracing::HostTracingProfile tracingProfile) const {
+  frontendChannel_(
+      cdp::jsonNotification("ReactNativeApplication.traceRequested"));
+  emitHostTracingProfile(std::move(tracingProfile));
+}
+
+void TracingAgent::emitHostTracingProfile(
+    tracing::HostTracingProfile tracingProfile) const {
+  auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
+    frontendChannel_(
+        cdp::jsonNotification(
+            "Tracing.dataCollected",
+            folly::dynamic::object("value", std::move(eventsChunk))));
+  };
+  tracing::HostTracingProfileSerializer::emitAsDataCollectedChunks(
+      std::move(tracingProfile),
+      dataCollectedCallback,
+      TRACE_EVENT_CHUNK_SIZE,
+      PROFILE_TRACE_EVENT_CHUNK_SIZE);
+
+  frontendChannel_(
+      cdp::jsonNotification(
+          "Tracing.tracingComplete",
+          folly::dynamic::object("dataLossOccurred", false)));
 }
 
 } // namespace facebook::react::jsinspector_modern

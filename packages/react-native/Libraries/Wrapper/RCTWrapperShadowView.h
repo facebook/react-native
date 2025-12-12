@@ -7,12 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/RCTShadowView.h>
 
 @class RCTBridge;
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTWrapperShadowView : RCTShadowView
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
@@ -20,3 +23,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_REMOVE_LEGACY_ARCH

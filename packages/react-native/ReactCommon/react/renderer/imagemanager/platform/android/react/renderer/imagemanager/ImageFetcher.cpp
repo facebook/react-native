@@ -8,40 +8,58 @@
 #include "ImageFetcher.h"
 
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/imagemanager/conversions.h>
-#include <utility>
 
 namespace facebook::react {
 
+extern const char ImageFetcherKey[] = "ImageFetcher";
+
+ImageFetcher::ImageFetcher(
+    std::shared_ptr<const ContextContainer> contextContainer)
+    : contextContainer_(std::move(contextContainer)) {}
+
 ImageRequest ImageFetcher::requestImage(
     const ImageSource& imageSource,
-    const ImageRequestParams& imageRequestParams,
     SurfaceId surfaceId,
-    Tag tag) const {
-  auto fabricUIManager_ =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-  static auto requestImage =
-      fabricUIManager_->getClass()
-          ->getMethod<void(
-              std::string, SurfaceId, Tag, JReadableMapBuffer::javaobject)>(
-              "experimental_prefetchResource");
-
-  auto serializedImageRequest =
-      serializeImageRequest(imageSource, imageRequestParams);
-
-  auto readableMapBuffer =
-      JReadableMapBuffer::createWithContents(std::move(serializedImageRequest));
-
-  requestImage(
-      fabricUIManager_,
-      "RCTImageView",
-      surfaceId,
-      tag,
-      readableMapBuffer.get());
+    const ImageRequestParams& imageRequestParams,
+    Tag tag) {
+  items_[surfaceId].emplace_back(
+      ImageRequestItem{
+          .imageSource = imageSource,
+          .imageRequestParams = imageRequestParams,
+          .tag = tag});
 
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
 
-  return {imageSource, telemetry};
+  if (!ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    flushImageRequests();
+  }
+
+  return ImageRequest{imageSource, telemetry};
+}
+
+void ImageFetcher::flushImageRequests() {
+  if (items_.empty()) {
+    return;
+  }
+
+  auto fabricUIManager_ =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+  static auto prefetchResources =
+      fabricUIManager_->getClass()
+          ->getMethod<void(
+              SurfaceId, std::string, JReadableMapBuffer::javaobject)>(
+              "experimental_prefetchResources");
+
+  for (auto& [surfaceId, surfaceImageRequests] : items_) {
+    auto readableMapBuffer = JReadableMapBuffer::createWithContents(
+        serializeImageRequests(surfaceImageRequests));
+    prefetchResources(
+        fabricUIManager_, surfaceId, "RCTImageView", readableMapBuffer.get());
+  }
+
+  items_.clear();
 }
 
 } // namespace facebook::react

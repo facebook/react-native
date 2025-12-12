@@ -7,6 +7,8 @@
 
 #import "RCTModalHostView.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <UIKit/UIKit.h>
 
 #import "RCTAssert.h"
@@ -250,3 +252,5 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

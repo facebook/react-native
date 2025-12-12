@@ -221,7 +221,8 @@ internal class EventDispatcherImpl(private val reactContext: ReactApplicationCon
           Systrace.startAsyncFlow(
               Systrace.TRACE_TAG_REACT,
               "ScheduleDispatchFrameCallback",
-              hasDispatchScheduledCount.get())
+              hasDispatchScheduledCount.get(),
+          )
           reactContext.runOnJSQueueThread(dispatchEventsRunnable)
         }
       } finally {
@@ -266,7 +267,8 @@ internal class EventDispatcherImpl(private val reactContext: ReactApplicationCon
         Systrace.endAsyncFlow(
             Systrace.TRACE_TAG_REACT,
             "ScheduleDispatchFrameCallback",
-            hasDispatchScheduledCount.getAndIncrement())
+            hasDispatchScheduledCount.getAndIncrement(),
+        )
         hasDispatchScheduled = false
         synchronized(eventsToDispatchLock) {
           if (eventsToDispatchSize > 0) {

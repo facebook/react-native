@@ -45,7 +45,7 @@ public interface MapBuffer : Iterable<MapBuffer.Entry> {
     DOUBLE,
     STRING,
     MAP,
-    LONG
+    LONG,
   }
 
   /**

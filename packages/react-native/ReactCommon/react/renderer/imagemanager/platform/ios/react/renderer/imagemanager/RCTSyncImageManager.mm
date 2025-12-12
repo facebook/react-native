@@ -85,12 +85,12 @@ using namespace facebook::react;
                                          priority:RCTImageLoaderPriorityImmediate
                                       attribution:{
                                                       .surfaceId = surfaceId,
-                                                  }
+  }
                                     progressBlock:progressBlock
                                  partialLoadBlock:nil
                                   completionBlock:completionBlock];
 
-  auto result = dispatch_group_wait(imageWaitGroup, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
+  auto result = dispatch_group_wait(imageWaitGroup, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC));
   if (result != 0) {
     RCTLogError(@"Image timed out in test environment for url: %@", loaderRequest.imageURL);
   }

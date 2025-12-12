@@ -39,7 +39,7 @@ internal class PackagerStatusCheck {
     this.client = client
   }
 
-  fun run(host: String, callback: PackagerStatusCallback): Unit {
+  fun run(host: String, callback: PackagerStatusCallback) {
     val statusURL = createPackagerStatusURL(host)
     val request = Request.Builder().url(statusURL).build()
 
@@ -50,7 +50,8 @@ internal class PackagerStatusCheck {
               override fun onFailure(call: Call, e: IOException) {
                 FLog.w(
                     ReactConstants.TAG,
-                    "The packager does not seem to be running as we got an IOException requesting its status: ${e.message}")
+                    "The packager does not seem to be running as we got an IOException requesting its status: ${e.message}",
+                )
                 callback.onPackagerStatusFetched(false)
               }
 
@@ -58,7 +59,8 @@ internal class PackagerStatusCheck {
                 if (!response.isSuccessful) {
                   FLog.e(
                       ReactConstants.TAG,
-                      "Got non-success http code from packager when requesting status: ${response.code()}")
+                      "Got non-success http code from packager when requesting status: ${response.code()}",
+                  )
                   callback.onPackagerStatusFetched(false)
                   return
                 }
@@ -66,7 +68,8 @@ internal class PackagerStatusCheck {
                 if (body == null) {
                   FLog.e(
                       ReactConstants.TAG,
-                      "Got null body response from packager when requesting status")
+                      "Got null body response from packager when requesting status",
+                  )
                   callback.onPackagerStatusFetched(false)
                   return
                 }
@@ -76,13 +79,15 @@ internal class PackagerStatusCheck {
                 if (PACKAGER_OK_STATUS != bodyString) {
                   FLog.e(
                       ReactConstants.TAG,
-                      "Got unexpected response from packager when requesting status: $bodyString")
+                      "Got unexpected response from packager when requesting status: $bodyString",
+                  )
                   callback.onPackagerStatusFetched(false)
                   return
                 }
                 callback.onPackagerStatusFetched(true)
               }
-            })
+            }
+        )
   }
 
   private companion object {

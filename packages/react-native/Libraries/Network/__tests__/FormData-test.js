@@ -18,7 +18,7 @@ describe('FormData', function () {
   });
 
   it('should return non blob null', function () {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     formData.append('null', null);
 
     const expectedPart = {
@@ -73,7 +73,7 @@ describe('FormData', function () {
   });
 
   it('should return non blob array', function () {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     formData.append('array', [
       true,
       false,

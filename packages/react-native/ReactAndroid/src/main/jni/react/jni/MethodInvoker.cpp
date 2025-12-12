@@ -22,7 +22,7 @@
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 using namespace facebook::jni;
 
@@ -80,7 +80,10 @@ local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(
   if (value.isNull()) {
     return {nullptr};
   } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     return JCxxCallbackImpl::newObjectCxxArgs(makeCallback(instance, value));
+#pragma clang diagnostic pop
   }
 }
 

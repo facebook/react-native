@@ -7,6 +7,8 @@
 
 #import "RCTWrapperViewManager.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import "RCTWrapperShadowView.h"
 #import "RCTWrapperView.h"
 
@@ -25,3 +27,5 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

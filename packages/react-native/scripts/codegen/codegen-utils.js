@@ -23,14 +23,14 @@
 function getCodegen() /*: $FlowFixMe */ {
   let RNCodegen;
   try {
-    // $FlowIgnore[cannot-resolve-module]
+    // $FlowFixMe[cannot-resolve-module]
     RNCodegen = require('../../packages/react-native-codegen/lib/generators/RNCodegen.js');
   } catch (e) {
-    // $FlowIgnore[cannot-resolve-module]
+    // $FlowFixMe[cannot-resolve-module]
     RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen.js');
   }
   if (!RNCodegen) {
-    throw 'RNCodegen not found.';
+    throw new Error('RNCodegen not found.');
   }
   return RNCodegen;
 }
@@ -38,14 +38,14 @@ function getCodegen() /*: $FlowFixMe */ {
 function getCombineJSToSchema() /*: $FlowFixMe */ {
   let combineJSToSchema;
   try {
-    // $FlowIgnore[cannot-resolve-module]
+    // $FlowFixMe[cannot-resolve-module]
     combineJSToSchema = require('../../packages/react-native-codegen/lib/cli/combine/combine-js-to-schema.js');
   } catch (e) {
-    // $FlowIgnore[cannot-resolve-module]
+    // $FlowFixMe[cannot-resolve-module]
     combineJSToSchema = require('@react-native/codegen/lib/cli/combine/combine-js-to-schema.js');
   }
   if (!combineJSToSchema) {
-    throw 'combine-js-to-schema not found.';
+    throw new Error('combine-js-to-schema not found.');
   }
   return combineJSToSchema;
 }

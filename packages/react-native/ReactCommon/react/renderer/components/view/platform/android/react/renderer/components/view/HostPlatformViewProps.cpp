@@ -95,6 +95,51 @@ HostPlatformViewProps::HostPlatformViewProps(
                     rawProps,
                     "screenReaderFocusable",
                     sourceProps.screenReaderFocusable,
+                    {})),
+      nextFocusDown(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusDown
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusDown",
+                    sourceProps.nextFocusDown,
+                    {})),
+      nextFocusForward(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusForward
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusForward",
+                    sourceProps.nextFocusForward,
+                    {})),
+      nextFocusLeft(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusLeft
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusLeft",
+                    sourceProps.nextFocusLeft,
+                    {})),
+      nextFocusRight(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusRight
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusRight",
+                    sourceProps.nextFocusRight,
+                    {})),
+      nextFocusUp(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nextFocusUp
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nextFocusUp",
+                    sourceProps.nextFocusUp,
                     {})) {}
 
 #define VIEW_EVENT_CASE(eventType)                      \
@@ -130,6 +175,11 @@ void HostPlatformViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(needsOffscreenAlphaCompositing);
     RAW_SET_PROP_SWITCH_CASE_BASIC(renderToHardwareTextureAndroid);
     RAW_SET_PROP_SWITCH_CASE_BASIC(screenReaderFocusable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusDown);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusForward);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusLeft);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusRight);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nextFocusUp);
   }
 }
 
@@ -597,6 +647,10 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["removeClippedSubviews"] = removeClippedSubviews;
   }
 
+  if (collapsableChildren != oldProps->collapsableChildren) {
+    result["collapsableChildren"] = collapsableChildren;
+  }
+
   if (onLayout != oldProps->onLayout) {
     result["onLayout"] = onLayout;
   }
@@ -613,26 +667,16 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["filter"] = toDynamic(filter);
   }
 
+  if (backgroundImage != oldProps->backgroundImage) {
+    result["experimental_backgroundImage"] = toDynamic(backgroundImage);
+  }
+
   if (mixBlendMode != oldProps->mixBlendMode) {
     result["mixBlendMode"] = toString(mixBlendMode);
   }
 
   if (pointerEvents != oldProps->pointerEvents) {
-    std::string value;
-    switch (pointerEvents) {
-      case PointerEventsMode::BoxOnly:
-        result["pointerEvents"] = "box-only";
-        break;
-      case PointerEventsMode::BoxNone:
-        result["pointerEvents"] = "box-none";
-        break;
-      case PointerEventsMode::None:
-        result["pointerEvents"] = "none";
-        break;
-      default:
-        result["pointerEvents"] = "auto";
-        break;
-    }
+    result["pointerEvents"] = toString(pointerEvents);
   }
 
   if (hitSlop != oldProps->hitSlop) {
@@ -892,7 +936,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
 
   if (accessibilityState != oldProps->accessibilityState) {
     updateAccessibilityStateProp(
-        result, oldProps->accessibilityState, accessibilityState);
+        result, accessibilityState, oldProps->accessibilityState);
   }
 
   if (accessibilityLabel != oldProps->accessibilityLabel) {
@@ -917,17 +961,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (accessibilityLiveRegion != oldProps->accessibilityLiveRegion) {
-    switch (accessibilityLiveRegion) {
-      case AccessibilityLiveRegion::Assertive:
-        result["accessibilityLiveRegion"] = "assertive";
-        break;
-      case AccessibilityLiveRegion::Polite:
-        result["accessibilityLiveRegion"] = "polite";
-        break;
-      case AccessibilityLiveRegion::None:
-        result["accessibilityLiveRegion"] = "none";
-        break;
-    }
+    result["accessibilityLiveRegion"] = toString(accessibilityLiveRegion);
   }
 
   if (accessibilityHint != oldProps->accessibilityHint) {
@@ -1003,19 +1037,46 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (importantForAccessibility != oldProps->importantForAccessibility) {
-    switch (importantForAccessibility) {
-      case ImportantForAccessibility::Auto:
-        result["importantForAccessibility"] = "auto";
-        break;
-      case ImportantForAccessibility::Yes:
-        result["importantForAccessibility"] = "yes";
-        break;
-      case ImportantForAccessibility::No:
-        result["importantForAccessibility"] = "no";
-        break;
-      case ImportantForAccessibility::NoHideDescendants:
-        result["importantForAccessibility"] = "noHideDescendants";
-        break;
+    result["importantForAccessibility"] = toString(importantForAccessibility);
+  }
+
+  if (nextFocusDown != oldProps->nextFocusDown) {
+    if (nextFocusDown.has_value()) {
+      result["nextFocusDown"] = nextFocusDown.value();
+    } else {
+      result["nextFocusDown"] = folly::dynamic(nullptr);
+    }
+  }
+
+  if (nextFocusForward != oldProps->nextFocusForward) {
+    if (nextFocusForward.has_value()) {
+      result["nextFocusForward"] = nextFocusForward.value();
+    } else {
+      result["nextFocusForward"] = folly::dynamic(nullptr);
+    }
+  }
+
+  if (nextFocusLeft != oldProps->nextFocusLeft) {
+    if (nextFocusLeft.has_value()) {
+      result["nextFocusLeft"] = nextFocusLeft.value();
+    } else {
+      result["nextFocusLeft"] = folly::dynamic(nullptr);
+    }
+  }
+
+  if (nextFocusRight != oldProps->nextFocusRight) {
+    if (nextFocusRight.has_value()) {
+      result["nextFocusRight"] = nextFocusRight.value();
+    } else {
+      result["nextFocusRight"] = folly::dynamic(nullptr);
+    }
+  }
+
+  if (nextFocusUp != oldProps->nextFocusUp) {
+    if (nextFocusUp.has_value()) {
+      result["nextFocusUp"] = nextFocusUp.value();
+    } else {
+      result["nextFocusUp"] = folly::dynamic(nullptr);
     }
   }
 

@@ -7,6 +7,8 @@
 
 #import <React/RCTBaseTextViewManager.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 @implementation RCTBaseTextViewManager
 
 RCT_EXPORT_MODULE(RCTBaseText)
@@ -58,3 +60,5 @@ RCT_REMAP_SHADOW_PROPERTY(isHighlighted, textAttributes.isHighlighted, BOOL)
 RCT_REMAP_SHADOW_PROPERTY(textTransform, textAttributes.textTransform, RCTTextTransform)
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

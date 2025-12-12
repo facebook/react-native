@@ -10,4 +10,8 @@ namespace facebook::react {
 // NOLINTNEXTLINE(modernize-avoid-c-arrays)
 extern const char WebSocketClientFactoryKey[] = "WebSocketClientFactory";
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
+extern const char DevToolsWebSocketClientFactoryKey[] =
+    "DevToolsWebSocketClientFactory";
+
 } // namespace facebook::react

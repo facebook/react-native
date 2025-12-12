@@ -34,7 +34,7 @@ public object LegacyArchitectureLogger {
   @JvmStatic
   public fun assertLegacyArchitecture(
       name: String,
-      logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
+      logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING,
   ) {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       executeAssert(name, logLevel)
@@ -43,7 +43,7 @@ public object LegacyArchitectureLogger {
 
   private fun executeAssert(
       name: String,
-      logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
+      logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING,
   ) {
     // Assert is being reported only in DEBUG mode to prevent over logging in production while we
     // we are working on decoupling legacy / new architecture.
@@ -58,7 +58,8 @@ public object LegacyArchitectureLogger {
         LegacyArchitectureLogLevel.WARNING -> {
           ReactSoftExceptionLogger.logSoftException(
               ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS,
-              ReactNoCrashSoftException("$name $exceptionMessage"))
+              ReactNoCrashSoftException("$name $exceptionMessage"),
+          )
         }
       }
     }

@@ -24,9 +24,10 @@ import {StyleSheet, View} from 'react-native';
 
 export type Props<ItemT> = {
   CellRendererComponent?: ?React.ComponentType<CellRendererProps<ItemT>>,
-  ItemSeparatorComponent: ?React.ComponentType<
-    any | {highlighted: boolean, leadingItem: ?ItemT},
-  >,
+  ItemSeparatorComponent?: ?(
+    | React.ComponentType<any | {highlighted: boolean, leadingItem: ?ItemT}>
+    | React.MixedElement
+  ),
   ListItemComponent?: ?(React.ComponentType<any> | React.MixedElement),
   cellKey: string,
   horizontal: ?boolean,
@@ -199,6 +200,8 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
         ItemSeparatorComponent
       : // $FlowFixMe[incompatible-type]
         ItemSeparatorComponent && (
+          // $FlowFixMe[incompatible-type]
+          // $FlowFixMe[not-a-component]
           <ItemSeparatorComponent {...this.state.separatorProps} />
         );
     const cellStyle = inversionStyle

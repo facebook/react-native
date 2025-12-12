@@ -11,5 +11,5 @@ package com.facebook.react.bridge
  * Listener for receiving window focus events.
  */
 public interface WindowFocusChangeListener {
-  public fun onWindowFocusChange(hasFocus: Boolean): Unit
+  public fun onWindowFocusChange(hasFocus: Boolean)
 }

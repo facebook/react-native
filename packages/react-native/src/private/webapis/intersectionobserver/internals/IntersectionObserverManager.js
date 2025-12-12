@@ -175,6 +175,7 @@ export function observe({
     targetShadowNode: targetNativeNodeReference,
     thresholds: registeredObserver.observer.thresholds,
     rootThresholds: registeredObserver.observer.rnRootThresholds,
+    rootMargin: registeredObserver.observer.rootMargin,
   });
   targetToTokenMap.set(target, token);
 

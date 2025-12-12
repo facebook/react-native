@@ -67,8 +67,8 @@ TEST(hash_combineTests, testStrings) {
 }
 
 TEST(hash_combineTests, testCustomTypes) {
-  auto person1 = Person{"John", "Doe"};
-  auto person2 = Person{"Jane", "Doe"};
+  auto person1 = Person{.firstName = "John", .lastName = "Doe"};
+  auto person2 = Person{.firstName = "Jane", .lastName = "Doe"};
 
   std::size_t seed = 0;
   hash_combine(seed, person1);

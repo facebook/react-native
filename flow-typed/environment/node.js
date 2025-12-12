@@ -21,6 +21,12 @@ interface ErrnoError extends Error {
   syscall?: string;
 }
 
+type Node$Conditional<T: boolean, IfTrue, IfFalse> = T extends true
+  ? IfTrue
+  : T extends false
+    ? IfFalse
+    : IfTrue | IfFalse;
+
 type buffer$NonBufferEncoding =
   | 'hex'
   | 'HEX'
@@ -1594,6 +1600,71 @@ declare module 'fs' {
     flags?: number,
   ): void;
 
+  declare type GlobOptions<WithFileTypes: boolean> = $ReadOnly<{
+    /**
+     * Current working directory.
+     * @default process.cwd()
+     */
+    cwd?: string | void,
+    /**
+     * `true` if the glob should return paths as `Dirent`s, `false` otherwise.
+     * @default false
+     * @since v22.2.0
+     */
+    withFileTypes?: WithFileTypes,
+    /**
+     * Function to filter out files/directories or a
+     * list of glob patterns to be excluded. If a function is provided, return
+     * `true` to exclude the item, `false` to include it.
+     * @default undefined
+     */
+    exclude?:
+      | ((fileName: Node$Conditional<WithFileTypes, Dirent, string>) => boolean)
+      | $ReadOnlyArray<string>,
+    ...
+  }>;
+
+  /**
+   * Retrieves the files matching the specified pattern.
+   *
+   * ```js
+   * import { glob } from 'node:fs';
+   *
+   * glob('*.js', (err, matches) => {
+   *   if (err) throw err;
+   *   console.log(matches);
+   * });
+   * ```
+   * @since v22.0.0
+   */
+  declare function glob(
+    pattern: string | $ReadOnlyArray<string>,
+    callback: (err: ?ErrnoError, matches: Array<string>) => void,
+  ): void;
+
+  declare function glob<WithFileTypes: boolean = false>(
+    pattern: string | $ReadOnlyArray<string>,
+    options: GlobOptions<WithFileTypes>,
+    callback: (
+      err: ?ErrnoError,
+      matches: Node$Conditional<WithFileTypes, Array<Dirent>, Array<string>>,
+    ) => void,
+  ): void;
+
+  /**
+   * ```js
+   * import { globSync } from 'node:fs';
+   *
+   * console.log(globSync('*.js'));
+   * ```
+   * @since v22.0.0
+   * @returns paths of files that match the pattern.
+   */
+  declare function globSync<WithFileTypes: boolean = false>(
+    pattern: string | $ReadOnlyArray<string>,
+    options?: GlobOptions<WithFileTypes>,
+  ): Node$Conditional<WithFileTypes, Array<Dirent>, Array<string>>;
+
   declare var F_OK: number;
   declare var R_OK: number;
   declare var W_OK: number;
@@ -1725,6 +1796,14 @@ declare module 'fs' {
       atime: number | string | Date,
       mtime: number | string | Date,
     ): Promise<void>,
+    glob<WithFileTypes: boolean = false>(
+      pattern: string | $ReadOnlyArray<string>,
+      options?: GlobOptions<WithFileTypes>,
+    ): Node$Conditional<
+      WithFileTypes,
+      AsyncIterator<Dirent>,
+      AsyncIterator<string>,
+    >,
     lchmod(path: FSPromisePath, mode: number): Promise<void>,
     lchown(path: FSPromisePath, uid: number, guid: number): Promise<void>,
     link(existingPath: FSPromisePath, newPath: FSPromisePath): Promise<void>,
@@ -1838,6 +1917,7 @@ type http$agentOptions = {
 declare class http$Agent<+SocketT = net$Socket> {
   constructor(options: http$agentOptions): void;
   destroy(): void;
+  // $FlowFixMe[incompatible-variance]
   freeSockets: {[name: string]: $ReadOnlyArray<SocketT>, ...};
   getName(options: {
     host: string,
@@ -1847,7 +1927,9 @@ declare class http$Agent<+SocketT = net$Socket> {
   }): string;
   maxFreeSockets: number;
   maxSockets: number;
+  // $FlowFixMe[incompatible-variance]
   requests: {[name: string]: $ReadOnlyArray<http$ClientRequest<SocketT>>, ...};
+  // $FlowFixMe[incompatible-variance]
   sockets: {[name: string]: $ReadOnlyArray<SocketT>, ...};
 }
 
@@ -3057,30 +3139,30 @@ type util$InspectOptions = {
 };
 
 declare type util$ParseArgsOption =
-  | {|
+  | $ReadOnly<{|
       type: 'boolean',
       multiple?: false,
       short?: string,
       default?: boolean,
-    |}
-  | {|
+    |}>
+  | $ReadOnly<{|
       type: 'boolean',
       multiple: true,
       short?: string,
       default?: Array<boolean>,
-    |}
-  | {|
+    |}>
+  | $ReadOnly<{|
       type: 'string',
       multiple?: false,
       short?: string,
       default?: string,
-    |}
-  | {|
+    |}>
+  | $ReadOnly<{|
       type: 'string',
       multiple: true,
       short?: string,
       default?: Array<string>,
-    |};
+    |}>;
 
 type util$ParseArgsOptionToValue<TOption> = TOption['type'] extends 'boolean'
   ? TOption['multiple'] extends true
@@ -3137,7 +3219,7 @@ declare module 'util' {
   declare function stripVTControlCharacters(str: string): string;
 
   declare function parseArgs<
-    TOptions: {[string]: util$ParseArgsOption} = {||},
+    TOptions: {+[string]: util$ParseArgsOption} = {||},
   >(config: {|
     args?: Array<string>,
     options?: TOptions,
@@ -3293,7 +3375,7 @@ declare module 'util' {
     text: string,
     options?: $ReadOnly<{
       stream?: ?stream$Stream,
-      validStream?: ?boolean,
+      validateStream?: ?boolean,
     }>,
   ): string;
 }
@@ -3995,13 +4077,16 @@ declare class Process extends events$EventEmitter {
   initgroups?: (user: number | string, extra_group: number | string) => void;
   kill(pid: number, signal?: string | number): void;
   mainModule: Object;
-  memoryUsage(): {
-    arrayBuffers: number,
-    rss: number,
-    heapTotal: number,
-    heapUsed: number,
-    external: number,
-    ...
+  memoryUsage: {
+    (): {
+      arrayBuffers: number,
+      rss: number,
+      heapTotal: number,
+      heapUsed: number,
+      external: number,
+      ...
+    },
+    rss: () => number,
   };
   nextTick: <T>(cb: (...T) => mixed, ...T) => void;
   pid: number;

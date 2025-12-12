@@ -12,7 +12,6 @@
 
 import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 
-const InteractionManager = require('./InteractionManager').default;
 const TouchHistoryMath = require('./TouchHistoryMath').default;
 
 const currentCentroidXOfTouchesChangedAfter =
@@ -30,9 +29,6 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * `PanResponder` reconciles several touches into a single gesture. It makes
  * single-touch gestures resilient to extra touches, and can be used to
  * recognize simple multi-touch gestures.
- *
- * By default, `PanResponder` holds an `InteractionManager` handle to block
- * long-running JS events from interrupting active gestures.
  *
  * It provides a predictable wrapper of the responder handlers provided by the
  * [gesture responder system](docs/gesture-responder-system.html).
@@ -405,9 +401,6 @@ const PanResponder = {
     getInteractionHandle: () => ?number,
     panHandlers: GestureResponderHandlerMethods,
   } {
-    const interactionState = {
-      handle: (null: ?number),
-    };
     const gestureState: PanResponderGestureState = {
       // Useful for debugging
       stateID: Math.random(),
@@ -422,7 +415,7 @@ const PanResponder = {
       numberActiveTouches: 0,
       _accountsForMovesUpTo: 0,
     };
-    const panHandlers = {
+    const panHandlers: GestureResponderHandlerMethods = {
       onStartShouldSetResponder(event: GestureResponderEvent): boolean {
         return config.onStartShouldSetPanResponder == null
           ? false
@@ -464,10 +457,6 @@ const PanResponder = {
       },
 
       onResponderGrant(event: GestureResponderEvent): boolean {
-        if (!interactionState.handle) {
-          interactionState.handle =
-            InteractionManager.createInteractionHandle();
-        }
         gestureState.x0 = currentCentroidX(event.touchHistory);
         gestureState.y0 = currentCentroidY(event.touchHistory);
         gestureState.dx = 0;
@@ -482,21 +471,11 @@ const PanResponder = {
       },
 
       onResponderReject(event: GestureResponderEvent): void {
-        clearInteractionHandle(
-          interactionState,
-          config.onPanResponderReject,
-          event,
-          gestureState,
-        );
+        config.onPanResponderReject?.call(undefined, event, gestureState);
       },
 
       onResponderRelease(event: GestureResponderEvent): void {
-        clearInteractionHandle(
-          interactionState,
-          config.onPanResponderRelease,
-          event,
-          gestureState,
-        );
+        config.onPanResponderRelease?.call(undefined, event, gestureState);
         PanResponder._initializeGestureState(gestureState);
       },
 
@@ -529,21 +508,11 @@ const PanResponder = {
       onResponderEnd(event: GestureResponderEvent): void {
         const touchHistory = event.touchHistory;
         gestureState.numberActiveTouches = touchHistory.numberActiveTouches;
-        clearInteractionHandle(
-          interactionState,
-          config.onPanResponderEnd,
-          event,
-          gestureState,
-        );
+        config.onPanResponderEnd?.call(undefined, event, gestureState);
       },
 
       onResponderTerminate(event: GestureResponderEvent): void {
-        clearInteractionHandle(
-          interactionState,
-          config.onPanResponderTerminate,
-          event,
-          gestureState,
-        );
+        config.onPanResponderTerminate?.call(undefined, event, gestureState);
         PanResponder._initializeGestureState(gestureState);
       },
 
@@ -556,26 +525,12 @@ const PanResponder = {
     return {
       panHandlers,
       getInteractionHandle(): ?number {
-        return interactionState.handle;
+        // TODO: Deprecate and delete this method.
+        return null;
       },
     };
   },
 };
-
-function clearInteractionHandle(
-  interactionState: {handle: ?number, ...},
-  callback: ?(ActiveCallback | PassiveCallback),
-  event: GestureResponderEvent,
-  gestureState: PanResponderGestureState,
-) {
-  if (interactionState.handle) {
-    InteractionManager.clearInteractionHandle(interactionState.handle);
-    interactionState.handle = null;
-  }
-  if (callback) {
-    callback(event, gestureState);
-  }
-}
 
 export type PanResponderInstance = ReturnType<(typeof PanResponder)['create']>;
 

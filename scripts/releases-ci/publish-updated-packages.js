@@ -14,7 +14,6 @@ const {execSync} = require('child_process');
 const {parseArgs} = require('util');
 
 const PUBLISH_PACKAGES_TAG = '#publish-packages-to-npm';
-const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
 
 const config = {
   options: {
@@ -25,7 +24,7 @@ const config = {
 async function main() {
   const {
     values: {help},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
@@ -66,8 +65,8 @@ async function publishUpdatedPackages() {
   const packagesToUpdate = [];
 
   await Promise.all(
-    Object.values(packages).map(async package => {
-      const version = package.packageJson.version;
+    Object.values(packages).map(async pck => {
+      const version = pck.packageJson.version;
 
       if (!version.startsWith('0.')) {
         throw new Error(
@@ -75,19 +74,17 @@ async function publishUpdatedPackages() {
         );
       }
 
-      const response = await fetch(
-        'https://registry.npmjs.org/' + package.name,
-      );
+      const response = await fetch('https://registry.npmjs.org/' + pck.name);
       const {versions: versionsInRegistry} = await response.json();
 
       if (version in versionsInRegistry) {
         console.log(
-          `- Skipping ${package.name} (${version} already present on npm)`,
+          `- Skipping ${pck.name} (${version} already present on npm)`,
         );
         return;
       }
 
-      packagesToUpdate.push(package.name);
+      packagesToUpdate.push(pck.name);
     }),
   );
 
@@ -98,19 +95,17 @@ async function publishUpdatedPackages() {
   const failedPackages = [];
 
   for (const packageName of packagesToUpdate) {
-    const package = packages[packageName];
-    console.log(
-      `- Publishing ${package.name} (${package.packageJson.version})`,
-    );
+    const pck = packages[packageName];
+    console.log(`- Publishing ${pck.name} (${pck.packageJson.version})`);
 
     try {
-      runPublish(package.name, package.path, tags);
+      runPublish(pck.name, pck.path, tags);
     } catch {
       console.log('--- Retrying once! ---');
       try {
-        runPublish(package.name, package.path, tags);
+        runPublish(pck.name, pck.path, tags);
       } catch (e) {
-        failedPackages.push(package.name);
+        failedPackages.push(pck.name);
       }
     }
   }
@@ -139,7 +134,6 @@ function runPublish(
 ) {
   const result = publishPackage(packagePath, {
     tags,
-    otp: NPM_CONFIG_OTP,
   });
 
   if (result.code !== 0) {

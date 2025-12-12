@@ -54,7 +54,7 @@ describe('resolveAssetSource', () => {
   it('ignores any weird data', () => {
     expect(resolveAssetSource(null)).toBe(null);
     expect(resolveAssetSource(42)).toBe(null);
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(resolveAssetSource('nonsense')).toBe(null);
   });
 

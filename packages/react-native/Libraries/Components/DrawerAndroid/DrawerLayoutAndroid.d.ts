@@ -9,7 +9,7 @@
 
 import type * as React from 'react';
 import {Constructor} from '../../../types/private/Utilities';
-import {NativeMethods} from '../../../types/public/ReactNativeTypes';
+import {HostInstance} from '../../../types/public/ReactNativeTypes';
 import {ColorValue} from '../../StyleSheet/StyleSheet';
 import {
   NativeSyntheticEvent,
@@ -121,7 +121,7 @@ interface DrawerPosition {
 }
 
 declare class DrawerLayoutAndroidComponent extends React.Component<DrawerLayoutAndroidProps> {}
-declare const DrawerLayoutAndroidBase: Constructor<NativeMethods> &
+declare const DrawerLayoutAndroidBase: Constructor<HostInstance> &
   typeof DrawerLayoutAndroidComponent;
 export class DrawerLayoutAndroid extends DrawerLayoutAndroidBase {
   /**

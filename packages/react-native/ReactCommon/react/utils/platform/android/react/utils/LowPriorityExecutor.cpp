@@ -18,7 +18,7 @@ namespace facebook::react::LowPriorityExecutor {
 struct LowPriorityExecutorThread {
   LowPriorityExecutorThread() : thread_{std::thread([this] { run(); })} {
     pthread_t hThread = thread_.native_handle();
-    struct sched_param param {};
+    struct sched_param param{};
     param.sched_priority = 19; // Higher value means lower priority
     pthread_setschedparam(hThread, SCHED_OTHER, &param);
   }

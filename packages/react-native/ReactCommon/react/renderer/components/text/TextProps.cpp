@@ -14,7 +14,7 @@ TextProps::TextProps(
     const TextProps& sourceProps,
     const RawProps& rawProps)
     : Props(context, sourceProps, rawProps),
-      BaseTextProps::BaseTextProps(context, sourceProps, rawProps){};
+      BaseTextProps::BaseTextProps(context, sourceProps, rawProps) {};
 
 void TextProps::setProp(
     const PropsParserContext& context,

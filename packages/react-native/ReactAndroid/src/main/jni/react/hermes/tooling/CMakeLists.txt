@@ -28,7 +28,7 @@ target_link_libraries(hermestooling
         PUBLIC
         reactnative
         jsi
-        hermes-engine::libhermes
+        hermes-engine::hermesvm
 )
 target_include_directories(hermestooling
         PUBLIC

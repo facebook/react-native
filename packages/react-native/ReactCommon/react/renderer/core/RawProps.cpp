@@ -117,7 +117,8 @@ const RawValue* RawProps::at(
   react_native_assert(
       parser_ &&
       "The object is not parsed. `parse` must be called before `at`.");
-  return parser_->at(*this, RawPropsKey{prefix, name, suffix});
+  return parser_->at(
+      *this, RawPropsKey{.prefix = prefix, .name = name, .suffix = suffix});
 }
 
 } // namespace facebook::react

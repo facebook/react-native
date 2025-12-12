@@ -16,8 +16,7 @@ namespace facebook::react {
 using AppStateConstants = NativeAppStateAppStateConstants<std::string>;
 
 template <>
-struct Bridging<AppStateConstants>
-    : NativeAppStateAppStateConstantsBridging<AppStateConstants> {};
+struct Bridging<AppStateConstants> : NativeAppStateAppStateConstantsBridging<AppStateConstants> {};
 
 using AppState = NativeAppStateAppState<std::string>;
 
@@ -26,18 +25,14 @@ struct Bridging<AppState> : NativeAppStateAppStateBridging<AppState> {};
 
 class AppStateModule : public NativeAppStateCxxSpec<AppStateModule> {
  public:
-  explicit AppStateModule(std::shared_ptr<CallInvoker> jsInvoker)
-      : NativeAppStateCxxSpec(jsInvoker) {}
+  explicit AppStateModule(std::shared_ptr<CallInvoker> jsInvoker) : NativeAppStateCxxSpec(jsInvoker) {}
 
-  AppStateConstants getConstants(jsi::Runtime& rt);
+  AppStateConstants getConstants(jsi::Runtime &rt);
 
-  void getCurrentAppState(
-      jsi::Runtime& rt,
-      const AsyncCallback<AppState>& success,
-      jsi::Function error);
-  void addListener(jsi::Runtime& rt, const std::string& eventName);
+  void getCurrentAppState(jsi::Runtime &rt, const AsyncCallback<AppState> &success, jsi::Function error);
+  void addListener(jsi::Runtime &rt, const std::string &eventName);
 
-  void removeListeners(jsi::Runtime& rt, double count);
+  void removeListeners(jsi::Runtime &rt, double count);
 };
 
 } // namespace facebook::react

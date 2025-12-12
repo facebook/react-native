@@ -38,8 +38,6 @@ Pod::Spec.new do |s|
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')}
 
-  if ENV['USE_FRAMEWORKS']
-    s.module_name            = "React_rendererconsistency"
-    s.header_mappings_dir  = "../../.."
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "../../..", module_name: "React_rendererconsistency")
+
 end

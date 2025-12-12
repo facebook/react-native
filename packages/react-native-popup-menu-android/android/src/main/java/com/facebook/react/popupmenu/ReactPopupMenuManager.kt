@@ -57,6 +57,7 @@ public class ReactPopupMenuManager :
         mapOf(
             PopupMenuSelectionEvent.EVENT_NAME to
                 mapOf(REGISTRATION_NAME to "onPopupMenuSelectionChange"),
-            PopupMenuDismissEvent.EVENT_NAME to mapOf(REGISTRATION_NAME to "onPopupMenuDismiss"))
+            PopupMenuDismissEvent.EVENT_NAME to mapOf(REGISTRATION_NAME to "onPopupMenuDismiss"),
+        )
   }
 }

@@ -87,8 +87,9 @@ function toObjCType(
       return 'NSString *';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *';
+    case 'UnionTypeAnnotation':
+      // TODO(T247151345): Implement proper heterogeneous union support. This is unsafe.
+      return 'NSObject *';
     case 'NumberTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -100,6 +101,8 @@ function toObjCType(
     case 'DoubleTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapCxxOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapCxxOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -171,8 +174,10 @@ function toObjCValue(
       return RCTBridgingTo('String');
     case 'StringLiteralTypeAnnotation':
       return RCTBridgingTo('String');
-    case 'StringLiteralUnionTypeAnnotation':
-      return RCTBridgingTo('String');
+    case 'UnionTypeAnnotation':
+      return !isRequired
+        ? `!RCTNilIfNull(${value}) ? std::optional<NSObject *>{} : std::optional<NSObject *>(${value})`
+        : value;
     case 'NumberTypeAnnotation':
       return RCTBridgingTo('Double');
     case 'NumberLiteralTypeAnnotation':
@@ -184,6 +189,8 @@ function toObjCValue(
     case 'DoubleTypeAnnotation':
       return RCTBridgingTo('Double');
     case 'BooleanTypeAnnotation':
+      return RCTBridgingTo('Bool');
+    case 'BooleanLiteralTypeAnnotation':
       return RCTBridgingTo('Bool');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {

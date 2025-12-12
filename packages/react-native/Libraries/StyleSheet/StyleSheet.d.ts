@@ -17,13 +17,7 @@ export interface StyleSheetProperties {
 type Falsy = undefined | null | false | '';
 interface RecursiveArray<T>
   extends Array<T | ReadonlyArray<T> | RecursiveArray<T>> {}
-/** Keep a brand of 'T' so that calls to `StyleSheet.flatten` can take `RegisteredStyle<T>` and return `T`. */
-type RegisteredStyle<T> = number & {__registeredStyleBrand: T};
-export type StyleProp<T> =
-  | T
-  | RegisteredStyle<T>
-  | RecursiveArray<T | RegisteredStyle<T> | Falsy>
-  | Falsy;
+export type StyleProp<T> = T | RecursiveArray<T | Falsy> | Falsy;
 
 type OpaqueColorValue = symbol & {__TYPE__: 'Color'};
 export type ColorValue = string | OpaqueColorValue;
@@ -128,23 +122,14 @@ export namespace StyleSheet {
   }
 
   /**
-   * Sometimes you may want `absoluteFill` but with a couple tweaks - `absoluteFillObject` can be
-   * used to create a customized entry in a `StyleSheet`, e.g.:
-   *
-   *   const styles = StyleSheet.create({
-   *     wrapper: {
-   *       ...StyleSheet.absoluteFillObject,
-   *       top: 10,
-   *       backgroundColor: 'transparent',
-   *     },
-   *   });
-   */
-  export const absoluteFillObject: AbsoluteFillStyle;
-
-  /**
    * A very common pattern is to create overlays with position absolute and zero positioning,
    * so `absoluteFill` can be used for convenience and to reduce duplication of these repeated
    * styles.
    */
-  export const absoluteFill: RegisteredStyle<AbsoluteFillStyle>;
+  export const absoluteFill: AbsoluteFillStyle;
+
+  /**
+   * @deprecated Use `StyleSheet.absoluteFill`.
+   */
+  export const absoluteFillObject: AbsoluteFillStyle;
 }

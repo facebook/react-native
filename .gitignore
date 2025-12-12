@@ -133,6 +133,7 @@ vendor/
 # Swift Package build folder
 /packages/react-native/.build
 /packages/react-native/.swiftpm
+/packages/react-native/React/includes/
 
 # @react-native/codegen
 /packages/react-native/React/FBReactNativeSpec/
@@ -170,10 +171,8 @@ fix_*.patch
 
 # Jest Integration
 /private/react-native-fantom/build/
+/private/react-native-fantom/.out/
 /private/react-native-fantom/tester/build/
 
 # [Experimental] Generated TS type definitions
 /packages/**/types_generated/
-
-/packages/debugger-shell/build/
-/packages/*/dist/

@@ -18,6 +18,7 @@ import type {
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
+import ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import {type ColorValue, type TextStyleProp} from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
 
@@ -1037,12 +1038,18 @@ export type TextInputProps = $ReadOnly<{
   ...TextInputBaseProps,
 }>;
 
-export interface TextInputInstance extends HostInstance {
-  +clear: () => void;
-  +isFocused: () => boolean;
-  +getNativeRef: () => ?HostInstance;
-  +setSelection: (start: number, end: number) => void;
+/**
+ * TextInput monkey-patches the native element instance with these methods.
+ * It isn't technically a class but this is the most elegant way to type it.
+ */
+declare class _TextInputInstance extends ReactNativeElement {
+  clear(): void;
+  isFocused(): boolean;
+  getNativeRef(): ?ReactNativeElement;
+  setSelection(start: number, end: number): void;
 }
+
+export type TextInputInstance = _TextInputInstance;
 
 /**
  * A foundational component for inputting text into the app via a

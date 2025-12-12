@@ -22,6 +22,10 @@ inputs:
     required: false
     default: "."
     description: The directory from which metro should be started
+  emulator-arch:
+    required: false
+    default: x86
+    description: The architecture of the emulator to run
 
 runs:
   using: composite
@@ -53,7 +57,7 @@ runs:
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: 24
-        arch: x86
+        arch: ${{ inputs.emulator-arch }}
         ram-size: '8192M'
         heap-size: '4096M'
         disk-size: '10G'
@@ -72,7 +76,7 @@ runs:
       uses: actions/upload-artifact@v4.3.4
       if: always()
       with:
-        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.flavor }}_NewArch
+        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.flavor }}_${{ inputs.emulator-arch }}_NewArch
         path: |
           report.xml
           screen.mp4
@@ -80,5 +84,5 @@ runs:
       if: steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.flavor }}-NewArch
+        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.flavor }}-${{ inputs.emulator-arch }}-NewArch
         path: /tmp/MaestroLogs

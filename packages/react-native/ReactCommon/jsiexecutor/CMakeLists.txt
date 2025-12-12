@@ -20,7 +20,9 @@ target_link_libraries(jsireact
         reactperflogger
         folly_runtime
         glog
-        jsi)
+        jserrorhandler
+        jsi
+        jsitooling)
 
 target_compile_reactnative_options(jsireact PRIVATE)
 target_compile_options(jsireact PRIVATE -O3)

@@ -71,7 +71,7 @@ const FIRST = 1,
   FOURTH = 4;
 
 function getNodePackagePath(packageName: string): string {
-  // $FlowIgnore[prop-missing] type definition is incomplete
+  // $FlowFixMe[prop-missing] type definition is incomplete
   return require.resolve(packageName, {cwd: [process.cwd(), ...module.paths]});
 }
 

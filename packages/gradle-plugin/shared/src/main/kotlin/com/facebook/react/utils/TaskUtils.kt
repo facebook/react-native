@@ -18,7 +18,7 @@ fun windowsAwareCommandLine(args: List<Any>): List<Any> =
 
 fun windowsAwareBashCommandLine(
     vararg args: String,
-    bashWindowsHome: String? = null
+    bashWindowsHome: String? = null,
 ): List<String> =
     if (Os.isWindows()) {
       listOf(bashWindowsHome ?: "bash", "-c") + args

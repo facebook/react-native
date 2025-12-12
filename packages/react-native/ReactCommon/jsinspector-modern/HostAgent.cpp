@@ -9,6 +9,8 @@
 #include "InstanceAgent.h"
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
+#include "InspectorFlags.h"
+#include "InspectorInterfaces.h"
 #include "NetworkIOAgent.h"
 #include "SessionState.h"
 #include "TracingAgent.h"
@@ -47,7 +49,8 @@ class HostAgent::Impl final {
         hostMetadata_(std::move(hostMetadata)),
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
-        tracingAgent_(TracingAgent(frontendChannel, sessionState)) {}
+        tracingAgent_(
+            TracingAgent(frontendChannel, sessionState, targetController)) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
@@ -141,6 +144,37 @@ class HostAgent::Impl final {
           .shouldSendOKResponse = true,
       };
     }
+    if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
+      if (req.method == "Network.enable") {
+        auto& inspector = getInspectorInstance();
+        if (inspector.getSystemState().registeredHostsCount > 1) {
+          frontendChannel_(
+              cdp::jsonError(
+                  req.id,
+                  cdp::ErrorCode::InternalError,
+                  "The Network domain is unavailable when multiple React Native hosts are registered."));
+          return {
+              .isFinishedHandlingRequest = true,
+              .shouldSendOKResponse = false,
+          };
+        }
+
+        sessionState_.isNetworkDomainEnabled = true;
+
+        return {
+            .isFinishedHandlingRequest = false,
+            .shouldSendOKResponse = true,
+        };
+      }
+      if (req.method == "Network.disable") {
+        sessionState_.isNetworkDomainEnabled = false;
+
+        return {
+            .isFinishedHandlingRequest = false,
+            .shouldSendOKResponse = true,
+        };
+      }
+    }
 
     // Methods other than domain enables/disables: handle anything we know how
     // to handle, and delegate to the InstanceAgent otherwise. (In some special
@@ -192,9 +226,23 @@ class HostAgent::Impl final {
         sendFuseboxNotice();
       }
 
-      frontendChannel_(cdp::jsonNotification(
-          "ReactNativeApplication.metadataUpdated",
-          createHostMetadataPayload(hostMetadata_)));
+      frontendChannel_(
+          cdp::jsonNotification(
+              "ReactNativeApplication.metadataUpdated",
+              createHostMetadataPayload(hostMetadata_)));
+      auto& inspector = getInspectorInstance();
+      bool isSingleHost = inspector.getSystemState().registeredHostsCount <= 1;
+      if (!isSingleHost) {
+        emitSystemStateChanged(isSingleHost);
+      }
+
+      auto stashedTraceRecording =
+          targetController_.getDelegate()
+              .unstable_getHostTracingProfileThatWillBeEmittedOnInitialization();
+      if (stashedTraceRecording.has_value()) {
+        tracingAgent_.emitExternalHostTracingProfile(
+            std::move(stashedTraceRecording.value()));
+      }
 
       return {
           .isFinishedHandlingRequest = true,
@@ -223,10 +271,11 @@ class HostAgent::Impl final {
         auto executionContextId = req.params["executionContextId"].getInt();
         if (executionContextId < (int64_t)std::numeric_limits<int32_t>::min() ||
             executionContextId > (int64_t)std::numeric_limits<int32_t>::max()) {
-          frontendChannel_(cdp::jsonError(
-              req.id,
-              cdp::ErrorCode::InvalidParams,
-              "Invalid execution context id"));
+          frontendChannel_(
+              cdp::jsonError(
+                  req.id,
+                  cdp::ErrorCode::InvalidParams,
+                  "Invalid execution context id"));
           return {
               .isFinishedHandlingRequest = true,
               .shouldSendOKResponse = false,
@@ -236,10 +285,11 @@ class HostAgent::Impl final {
             ExecutionContextSelector::byId((int32_t)executionContextId);
 
         if (req.params.count("executionContextName") != 0u) {
-          frontendChannel_(cdp::jsonError(
-              req.id,
-              cdp::ErrorCode::InvalidParams,
-              "executionContextName is mutually exclusive with executionContextId"));
+          frontendChannel_(
+              cdp::jsonError(
+                  req.id,
+                  cdp::ErrorCode::InvalidParams,
+                  "executionContextName is mutually exclusive with executionContextId"));
           return {
               .isFinishedHandlingRequest = true,
               .shouldSendOKResponse = false,
@@ -310,8 +360,6 @@ class HostAgent::Impl final {
   }
 
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> instanceAgent) {
-    tracingAgent_.setCurrentInstanceAgent(instanceAgent);
-
     auto previousInstanceAgent = std::move(instanceAgent_);
     instanceAgent_ = std::move(instanceAgent);
 
@@ -333,12 +381,33 @@ class HostAgent::Impl final {
     }
   }
 
+  bool hasFuseboxClientConnected() const {
+    return fuseboxClientType_ == FuseboxClientType::Fusebox;
+  }
+
+  void emitExternalTracingProfile(
+      tracing::HostTracingProfile tracingProfile) const {
+    assert(
+        hasFuseboxClientConnected() &&
+        "Attempted to emit a trace recording to a non-Fusebox client");
+    tracingAgent_.emitExternalHostTracingProfile(std::move(tracingProfile));
+  }
+
+  void emitSystemStateChanged(bool isSingleHost) {
+    frontendChannel_(
+        cdp::jsonNotification(
+            "ReactNativeApplication.systemStateChanged",
+            folly::dynamic::object("isSingleHost", isSingleHost)));
+
+    frontendChannel_(cdp::jsonNotification("Network.disable"));
+  }
+
  private:
   enum class FuseboxClientType { Unknown, Fusebox, NonFusebox };
 
   /**
    * Send a simple Log.entryAdded notification with the given
-   * \param text. You must ensure that the frontend has enabled Log
+   * \param text You must ensure that the frontend has enabled Log
    * notifications (using Log.enable) prior to calling this function. In Chrome
    * DevTools, the message will appear in the Console tab along with regular
    * console messages. The difference between Log.entryAdded and
@@ -352,16 +421,17 @@ class HostAgent::Impl final {
     for (auto arg : args) {
       argsArray.push_back(arg);
     }
-    frontendChannel_(cdp::jsonNotification(
-        "Log.entryAdded",
-        folly::dynamic::object(
-            "entry",
+    frontendChannel_(
+        cdp::jsonNotification(
+            "Log.entryAdded",
             folly::dynamic::object(
-                "timestamp",
-                duration_cast<milliseconds>(
-                    system_clock::now().time_since_epoch())
-                    .count())("source", "other")("level", "info")("text", text)(
-                "args", std::move(argsArray)))));
+                "entry",
+                folly::dynamic::object(
+                    "timestamp",
+                    duration_cast<milliseconds>(
+                        system_clock::now().time_since_epoch())
+                        .count())("source", "other")("level", "info")(
+                    "text", text)("args", std::move(argsArray)))));
   }
 
   void sendFuseboxNotice() {
@@ -433,6 +503,11 @@ class HostAgent::Impl final {
 
   void handleRequest(const cdp::PreparsedRequest& req) {}
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent) {}
+  bool hasFuseboxClientConnected() const {
+    return false;
+  }
+  void emitExternalTracingProfile(tracing::HostTracingProfile tracingProfile) {}
+  void emitSystemStateChanged(bool isSingleHost) {}
 };
 
 #endif // REACT_NATIVE_DEBUGGER_ENABLED
@@ -443,13 +518,14 @@ HostAgent::HostAgent(
     HostTargetMetadata hostMetadata,
     SessionState& sessionState,
     VoidExecutor executor)
-    : impl_(std::make_unique<Impl>(
-          *this,
-          frontendChannel,
-          targetController,
-          std::move(hostMetadata),
-          sessionState,
-          std::move(executor))) {}
+    : impl_(
+          std::make_unique<Impl>(
+              *this,
+              frontendChannel,
+              targetController,
+              std::move(hostMetadata),
+              sessionState,
+              std::move(executor))) {}
 
 HostAgent::~HostAgent() = default;
 
@@ -460,6 +536,32 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 void HostAgent::setCurrentInstanceAgent(
     std::shared_ptr<InstanceAgent> instanceAgent) {
   impl_->setCurrentInstanceAgent(std::move(instanceAgent));
+}
+
+bool HostAgent::hasFuseboxClientConnected() const {
+  return impl_->hasFuseboxClientConnected();
+}
+
+void HostAgent::emitExternalTracingProfile(
+    tracing::HostTracingProfile tracingProfile) const {
+  impl_->emitExternalTracingProfile(std::move(tracingProfile));
+}
+
+void HostAgent::emitSystemStateChanged(bool isSingleHost) const {
+  impl_->emitSystemStateChanged(isSingleHost);
+}
+
+#pragma mark - Tracing
+
+HostTracingAgent::HostTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {}
+
+void HostTracingAgent::setTracedInstance(InstanceTarget* instanceTarget) {
+  if (instanceTarget != nullptr) {
+    instanceTracingAgent_ = instanceTarget->createTracingAgent(state_);
+  } else {
+    instanceTracingAgent_ = nullptr;
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern

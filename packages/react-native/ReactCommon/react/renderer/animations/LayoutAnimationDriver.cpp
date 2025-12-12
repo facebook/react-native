@@ -55,8 +55,9 @@ void LayoutAnimationDriver::animationMutationsForFrame(
           animationInterpolationFactor, baselineShadowView, finalShadowView);
 
       // Create the mutation instruction
-      mutationsList.emplace_back(ShadowViewMutation::UpdateMutation(
-          keyframe.viewPrev, mutatedShadowView, keyframe.parentTag));
+      mutationsList.emplace_back(
+          ShadowViewMutation::UpdateMutation(
+              keyframe.viewPrev, mutatedShadowView, keyframe.parentTag));
 
       PrintMutationInstruction("Animation Progress:", mutationsList.back());
 

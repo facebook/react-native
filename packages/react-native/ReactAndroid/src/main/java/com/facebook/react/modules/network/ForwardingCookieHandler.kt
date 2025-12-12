@@ -45,13 +45,13 @@ public class ForwardingCookieHandler() : CookieHandler() {
     }
   }
 
-  public fun clearCookies(callback: Callback): Unit {
+  public fun clearCookies(callback: Callback) {
     cookieManager?.removeAllCookies { value -> callback.invoke(value) }
   }
 
   public fun destroy(): Unit = Unit
 
-  public fun addCookies(url: String, cookies: List<String>): Unit {
+  public fun addCookies(url: String, cookies: List<String>) {
     for (cookie in cookies) {
       addCookieAsync(url, cookie)
     }

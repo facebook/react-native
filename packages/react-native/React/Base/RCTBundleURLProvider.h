@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTBundleManager.h"
 #import "RCTDefines.h"
 
 RCT_EXTERN NSString *_Nonnull const RCTBundleURLProviderUpdatedNotification;
@@ -89,6 +90,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSURL *__nullable)jsBundleURLForFallbackExtension:(NSString *__nullable)extension;
 
 /**
+ * Returns the jsBundleURL for a given bundle entrypoint,
+ * the packager scheme, server host and options updater
+ * for modifying default packager options.
+ */
+- (NSURL *__nullable)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                         packagerServerScheme:(NSString *)packagerServerScheme
+                           packagerServerHost:(NSString *)packagerServerHost
+                       packagerOptionsUpdater:(RCTPackagerOptionsUpdater)packagerOptionsUpdater;
+
+/**
  * Returns the resourceURL for a given bundle entrypoint and
  * the fallback offline resource file if the packager is not running.
  */
@@ -96,6 +107,19 @@ NS_ASSUME_NONNULL_BEGIN
                                    resourceName:(NSString *)name
                               resourceExtension:(NSString *)extension
                                   offlineBundle:(NSBundle *)offlineBundle;
+
+/**
+ * Returns the query items for given options used to create the jsBundleURL.
+ */
++ (NSArray<NSURLQueryItem *> *)createJSBundleURLQuery:(NSString *)packagerHost
+                                       packagerScheme:(NSString *__nullable)scheme
+                                            enableDev:(BOOL)enableDev
+                                   enableMinification:(BOOL)enableMinification
+                                      inlineSourceMap:(BOOL)inlineSourceMap
+                                          modulesOnly:(BOOL)modulesOnly
+                                            runModule:(BOOL)runModule
+                                    additionalOptions:
+                                        (NSDictionary<NSString *, NSString *> *__nullable)additionalOptions;
 
 /**
  * The IP address or hostname of the packager.

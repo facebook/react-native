@@ -27,13 +27,16 @@ export enum HermesVariant {
 export function getBuckOptionsForHermes(
   variant: HermesVariant,
 ): $ReadOnlyArray<string> {
+  const baseOptions = EnvironmentOptions.enableJSMemoryInstrumentation
+    ? ['-c hermes.memory_instrumentation=true']
+    : [];
   switch (variant) {
     case HermesVariant.Hermes:
-      return [];
+      return [...baseOptions, '-c hermes.static_hermes=legacy'];
     case HermesVariant.StaticHermesStable:
-      return ['-c hermes.static_hermes=stable'];
+      return [...baseOptions, '-c hermes.static_hermes=stable'];
     case HermesVariant.StaticHermesExperimental:
-      return ['-c hermes.static_hermes=trunk'];
+      return [...baseOptions, '-c hermes.static_hermes=trunk'];
   }
 }
 
@@ -51,7 +54,32 @@ export function getHermesCompilerTarget(variant: HermesVariant): string {
 export function getBuckModesForPlatform(
   enableRelease: boolean = false,
 ): $ReadOnlyArray<string> {
-  const mode = enableRelease ? 'opt' : 'dev';
+  let mode = enableRelease ? 'opt' : 'dev';
+
+  if (enableRelease) {
+    if (EnvironmentOptions.enableASAN || EnvironmentOptions.enableTSAN) {
+      printConsoleLog({
+        type: 'console-log',
+        level: 'warn',
+        message:
+          'ASAN and TSAN are not supported in release mode. Use dev mode instead.',
+      });
+    }
+  } else {
+    if (EnvironmentOptions.enableASAN) {
+      printConsoleLog({
+        type: 'console-log',
+        level: 'warn',
+        message:
+          'ASAN and TSAN modes cannot be used together. Using ASAN mode as a fallback.',
+      });
+      mode = 'dev-asan';
+    } else if (EnvironmentOptions.enableASAN) {
+      mode = 'dev-asan';
+    } else if (EnvironmentOptions.enableTSAN) {
+      mode = 'dev-tsan';
+    }
+  }
 
   let osPlatform;
   switch (os.platform()) {
@@ -60,6 +88,8 @@ export function getBuckModesForPlatform(
       break;
     case 'darwin':
       osPlatform =
+        /* $FlowFixMe[invalid-compare] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
         os.arch() === 'arm64'
           ? `@//arvr/mode/mac-arm/${mode}`
           : `@//arvr/mode/mac/${mode}`;
@@ -72,6 +102,11 @@ export function getBuckModesForPlatform(
   }
 
   return ['@//xplat/mode/react-native/granite', osPlatform];
+}
+
+// TODO: T240293839 Remove when we get rid of RN_USE_ANIMATION_BACKEND preprocessor flag
+export function getConfigForAnimationBackend(): $ReadOnlyArray<string> {
+  return ['-c rn.use_animationbackend=true'];
 }
 
 export type AsyncCommandResult = {
@@ -96,7 +131,7 @@ export type SyncCommandResult = {
   stderr: string,
 };
 
-function maybeLogCommand(command: string, args: Array<string>): void {
+function maybeLogCommand(command: string, args: $ReadOnlyArray<string>): void {
   if (EnvironmentOptions.logCommands) {
     console.log(`RUNNING \`${command} ${args.join(' ')}\``);
   }
@@ -104,17 +139,22 @@ function maybeLogCommand(command: string, args: Array<string>): void {
 
 export function runCommand(
   command: string,
-  args: Array<string>,
+  args: $ReadOnlyArray<string>,
 ): AsyncCommandResult {
   maybeLogCommand(command, args);
 
-  const childProcess = spawn(command, args, {
-    encoding: 'utf8',
-    env: {
-      ...process.env,
-      PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+  const childProcess = spawn(
+    command,
+    // spawn is typed with Array instead of with $ReadOnlyArray
+    [...args],
+    {
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `/usr/local/bin:/usr/bin:${process.env.PATH ?? ''}`,
+      },
     },
-  });
+  );
 
   const result: AsyncCommandResult = {
     childProcess,
@@ -143,15 +183,15 @@ export function runCommand(
 
 export function runCommandSync(
   command: string,
-  args: Array<string>,
+  args: $ReadOnlyArray<string>,
 ): SyncCommandResult {
   maybeLogCommand(command, args);
 
-  const result = spawnSync(command, args, {
+  const result = spawnSync(command, [...args], {
     encoding: 'utf8',
     env: {
       ...process.env,
-      PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+      PATH: `/usr/local/bin:/usr/bin:${process.env.PATH ?? ''}`,
     },
   });
 
@@ -274,6 +314,68 @@ export function symbolicateStackTrace(
     .join('\n');
 }
 
+type ChromeDevToolsTraceNode = {
+  id: number,
+  callFrame: {
+    functionName: string,
+    scriptId: string,
+    url: string,
+    lineNumber: number,
+    columnNumber: number,
+    ...
+  },
+  children: Array<number>,
+  ...
+};
+
+type ChromeDevToolsTrace = {
+  samples: Array<number>,
+  timeDeltas: Array<number>,
+  nodes: Array<ChromeDevToolsTraceNode>,
+};
+
+export function symbolicateJSTrace(
+  jsTraceOutputPath: string,
+  sourceMapPath: string,
+) {
+  const traceContents: ChromeDevToolsTrace = JSON.parse(
+    fs.readFileSync(jsTraceOutputPath, 'utf8'),
+  );
+  const sourceMapData = JSON.parse(fs.readFileSync(sourceMapPath, 'utf8'));
+  const consumer = new SourceMapConsumer(sourceMapData);
+
+  for (const node of traceContents.nodes) {
+    const {lineNumber, columnNumber} = node.callFrame;
+
+    if (lineNumber === 0 || columnNumber === 0) {
+      continue;
+    }
+
+    const originalPosition = consumer.originalPositionFor({
+      line: lineNumber,
+      column: columnNumber,
+    });
+
+    if (originalPosition.name) {
+      node.callFrame.functionName = originalPosition.name;
+    }
+
+    if (originalPosition.source) {
+      node.callFrame.url = `file://${originalPosition.source}`;
+    }
+
+    if (originalPosition.line && originalPosition.line > 0) {
+      node.callFrame.lineNumber = originalPosition.line - 1;
+    }
+
+    if (originalPosition.column && originalPosition.column > 0) {
+      node.callFrame.columnNumber = originalPosition.column;
+    }
+  }
+
+  fs.writeFileSync(jsTraceOutputPath, JSON.stringify(traceContents), 'utf8');
+}
+
 export type ConsoleLogMessage = {
   type: 'console-log',
   level: 'info' | 'warn' | 'error',
@@ -300,4 +402,65 @@ export function printConsoleLog(log: ConsoleLogMessage): void {
       }
       break;
   }
+}
+
+// Returns a markdown table corresponding to the given data, adopted from the RN console.table polyfill implementation
+export function markdownTable(
+  data: {[string]: {[string]: string}},
+  indexColumnName?: string = '',
+): string {
+  const repeat = (element: string, n: number) =>
+    Array.apply(null, Array(n)).map(() => element);
+
+  const rows = Object.keys(data).map((key: string) => ({
+    [indexColumnName]: key,
+    ...data[key],
+  }));
+
+  if (rows.length === 0) {
+    return '';
+  }
+
+  const columns = Array.from(
+    rows.reduce((columnSet: Set<string>, row) => {
+      Object.keys(row).forEach(key => columnSet.add(key));
+      return columnSet;
+    }, new Set()),
+  );
+  const stringRows: Array<Array<string>> = [];
+  const columnWidths = [];
+
+  // Figure out max cell width for each column
+  columns.forEach((k, i) => {
+    columnWidths[i] = k.length;
+    for (let j = 0; j < rows.length; j++) {
+      const cellStr = rows[j][k];
+      stringRows[j] = stringRows[j] || [];
+      stringRows[j][i] = cellStr;
+      columnWidths[i] = Math.max(columnWidths[i], cellStr.length);
+    }
+  });
+
+  // Join all elements in the row into a single string with | separators
+  // (appends extra spaces to each cell to make separators  | aligned)
+  const joinRow = (row: Array<string>, space?: string = ' ') => {
+    const cells = row.map((cell: string, i) => {
+      const extraSpaces = repeat(' ', columnWidths[i] - cell.length).join('');
+      return cell + extraSpaces;
+    });
+    return '| ' + cells.join(space + '|' + space) + ' |';
+  };
+
+  const separators = columnWidths.map(columnWidth =>
+    repeat('-', columnWidth).join(''),
+  );
+  const separatorRow = joinRow(separators);
+  const header = joinRow(columns);
+  const table = [header, separatorRow];
+
+  for (let i = 0; i < rows.length; i++) {
+    table.push(joinRow(stringRows[i]));
+  }
+
+  return '\n' + table.join('\n');
 }

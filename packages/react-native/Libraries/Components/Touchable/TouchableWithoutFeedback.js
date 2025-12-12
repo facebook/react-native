@@ -189,7 +189,7 @@ export default function TouchableWithoutFeedback(
       disabled:
         disabled !== null
           ? disabled
-          : ariaDisabled ?? accessibilityState?.disabled,
+          : (ariaDisabled ?? accessibilityState?.disabled),
       hitSlop: hitSlop,
       delayLongPress: delayLongPress,
       delayPressIn: delayPressIn,
@@ -272,7 +272,7 @@ export default function TouchableWithoutFeedback(
         ? 'no-hide-descendants'
         : props.importantForAccessibility,
     accessibilityLiveRegion:
-      ariaLive === 'off' ? 'none' : ariaLive ?? props.accessibilityLiveRegion,
+      ariaLive === 'off' ? 'none' : (ariaLive ?? props.accessibilityLiveRegion),
     nativeID: props.id ?? props.nativeID,
   };
 
@@ -282,6 +282,6 @@ export default function TouchableWithoutFeedback(
     }
   }
 
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   return cloneElement(element, elementProps, ...children);
 }

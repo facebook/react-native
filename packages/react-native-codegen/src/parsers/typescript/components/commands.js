@@ -38,11 +38,12 @@ function buildCommandSchemaInternal(
       firstParam.typeAnnotation != null &&
       firstParam.typeAnnotation.type === 'TSTypeReference' &&
       firstParam.typeAnnotation.typeName.left?.name === 'React' &&
-      firstParam.typeAnnotation.typeName.right?.name === 'ElementRef'
+      (firstParam.typeAnnotation.typeName.right?.name === 'ElementRef' ||
+        firstParam.typeAnnotation.typeName.right?.name === 'ComponentRef')
     )
   ) {
     throw new Error(
-      `The first argument of method ${name} must be of type React.ElementRef<>`,
+      `The first argument of method ${name} must be of type React.ElementRef<> or React.ComponentRef<>`,
     );
   }
 
@@ -76,6 +77,8 @@ function buildCommandSchemaInternal(
         break;
       case 'Array':
       case 'ReadOnlyArray':
+        /* $FlowFixMe[invalid-compare] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
         if (!paramValue.type === 'TSTypeReference') {
           throw new Error(
             'Array and ReadOnlyArray are TSTypeReference for array',

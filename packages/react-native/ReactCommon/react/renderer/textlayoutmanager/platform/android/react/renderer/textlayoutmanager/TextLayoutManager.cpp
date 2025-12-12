@@ -159,8 +159,9 @@ TextLayoutManager::TextLayoutManager(
     : contextContainer_(std::move(contextContainer)),
       textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
       lineMeasureCache_(kSimpleThreadSafeCacheSizeCap),
-      preparedTextCache_(static_cast<size_t>(
-          ReactNativeFeatureFlags::preparedTextCacheSize())) {}
+      preparedTextCache_(
+          static_cast<size_t>(
+              ReactNativeFeatureFlags::preparedTextCacheSize())) {}
 
 TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
@@ -423,11 +424,12 @@ TextMeasurement TextLayoutManager::measurePreparedLayout(
         textMeasurement.attachments.push_back(
             TextMeasurement::Attachment{.frame = Rect{}, .isClipped = true});
       } else {
-        textMeasurement.attachments.push_back(TextMeasurement::Attachment{
-            .frame =
-                {.origin = {.x = left, .y = top},
-                 .size = {.width = width, .height = height}},
-            .isClipped = false});
+        textMeasurement.attachments.push_back(
+            TextMeasurement::Attachment{
+                .frame =
+                    {.origin = {.x = left, .y = top},
+                     .size = {.width = width, .height = height}},
+                .isClipped = false});
       }
     }
   }

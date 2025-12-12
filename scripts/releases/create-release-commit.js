@@ -10,6 +10,9 @@
 
 const {setVersion} = require('../releases/set-version');
 const {getBranchName} = require('../releases/utils/scm-utils');
+const {
+  writeReleaseAssetUrlsToDotSlashFiles,
+} = require('../releases/write-dotslash-release-asset-urls');
 const {parseVersion} = require('./utils/version-utils');
 const {execSync} = require('child_process');
 const yargs = require('yargs');
@@ -48,6 +51,9 @@ async function main() {
 
   console.info('Setting version for monorepo packages and react-native');
   await setVersion(version, false); // version, skip-react-native
+
+  console.info('Writing release asset URLs to DotSlash files');
+  await writeReleaseAssetUrlsToDotSlashFiles(version);
 
   if (dryRun) {
     console.info('Running in dry-run mode, skipping git commit');

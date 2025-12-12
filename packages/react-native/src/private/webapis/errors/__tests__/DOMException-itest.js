@@ -77,9 +77,9 @@ describe('DOMException', () => {
   it('normalizes the name correctly', () => {
     expect(new DOMException(undefined, undefined).name).toBe('Error');
     expect(new DOMException(undefined, '').name).toBe('');
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(new DOMException(undefined, null).name).toBe('null');
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(new DOMException(undefined, {}).name).toBe('[object Object]');
   });
 

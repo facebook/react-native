@@ -12,6 +12,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 extern const char ViewComponentName[];
 
 /**
@@ -21,27 +22,19 @@ class ViewShadowNodeProps final : public ViewProps {
  public:
   ViewShadowNodeProps() = default;
   ViewShadowNodeProps(
-      const PropsParserContext& context,
-      const ViewShadowNodeProps& sourceProps,
-      const RawProps& rawProps);
+      const PropsParserContext &context,
+      const ViewShadowNodeProps &sourceProps,
+      const RawProps &rawProps);
 };
 
 /*
  * `ShadowNode` for <View> component.
  */
-class ViewShadowNode final : public ConcreteViewShadowNode<
-                                 ViewComponentName,
-                                 ViewShadowNodeProps,
-                                 ViewEventEmitter> {
+class ViewShadowNode final : public ConcreteViewShadowNode<ViewComponentName, ViewShadowNodeProps, ViewEventEmitter> {
  public:
-  ViewShadowNode(
-      const ShadowNodeFragment& fragment,
-      const ShadowNodeFamily::Shared& family,
-      ShadowNodeTraits traits);
+  ViewShadowNode(const ShadowNodeFragment &fragment, const ShadowNodeFamily::Shared &family, ShadowNodeTraits traits);
 
-  ViewShadowNode(
-      const ShadowNode& sourceShadowNode,
-      const ShadowNodeFragment& fragment);
+  ViewShadowNode(const ShadowNode &sourceShadowNode, const ShadowNodeFragment &fragment);
 
  private:
   void initialize() noexcept;

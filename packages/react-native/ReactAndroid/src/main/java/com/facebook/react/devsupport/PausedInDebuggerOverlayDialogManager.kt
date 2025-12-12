@@ -29,7 +29,7 @@ internal class PausedInDebuggerOverlayDialogManager(
 
   override fun showPausedInDebuggerOverlay(
       message: String,
-      listener: DevSupportManager.PausedInDebuggerOverlayCommandListener
+      listener: DevSupportManager.PausedInDebuggerOverlayCommandListener,
   ) {
     UiThreadUtil.runOnUiThread {
       pausedInDebuggerDialog?.dismiss()

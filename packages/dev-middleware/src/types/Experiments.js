@@ -20,15 +20,13 @@ export type Experiments = $ReadOnly<{
   /**
    * Enables the Network panel in the debugger frontend.
    */
-  // NOTE: Used by Expo, exposing a tab labelled "Network (Expo, unstable)"
+  // NOTE: Used by Expo, exposing a tab labelled "Network (Expo)"
   enableNetworkInspector: boolean,
 
   /**
    * Launch the Fusebox frontend in a standalone shell instead of a browser.
    * When this is enabled, we will use the optional unstable_showFuseboxShell
-   * method on the framework-provided BrowserLauncher, or throw an error if the
-   * method is missing. Note that the default BrowserLauncher does *not*
-   * implement unstable_showFuseboxShell.
+   * method on the BrowserLauncher, or throw an error if the method is missing.
    */
   enableStandaloneFuseboxShell: boolean,
 }>;

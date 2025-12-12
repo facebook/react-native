@@ -22,7 +22,7 @@ const BaseComponent = mockComponent(
   true, // isESModule
 ) as TModal;
 
-// $FlowIgnore[incompatible-use]
+// $FlowFixMe[incompatible-use]
 export default class Modal extends BaseComponent {
   render(): React.Node {
     if (this.props.visible === false) {

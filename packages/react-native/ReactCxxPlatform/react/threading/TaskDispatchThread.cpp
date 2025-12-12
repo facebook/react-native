@@ -13,19 +13,18 @@
 #include <future>
 #include <utility>
 
-#include <glog/logging.h>
-
 #ifdef ANDROID
 #include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <sys/syscall.h>
 #endif
 
 namespace facebook::react {
 
 TaskDispatchThread::TaskDispatchThread(
-    std::string threadName,
+    std::string_view threadName,
     int priorityOffset) noexcept
-    : threadName_(std::move(threadName)) {
+    : threadName_(threadName) {
 #ifdef ANDROID
   // Attaches the thread to JVM just in case anything calls out to Java
   thread_ = std::thread([&]() {
@@ -51,6 +50,10 @@ TaskDispatchThread::TaskDispatchThread(
 
 TaskDispatchThread::~TaskDispatchThread() noexcept {
   quit();
+
+  if (thread_.joinable()) {
+    thread_.join();
+  }
 }
 
 bool TaskDispatchThread::isOnThread() noexcept {
@@ -67,13 +70,16 @@ void TaskDispatchThread::runAsync(
   if (!running_) {
     return;
   }
-  std::lock_guard<std::mutex> guard(queueLock_);
+  std::lock_guard<std::mutex> guard(mutex_);
   auto dispatchTime = std::chrono::system_clock::now() + delayMs;
   queue_.emplace(dispatchTime, std::move(task));
   loopCv_.notify_one();
 }
 
 void TaskDispatchThread::runSync(TaskFn&& task) noexcept {
+  if (!running_) {
+    return;
+  }
   std::promise<void> promise;
   runAsync([&]() {
     if (running_) {
@@ -85,17 +91,21 @@ void TaskDispatchThread::runSync(TaskFn&& task) noexcept {
 }
 
 void TaskDispatchThread::quit() noexcept {
-  if (!running_) {
-    return;
-  }
-  running_ = false;
-  loopCv_.notify_one();
-  if (thread_.joinable()) {
-    if (!isOnThread()) {
-      thread_.join();
-    } else {
-      thread_.detach();
+  {
+    /*
+      We should hold lock even when changing atomic variable to correctly
+      publish the modificatino to the waiting thread
+      from: https://en.cppreference.com/w/cpp/thread/condition_variable.html
+    */
+    std::unique_lock<std::mutex> lock(mutex_);
+    if (!running_.exchange(false)) {
+      return;
     }
+  }
+
+  loopCv_.notify_one();
+  if (!isOnThread()) {
+    loopStoppedPromise_.get_future().wait();
   }
 }
 
@@ -104,28 +114,37 @@ void TaskDispatchThread::loop() noexcept {
     folly::setThreadName(threadName_);
   }
   while (running_) {
-    std::unique_lock<std::mutex> lock(queueLock_);
+    std::unique_lock<std::mutex> lock(mutex_);
     loopCv_.wait(lock, [&]() { return !running_ || !queue_.empty(); });
+
     while (!queue_.empty()) {
       auto task = queue_.top();
       auto now = std::chrono::system_clock::now();
-      if (task.dispatchTime > now) {
-        if (running_) {
+
+      if (running_) {
+        if (task.dispatchTime > now) {
+          // Wait until the scheduled task time, if delayed
           loopCv_.wait_until(lock, task.dispatchTime);
-        } else {
-          // Shutting down, skip all the delayed tasks that are not to be
-          // executed yet
-          queue_.pop();
+          continue;
         }
-        continue;
+      } else {
+        // Shutting down, skip all the remaining tasks
+        queue_ = {};
+        break;
       }
 
+      // We should check whether the task thread is still running at this
+      // point (which may not anymore be the case since the previous check)
+      if (running_) {
+        lock.unlock();
+        task.fn();
+        lock.lock();
+      }
       queue_.pop();
-      lock.unlock();
-      task.fn();
-      lock.lock();
     }
   }
+
+  loopStoppedPromise_.set_value();
 }
 
 } //  namespace facebook::react

@@ -7,6 +7,8 @@
 
 #include "InspectorInterfaces.h"
 
+#include "InspectorFlags.h"
+
 #include <cassert>
 #include <list>
 #include <mutex>
@@ -35,6 +37,14 @@ namespace {
 
 class InspectorImpl : public IInspector {
  public:
+  InspectorImpl() {
+    systemStateListener_ = std::make_shared<SystemStateListener>(systemState_);
+    auto& inspectorFlags = InspectorFlags::getInstance();
+    if (inspectorFlags.getAssertSingleHostState()) {
+      registerPageStatusListener(systemStateListener_);
+    }
+  }
+
   int addPage(
       const std::string& description,
       const std::string& vm,
@@ -50,7 +60,21 @@ class InspectorImpl : public IInspector {
   void registerPageStatusListener(
       std::weak_ptr<IPageStatusListener> listener) override;
 
+  InspectorSystemState getSystemState() const override;
+
  private:
+  class SystemStateListener : public IPageStatusListener {
+   public:
+    explicit SystemStateListener(InspectorSystemState& state) : state_(state) {}
+
+    void unstable_onHostTargetAdded() override {
+      state_.registeredHostsCount++;
+    }
+
+   private:
+    InspectorSystemState& state_;
+  };
+
   class Page {
    public:
     Page(
@@ -70,10 +94,13 @@ class InspectorImpl : public IInspector {
     ConnectFunc connectFunc_;
     InspectorTargetCapabilities capabilities_;
   };
+
   mutable std::mutex mutex_;
   int nextPageId_{1};
   std::map<int, Page> pages_;
   std::list<std::weak_ptr<IPageStatusListener>> listeners_;
+  InspectorSystemState systemState_{0};
+  std::shared_ptr<SystemStateListener> systemStateListener_;
 };
 
 InspectorImpl::Page::Page(
@@ -115,6 +142,16 @@ int InspectorImpl::addPage(
   pages_.emplace(
       pageId,
       Page{pageId, description, vm, std::move(connectFunc), capabilities});
+
+  // Strong assumption: If prefersFuseboxFrontend is set, the page added is a
+  // HostTarget and not a legacy Hermes runtime target.
+  if (capabilities.prefersFuseboxFrontend) {
+    for (const auto& listenerWeak : listeners_) {
+      if (auto listener = listenerWeak.lock()) {
+        listener->unstable_onHostTargetAdded();
+      }
+    }
+  }
 
   return pageId;
 }
@@ -174,6 +211,11 @@ void InspectorImpl::registerPageStatusListener(
     }
   }
   listeners_.push_back(listener);
+}
+
+InspectorSystemState InspectorImpl::getSystemState() const {
+  std::scoped_lock lock(mutex_);
+  return systemState_;
 }
 } // namespace
 

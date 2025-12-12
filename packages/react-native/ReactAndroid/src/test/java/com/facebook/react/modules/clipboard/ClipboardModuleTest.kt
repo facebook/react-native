@@ -5,36 +5,45 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-@file:Suppress("DEPRECATION")
-
 package com.facebook.react.modules.clipboard
 
-import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
-import com.facebook.react.bridge.BridgeReactContext
+import com.facebook.react.bridge.ReactTestHelper.createTestReactApplicationContext
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
+import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
-@Suppress("DEPRECATION")
-@SuppressLint("ClipboardManager", "DeprecatedClass")
 @RunWith(RobolectricTestRunner::class)
+@Config(shadows = [ShadowSoLoader::class])
 class ClipboardModuleTest {
   private lateinit var clipboardModule: ClipboardModule
   private lateinit var clipboardManager: ClipboardManager
 
   @Before
   fun setUp() {
-    clipboardModule = ClipboardModule(BridgeReactContext(RuntimeEnvironment.getApplication()))
+    ReactNativeFeatureFlagsForTests.setUp()
+    clipboardModule =
+        ClipboardModule(createTestReactApplicationContext(RuntimeEnvironment.getApplication()))
     clipboardManager =
         RuntimeEnvironment.getApplication().getSystemService(Context.CLIPBOARD_SERVICE)
             as ClipboardManager
   }
 
+  @After
+  fun tearDown() {
+    ReactNativeFeatureFlags.dangerouslyReset()
+  }
+
+  @Suppress("DEPRECATION")
   @Test
   fun testSetString() {
     clipboardModule.setString(TEST_CONTENT)

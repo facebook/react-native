@@ -17,6 +17,9 @@ runs:
     - name: Install node dependencies
       uses: ./.github/actions/yarn-install
     - name: Set React Native Version
+      # We don't want to set the version for stable branches, because this has been
+      # already set from the 'create release' commits on the release branch.
+      if: ${{ !endsWith(github.ref_name, '-stable') }}
       shell: bash
       run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}
     - name: Setup gradle

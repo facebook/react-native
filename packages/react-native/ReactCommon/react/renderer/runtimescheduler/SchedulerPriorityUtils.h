@@ -14,13 +14,13 @@
 
 namespace facebook::react {
 
-static constexpr std::underlying_type<SchedulerPriority>::type serialize(
-    SchedulerPriority schedulerPriority) {
-  return static_cast<std::underlying_type<SchedulerPriority>::type>(
-      schedulerPriority);
+static constexpr std::underlying_type<SchedulerPriority>::type serialize(SchedulerPriority schedulerPriority)
+{
+  return static_cast<std::underlying_type<SchedulerPriority>::type>(schedulerPriority);
 }
 
-static inline SchedulerPriority fromRawValue(double value) {
+static inline SchedulerPriority fromRawValue(double value)
+{
   switch ((int)value) {
     case 1:
       return SchedulerPriority::ImmediatePriority;
@@ -32,13 +32,14 @@ static inline SchedulerPriority fromRawValue(double value) {
       return SchedulerPriority::LowPriority;
     case 5:
       return SchedulerPriority::IdlePriority;
+    default:
+      react_native_assert(false && "Unsupported SchedulerPriority value");
+      return SchedulerPriority::NormalPriority;
   }
-  react_native_assert(false && "Unsupported SchedulerPriority value");
-  return SchedulerPriority::NormalPriority;
 }
 
-static inline HighResDuration timeoutForSchedulerPriority(
-    SchedulerPriority schedulerPriority) noexcept {
+static inline HighResDuration timeoutForSchedulerPriority(SchedulerPriority schedulerPriority) noexcept
+{
   switch (schedulerPriority) {
     case SchedulerPriority::ImmediatePriority:
       return HighResDuration::fromChrono(std::chrono::milliseconds(0));
@@ -50,9 +51,10 @@ static inline HighResDuration timeoutForSchedulerPriority(
       return HighResDuration::fromChrono(std::chrono::seconds(10));
     case SchedulerPriority::IdlePriority:
       return HighResDuration::fromChrono(std::chrono::minutes(5));
+    default:
+      react_native_assert(false && "Unsupported SchedulerPriority value");
+      return HighResDuration::fromChrono(std::chrono::seconds(5));
   }
-  react_native_assert(false && "Unsupported SchedulerPriority value");
-  return HighResDuration::fromChrono(std::chrono::seconds(5));
 }
 
 } // namespace facebook::react

@@ -13,15 +13,15 @@
 #pragma once
 
 namespace facebook::react {
-using parsePlatformColorFn =
-    SharedColor (*)(const ContextContainer&, int32_t, const RawValue&);
+using parsePlatformColorFn = SharedColor (*)(const ContextContainer &, int32_t, const RawValue &);
 
 inline void fromRawValueShared(
-    const ContextContainer& contextContainer,
+    const ContextContainer &contextContainer,
     int32_t surfaceId,
-    const RawValue& value,
-    SharedColor& result,
-    parsePlatformColorFn parsePlatformColor) {
+    const RawValue &value,
+    SharedColor &result,
+    parsePlatformColorFn parsePlatformColor)
+{
   ColorComponents colorComponents = {0, 0, 0, 0};
 
   if (value.hasType<int>()) {
@@ -45,7 +45,7 @@ inline void fromRawValueShared(
     result = colorFromComponents(colorComponents);
   } else {
     if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
-      const auto& items = (std::unordered_map<std::string, RawValue>)value;
+      const auto &items = (std::unordered_map<std::string, RawValue>)value;
       if (items.find("space") != items.end()) {
         colorComponents.red = (float)items.at("r");
         colorComponents.green = (float)items.at("g");

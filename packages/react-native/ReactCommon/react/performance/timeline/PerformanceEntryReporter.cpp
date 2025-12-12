@@ -7,6 +7,7 @@
 
 #include "PerformanceEntryReporter.h"
 
+#include <jsinspector-modern/ConsoleTaskOrchestrator.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/timing/primitives.h>
@@ -30,7 +31,7 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
       PerformanceEntryType::LONGTASK,
   };
 
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
+  if (ReactNativeFeatureFlags::enableNetworkEventReporting()) {
     supportedEntryTypes.emplace_back(PerformanceEntryType::RESOURCE);
   }
 
@@ -88,9 +89,19 @@ PerformanceEntryReporter::PerformanceEntryReporter()
 #endif
 }
 
-HighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
-  return timeStampProvider_ != nullptr ? timeStampProvider_()
-                                       : HighResTimeStamp::now();
+void PerformanceEntryReporter::addEventListener(
+    PerformanceEntryReporterEventListener* listener) {
+  std::unique_lock lock(listenersMutex_);
+  eventListeners_.push_back(listener);
+}
+
+void PerformanceEntryReporter::removeEventListener(
+    PerformanceEntryReporterEventListener* listener) {
+  std::unique_lock lock(listenersMutex_);
+  auto it = std::find(eventListeners_.begin(), eventListeners_.end(), listener);
+  if (it != eventListeners_.end()) {
+    eventListeners_.erase(it);
+  }
 }
 
 std::vector<PerformanceEntryType>
@@ -197,13 +208,13 @@ void PerformanceEntryReporter::reportMeasure(
     const std::string& name,
     HighResTimeStamp startTime,
     HighResDuration duration,
-    UserTimingDetailProvider&& detailProvider) {
+    const std::optional<UserTimingDetailProvider>& detailProvider) {
   const auto entry = PerformanceMeasure{
       {.name = std::string(name),
        .startTime = startTime,
        .duration = duration}};
 
-  traceMeasure(entry, std::move(detailProvider));
+  traceMeasure(entry, detailProvider);
 
   // Add to buffers & notify observers
   {
@@ -212,6 +223,16 @@ void PerformanceEntryReporter::reportMeasure(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+
+  std::vector<PerformanceEntryReporterEventListener*> listenersCopy;
+  {
+    std::shared_lock lock(listenersMutex_);
+    listenersCopy = eventListeners_;
+  }
+
+  for (auto* listener : listenersCopy) {
+    listener->onMeasureEntry(entry, detailProvider);
+  }
 }
 
 void PerformanceEntryReporter::clearEventCounts() {
@@ -231,11 +252,12 @@ std::optional<HighResTimeStamp> PerformanceEntryReporter::getMarkTime(
 }
 
 void PerformanceEntryReporter::reportEvent(
-    std::string name,
+    const std::string& name,
     HighResTimeStamp startTime,
     HighResDuration duration,
     HighResTimeStamp processingStart,
     HighResTimeStamp processingEnd,
+    HighResTimeStamp taskEndTime,
     uint32_t interactionId) {
   eventCounts_[name]++;
 
@@ -246,9 +268,10 @@ void PerformanceEntryReporter::reportEvent(
   }
 
   const auto entry = PerformanceEventTiming{
-      {.name = std::move(name), .startTime = startTime, .duration = duration},
+      {.name = name, .startTime = startTime, .duration = duration},
       processingStart,
       processingEnd,
+      taskEndTime,
       interactionId};
 
   {
@@ -258,6 +281,16 @@ void PerformanceEntryReporter::reportEvent(
 
   // TODO(T198982346): Log interaction events to jsinspector_modern
   observerRegistry_->queuePerformanceEntry(entry);
+
+  std::vector<PerformanceEntryReporterEventListener*> listenersCopy;
+  {
+    std::shared_lock lock(listenersMutex_);
+    listenersCopy = eventListeners_;
+  }
+
+  for (auto* listener : listenersCopy) {
+    listener->onEventTimingEntry(entry);
+  }
 }
 
 void PerformanceEntryReporter::reportLongTask(
@@ -284,7 +317,10 @@ void PerformanceEntryReporter::reportResourceTiming(
     std::optional<HighResTimeStamp> connectEnd,
     HighResTimeStamp responseStart,
     HighResTimeStamp responseEnd,
-    const std::optional<int>& responseStatus) {
+    int responseStatus,
+    const std::string& contentType,
+    int encodedBodySize,
+    int decodedBodySize) {
   const auto entry = PerformanceResourceTiming{
       {.name = url, .startTime = fetchStart},
       fetchStart,
@@ -294,6 +330,9 @@ void PerformanceEntryReporter::reportResourceTiming(
       responseStart,
       responseEnd,
       responseStatus,
+      contentType,
+      encodedBodySize,
+      decodedBodySize,
   };
 
   // Add to buffers & notify observers
@@ -325,11 +364,13 @@ void PerformanceEntryReporter::traceMark(
 
 void PerformanceEntryReporter::traceMeasure(
     const PerformanceMeasure& entry,
-    UserTimingDetailProvider&& detailProvider) const {
+    const std::optional<UserTimingDetailProvider>& detailProvider) const {
   auto& performanceTracer =
       jsinspector_modern::tracing::PerformanceTracer::getInstance();
   if (performanceTracer.isTracing() || ReactPerfettoLogger::isTracing()) {
-    auto detail = detailProvider != nullptr ? detailProvider() : nullptr;
+    auto detail = detailProvider && detailProvider.has_value()
+        ? (*detailProvider)()
+        : nullptr;
 
     if (ReactPerfettoLogger::isTracing()) {
       ReactPerfettoLogger::measure(
@@ -341,8 +382,15 @@ void PerformanceEntryReporter::traceMeasure(
     }
 
     if (performanceTracer.isTracing()) {
+      auto taskContext =
+          jsinspector_modern::ConsoleTaskOrchestrator::getInstance().top();
+
       performanceTracer.reportMeasure(
-          entry.name, entry.startTime, entry.duration, std::move(detail));
+          entry.name,
+          entry.startTime,
+          entry.duration,
+          std::move(detail),
+          taskContext ? taskContext->getSerializedStackTrace() : nullptr);
     }
   }
 }

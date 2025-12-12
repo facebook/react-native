@@ -27,10 +27,6 @@ jobs:
           ONCALL2=$(echo $ONCALLS | cut -d ' ' -f 2)
           echo "oncall1=$ONCALL1" >> $GITHUB_ENV
           echo "oncall2=$ONCALL2" >> $GITHUB_ENV
-      - name: Print oncalls
-        run: |
-          echo "oncall1: ${{ env.oncall1 }}"
-          echo "oncall2: ${{ env.oncall2 }}"
       - name: Monitor New Issues
         uses: react-native-community/repo-monitor@v1.0.1
         with:

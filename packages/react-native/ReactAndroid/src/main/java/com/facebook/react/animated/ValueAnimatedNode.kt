@@ -27,21 +27,21 @@ internal open class ValueAnimatedNode(config: ReadableMap? = null) : AnimatedNod
 
   open fun getAnimatedObject(): Any? = null
 
-  fun flattenOffset(): Unit {
+  fun flattenOffset() {
     nodeValue += offset
     offset = 0.0
   }
 
-  fun extractOffset(): Unit {
+  fun extractOffset() {
     offset += nodeValue
     nodeValue = 0.0
   }
 
-  fun onValueUpdate(): Unit {
+  fun onValueUpdate() {
     valueListener?.onValueUpdate(getValue() - offset, offset)
   }
 
-  fun setValueListener(listener: AnimatedNodeValueListener?): Unit {
+  fun setValueListener(listener: AnimatedNodeValueListener?) {
     valueListener = listener
   }
 

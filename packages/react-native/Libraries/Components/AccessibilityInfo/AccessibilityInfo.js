@@ -99,7 +99,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
@@ -119,7 +119,11 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid?.isGrayscaleEnabled != null) {
           NativeAccessibilityInfoAndroid.isGrayscaleEnabled(resolve);
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityInfoAndroid.isGrayscaleEnabled is not available',
+            ),
+          );
         }
       });
     } else {
@@ -130,7 +134,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('AccessibilityInfo native module is not available'));
         }
       });
     }
@@ -150,7 +154,11 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid?.isInvertColorsEnabled != null) {
           NativeAccessibilityInfoAndroid.isInvertColorsEnabled(resolve);
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityInfoAndroid.isInvertColorsEnabled is not available',
+            ),
+          );
         }
       });
     } else {
@@ -161,7 +169,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('AccessibilityInfo native module is not available'));
         }
       });
     }
@@ -181,7 +189,7 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid != null) {
           NativeAccessibilityInfoAndroid.isReduceMotionEnabled(resolve);
         } else {
-          reject(null);
+          reject(new Error('AccessibilityInfo native module is not available'));
         }
       } else {
         if (NativeAccessibilityManagerIOS != null) {
@@ -190,7 +198,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       }
     });
@@ -208,7 +216,11 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid?.isHighTextContrastEnabled != null) {
           NativeAccessibilityInfoAndroid.isHighTextContrastEnabled(resolve);
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityInfoAndroid.isHighTextContrastEnabled is not available',
+            ),
+          );
         }
       } else {
         return Promise.resolve(false);
@@ -236,7 +248,11 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityManagerIOS.getCurrentDarkerSystemColorsState is not available',
+            ),
+          );
         }
       }
     });
@@ -264,7 +280,11 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityManagerIOS.getCurrentPrefersCrossFadeTransitionsState is not available',
+            ),
+          );
         }
       }
     });
@@ -289,7 +309,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
@@ -309,7 +329,7 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid != null) {
           NativeAccessibilityInfoAndroid.isTouchExplorationEnabled(resolve);
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityInfoAndroid is not available'));
         }
       } else {
         if (NativeAccessibilityManagerIOS != null) {
@@ -318,7 +338,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       }
     });
@@ -343,10 +363,18 @@ const AccessibilityInfo = {
         ) {
           NativeAccessibilityInfoAndroid.isAccessibilityServiceEnabled(resolve);
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityInfoAndroid.isAccessibilityServiceEnabled is not available',
+            ),
+          );
         }
       } else {
-        reject(null);
+        reject(
+          new Error(
+            'isAccessibilityServiceEnabled is only available on Android',
+          ),
+        );
       }
     });
   },
@@ -396,13 +424,13 @@ const AccessibilityInfo = {
    */
   addEventListener<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
-    // $FlowIssue[incompatible-type] - Flow bug with unions and generics (T128099423)
+    // $FlowFixMe[incompatible-type] - Flow bug with unions and generics (T128099423)
     handler: (...AccessibilityEventDefinitions[K]) => void,
   ): EventSubscription {
     const deviceEventName = EventNames.get(eventName);
     return deviceEventName == null
       ? {remove(): void {}}
-      : // $FlowFixMe[incompatible-call]
+      : // $FlowFixMe[incompatible-type]
         RCTDeviceEventEmitter.addListener(deviceEventName, handler);
   },
 
@@ -448,10 +476,15 @@ const AccessibilityInfo = {
    * - `announcement`: The string announced by the screen reader.
    * - `options`: An object that configures the reading options.
    *   - `queue`: The announcement will be queued behind existing announcements. iOS only.
+   *   - `priority`: The priority of the announcement. Possible values: 'low' | 'default' | 'high'.
+   *     High priority announcements will interrupt any ongoing speech and cannot be interrupted.
+   *     Default priority announcements will interrupt any ongoing speech but can be interrupted.
+   *     Low priority announcements will not interrupt ongoing speech and can be interrupted.
+   *     (iOS only).
    */
   announceForAccessibilityWithOptions(
     announcement: string,
-    options: {queue?: boolean},
+    options: {queue?: boolean, priority?: 'low' | 'default' | 'high'},
   ): void {
     if (Platform.OS === 'android') {
       NativeAccessibilityInfoAndroid?.announceForAccessibility(announcement);

@@ -17,10 +17,9 @@
 #include <ReactCommon/BindingsInstallerHolder.h>
 #include <ReactCommon/CxxTurboModuleUtils.h>
 #include <ReactCommon/JavaInteropTurboModule.h>
-#include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <react/jni/CxxModuleWrapper.h>
+#include <react/jni/CxxModuleWrapperBase.h>
 
 namespace facebook::react {
 
@@ -177,11 +176,24 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
     return turboModule;
   }
 
+  // TODO(T248203434): Remove this workaround once fixed in fbjni
+  // NOTE: We use jstring instead of std::string for the method signature to
+  // work around a bug in fbjni's exception handling. When a Java method throws
+  // an exception, fbjni's JMethod::operator() needs to check for pending
+  // exceptions via FACEBOOK_JNI_THROW_PENDING_EXCEPTION(). However, if we pass
+  // std::string, fbjni creates a temporary local_ref<JString> for the argument.
+  // C++ destroys temporaries at the end of the full-expression, which happens
+  // AFTER the JNI call returns but BEFORE the exception check. The destructor
+  // calls JNI functions (GetObjectRefType) while there's a pending exception,
+  // which violates JNI rules and causes ART's CheckJNI to abort the process.
+  //
+  // By pre-converting to jstring here, we control the lifetime of the
+  // local_ref<JString> so it extends past the exception check.
   static auto getTurboJavaModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>(
-              "getTurboJavaModule");
-  auto moduleInstance = getTurboJavaModule(javaPart.get(), name);
+      javaPart->getClass()->getMethod<jni::alias_ref<JTurboModule>(jstring)>(
+          "getTurboJavaModule");
+  auto jname = jni::make_jstring(name);
+  auto moduleInstance = getTurboJavaModule(javaPart.get(), jname.get());
   if (moduleInstance) {
     TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
     JavaTurboModule::InitParams params = {
@@ -204,22 +216,6 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
     }
 
     turboModuleCache_.insert({name, turboModule});
-    TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
-    return turboModule;
-  }
-
-  static auto getTurboLegacyCxxModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-              const std::string&)>("getTurboLegacyCxxModule");
-  auto legacyCxxModule = getTurboLegacyCxxModule(javaPart.get(), name);
-  if (legacyCxxModule) {
-    TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
-
-    auto turboModule = std::make_shared<react::TurboCxxModule>(
-        legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
-    turboModuleCache_.insert({name, turboModule});
-
     TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
     return turboModule;
   }
@@ -260,28 +256,24 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
 
   TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
 
-  static auto getLegacyCxxModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-              const std::string&)>("getLegacyCxxModule");
-  auto legacyCxxModule = getLegacyCxxModule(javaPart.get(), name);
-
-  if (legacyCxxModule) {
-    TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
-
-    auto turboModule = std::make_shared<react::TurboCxxModule>(
-        legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
-    legacyModuleCache_.insert({name, turboModule});
-
-    TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
-    return turboModule;
-  }
-
+  // TODO(T248203434): Remove this workaround once fixed in fbjni
+  // NOTE: We use jstring instead of std::string for the method signature to
+  // work around a bug in fbjni's exception handling. When a Java method throws
+  // an exception, fbjni's JMethod::operator() needs to check for pending
+  // exceptions via FACEBOOK_JNI_THROW_PENDING_EXCEPTION(). However, if we pass
+  // std::string, fbjni creates a temporary local_ref<JString> for the argument.
+  // C++ destroys temporaries at the end of the full-expression, which happens
+  // AFTER the JNI call returns but BEFORE the exception check. The destructor
+  // calls JNI functions (GetObjectRefType) while there's a pending exception,
+  // which violates JNI rules and causes ART's CheckJNI to abort the process.
+  //
+  // By pre-converting to jstring here, we control the lifetime of the
+  // local_ref<JString> so it extends past the exception check.
   static auto getLegacyJavaModule =
-      javaPart->getClass()
-          ->getMethod<jni::alias_ref<JNativeModule>(const std::string&)>(
-              "getLegacyJavaModule");
-  auto moduleInstance = getLegacyJavaModule(javaPart.get(), name);
+      javaPart->getClass()->getMethod<jni::alias_ref<JNativeModule>(jstring)>(
+          "getLegacyJavaModule");
+  auto jname = jni::make_jstring(name);
+  auto moduleInstance = getLegacyJavaModule(javaPart.get(), jname.get());
 
   if (moduleInstance) {
     TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);

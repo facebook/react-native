@@ -43,9 +43,7 @@ class IWebSocketDelegate {
    * \param posixCode POSIX errno value if available, otherwise nullopt.
    * \param error Error description.
    */
-  virtual void didFailWithError(
-      std::optional<int> posixCode,
-      std::string error) = 0;
+  virtual void didFailWithError(std::optional<int> posixCode, std::string error) = 0;
 
   /**
    * Called when a message has been received from the socket.

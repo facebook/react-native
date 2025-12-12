@@ -52,7 +52,7 @@ HostPlatformParagraphProps::HostPlatformParagraphProps(
                     sourceProps.dataDetectorType,
                     {}))
 
-          {};
+{};
 
 void HostPlatformParagraphProps::setProp(
     const PropsParserContext& context,

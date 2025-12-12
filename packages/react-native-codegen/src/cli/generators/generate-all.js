@@ -46,9 +46,17 @@ try {
 } catch (err) {
   throw new Error(`Can't parse schema to JSON. ${schemaPath}`);
 }
-
+const includeGetDebugPropsImplementation: boolean =
+  libraryName.includes('FBReactNativeSpec');
 RNCodegen.generate(
-  {libraryName, schema, outputDirectory, packageName, assumeNonnull},
+  {
+    libraryName,
+    schema,
+    outputDirectory,
+    packageName,
+    assumeNonnull,
+    includeGetDebugPropsImplementation,
+  },
   {
     generators: [
       'descriptors',

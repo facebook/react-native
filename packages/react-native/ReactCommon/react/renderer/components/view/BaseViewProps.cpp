@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/view/BackgroundImagePropsConversions.h>
 #include <react/renderer/components/view/BoxShadowPropsConversions.h>
 #include <react/renderer/components/view/FilterPropsConversions.h>
 #include <react/renderer/components/view/conversions.h>
@@ -225,6 +226,33 @@ BaseViewProps::BaseViewProps(
                     "experimental_backgroundImage",
                     sourceProps.backgroundImage,
                     {})),
+      backgroundSize(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.backgroundSize
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "experimental_backgroundSize",
+                    sourceProps.backgroundSize,
+                    {})),
+      backgroundPosition(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.backgroundPosition
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "experimental_backgroundPosition",
+                    sourceProps.backgroundPosition,
+                    {})),
+      backgroundRepeat(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.backgroundRepeat
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "experimental_backgroundRepeat",
+                    sourceProps.backgroundRepeat,
+                    {})),
       mixBlendMode(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.mixBlendMode
@@ -376,6 +404,10 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(opacity);
     RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundColor);
     RAW_SET_PROP_SWITCH_CASE(backgroundImage, "experimental_backgroundImage");
+    RAW_SET_PROP_SWITCH_CASE(backgroundSize, "experimental_backgroundSize");
+    RAW_SET_PROP_SWITCH_CASE(
+        backgroundPosition, "experimental_backgroundPosition");
+    RAW_SET_PROP_SWITCH_CASE(backgroundRepeat, "experimental_backgroundRepeat");
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOffset);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOpacity);
@@ -558,9 +590,6 @@ Transform BaseViewProps::resolveTransform(
     const Transform& transform,
     const TransformOrigin& transformOrigin) {
   auto transformMatrix = Transform{};
-  if (frameSize.width == 0 && frameSize.height == 0) {
-    return transformMatrix;
-  }
 
   // transform is matrix
   if (transform.operations.size() == 1 &&
@@ -614,6 +643,10 @@ SharedDebugStringConvertibleList BaseViewProps::getDebugProps() const {
               defaultBaseViewProps.pointerEvents),
           debugStringConvertibleItem(
               "transform", transform, defaultBaseViewProps.transform),
+          debugStringConvertibleItem(
+              "backgroundImage",
+              backgroundImage,
+              defaultBaseViewProps.backgroundImage),
       };
 }
 #endif

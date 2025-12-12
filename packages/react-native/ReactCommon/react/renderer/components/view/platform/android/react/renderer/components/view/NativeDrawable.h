@@ -26,7 +26,8 @@ struct NativeDrawable {
     std::optional<Float> rippleRadius{};
     bool borderless{false};
 
-    bool operator==(const Ripple& rhs) const {
+    bool operator==(const Ripple &rhs) const
+    {
       return std::tie(this->color, this->borderless, this->rippleRadius) ==
           std::tie(rhs.color, rhs.borderless, rhs.rippleRadius);
     }
@@ -36,7 +37,8 @@ struct NativeDrawable {
   Ripple ripple;
   Kind kind;
 
-  bool operator==(const NativeDrawable& rhs) const {
+  bool operator==(const NativeDrawable &rhs) const
+  {
     if (this->kind != rhs.kind) {
       return false;
     }
@@ -49,29 +51,26 @@ struct NativeDrawable {
     }
   }
 
-  bool operator!=(const NativeDrawable& rhs) const {
+  bool operator!=(const NativeDrawable &rhs) const
+  {
     return !(*this == rhs);
   }
 
   ~NativeDrawable() = default;
 };
 
-static inline void fromRawValue(
-    const PropsParserContext& /*context*/,
-    const RawValue& rawValue,
-    NativeDrawable& result) {
+static inline void
+fromRawValue(const PropsParserContext & /*context*/, const RawValue &rawValue, NativeDrawable &result)
+{
   auto map = (std::unordered_map<std::string, RawValue>)rawValue;
 
   auto typeIterator = map.find("type");
-  react_native_expect(
-      typeIterator != map.end() && typeIterator->second.hasType<std::string>());
+  react_native_expect(typeIterator != map.end() && typeIterator->second.hasType<std::string>());
   std::string type = (std::string)typeIterator->second;
 
   if (type == "ThemeAttrAndroid") {
     auto attrIterator = map.find("attribute");
-    react_native_expect(
-        attrIterator != map.end() &&
-        attrIterator->second.hasType<std::string>());
+    react_native_expect(attrIterator != map.end() && attrIterator->second.hasType<std::string>());
 
     result = NativeDrawable{
         (std::string)attrIterator->second,
@@ -86,15 +85,10 @@ static inline void fromRawValue(
     result = NativeDrawable{
         std::string{},
         NativeDrawable::Ripple{
-            color != map.end() && color->second.hasType<int32_t>()
-                ? (int32_t)color->second
-                : std::optional<int32_t>{},
-            rippleRadius != map.end() && rippleRadius->second.hasType<Float>()
-                ? (Float)rippleRadius->second
-                : std::optional<Float>{},
-            borderless != map.end() && borderless->second.hasType<bool>()
-                ? (bool)borderless->second
-                : false,
+            color != map.end() && color->second.hasType<int32_t>() ? (int32_t)color->second : std::optional<int32_t>{},
+            rippleRadius != map.end() && rippleRadius->second.hasType<Float>() ? (Float)rippleRadius->second
+                                                                               : std::optional<Float>{},
+            borderless != map.end() && borderless->second.hasType<bool>() ? (bool)borderless->second : false,
         },
         NativeDrawable::Kind::Ripple,
     };

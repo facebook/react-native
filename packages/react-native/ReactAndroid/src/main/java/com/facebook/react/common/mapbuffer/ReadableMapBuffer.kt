@@ -32,7 +32,7 @@ private constructor(
     // Byte data of the mapBuffer
     private val buffer: ByteBuffer,
     // Offset to the start of the MapBuffer
-    private val offsetToMapBuffer: Int
+    private val offsetToMapBuffer: Int,
 ) : HybridClassBase(), MapBuffer {
 
   // Amount of items serialized on the ByteBuffer

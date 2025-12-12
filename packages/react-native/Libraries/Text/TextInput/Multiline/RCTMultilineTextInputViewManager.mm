@@ -8,6 +8,8 @@
 #import <React/RCTMultilineTextInputView.h>
 #import <React/RCTMultilineTextInputViewManager.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 @implementation RCTMultilineTextInputViewManager
 
 RCT_EXPORT_MODULE()
@@ -22,3 +24,5 @@ RCT_EXPORT_MODULE()
 RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, backedTextInputView.dataDetectorTypes, UIDataDetectorTypes)
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

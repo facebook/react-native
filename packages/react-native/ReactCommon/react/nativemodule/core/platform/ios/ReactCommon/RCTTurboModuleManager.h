@@ -19,6 +19,7 @@
 
 @class RCTBridgeProxy;
 @class RCTTurboModuleManager;
+@class RCTDevMenuConfigurationDecorator;
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
@@ -72,6 +73,12 @@
               bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
                            delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                           jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+      devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator;
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
 

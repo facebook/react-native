@@ -44,7 +44,8 @@ internal class ReactClickableSpan(val reactTag: Int) : ClickableSpan(), ReactSpa
     val context = view.context as ReactContext
     val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(context, reactTag)
     eventDispatcher?.dispatchEvent(
-        ViewGroupClickEvent(UIManagerHelper.getSurfaceId(context), reactTag))
+        ViewGroupClickEvent(UIManagerHelper.getSurfaceId(context), reactTag)
+    )
   }
 
   override fun updateDrawState(ds: TextPaint) {

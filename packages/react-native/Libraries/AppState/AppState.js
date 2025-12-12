@@ -97,7 +97,7 @@ class AppStateImpl {
         // It's possible that the state will have changed here & listeners need to be notified
         if (!eventUpdated && this.currentState !== appStateData.app_state) {
           this.currentState = appStateData.app_state;
-          // $FlowFixMe[incompatible-call]
+          // $FlowFixMe[incompatible-type]
           emitter.emit('appStateDidChange', appStateData);
         }
       }, logError);
@@ -120,23 +120,27 @@ class AppStateImpl {
     }
     switch (type) {
       case 'change':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowFixMe[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const changeHandler: AppStateStatus => void = handler;
         return emitter.addListener('appStateDidChange', appStateData => {
           changeHandler(appStateData.app_state);
         });
       case 'memoryWarning':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowFixMe[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const memoryWarningHandler: () => void = handler;
         return emitter.addListener('memoryWarning', memoryWarningHandler);
       case 'blur':
       case 'focus':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowFixMe[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const focusOrBlurHandler: () => void = handler;
         return emitter.addListener('appStateFocusChange', hasFocus => {
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           if (type === 'blur' && !hasFocus) {
             focusOrBlurHandler();
           }
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           if (type === 'focus' && hasFocus) {
             focusOrBlurHandler();
           }

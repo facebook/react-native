@@ -26,7 +26,7 @@ using namespace facebook::react;
 
 - (instancetype)initWithCxxMethod:(const CxxModule::Method &)method
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _method = std::make_unique<CxxModule::Method>(method);
   }
   return self;
@@ -129,7 +129,7 @@ using namespace facebook::react;
       // TODO: we should convert this to JSValue directly
       return convertFollyDynamicToId(result);
     }
-  } catch (const facebook::xplat::JsArgumentException &ex) {
+  } catch ([[maybe_unused]] const facebook::xplat::JsArgumentException &ex) {
     RCTLogError(
         @"Method %@.%s argument error: %s",
         RCTBridgeModuleNameForClass([module class]),

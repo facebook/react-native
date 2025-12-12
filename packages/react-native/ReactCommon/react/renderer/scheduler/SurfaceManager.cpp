@@ -29,9 +29,8 @@ void SurfaceManager::startSurface(
     const LayoutContext& layoutContext) noexcept {
   {
     std::unique_lock lock(mutex_);
-    auto surfaceHandler = SurfaceHandler{moduleName, surfaceId};
-    surfaceHandler.setContextContainer(scheduler_.getContextContainer());
-    registry_.emplace(surfaceId, std::move(surfaceHandler));
+    auto [it, _] = registry_.try_emplace(surfaceId, moduleName, surfaceId);
+    it->second.setContextContainer(scheduler_.getContextContainer());
   }
 
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
@@ -95,11 +94,11 @@ std::optional<SurfaceManager::SurfaceProps> SurfaceManager::getSurfaceProps(
 
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     surfaceProps = SurfaceManager::SurfaceProps{
-        surfaceId,
-        surfaceHandler.getModuleName(),
-        surfaceHandler.getProps(),
-        surfaceHandler.getLayoutConstraints(),
-        surfaceHandler.getLayoutContext()};
+        .surfaceId = surfaceId,
+        .moduleName = surfaceHandler.getModuleName(),
+        .props = surfaceHandler.getProps(),
+        .layoutConstraints = surfaceHandler.getLayoutConstraints(),
+        .layoutContext = surfaceHandler.getLayoutContext()};
   });
 
   return surfaceProps;

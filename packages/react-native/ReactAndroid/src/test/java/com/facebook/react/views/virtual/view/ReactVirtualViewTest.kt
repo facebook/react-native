@@ -47,7 +47,7 @@ class ReactVirtualViewTest {
 
     val displayMetricsHolder = mockStatic(DisplayMetricsHolder::class.java)
     displayMetricsHolder
-        .`when`<DisplayMetrics> { DisplayMetricsHolder.getWindowDisplayMetrics() }
+        .`when`<DisplayMetrics> { DisplayMetricsHolder.getScreenDisplayMetrics() }
         .thenAnswer { DisplayMetrics().apply { density = 1f } }
   }
 
@@ -83,14 +83,16 @@ class ReactVirtualViewTest {
           expectedTargetY = 0,
           expectedTargetHeight = 50,
           expectedThresholdY = 0,
-          expectedThresholdHeight = 200)
+          expectedThresholdHeight = 200,
+      )
       verifyEvent(
           allValues[1],
           expectedMode = VirtualViewMode.Hidden,
           expectedTargetY = 0,
           expectedTargetHeight = 50,
           expectedThresholdY = 0,
-          expectedThresholdHeight = 0)
+          expectedThresholdHeight = 0,
+      )
     }
   }
 

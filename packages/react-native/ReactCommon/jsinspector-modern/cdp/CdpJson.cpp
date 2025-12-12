@@ -49,7 +49,7 @@ std::string jsonResult(RequestId id, const folly::dynamic& result) {
 }
 
 std::string jsonNotification(
-    std::string_view method,
+    const std::string& method,
     std::optional<folly::dynamic> params) {
   auto dynamicNotification = folly::dynamic::object("method", method);
   if (params) {
@@ -60,7 +60,7 @@ std::string jsonNotification(
 
 std::string jsonRequest(
     RequestId id,
-    std::string_view method,
+    const std::string& method,
     std::optional<folly::dynamic> params) {
   auto dynamicRequest = folly::dynamic::object("id", id)("method", method);
   if (params) {

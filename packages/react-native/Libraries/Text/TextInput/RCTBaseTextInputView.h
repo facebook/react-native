@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/RCTView.h>
 
 #import "RCTBackedTextInputDelegate.h"
@@ -18,7 +20,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTBaseTextInputView : RCTView <RCTBackedTextInputDelegate>
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
+@interface RCTBaseTextInputView : RCTView<RCTBackedTextInputDelegate>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
@@ -61,3 +64,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_REMOVE_LEGACY_ARCH

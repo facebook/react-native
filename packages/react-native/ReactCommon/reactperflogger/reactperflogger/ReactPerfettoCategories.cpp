@@ -9,6 +9,7 @@
 
 #include "ReactPerfettoCategories.h"
 
-PERFETTO_TRACK_EVENT_STATIC_STORAGE();
+PERFETTO_TRACK_EVENT_STATIC_STORAGE_IN_NAMESPACE(facebook::react);
+PERFETTO_USE_CATEGORIES_FROM_NAMESPACE(facebook::react);
 
 #endif

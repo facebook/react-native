@@ -237,7 +237,7 @@ BaseTextProps::BaseTextProps(
                     context,
                     rawProps,
                     sourceProps.textAttributes,
-                    TextAttributes{})){};
+                    TextAttributes{})) {};
 
 void BaseTextProps::setProp(
     const PropsParserContext& context,
@@ -524,7 +524,8 @@ void BaseTextProps::appendTextAttributesProps(
         : nullptr;
   }
 
-  if (textAttributes.opacity != oldProps->textAttributes.opacity) {
+  if (!floatEquality(
+          textAttributes.opacity, oldProps->textAttributes.opacity)) {
     result["opacity"] = textAttributes.opacity;
   }
 

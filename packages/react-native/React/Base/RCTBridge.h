@@ -62,10 +62,6 @@ void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
 BOOL RCTFabricInteropLayerEnabled(void);
 void RCTEnableFabricInteropLayer(BOOL enabled);
 
-// Turn on TurboModule sync execution of void methods
-BOOL RCTTurboModuleSyncVoidMethodsEnabled(void);
-void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled);
-
 BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void);
 void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled);
 
@@ -107,7 +103,9 @@ RCT_EXTERN_C_END
  * pre-initialized module instances if they require additional init parameters
  * or configuration.
  */
-- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions;
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
+                   launchOptions:(NSDictionary *)launchOptions
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * DEPRECATED: Use initWithDelegate:launchOptions: instead
@@ -121,7 +119,8 @@ RCT_EXTERN_C_END
  */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    moduleProvider:(RCTBridgeModuleListProvider)block
-                    launchOptions:(NSDictionary *)launchOptions;
+                    launchOptions:(NSDictionary *)launchOptions
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * This method is used to call functions in the JavaScript application context.

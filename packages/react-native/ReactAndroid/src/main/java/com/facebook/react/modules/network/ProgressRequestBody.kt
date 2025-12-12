@@ -19,9 +19,13 @@ import okio.Sink
 
 internal class ProgressRequestBody(
     private val requestBody: RequestBody,
-    private val progressListener: ProgressListener
+    private val progressListener: ProgressListener,
 ) : RequestBody() {
   private var contentLength = 0L
+
+  companion object {
+    private const val MAX_BODY_PREVIEW_SIZE = 1024 * 1024 // 1MB
+  }
 
   override fun contentType(): MediaType? {
     return requestBody.contentType()
@@ -75,6 +79,23 @@ internal class ProgressRequestBody(
             val contentLength = contentLength()
             progressListener.onProgress(bytesWritten, contentLength, bytesWritten == contentLength)
           }
-        })
+        }
+    )
+  }
+
+  fun getBodyPreview(): String {
+    return try {
+      val buffer = okio.Buffer()
+      requestBody.writeTo(buffer)
+      val size = buffer.size()
+      if (size <= MAX_BODY_PREVIEW_SIZE) {
+        buffer.readUtf8()
+      } else {
+        buffer.readUtf8(MAX_BODY_PREVIEW_SIZE.toLong()) +
+            "\n... [truncated, showing $MAX_BODY_PREVIEW_SIZE of $size bytes]"
+      }
+    } catch (e: Exception) {
+      ""
+    }
   }
 }

@@ -29,8 +29,10 @@ abstract class CustomExecTask : Exec() {
   @get:Input @get:Optional abstract val onlyIfProvidedPathDoesNotExists: Property<String>
 
   override fun exec() {
-    if (onlyIfProvidedPathDoesNotExists.isPresent &&
-        File(onlyIfProvidedPathDoesNotExists.get()).exists()) {
+    if (
+        onlyIfProvidedPathDoesNotExists.isPresent &&
+            File(onlyIfProvidedPathDoesNotExists.get()).exists()
+    ) {
       return
     }
     if (standardOutputFile.isPresent) {

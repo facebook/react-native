@@ -13,9 +13,7 @@ import com.facebook.infer.annotation.ThreadConfined.UI
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.LifecycleState
 
-internal class ReactLifecycleStateManager(
-    private val bridgelessReactStateTracker: BridgelessReactStateTracker
-) {
+internal class ReactLifecycleStateManager(private val stateTracker: ReactHostStateTracker) {
   private var state: LifecycleState = LifecycleState.BEFORE_CREATE
 
   val lifecycleState: LifecycleState
@@ -24,7 +22,7 @@ internal class ReactLifecycleStateManager(
   @ThreadConfined(UI)
   fun resumeReactContextIfHostResumed(currentContext: ReactContext, activity: Activity?) {
     if (state == LifecycleState.RESUMED) {
-      bridgelessReactStateTracker.enterState("ReactContext.onHostResume()")
+      stateTracker.enterState("ReactContext.onHostResume()")
       currentContext.onHostResume(activity)
     }
   }
@@ -36,7 +34,7 @@ internal class ReactLifecycleStateManager(
     }
 
     currentContext?.let { context ->
-      bridgelessReactStateTracker.enterState("ReactContext.onHostResume()")
+      stateTracker.enterState("ReactContext.onHostResume()")
       context.onHostResume(activity)
     }
     state = LifecycleState.RESUMED
@@ -48,13 +46,13 @@ internal class ReactLifecycleStateManager(
       when (state) {
         LifecycleState.BEFORE_CREATE -> {
           // TODO: Investigate if we can remove this transition.
-          bridgelessReactStateTracker.enterState("ReactContext.onHostResume()")
+          stateTracker.enterState("ReactContext.onHostResume()")
           it.onHostResume(activity)
-          bridgelessReactStateTracker.enterState("ReactContext.onHostPause()")
+          stateTracker.enterState("ReactContext.onHostPause()")
           it.onHostPause()
         }
         LifecycleState.RESUMED -> {
-          bridgelessReactStateTracker.enterState("ReactContext.onHostPause()")
+          stateTracker.enterState("ReactContext.onHostPause()")
           it.onHostPause()
         }
         else -> {
@@ -71,13 +69,13 @@ internal class ReactLifecycleStateManager(
     currentContext?.let {
       when (state) {
         LifecycleState.BEFORE_RESUME -> {
-          bridgelessReactStateTracker.enterState("ReactContext.onHostDestroy()")
+          stateTracker.enterState("ReactContext.onHostDestroy()")
           it.onHostDestroy()
         }
         LifecycleState.RESUMED -> {
-          bridgelessReactStateTracker.enterState("ReactContext.onHostPause()")
+          stateTracker.enterState("ReactContext.onHostPause()")
           it.onHostPause()
-          bridgelessReactStateTracker.enterState("ReactContext.onHostDestroy()")
+          stateTracker.enterState("ReactContext.onHostDestroy()")
           it.onHostDestroy()
         }
         else -> {

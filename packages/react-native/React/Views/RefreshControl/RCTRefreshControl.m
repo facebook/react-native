@@ -8,6 +8,8 @@
 #import "RCTRefreshControl.h"
 #import "RCTRefreshableProtocol.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import "RCTUtils.h"
 
 @interface RCTRefreshControl () <RCTRefreshableProtocol>
@@ -224,3 +226,5 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

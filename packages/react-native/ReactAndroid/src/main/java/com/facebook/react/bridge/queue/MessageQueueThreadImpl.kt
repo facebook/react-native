@@ -41,7 +41,8 @@ private constructor(
     if (isFinished) {
       FLog.w(
           ReactConstants.TAG,
-          "Tried to enqueue runnable on already finished thread: '$name... dropping Runnable.")
+          "Tried to enqueue runnable on already finished thread: '$name... dropping Runnable.",
+      )
       return false
     }
     handler.post(runnable)
@@ -82,7 +83,8 @@ private constructor(
   public override fun assertIsOnThread(message: String) {
     SoftAssertions.assertCondition(
         isOnThread(),
-        StringBuilder().append(assertionErrorMessage).append(" ").append(message).toString())
+        StringBuilder().append(assertionErrorMessage).append(" ").append(message).toString(),
+    )
   }
 
   /**
@@ -109,7 +111,7 @@ private constructor(
     @Throws(RuntimeException::class)
     public fun create(
         spec: MessageQueueThreadSpec,
-        exceptionHandler: QueueThreadExceptionHandler
+        exceptionHandler: QueueThreadExceptionHandler,
     ): MessageQueueThreadImpl {
       return when (spec.threadType) {
         ThreadType.MAIN_UI -> createForMainThread(spec.name, exceptionHandler)
@@ -122,7 +124,7 @@ private constructor(
     /** Returns a MessageQueueThreadImpl corresponding to Android's main UI thread. */
     private fun createForMainThread(
         name: String,
-        exceptionHandler: QueueThreadExceptionHandler
+        exceptionHandler: QueueThreadExceptionHandler,
     ): MessageQueueThreadImpl =
         MessageQueueThreadImpl(name, Looper.getMainLooper(), exceptionHandler)
 
@@ -137,7 +139,7 @@ private constructor(
     private fun startNewBackgroundThread(
         name: String,
         stackSize: Long,
-        exceptionHandler: QueueThreadExceptionHandler
+        exceptionHandler: QueueThreadExceptionHandler,
     ): MessageQueueThreadImpl {
       val looperFuture = SimpleSettableFuture<Looper?>()
       val bgThread =
@@ -150,7 +152,8 @@ private constructor(
                 Looper.loop()
               },
               "mqt_$name",
-              stackSize)
+              stackSize,
+          )
       bgThread.start()
 
       val looper =

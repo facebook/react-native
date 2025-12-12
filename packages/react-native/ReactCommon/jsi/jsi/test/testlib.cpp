@@ -44,19 +44,23 @@ TEST_P(JSITest, PropNameIDTest) {
   EXPECT_TRUE(PropNameID::compare(rt, movedQuux, copiedQuux));
 
   EXPECT_TRUE(PropNameID::compare(rt, movedQuux, movedQuux));
-  EXPECT_TRUE(PropNameID::compare(
-      rt, movedQuux, PropNameID::forAscii(rt, std::string("quux2"))));
-  EXPECT_FALSE(PropNameID::compare(
-      rt, movedQuux, PropNameID::forAscii(rt, std::string("foo"))));
+  EXPECT_TRUE(
+      PropNameID::compare(
+          rt, movedQuux, PropNameID::forAscii(rt, std::string("quux2"))));
+  EXPECT_FALSE(
+      PropNameID::compare(
+          rt, movedQuux, PropNameID::forAscii(rt, std::string("foo"))));
   uint8_t utf8[] = {0xF0, 0x9F, 0x86, 0x97};
   PropNameID utf8PropNameID = PropNameID::forUtf8(rt, utf8, sizeof(utf8));
   EXPECT_EQ(
       utf8PropNameID.utf8(rt), reinterpret_cast<const char*>(u8"\U0001F197"));
-  EXPECT_TRUE(PropNameID::compare(
-      rt, utf8PropNameID, PropNameID::forUtf8(rt, utf8, sizeof(utf8))));
+  EXPECT_TRUE(
+      PropNameID::compare(
+          rt, utf8PropNameID, PropNameID::forUtf8(rt, utf8, sizeof(utf8))));
   PropNameID nonUtf8PropNameID = PropNameID::forUtf8(rt, "meow");
-  EXPECT_TRUE(PropNameID::compare(
-      rt, nonUtf8PropNameID, PropNameID::forAscii(rt, "meow")));
+  EXPECT_TRUE(
+      PropNameID::compare(
+          rt, nonUtf8PropNameID, PropNameID::forAscii(rt, "meow")));
   EXPECT_EQ(nonUtf8PropNameID.utf8(rt), "meow");
   PropNameID strPropNameID =
       PropNameID::forString(rt, String::createFromAscii(rt, "meow"));
@@ -149,11 +153,12 @@ TEST_P(JSITest, ObjectTest) {
   obj.setProperty(rt, "oprop", oprop);
   obj.setProperty(rt, "aprop", Array(rt, 1));
 
-  EXPECT_TRUE(function("function (obj) { return "
-                       "obj.roses == 'red' && "
-                       "obj['violets'] == 'blue' && "
-                       "typeof obj.oprop == 'object' && "
-                       "Array.isArray(obj.aprop); }")
+  EXPECT_TRUE(function(
+                  "function (obj) { return "
+                  "obj.roses == 'red' && "
+                  "obj['violets'] == 'blue' && "
+                  "typeof obj.oprop == 'object' && "
+                  "Array.isArray(obj.aprop); }")
                   .call(rt, obj)
                   .getBool());
 
@@ -176,6 +181,57 @@ TEST_P(JSITest, ObjectTest) {
   Array names = obj.getPropertyNames(rt);
   EXPECT_EQ(names.size(rt), 1);
   EXPECT_EQ(names.getValueAtIndex(rt, 0).getString(rt).utf8(rt), "a");
+
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::has/get/setProperty with Value overload
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    Value getProperty(const Object& object, const Value& name) override {
+      return Runtime::getProperty(object, name);
+    }
+
+    bool hasProperty(const Object& object, const Value& name) override {
+      return Runtime::hasProperty(object, name);
+    }
+
+    void setPropertyValue(
+        const Object& object,
+        const Value& name,
+        const Value& value) override {
+      Runtime::setPropertyValue(object, name, value);
+    }
+  };
+
+  RD rd = RD(rt);
+
+  obj = eval("const obj = {}; obj;").getObject(rd);
+  auto propVal = Value(123);
+  obj.setProperty(rd, propVal, 456);
+  EXPECT_TRUE(obj.hasProperty(rd, propVal));
+  auto getRes = obj.getProperty(rd, propVal);
+  EXPECT_EQ(getRes.getNumber(), 456);
+
+  /// The property is non-writable so it should fail
+  obj = eval(
+            "Object.defineProperty(obj, '456', {"
+            "  value: 10,"
+            "  writable: false,});")
+            .getObject(rd);
+  auto unwritableProp = Value(456);
+  EXPECT_THROW(obj.setProperty(rd, unwritableProp, 1), JSError);
+
+  auto badObjKey = eval(
+      "var badObj = {"
+      "    toString: function() {"
+      "        throw new Error('something went wrong');"
+      "    }"
+      "};"
+      "badObj;");
+  EXPECT_THROW(obj.setProperty(rd, badObjKey, 123), JSError);
+  EXPECT_THROW(obj.hasProperty(rd, badObjKey), JSError);
+  EXPECT_THROW(obj.getProperty(rd, badObjKey), JSError);
 }
 
 TEST_P(JSITest, HostObjectTest) {
@@ -196,7 +252,7 @@ TEST_P(JSITest, HostObjectTest) {
   EXPECT_TRUE(cho.getHostObject<ConstantHostObject>(rt).get() != nullptr);
 
   struct SameRuntimeHostObject : HostObject {
-    SameRuntimeHostObject(Runtime& rt) : rt_(rt){};
+    SameRuntimeHostObject(Runtime& rt) : rt_(rt) {};
 
     Value get(Runtime& rt, const PropNameID& sym) override {
       EXPECT_EQ(&rt, &rt_);
@@ -680,14 +736,15 @@ TEST_P(JSITest, HostFunctionTest) {
   EXPECT_TRUE(eval("cons.length == 2").getBool());
   EXPECT_TRUE(eval("cons instanceof Function").getBool());
 
-  EXPECT_TRUE(eval("(function() {"
-                   "  try {"
-                   "    cons('fail'); return false;"
-                   "  } catch (e) {"
-                   "    return ((e instanceof Error) &&"
-                   "            (e.message == 'Exception in HostFunction: ' +"
-                   "                          'expected 2 args'));"
-                   "  }})()")
+  EXPECT_TRUE(eval(
+                  "(function() {"
+                  "  try {"
+                  "    cons('fail'); return false;"
+                  "  } catch (e) {"
+                  "    return ((e instanceof Error) &&"
+                  "            (e.message == 'Exception in HostFunction: ' +"
+                  "                          'expected 2 args'));"
+                  "  }})()")
                   .getBool());
 
   Function coolify = Function::createFromHostFunction(
@@ -704,10 +761,11 @@ TEST_P(JSITest, HostFunctionTest) {
   EXPECT_TRUE(eval("coolify.name == 'coolify'").getBool());
   EXPECT_TRUE(eval("coolify.length == 0").getBool());
   EXPECT_TRUE(eval("coolify.bind('R&M')() == 'R&M is cool'").getBool());
-  EXPECT_TRUE(eval("(function() {"
-                   "  var s = coolify.bind(function(){})();"
-                   "  return s.lastIndexOf(' is cool') == (s.length - 8);"
-                   "})()")
+  EXPECT_TRUE(eval(
+                  "(function() {"
+                  "  var s = coolify.bind(function(){})();"
+                  "  return s.lastIndexOf(' is cool') == (s.length - 8);"
+                  "})()")
                   .getBool());
 
   Function lookAtMe = Function::createFromHostFunction(
@@ -836,14 +894,15 @@ TEST_P(JSITest, ValueTest) {
   uint8_t utf8[] = "[null, 2, \"c\", \"emoji: \xf0\x9f\x86\x97\", {}]";
 
   EXPECT_TRUE(
-      function("function (arr) { return "
-               "Array.isArray(arr) && "
-               "arr.length == 5 && "
-               "arr[0] === null && "
-               "arr[1] == 2 && "
-               "arr[2] == 'c' && "
-               "arr[3] == 'emoji: \\uD83C\\uDD97' && "
-               "typeof arr[4] == 'object'; }")
+      function(
+          "function (arr) { return "
+          "Array.isArray(arr) && "
+          "arr.length == 5 && "
+          "arr[0] === null && "
+          "arr[1] == 2 && "
+          "arr[2] == 'c' && "
+          "arr[3] == 'emoji: \\uD83C\\uDD97' && "
+          "typeof arr[4] == 'object'; }")
           .call(rt, Value::createFromJsonUtf8(rt, utf8, sizeof(utf8) - 1))
           .getBool());
 
@@ -885,14 +944,16 @@ TEST_P(JSITest, EqualsTest) {
   EXPECT_TRUE(Value::strictEquals(rt, nullptr, nullptr));
   EXPECT_TRUE(Value::strictEquals(rt, Value::undefined(), Value()));
   EXPECT_TRUE(Value::strictEquals(rt, rt.global(), Value(rt.global())));
-  EXPECT_FALSE(Value::strictEquals(
-      rt,
-      std::numeric_limits<double>::quiet_NaN(),
-      std::numeric_limits<double>::quiet_NaN()));
-  EXPECT_FALSE(Value::strictEquals(
-      rt,
-      std::numeric_limits<double>::signaling_NaN(),
-      std::numeric_limits<double>::signaling_NaN()));
+  EXPECT_FALSE(
+      Value::strictEquals(
+          rt,
+          std::numeric_limits<double>::quiet_NaN(),
+          std::numeric_limits<double>::quiet_NaN()));
+  EXPECT_FALSE(
+      Value::strictEquals(
+          rt,
+          std::numeric_limits<double>::signaling_NaN(),
+          std::numeric_limits<double>::signaling_NaN()));
   EXPECT_TRUE(Value::strictEquals(rt, +0.0, -0.0));
   EXPECT_TRUE(Value::strictEquals(rt, -0.0, +0.0));
 
@@ -1038,8 +1099,9 @@ TEST_P(JSITest, JSErrorDoesNotInfinitelyRecurse) {
     return rt.global().getPropertyAsObject(rt, "NotAProperty");
   };
   EXPECT_EQ(
-      function("function (f) { try { f(); return 'undefined'; }"
-               "catch (e) { return typeof e; } }")
+      function(
+          "function (f) { try { f(); return 'undefined'; }"
+          "catch (e) { return typeof e; } }")
           .call(
               rt,
               Function::createFromHostFunction(
@@ -1279,18 +1341,21 @@ TEST_P(JSITest, SymbolTest) {
   EXPECT_EQ(eval("Symbol('sym')").getSymbol(rt).toString(rt), "Symbol(sym)");
 
   // EqualsTest
-  EXPECT_FALSE(Symbol::strictEquals(
-      rt,
-      eval("Symbol('a')").getSymbol(rt),
-      eval("Symbol('a')").getSymbol(rt)));
-  EXPECT_TRUE(Symbol::strictEquals(
-      rt,
-      eval("Symbol.for('a')").getSymbol(rt),
-      eval("Symbol.for('a')").getSymbol(rt)));
+  EXPECT_FALSE(
+      Symbol::strictEquals(
+          rt,
+          eval("Symbol('a')").getSymbol(rt),
+          eval("Symbol('a')").getSymbol(rt)));
+  EXPECT_TRUE(
+      Symbol::strictEquals(
+          rt,
+          eval("Symbol.for('a')").getSymbol(rt),
+          eval("Symbol.for('a')").getSymbol(rt)));
   EXPECT_FALSE(
       Value::strictEquals(rt, eval("Symbol('a')"), eval("Symbol('a')")));
-  EXPECT_TRUE(Value::strictEquals(
-      rt, eval("Symbol.for('a')"), eval("Symbol.for('a')")));
+  EXPECT_TRUE(
+      Value::strictEquals(
+          rt, eval("Symbol.for('a')"), eval("Symbol.for('a')")));
   EXPECT_FALSE(Value::strictEquals(rt, eval("Symbol('a')"), eval("'a'")));
 }
 
@@ -1301,13 +1366,15 @@ TEST_P(JSITest, JSErrorTest) {
   // Getting message property can throw
 
   EXPECT_THROW(
-      eval("var GetMessageThrows = {get message() { throw Error('ex'); }};"
-           "throw GetMessageThrows;"),
+      eval(
+          "var GetMessageThrows = {get message() { throw Error('ex'); }};"
+          "throw GetMessageThrows;"),
       JSIException);
 
   EXPECT_THROW(
-      eval("var GetMessageThrows = {get message() { throw GetMessageThrows; }};"
-           "throw GetMessageThrows;"),
+      eval(
+          "var GetMessageThrows = {get message() { throw GetMessageThrows; }};"
+          "throw GetMessageThrows;"),
       JSIException);
 
   // Converting exception message to String can throw
@@ -1330,18 +1397,20 @@ TEST_P(JSITest, JSErrorTest) {
       JSIException);
 
   EXPECT_THROW(
-      eval("var e = Error();"
-           "String = function() { throw Error('ctor'); };"
-           "throw e;"),
+      eval(
+          "var e = Error();"
+          "String = function() { throw Error('ctor'); };"
+          "throw e;"),
       JSIException);
 
   // Converting an exception message to String can return a non-String
 
   EXPECT_THROW(
-      eval("String = function() { return 42; };"
-           "var e = Error();"
-           "e.message = 17;"
-           "throw e;"),
+      eval(
+          "String = function() { return 42; };"
+          "var e = Error();"
+          "e.message = 17;"
+          "throw e;"),
       JSIException);
 
   // Exception can be non-Object
@@ -1353,8 +1422,9 @@ TEST_P(JSITest, JSErrorTest) {
   // Converting exception with no message or stack property to String can throw
 
   EXPECT_THROW(
-      eval("var e = {toString() { throw new Error('errstr'); }};"
-           "throw e;"),
+      eval(
+          "var e = {toString() { throw new Error('errstr'); }};"
+          "throw e;"),
       JSIException);
 }
 
@@ -1385,7 +1455,7 @@ TEST_P(JSITest, MicrotasksTest) {
     EXPECT_EQ(
         rt.global().getProperty(rt, "globalValue").asString(rt).utf8(rt),
         "hello world");
-  } catch (const JSINativeException& ex) {
+  } catch (const JSINativeException&) {
     // queueMicrotask() is unimplemented by some runtimes, ignore such failures.
   }
 }
@@ -1480,7 +1550,7 @@ TEST_P(JSITest, ArrayBufferSizeTest) {
   try {
     // Ensure we can safely write some data to the buffer.
     memset(ab.data(rt), 0xab, 10);
-  } catch (const JSINativeException& ex) {
+  } catch (const JSINativeException&) {
     // data() is unimplemented by some runtimes, ignore such failures.
   }
 
@@ -1880,6 +1950,65 @@ TEST_P(JSITest, CastInterface) {
   // Use == instead of EXPECT_EQ to avoid ambiguous operator usage due to the
   // type of 'ptr'.
   EXPECT_TRUE(ptr == nullptr);
+}
+
+TEST_P(JSITest, DeleteProperty) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::deleteProperty
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void deleteProperty(const Object& object, const PropNameID& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+    void deleteProperty(const Object& object, const String& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+    void deleteProperty(const Object& object, const Value& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+  };
+  RD rd = RD(rt);
+  auto obj = eval("obj = {1:2, foo: 'bar', 3: 4, salt:'pepper'}").getObject(rd);
+
+  auto prop = PropNameID::forAscii(rd, "1");
+  auto hasRes = obj.hasProperty(rd, prop);
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, prop);
+  hasRes = obj.hasProperty(rd, prop);
+  EXPECT_FALSE(hasRes);
+
+  auto str = String::createFromAscii(rd, "foo");
+  hasRes = obj.hasProperty(rd, str);
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, str);
+  hasRes = obj.hasProperty(rd, str);
+  EXPECT_FALSE(hasRes);
+
+  auto valProp = Value(3);
+  hasRes = obj.hasProperty(rd, "3");
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, valProp);
+  auto getRes = obj.getProperty(rd, "3");
+  EXPECT_TRUE(getRes.isUndefined());
+
+  hasRes = obj.hasProperty(rd, "salt");
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, "salt");
+  hasRes = obj.hasProperty(rd, "salt");
+  EXPECT_FALSE(hasRes);
+
+  obj = eval(
+            "const obj = {};"
+            "Object.defineProperty(obj, 'prop', {"
+            "  value: 10,"
+            "  configurable: false,});"
+            "obj;")
+            .getObject(rd);
+  EXPECT_THROW(obj.deleteProperty(rd, "prop"), JSError);
+  hasRes = obj.hasProperty(rd, "prop");
+  EXPECT_TRUE(hasRes);
 }
 
 INSTANTIATE_TEST_CASE_P(

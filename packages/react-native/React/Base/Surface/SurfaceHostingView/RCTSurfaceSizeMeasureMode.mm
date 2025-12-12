@@ -18,17 +18,17 @@ void RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
   *minimumSize = CGSizeZero;
   *maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
-  if (sizeMeasureMode & RCTSurfaceSizeMeasureModeWidthExact) {
+  if ((sizeMeasureMode & RCTSurfaceSizeMeasureModeWidthExact) != 0) {
     minimumSize->width = size.width;
     maximumSize->width = size.width;
-  } else if (sizeMeasureMode & RCTSurfaceSizeMeasureModeWidthAtMost) {
+  } else if ((sizeMeasureMode & RCTSurfaceSizeMeasureModeWidthAtMost) != 0) {
     maximumSize->width = size.width;
   }
 
-  if (sizeMeasureMode & RCTSurfaceSizeMeasureModeHeightExact) {
+  if ((sizeMeasureMode & RCTSurfaceSizeMeasureModeHeightExact) != 0) {
     minimumSize->height = size.height;
     maximumSize->height = size.height;
-  } else if (sizeMeasureMode & RCTSurfaceSizeMeasureModeHeightAtMost) {
+  } else if ((sizeMeasureMode & RCTSurfaceSizeMeasureModeHeightAtMost) != 0) {
     maximumSize->height = size.height;
   }
 }

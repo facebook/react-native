@@ -99,7 +99,14 @@ class StyleSizeLength {
   }
 
   constexpr FloatOptional resolve(float referenceLength) {
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
     switch (unit_) {
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
       case Unit::Point:
         return value_;
       case Unit::Percent:

@@ -10,6 +10,7 @@ package com.facebook.react.devsupport
 import android.content.Context
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.SurfaceDelegateFactory
+import com.facebook.react.devsupport.inspector.TracingState
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -22,9 +23,8 @@ import com.facebook.react.packagerconnection.RequestHandler
  * [DevSupportManagerBase] with some additional, more flexible APIs for asynchronously loading the
  * JS bundle.
  *
- * @constructor The primary constructor mirrors the same constructor we have for
- *   [BridgeDevSupportManager] and
- *     * is kept for backward compatibility.
+ * @constructor The primary constructor mirrors the same constructor we had for
+ *   `BridgeDevSupportManager` and is kept for backward compatibility.
  */
 internal class BridgelessDevSupportManager(
     applicationContext: Context,
@@ -37,7 +37,7 @@ internal class BridgelessDevSupportManager(
     customPackagerCommandHandlers: Map<String, RequestHandler>?,
     surfaceDelegateFactory: SurfaceDelegateFactory?,
     devLoadingViewManager: DevLoadingViewManager?,
-    pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
+    pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
 ) :
     DevSupportManagerBase(
         applicationContext,
@@ -50,12 +50,13 @@ internal class BridgelessDevSupportManager(
         customPackagerCommandHandlers,
         surfaceDelegateFactory,
         devLoadingViewManager,
-        pausedInDebuggerOverlayManager) {
+        pausedInDebuggerOverlayManager,
+    ) {
 
   constructor(
       context: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
-      packagerPathForJSBundleName: String?
+      packagerPathForJSBundleName: String?,
   ) : this(
       applicationContext = context.applicationContext,
       reactInstanceManagerHelper = reactInstanceManagerHelper,
@@ -67,7 +68,8 @@ internal class BridgelessDevSupportManager(
       customPackagerCommandHandlers = null,
       surfaceDelegateFactory = null,
       devLoadingViewManager = null,
-      pausedInDebuggerOverlayManager = null)
+      pausedInDebuggerOverlayManager = null,
+  )
 
   override val uniqueTag: String
     get() = "Bridgeless"
@@ -77,5 +79,9 @@ internal class BridgelessDevSupportManager(
     // dismiss redbox if exists
     hideRedboxDialog()
     reactInstanceDevHelper.reload("BridgelessDevSupportManager.handleReloadJS()")
+  }
+
+  fun tracingState(): TracingState {
+    return TracingState.ENABLED_IN_CDP_MODE
   }
 }

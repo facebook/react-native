@@ -25,11 +25,11 @@ import java.lang.reflect.Method
 @DoNotStrip
 @InteropLegacyArchitecture
 internal class JavaModuleWrapper(
-    private val jsInstance: JSInstance,
-    private val moduleHolder: ModuleHolder
+    @Suppress("DEPRECATION") private val jsInstance: JSInstance,
+    private val moduleHolder: ModuleHolder,
 ) {
   interface NativeMethod {
-    fun invoke(jsInstance: JSInstance, parameters: ReadableArray)
+    @Suppress("DEPRECATION") fun invoke(jsInstance: JSInstance, parameters: ReadableArray)
 
     val type: String
   }
@@ -74,6 +74,7 @@ internal class JavaModuleWrapper(
       targetMethod.getAnnotation(ReactMethod::class.java)?.let { annotation ->
         val methodName = targetMethod.name
         val md = MethodDescriptor()
+        @Suppress("DEPRECATION")
         val method = JavaMethodWrapper(this, targetMethod, annotation.isBlockingSynchronousMethod)
         md.name = methodName
         md.type = method.type

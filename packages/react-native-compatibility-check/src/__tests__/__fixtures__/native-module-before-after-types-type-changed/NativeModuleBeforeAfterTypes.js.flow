@@ -29,8 +29,10 @@ type SimpleFunction3 = (foo: string) => string;
 type SimpleFunction4 = (a: number) => string;
 
 type SimpleUnion = 'str1' | 'str2';
+type SimpleUnionOrderChanged = 'str2' | 'str1';
 type SimpleUnionLonger = 'str1' | 'str2' | 'str3';
 type SimpleUnion2 = 4 | 5;
+type SimpleUnion2OrderChanged = 5 | 4;
 type SimpleUnion3 = {} | {key: 'value'};
 type SimpleUnion4 = BooleanType | StringType | SimpleObject;
 
@@ -60,7 +62,9 @@ export interface Spec extends TurboModule {
 
     +simpleUnion: (a: SimpleUnion) => void;
     +simpleUnionLonger: (a: SimpleUnionLonger) => void;
+    +simpleUnionOrderChanged: (a: SimpleUnionOrderChanged) => void;
     +simpleUnion2: (a: SimpleUnion2) => void;
+    +simpleUnion2OrderChanged: (a: SimpleUnion2OrderChanged) => void;
     +simpleUnion3: (a: SimpleUnion3) => void;
     +simpleUnion4: (a: SimpleUnion4) => void;
 

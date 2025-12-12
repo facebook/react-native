@@ -20,6 +20,8 @@ export type Destination =
   'macOS,variant=Mac Catalyst';
 
 export type BuildFlavor = 'Debug' | 'Release';
+
+export type MavenSubGroup = 'hermes' | 'react';
 */
 
 module.exports = {};

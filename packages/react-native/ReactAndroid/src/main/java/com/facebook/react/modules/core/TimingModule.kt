@@ -18,7 +18,7 @@ import com.facebook.react.module.annotations.ReactModule
 @ReactModule(name = NativeTimingSpec.NAME)
 public class TimingModule(
     reactContext: ReactApplicationContext,
-    devSupportManager: DevSupportManager
+    devSupportManager: DevSupportManager,
 ) : com.facebook.fbreact.specs.NativeTimingSpec(reactContext), JavaScriptTimerExecutor {
   private val javaTimerManager: JavaTimerManager =
       JavaTimerManager(reactContext, this, ReactChoreographer.getInstance(), devSupportManager)
@@ -27,7 +27,7 @@ public class TimingModule(
       callbackIDDouble: Double,
       durationDouble: Double,
       jsSchedulingTime: Double,
-      repeat: Boolean
+      repeat: Boolean,
   ) {
     val callbackID = callbackIDDouble.toInt()
     val duration = durationDouble.toInt()

@@ -13,11 +13,9 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(takeScreenshot
-                  : (id /* NSString or NSNumber */)target withOptions
-                  : (NSDictionary *)options resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    takeScreenshot : (id /* NSString or NSNumber */)target withOptions : (NSDictionary *)
+        options resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   [self.bridge.uiManager addUIBlock:^(
                              __unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {

@@ -18,7 +18,7 @@ SDKROOT=$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 env -i \
   PATH="$PATH" \
   SDKROOT="$SDKROOT" \
-  "$CMAKE_BINARY" -S "${PODS_ROOT}/hermes-engine" -B "$hermesc_dir_path" -DJSI_DIR="$jsi_path"
+  "$CMAKE_BINARY" -S "${PODS_ROOT}/hermes-engine" -B "$hermesc_dir_path" -DJSI_DIR="$jsi_path" -DCMAKE_BUILD_TYPE=Release
 
 env -i \
   PATH="$PATH" \

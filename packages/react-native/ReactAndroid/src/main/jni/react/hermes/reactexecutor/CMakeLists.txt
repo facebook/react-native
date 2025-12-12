@@ -20,11 +20,15 @@ target_include_directories(hermes_executor PRIVATE .)
 target_link_libraries(
         hermes_executor
         hermes_executor_common
-        hermes-engine::libhermes
+        hermes-engine::hermesvm
         jsi
         reactnative
 )
 target_compile_reactnative_options(hermes_executor PRIVATE)
 if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
   target_compile_options(hermes_executor PRIVATE -DHERMES_ENABLE_DEBUGGER=1)
+
+  if (HERMES_V1_ENABLED)
+        target_compile_options(hermes_executor PRIVATE -DHERMES_V1_ENABLED=1)
+  endif()
 endif()

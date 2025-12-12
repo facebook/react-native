@@ -35,6 +35,9 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.style.BackgroundImageLayer
+import com.facebook.react.uimanager.style.BackgroundPosition
+import com.facebook.react.uimanager.style.BackgroundRepeat
+import com.facebook.react.uimanager.style.BackgroundSize
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
@@ -65,14 +68,17 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   }
 
   init {
-    if (ReactNativeFeatureFlags.enableViewRecyclingForView()) {
+    if (
+        ReactNativeFeatureFlags.enableViewRecyclingForView() &&
+            this.javaClass == ReactViewManager::class.java
+    ) {
       setupViewRecycling()
     }
   }
 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
-      view: ReactViewGroup
+      view: ReactViewGroup,
   ): ReactViewGroup? {
     // We don't want to run the view clipping when the view is being prepared for recycling to avoid
     // have size changes iterate over child view that should be removed anyway
@@ -149,6 +155,63 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     }
   }
 
+  @ReactProp(name = ViewProps.BACKGROUND_SIZE, customType = "BackgroundSize")
+  public open fun setBackgroundSize(view: ReactViewGroup, backgroundSize: ReadableArray?) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundSize != null && backgroundSize.size() > 0) {
+        val backgroundSizes = ArrayList<BackgroundSize>(backgroundSize.size())
+        for (i in 0 until backgroundSize.size()) {
+          val backgroundSizeValue = backgroundSize.getDynamic(i)
+          val parsedBackgroundSize = BackgroundSize.parse(backgroundSizeValue)
+          if (parsedBackgroundSize != null) {
+            backgroundSizes.add(parsedBackgroundSize)
+          }
+        }
+        BackgroundStyleApplicator.setBackgroundSize(view, backgroundSizes)
+      }
+    } else {
+      BackgroundStyleApplicator.setBackgroundSize(view, null)
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_POSITION, customType = "BackgroundPosition")
+  public open fun setBackgroundPosition(view: ReactViewGroup, backgroundPosition: ReadableArray?) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundPosition != null && backgroundPosition.size() > 0) {
+        val backgroundPositions = ArrayList<BackgroundPosition>(backgroundPosition.size())
+        for (i in 0 until backgroundPosition.size()) {
+          val backgroundPositionMap = backgroundPosition.getMap(i)
+          val parsedBackgroundPosition = BackgroundPosition.parse(backgroundPositionMap)
+          if (parsedBackgroundPosition != null) {
+            backgroundPositions.add(parsedBackgroundPosition)
+          }
+        }
+        BackgroundStyleApplicator.setBackgroundPosition(view, backgroundPositions)
+      } else {
+        BackgroundStyleApplicator.setBackgroundPosition(view, null)
+      }
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_REPEAT, customType = "BackgroundRepeat")
+  public open fun setBackgroundRepeat(view: ReactViewGroup, backgroundRepeat: ReadableArray?) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundRepeat != null && backgroundRepeat.size() > 0) {
+        val backgroundRepeats = ArrayList<BackgroundRepeat>(backgroundRepeat.size())
+        for (i in 0 until backgroundRepeat.size()) {
+          val backgroundRepeatMap = backgroundRepeat.getMap(i)
+          val parsedBackgroundRepeat = BackgroundRepeat.parse(backgroundRepeatMap)
+          if (parsedBackgroundRepeat != null) {
+            backgroundRepeats.add(parsedBackgroundRepeat)
+          }
+        }
+        BackgroundStyleApplicator.setBackgroundRepeat(view, backgroundRepeats)
+      } else {
+        BackgroundStyleApplicator.setBackgroundRepeat(view, null)
+      }
+    }
+  }
+
   @ReactProp(name = "nextFocusDown", defaultInt = View.NO_ID)
   public open fun nextFocusDown(view: ReactViewGroup, viewId: Int) {
     view.nextFocusDownId = viewId
@@ -190,15 +253,18 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
               ViewProps.BORDER_END_START_RADIUS,
               ViewProps.BORDER_START_END_RADIUS,
               ViewProps.BORDER_START_START_RADIUS,
-          ])
+          ]
+  )
   public open fun setBorderRadius(view: ReactViewGroup, index: Int, rawBorderRadius: Dynamic) {
     var borderRadius = LengthPercentage.setFromDynamic(rawBorderRadius)
 
     // We do not support percentage border radii on Paper in order to be consistent with iOS (to
     // avoid developer surprise if it works on one platform but not another).
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC &&
-        borderRadius != null &&
-        borderRadius.type == LengthPercentageType.PERCENT) {
+    if (
+        ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC &&
+            borderRadius != null &&
+            borderRadius.type == LengthPercentageType.PERCENT
+    ) {
       borderRadius = null
     }
 
@@ -207,7 +273,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @Deprecated(
       "Don't use setBorderRadius(view, int, Float) as it was deprecated in React Native 0.75.0.",
-      ReplaceWith("setBorderRadius(view, index, DynamicFromObject(borderRadius)"))
+      ReplaceWith("setBorderRadius(view, index, DynamicFromObject(borderRadius)"),
+  )
   public open fun setBorderRadius(view: ReactViewGroup, index: Int, borderRadius: Float) {
     setBorderRadius(view, index, DynamicFromObject(borderRadius))
   }
@@ -272,7 +339,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
   public open fun setNeedsOffscreenAlphaCompositing(
       view: ReactViewGroup,
-      needsOffscreenAlphaCompositing: Boolean
+      needsOffscreenAlphaCompositing: Boolean,
   ) {
     view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing)
   }
@@ -288,7 +355,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
               ViewProps.BORDER_START_WIDTH,
               ViewProps.BORDER_END_WIDTH,
           ],
-      defaultFloat = Float.NaN)
+      defaultFloat = Float.NaN,
+  )
   public open fun setBorderWidth(view: ReactViewGroup, index: Int, width: Float) {
     BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width)
   }
@@ -307,10 +375,14 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
               ViewProps.BORDER_BLOCK_END_COLOR,
               ViewProps.BORDER_BLOCK_START_COLOR,
           ],
-      customType = "Color")
+      customType = "Color",
+  )
   public open fun setBorderColor(view: ReactViewGroup, index: Int, color: Int?) {
     BackgroundStyleApplicator.setBorderColor(
-        view, LogicalEdge.fromSpacingType(SPACING_TYPES[index]), color)
+        view,
+        LogicalEdge.fromSpacingType(SPACING_TYPES[index]),
+        color,
+    )
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE)
@@ -333,7 +405,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
         val eventDispatcher =
             UIManagerHelper.getEventDispatcherForReactTag((view.context as ReactContext), view.id)
         eventDispatcher?.dispatchEvent(
-            ViewGroupClickEvent(UIManagerHelper.getSurfaceId(view.context), view.id))
+            ViewGroupClickEvent(UIManagerHelper.getSurfaceId(view.context), view.id)
+        )
       }
 
       // Clickable elements are focusable. On API 26, this is taken care by setClickable.
@@ -364,7 +437,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   override fun setTransformProperty(
       view: ReactViewGroup,
       transforms: ReadableArray?,
-      transformOrigin: ReadableArray?
+      transformOrigin: ReadableArray?,
   ) {
     super.setTransformProperty(view, transforms, transformOrigin)
     view.setBackfaceVisibilityDependantOpacity()
@@ -380,7 +453,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @Deprecated(
       "Use receiveCommand(View, String, ReadableArray)",
-      ReplaceWith("receiveCommand(root, commandIdString, args)"))
+      ReplaceWith("receiveCommand(root, commandIdString, args)"),
+  )
   override fun receiveCommand(root: ReactViewGroup, commandId: Int, args: ReadableArray?) {
     when (commandId) {
       CMD_HOTSPOT_UPDATE -> handleHotspotUpdate(root, args)
@@ -393,6 +467,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     when (commandId) {
       HOTSPOT_UPDATE_KEY -> handleHotspotUpdate(root, args)
       "setPressed" -> handleSetPressed(root, args)
+      "focus" -> handleFocus(root)
+      "blur" -> handleBlur(root)
       else -> {}
     }
   }
@@ -400,7 +476,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   private fun handleSetPressed(root: ReactViewGroup, args: ReadableArray?) {
     if (args == null || args.size() != 1) {
       throw JSApplicationIllegalArgumentException(
-          "Illegal number of arguments for 'setPressed' command")
+          "Illegal number of arguments for 'setPressed' command"
+      )
     }
     root.isPressed = args.getBoolean(0)
   }
@@ -408,11 +485,24 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   private fun handleHotspotUpdate(root: ReactViewGroup, args: ReadableArray?) {
     if (args == null || args.size() != 2) {
       throw JSApplicationIllegalArgumentException(
-          "Illegal number of arguments for 'updateHotspot' command")
+          "Illegal number of arguments for 'updateHotspot' command"
+      )
     }
 
     val x = args.getDouble(0).dpToPx()
     val y = args.getDouble(1).dpToPx()
     root.drawableHotspotChanged(x, y)
+  }
+
+  private fun handleFocus(root: ReactViewGroup) {
+    if (ReactNativeFeatureFlags.enableImperativeFocus()) {
+      root.requestFocusFromJS()
+    }
+  }
+
+  private fun handleBlur(root: ReactViewGroup) {
+    if (ReactNativeFeatureFlags.enableImperativeFocus()) {
+      root.clearFocusFromJS()
+    }
   }
 }

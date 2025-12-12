@@ -122,7 +122,8 @@ internal class LinearGradient(val direction: Direction, val colorStops: List<Col
         endPoint[1],
         colors,
         positions,
-        Shader.TileMode.CLAMP)
+        Shader.TileMode.CLAMP,
+    )
   }
 
   // Spec: https://www.w3.org/TR/css-images-3/#linear-gradient-syntax
@@ -130,7 +131,7 @@ internal class LinearGradient(val direction: Direction, val colorStops: List<Col
   private fun getAngleForKeyword(
       keyword: Direction.KeywordType,
       width: Double,
-      height: Double
+      height: Double,
   ): Double {
     return when (keyword) {
       Direction.KeywordType.TO_TOP_RIGHT -> {
@@ -149,7 +150,7 @@ internal class LinearGradient(val direction: Direction, val colorStops: List<Col
   private fun endPointsFromAngle(
       angle: Double,
       height: Float,
-      width: Float
+      width: Float,
   ): Pair<FloatArray, FloatArray> {
     var adjustedAngle = angle % 360
     if (adjustedAngle < 0) {

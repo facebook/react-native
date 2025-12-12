@@ -17,8 +17,9 @@ RuntimeHeapInfoCollector::RuntimeHeapInfoCollector(
     std::chrono::milliseconds intervalMs)
     : intervalMs_(intervalMs) {
   if (intervalMs_ <= std::chrono::milliseconds::zero()) {
-    throw std::runtime_error(fmt::format(
-        "Invalid interval, must be > 0ms, got {} ms", intervalMs_.count()));
+    throw std::runtime_error(
+        fmt::format(
+            "Invalid interval, must be > 0ms, got {} ms", intervalMs_.count()));
   }
 
   lastCollectionTime_ = std::chrono::steady_clock::now();

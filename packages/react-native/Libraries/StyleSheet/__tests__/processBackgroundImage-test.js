@@ -709,7 +709,7 @@ describe('processBackgroundImage', () => {
         colorStops: [{color: 'red'}, {positions: ['20%']}, {color: 'blue'}],
       },
     ];
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     const result = processBackgroundImage(input);
     expect(result[0].type).toBe('linear-gradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 180});
@@ -741,7 +741,7 @@ describe('processBackgroundImage', () => {
     expect(result).toEqual([]);
 
     // Invalid object syntax
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     result = processBackgroundImage([
       {
         type: 'linear-gradient' as const,
@@ -781,7 +781,7 @@ describe('processBackgroundImage', () => {
         ],
       },
     ];
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: null},
@@ -889,7 +889,7 @@ describe('processBackgroundImage', () => {
         ],
       },
     ];
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     const result1 = processBackgroundImage(input1);
     expect(result1[0].colorStops).toEqual([
       {color: processColor('red'), position: '10%'},
@@ -925,7 +925,7 @@ describe('processBackgroundImage', () => {
         },
       },
     ];
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: '10%'},

@@ -31,7 +31,8 @@ internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCo
       FLog.w(
           HeadlessJsTaskSupportModule::class.java,
           "Tried to retry non-active task with id %d. Did it time out?",
-          taskId)
+          taskId,
+      )
       promise.resolve(false)
     }
   }
@@ -45,7 +46,8 @@ internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCo
       FLog.w(
           HeadlessJsTaskSupportModule::class.java,
           "Tried to finish non-active task with id %d. Did it time out?",
-          taskId)
+          taskId,
+      )
     }
   }
 

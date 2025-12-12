@@ -16,8 +16,9 @@ import org.junit.Before
 import org.junit.Test
 
 /** Test that verifies that spec of methods annotated with @ReactProp is correct */
-@Suppress("UNUSED_PARAMETER")
+@Suppress("UNUSED_PARAMETER", "DEPRECATED")
 class ReactPropAnnotationSetterSpecTest {
+  @Suppress("DEPRECATION")
   private abstract inner class BaseViewManager : ViewManager<View, ReactShadowNode<*>>() {
     override fun getName(): String = "IgnoredName"
 

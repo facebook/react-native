@@ -54,7 +54,12 @@ RuntimeTarget::RuntimeTarget(
 void RuntimeTarget::installGlobals() {
   // NOTE: RuntimeTarget::installConsoleHandler is in RuntimeTargetConsole.cpp
   installConsoleHandler();
+  // NOTE: RuntimeTarget::installDebuggerSessionObserver is in
+  // RuntimeTargetDebuggerSessionObserver.cpp
   installDebuggerSessionObserver();
+  // NOTE: RuntimeTarget::installNetworkReporterAPI is in
+  // RuntimeTargetNetwork.cpp
+  installNetworkReporterAPI();
 }
 
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
@@ -77,12 +82,24 @@ std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
   return runtimeAgent;
 }
 
+std::shared_ptr<RuntimeTracingAgent> RuntimeTarget::createTracingAgent(
+    tracing::TraceRecordingState& state) {
+  auto agent = std::make_shared<RuntimeTracingAgent>(state, controller_);
+  tracingAgent_ = agent;
+  return agent;
+}
+
 RuntimeTarget::~RuntimeTarget() {
   // Agents are owned by the session, not by RuntimeTarget, but
   // they hold a RuntimeTarget& that we must guarantee is valid.
   assert(
       agents_.empty() &&
       "RuntimeAgent objects must be destroyed before their RuntimeTarget. Did you call InstanceTarget::unregisterRuntime()?");
+
+  // Tracing Agents are owned by the HostTargetTraceRecording.
+  assert(
+      tracingAgent_.expired() &&
+      "RuntimeTracingAgent must be destroyed before their InstanceTarget. Did you call InstanceTarget::unregisterRuntime()?");
 }
 
 void RuntimeTarget::installBindingHandler(const std::string& bindingName) {
@@ -146,24 +163,109 @@ void RuntimeTarget::emitDebuggerSessionDestroyed() {
   });
 }
 
+void RuntimeTarget::enableSamplingProfiler() {
+  delegate_.enableSamplingProfiler();
+}
+
+void RuntimeTarget::disableSamplingProfiler() {
+  delegate_.disableSamplingProfiler();
+}
+
+tracing::RuntimeSamplingProfile RuntimeTarget::collectSamplingProfile() {
+  return delegate_.collectSamplingProfile();
+}
+
+void RuntimeTarget::notifyDomainStateChanged(
+    Domain domain,
+    bool enabled,
+    const RuntimeAgent& notifyingAgent) {
+  auto [domainStateChangedLocally, domainStateChangedGlobally] =
+      processDomainChange(domain, enabled, notifyingAgent);
+
+  switch (domain) {
+    case Domain::Log:
+    case Domain::Runtime: {
+      auto otherDomain = domain == Domain::Log ? Domain::Runtime : Domain::Log;
+      // There should be an agent that enables both Log and Runtime domains.
+      if (!agentsByEnabledDomain_[otherDomain].contains(&notifyingAgent)) {
+        break;
+      }
+
+      if (domainStateChangedGlobally && enabled) {
+        assert(agentsWithRuntimeAndLogDomainsEnabled_ == 0);
+        emitDebuggerSessionCreated();
+        ++agentsWithRuntimeAndLogDomainsEnabled_;
+      } else if (domainStateChangedGlobally) {
+        assert(agentsWithRuntimeAndLogDomainsEnabled_ == 1);
+        emitDebuggerSessionDestroyed();
+        --agentsWithRuntimeAndLogDomainsEnabled_;
+      } else if (domainStateChangedLocally && enabled) {
+        // This is a case when given domain was already enabled by other Agent,
+        // so global state didn't change.
+        if (++agentsWithRuntimeAndLogDomainsEnabled_ == 1) {
+          emitDebuggerSessionCreated();
+        }
+      } else if (domainStateChangedLocally) {
+        if (--agentsWithRuntimeAndLogDomainsEnabled_ == 0) {
+          emitDebuggerSessionDestroyed();
+        }
+      }
+
+      break;
+    }
+    case Domain::Network:
+      break;
+    case Domain::kMaxValue: {
+      throw std::logic_error("Unexpected kMaxValue domain value provided");
+    }
+  }
+}
+
+std::pair<bool, bool> RuntimeTarget::processDomainChange(
+    Domain domain,
+    bool enabled,
+    const RuntimeAgent& notifyingAgent) {
+  bool domainHadAgentsBefore = !agentsByEnabledDomain_[domain].empty();
+  bool domainHasBeenEnabledBefore =
+      agentsByEnabledDomain_[domain].contains(&notifyingAgent);
+
+  if (enabled) {
+    agentsByEnabledDomain_[domain].insert(&notifyingAgent);
+  } else {
+    agentsByEnabledDomain_[domain].erase(&notifyingAgent);
+  }
+  threadSafeDomainStatus_[domain] = !agentsByEnabledDomain_[domain].empty();
+
+  bool domainHasAgentsAfter = !agentsByEnabledDomain_[domain].empty();
+
+  return {
+      domainHasBeenEnabledBefore ^ enabled,
+      domainHadAgentsBefore ^ domainHasAgentsAfter,
+  };
+}
+
+bool RuntimeTarget::isDomainEnabled(Domain domain) const {
+  return threadSafeDomainStatus_[domain];
+}
+
+bool RuntimeTarget::isConsoleCreateTaskEnabled() const {
+  if (isDomainEnabled(Domain::Runtime)) {
+    return true;
+  }
+
+  if (auto tracingAgent = tracingAgent_.lock()) {
+    return tracingAgent->isRunningInBackgroundMode();
+  }
+
+  return false;
+}
+
 RuntimeTargetController::RuntimeTargetController(RuntimeTarget& target)
     : target_(target) {}
 
 void RuntimeTargetController::installBindingHandler(
     const std::string& bindingName) {
   target_.installBindingHandler(bindingName);
-}
-
-void RuntimeTargetController::notifyDebuggerSessionCreated() {
-  target_.emitDebuggerSessionCreated();
-}
-
-void RuntimeTargetController::notifyDebuggerSessionDestroyed() {
-  target_.emitDebuggerSessionDestroyed();
-}
-
-void RuntimeTargetController::registerForTracing() {
-  target_.registerForTracing();
 }
 
 void RuntimeTargetController::enableSamplingProfiler() {
@@ -179,22 +281,11 @@ RuntimeTargetController::collectSamplingProfile() {
   return target_.collectSamplingProfile();
 }
 
-void RuntimeTarget::registerForTracing() {
-  jsExecutor_([](auto& /*runtime*/) {
-    tracing::PerformanceTracer::getInstance().reportJavaScriptThread();
-  });
-}
-
-void RuntimeTarget::enableSamplingProfiler() {
-  delegate_.enableSamplingProfiler();
-}
-
-void RuntimeTarget::disableSamplingProfiler() {
-  delegate_.disableSamplingProfiler();
-}
-
-tracing::RuntimeSamplingProfile RuntimeTarget::collectSamplingProfile() {
-  return delegate_.collectSamplingProfile();
+void RuntimeTargetController::notifyDomainStateChanged(
+    Domain domain,
+    bool enabled,
+    const RuntimeAgent& notifyingAgent) {
+  target_.notifyDomainStateChanged(domain, enabled, notifyingAgent);
 }
 
 } // namespace facebook::react::jsinspector_modern

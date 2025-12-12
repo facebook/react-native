@@ -10,22 +10,101 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/ShadowNodeFamily.h>
+#include <react/renderer/css/CSSLength.h>
+#include <react/renderer/css/CSSPercentage.h>
+#include <react/renderer/css/CSSValueParser.h>
+#include <react/renderer/graphics/RectangleEdges.h>
 #include <utility>
 
 namespace facebook::react {
+
+// Parse a normalized rootMargin string that's always in the format:
+// "top right bottom left" where each value is either "Npx" or "N%"
+// The string is already validated and normalized by JS.
+// Returns a vector of 4 MarginValue structures (top, right, bottom, left).
+// Returns an empty vector if parsing fails.
+std::vector<MarginValue> parseNormalizedRootMargin(
+    const std::string& marginStr) {
+  // If unset or set to default, return empty so we don't apply any margins
+  if (marginStr.empty() || marginStr == "0px 0px 0px 0px") {
+    return {};
+  }
+
+  std::vector<MarginValue> values;
+  CSSSyntaxParser syntaxParser(marginStr);
+
+  // Parse exactly 4 space-separated values
+  while (!syntaxParser.isFinished() && values.size() < 4) {
+    syntaxParser.consumeWhitespace();
+    if (syntaxParser.isFinished()) {
+      break;
+    }
+
+    auto parsed = parseNextCSSValue<CSSLength, CSSPercentage>(syntaxParser);
+
+    if (std::holds_alternative<CSSLength>(parsed)) {
+      auto length = std::get<CSSLength>(parsed);
+      // Only support px units for rootMargin (per W3C spec)
+      if (length.unit != CSSLengthUnit::Px) {
+        return {};
+      }
+      values.push_back({length.value, false});
+    } else if (std::holds_alternative<CSSPercentage>(parsed)) {
+      auto percentage = std::get<CSSPercentage>(parsed);
+      values.push_back({percentage.value, true});
+    } else {
+      // Invalid token
+      return {};
+    }
+  }
+
+  // Should have exactly 4 values since JS normalizes to this format
+  if (values.size() != 4) {
+    return {};
+  }
+
+  return values;
+}
+
+namespace {
+
+// Convert margin values to actual pixel values based on root rect.
+// Per W3C spec: top/bottom percentages use height, left/right use width.
+EdgeInsets calculateRootMarginInsets(
+    const std::vector<MarginValue>& margins,
+    const Rect& rootRect) {
+  Float top = margins[0].isPercentage
+      ? (margins[0].value / 100.0f) * rootRect.size.height
+      : margins[0].value;
+  Float right = margins[1].isPercentage
+      ? (margins[1].value / 100.0f) * rootRect.size.width
+      : margins[1].value;
+  Float bottom = margins[2].isPercentage
+      ? (margins[2].value / 100.0f) * rootRect.size.height
+      : margins[2].value;
+  Float left = margins[3].isPercentage
+      ? (margins[3].value / 100.0f) * rootRect.size.width
+      : margins[3].value;
+
+  return EdgeInsets{left, top, right, bottom};
+}
+
+} // namespace
 
 IntersectionObserver::IntersectionObserver(
     IntersectionObserverObserverId intersectionObserverId,
     std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily,
     ShadowNodeFamily::Shared targetShadowNodeFamily,
     std::vector<Float> thresholds,
-    std::optional<std::vector<Float>> rootThresholds)
+    std::optional<std::vector<Float>> rootThresholds,
+    std::vector<MarginValue> rootMargins)
     : intersectionObserverId_(intersectionObserverId),
       observationRootShadowNodeFamily_(
           std::move(observationRootShadowNodeFamily)),
       targetShadowNodeFamily_(std::move(targetShadowNodeFamily)),
       thresholds_(std::move(thresholds)),
-      rootThresholds_(std::move(rootThresholds)) {}
+      rootThresholds_(std::move(rootThresholds)),
+      rootMargins_(std::move(rootMargins)) {}
 
 static std::shared_ptr<const ShadowNode> getShadowNode(
     const ShadowNodeFamily::AncestorList& ancestors) {
@@ -65,8 +144,8 @@ static Rect getRootNodeBoundingRect(const RootShadowNode& rootShadowNode) {
 static Rect getBoundingRect(const ShadowNodeFamily::AncestorList& ancestors) {
   auto layoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
       ancestors,
-      {/* .includeTransform = */ true,
-       /* .includeViewportOffset = */ true});
+      {/* .includeTransform = */ .includeTransform = true,
+       /* .includeViewportOffset = */ .includeViewportOffset = true});
   return layoutMetrics == EmptyLayoutMetrics ? Rect{} : layoutMetrics.frame;
 }
 
@@ -74,33 +153,55 @@ static Rect getClippedTargetBoundingRect(
     const ShadowNodeFamily::AncestorList& targetAncestors) {
   auto layoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
       targetAncestors,
-      {/* .includeTransform = */ true,
-       /* .includeViewportOffset = */ true,
-       /* .applyParentClipping = */ true});
+      {/* .includeTransform = */ .includeTransform = true,
+       /* .includeViewportOffset = */ .includeViewportOffset = true,
+       /* .applyParentClipping = */ .enableOverflowClipping = true});
 
   return layoutMetrics == EmptyLayoutMetrics ? Rect{} : layoutMetrics.frame;
 }
 
+// Distinguishes between edge-adjacent vs. no intersection
+static std::optional<Rect> intersectOrNull(
+    const Rect& rect1,
+    const Rect& rect2) {
+  auto result = Rect::intersect(rect1, rect2);
+  // Check if the result has zero area (could be empty or degenerate)
+  if (result.size.width == 0 || result.size.height == 0) {
+    // Check if origin is within both rectangles (touching case)
+    bool originInRect1 = result.origin.x >= rect1.getMinX() &&
+        result.origin.x <= rect1.getMaxX() &&
+        result.origin.y >= rect1.getMinY() &&
+        result.origin.y <= rect1.getMaxY();
+
+    bool originInRect2 = result.origin.x >= rect2.getMinX() &&
+        result.origin.x <= rect2.getMaxX() &&
+        result.origin.y >= rect2.getMinY() &&
+        result.origin.y <= rect2.getMaxY();
+
+    if (!originInRect1 || !originInRect2) {
+      // No actual intersection - rectangles are separated
+      return std::nullopt;
+    }
+  }
+
+  // Valid intersection (including degenerate edge/corner cases)
+  return result;
+}
+
 // Partially equivalent to
-// https://w3c.github.io/IntersectionObserver/#compute-the-intersection
-static Rect computeIntersection(
+// https://w3c.github.io/IntersectionObserver/#calculate-intersection-rect-algo
+static std::optional<Rect> computeIntersection(
     const Rect& rootBoundingRect,
+    const Rect& rootMarginBoundingRect,
     const Rect& targetBoundingRect,
     const ShadowNodeFamily::AncestorList& targetToRootAncestors,
-    bool hasCustomRoot) {
+    bool hasExplicitRoot) {
+  // Use intersectOrNull to properly distinguish between edge-adjacent
+  // (valid intersection) and separated rectangles (no intersection)
   auto absoluteIntersectionRect =
-      Rect::intersect(rootBoundingRect, targetBoundingRect);
-
-  Float absoluteIntersectionRectArea = absoluteIntersectionRect.size.width *
-      absoluteIntersectionRect.size.height;
-
-  Float targetBoundingRectArea =
-      targetBoundingRect.size.width * targetBoundingRect.size.height;
-
-  // Finish early if there is not intersection between the root and the target
-  // before we do any clipping.
-  if (absoluteIntersectionRectArea == 0 || targetBoundingRectArea == 0) {
-    return {};
+      intersectOrNull(rootMarginBoundingRect, targetBoundingRect);
+  if (!absoluteIntersectionRect.has_value()) {
+    return std::nullopt;
   }
 
   // Coordinates of the target after clipping the parts hidden by a parent,
@@ -109,12 +210,14 @@ static Rect computeIntersection(
   auto clippedTargetFromRoot =
       getClippedTargetBoundingRect(targetToRootAncestors);
 
-  auto clippedTargetBoundingRect = hasCustomRoot ? Rect{
-      rootBoundingRect.origin + clippedTargetFromRoot.origin,
-      clippedTargetFromRoot.size}
+  // Use root origin (without rootMargins) to translate coordinates of
+  // clippedTarget from relative to root, to top-level coordinate system
+  auto clippedTargetBoundingRect = hasExplicitRoot ? Rect{
+      .origin= rootBoundingRect.origin + clippedTargetFromRoot.origin,
+      .size=clippedTargetFromRoot.size}
       : clippedTargetFromRoot;
 
-  return Rect::intersect(rootBoundingRect, clippedTargetBoundingRect);
+  return intersectOrNull(rootMarginBoundingRect, clippedTargetBoundingRect);
 }
 
 static Float getHighestThresholdCrossed(
@@ -135,37 +238,53 @@ std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservation(
     const RootShadowNode& rootShadowNode,
     HighResTimeStamp time) {
-  bool hasCustomRoot = observationRootShadowNodeFamily_.has_value();
+  bool hasExplicitRoot = observationRootShadowNodeFamily_.has_value();
 
-  auto rootAncestors = hasCustomRoot
+  auto rootAncestors = hasExplicitRoot
       ? observationRootShadowNodeFamily_.value()->getAncestors(rootShadowNode)
       : ShadowNodeFamily::AncestorList{};
 
   // Absolute coordinates of the root
-  auto rootBoundingRect = hasCustomRoot
+  auto rootBoundingRect = hasExplicitRoot
       ? getBoundingRect(rootAncestors)
       : getRootNodeBoundingRect(rootShadowNode);
+
+  auto rootMarginBoundingRect = rootBoundingRect;
+
+  // Apply rootMargin to expand/contract the root bounding rect
+  if (!rootMargins_.empty()) {
+    // Calculate the actual insets based on current root dimensions
+    // (converts percentages to pixels)
+    auto insets = calculateRootMarginInsets(rootMargins_, rootBoundingRect);
+    // Use outsetBy to expand the root rect (positive values expand, negative
+    // contract)
+    rootMarginBoundingRect = outsetBy(rootBoundingRect, insets);
+  }
 
   auto targetAncestors = targetShadowNodeFamily_->getAncestors(rootShadowNode);
 
   // Absolute coordinates of the target
   auto targetBoundingRect = getBoundingRect(targetAncestors);
 
-  if ((hasCustomRoot && rootAncestors.empty()) || targetAncestors.empty()) {
+  if ((hasExplicitRoot && rootAncestors.empty()) || targetAncestors.empty()) {
     // If observation root or target is not a descendant of `rootShadowNode`
     return setNotIntersectingState(
-        rootBoundingRect, targetBoundingRect, {}, time);
+        rootMarginBoundingRect, targetBoundingRect, {}, time);
   }
 
-  auto targetToRootAncestors = hasCustomRoot
+  auto targetToRootAncestors = hasExplicitRoot
       ? targetShadowNodeFamily_->getAncestors(*getShadowNode(rootAncestors))
       : targetAncestors;
 
-  auto intersectionRect = computeIntersection(
+  auto intersection = computeIntersection(
       rootBoundingRect,
+      rootMarginBoundingRect,
       targetBoundingRect,
       targetToRootAncestors,
-      hasCustomRoot);
+      hasExplicitRoot);
+
+  auto intersectionRect =
+      intersection.has_value() ? intersection.value() : Rect{};
 
   Float targetBoundingRectArea =
       targetBoundingRect.size.width * targetBoundingRect.size.height;
@@ -177,9 +296,9 @@ IntersectionObserver::updateIntersectionObservation(
       ? 0
       : intersectionRectArea / targetBoundingRectArea;
 
-  if (intersectionRatio == 0) {
+  if (!intersection.has_value()) {
     return setNotIntersectingState(
-        rootBoundingRect, targetBoundingRect, intersectionRect, time);
+        rootMarginBoundingRect, targetBoundingRect, intersectionRect, time);
   }
 
   auto highestThresholdCrossed =
@@ -187,11 +306,11 @@ IntersectionObserver::updateIntersectionObservation(
 
   auto highestRootThresholdCrossed = -1.0f;
   if (rootThresholds_.has_value()) {
-    Float rootBoundingRectArea =
-        rootBoundingRect.size.width * rootBoundingRect.size.height;
-    Float rootThresholdIntersectionRatio = rootBoundingRectArea == 0
+    Float rootMarginBoundingRectArea =
+        rootMarginBoundingRect.size.width * rootMarginBoundingRect.size.height;
+    Float rootThresholdIntersectionRatio = rootMarginBoundingRectArea == 0
         ? 0
-        : intersectionRectArea / rootBoundingRectArea;
+        : intersectionRectArea / rootMarginBoundingRectArea;
     highestRootThresholdCrossed = getHighestThresholdCrossed(
         rootThresholdIntersectionRatio, rootThresholds_.value());
   }
@@ -199,11 +318,11 @@ IntersectionObserver::updateIntersectionObservation(
   if (highestThresholdCrossed == -1.0f &&
       highestRootThresholdCrossed == -1.0f) {
     return setNotIntersectingState(
-        rootBoundingRect, targetBoundingRect, intersectionRect, time);
+        rootMarginBoundingRect, targetBoundingRect, intersectionRect, time);
   }
 
   return setIntersectingState(
-      rootBoundingRect,
+      rootMarginBoundingRect,
       targetBoundingRect,
       intersectionRect,
       highestThresholdCrossed,
@@ -231,13 +350,13 @@ IntersectionObserver::setIntersectingState(
   if (state_ != newState) {
     state_ = newState;
     IntersectionObserverEntry entry{
-        intersectionObserverId_,
-        targetShadowNodeFamily_,
-        targetBoundingRect,
-        rootBoundingRect,
-        intersectionRect,
-        true,
-        time,
+        .intersectionObserverId = intersectionObserverId_,
+        .shadowNodeFamily = targetShadowNodeFamily_,
+        .targetRect = targetBoundingRect,
+        .rootRect = rootBoundingRect,
+        .intersectionRect = intersectionRect,
+        .isIntersectingAboveThresholds = true,
+        .time = time,
     };
     return std::optional<IntersectionObserverEntry>{std::move(entry)};
   }
@@ -254,13 +373,13 @@ IntersectionObserver::setNotIntersectingState(
   if (state_ != IntersectionObserverState::NotIntersecting()) {
     state_ = IntersectionObserverState::NotIntersecting();
     IntersectionObserverEntry entry{
-        intersectionObserverId_,
-        targetShadowNodeFamily_,
-        targetBoundingRect,
-        rootBoundingRect,
-        intersectionRect,
-        false,
-        time,
+        .intersectionObserverId = intersectionObserverId_,
+        .shadowNodeFamily = targetShadowNodeFamily_,
+        .targetRect = targetBoundingRect,
+        .rootRect = rootBoundingRect,
+        .intersectionRect = intersectionRect,
+        .isIntersectingAboveThresholds = false,
+        .time = time,
     };
     return std::optional<IntersectionObserverEntry>(std::move(entry));
   }

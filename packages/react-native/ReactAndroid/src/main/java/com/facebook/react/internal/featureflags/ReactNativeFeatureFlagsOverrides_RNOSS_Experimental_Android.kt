@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0bafb0a2fb79c4220d21f1736894af14>>
+ * @generated SignedSource<<8531ce29d0e5362517d35559ebda623b>>
  */
 
 /**
@@ -23,9 +23,11 @@ public open class ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android : 
   // We could use JNI to get the defaults from C++,
   // but that is more expensive than just duplicating the defaults here.
 
+  override fun enableAccessibilityOrder(): Boolean = true
+
+  override fun enableSwiftUIBasedFilters(): Boolean = true
+
+  override fun fixTextClippingAndroid15useBoundsForWidth(): Boolean = true
+
   override fun preventShadowTreeCommitExhaustion(): Boolean = true
-
-  override fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean = true
-
-  override fun useNativeTransformHelperAndroid(): Boolean = true
 }

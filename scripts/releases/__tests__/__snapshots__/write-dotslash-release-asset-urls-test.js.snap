@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`writeReleaseAssetUrlsToDotSlashFile adds a new release asset provider if missing (first release commit in a branch): console.log calls 1`] = `
+Array [
+  Array [
+    "Updating <tmpDir>/entry-point...",
+  ],
+  Array [
+    "Downloading from <serverUrl> for integrity validation...",
+  ],
+  Array [
+    "Providers:
+",
+    "- Original
++ Updated
+
+  Array [
+    Object {
++     \\"url\\": \\"https://github.com/facebook/react-native/releases/download/v1000.0.1/test-linux-x86_64\\",
++   },
++   Object {
+      \\"url\\": \\"<serverUrl>\\",
+    },
+  ]",
+  ],
+]
+`;
+
+exports[`writeReleaseAssetUrlsToDotSlashFile adds a new release asset provider if missing (first release commit in a branch): updated dotslash file 1`] = `
+"#!/usr/bin/env dotslash
+// @generated SignedSource<<SIGNATURE>>
+{
+  \\"name\\": \\"test\\",
+  \\"platforms\\": {
+    \\"linux-x86_64\\": {
+      \\"providers\\": [
+        {
+            \\"url\\": \\"https://github.com/facebook/react-native/releases/download/v1000.0.1/test-linux-x86_64\\"
+        },
+        {
+            \\"url\\": \\"<serverUrl>\\"
+        }
+    ],
+      \\"size\\": 0,
+      \\"hash\\": \\"sha256\\",
+      \\"digest\\": \\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\\",
+      \\"path\\": \\"bar\\"
+    }
+  }
+}
+"
+`;
+
+exports[`writeReleaseAssetUrlsToDotSlashFile fails if there are no upstream providers 1`] = `"No upstream HTTP providers found for asset: test-linux-x86_64.tar.gz"`;
+
+exports[`writeReleaseAssetUrlsToDotSlashFile fails if there are no upstream providers: console.log calls 1`] = `
+Array [
+  Array [
+    "Updating <tmpDir>/entry-point...",
+  ],
+]
+`;
+
+exports[`writeReleaseAssetUrlsToDotSlashFile fails if upstream returns an incorrect asset 1`] = `"size mismatch: expected 1, got 0"`;
+
+exports[`writeReleaseAssetUrlsToDotSlashFile fails if upstream returns an incorrect asset: console.log calls 1`] = `
+Array [
+  Array [
+    "Updating <tmpDir>/entry-point...",
+  ],
+  Array [
+    "Downloading from <serverUrl> for integrity validation...",
+  ],
+]
+`;
+
+exports[`writeReleaseAssetUrlsToDotSlashFile replaces the old release asset provider if exists (Nth release commit in a branch): console.log calls 1`] = `
+Array [
+  Array [
+    "Updating <tmpDir>/entry-point...",
+  ],
+  Array [
+    "Downloading from <serverUrl> for integrity validation...",
+  ],
+  Array [
+    "Providers:
+",
+    "- Original
++ Updated
+
+  Array [
+    Object {
+-     \\"url\\": \\"<serverUrl>\\",
++     \\"url\\": \\"https://github.com/facebook/react-native/releases/download/v1000.0.1/test-linux-x86_64\\",
+    },
+    Object {
+-     \\"url\\": \\"https://github.com/facebook/react-native/releases/download/v1000.0.0/test.tar.gz\\",
++     \\"url\\": \\"<serverUrl>\\",
+    },
+  ]",
+  ],
+]
+`;
+
+exports[`writeReleaseAssetUrlsToDotSlashFile replaces the old release asset provider if exists (Nth release commit in a branch): updated dotslash file 1`] = `
+"#!/usr/bin/env dotslash
+// @generated SignedSource<<SIGNATURE>>
+{
+  \\"name\\": \\"test\\",
+  \\"platforms\\": {
+    \\"linux-x86_64\\": {
+      \\"providers\\": [
+        {
+            \\"url\\": \\"https://github.com/facebook/react-native/releases/download/v1000.0.1/test-linux-x86_64\\"
+        },
+        {
+            \\"url\\": \\"<serverUrl>\\"
+        }
+    ],
+      \\"size\\": 0,
+      \\"hash\\": \\"sha256\\",
+      \\"digest\\": \\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\\",
+      \\"path\\": \\"bar\\"
+    }
+  }
+}
+"
+`;

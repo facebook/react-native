@@ -24,7 +24,7 @@ internal object UIConstantsProviderBinding {
       runtimeExecutor: RuntimeExecutor,
       defaultEventTypesProvider: DefaultEventTypesProvider,
       viewManagerConstantsProvider: ConstantsForViewManagerProvider,
-      constantsProvider: ConstantsProvider
+      constantsProvider: ConstantsProvider,
   )
 
   @DoNotStripAny

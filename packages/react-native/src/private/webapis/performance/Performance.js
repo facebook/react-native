@@ -29,10 +29,7 @@ import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
 } from './internals/RawPerformanceEntry';
-import {
-  getCurrentTimeStamp,
-  warnNoNativePerformance,
-} from './internals/Utilities';
+import {getCurrentTimeStamp} from './internals/Utilities';
 import MemoryInfo from './MemoryInfo';
 import ReactNativeStartupTiming from './ReactNativeStartupTiming';
 import MaybeNativePerformance from './specs/NativePerformance';
@@ -66,30 +63,30 @@ const cachedReportMeasure = NativePerformance.reportMeasure;
 const cachedGetMarkTime = NativePerformance.getMarkTime;
 const cachedNativeClearMarks = NativePerformance.clearMarks;
 const cachedNativeClearMeasures = NativePerformance.clearMeasures;
+let cachedTimeOrigin: ?DOMHighResTimeStamp;
 
-const MARK_OPTIONS_REUSABLE_OBJECT: {...PerformanceMarkOptions} = {
+const MARK_OPTIONS_REUSABLE_OBJECT: PerformanceMarkOptions = {
   startTime: 0,
   detail: undefined,
 };
 
-const MEASURE_OPTIONS_REUSABLE_OBJECT: {...PerformanceMeasureInit} = {
+const MEASURE_OPTIONS_REUSABLE_OBJECT: PerformanceMeasureInit = {
+  name: '',
   startTime: 0,
   duration: 0,
   detail: undefined,
 };
 
-const getMarkTimeForMeasure = cachedGetMarkTime
-  ? (markName: string): number => {
-      const markTime = cachedGetMarkTime(markName);
-      if (markTime == null) {
-        throw new DOMException(
-          `Failed to execute 'measure' on 'Performance': The mark '${markName}' does not exist.`,
-          'SyntaxError',
-        );
-      }
-      return markTime;
-    }
-  : undefined;
+const getMarkTimeForMeasure = (markName: string): number => {
+  const markTime = cachedGetMarkTime(markName);
+  if (markTime == null) {
+    throw new DOMException(
+      `Failed to execute 'measure' on 'Performance': The mark '${markName}' does not exist.`,
+      'SyntaxError',
+    );
+  }
+  return markTime;
+};
 
 /**
  * Partial implementation of the Performance interface for RN,
@@ -97,7 +94,11 @@ const getMarkTimeForMeasure = cachedGetMarkTime
  * https://www.w3.org/TR/user-timing/#extensions-performance-interface
  */
 export default class Performance {
-  eventCounts: EventCounts = new EventCounts();
+  #eventCounts: EventCounts = new EventCounts();
+
+  get eventCounts(): EventCounts {
+    return this.#eventCounts;
+  }
 
   // Get the current JS memory information.
   get memory(): MemoryInfo {
@@ -127,20 +128,34 @@ export default class Performance {
   get rnStartupTiming(): ReactNativeStartupTiming {
     const {
       startTime,
-      endTime,
       initializeRuntimeStart,
-      initializeRuntimeEnd,
       executeJavaScriptBundleEntryPointStart,
-      executeJavaScriptBundleEntryPointEnd,
+      endTime,
     } = NativePerformance.getReactNativeStartupTiming();
     return new ReactNativeStartupTiming({
       startTime,
-      endTime,
       initializeRuntimeStart,
-      initializeRuntimeEnd,
       executeJavaScriptBundleEntryPointStart,
-      executeJavaScriptBundleEntryPointEnd,
+      endTime,
     });
+  }
+
+  /**
+   * Returns the high resolution timestamp that is used as the baseline for
+   * performance-related timestamps.
+   * https://developer.mozilla.org/en-US/docs/Web/API/Performance/timeOrigin
+   */
+  get timeOrigin(): DOMHighResTimeStamp {
+    if (cachedTimeOrigin == null) {
+      if (NativePerformance.timeOrigin) {
+        cachedTimeOrigin = NativePerformance?.timeOrigin();
+      } else {
+        // Very naive polyfill.
+        cachedTimeOrigin = Date.now() - getCurrentTimeStamp();
+      }
+    }
+
+    return cachedTimeOrigin;
   }
 
   mark(
@@ -150,11 +165,6 @@ export default class Performance {
     // IMPORTANT: this method has been micro-optimized.
     // Please run the benchmarks in `Performance-benchmarks-itest` to ensure
     // changes do not regress performance.
-
-    if (cachedReportMark === undefined) {
-      warnNoNativePerformance();
-      return new PerformanceMark(markName, {startTime: 0});
-    }
 
     if (markName === undefined) {
       throw new TypeError(
@@ -199,7 +209,9 @@ export default class Performance {
       resolvedDetail = structuredClone(detail);
     }
 
+    // $FlowExpectedError[cannot-write]
     MARK_OPTIONS_REUSABLE_OBJECT.startTime = resolvedStartTime;
+    // $FlowExpectedError[cannot-write]
     MARK_OPTIONS_REUSABLE_OBJECT.detail = resolvedDetail;
 
     const entry = new PerformanceMark(
@@ -225,14 +237,6 @@ export default class Performance {
     // Please run the benchmarks in `Performance-benchmarks-itest` to ensure
     // changes do not regress performance.
 
-    if (
-      getMarkTimeForMeasure === undefined ||
-      cachedReportMeasure === undefined
-    ) {
-      warnNoNativePerformance();
-      return new PerformanceMeasure(measureName, {startTime: 0, duration: 0});
-    }
-
     let resolvedMeasureName: string;
     let resolvedStartTime: number;
     let resolvedDuration: number;
@@ -245,7 +249,7 @@ export default class Performance {
     }
 
     resolvedMeasureName =
-      measureName === 'string' ? measureName : String(measureName);
+      typeof measureName === 'string' ? measureName : String(measureName);
 
     if (startMarkOrOptions != null) {
       switch (typeof startMarkOrOptions) {
@@ -385,14 +389,16 @@ export default class Performance {
       }
     }
 
+    // $FlowExpectedError[cannot-write]
+    MEASURE_OPTIONS_REUSABLE_OBJECT.name = resolvedMeasureName;
+    // $FlowExpectedError[cannot-write]
     MEASURE_OPTIONS_REUSABLE_OBJECT.startTime = resolvedStartTime;
+    // $FlowExpectedError[cannot-write]
     MEASURE_OPTIONS_REUSABLE_OBJECT.duration = resolvedDuration;
+    // $FlowExpectedError[cannot-write]
     MEASURE_OPTIONS_REUSABLE_OBJECT.detail = resolvedDetail;
 
-    const entry = new PerformanceMeasure(
-      resolvedMeasureName,
-      MEASURE_OPTIONS_REUSABLE_OBJECT,
-    );
+    const entry = new PerformanceMeasure(MEASURE_OPTIONS_REUSABLE_OBJECT);
 
     cachedReportMeasure(
       resolvedMeasureName,
@@ -455,5 +461,17 @@ export default class Performance {
     ).map(rawToPerformanceEntry);
   }
 }
+
+export const Performance_public: typeof Performance =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function Performance() {
+    throw new TypeError(
+      "Failed to construct 'Performance': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+Performance_public.prototype = Performance.prototype;
 
 setPlatformObject(Performance);

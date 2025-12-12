@@ -46,7 +46,7 @@ describe('processColorArray', () => {
       const expectedIntArray = [0xff0a141e, 0xff1e140a, 0xff3296fa].map(
         platformSpecific,
       );
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       expect(colorFromRGBArray).toEqual(platformSpecific(expectedIntArray));
     });
 
@@ -59,7 +59,7 @@ describe('processColorArray', () => {
       const expectedIntArray = [0xffdb3dac, 0xff234786, 0xff1e541d].map(
         platformSpecific,
       );
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       expect(colorFromHSLArray).toEqual(platformSpecific(expectedIntArray));
     });
 
@@ -72,7 +72,7 @@ describe('processColorArray', () => {
       const spy = jest.spyOn(console, 'error').mockReturnValue(undefined);
 
       const colors = ['red', '???', null, undefined, false];
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       const colorFromStringArray = processColorArray(colors);
       const expectedIntArray = [
         0xffff0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,

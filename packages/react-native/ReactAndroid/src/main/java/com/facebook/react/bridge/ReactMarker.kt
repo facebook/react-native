@@ -77,8 +77,8 @@ public object ReactMarker {
       tag: String?,
       instanceKey: Int,
       timestamp: Long,
-      counter: Int
-  ): Unit {
+      counter: Int,
+  ) {
     for (listener in fabricMarkerListeners) {
       listener.logFabricMarker(name, tag, instanceKey, timestamp, counter)
     }
@@ -90,7 +90,7 @@ public object ReactMarker {
       name: ReactMarkerConstants,
       tag: String?,
       instanceKey: Int,
-      timestamp: Long
+      timestamp: Long,
   ) {
     for (listener in fabricMarkerListeners) {
       listener.logFabricMarker(name, tag, instanceKey, timestamp, 0)
@@ -145,12 +145,7 @@ public object ReactMarker {
   @JvmStatic
   @DoNotStrip
   @AnyThread
-  public fun logMarker(
-      name: ReactMarkerConstants,
-      tag: String?,
-      instanceKey: Int,
-      time: Long?
-  ): Unit {
+  public fun logMarker(name: ReactMarkerConstants, tag: String?, instanceKey: Int, time: Long?) {
     logFabricMarker(name, tag, instanceKey)
     for (listener in listeners) {
       listener.logMarker(name, tag, instanceKey)
@@ -161,7 +156,7 @@ public object ReactMarker {
 
   @JvmStatic
   @DoNotStrip
-  private fun notifyNativeMarker(name: ReactMarkerConstants, time: Long?): Unit {
+  private fun notifyNativeMarker(name: ReactMarkerConstants, time: Long?) {
     if (!name.hasMatchingNameMarker) {
       return
     }
@@ -198,15 +193,15 @@ public object ReactMarker {
         name: ReactMarkerConstants,
         tag: String?,
         instanceKey: Int,
-        timestamp: Long
-    ): Unit
+        timestamp: Long,
+    )
 
     public fun logFabricMarker(
         name: ReactMarkerConstants,
         tag: String?,
         instanceKey: Int,
         timestamp: Long,
-        counter: Int
+        counter: Int,
     ): Unit = logFabricMarker(name, tag, instanceKey, timestamp)
   }
 }

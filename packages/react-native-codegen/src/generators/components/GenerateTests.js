@@ -105,6 +105,8 @@ function getTestCasesForProp(
       propValue: typeAnnotation.default != null ? typeAnnotation.default : true,
     });
     // $FlowFixMe[incompatible-type]
+    /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+     * roll out. See https://fburl.com/workplace/4oq3zi07. */
   } else if (typeAnnotation.type === 'IntegerTypeAnnotation') {
     cases.push({
       propName,

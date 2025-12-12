@@ -8,12 +8,17 @@
  * @format
  */
 
-export {default as createDevMiddleware} from './createDevMiddleware';
-
-export type {BrowserLauncher} from './types/BrowserLauncher';
+export type {
+  BrowserLauncher,
+  DebuggerShellPreparationResult,
+} from './types/BrowserLauncher';
 export type {EventReporter, ReportableEvent} from './types/EventReporter';
 export type {
   CustomMessageHandler,
   CustomMessageHandlerConnection,
   CreateCustomMessageHandlerFn,
 } from './inspector-proxy/CustomMessageHandler';
+export type {Logger} from './types/Logger';
+
+export {default as unstable_DefaultBrowserLauncher} from './utils/DefaultBrowserLauncher';
+export {default as createDevMiddleware} from './createDevMiddleware';

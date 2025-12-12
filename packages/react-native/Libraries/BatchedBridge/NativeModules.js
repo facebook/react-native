@@ -173,7 +173,7 @@ function updateErrorWithErrorData(
 ): ExtendedError {
   /* $FlowFixMe[class-object-subtyping] added when improving typing for this
    * parameters */
-  // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   // $FlowFixMe[unsafe-object-assign]
   return Object.assign(error, errorData || {});
 }

@@ -94,22 +94,26 @@ export default class OpenDebuggerKeyboardHandler {
         const target = targets[0];
         void this.#tryOpenDebuggerForTarget(target);
       } else {
-        this.#targetsShownForSelection = targets;
-
         if (targets.length > 9) {
           this.#log(
             'warn',
             '10 or more debug targets available, showing the first 9.',
           );
         }
+        const targetsShown = targets.slice(0, 9);
+        const hasDuplicateTitles =
+          new Set(targetsShown.map(target => target.title)).size <
+          targetsShown.length;
+        this.#targetsShownForSelection = targetsShown;
 
         this.#setTerminalMenu(
-          `Multiple debug targets available, please select:\n  ${targets
-            .slice(0, 9)
-            .map(
-              ({title}, i) =>
-                `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title}"`,
-            )
+          `Multiple debug targets available, please select:\n  ${targetsShown
+            .map(({title, description}, i) => {
+              const descriptionSuffix = hasDuplicateTitles
+                ? ` (${description})`
+                : '';
+              return `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title}${descriptionSuffix}"`;
+            })
             .join('\n  ')}`,
         );
       }

@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <variant>
-
 #include "HermesRuntimeSamplingProfileSerializer.h"
+
+#include <oscompat/OSCompat.h>
+
+#include <variant>
 
 namespace facebook::react::jsinspector_modern::tracing {
 
@@ -163,6 +165,10 @@ HermesRuntimeSamplingProfileSerializer::serializeToTracingSamplingProfile(
 
   return RuntimeSamplingProfile{
       "Hermes",
+      // Hermes' Profile should be the source of truth for this,
+      // but it is safe to reuse the process ID here, since everything runs in
+      // the same process.
+      oscompat::getCurrentProcessId(),
       std::move(reconciledSamples),
       std::make_unique<RawHermesRuntimeProfile>(std::move(hermesProfile))};
 }

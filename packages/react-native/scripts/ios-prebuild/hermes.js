@@ -29,7 +29,7 @@ import type {BuildFlavor, Destination, Platform} from './types';
  * environment variable. If this varuable is set, the script will use the local tarball instead of downloading it.
  */
 async function prepareHermesArtifactsAsync(
-  version /*:string*/,
+  reactNativeVersion /*:string*/,
   buildType /*: BuildFlavor */,
 ) /*: Promise<string> */ {
   hermesLog(`Preparing Hermes...`);
@@ -54,7 +54,7 @@ async function prepareHermesArtifactsAsync(
   // Only check if the artifacts folder exists if we are not using a local tarball
   if (!localPath) {
     // Resolve the version from the environment variable or use the default version
-    let resolvedVersion = process.env.HERMES_VERSION ?? version;
+    let resolvedVersion = process.env.HERMES_VERSION ?? 'nightly';
 
     if (resolvedVersion === 'nightly') {
       hermesLog('Using latest nightly tarball');
@@ -104,7 +104,7 @@ async function prepareHermesArtifactsAsync(
 
 async function getNightlyVersionFromNPM() /*: Promise<string> */ {
   const npmResponse /*: Response */ = await fetch(
-    'https://registry.npmjs.org/react-native/nightly',
+    'https://registry.npmjs.org/hermes-compiler/nightly',
   );
 
   if (!npmResponse.ok) {
@@ -126,11 +126,15 @@ type HermesEngineSourceType =
   | 'download_prebuilt_nightly_tarball'
 */
 
-const HermesEngineSourceTypes = {
-    LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
-    DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
-    DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
-  } /*:: as const */;
+const HermesEngineSourceTypes /*:{
+  +DOWNLOAD_PREBUILD_TARBALL: "download_prebuild_tarball",
+  +DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: "download_prebuilt_nightly_tarball",
+  +LOCAL_PREBUILT_TARBALL: "local_prebuilt_tarball"
+} */ = {
+  LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
+  DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
+  DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
+};
 
 /**
  * Checks if the Hermes artifacts are already downloaded and up to date with the specified version.
@@ -149,7 +153,7 @@ function checkExistingVersion(
     'Library',
     'Frameworks',
     'universal',
-    'hermes.xcframework',
+    'hermesvm.xcframework',
   );
 
   if (fs.existsSync(versionFilePath) && fs.existsSync(hermesXCFramework)) {
@@ -187,19 +191,20 @@ function getTarballUrl(
   // The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
   const mavenRepoUrl =
     process.env.ENTERPRISE_REPOSITORY ?? 'https://repo1.maven.org/maven2';
-  const namespace = 'com/facebook/react';
-  return `${mavenRepoUrl}/${namespace}/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-ios-${buildType.toLowerCase()}.tar.gz`;
+  const namespace = 'com/facebook/hermes';
+  return `${mavenRepoUrl}/${namespace}/hermes-ios/${version}/hermes-ios-${version}-hermes-ios-${buildType.toLowerCase()}.tar.gz`;
 }
 
 async function getNightlyTarballUrl(
   version /*: string */,
   buildType /*: BuildFlavor */,
 ) /*: Promise<string> */ {
-  const artifactCoordinate = 'react-native-artifacts';
+  const artifactCoordinate = 'hermes-ios';
   const artifactName = `hermes-ios-${buildType.toLowerCase()}.tar.gz`;
   return await computeNightlyTarballURL(
     version,
     buildType,
+    'hermes',
     artifactCoordinate,
     artifactName,
   );

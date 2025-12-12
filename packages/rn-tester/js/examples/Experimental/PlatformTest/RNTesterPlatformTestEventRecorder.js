@@ -112,7 +112,7 @@ export default class RNTesterPlatformTestEventRecorder {
           targetName,
           (event, eventType) => callback?.(event, eventType, targetName),
         );
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       const eventListenerProps = this.relevantEvents.reduce(
         (acc: ViewProps, eventName) => {
           const eventPropName =

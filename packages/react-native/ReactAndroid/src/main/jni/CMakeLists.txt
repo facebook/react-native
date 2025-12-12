@@ -22,15 +22,14 @@ file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)
 file(TO_CMAKE_PATH "${REACT_BUILD_DIR}" REACT_BUILD_DIR)
 file(TO_CMAKE_PATH "${REACT_COMMON_DIR}" REACT_COMMON_DIR)
 
+set(HERMES_V1_ENABLED OFF CACHE BOOL "Build with support for Hermes v1")
+
 # If you have ccache installed, we're going to honor it.
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
-
-# Make sure every shared lib includes a .note.gnu.build-id header
-add_link_options(-Wl,--build-id)
 
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
@@ -81,6 +80,7 @@ add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
 add_react_common_subdir(react/featureflags)
+add_react_common_subdir(react/performance/cdpmetrics)
 add_react_common_subdir(react/performance/timeline)
 add_react_common_subdir(react/renderer/animations)
 add_react_common_subdir(react/renderer/attributedstring)
@@ -114,6 +114,7 @@ add_react_common_subdir(react/renderer/components/scrollview)
 add_react_common_subdir(react/renderer/components/safeareaview)
 add_react_common_subdir(react/renderer/leakchecker)
 add_react_common_subdir(react/renderer/observers/events)
+add_react_common_subdir(react/renderer/observers/intersection)
 add_react_common_subdir(react/renderer/textlayoutmanager)
 add_react_common_subdir(react/utils)
 add_react_common_subdir(react/bridging)
@@ -124,6 +125,9 @@ add_react_common_subdir(react/nativemodule/dom)
 add_react_common_subdir(react/nativemodule/featureflags)
 add_react_common_subdir(react/nativemodule/microtasks)
 add_react_common_subdir(react/nativemodule/idlecallbacks)
+add_react_common_subdir(react/nativemodule/intersectionobserver)
+add_react_common_subdir(react/nativemodule/webperformance)
+add_react_common_subdir(react/networking)
 add_react_common_subdir(jserrorhandler)
 add_react_common_subdir(react/runtime)
 add_react_common_subdir(react/runtime/hermes)
@@ -189,8 +193,12 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_nativemodule_dom>
           $<TARGET_OBJECTS:react_nativemodule_featureflags>
           $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
+          $<TARGET_OBJECTS:react_nativemodule_intersectionobserver>
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
+          $<TARGET_OBJECTS:react_nativemodule_webperformance>
+          $<TARGET_OBJECTS:react_networking>
           $<TARGET_OBJECTS:react_newarchdefaults>
+          $<TARGET_OBJECTS:react_performance_cdpmetrics>
           $<TARGET_OBJECTS:react_performance_timeline>
           $<TARGET_OBJECTS:react_renderer_animations>
           $<TARGET_OBJECTS:react_renderer_attributedstring>
@@ -206,6 +214,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_renderer_mapbuffer>
           $<TARGET_OBJECTS:react_renderer_mounting>
           $<TARGET_OBJECTS:react_renderer_observers_events>
+          $<TARGET_OBJECTS:react_renderer_observers_intersection>
           $<TARGET_OBJECTS:react_renderer_runtimescheduler>
           $<TARGET_OBJECTS:react_renderer_scheduler>
           $<TARGET_OBJECTS:react_renderer_telemetry>
@@ -277,8 +286,12 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_nativemodule_dom,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_intersectionobserver,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_webperformance,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_networking,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_performance_cdpmetrics,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_performance_timeline,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_animations,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
@@ -325,3 +338,10 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:uimanagerjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:yoga,INTERFACE_INCLUDE_DIRECTORIES>
 )
+
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
+  target_compile_options(reactnative PRIVATE
+          -DREACT_NATIVE_DEBUGGER_ENABLED=1
+          -DREACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1
+  )
+endif ()

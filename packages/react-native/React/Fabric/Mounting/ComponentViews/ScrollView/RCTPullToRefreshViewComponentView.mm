@@ -40,6 +40,7 @@ using namespace facebook::react;
     // attaching and detaching of a pull-to-refresh view to a scroll view.
     // The pull-to-refresh view is not a subview of this view.
     self.hidden = YES;
+    _props = PullToRefreshViewShadowNode::defaultSharedProps();
     _recycled = NO;
     [self _initializeUIRefreshControl];
   }

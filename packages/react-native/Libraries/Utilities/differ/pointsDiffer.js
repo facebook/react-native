@@ -16,7 +16,7 @@ type Point = {
   ...
 };
 
-const dummyPoint = {x: undefined, y: undefined};
+const dummyPoint: Point = {x: undefined, y: undefined};
 
 function pointsDiffer(one: ?Point, two: ?Point): boolean {
   one = one || dummyPoint;

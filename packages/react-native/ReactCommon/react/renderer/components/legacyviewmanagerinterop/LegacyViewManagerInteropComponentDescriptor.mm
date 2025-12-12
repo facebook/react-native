@@ -63,13 +63,13 @@ static Class getViewManagerFromComponentName(const std::string &componentName)
   // 1. Try to get the manager with the RCT prefix.
   auto rctViewManagerName = "RCT" + viewManagerName;
   Class viewManagerClass = NSClassFromString(RCTNSStringFromString(rctViewManagerName));
-  if (viewManagerClass) {
+  if (viewManagerClass != nullptr) {
     return viewManagerClass;
   }
 
   // 2. Try to get the manager without the prefix.
   viewManagerClass = NSClassFromString(RCTNSStringFromString(viewManagerName));
-  if (viewManagerClass) {
+  if (viewManagerClass != nullptr) {
     return viewManagerClass;
   }
 
@@ -104,7 +104,7 @@ static Class getViewManagerClass(const std::string &componentName, RCTBridge *br
   return nil;
 }
 
-static const std::shared_ptr<void> constructCoordinator(
+static std::shared_ptr<void> constructCoordinator(
     const std::shared_ptr<const ContextContainer> &contextContainer,
     const ComponentDescriptor::Flavor &flavor)
 {

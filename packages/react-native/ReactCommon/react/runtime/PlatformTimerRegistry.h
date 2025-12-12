@@ -25,6 +25,8 @@ class PlatformTimerRegistry {
   virtual void createRecurringTimer(uint32_t timerID, double delayMS) = 0;
 
   virtual ~PlatformTimerRegistry() noexcept = default;
+
+  virtual void quit() {}
 };
 
 using TimerManagerDelegate = PlatformTimerRegistry;

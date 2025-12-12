@@ -9,6 +9,7 @@
 
 #include "PerformanceEntryCircularBuffer.h"
 #include "PerformanceEntryKeyedBuffer.h"
+#include "PerformanceEntryReporterListeners.h"
 #include "PerformanceObserverRegistry.h"
 
 #include <folly/dynamic.h>
@@ -27,8 +28,7 @@ constexpr size_t EVENT_BUFFER_SIZE = 150;
 constexpr size_t LONG_TASK_BUFFER_SIZE = 200;
 constexpr size_t RESOURCE_TIMING_BUFFER_SIZE = 250;
 
-constexpr HighResDuration LONG_TASK_DURATION_THRESHOLD =
-    HighResDuration::fromMilliseconds(50);
+constexpr HighResDuration LONG_TASK_DURATION_THRESHOLD = HighResDuration::fromMilliseconds(50);
 
 class PerformanceEntryReporter {
  public:
@@ -38,86 +38,77 @@ class PerformanceEntryReporter {
   // the same thread.
   // TODO: Consider passing it as a parameter to the corresponding modules at
   // creation time instead of having the singleton.
-  static std::shared_ptr<PerformanceEntryReporter>& getInstance();
+  static std::shared_ptr<PerformanceEntryReporter> &getInstance();
 
-  PerformanceObserverRegistry& getObserverRegistry() {
+  PerformanceObserverRegistry &getObserverRegistry()
+  {
     return *observerRegistry_;
   }
 
   std::vector<PerformanceEntry> getEntries() const;
-  void getEntries(std::vector<PerformanceEntry>& dest) const;
+  void getEntries(std::vector<PerformanceEntry> &dest) const;
 
-  std::vector<PerformanceEntry> getEntries(
-      PerformanceEntryType entryType) const;
-  void getEntries(
-      std::vector<PerformanceEntry>& dest,
-      PerformanceEntryType entryType) const;
+  std::vector<PerformanceEntry> getEntries(PerformanceEntryType entryType) const;
+  void getEntries(std::vector<PerformanceEntry> &dest, PerformanceEntryType entryType) const;
 
-  std::vector<PerformanceEntry> getEntries(
-      PerformanceEntryType entryType,
-      const std::string& entryName) const;
-  void getEntries(
-      std::vector<PerformanceEntry>& dest,
-      PerformanceEntryType entryType,
-      const std::string& entryName) const;
+  std::vector<PerformanceEntry> getEntries(PerformanceEntryType entryType, const std::string &entryName) const;
+  void getEntries(std::vector<PerformanceEntry> &dest, PerformanceEntryType entryType, const std::string &entryName)
+      const;
 
   void clearEntries();
   void clearEntries(PerformanceEntryType entryType);
-  void clearEntries(
-      PerformanceEntryType entryType,
-      const std::string& entryName);
+  void clearEntries(PerformanceEntryType entryType, const std::string &entryName);
 
-  HighResTimeStamp getCurrentTimeStamp() const;
-
-  void setTimeStampProvider(std::function<HighResTimeStamp()> provider) {
-    timeStampProvider_ = std::move(provider);
-  }
+  void addEventListener(PerformanceEntryReporterEventListener *listener);
+  void removeEventListener(PerformanceEntryReporterEventListener *listener);
 
   static std::vector<PerformanceEntryType> getSupportedEntryTypes();
 
   uint32_t getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
 
-  const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
+  const std::unordered_map<std::string, uint32_t> &getEventCounts() const
+  {
     return eventCounts_;
   }
 
   void clearEventCounts();
 
-  std::optional<HighResTimeStamp> getMarkTime(
-      const std::string& markName) const;
+  std::optional<HighResTimeStamp> getMarkTime(const std::string &markName) const;
 
   using UserTimingDetailProvider = std::function<folly::dynamic()>;
 
-  void reportMark(
-      const std::string& name,
-      HighResTimeStamp startTime,
-      UserTimingDetailProvider&& detailProvider = nullptr);
+  void
+  reportMark(const std::string &name, HighResTimeStamp startTime, UserTimingDetailProvider &&detailProvider = nullptr);
 
   void reportMeasure(
-      const std::string& name,
+      const std::string &name,
       HighResTimeStamp startTime,
       HighResDuration duration,
-      UserTimingDetailProvider&& detailProvider = nullptr);
+      const std::optional<UserTimingDetailProvider> &detailProvider = std::nullopt);
 
   void reportEvent(
-      std::string name,
+      const std::string &name,
       HighResTimeStamp startTime,
       HighResDuration duration,
       HighResTimeStamp processingStart,
       HighResTimeStamp processingEnd,
+      HighResTimeStamp taskEndTime,
       uint32_t interactionId);
 
   void reportLongTask(HighResTimeStamp startTime, HighResDuration duration);
 
   void reportResourceTiming(
-      const std::string& url,
+      const std::string &url,
       HighResTimeStamp fetchStart,
       HighResTimeStamp requestStart,
       std::optional<HighResTimeStamp> connectStart,
       std::optional<HighResTimeStamp> connectEnd,
       HighResTimeStamp responseStart,
       HighResTimeStamp responseEnd,
-      const std::optional<int>& responseStatus);
+      int responseStatus,
+      const std::string &contentType,
+      int encodedBodySize,
+      int decodedBodySize);
 
  private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
@@ -125,17 +116,17 @@ class PerformanceEntryReporter {
   mutable std::shared_mutex buffersMutex_;
   PerformanceEntryCircularBuffer eventBuffer_{EVENT_BUFFER_SIZE};
   PerformanceEntryCircularBuffer longTaskBuffer_{LONG_TASK_BUFFER_SIZE};
-  PerformanceEntryCircularBuffer resourceTimingBuffer_{
-      RESOURCE_TIMING_BUFFER_SIZE};
+  PerformanceEntryCircularBuffer resourceTimingBuffer_{RESOURCE_TIMING_BUFFER_SIZE};
   PerformanceEntryKeyedBuffer markBuffer_;
   PerformanceEntryKeyedBuffer measureBuffer_;
 
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
-  std::function<HighResTimeStamp()> timeStampProvider_ = nullptr;
+  mutable std::shared_mutex listenersMutex_;
+  std::vector<PerformanceEntryReporterEventListener *> eventListeners_{};
 
-  const inline PerformanceEntryBuffer& getBuffer(
-      PerformanceEntryType entryType) const {
+  const inline PerformanceEntryBuffer &getBuffer(PerformanceEntryType entryType) const
+  {
     switch (entryType) {
       case PerformanceEntryType::EVENT:
         return eventBuffer_;
@@ -149,11 +140,13 @@ class PerformanceEntryReporter {
         return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
+      default:
+        throw std::logic_error("Unhandled PerformanceEntryType");
     }
-    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
-  inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
+  inline PerformanceEntryBuffer &getBufferRef(PerformanceEntryType entryType)
+  {
     switch (entryType) {
       case PerformanceEntryType::EVENT:
         return eventBuffer_;
@@ -167,16 +160,19 @@ class PerformanceEntryReporter {
         return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
+      default:
+        throw std::logic_error("Unhandled PerformanceEntryType");
     }
-    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
-  void traceMark(
-      const PerformanceMark& entry,
-      UserTimingDetailProvider&& detailProvider) const;
-  void traceMeasure(
-      const PerformanceMeasure& entry,
-      UserTimingDetailProvider&& detailProvider) const;
+  void traceMark(const PerformanceMark &entry, UserTimingDetailProvider &&detailProvider) const;
+  void traceMeasure(const PerformanceMeasure &entry, const std::optional<UserTimingDetailProvider> &detailProvider)
+      const;
+  void traceResourceTiming(
+      const PerformanceResourceTiming &entry,
+      const std::optional<std::string> &devtoolsRequestId,
+      const std::optional<std::string> &requestMethod,
+      const std::optional<std::string> &resourceType) const;
 };
 
 } // namespace facebook::react

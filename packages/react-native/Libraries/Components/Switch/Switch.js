@@ -215,7 +215,7 @@ const Switch: component(
       native.value != null && native.value !== jsValue;
     if (
       shouldUpdateNativeSwitch &&
-      // $FlowIssue[method-unbinding]
+      // $FlowFixMe[method-unbinding]
       nativeSwitchRef.current?.setNativeProps != null
     ) {
       if (Platform.OS === 'android') {
@@ -264,7 +264,7 @@ const Switch: component(
       disabled,
       onTintColor: trackColorForTrue,
       style: StyleSheet.compose(
-        {height: 31, width: 51},
+        {alignSelf: 'flex-start' as const},
         StyleSheet.compose(
           style,
           ios_backgroundColor == null

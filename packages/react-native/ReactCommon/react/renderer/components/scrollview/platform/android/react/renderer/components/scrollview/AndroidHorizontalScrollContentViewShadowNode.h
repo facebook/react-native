@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
+#include <react/renderer/components/scrollview/ScrollViewState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
 
@@ -17,7 +19,9 @@ extern const char AndroidHorizontalScrollContentViewShadowNodeComponentName[];
 class AndroidHorizontalScrollContentViewShadowNode final
     : public ConcreteViewShadowNode<
           AndroidHorizontalScrollContentViewShadowNodeComponentName,
-          ViewProps> {
+          ViewProps,
+          ScrollViewEventEmitter,
+          ScrollViewState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
   void layout(LayoutContext layoutContext) override;

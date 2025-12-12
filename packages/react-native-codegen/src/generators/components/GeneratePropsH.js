@@ -65,14 +65,20 @@ const ClassTemplate = ({
   className,
   props,
   extendClasses,
+  includeGetDebugPropsImplementation,
 }: {
   enums: string,
   structs: string,
   className: string,
   props: string,
   extendClasses: string,
-}) =>
-  `
+  includeGetDebugPropsImplementation: boolean,
+}) => {
+  const getDebugPropsString = `#if RN_DEBUG_STRING_CONVERTIBLE
+  SharedDebugStringConvertibleList getDebugProps() const override;
+  #endif`;
+
+  return `
 ${enums}
 ${structs}
 class ${className} final${extendClasses} {
@@ -89,8 +95,11 @@ class ${className} final${extendClasses} {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  ${includeGetDebugPropsImplementation ? getDebugPropsString : ''}
 };
 `.trim();
+};
 
 const EnumTemplate = ({
   enumName,
@@ -115,6 +124,8 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ${enumName} &value) {
   switch (value) {
     ${toCases}
+    default:
+      abort();
   }
 }
 
@@ -145,13 +156,16 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   assert(value.hasType<int>());
   auto integerValue = (int)value;
   switch (integerValue) {${fromCases}
+    default:
+      abort();
   }
-  abort();
 }
 
 static inline std::string toString(const ${enumName} &value) {
   switch (value) {
     ${toCases}
+    default:
+      abort();
   }
 }
 
@@ -159,6 +173,8 @@ static inline std::string toString(const ${enumName} &value) {
 static inline folly::dynamic toDynamic(const ${enumName} &value) {
   switch (value) {
     ${toDynamicCases}
+    default:
+      abort();
   }
 }
 #endif
@@ -177,6 +193,7 @@ const StructTemplate = ({
 }) =>
   `struct ${structName} {
   ${fields}
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ${structName}&) const = default;
@@ -512,6 +529,7 @@ function generatePropsString(
   componentName: string,
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
   nameParts: $ReadOnlyArray<string>,
+  generateOptionalProperties?: boolean = false,
 ) {
   return props
     .map(prop => {
@@ -525,6 +543,14 @@ function generatePropsString(
         prop,
       );
 
+      if (
+        prop.optional &&
+        prop.typeAnnotation.default == null &&
+        generateOptionalProperties
+      ) {
+        return `std::optional<${nativeType}> ${prop.name}${defaultInitializer};`;
+      }
+
       return `${nativeType} ${prop.name}${defaultInitializer};`;
     })
     .join('\n' + '  ');
@@ -536,6 +562,7 @@ function getExtendsImports(
   const imports: Set<string> = new Set();
 
   imports.add('#include <react/renderer/core/PropsParserContext.h>');
+  imports.add('#include <react/renderer/debug/DebugStringConvertible.h>');
 
   extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -563,7 +590,12 @@ function generateStructsForComponent(
   componentName: string,
   component: ComponentShape,
 ): string {
-  const structs = generateStructs(componentName, component.props, []);
+  const structs = generateStructs(
+    componentName,
+    component.props,
+    [],
+    component.generateOptionalObjectProperties,
+  );
   const structArray = Array.from(structs.values());
   if (structArray.length < 1) {
     return '';
@@ -575,6 +607,7 @@ function generateStructs(
   componentName: string,
   properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
   nameParts: Array<string>,
+  generateOptionalObjectProperties?: boolean = false,
 ): StructsMap {
   const structs: StructsMap = new Map();
   properties.forEach(prop => {
@@ -587,6 +620,7 @@ function generateStructs(
         componentName,
         elementProperties,
         nameParts.concat([prop.name]),
+        generateOptionalObjectProperties,
       );
       nestedStructs.forEach(function (value, key) {
         structs.set(key, value);
@@ -597,6 +631,7 @@ function generateStructs(
         componentName,
         nameParts.concat([prop.name]),
         typeAnnotation.properties,
+        generateOptionalObjectProperties,
       );
     }
 
@@ -611,6 +646,7 @@ function generateStructs(
         componentName,
         elementProperties,
         nameParts.concat([prop.name]),
+        generateOptionalObjectProperties,
       );
       nestedStructs.forEach(function (value, key) {
         structs.set(key, value);
@@ -622,6 +658,7 @@ function generateStructs(
         componentName,
         nameParts.concat([prop.name]),
         elementProperties,
+        generateOptionalObjectProperties,
       );
 
       // Generate the conversion function for std:vector<Object>.
@@ -652,6 +689,7 @@ function generateStructs(
         componentName,
         elementProperties,
         nameParts.concat([prop.name]),
+        generateOptionalObjectProperties,
       );
       nestedStructs.forEach(function (value, key) {
         structs.set(key, value);
@@ -663,6 +701,7 @@ function generateStructs(
         componentName,
         nameParts.concat([prop.name]),
         elementProperties,
+        generateOptionalObjectProperties,
       );
 
       // Generate the conversion function for std:vector<Object>.
@@ -689,6 +728,7 @@ function generateStruct(
   componentName: string,
   nameParts: $ReadOnlyArray<string>,
   properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  generateOptionalObjectProperties?: boolean = false,
 ): void {
   const structNameParts = nameParts;
   const structName = generateStructName(componentName, structNameParts);
@@ -696,6 +736,7 @@ function generateStruct(
     componentName,
     properties,
     structNameParts,
+    generateOptionalObjectProperties,
   );
 
   properties.forEach((property: NamedShape<PropTypeAnnotation>) => {
@@ -726,7 +767,13 @@ function generateStruct(
             `Properties are expected for ObjectTypeAnnotation (see ${name} in ${componentName})`,
           );
         }
-        generateStruct(structs, componentName, nameParts.concat([name]), props);
+        generateStruct(
+          structs,
+          componentName,
+          nameParts.concat([name]),
+          props,
+          generateOptionalObjectProperties,
+        );
         return;
       case 'MixedTypeAnnotation':
         return;
@@ -758,9 +805,29 @@ function generateStruct(
         case 'DoubleTypeAnnotation':
         case 'FloatTypeAnnotation':
         case 'MixedTypeAnnotation':
-          return `result["${name}"] = ${name};`;
+          if (
+            property.optional &&
+            property.typeAnnotation.default == null &&
+            generateOptionalObjectProperties
+          ) {
+            return `if (${name}.has_value()) {
+      result["${name}"] = ${name}.value();
+    }`;
+          } else {
+            return `result["${name}"] = ${name};`;
+          }
         default:
-          return `result["${name}"] = ::facebook::react::toDynamic(${name});`;
+          if (
+            property.optional &&
+            property.typeAnnotation.default == null &&
+            generateOptionalObjectProperties
+          ) {
+            return `if (${name}.has_value()) {
+      result["${name}"] = ::facebook::react::toDynamic(${name}.value());
+    }`;
+          } else {
+            return `result["${name}"] = ::facebook::react::toDynamic(${name});`;
+          }
       }
     })
     .join('\n    ');
@@ -783,6 +850,7 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
     headerPrefix?: string,
+    includeGetDebugPropsImplementation?: boolean = false,
   ): FilesOutput {
     const fileName = 'Props.h';
 
@@ -815,6 +883,7 @@ module.exports = {
               componentName,
               component.props,
               [],
+              component.generateOptionalProperties,
             );
             const extendString = getClassExtendString(component);
             const extendsImports = getExtendsImports(component.extendsProps);
@@ -831,6 +900,7 @@ module.exports = {
               className: newName,
               extendClasses: extendString,
               props: propsString,
+              includeGetDebugPropsImplementation,
             });
 
             return replacedTemplate;

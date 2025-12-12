@@ -57,15 +57,18 @@ public class ViewGroupDrawingOrderHelper(private val viewGroup: ViewGroup) {
    */
   public fun getChildDrawingOrder(childCount: Int, index: Int): Int {
     var currentDrawingOrderIndices = this.drawingOrderIndices
-    if (currentDrawingOrderIndices != null &&
-        (index >= currentDrawingOrderIndices.size ||
-            currentDrawingOrderIndices[index] >= childCount)) {
+    if (
+        currentDrawingOrderIndices != null &&
+            (index >= currentDrawingOrderIndices.size ||
+                currentDrawingOrderIndices[index] >= childCount)
+    ) {
       FLog.w(
           ReactConstants.TAG,
           "getChildDrawingOrder index out of bounds! Please check any custom view manipulations you" +
               " may have done. childCount = %d, index = %d",
           childCount,
-          index)
+          index,
+      )
       update()
     }
 

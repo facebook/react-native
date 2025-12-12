@@ -123,11 +123,9 @@ void ImageResponseObserverCoordinator::nativeImageResponseFailed(
 }
 
 void ImageResponseObserverCoordinator::consumeResponse() const {
-  if (ReactNativeFeatureFlags::releaseImageDataWhenConsumed()) {
-    status_ = ImageResponse::Status::Consumed;
-    imageData_.reset();
-    imageMetadata_.reset();
-  }
+  status_ = ImageResponse::Status::Consumed;
+  imageData_.reset();
+  imageMetadata_.reset();
 }
 
 } // namespace facebook::react

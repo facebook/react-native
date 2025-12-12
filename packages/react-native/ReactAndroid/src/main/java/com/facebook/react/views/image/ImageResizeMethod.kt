@@ -7,9 +7,30 @@
 
 package com.facebook.react.views.image
 
+import com.facebook.common.logging.FLog
+import com.facebook.react.common.ReactConstants
+
 public enum class ImageResizeMethod {
   AUTO,
   RESIZE,
   SCALE,
-  NONE,
+  NONE;
+
+  public companion object {
+    @JvmStatic
+    public fun parse(resizeMethod: String?): ImageResizeMethod {
+      return when (resizeMethod) {
+        null,
+        "",
+        "auto" -> ImageResizeMethod.AUTO
+        "resize" -> ImageResizeMethod.RESIZE
+        "scale" -> ImageResizeMethod.SCALE
+        "none" -> ImageResizeMethod.NONE
+        else -> {
+          FLog.w(ReactConstants.TAG, "Invalid resize method: '$resizeMethod'")
+          ImageResizeMethod.AUTO
+        }
+      }
+    }
+  }
 }

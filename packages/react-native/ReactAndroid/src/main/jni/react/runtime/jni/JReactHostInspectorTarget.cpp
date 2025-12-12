@@ -16,10 +16,13 @@ using namespace facebook::jni;
 using namespace facebook::react::jsinspector_modern;
 
 namespace facebook::react {
+
 JReactHostInspectorTarget::JReactHostInspectorTarget(
+    alias_ref<JReactHostInspectorTarget::javaobject> jobj,
     alias_ref<JReactHostImpl> reactHostImpl,
     alias_ref<JExecutor::javaobject> executor)
-    : javaReactHostImpl_(make_global(makeJWeakReference(reactHostImpl))),
+    : jobj_(make_global(jobj)),
+      javaReactHostImpl_(make_global(makeJWeakReference(reactHostImpl))),
       inspectorExecutor_([javaExecutor =
                               // Use a SafeReleaseJniRef because this lambda may
                               // be copied to arbitrary threads.
@@ -27,7 +30,8 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
                              std::function<void()>&& callback) mutable {
         auto jrunnable = JNativeRunnable::newObjectCxxArgs(std::move(callback));
         javaExecutor->execute(jrunnable);
-      }) {
+      }),
+      tracingDelegate_(std::make_unique<TracingDelegate>()) {
   auto& inspectorFlags = InspectorFlags::getInstance();
   if (inspectorFlags.getFuseboxEnabled()) {
     inspectorTarget_ = HostTarget::create(*this, inspectorExecutor_);
@@ -62,10 +66,10 @@ JReactHostInspectorTarget::~JReactHostInspectorTarget() {
 
 local_ref<JReactHostInspectorTarget::jhybriddata>
 JReactHostInspectorTarget::initHybrid(
-    alias_ref<JReactHostInspectorTarget::jhybridobject> /*self*/,
+    alias_ref<JReactHostInspectorTarget::jhybridobject> jobj,
     jni::alias_ref<JReactHostImpl> reactHostImpl,
     jni::alias_ref<JExecutor::javaobject> javaExecutor) {
-  return makeCxxInstance(reactHostImpl, javaExecutor);
+  return makeCxxInstance(jobj, reactHostImpl, javaExecutor);
 }
 
 void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
@@ -76,15 +80,6 @@ void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
         "java/lang/IllegalStateException",
         "Cannot send command while the Fusebox backend is not enabled");
   }
-}
-
-void JReactHostInspectorTarget::registerNatives() {
-  registerHybrid({
-      makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
-      makeNativeMethod(
-          "sendDebuggerResumeCommand",
-          JReactHostInspectorTarget::sendDebuggerResumeCommand),
-  });
 }
 
 jsinspector_modern::HostTargetMetadata
@@ -127,6 +122,13 @@ void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
   }
 }
 
+void JReactHostInspectorTarget::unstable_onPerfIssueAdded(
+    const PerfIssuePayload& issue) {
+  static auto method = javaClassStatic()->getMethod<void(local_ref<jstring>)>(
+      "handleNativePerfIssueAdded");
+  method(jobj_, make_jstring(issue.name));
+}
+
 void JReactHostInspectorTarget::loadNetworkResource(
     const jsinspector_modern::LoadNetworkResourceRequest& params,
     jsinspector_modern::ScopedExecutor<
@@ -143,4 +145,204 @@ void JReactHostInspectorTarget::loadNetworkResource(
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
   return inspectorTarget_ ? inspectorTarget_.get() : nullptr;
 }
+
+bool JReactHostInspectorTarget::startBackgroundTrace() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->startTracing(
+        tracing::Mode::Background,
+        {
+            tracing::Category::HiddenTimeline,
+            tracing::Category::RuntimeExecution,
+            tracing::Category::Timeline,
+            tracing::Category::UserTiming,
+        });
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot start Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+tracing::HostTracingProfile JReactHostInspectorTarget::stopTracing() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->stopTracing();
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot stop Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+jboolean JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace() {
+  auto capturedTrace = inspectorTarget_->stopTracing();
+  if (inspectorTarget_->hasActiveSessionWithFuseboxClient()) {
+    inspectorTarget_->emitTracingProfileForFirstFuseboxClient(
+        std::move(capturedTrace));
+    return jboolean(true);
+  }
+
+  stashTracingProfile(std::move(capturedTrace));
+  return jboolean(false);
+}
+
+void JReactHostInspectorTarget::stopAndDiscardBackgroundTrace() {
+  inspectorTarget_->stopTracing();
+}
+
+void JReactHostInspectorTarget::stashTracingProfile(
+    tracing::HostTracingProfile&& hostTracingProfile) {
+  stashedTracingProfile_ = std::move(hostTracingProfile);
+}
+
+std::optional<tracing::HostTracingProfile> JReactHostInspectorTarget::
+    unstable_getHostTracingProfileThatWillBeEmittedOnInitialization() {
+  auto tracingProfile = std::move(stashedTracingProfile_);
+  stashedTracingProfile_.reset();
+  return tracingProfile;
+}
+
+void JReactHostInspectorTarget::registerNatives() {
+  registerHybrid({
+      makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          JReactHostInspectorTarget::sendDebuggerResumeCommand),
+      makeNativeMethod(
+          "startBackgroundTrace",
+          JReactHostInspectorTarget::startBackgroundTrace),
+      makeNativeMethod(
+          "stopAndMaybeEmitBackgroundTrace",
+          JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace),
+      makeNativeMethod(
+          "stopAndDiscardBackgroundTrace",
+          JReactHostInspectorTarget::stopAndDiscardBackgroundTrace),
+      makeNativeMethod(
+          "getTracingState", JReactHostInspectorTarget::getTracingState),
+      makeNativeMethod(
+          "registerTracingStateListener",
+          JReactHostInspectorTarget::registerTracingStateListener),
+      makeNativeMethod(
+          "unregisterTracingStateListener",
+          JReactHostInspectorTarget::unregisterTracingStateListener),
+      makeNativeMethod(
+          "recordFrameTimings", JReactHostInspectorTarget::recordFrameTimings),
+  });
+}
+
+jni::local_ref<JTracingState::javaobject>
+JReactHostInspectorTarget::getTracingState() {
+  return convertCPPTracingStateToJava(tracingDelegate_->getTracingState());
+}
+
+jlong JReactHostInspectorTarget::registerTracingStateListener(
+    jni::alias_ref<JTracingStateListener::javaobject> listener) {
+  auto cppListener = [globalRef = make_global(listener)](
+                         TracingState tracingState, bool screenshotsEnabled) {
+    globalRef->onStateChanged(tracingState, screenshotsEnabled);
+  };
+
+  return static_cast<jlong>(
+      tracingDelegate_->registerTracingStateListener(std::move(cppListener)));
+}
+
+void JReactHostInspectorTarget::unregisterTracingStateListener(
+    jlong subscriptionId) {
+  tracingDelegate_->unregisterTracingStateListener(subscriptionId);
+}
+
+HostTargetTracingDelegate* JReactHostInspectorTarget::getTracingDelegate() {
+  return tracingDelegate_.get();
+}
+
+void JReactHostInspectorTarget::recordFrameTimings(
+    jni::alias_ref<JFrameTimingSequence::javaobject> frameTimingSequence) {
+  inspectorTarget_->recordFrameTimings({
+      frameTimingSequence->getId(),
+      frameTimingSequence->getThreadId(),
+      frameTimingSequence->getBeginDrawingTimestamp(),
+      frameTimingSequence->getCommitTimestamp(),
+      frameTimingSequence->getEndDrawingTimestamp(),
+      frameTimingSequence->getScreenshot(),
+  });
+}
+
+void TracingDelegate::onTracingStarted(
+    tracing::Mode tracingMode,
+    bool screenshotsCategoryEnabled) {
+  TracingState nextState = TracingState::Disabled;
+  switch (tracingMode) {
+    case tracing::Mode::CDP:
+      nextState = TracingState::EnabledInCDPMode;
+      break;
+    case tracing::Mode::Background:
+      nextState = TracingState::EnabledInBackgroundMode;
+      break;
+    default:
+      throw std::logic_error("Unexpected new Tracing Mode");
+  }
+
+  std::vector<TracingStateListener> listeners;
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    tracingState_ = nextState;
+    listeners = copySubscribedListeners();
+  }
+
+  notifyListeners(listeners, nextState, screenshotsCategoryEnabled);
+}
+
+void TracingDelegate::onTracingStopped() {
+  std::vector<TracingStateListener> listeners;
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    tracingState_ = TracingState::Disabled;
+    listeners = copySubscribedListeners();
+  }
+
+  notifyListeners(listeners, TracingState::Disabled, false);
+}
+
+TracingState TracingDelegate::getTracingState() {
+  std::lock_guard<std::mutex> lock(mutex_);
+
+  return tracingState_;
+}
+
+size_t TracingDelegate::registerTracingStateListener(
+    TracingStateListener listener) {
+  std::lock_guard<std::mutex> lock(mutex_);
+
+  auto id = nextSubscriptionId_++;
+  subscriptions_[id] = std::move(listener);
+  return id;
+}
+
+void TracingDelegate::unregisterTracingStateListener(size_t subscriptionId) {
+  std::lock_guard<std::mutex> lock(mutex_);
+
+  subscriptions_.erase(subscriptionId);
+}
+
+std::vector<TracingStateListener> TracingDelegate::copySubscribedListeners() {
+  std::vector<TracingStateListener> listeners;
+  listeners.reserve(subscriptions_.size());
+
+  for (auto& [_, listener] : subscriptions_) {
+    listeners.push_back(listener);
+  }
+
+  return listeners;
+}
+
+void TracingDelegate::notifyListeners(
+    const std::vector<TracingStateListener>& listeners,
+    TracingState state,
+    bool screenshotsCategoryEnabled) {
+  for (const auto& listener : listeners) {
+    listener(state, screenshotsCategoryEnabled);
+  }
+}
+
 } // namespace facebook::react

@@ -20,7 +20,7 @@ import com.facebook.react.module.annotations.ReactModule
 @ReactModule(name = NativeDeviceEventManagerSpec.NAME)
 public open class DeviceEventManagerModule(
     reactContext: ReactApplicationContext?,
-    backBtnHandler: DefaultHardwareBackBtnHandler?
+    backBtnHandler: DefaultHardwareBackBtnHandler?,
 ) : NativeDeviceEventManagerSpec(reactContext) {
   @DoNotStripAny
   public fun interface RCTDeviceEventEmitter : JavaScriptModule {

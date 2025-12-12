@@ -39,6 +39,24 @@ function DebuggingOverlay({
   useImperativeHandle(
     ref,
     () => ({
+      clearElementsHighlight() {
+        if (!isNativeComponentReady) {
+          return;
+        }
+
+        if (nativeComponentRef.current != null) {
+          Commands.clearElementsHighlights(nativeComponentRef.current);
+        }
+      },
+      highlightElements(elements) {
+        if (!isNativeComponentReady) {
+          return;
+        }
+
+        if (nativeComponentRef.current != null) {
+          Commands.highlightElements(nativeComponentRef.current, elements);
+        }
+      },
       highlightTraceUpdates(updates) {
         if (!isNativeComponentReady) {
           return;
@@ -53,24 +71,6 @@ function DebuggingOverlay({
             nativeComponentRef.current,
             nonEmptyRectangles,
           );
-        }
-      },
-      highlightElements(elements) {
-        if (!isNativeComponentReady) {
-          return;
-        }
-
-        if (nativeComponentRef.current != null) {
-          Commands.highlightElements(nativeComponentRef.current, elements);
-        }
-      },
-      clearElementsHighlight() {
-        if (!isNativeComponentReady) {
-          return;
-        }
-
-        if (nativeComponentRef.current != null) {
-          Commands.clearElementsHighlights(nativeComponentRef.current);
         }
       },
     }),
@@ -95,14 +95,14 @@ function DebuggingOverlay({
 
 const styles = StyleSheet.create({
   overlay: {
-    position: 'absolute',
-    top: 0,
     bottom: 0,
     left: 0,
+    position: 'absolute',
     right: 0,
+    top: 0,
   },
 });
 
 export default DebuggingOverlay as component(
-  ref: React.RefSetter<DebuggingOverlayHandle>,
+  ref?: React.RefSetter<DebuggingOverlayHandle>,
 );

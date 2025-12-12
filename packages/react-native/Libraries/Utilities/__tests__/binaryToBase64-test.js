@@ -33,7 +33,7 @@ describe('binaryToBase64', () => {
   it('should not encode a non-ArrayBuffer or non-TypedArray', () => {
     const input = ['i', 'n', 'v', 'a', 'l', 'i', 'd'];
 
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => binaryToBase64(input)).toThrowError();
   });
 });
@@ -41,6 +41,6 @@ describe('binaryToBase64', () => {
 function base64ToString(base64String: string) {
   const byteArray = base64.toByteArray(base64String);
 
-  // $FlowFixMe[incompatible-call] - `TextEncoder` constructor type is wrong.
+  // $FlowFixMe[incompatible-type] - `TextEncoder` constructor type is wrong.
   return new TextDecoder().decode(byteArray);
 }

@@ -9,18 +9,70 @@
  */
 
 import type {HostInstance} from '../../src/private/types/HostInstance';
-import type {
-  InternalInstanceHandle,
-  Node,
-} from '../Renderer/shims/ReactNativeTypes';
+import typeof ReactFabricType from '../Renderer/shims/ReactFabric';
+import typeof ReactNativeType from '../Renderer/shims/ReactNative';
+import type {RootTag} from './RootTag';
 
 import {
   onCaughtError,
   onRecoverableError,
   onUncaughtError,
 } from '../../src/private/renderer/errorhandling/ErrorHandlers';
-import {type RootTag} from './RootTag';
 import * as React from 'react';
+
+let cachedFabricRenderer;
+let cachedPaperRenderer;
+
+function getFabricRenderer(): ReactFabricType {
+  if (cachedFabricRenderer == null) {
+    cachedFabricRenderer = require('../Renderer/shims/ReactFabric').default;
+  }
+  return cachedFabricRenderer;
+}
+
+function getPaperRenderer(): ReactNativeType {
+  if (cachedPaperRenderer == null) {
+    cachedPaperRenderer = require('../Renderer/shims/ReactNative').default;
+  }
+  return cachedPaperRenderer;
+}
+
+const getMethod: (<MethodName: $Keys<ReactFabricType>>(
+  () => ReactFabricType,
+  MethodName,
+) => ReactFabricType[MethodName]) &
+  (<MethodName: $Keys<ReactNativeType>>(
+    () => ReactNativeType,
+    MethodName,
+  ) => ReactNativeType[MethodName]) = (getRenderer, methodName) => {
+  let cachedImpl;
+
+  // $FlowExpectedError[incompatible-type]
+  return function (arg1, arg2, arg3, arg4, arg5, arg6) {
+    if (cachedImpl == null) {
+      // $FlowExpectedError[prop-missing]
+      cachedImpl = getRenderer()[methodName];
+    }
+
+    // $FlowExpectedError[extra-arg]
+    return cachedImpl(arg1, arg2, arg3, arg4, arg5);
+  };
+};
+
+function getFabricMethod<MethodName: $Keys<ReactFabricType>>(
+  methodName: MethodName,
+): ReactFabricType[MethodName] {
+  return getMethod(getFabricRenderer, methodName);
+}
+
+function getPaperMethod<MethodName: $Keys<ReactNativeType>>(
+  methodName: MethodName,
+): ReactNativeType[MethodName] {
+  return getMethod(getPaperRenderer, methodName);
+}
+
+let cachedFabricRender;
+let cachedPaperRender;
 
 export function renderElement({
   element,
@@ -34,50 +86,30 @@ export function renderElement({
   useConcurrentRoot: boolean,
 }): void {
   if (useFabric) {
-    require('../Renderer/shims/ReactFabric').default.render(
-      element,
-      rootTag,
-      null,
-      useConcurrentRoot,
-      {
-        onCaughtError,
-        onUncaughtError,
-        onRecoverableError,
-      },
-    );
+    if (cachedFabricRender == null) {
+      cachedFabricRender = getFabricRenderer().render;
+    }
+
+    cachedFabricRender(element, rootTag, null, useConcurrentRoot, {
+      onCaughtError,
+      onUncaughtError,
+      onRecoverableError,
+    });
   } else {
-    require('../Renderer/shims/ReactNative').default.render(
-      element,
-      rootTag,
-      undefined,
-      {
-        onCaughtError,
-        onUncaughtError,
-        onRecoverableError,
-      },
-    );
+    if (cachedPaperRender == null) {
+      cachedPaperRender = getPaperRenderer().render;
+    }
+
+    cachedPaperRender(element, rootTag, undefined, {
+      onCaughtError,
+      onUncaughtError,
+      onRecoverableError,
+    });
   }
 }
 
-export function findHostInstance_DEPRECATED<TElementType: React.ElementType>(
-  // $FlowFixMe[incompatible-call]
-  componentOrHandle: ?(React.ElementRef<TElementType> | number),
-): ?HostInstance {
-  return require('../Renderer/shims/ReactNative').default.findHostInstance_DEPRECATED(
-    // $FlowFixMe[incompatible-call]
-    componentOrHandle,
-  );
-}
-
-export function findNodeHandle<TElementType: React.ElementType>(
-  // $FlowFixMe[incompatible-call]
-  componentOrHandle: ?(React.ElementRef<TElementType> | number),
-): ?number {
-  return require('../Renderer/shims/ReactNative').default.findNodeHandle(
-    // $FlowFixMe[incompatible-call]
-    componentOrHandle,
-  );
-}
+let cachedFabricDispatchCommand;
+let cachedPaperDispatchCommand;
 
 export function dispatchCommand(
   handle: HostInstance,
@@ -87,90 +119,58 @@ export function dispatchCommand(
   if (global.RN$Bridgeless === true) {
     // Note: this function has the same implementation in the legacy and new renderer.
     // However, evaluating the old renderer comes with some side effects.
-    return require('../Renderer/shims/ReactFabric').default.dispatchCommand(
-      handle,
-      command,
-      args,
-    );
+    if (cachedFabricDispatchCommand == null) {
+      cachedFabricDispatchCommand = getFabricRenderer().dispatchCommand;
+    }
+
+    return cachedFabricDispatchCommand(handle, command, args);
   } else {
-    return require('../Renderer/shims/ReactNative').default.dispatchCommand(
-      handle,
-      command,
-      args,
-    );
+    if (cachedPaperDispatchCommand == null) {
+      cachedPaperDispatchCommand = getPaperRenderer().dispatchCommand;
+    }
+
+    return cachedPaperDispatchCommand(handle, command, args);
   }
 }
 
-export function sendAccessibilityEvent(
-  handle: HostInstance,
-  eventType: string,
-): void {
-  return require('../Renderer/shims/ReactNative').default.sendAccessibilityEvent(
-    handle,
-    eventType,
-  );
-}
+export const findHostInstance_DEPRECATED: <TElementType: React.ElementType>(
+  // $FlowExpectedError[incompatible-type]
+  componentOrHandle: ?(React.ElementRef<TElementType> | number),
+) => ?HostInstance = getPaperMethod('findHostInstance_DEPRECATED');
+
+export const findNodeHandle: <TElementType: React.ElementType>(
+  // $FlowExpectedError[incompatible-type]
+  componentOrHandle: ?(React.ElementRef<TElementType> | number),
+) => ?number = getPaperMethod('findNodeHandle');
+
+export const sendAccessibilityEvent: ReactNativeType['sendAccessibilityEvent'] =
+  getPaperMethod('sendAccessibilityEvent');
 
 /**
  * This method is used by AppRegistry to unmount a root when using the old
  * React Native renderer (Paper).
  */
-export function unmountComponentAtNodeAndRemoveContainer(rootTag: RootTag) {
-  // $FlowExpectedError[incompatible-type] rootTag is an opaque type so we can't really cast it as is.
-  const rootTagAsNumber: number = rootTag;
-  require('../Renderer/shims/ReactNative').default.unmountComponentAtNodeAndRemoveContainer(
-    rootTagAsNumber,
-  );
-}
+export const unmountComponentAtNodeAndRemoveContainer: (
+  rootTag: RootTag,
+) => void =
+  // $FlowExpectedError[incompatible-type]
+  getPaperMethod('unmountComponentAtNodeAndRemoveContainer');
 
-export function unstable_batchedUpdates<T>(
-  fn: T => void,
-  bookkeeping: T,
-): void {
-  // This doesn't actually do anything when batching updates for a Fabric root.
-  return require('../Renderer/shims/ReactNative').default.unstable_batchedUpdates(
-    fn,
-    bookkeeping,
-  );
-}
+export const unstable_batchedUpdates: ReactNativeType['unstable_batchedUpdates'] =
+  getPaperMethod('unstable_batchedUpdates');
+
+export const isChildPublicInstance: ReactNativeType['isChildPublicInstance'] =
+  getPaperMethod('isChildPublicInstance');
+
+export const getNodeFromInternalInstanceHandle: ReactFabricType['getNodeFromInternalInstanceHandle'] =
+  getFabricMethod('getNodeFromInternalInstanceHandle');
+
+export const getPublicInstanceFromInternalInstanceHandle: ReactFabricType['getPublicInstanceFromInternalInstanceHandle'] =
+  getFabricMethod('getPublicInstanceFromInternalInstanceHandle');
+
+export const getPublicInstanceFromRootTag: ReactFabricType['getPublicInstanceFromRootTag'] =
+  getFabricMethod('getPublicInstanceFromRootTag');
 
 export function isProfilingRenderer(): boolean {
   return Boolean(__DEV__);
-}
-
-export function isChildPublicInstance(
-  parentInstance: HostInstance,
-  childInstance: HostInstance,
-): boolean {
-  return require('../Renderer/shims/ReactNative').default.isChildPublicInstance(
-    parentInstance,
-    childInstance,
-  );
-}
-
-export function getNodeFromInternalInstanceHandle(
-  internalInstanceHandle: InternalInstanceHandle,
-): ?Node {
-  // This is only available in Fabric
-  return require('../Renderer/shims/ReactFabric').default.getNodeFromInternalInstanceHandle(
-    internalInstanceHandle,
-  );
-}
-
-export function getPublicInstanceFromInternalInstanceHandle(
-  internalInstanceHandle: InternalInstanceHandle,
-): mixed /*PublicInstance | PublicTextInstance | null*/ {
-  // This is only available in Fabric
-  return require('../Renderer/shims/ReactFabric').default.getPublicInstanceFromInternalInstanceHandle(
-    internalInstanceHandle,
-  );
-}
-
-export function getPublicInstanceFromRootTag(
-  rootTag: number,
-): mixed /*PublicRootInstance | null*/ {
-  // This is only available in Fabric
-  return require('../Renderer/shims/ReactFabric').default.getPublicInstanceFromRootTag(
-    rootTag,
-  );
 }

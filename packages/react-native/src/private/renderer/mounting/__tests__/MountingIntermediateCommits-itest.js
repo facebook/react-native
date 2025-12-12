@@ -12,12 +12,10 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useLayoutEffect, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 function TestComponent({
   triggerIntermediateState,
@@ -41,9 +39,8 @@ function TestComponent({
     // this after, but before the commit that processes the state update in
     // this effect.
     if (simulateUIThreadCommit) {
-      const node = ensureInstance(scrollViewRef.current, ReactNativeElement);
       Fantom.runOnUIThread(() => {
-        Fantom.enqueueScrollEvent(node, {x: 0, y: 10});
+        Fantom.enqueueScrollEvent(scrollViewRef, {x: 0, y: 10});
       });
     }
   }, [simulateUIThreadCommit, triggerIntermediateState]);

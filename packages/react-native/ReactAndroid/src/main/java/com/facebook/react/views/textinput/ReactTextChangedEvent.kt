@@ -16,7 +16,7 @@ internal class ReactTextChangedEvent(
     surfaceId: Int,
     viewId: Int,
     private val text: String,
-    private val eventCount: Int
+    private val eventCount: Int,
 ) : Event<ReactTextChangedEvent>(surfaceId, viewId) {
   override fun getEventName(): String = EVENT_NAME
 

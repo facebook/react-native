@@ -35,6 +35,9 @@ module.exports = {
         // Flow handles these checks for us, so they aren't required
         'no-undef': 'off',
         'no-unreachable': 'off',
+        // Throwing from function or rejecting promises with non-error values could result in unclear error stack traces and lead to harder debugging
+        'prefer-promise-reject-errors': 'error',
+        'no-throw-literal': 'error',
       },
     },
     {

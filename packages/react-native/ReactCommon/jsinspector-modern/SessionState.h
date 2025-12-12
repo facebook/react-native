@@ -24,6 +24,13 @@ struct SessionState {
   bool isLogDomainEnabled{false};
   bool isReactNativeApplicationDomainEnabled{false};
   bool isRuntimeDomainEnabled{false};
+  bool isNetworkDomainEnabled{false};
+
+  /**
+   * Whether the Trace Recording was initialized via CDP Tracing.start method
+   * and not finished yet with Tracing.stop.
+   */
+  bool hasPendingTraceRecording{false};
 
   /**
    * A map from binding names (registered during this session using @cdp
@@ -34,8 +41,7 @@ struct SessionState {
    * matching Chrome's behaviour (a binding not added by the current session
    * will not emit events on it).
    */
-  std::unordered_map<std::string, ExecutionContextSelectorSet>
-      subscribedBindings;
+  std::unordered_map<std::string, ExecutionContextSelectorSet> subscribedBindings;
 
   /**
    * Messages logged through the HostAgent::sendConsoleMessage and

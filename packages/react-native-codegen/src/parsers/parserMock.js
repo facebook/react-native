@@ -18,10 +18,10 @@ import type {
   NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
+  NativeModuleUnionTypeAnnotationMemberType,
   Nullable,
   PropTypeAnnotation,
   SchemaType,
-  UnionTypeAnnotationMemberType,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {
@@ -105,30 +105,24 @@ export class MockedParser implements Parser {
 
   remapUnionTypeAnnotationMemberNames(
     membersTypes: $FlowFixMe[],
-  ): UnionTypeAnnotationMemberType[] {
-    return [];
-  }
-
-  getStringLiteralUnionTypeAnnotationStringLiterals(
-    membersTypes: $FlowFixMe[],
-  ): string[] {
+  ): NativeModuleUnionTypeAnnotationMemberType[] {
     return [];
   }
 
   parseFile(filename: string): SchemaType {
-    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return schemaMock;
   }
 
   parseString(contents: string, filename: ?string): SchemaType {
-    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return schemaMock;
   }
 
   parseModuleFixture(filename: string): SchemaType {
-    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return schemaMock;
   }

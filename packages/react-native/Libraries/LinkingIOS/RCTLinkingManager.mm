@@ -87,10 +87,8 @@ RCT_EXPORT_MODULE()
   [self sendEventWithName:@"url" body:notification.userInfo];
 }
 
-RCT_EXPORT_METHOD(openURL
-                  : (NSURL *)URL resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    openURL : (NSURL *)URL resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   [RCTSharedApplication() openURL:URL
       options:@{}
@@ -114,10 +112,8 @@ RCT_EXPORT_METHOD(openURL
       }];
 }
 
-RCT_EXPORT_METHOD(canOpenURL
-                  : (NSURL *)URL resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (__unused RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    canOpenURL : (NSURL *)URL resolve : (RCTPromiseResolveBlock)resolve reject : (__unused RCTPromiseRejectBlock)reject)
 {
   if (RCTRunningInAppExtension()) {
     // Technically Today widgets can open urls, but supporting that would require
@@ -155,7 +151,7 @@ RCT_EXPORT_METHOD(canOpenURL
 RCT_EXPORT_METHOD(getInitialURL : (RCTPromiseResolveBlock)resolve reject : (__unused RCTPromiseRejectBlock)reject)
 {
   NSURL *initialURL = nil;
-  if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
+  if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey] != nullptr) {
     initialURL = self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
   } else {
     NSDictionary *userActivityDictionary =
@@ -181,11 +177,9 @@ RCT_EXPORT_METHOD(openSettings : (RCTPromiseResolveBlock)resolve reject : (__unu
       }];
 }
 
-RCT_EXPORT_METHOD(sendIntent
-                  : (NSString *)action extras
-                  : (NSArray *_Nullable)extras resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(
+    sendIntent : (NSString *)action extras : (NSArray *_Nullable)extras resolve : (RCTPromiseResolveBlock)
+        resolve reject : (RCTPromiseRejectBlock)reject)
 {
   RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }

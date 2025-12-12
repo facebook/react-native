@@ -16,9 +16,7 @@ type ReactNativeStartupTimingLike = {
   startTime: ?number,
   endTime: ?number,
   initializeRuntimeStart: ?number,
-  initializeRuntimeEnd: ?number,
   executeJavaScriptBundleEntryPointStart: ?number,
-  executeJavaScriptBundleEntryPointEnd: ?number,
 };
 
 // Read-only object with RN startup timing information.
@@ -29,22 +27,17 @@ export default class ReactNativeStartupTiming {
   // 1. The `ReactNativeStartupTiming` is non-standard API
   // 2. The timing information is relative to the time origin, which means `0` has valid meaning
   #startTime: ?number;
-  #endTime: ?number;
   #initializeRuntimeStart: ?number;
-  #initializeRuntimeEnd: ?number;
   #executeJavaScriptBundleEntryPointStart: ?number;
-  #executeJavaScriptBundleEntryPointEnd: ?number;
+  #endTime: ?number;
 
   constructor(startUpTiming: ?ReactNativeStartupTimingLike) {
     if (startUpTiming != null) {
       this.#startTime = startUpTiming.startTime;
-      this.#endTime = startUpTiming.endTime;
       this.#initializeRuntimeStart = startUpTiming.initializeRuntimeStart;
-      this.#initializeRuntimeEnd = startUpTiming.initializeRuntimeEnd;
       this.#executeJavaScriptBundleEntryPointStart =
         startUpTiming.executeJavaScriptBundleEntryPointStart;
-      this.#executeJavaScriptBundleEntryPointEnd =
-        startUpTiming.executeJavaScriptBundleEntryPointEnd;
+      this.#endTime = startUpTiming.endTime;
     }
   }
 
@@ -56,7 +49,7 @@ export default class ReactNativeStartupTiming {
   }
 
   /**
-   * End time of the RN app startup process. This is equal to `executeJavaScriptBundleEntryPointEnd`.
+   * End time of the RN app startup process.
    */
   get endTime(): ?number {
     return this.#endTime;
@@ -70,24 +63,10 @@ export default class ReactNativeStartupTiming {
   }
 
   /**
-   * End time when RN runtime get initialized. This is the last marker before ends of the app startup process.
-   */
-  get initializeRuntimeEnd(): ?number {
-    return this.#initializeRuntimeEnd;
-  }
-
-  /**
    * Start time of JS bundle being executed. This indicates the RN JS bundle is loaded and start to be evaluated.
    */
   get executeJavaScriptBundleEntryPointStart(): ?number {
     return this.#executeJavaScriptBundleEntryPointStart;
-  }
-
-  /**
-   * End time of JS bundle being executed. This indicates all the synchronous entry point jobs are finished.
-   */
-  get executeJavaScriptBundleEntryPointEnd(): ?number {
-    return this.#executeJavaScriptBundleEntryPointEnd;
   }
 }
 

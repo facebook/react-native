@@ -44,21 +44,29 @@ function createVersionExportedApis(
         // Collect all type declarations and build dependency graph
         for (const nodePath of path.get('body')) {
           const node = nodePath.node;
-          const typeName = node.id?.name;
+          // VariableDeclaration has name at declarations[0].id.name, others at node.id.name
+          const typeName = t.isVariableDeclaration(node)
+            ? node.declarations?.[0]?.id?.name
+            : node.id?.name;
           if (
             (t.isTSDeclareFunction(node) ||
               t.isTSTypeAliasDeclaration(node) ||
               t.isTSInterfaceDeclaration(node) ||
               t.isTSEnumDeclaration(node) ||
               t.isClassDeclaration(node) ||
-              t.isTSModuleDeclaration(node)) &&
+              t.isTSModuleDeclaration(node) ||
+              t.isVariableDeclaration(node)) &&
             typeName != null
           ) {
-            declarations.set(typeName, node);
-            dependencyGraph.set(
-              typeName,
-              Array.from(getTypeReferencesForNode(node)),
-            );
+            // Don't overwrite if declaration already exists
+            // (e.g., prefer `declare const X: typeof X_default` over `declare type X = typeof X`)
+            if (!declarations.has(typeName)) {
+              declarations.set(typeName, node);
+              dependencyGraph.set(
+                typeName,
+                Array.from(getTypeReferencesForNode(node)),
+              );
+            }
           }
         }
 
@@ -79,7 +87,7 @@ function createVersionExportedApis(
           if (t.isTSModuleDeclaration(node) && node.body) {
             const namespaceName = node.id.name;
 
-            // $FlowIgnore[prop-missing]
+            // $FlowFixMe[incompatible-type]
             for (const item of node.body.body) {
               if (t.isExportNamedDeclaration(item) && item.specifiers) {
                 for (const specifier of item.specifiers) {
@@ -91,7 +99,7 @@ function createVersionExportedApis(
                     const localName = specifier.local.name;
                     const exportedName = specifier.exported.name;
                     namespaceAliases.set(
-                      // $FlowIgnore[incompatible-type]
+                      // $FlowFixMe[incompatible-type]
                       `${namespaceName}.${exportedName}`,
                       localName,
                     );
@@ -224,8 +232,8 @@ function createVersionExportedApis(
             nodePath.node.specifiers != null
           ) {
             const specifiers = nodePath.node.specifiers.map(specifier => {
-              // $FlowIgnore[incompatible-type] nodePath is refined above
-              // $FlowIgnore[incompatible-use]
+              // $FlowFixMe[incompatible-type] nodePath is refined above
+              // $FlowFixMe[incompatible-use]
               const name: string = specifier.exported.name;
               if (declarations.has(name)) {
                 const hash = generateTypeHash(name);
@@ -245,8 +253,8 @@ function createVersionExportedApis(
               }
               return specifier;
             });
-            // $FlowIgnore[prop-missing]
-            // $FlowIgnore[incompatible-type]
+            // $FlowFixMe[prop-missing]
+            // $FlowFixMe[incompatible-type]
             nodePath.node.specifiers = specifiers;
           }
         }
@@ -339,6 +347,14 @@ function createVersionExportedApis(
       getTypeReferencesForNode(node.typeAnnotation, refs);
     }
 
+    // Handle typeof queries (`typeof X`)
+    if (t.isTSTypeQuery(node) && node.exprName) {
+      const exprName = node.exprName;
+      if (t.isIdentifier(exprName) || t.isTSQualifiedName(exprName)) {
+        refs.add(extractQualifiedName(exprName));
+      }
+    }
+
     // Handle conditional types (`T extends U ? X : Y`)
     if (t.isTSConditionalType(node)) {
       getTypeReferencesForNode(node.checkType, refs);
@@ -359,10 +375,12 @@ function createVersionExportedApis(
 
     // Recursively traverse all properties
     for (const key in node) {
-      // $FlowIgnore[invalid-computed-prop]
+      // $FlowFixMe[invalid-computed-prop]
       const value = node[key];
       if (Array.isArray(value)) {
         value.forEach(item => getTypeReferencesForNode(item, refs));
+        /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+         * roll out. See https://fburl.com/workplace/4oq3zi07. */
       } else if (typeof value === 'object' && value !== null) {
         getTypeReferencesForNode(value, refs);
       }
@@ -386,8 +404,8 @@ function createVersionExportedApis(
         if (current.right && current.right.name) {
           fullName = '.' + current.right.name + fullName;
         }
-        // $FlowIgnore[prop-missing]
-        // $FlowIgnore[incompatible-type]
+        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-type]
         current = current.left;
       }
 

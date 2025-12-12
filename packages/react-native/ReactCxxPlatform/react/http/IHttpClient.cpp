@@ -10,4 +10,7 @@ namespace facebook::react {
 // NOLINTNEXTLINE(modernize-avoid-c-arrays)
 extern const char HttpClientFactoryKey[] = "HttpClientFactory";
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
+extern const char DevToolsHttpClientFactoryKey[] = "DevToolsHttpClientFactory";
+
 } // namespace facebook::react

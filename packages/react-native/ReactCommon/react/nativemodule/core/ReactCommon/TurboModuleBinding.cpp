@@ -128,7 +128,6 @@ void TurboModuleBinding::install(
     return;
   }
 
-  defineReadOnlyGlobal(runtime, "RN$UnifiedNativeModuleProxy", true);
   defineReadOnlyGlobal(
       runtime,
       "nativeModuleProxy",

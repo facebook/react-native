@@ -48,7 +48,12 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
         } else {
           @Suppress("DEPRECATION")
           ReactDelegate(
-              requireActivity(), reactNativeHost, mainComponentName, launchOptions, fabricEnabled)
+              requireActivity(),
+              reactNativeHost,
+              mainComponentName,
+              launchOptions,
+              fabricEnabled,
+          )
         }
   }
 
@@ -61,7 +66,8 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   @Suppress("DEPRECATION")
   @Deprecated(
       "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
-      ReplaceWith("reactHost"))
+      ReplaceWith("reactHost"),
+  )
   protected open val reactNativeHost: ReactNativeHost?
     get() = (activity?.application as ReactApplication?)?.reactNativeHost
 
@@ -80,7 +86,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   public override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
-      savedInstanceState: Bundle?
+      savedInstanceState: Bundle?,
   ): View? {
     reactDelegate.loadApp()
     return reactDelegate.reactRootView
@@ -139,7 +145,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   public override fun onRequestPermissionsResult(
       requestCode: Int,
       permissions: Array<String>,
-      grantResults: IntArray
+      grantResults: IntArray,
   ) {
     @Suppress("DEPRECATION")
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -151,17 +157,17 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   }
 
   override fun checkPermission(permission: String, pid: Int, uid: Int): Int =
-      getActivity()?.checkPermission(permission, pid, uid) ?: 0
+      activity?.checkPermission(permission, pid, uid) ?: 0
 
   override fun checkSelfPermission(permission: String): Int =
-      getActivity()?.checkSelfPermission(permission) ?: 0
+      activity?.checkSelfPermission(permission) ?: 0
 
   @Suppress("DEPRECATION")
   override fun requestPermissions(
       permissions: Array<String>,
       requestCode: Int,
-      listener: PermissionListener?
-  ): Unit {
+      listener: PermissionListener?,
+  ) {
     permissionListener = listener
     requestPermissions(permissions, requestCode)
   }
@@ -197,7 +203,8 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
     public fun build(): ReactFragment = newInstance(componentName, launchOptions, fabricEnabled)
 
     @Deprecated(
-        "You should not change call ReactFragment.setFabricEnabled. Instead enable the NewArchitecture for the whole application with newArchEnabled=true in your gradle.properties file")
+        "You should not change call ReactFragment.setFabricEnabled. Instead enable the NewArchitecture for the whole application with newArchEnabled=true in your gradle.properties file"
+    )
     public fun setFabricEnabled(fabricEnabled: Boolean): Builder {
       this.fabricEnabled = fabricEnabled
       return this
@@ -210,7 +217,8 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
     protected const val ARG_FABRIC_ENABLED: String = "arg_fabric_enabled"
 
     @Deprecated(
-        "We will remove this and use a different solution for handling Fragment lifecycle events.")
+        "We will remove this and use a different solution for handling Fragment lifecycle events."
+    )
     protected const val ARG_DISABLE_HOST_LIFECYCLE_EVENTS: String =
         "arg_disable_host_lifecycle_events"
 
@@ -223,7 +231,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
     private fun newInstance(
         componentName: String?,
         launchOptions: Bundle?,
-        fabricEnabled: Boolean
+        fabricEnabled: Boolean,
     ): ReactFragment {
       val args =
           Bundle().apply {

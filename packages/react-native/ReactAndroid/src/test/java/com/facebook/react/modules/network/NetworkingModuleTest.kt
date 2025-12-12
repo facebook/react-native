@@ -79,7 +79,8 @@ class NetworkingModuleTest {
     ReactNativeFeatureFlags.override(
         object : ReactNativeFeatureFlagsDefaults() {
           override fun enableNetworkEventReporting(): Boolean = false
-        })
+        }
+    )
 
     networkingModule = NetworkingModule(context, "", httpClient, null)
 
@@ -111,7 +112,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     with(requestArgumentCaptor) {
       verify(httpClient).newCall(capture())
@@ -136,7 +138,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     verifyErrorEmit(context, 0)
   }
@@ -155,7 +158,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     verifyErrorEmit(context, 0)
   }
@@ -171,7 +175,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     verifyErrorEmit(context, 0)
   }
@@ -199,7 +204,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     with(requestArgumentCaptor) {
       verify(httpClient).newCall(capture())
@@ -219,7 +225,8 @@ class NetworkingModuleTest {
     val headers =
         listOf(
             JavaOnlyArray.of("Accept", "text/plain"),
-            JavaOnlyArray.of("User-Agent", "React test agent/1.0"))
+            JavaOnlyArray.of("User-Agent", "React test agent/1.0"),
+        )
 
     networkingModule.sendRequest(
         "GET",
@@ -230,7 +237,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     with(requestArgumentCaptor) {
       verify(httpClient).newCall(capture())
@@ -255,7 +263,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     verify(httpClient).newCall(requestArgumentCaptor.capture())
 
@@ -280,7 +289,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     verify(httpClient).newCall(requestArgumentCaptor.capture())
 
@@ -303,7 +313,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     verify(httpClient).newCall(requestArgumentCaptor.capture())
 
@@ -322,7 +333,9 @@ class NetworkingModuleTest {
     val bodyPart = JavaOnlyMap()
     bodyPart.putString("string", "value")
     bodyPart.putArray(
-        "headers", JavaOnlyArray.from(listOf(JavaOnlyArray.of("content-disposition", "name"))))
+        "headers",
+        JavaOnlyArray.from(listOf(JavaOnlyArray.of("content-disposition", "name"))),
+    )
     formData.pushMap(bodyPart)
     body.putArray("formData", formData)
 
@@ -335,7 +348,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     // verify url, method, headers
     with(requestArgumentCaptor) {
@@ -358,14 +372,17 @@ class NetworkingModuleTest {
         listOf(
             JavaOnlyArray.of("Accept", "text/plain"),
             JavaOnlyArray.of("User-Agent", "React test agent/1.0"),
-            JavaOnlyArray.of("content-type", "multipart/form-data"))
+            JavaOnlyArray.of("content-type", "multipart/form-data"),
+        )
 
     val body = JavaOnlyMap()
     val formData = JavaOnlyArray()
     val bodyPart = JavaOnlyMap()
     bodyPart.putString("string", "value")
     bodyPart.putArray(
-        "headers", JavaOnlyArray.from(listOf(JavaOnlyArray.of("content-disposition", "name"))))
+        "headers",
+        JavaOnlyArray.from(listOf(JavaOnlyArray.of("content-disposition", "name"))),
+    )
     formData.pushMap(bodyPart)
     body.putArray("formData", formData)
 
@@ -378,7 +395,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     // verify url, method, headers
     with(requestArgumentCaptor) {
@@ -422,7 +440,9 @@ class NetworkingModuleTest {
     val bodyPart = JavaOnlyMap()
     bodyPart.putString("string", "locale")
     bodyPart.putArray(
-        "headers", JavaOnlyArray.from(listOf(JavaOnlyArray.of("content-disposition", "user"))))
+        "headers",
+        JavaOnlyArray.from(listOf(JavaOnlyArray.of("content-disposition", "user"))),
+    )
     formData.pushMap(bodyPart)
 
     val imageBodyPart = JavaOnlyMap()
@@ -434,7 +454,11 @@ class NetworkingModuleTest {
                 JavaOnlyArray.of("content-type", "image/jpg"),
                 JavaOnlyArray.of(
                     "content-disposition",
-                    "filename=\"测试photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg"))))
+                    "filename=\"测试photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg",
+                ),
+            )
+        ),
+    )
 
     formData.pushMap(imageBodyPart)
 
@@ -447,7 +471,8 @@ class NetworkingModuleTest {
         "text", /* responseType */
         true, /* useIncrementalUpdates*/
         0.0, /* timeout */
-        false /* withCredentials */)
+        false, /* withCredentials */
+    )
 
     // verify RequestBodyPart for image
     requestBodyUtil.verify { RequestBodyUtil.getFileInputStream(any(), eq("imageUri")) }
@@ -503,7 +528,8 @@ class NetworkingModuleTest {
           "text", /* responseType */
           true, /* useIncrementalUpdates*/
           0.0, /* timeout */
-          false /* withCredentials */)
+          false, /* withCredentials */
+      )
     }
 
     verify(httpClient, times(3)).newCall(any())
@@ -511,7 +537,9 @@ class NetworkingModuleTest {
     networkingModule.invalidate()
     val requestIdArguments = argumentCaptor<Int>()
     okHttpCallUtil.verify(
-        { OkHttpCallUtil.cancelTag(any(), requestIdArguments.capture()) }, times(requests))
+        { OkHttpCallUtil.cancelTag(any(), requestIdArguments.capture()) },
+        times(requests),
+    )
 
     assertThat(requestIdArguments.allValues.size).isEqualTo(requests)
     for (idx in 0 until requests) {
@@ -540,7 +568,8 @@ class NetworkingModuleTest {
           "text", /* responseType */
           true, /* useIncrementalUpdates*/
           0.0, /* timeout */
-          false /* withCredentials */)
+          false, /* withCredentials */
+      )
     }
     verify(httpClient, times(3)).newCall(any())
 
@@ -563,7 +592,8 @@ class NetworkingModuleTest {
     requestIdArguments = argumentCaptor<Int>()
     okHttpCallUtil.verify(
         { OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture()) },
-        times(requests))
+        times(requests),
+    )
     assertThat(requestIdArguments.allValues.size).isEqualTo(requests)
     for (idx in 0 until requests) {
       assertThat(requestIdArguments.allValues.contains(idx + 1)).isTrue

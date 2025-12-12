@@ -14,6 +14,9 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/BackgroundImage.h>
+#include <react/renderer/graphics/BackgroundPosition.h>
+#include <react/renderer/graphics/BackgroundRepeat.h>
+#include <react/renderer/graphics/BackgroundSize.h>
 #include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Color.h>
@@ -29,17 +32,13 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
  public:
   BaseViewProps() = default;
   BaseViewProps(
-      const PropsParserContext& context,
-      const BaseViewProps& sourceProps,
-      const RawProps& rawProps,
-      const std::function<bool(const std::string&)>& filterObjectKeys =
-          nullptr);
+      const PropsParserContext &context,
+      const BaseViewProps &sourceProps,
+      const RawProps &rawProps,
+      const std::function<bool(const std::string &)> &filterObjectKeys = nullptr);
 
-  void setProp(
-      const PropsParserContext& context,
-      RawPropsPropNameHash hash,
-      const char* propName,
-      const RawValue& value);
+  void
+  setProp(const PropsParserContext &context, RawPropsPropNameHash hash, const char *propName, const RawValue &value);
 
 #pragma mark - Props
 
@@ -76,6 +75,15 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   // Background Image
   std::vector<BackgroundImage> backgroundImage{};
 
+  // Background Size
+  std::vector<BackgroundSize> backgroundSize{};
+
+  // Background Position
+  std::vector<BackgroundPosition> backgroundPosition{};
+
+  // Background Repeat
+  std::vector<BackgroundRepeat> backgroundRepeat{};
+
   // MixBlendMode
   BlendMode mixBlendMode{BlendMode::Normal};
 
@@ -104,14 +112,12 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 #pragma mark - Convenience Methods
 
   CascadedBorderWidths getBorderWidths() const;
-  BorderMetrics resolveBorderMetrics(const LayoutMetrics& layoutMetrics) const;
-  Transform resolveTransform(const LayoutMetrics& layoutMetrics) const;
+  BorderMetrics resolveBorderMetrics(const LayoutMetrics &layoutMetrics) const;
+  Transform resolveTransform(const LayoutMetrics &layoutMetrics) const;
   bool getClipsContentToBounds() const;
 
-  static Transform resolveTransform(
-      const Size& frameSize,
-      const Transform& transform,
-      const TransformOrigin& transformOrigin);
+  static Transform
+  resolveTransform(const Size &frameSize, const Transform &transform, const TransformOrigin &transformOrigin);
 
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;

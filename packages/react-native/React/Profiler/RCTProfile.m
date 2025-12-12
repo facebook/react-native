@@ -184,7 +184,7 @@ RCT_EXTERN void RCTProfileTrampoline(void);
 static void *RCTProfileTrampoline = NULL;
 #endif
 
-RCT_EXTERN void RCTProfileTrampolineStart(id, SEL);
+RCT_EXTERN void RCTProfileTrampolineStart(id /*self*/, SEL /*cmd*/);
 void RCTProfileTrampolineStart(id self, SEL cmd)
 {
   /**
@@ -471,12 +471,10 @@ void RCTProfileInit(RCTBridge *bridge)
     [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
       RCTProfileAddEvent(
           kProfileTraceEvents,
-          @"ph"
-          : @"M", // metadata event
-            @"name"
-          : @"thread_sort_index", @"tid"
-          : thread, @"args"
-          :
+          @"ph" : @"M", // metadata event
+          @"name" : @"thread_sort_index",
+          @"tid" : thread,
+          @"args" :
           @{@"sort_index" : @(-1000 + (NSInteger)idx)});
     }];
   });
@@ -582,14 +580,15 @@ void _RCTProfileEndEvent(
     }
 
     NSNumber *start = event[0];
-    RCTProfileAddEvent(kProfileTraceEvents, @"tid"
-                       : threadName, @"name"
-                       : event[1], @"cat"
-                       : category, @"ph"
-                       : @"X", @"ts"
-                       : start, @"dur"
-                       : @(RCTProfileTimestamp(time).doubleValue - start.doubleValue), @"args"
-                       : event[2], );
+    RCTProfileAddEvent(
+        kProfileTraceEvents,
+        @"tid" : threadName,
+        @"name" : event[1],
+        @"cat" : category,
+        @"ph" : @"X",
+        @"ts" : start,
+        @"dur" : @(RCTProfileTimestamp(time).doubleValue - start.doubleValue),
+        @"args" : event[2], );
   });
 }
 
@@ -636,14 +635,15 @@ void RCTProfileEndAsyncEvent(uint64_t tag, NSString *category, NSUInteger cookie
     if (event) {
       NSNumber *endTimestamp = RCTProfileTimestamp(time);
 
-      RCTProfileAddEvent(kProfileTraceEvents, @"tid"
-                         : threadName, @"name"
-                         : event[1], @"cat"
-                         : category, @"ph"
-                         : @"X", @"ts"
-                         : event[0], @"dur"
-                         : @(endTimestamp.doubleValue - [event[0] doubleValue]), @"args"
-                         : event[2], );
+      RCTProfileAddEvent(
+          kProfileTraceEvents,
+          @"tid" : threadName,
+          @"name" : event[1],
+          @"cat" : category,
+          @"ph" : @"X",
+          @"ts" : event[0],
+          @"dur" : @(endTimestamp.doubleValue - [event[0] doubleValue]),
+          @"args" : event[2], );
       [RCTProfileOngoingEvents removeObjectForKey:@(cookie)];
     }
   });
@@ -661,13 +661,14 @@ void RCTProfileImmediateEvent(uint64_t tag, NSString *name, NSTimeInterval time,
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
-    RCTProfileAddEvent(kProfileTraceEvents, @"tid"
-                       : threadName, @"name"
-                       : name, @"ts"
-                       : RCTProfileTimestamp(time), @"scope"
-                       : @(scope), @"ph"
-                       : @"i", @"args"
-                       : RCTProfileGetMemoryUsage(), );
+    RCTProfileAddEvent(
+        kProfileTraceEvents,
+        @"tid" : threadName,
+        @"name" : name,
+        @"ts" : RCTProfileTimestamp(time),
+        @"scope" : @(scope),
+        @"ph" : @"i",
+        @"args" : RCTProfileGetMemoryUsage(), );
   });
 }
 
@@ -687,13 +688,14 @@ NSUInteger _RCTProfileBeginFlowEvent(void)
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
-    RCTProfileAddEvent(kProfileTraceEvents, @"tid"
-                       : threadName, @"name"
-                       : @"flow", @"id"
-                       : @(cookie), @"cat"
-                       : @"flow", @"ph"
-                       : @"s", @"ts"
-                       : RCTProfileTimestamp(time), );
+    RCTProfileAddEvent(
+        kProfileTraceEvents,
+        @"tid" : threadName,
+        @"name" : @"flow",
+        @"id" : @(cookie),
+        @"cat" : @"flow",
+        @"ph" : @"s",
+        @"ts" : RCTProfileTimestamp(time), );
   });
 
   return cookie;
@@ -712,13 +714,14 @@ void _RCTProfileEndFlowEvent(NSUInteger cookie)
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
-    RCTProfileAddEvent(kProfileTraceEvents, @"tid"
-                       : threadName, @"name"
-                       : @"flow", @"id"
-                       : @(cookie), @"cat"
-                       : @"flow", @"ph"
-                       : @"f", @"ts"
-                       : RCTProfileTimestamp(time), );
+    RCTProfileAddEvent(
+        kProfileTraceEvents,
+        @"tid" : threadName,
+        @"name" : @"flow",
+        @"id" : @(cookie),
+        @"cat" : @"flow",
+        @"ph" : @"f",
+        @"ts" : RCTProfileTimestamp(time), );
   });
 }
 

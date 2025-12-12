@@ -15,6 +15,5 @@ namespace facebook::react {
 /*
  * Descriptor for <VirtualView2> component.
  */
-using VirtualViewExperimentalComponentDescriptor =
-    ConcreteComponentDescriptor<VirtualViewExperimentalShadowNode>;
+using VirtualViewExperimentalComponentDescriptor = ConcreteComponentDescriptor<VirtualViewExperimentalShadowNode>;
 } // namespace facebook::react

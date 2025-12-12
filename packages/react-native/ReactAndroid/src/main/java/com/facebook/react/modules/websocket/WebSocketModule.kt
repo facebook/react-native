@@ -64,7 +64,7 @@ public class WebSocketModule(context: ReactApplicationContext) :
     }
   }
 
-  public fun setContentHandler(id: Int, contentHandler: ContentHandler?): Unit {
+  public fun setContentHandler(id: Int, contentHandler: ContentHandler?) {
     if (contentHandler != null) {
       contentHandlers[id] = contentHandler
     } else {
@@ -76,7 +76,7 @@ public class WebSocketModule(context: ReactApplicationContext) :
       url: String,
       protocols: ReadableArray?,
       options: ReadableMap?,
-      socketID: Double
+      socketID: Double,
   ) {
     val id = socketID.toInt()
     val okHttpBuilder =
@@ -196,7 +196,8 @@ public class WebSocketModule(context: ReactApplicationContext) :
 
             sendEvent("websocketMessage", params)
           }
-        })
+        },
+    )
 
     // Trigger shutdown of the dispatcher's executor so this process can exit cleanly
     client.dispatcher().executorService().shutdown()
@@ -274,7 +275,7 @@ public class WebSocketModule(context: ReactApplicationContext) :
     }
   }
 
-  public fun sendBinary(byteString: ByteString, id: Int): Unit {
+  public fun sendBinary(byteString: ByteString, id: Int) {
     val client = webSocketConnections[id]
     if (client == null) {
       // This is a programmer error -- display development warning
@@ -367,7 +368,7 @@ public class WebSocketModule(context: ReactApplicationContext) :
     private var customClientBuilder: CustomClientBuilder? = null
 
     @JvmStatic
-    public fun setCustomClientBuilder(ccb: CustomClientBuilder?): Unit {
+    public fun setCustomClientBuilder(ccb: CustomClientBuilder?) {
       customClientBuilder = ccb
     }
 

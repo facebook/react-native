@@ -45,8 +45,8 @@ internal class DialogTitle : TextView {
       if (lineCount > 0) {
         val ellipsisCount = layout.getEllipsisCount(lineCount - 1)
         if (ellipsisCount > 0) {
-          setSingleLine(false)
-          setMaxLines(2)
+          isSingleLine = false
+          maxLines = 2
           super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
       }

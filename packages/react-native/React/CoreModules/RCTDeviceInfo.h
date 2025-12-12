@@ -11,4 +11,6 @@
 
 @interface RCTDeviceInfo : NSObject <RCTBridgeModule>
 
+- (instancetype)initWithDimensionsProvider:(NSDictionary * (^)(void))dimensionsProvider;
+
 @end

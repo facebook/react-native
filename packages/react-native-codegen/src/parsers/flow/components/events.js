@@ -115,7 +115,7 @@ function extractArrayElementType(
       };
     case 'UnionTypeAnnotation':
       return {
-        type: 'StringLiteralUnionTypeAnnotation',
+        type: 'UnionTypeAnnotation',
         types: typeAnnotation.types.map(option => ({
           type: 'StringLiteralTypeAnnotation',
           value: parser.getLiteralValue(option),

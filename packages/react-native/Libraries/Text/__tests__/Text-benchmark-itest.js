@@ -6,6 +6,7 @@
  *
  * @flow strict-local
  * @format
+ * @fantom_flags reduceDefaultPropsInText:*
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
@@ -17,33 +18,60 @@ import {Text} from 'react-native';
 let root;
 let testElements: React.MixedElement;
 
-Fantom.unstable_benchmark.suite('Text').test.each(
-  [100, 1000],
-  n => `render ${n.toString()} text component instances`,
-  () => {
-    Fantom.runTask(() => root.render(testElements));
-  },
-  n => ({
-    beforeAll: () => {
-      testElements = (
-        <>
-          {[...Array(n).keys()].map(i => (
-            <Text
-              id={String(i)}
-              nativeID={String(i)}
-              style={{
-                width: i + 1,
-                height: i + 1,
-              }}>{`Text instance ${i}`}</Text>
-          ))}
-        </>
-      );
+Fantom.unstable_benchmark
+  .suite('Text')
+  .test.each(
+    [100, 1000],
+    n =>
+      `render ${n.toString()} text component instances with no explicit props`,
+    () => {
+      Fantom.runTask(() => root.render(testElements));
     },
-    beforeEach: () => {
-      root = Fantom.createRoot();
+    n => ({
+      beforeAll: () => {
+        testElements = (
+          <>
+            {[...Array(n).keys()].map(i => (
+              <Text />
+            ))}
+          </>
+        );
+      },
+      beforeEach: () => {
+        root = Fantom.createRoot();
+      },
+      afterEach: () => {
+        root.destroy();
+      },
+    }),
+  )
+  .test.each(
+    [100, 1000],
+    n => `render ${n.toString()} text component instances`,
+    () => {
+      Fantom.runTask(() => root.render(testElements));
     },
-    afterEach: () => {
-      root.destroy();
-    },
-  }),
-);
+    n => ({
+      beforeAll: () => {
+        testElements = (
+          <>
+            {[...Array(n).keys()].map(i => (
+              <Text
+                id={String(i)}
+                nativeID={String(i)}
+                style={{
+                  width: i + 1,
+                  height: i + 1,
+                }}>{`Text instance ${i}`}</Text>
+            ))}
+          </>
+        );
+      },
+      beforeEach: () => {
+        root = Fantom.createRoot();
+      },
+      afterEach: () => {
+        root.destroy();
+      },
+    }),
+  );

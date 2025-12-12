@@ -13,6 +13,8 @@
 
 #include <jsinspector-modern/cdp/CdpJson.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfile.h>
+#include <jsinspector-modern/tracing/TargetTracingAgent.h>
+#include <jsinspector-modern/tracing/TraceRecordingState.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -44,9 +46,9 @@ class RuntimeAgent final {
    */
   RuntimeAgent(
       FrontendChannel frontendChannel,
-      RuntimeTargetController& targetController,
+      RuntimeTargetController &targetController,
       ExecutionContextDescription executionContextDescription,
-      SessionState& sessionState,
+      SessionState &sessionState,
       std::unique_ptr<RuntimeAgentDelegate> delegate);
 
   ~RuntimeAgent();
@@ -61,16 +63,14 @@ class RuntimeAgent final {
    * to the request (with either a success or error message). False if the
    * agent expects another agent to respond to the request instead.
    */
-  bool handleRequest(const cdp::PreparsedRequest& req);
+  bool handleRequest(const cdp::PreparsedRequest &req);
 
-  inline const ExecutionContextDescription& getExecutionContextDescription()
-      const {
+  inline const ExecutionContextDescription &getExecutionContextDescription() const
+  {
     return executionContextDescription_;
   }
 
-  void notifyBindingCalled(
-      const std::string& bindingName,
-      const std::string& payload);
+  void notifyBindingCalled(const std::string &bindingName, const std::string &payload);
 
   struct ExportedState {
     std::unique_ptr<RuntimeAgentDelegate::ExportedState> delegateState;
@@ -83,33 +83,30 @@ class RuntimeAgent final {
    */
   ExportedState getExportedState();
 
-  /**
-   * Registers the corresponding RuntimeTarget for Tracing: might enable some
-   * capabilities that will be later used in Tracing Profile.
-   */
-  void registerForTracing();
-
-  /**
-   * Start sampling profiler for the corresponding RuntimeTarget.
-   */
-  void enableSamplingProfiler();
-
-  /**
-   * Stop sampling profiler for the corresponding RuntimeTarget.
-   */
-  void disableSamplingProfiler();
-
-  /**
-   * Return recorded sampling profile for the previous sampling session.
-   */
-  tracing::RuntimeSamplingProfile collectSamplingProfile();
-
  private:
   FrontendChannel frontendChannel_;
-  RuntimeTargetController& targetController_;
-  SessionState& sessionState_;
+  RuntimeTargetController &targetController_;
+  SessionState &sessionState_;
   const std::unique_ptr<RuntimeAgentDelegate> delegate_;
   const ExecutionContextDescription executionContextDescription_;
+};
+
+#pragma mark - Tracing
+
+/**
+ * An Agent that handles Tracing events for a particular RuntimeTarget.
+ *
+ * Lifetime of this agent is bound to the lifetime of the Tracing session -
+ * HostTargetTraceRecording and to the lifetime of the RuntimeTarget.
+ */
+class RuntimeTracingAgent : public tracing::TargetTracingAgent {
+ public:
+  explicit RuntimeTracingAgent(tracing::TraceRecordingState &state, RuntimeTargetController &targetController);
+
+  ~RuntimeTracingAgent();
+
+ private:
+  RuntimeTargetController &targetController_;
 };
 
 } // namespace facebook::react::jsinspector_modern

@@ -7,11 +7,14 @@
 
 #include "NativeFantom.h"
 
+#include <hermes/hermes.h>
 #include <jsi/JSIDynamic.h>
 #include <react/bridging/Bridging.h>
+#include <react/debug/flags.h>
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/components/scrollview/ScrollViewShadowNode.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
+#include <fstream>
 #include <iostream>
 
 #include "TesterAppDelegate.h"
@@ -86,7 +89,8 @@ std::string NativeFantom::getRenderedOutput(
       options.includeRoot, options.includeLayoutMetrics};
 
   auto viewTree = appDelegate_.mountingManager_->getViewTree(surfaceId);
-  return RenderOutput::render(viewTree, formatOptions);
+  return appDelegate_.mountingManager_->renderer()->render(
+      viewTree, formatOptions);
 }
 
 void NativeFantom::reportTestSuiteResultsJSON(
@@ -114,7 +118,7 @@ jsi::Object NativeFantom::getFabricUpdateProps(
 void NativeFantom::enqueueNativeEvent(
     jsi::Runtime& /*runtime*/,
     std::shared_ptr<const ShadowNode> shadowNode,
-    std::string type,
+    const std::string& type,
     const std::optional<folly::dynamic>& payload,
     std::optional<RawEvent::Category> category,
     std::optional<bool> isUnique) {
@@ -245,6 +249,71 @@ void NativeFantom::saveJSMemoryHeapSnapshot(
     const std::string& filePath) {
   runtime.instrumentation().collectGarbage("heapsnapshot");
   runtime.instrumentation().createSnapshotToFile(filePath);
+}
+
+#ifdef REACT_NATIVE_DEBUG
+
+void NativeFantom::forceHighResTimeStamp(
+    jsi::Runtime& /*runtime*/,
+    std::optional<HighResTimeStamp> now) {
+  if (now) {
+    HighResTimeStamp::setTimeStampProviderForTesting(
+        [now] { return now->toChronoSteadyClockTimePoint(); });
+  } else {
+    HighResTimeStamp::setTimeStampProviderForTesting(nullptr);
+  }
+}
+
+#else
+
+void NativeFantom::forceHighResTimeStamp(
+    jsi::Runtime& runtime,
+    std::optional<HighResTimeStamp> /*now*/) {
+  throw jsi::JSError(
+      runtime, "Mocking timers is not supported in optimized builds");
+}
+
+#endif
+
+const int JS_SAMPLING_PROFILER_HZ = 10000;
+
+void NativeFantom::startJSSamplingProfiler(jsi::Runtime& /*runtime*/) {
+  auto* hermesRootAPI =
+      jsi::castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesRootAPI->enableSamplingProfiler(JS_SAMPLING_PROFILER_HZ);
+}
+
+void NativeFantom::stopJSSamplingProfilerAndSaveToFile(
+    jsi::Runtime& runtime,
+    const std::string& filePath) {
+  auto* hermesRootAPI =
+      jsi::castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesRootAPI->disableSamplingProfiler();
+  std::ofstream fileStream(filePath);
+  auto* hermesRuntime = dynamic_cast<hermes::HermesRuntime*>(&runtime);
+  hermesRuntime->sampledTraceToStreamInDevToolsFormat(fileStream);
+}
+
+void NativeFantom::setImageResponse(
+    jsi::Runtime& /*rt*/,
+    const std::string& uri,
+    const NativeFantomSetImageResponseImageResponse& imageResponse) {
+  appDelegate_.mountingManager_->imageLoader_->setImageResponse(
+      uri,
+      {
+          .width = imageResponse.width,
+          .height = imageResponse.height,
+          .cacheStatus = imageResponse.cacheStatus,
+          .errorMessage = imageResponse.errorMessage,
+      });
+}
+
+void NativeFantom::clearImage(jsi::Runtime& /*rt*/, const std::string& uri) {
+  appDelegate_.mountingManager_->imageLoader_->clearImage(uri);
+}
+
+void NativeFantom::clearAllImages(jsi::Runtime& /*rt*/) {
+  appDelegate_.mountingManager_->imageLoader_->clearAllImages();
 }
 
 } // namespace facebook::react

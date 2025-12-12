@@ -114,7 +114,7 @@ internal class OutsetBoxShadowDrawable(
       canvas: Canvas,
       shadowRect: RectF,
       spreadExtent: Float,
-      computedBorderRadii: ComputedBorderRadius
+      computedBorderRadii: ComputedBorderRadius,
   ) {
     // We inset the clip slightly, to avoid Skia artifacts with antialiased
     // clipping. This inset is only visible when no background is present.
@@ -132,9 +132,12 @@ internal class OutsetBoxShadowDrawable(
                   computedBorderRadii.bottomRight.horizontal,
                   computedBorderRadii.bottomRight.vertical,
                   computedBorderRadii.bottomLeft.horizontal,
-                  computedBorderRadii.bottomLeft.vertical),
-              Path.Direction.CW)
-        })
+                  computedBorderRadii.bottomLeft.vertical,
+              ),
+              Path.Direction.CW,
+          )
+        }
+    )
 
     canvas.drawPath(
         Path().apply {
@@ -148,10 +151,13 @@ internal class OutsetBoxShadowDrawable(
                   adjustRadiusForSpread(computedBorderRadii.bottomRight.horizontal, spreadExtent),
                   adjustRadiusForSpread(computedBorderRadii.bottomRight.vertical, spreadExtent),
                   adjustRadiusForSpread(computedBorderRadii.bottomLeft.horizontal, spreadExtent),
-                  adjustRadiusForSpread(computedBorderRadii.bottomLeft.vertical, spreadExtent)),
-              Path.Direction.CW)
+                  adjustRadiusForSpread(computedBorderRadii.bottomLeft.vertical, spreadExtent),
+              ),
+              Path.Direction.CW,
+          )
         },
-        shadowPaint)
+        shadowPaint,
+    )
   }
 
   private fun drawShadowRect(canvas: Canvas, shadowRect: RectF) {

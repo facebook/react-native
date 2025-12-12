@@ -39,19 +39,19 @@ export function withServerForEachTest(options: CreateServerOptions): $ReadOnly<{
     app: ConnectApp,
     port: number,
   } = {
-    // $FlowIgnore[unsafe-getters-setters]
+    // $FlowFixMe[unsafe-getters-setters]
     get serverBaseUrl() {
       throw new Error(EAGER_ACCESS_ERROR_MESSAGE);
     },
-    // $FlowIgnore[unsafe-getters-setters]
+    // $FlowFixMe[unsafe-getters-setters]
     get serverBaseWsUrl() {
       throw new Error(EAGER_ACCESS_ERROR_MESSAGE);
     },
-    // $FlowIgnore[unsafe-getters-setters]
+    // $FlowFixMe[unsafe-getters-setters]
     get app() {
       throw new Error(EAGER_ACCESS_ERROR_MESSAGE);
     },
-    // $FlowIgnore[unsafe-getters-setters]
+    // $FlowFixMe[unsafe-getters-setters]
     get port() {
       throw new Error(EAGER_ACCESS_ERROR_MESSAGE);
     },
@@ -62,11 +62,11 @@ export function withServerForEachTest(options: CreateServerOptions): $ReadOnly<{
     ({server, app} = await createServer(options));
     const serverBaseUrl = baseUrlForServer(
       server,
-      options.secure ?? false ? 'https' : 'http',
+      (options.secure ?? false) ? 'https' : 'http',
     );
     const serverBaseWsUrl = baseUrlForServer(
       server,
-      options.secure ?? false ? 'wss' : 'ws',
+      (options.secure ?? false) ? 'wss' : 'ws',
     );
     Object.defineProperty(ref, 'serverBaseUrl', {value: serverBaseUrl});
     Object.defineProperty(ref, 'serverBaseWsUrl', {value: serverBaseWsUrl});
@@ -93,7 +93,7 @@ export async function createServer(options: CreateServerOptions): Promise<{
     );
     httpServer = https.createServer(
       {cert, key},
-      // $FlowFixMe[incompatible-call] The types for `connect` and `https` are subtly incompatible as written.
+      // $FlowFixMe[incompatible-type] The types for `connect` and `https` are subtly incompatible as written.
       app,
     );
   } else {

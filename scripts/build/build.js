@@ -20,10 +20,10 @@ const {
 const babel = require('@babel/core');
 const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
-const glob = require('glob');
 const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
+const {globSync} = require('tinyglobby');
 const ts = require('typescript');
 const {parseArgs, styleText} = require('util');
 
@@ -44,7 +44,7 @@ async function build() {
   const {
     positionals: packageNames,
     values: {validate, help},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
@@ -103,15 +103,15 @@ async function buildPackage(packageName /*: string */) {
     const {emitTypeScriptDefs} = getBuildOptions(packageName);
     const entryPoints = await getEntryPoints(packageName);
 
-    const files = glob
-      .sync(path.resolve(PACKAGES_DIR, packageName, SRC_DIR, '**/*'), {
-        nodir: true,
-      })
-      .filter(
-        file =>
-          !entryPoints.has(file) &&
-          !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
-      );
+    const files = globSync('**/*', {
+      cwd: path.resolve(PACKAGES_DIR, packageName, SRC_DIR),
+      onlyFiles: true,
+      absolute: true,
+    }).filter(
+      file =>
+        !entryPoints.has(file) &&
+        !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
+    );
 
     process.stdout.write(
       `${packageName} ${styleText('dim', '.').repeat(72 - packageName.length)} `,
@@ -189,7 +189,7 @@ async function buildFile(
   // Transform source file using Babel
   const transformed = await prettier.format(
     (await babel.transformFileAsync(file, getBabelConfig(packageName))).code,
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     prettierConfig,
   );
@@ -429,9 +429,11 @@ function normalizeExportsTarget(target /*: string */) /*: string */ {
 }
 
 function validateTypeScriptDefs(packageName /*: string */) {
-  const files = glob.sync(
-    path.resolve(PACKAGES_DIR, packageName, BUILD_DIR, '**/*.d.ts'),
-  );
+  const files = globSync('**/*.d.ts', {
+    cwd: path.resolve(PACKAGES_DIR, packageName, BUILD_DIR),
+    absolute: true,
+    onlyFiles: true,
+  });
   const compilerOptions = {
     ...getTypeScriptCompilerOptions(packageName),
     noEmit: true,
@@ -458,7 +460,7 @@ function validateTypeScriptDefs(packageName /*: string */) {
           '\n',
         );
         console.log(
-          // $FlowIssue[incompatible-use] Type refined above
+          // $FlowFixMe[incompatible-use] Type refined above
           `${diagnostic.file.fileName} (${line + 1},${
             character + 1
           }): ${message}`,

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react
 
 import com.facebook.react.bridge.ModuleHolder
@@ -16,6 +18,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Helper class to build NativeModuleRegistry. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 public class NativeModuleRegistryBuilder(
     private val reactApplicationContext: ReactApplicationContext,
 ) {
@@ -24,20 +30,18 @@ public class NativeModuleRegistryBuilder(
 
   @Deprecated(
       "ReactInstanceManager is not used",
-      ReplaceWith("NativeModuleRegistryBuilder(reactApplicationContext)"))
+      ReplaceWith("NativeModuleRegistryBuilder(reactApplicationContext)"),
+  )
   public constructor(
       reactApplicationContext: ReactApplicationContext,
-      @Suppress("UNUSED_PARAMETER") reactInstanceManager: ReactInstanceManager
+      @Suppress("UNUSED_PARAMETER") reactInstanceManager: ReactInstanceManager,
   ) : this(reactApplicationContext)
 
   public fun processPackage(reactPackage: ReactPackage) {
     // We use an iterable instead of an iterator here to ensure thread safety, and that this list
     // cannot be modified
     val moduleHolders =
-        @Suppress("DEPRECATION")
-        if (reactPackage is LazyReactPackage) {
-          reactPackage.getNativeModuleIterator(reactApplicationContext)
-        } else if (reactPackage is BaseReactPackage) {
+        if (reactPackage is BaseReactPackage) {
           reactPackage.getNativeModuleIterator(reactApplicationContext)
         } else {
           ReactPackageHelper.getNativeModuleIterator(reactPackage, reactApplicationContext)
@@ -66,7 +70,9 @@ by autolinking. Try removing the existing entry and rebuild.
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "NativeModuleRegistryBuilder", LegacyArchitectureLogLevel.ERROR)
+          "NativeModuleRegistryBuilder",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

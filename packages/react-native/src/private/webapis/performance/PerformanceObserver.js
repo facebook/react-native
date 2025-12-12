@@ -57,6 +57,19 @@ export class PerformanceObserverEntryList {
   }
 }
 
+export const PerformanceObserverEntryList_public: typeof PerformanceObserverEntryList =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceObserverEntryList() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceObserverEntryList': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceObserverEntryList_public.prototype =
+  PerformanceObserverEntryList.prototype;
+
 export type PerformanceObserverCallbackOptions = {
   droppedEntriesCount: number,
 };
@@ -145,6 +158,22 @@ export class PerformanceObserver {
     NativePerformance.disconnect(this.#nativeObserverHandle);
   }
 
+  takeRecords(): PerformanceEntryList {
+    let entries: PerformanceEntryList = [];
+
+    if (this.#nativeObserverHandle != null) {
+      const rawEntries = NativePerformance.takeRecords(
+        this.#nativeObserverHandle,
+        true,
+      );
+      if (rawEntries && rawEntries.length > 0) {
+        entries = rawEntries.map(rawToPerformanceEntry);
+      }
+    }
+
+    return entries;
+  }
+
   #createNativeObserver(): OpaqueNativeObserverHandle | null {
     this.#calledAtLeastOnce = false;
 
@@ -154,7 +183,7 @@ export class PerformanceObserver {
           observerHandle,
           true, // sort records
         );
-        if (!rawEntries) {
+        if (!rawEntries || rawEntries.length === 0) {
           return;
         }
 

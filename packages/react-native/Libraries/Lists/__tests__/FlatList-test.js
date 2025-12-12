@@ -84,7 +84,7 @@ describe('FlatList', () => {
         ListHeaderComponent={() => <header />}
         data={new Array<void>(5).fill().map((_, ii) => ({id: String(ii)}))}
         keyExtractor={(item, index) => item.id}
-        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-type]
         getItemLayout={({index}: $FlowFixMe) => ({
           length: 50,
           offset: index * 50,
@@ -201,7 +201,7 @@ describe('FlatList', () => {
 
     const component = await create(
       <FlatList
-        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-type]
         data={arrayLike}
         renderItem={({item}) => <item value={item.key} />}
       />,

@@ -1,0 +1,5 @@
+---
+InheritParentConfig: true
+Checks: '
+-facebook-hte-BadCall-sleep_for,
+'

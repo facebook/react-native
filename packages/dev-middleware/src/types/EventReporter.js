@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {DebuggerShellPreparationResult} from './BrowserLauncher';
+
 type SuccessResult<Props: {...} | void = {}> = {
   status: 'success',
   ...Props,
@@ -132,6 +134,10 @@ export type ReportableEvent =
       duration: number,
       ...ConnectionUptime,
       ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'fusebox_shell_preparation_attempt',
+      result: DebuggerShellPreparationResult,
     };
 
 /**

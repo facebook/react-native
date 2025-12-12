@@ -84,7 +84,8 @@ class ReactPropConstantsTest {
 
     @ReactPropGroup(
         names = ["customBoxedIntGroupPropFirst", "customBoxedIntGroupPropSecond"],
-        customType = "color")
+        customType = "color",
+    )
     fun customIntGroupProp(v: View?, index: Int, value: Int?) = Unit
   }
 
@@ -122,7 +123,8 @@ class ReactPropConstantsTest {
                 "customIntProp" to "date",
                 "customBoxedIntGroupPropFirst" to "color",
                 "customBoxedIntGroupPropSecond" to "color",
-            ))
+            )
+        )
   }
 
   companion object {

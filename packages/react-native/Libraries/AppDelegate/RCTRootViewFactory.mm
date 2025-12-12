@@ -7,6 +7,7 @@
 
 #import "RCTRootViewFactory.h"
 #import <React/RCTCxxBridgeDelegate.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
@@ -20,7 +21,6 @@
 #else
 #import <React/CoreModulesPlugins.h>
 #endif
-#import <React/RCTBundleURLProvider.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTFabricSurface.h>
@@ -38,18 +38,12 @@
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL newArchEnabled:(BOOL)newArchEnabled
 {
-  return [self initWithBundleURL:bundleURL
-                  newArchEnabled:newArchEnabled
-              turboModuleEnabled:newArchEnabled
-               bridgelessEnabled:newArchEnabled];
+  return [self initWithBundleURL:bundleURL];
 }
 
 - (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock newArchEnabled:(BOOL)newArchEnabled
 {
-  return [self initWithBundleURLBlock:bundleURLBlock
-                       newArchEnabled:newArchEnabled
-                   turboModuleEnabled:newArchEnabled
-                    bridgelessEnabled:newArchEnabled];
+  return [self initWithBundleURLBlock:bundleURLBlock];
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
@@ -57,13 +51,9 @@
                turboModuleEnabled:(BOOL)turboModuleEnabled
                 bridgelessEnabled:(BOOL)bridgelessEnabled
 {
-  return [self
-      initWithBundleURLBlock:^{
-        return bundleURL;
-      }
-              newArchEnabled:newArchEnabled
-          turboModuleEnabled:turboModuleEnabled
-           bridgelessEnabled:bridgelessEnabled];
+  return [self initWithBundleURLBlock:^{
+    return bundleURL;
+  }];
 }
 
 - (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
@@ -73,11 +63,29 @@
 {
   if (self = [super init]) {
     _bundleURLBlock = bundleURLBlock;
-    _fabricEnabled = newArchEnabled;
-    _turboModuleEnabled = turboModuleEnabled;
-    _bridgelessEnabled = bridgelessEnabled;
+    _fabricEnabled = YES;
+    _turboModuleEnabled = YES;
+    _bridgelessEnabled = YES;
   }
   return self;
+}
+
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
+{
+  if (self = [super init]) {
+    _bundleURLBlock = bundleURLBlock;
+    _fabricEnabled = YES;
+    _turboModuleEnabled = YES;
+    _bridgelessEnabled = YES;
+  }
+  return self;
+}
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+{
+  return [self initWithBundleURLBlock:^{
+    return bundleURL;
+  }];
 }
 
 @end
@@ -125,58 +133,68 @@
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties
 {
-  return [self viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:nil];
+  return [self viewWithModuleName:moduleName
+                initialProperties:initialProperties
+                    launchOptions:nil
+              bundleConfiguration:[RCTBundleConfiguration defaultConfiguration]
+             devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
 {
-  return [self viewWithModuleName:moduleName initialProperties:nil launchOptions:nil];
+  return [self viewWithModuleName:moduleName
+                initialProperties:nil
+                    launchOptions:nil
+              bundleConfiguration:[RCTBundleConfiguration defaultConfiguration]
+             devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (void)initializeReactHostWithLaunchOptions:(NSDictionary *)launchOptions
+                         bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+                        devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
-  if (_configuration.bridgelessEnabled) {
-    // Enable TurboModule interop by default in Bridgeless mode
-    RCTEnableTurboModuleInterop(YES);
-    RCTEnableTurboModuleInteropBridgeProxy(YES);
+  // Enable TurboModule interop by default in Bridgeless mode
+  RCTEnableTurboModuleInterop(YES);
+  RCTEnableTurboModuleInteropBridgeProxy(YES);
 
-    [self createReactHostIfNeeded:launchOptions];
-    return;
-  }
+  [self createReactHostIfNeeded:launchOptions
+            bundleConfiguration:bundleConfiguration
+           devMenuConfiguration:devMenuConfiguration];
+  return;
+}
 
-  [self createBridgeIfNeeded:launchOptions];
-  [self createBridgeAdapterIfNeeded];
+- (UIView *)viewWithModuleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
+                 launchOptions:(NSDictionary *)launchOptions
+{
+  return [self viewWithModuleName:moduleName
+                initialProperties:initialProperties
+                    launchOptions:launchOptions
+              bundleConfiguration:[RCTBundleConfiguration defaultConfiguration]
+             devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initProps
                  launchOptions:(NSDictionary *)launchOptions
+           bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+          devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
-  [self initializeReactHostWithLaunchOptions:launchOptions];
+  [self initializeReactHostWithLaunchOptions:launchOptions
+                         bundleConfiguration:bundleConfiguration
+                        devMenuConfiguration:devMenuConfiguration];
 
-  if (_configuration.bridgelessEnabled) {
-    RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
+  RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName
+                                                        initialProperties:initProps ? initProps : @{}];
 
-    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView =
-        [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+  RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView =
+      [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
 
-    surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
-    if (_configuration.customizeRootView != nil) {
-      _configuration.customizeRootView(surfaceHostingProxyRootView);
-    }
-    return surfaceHostingProxyRootView;
-  }
-
-  UIView *rootView;
-  if (_configuration.createRootViewWithBridge != nil) {
-    rootView = _configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
-  } else {
-    rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
-  }
+  surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
   if (_configuration.customizeRootView != nil) {
-    _configuration.customizeRootView(rootView);
+    _configuration.customizeRootView(surfaceHostingProxyRootView);
   }
-  return rootView;
+  return surfaceHostingProxyRootView;
 }
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
@@ -188,8 +206,7 @@
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
-  BOOL enableFabric = _configuration.fabricEnabled;
-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, YES);
   rootView.backgroundColor = [UIColor systemBackgroundColor];
   return rootView;
 }
@@ -198,19 +215,15 @@
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
-  if (RCTIsNewArchEnabled()) {
-    std::shared_ptr<facebook::react::CallInvoker> callInvoker =
-        std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
-    RCTTurboModuleManager *turboModuleManager =
-        [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                             delegate:_turboModuleManagerDelegate
-                                            jsInvoker:callInvoker];
-    _contextContainer->erase("RuntimeScheduler");
-    _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
-    return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
-  } else {
-    return RCTAppSetupJsExecutorFactoryForOldArch(bridge, _runtimeScheduler);
-  }
+
+  std::shared_ptr<facebook::react::CallInvoker> callInvoker =
+      std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
+  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                                   delegate:_turboModuleManagerDelegate
+                                                                                  jsInvoker:callInvoker];
+  _contextContainer->erase(facebook::react::RuntimeSchedulerKey);
+  _contextContainer->insert(facebook::react::RuntimeSchedulerKey, _runtimeScheduler);
+  return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
 }
 
 - (void)createBridgeIfNeeded:(NSDictionary *)launchOptions
@@ -228,7 +241,7 @@
 
 - (void)createBridgeAdapterIfNeeded
 {
-  if (!self->_configuration.fabricEnabled || self.bridgeAdapter) {
+  if (self.bridgeAdapter != nullptr) {
     return;
   }
 
@@ -240,14 +253,28 @@
 #pragma mark - New Arch Utilities
 
 - (void)createReactHostIfNeeded:(NSDictionary *)launchOptions
+            bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+           devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self.reactHost) {
     return;
   }
-  self.reactHost = [self createReactHost:launchOptions];
+
+  self.reactHost = [self createReactHost:launchOptions
+                     bundleConfiguration:bundleConfiguration
+                    devMenuConfiguration:devMenuConfiguration];
 }
 
 - (RCTHost *)createReactHost:(NSDictionary *)launchOptions
+{
+  return [self createReactHost:launchOptions
+           bundleConfiguration:[RCTBundleConfiguration defaultConfiguration]
+          devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
+}
+
+- (RCTHost *)createReactHost:(NSDictionary *)launchOptions
+         bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+        devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   __weak __typeof(self) weakSelf = self;
   RCTHost *reactHost =
@@ -257,7 +284,9 @@
                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                   return [weakSelf createJSRuntimeFactory];
                                 }
-                                   launchOptions:launchOptions];
+                                   launchOptions:launchOptions
+                             bundleConfiguration:bundleConfiguration
+                            devMenuConfiguration:devMenuConfiguration];
   [reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
   }];

@@ -13,7 +13,6 @@ import com.android.build.gradle.LibraryExtension
 import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.isEdgeToEdgeEnabled
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
-import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
 import java.net.Inet4Address
 import java.net.NetworkInterface
@@ -45,12 +44,8 @@ internal object AgpConfiguratorUtils {
                   maybeCreate("debugOptimized").apply {
                     manifestPlaceholders["usesCleartextTraffic"] = "true"
                     initWith(debug)
-                    externalNativeBuild {
-                      cmake {
-                        arguments("-DCMAKE_BUILD_TYPE=Release")
-                        matchingFallbacks += listOf("release")
-                      }
-                    }
+                    matchingFallbacks += listOf("release")
+                    externalNativeBuild { cmake { arguments("-DCMAKE_BUILD_TYPE=Release") } }
                   }
                 }
               }
@@ -65,14 +60,17 @@ internal object AgpConfiguratorUtils {
               .getByType(ApplicationAndroidComponentsExtension::class.java)
               .finalizeDsl { ext ->
                 ext.buildFeatures.buildConfig = true
+                ext.defaultConfig.buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true")
                 ext.defaultConfig.buildConfigField(
                     "boolean",
-                    "IS_NEW_ARCHITECTURE_ENABLED",
-                    project.isNewArchEnabled(extension).toString())
+                    "IS_HERMES_ENABLED",
+                    project.isHermesEnabled.toString(),
+                )
                 ext.defaultConfig.buildConfigField(
-                    "boolean", "IS_HERMES_ENABLED", project.isHermesEnabled.toString())
-                ext.defaultConfig.buildConfigField(
-                    "boolean", "IS_EDGE_TO_EDGE_ENABLED", project.isEdgeToEdgeEnabled.toString())
+                    "boolean",
+                    "IS_EDGE_TO_EDGE_ENABLED",
+                    project.isEdgeToEdgeEnabled.toString(),
+                )
               }
         }
     project.pluginManager.withPlugin("com.android.application", action)
@@ -98,8 +96,12 @@ internal object AgpConfiguratorUtils {
           project.extensions
               .getByType(ApplicationAndroidComponentsExtension::class.java)
               .finalizeDsl { ext ->
+                ext.buildFeatures.resValues = true
                 ext.defaultConfig.resValue(
-                    "string", "react_native_dev_server_ip", getHostIpAddress())
+                    "string",
+                    "react_native_dev_server_ip",
+                    getHostIpAddress(),
+                )
                 ext.defaultConfig.resValue("integer", "react_native_dev_server_port", devServerPort)
               }
         }

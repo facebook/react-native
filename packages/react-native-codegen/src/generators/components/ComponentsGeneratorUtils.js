@@ -280,9 +280,9 @@ function getLocalImports(
     ) {
       imports.add('#include <react/renderer/core/propsConversions.h>');
       const objectProps = typeAnnotation.elementType.properties;
-      // $FlowFixMe[incompatible-call] the type is guaranteed to be ObjectTypeAnnotation<PropTypeAnnotation>
+      // $FlowFixMe[incompatible-type] the type is guaranteed to be ObjectTypeAnnotation<PropTypeAnnotation>
       const objectImports = getImports(objectProps);
-      // $FlowFixMe[incompatible-call] the type is guaranteed to be ObjectTypeAnnotation<PropTypeAnnotation>
+      // $FlowFixMe[incompatible-type] the type is guaranteed to be ObjectTypeAnnotation<PropTypeAnnotation>
       const localImports = getLocalImports(objectProps);
       // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);

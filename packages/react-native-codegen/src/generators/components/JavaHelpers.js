@@ -108,7 +108,7 @@ function getImports(
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       addImportsForNativeName(typeAnnotation.name);
     }
 

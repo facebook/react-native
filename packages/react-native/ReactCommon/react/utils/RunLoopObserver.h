@@ -61,15 +61,12 @@ class RunLoopObserver {
      * is retained during this call.
      * Will be called on the thread associated with the run loop.
      */
-    virtual void activityDidChange(const Delegate* delegate, Activity activity)
-        const noexcept = 0;
+    virtual void activityDidChange(const Delegate *delegate, Activity activity) const noexcept = 0;
 
     virtual ~Delegate() noexcept = default;
   };
 
-  using Factory = std::function<std::unique_ptr<RunLoopObserver>(
-      Activity activities,
-      const WeakOwner& owner)>;
+  using Factory = std::function<std::unique_ptr<RunLoopObserver>(Activity activities, const WeakOwner &owner)>;
 
   /*
    * Constructs a run loop observer.
@@ -81,7 +78,7 @@ class RunLoopObserver {
    * Sets the delegate.
    * Must be called just once.
    */
-  void setDelegate(const Delegate* delegate) const noexcept;
+  void setDelegate(const Delegate *delegate) const noexcept;
 
   /*
    * Enables or disables run loop observing.
@@ -118,7 +115,7 @@ class RunLoopObserver {
 
   const Activity activities_{};
   const WeakOwner owner_;
-  mutable const Delegate* delegate_{nullptr};
+  mutable const Delegate *delegate_{nullptr};
   mutable std::atomic<bool> enabled_{false};
 };
 

@@ -18,13 +18,20 @@ import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
 
 /**
- * A simple factory that creates instances of [DevSupportManager] implementations. Uses reflection
- * to create BridgeDevSupportManager if it exists. This allows ProGuard to strip that class and its
- * dependencies in release builds. If the class isn't found, [PerftestDevSupportManager] is returned
- * instead.
+ * A simple factory that creates instances of [DevSupportManager] implementations.
+ *
+ * The first create() method is for the Old Architecture flow and is deprecated and should not be
+ * used anymore. The second create() method is for the New Architecture/Bridgeless flow.
  */
 internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
 
+  @Deprecated(
+      "Use the other create() method with useDevSupport parameter for New Architecture. This method will be removed in a future release.",
+      replaceWith =
+          ReplaceWith(
+              "create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager, pausedInDebuggerOverlayManager)"
+          ),
+  )
   override fun create(
       applicationContext: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
@@ -36,56 +43,13 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       customPackagerCommandHandlers: Map<String, RequestHandler>?,
       surfaceDelegateFactory: SurfaceDelegateFactory?,
       devLoadingViewManager: DevLoadingViewManager?,
-      pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
-  ): DevSupportManager {
-    return if (!enableOnCreate) {
-      ReleaseDevSupportManager()
-    } else
-        try {
-          // Developer support is enabled, we now must choose whether to return a DevSupportManager,
-          // or a more lean profiling-only PerftestDevSupportManager. We make the choice by first
-          // trying to return the full support DevSupportManager and if it fails, then just
-          // return PerftestDevSupportManager.
-
-          // ProGuard is surprisingly smart in this case and will keep a class if it detects a call
-          // to
-          // Class.forName() with a static string. So instead we generate a quasi-dynamic string to
-          // confuse it.
-          val className =
-              StringBuilder(DEVSUPPORT_IMPL_PACKAGE)
-                  .append(".")
-                  .append(DEVSUPPORT_IMPL_CLASS)
-                  .toString()
-          val devSupportManagerClass = Class.forName(className)
-          val constructor =
-              devSupportManagerClass.getConstructor(
-                  Context::class.java,
-                  ReactInstanceDevHelper::class.java,
-                  String::class.java,
-                  Boolean::class.javaPrimitiveType,
-                  RedBoxHandler::class.java,
-                  DevBundleDownloadListener::class.java,
-                  Int::class.javaPrimitiveType,
-                  MutableMap::class.java,
-                  SurfaceDelegateFactory::class.java,
-                  DevLoadingViewManager::class.java,
-                  PausedInDebuggerOverlayManager::class.java)
-          constructor.newInstance(
-              applicationContext,
-              reactInstanceManagerHelper,
-              packagerPathForJSBundleName,
-              true,
-              redBoxHandler,
-              devBundleDownloadListener,
-              minNumShakes,
-              customPackagerCommandHandlers,
-              surfaceDelegateFactory,
-              devLoadingViewManager,
-              pausedInDebuggerOverlayManager) as DevSupportManager
-        } catch (e: Exception) {
-          PerftestDevSupportManager(applicationContext)
-        }
-  }
+      pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
+  ): DevSupportManager =
+      if (!enableOnCreate) {
+        ReleaseDevSupportManager()
+      } else {
+        PerftestDevSupportManager(applicationContext)
+      }
 
   override fun create(
       applicationContext: Context,
@@ -99,7 +63,7 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       surfaceDelegateFactory: SurfaceDelegateFactory?,
       devLoadingViewManager: DevLoadingViewManager?,
       pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
-      useDevSupport: Boolean
+      useDevSupport: Boolean,
   ): DevSupportManager =
       if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
         PerftestDevSupportManager(applicationContext)
@@ -115,13 +79,9 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
             customPackagerCommandHandlers,
             surfaceDelegateFactory,
             devLoadingViewManager,
-            pausedInDebuggerOverlayManager)
+            pausedInDebuggerOverlayManager,
+        )
       } else {
         ReleaseDevSupportManager()
       }
-
-  private companion object {
-    private const val DEVSUPPORT_IMPL_PACKAGE = "com.facebook.react.devsupport"
-    private const val DEVSUPPORT_IMPL_CLASS = "BridgeDevSupportManager"
-  }
 }

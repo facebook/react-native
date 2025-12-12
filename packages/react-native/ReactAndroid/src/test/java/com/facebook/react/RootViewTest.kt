@@ -98,7 +98,7 @@ class RootViewTest {
     val rootViewId = 11
     val rootView = ReactRootView(reactContext)
     rootView.id = rootViewId
-    rootView.rootViewTag = rootViewId
+    rootView.setRootViewTag(rootViewId)
     rootView.startReactApplication(instanceManager, "")
     rootView.simulateAttachForTesting()
     val ts = SystemClock.currentTimeMillis()
@@ -131,7 +131,9 @@ class RootViewTest {
                 "identifier",
                 0.0,
                 "targetSurface",
-                -1))
+                -1,
+            )
+        )
 
     // Test ACTION_UP event
     reset(eventEmitterModuleMock, eventDispatcher)
@@ -163,13 +165,16 @@ class RootViewTest {
                 "identifier",
                 0.0,
                 "targetSurface",
-                -1))
+                -1,
+            )
+        )
 
     // Test other action
     reset(eventDispatcher)
 
     rootView.onTouchEvent(
-        MotionEvent.obtain(50, Date().time, MotionEvent.ACTION_HOVER_MOVE, 0f, 0f, 0))
+        MotionEvent.obtain(50, Date().time, MotionEvent.ACTION_HOVER_MOVE, 0f, 0f, 0)
+    )
 
     verifyNoMoreInteractions(eventDispatcher)
   }
@@ -206,7 +211,7 @@ class RootViewTest {
                   .build()
         }
     val rootViewSpy = spy(rootView)
-    whenever(rootViewSpy.getLayoutParams()).thenReturn(WindowManager.LayoutParams())
+    whenever(rootViewSpy.layoutParams).thenReturn(WindowManager.LayoutParams())
 
     rootViewSpy.startReactApplication(instanceManager, "")
     rootViewSpy.simulateCheckForKeyboardForTesting()

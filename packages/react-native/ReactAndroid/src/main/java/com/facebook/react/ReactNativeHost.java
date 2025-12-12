@@ -35,7 +35,8 @@ import java.util.List;
  *
  * @deprecated This class will be replaced by com.facebook.react.ReactHost in the New Architecture.
  */
-@Deprecated
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactNativeHost {

@@ -29,19 +29,27 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
-  override fun cxxNativeAnimatedRemoveJsSync(): Boolean = false
+  override fun disableEarlyViewCommandExecution(): Boolean = false
 
-  override fun disableFabricCommitInCXXAnimated(): Boolean = false
+  override fun disableImageViewPreallocationAndroid(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
   override fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean = true
 
+  override fun disableSubviewClippingAndroid(): Boolean = false
+
   override fun disableTextLayoutManagerCacheAndroid(): Boolean = false
+
+  override fun disableViewPreallocationAndroid(): Boolean = false
 
   override fun enableAccessibilityOrder(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
+
+  override fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean = false
+
+  override fun enableAndroidLinearText(): Boolean = false
 
   override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 
@@ -59,13 +67,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableEagerRootViewAttachment(): Boolean = false
 
+  override fun enableExclusivePropsUpdateAndroid(): Boolean = false
+
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
 
-  override fun enableFixForParentTagDuringReparenting(): Boolean = false
-
-  override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean = true
 
   override fun enableIOSTextBaselineOffsetPerLine(): Boolean = false
 
@@ -73,9 +81,19 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
 
+  override fun enableImagePrefetchingJNIBatchingAndroid(): Boolean = false
+
+  override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
+
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
 
+  override fun enableImperativeFocus(): Boolean = false
+
   override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
+
+  override fun enableIntersectionObserverByDefault(): Boolean = false
+
+  override fun enableKeyEvents(): Boolean = false
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 
@@ -91,21 +109,25 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableNetworkEventReporting(): Boolean = false
 
-  override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
-
   override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
-  override fun enableResourceTimingAPI(): Boolean = false
+  override fun enableSwiftUIBasedFilters(): Boolean = false
 
   override fun enableViewCulling(): Boolean = false
 
   override fun enableViewRecycling(): Boolean = false
 
+  override fun enableViewRecyclingForImage(): Boolean = true
+
+  override fun enableViewRecyclingForScrollView(): Boolean = false
+
   override fun enableViewRecyclingForText(): Boolean = true
 
   override fun enableViewRecyclingForView(): Boolean = true
+
+  override fun enableVirtualViewContainerStateExperimental(): Boolean = false
 
   override fun enableVirtualViewDebugFeatures(): Boolean = false
 
@@ -113,7 +135,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableVirtualViewWindowFocusDetection(): Boolean = false
 
+  override fun enableWebPerformanceAPIsByDefault(): Boolean = true
+
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
+
+  override fun fixTextClippingAndroid15useBoundsForWidth(): Boolean = false
+
+  override fun fuseboxAssertSingleHostState(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
@@ -121,15 +149,27 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
 
+  override fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = false
+
+  override fun perfIssuesEnabled(): Boolean = false
+
   override fun perfMonitorV2Enabled(): Boolean = false
 
   override fun preparedTextCacheSize(): Double = 200.0
 
   override fun preventShadowTreeCommitExhaustion(): Boolean = false
 
-  override fun releaseImageDataWhenConsumed(): Boolean = false
-
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
+
+  override fun shouldResetClickableWhenRecyclingView(): Boolean = true
+
+  override fun shouldResetOnClickListenerWhenRecyclingView(): Boolean = true
+
+  override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = true
+
+  override fun shouldSetIsClickableByDefault(): Boolean = false
+
+  override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 
   override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
 
@@ -141,21 +181,27 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useFabricInterop(): Boolean = true
 
-  override fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean = false
+  override fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean = true
 
-  override fun useNativeTransformHelperAndroid(): Boolean = false
+  override fun useNativeTransformHelperAndroid(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
-  override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
-
-  override fun useRawPropsJsiValue(): Boolean = false
+  override fun useRawPropsJsiValue(): Boolean = true
 
   override fun useShadowNodeStateOnClone(): Boolean = false
+
+  override fun useSharedAnimatedBackend(): Boolean = false
+
+  override fun useTraitHiddenOnAndroid(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 
   override fun useTurboModules(): Boolean = false
+
+  override fun viewCullingOutsetRatio(): Double = 0.0
+
+  override fun virtualViewHysteresisRatio(): Double = 0.0
 
   override fun virtualViewPrerenderRatio(): Double = 5.0
 }

@@ -15,7 +15,7 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import React from 'react';
 import {useState} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Animated, Button, Image, StyleSheet, Text, View} from 'react-native';
 
 const alphaHotdog = require('../../assets/alpha-hotdog.png');
 const hotdog = require('../../assets/hotdog.jpg');
@@ -35,7 +35,7 @@ function StaticViewAndImage(props: Props): React.Node {
           <Text>Hello world!</Text>
         </View>
       </View>
-      {/* $FlowFixMe - ImageStyle is not compatible with ViewStyle */}
+      {/* $FlowFixMe[incompatible-use] - ImageStyle is not compatible with ViewStyle */}
       <Image
         source={props.imageSource ?? hotdog}
         style={[props.style, styles.commonImage]}
@@ -67,6 +67,14 @@ function StaticViewAndImageWithState(props: Props): React.Node {
 }
 
 const styles = StyleSheet.create({
+  blurWithShadow: {
+    filter: [{blur: 10 as string | number}],
+    boxShadow: '0 0 10px 10px black',
+    overflow: 'hidden',
+    backgroundColor: 'pink',
+    height: 100,
+    width: 100,
+  },
   commonView: {
     width: 150,
     height: 150,
@@ -127,7 +135,6 @@ exports.examples = [
     title: 'Contrast',
     description: 'contrast(0.5)',
     name: 'contrast',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison style={{filter: [{contrast: 0.5}]}} />
@@ -147,7 +154,6 @@ exports.examples = [
     title: 'Grayscale',
     description: 'grayscale(0.5)',
     name: 'grayscale',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison style={{filter: [{grayscale: 0.5}]}} />
@@ -158,7 +164,6 @@ exports.examples = [
     title: 'Saturate',
     description: 'saturate(4)',
     name: 'saturate',
-    platform: 'android',
     render(): React.Node {
       return <StaticViewAndImageComparison style={{filter: [{saturate: 4}]}} />;
     },
@@ -167,7 +172,6 @@ exports.examples = [
     title: 'Hue Rotate',
     description: 'hueRotate(-90deg)',
     name: 'hueRotate',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison
@@ -189,7 +193,6 @@ exports.examples = [
     title: 'Blur',
     description: 'blur(10)',
     name: 'blur',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison
@@ -200,10 +203,30 @@ exports.examples = [
     },
   },
   {
+    title: 'Blur with boxShadow + overflow hidden + outline',
+    description: 'This tests container view with blur and outline on iOS',
+    name: 'blur-with-overflow',
+    render(): React.Node {
+      return (
+        <View
+          style={styles.blurWithShadow}
+          testID="filter-test-blur-overflow-hidden"
+        />
+      );
+    },
+  },
+  {
+    title: 'Animated Blur',
+    description: 'Animated blur',
+    name: 'animated-blur',
+    render(): React.Node {
+      return <AnimatedBlurExample />;
+    },
+  },
+  {
     title: 'Drop Shadow',
     description: 'drop-shadow(30px 10px 4px #4444dd)',
     name: 'drop-shadow',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison
@@ -253,3 +276,35 @@ exports.examples = [
     },
   },
 ] as Array<RNTesterModuleExample>;
+
+const AnimatedBlurExample = () => {
+  const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const [isBlurred, setIsBlurred] = React.useState(false);
+
+  const onPress = () => {
+    Animated.timing(animatedValue, {
+      toValue: isBlurred ? 0 : 20,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start(() => setIsBlurred(!isBlurred));
+  };
+
+  return (
+    <View style={{flexDirection: 'column', alignItems: 'center'}}>
+      <Button
+        onPress={onPress}
+        title={isBlurred ? 'Remove Blur' : 'Animate Blur'}
+      />
+      <Animated.View
+        style={[
+          {
+            filter: [{blur: animatedValue}],
+            backgroundColor: 'pink',
+            height: 100,
+            width: 100,
+          },
+        ]}
+      />
+    </View>
+  );
+};

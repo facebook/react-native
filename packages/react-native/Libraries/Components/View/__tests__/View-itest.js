@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict-local
+ * @fantom_flags enableNativeCSSParsing:*
  * @format
  */
 
@@ -20,209 +21,267 @@ import {View} from 'react-native';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('<View>', () => {
-  describe('width and height style', () => {
-    it('handles correct percentage-based dimensions', () => {
-      const root = Fantom.createRoot();
+  describe('props', () => {
+    describe('style', () => {
+      describe('width and height style', () => {
+        it('handles correct percentage-based dimensions', () => {
+          const root = Fantom.createRoot();
 
-      Fantom.runTask(() => {
-        root.render(
-          <View style={{width: 100, height: 100}}>
-            <View style={{width: '20%', height: '50%'}} collapsable={false} />
-          </View>,
-        );
-      });
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 100, height: 100}}>
+                <View
+                  style={{width: '20%', height: '50%'}}
+                  collapsable={false}
+                />
+              </View>,
+            );
+          });
 
-      expect(
-        root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
-      ).toEqual(
-        <rn-view
-          layoutMetrics-frame="{x:0,y:0,width:20,height:50}"
-          height="50.000000%"
-          layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-displayType="Flex"
-          layoutMetrics-layoutDirection="LeftToRight"
-          layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
-          layoutMetrics-pointScaleFactor="3"
-          width="20.000000%"
-        />,
-      );
-    });
-
-    it('handles numeric values passed in as strings', () => {
-      const root = Fantom.createRoot();
-
-      Fantom.runTask(() => {
-        root.render(
-          <View style={{width: '5', height: '10'}} collapsable={false} />,
-        );
-      });
-
-      expect(
-        root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
-      ).toEqual(
-        <rn-view
-          layoutMetrics-frame="{x:0,y:0,width:5,height:10}"
-          height="10.000000"
-          layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-displayType="Flex"
-          layoutMetrics-layoutDirection="LeftToRight"
-          layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
-          layoutMetrics-pointScaleFactor="3"
-          width="5.000000"
-        />,
-      );
-    });
-
-    it('handles invalid values, falling back to default', () => {
-      const root = Fantom.createRoot();
-
-      Fantom.runTask(() => {
-        root.render(
-          <View style={{width: 100, height: 100}}>
-            <View
-              // 5pt is a valid CSS value but RN can't parse it.
-              style={{width: '5pt', height: 'error 50%'}}
-              collapsable={false}
-            />
-          </View>,
-        );
-      });
-
-      expect(
-        root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
-      ).toEqual(
-        <rn-view
-          layoutMetrics-frame="{x:0,y:0,width:100,height:0}"
-          height="undefined"
-          layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-displayType="Flex"
-          layoutMetrics-layoutDirection="LeftToRight"
-          layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
-          layoutMetrics-pointScaleFactor="3"
-          width="undefined"
-        />,
-      );
-    });
-  });
-
-  describe('margin style', () => {
-    it('handles correct percentage-based values', () => {
-      const root = Fantom.createRoot();
-
-      Fantom.runTask(() => {
-        root.render(
-          <View style={{width: 100, height: 200}}>
-            <View
-              style={{width: 5, height: 10, margin: '50%'}}
-              collapsable={false}
-            />
-          </View>,
-        );
-      });
-
-      expect(
-        root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
-      ).toEqual(
-        <rn-view
-          layoutMetrics-frame="{x:50,y:50,width:5,height:10}"
-          height="10.000000"
-          layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-displayType="Flex"
-          layoutMetrics-layoutDirection="LeftToRight"
-          layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
-          layoutMetrics-pointScaleFactor="3"
-          margin="50.000000%"
-          width="5.000000"
-        />,
-      );
-    });
-
-    it('handles numeric values passed in as strings', () => {
-      const root = Fantom.createRoot();
-
-      Fantom.runTask(() => {
-        root.render(
-          <View style={{width: 100, height: 200}}>
-            <View
-              style={{width: 5, height: 10, margin: '5'}}
-              collapsable={false}
-            />
-          </View>,
-        );
-      });
-
-      expect(
-        root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
-      ).toEqual(
-        <rn-view
-          layoutMetrics-frame="{x:5,y:5,width:5,height:10}"
-          height="10.000000"
-          layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-displayType="Flex"
-          layoutMetrics-layoutDirection="LeftToRight"
-          layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
-          layoutMetrics-pointScaleFactor="3"
-          margin="5.000000"
-          width="5.000000"
-        />,
-      );
-    });
-  });
-
-  describe('transform style', () => {
-    it('causes view to be unflattened', () => {
-      const root = Fantom.createRoot();
-
-      Fantom.runTask(() => {
-        root.render(<View style={{transform: [{translateX: 10}]}} />);
-      });
-
-      expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-        <rn-view transform='[{"translateX": 10.000000}]' />,
-      );
-    });
-
-    [
-      [undefined, {x: -5, y: 0, width: 20, height: 10}],
-      ['50% 50%', {x: -5, y: 0, width: 20, height: 10}],
-      ['top left', {x: 0, y: 0, width: 20, height: 10}],
-      ['right bottom', {x: -10, y: 0, width: 20, height: 10}],
-    ].forEach(([transformOrigin, expectedBounds]) => {
-      it(`applies transformOrigin correctly for ${String(transformOrigin)}`, () => {
-        const root = Fantom.createRoot();
-
-        const viewRef = createRef<HostInstance>();
-        Fantom.runTask(() => {
-          root.render(
-            <View
-              ref={viewRef}
-              style={{
-                width: 10,
-                height: 10,
-                transform: [{scaleX: 2}],
-                transformOrigin,
-              }}
+          expect(
+            root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
+          ).toEqual(
+            <rn-view
+              layoutMetrics-frame="{x:0,y:0,width:20,height:50}"
+              height="50.000000%"
+              layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-displayType="Flex"
+              layoutMetrics-layoutDirection="LeftToRight"
+              layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
+              layoutMetrics-pointScaleFactor="3"
+              width="20.000000%"
             />,
           );
         });
 
-        const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+        it('handles numeric values passed in as strings', () => {
+          const root = Fantom.createRoot();
 
-        const viewBounds = viewElement.getBoundingClientRect();
-        expect(viewBounds.x).toBe(expectedBounds.x);
-        expect(viewBounds.y).toBe(expectedBounds.y);
-        expect(viewBounds.width).toBe(expectedBounds.width);
-        expect(viewBounds.height).toBe(expectedBounds.height);
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: '5', height: '10'}} collapsable={false} />,
+            );
+          });
+
+          expect(
+            root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
+          ).toEqual(
+            <rn-view
+              layoutMetrics-frame="{x:0,y:0,width:5,height:10}"
+              height="10.000000"
+              layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-displayType="Flex"
+              layoutMetrics-layoutDirection="LeftToRight"
+              layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
+              layoutMetrics-pointScaleFactor="3"
+              width="5.000000"
+            />,
+          );
+        });
+
+        it('handles invalid values, falling back to default', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 100, height: 100}}>
+                <View
+                  // 5pt is a valid CSS value but RN can't parse it.
+                  style={{width: '5pt', height: 'error 50%'}}
+                  collapsable={false}
+                />
+              </View>,
+            );
+          });
+
+          expect(
+            root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
+          ).toEqual(
+            <rn-view
+              layoutMetrics-frame="{x:0,y:0,width:100,height:0}"
+              height="undefined"
+              layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-displayType="Flex"
+              layoutMetrics-layoutDirection="LeftToRight"
+              layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
+              layoutMetrics-pointScaleFactor="3"
+              width="undefined"
+            />,
+          );
+        });
+      });
+
+      describe('margin style', () => {
+        it('handles correct percentage-based values', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 100, height: 200}}>
+                <View
+                  style={{width: 5, height: 10, margin: '50%'}}
+                  collapsable={false}
+                />
+              </View>,
+            );
+          });
+
+          expect(
+            root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
+          ).toEqual(
+            <rn-view
+              layoutMetrics-frame="{x:50,y:50,width:5,height:10}"
+              height="10.000000"
+              layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-displayType="Flex"
+              layoutMetrics-layoutDirection="LeftToRight"
+              layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
+              layoutMetrics-pointScaleFactor="3"
+              margin="50.000000%"
+              width="5.000000"
+            />,
+          );
+        });
+
+        it('handles numeric values passed in as strings', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <View style={{width: 100, height: 200}}>
+                <View
+                  style={{width: 5, height: 10, margin: '5'}}
+                  collapsable={false}
+                />
+              </View>,
+            );
+          });
+
+          expect(
+            root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
+          ).toEqual(
+            <rn-view
+              layoutMetrics-frame="{x:5,y:5,width:5,height:10}"
+              height="10.000000"
+              layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
+              layoutMetrics-displayType="Flex"
+              layoutMetrics-layoutDirection="LeftToRight"
+              layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
+              layoutMetrics-pointScaleFactor="3"
+              margin="5.000000"
+              width="5.000000"
+            />,
+          );
+        });
+      });
+
+      describe('transform style', () => {
+        it('causes view to be unflattened', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<View style={{transform: [{translateX: 10}]}} />);
+          });
+
+          expect(
+            root.getRenderedOutput({props: ['transform']}).toJSX(),
+          ).toEqual(<rn-view transform='[{"translateX": 10.000000}]' />);
+        });
+
+        [
+          [undefined, {x: -5, y: 0, width: 20, height: 10}],
+          ['50% 50%', {x: -5, y: 0, width: 20, height: 10}],
+          ['top left', {x: 0, y: 0, width: 20, height: 10}],
+          ['right bottom', {x: -10, y: 0, width: 20, height: 10}],
+        ].forEach(([transformOrigin, expectedBounds]) => {
+          it(`applies transformOrigin correctly for ${String(transformOrigin)}`, () => {
+            const root = Fantom.createRoot();
+
+            const viewRef = createRef<HostInstance>();
+            Fantom.runTask(() => {
+              root.render(
+                <View
+                  ref={viewRef}
+                  style={{
+                    width: 10,
+                    height: 10,
+                    transform: [{scaleX: 2}],
+                    transformOrigin,
+                  }}
+                />,
+              );
+            });
+
+            const viewElement = ensureInstance(
+              viewRef.current,
+              ReactNativeElement,
+            );
+
+            const viewBounds = viewElement.getBoundingClientRect();
+            expect(viewBounds.x).toBe(expectedBounds.x);
+            expect(viewBounds.y).toBe(expectedBounds.y);
+            expect(viewBounds.width).toBe(expectedBounds.width);
+            expect(viewBounds.height).toBe(expectedBounds.height);
+          });
+        });
+      });
+
+      describe('background-image', () => {
+        it('it parses CSS and object syntax', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <>
+                <View
+                  style={{
+                    experimental_backgroundImage:
+                      'radial-gradient(#e66465, #9198e5)',
+                  }}
+                />
+                <View
+                  style={{
+                    experimental_backgroundImage: [
+                      {
+                        type: 'radial-gradient',
+                        shape: 'ellipse',
+                        position: {top: '50%', right: '50%'},
+                        size: 'farthest-corner',
+                        colorStops: [{color: '#e66465'}, {color: '#9198e5'}],
+                      },
+                    ],
+                  }}
+                />
+              </>,
+            );
+          });
+
+          const expectedProps = {
+            backgroundImage:
+              '[radial-gradient(ellipse farthest-corner at 50% 50% , rgba(230, 100, 101, 1), rgba(145, 152, 229, 1))]',
+          };
+
+          expect(root.getRenderedOutput().toJSON()).toEqual([
+            {
+              children: [],
+              props: expectedProps,
+              type: 'View',
+            },
+            {
+              children: [],
+              props: expectedProps,
+              type: 'View',
+            },
+          ]);
+        });
       });
     });
-  });
 
-  describe('props', () => {
     describe('pointerEvents', () => {
       it('auto does not propagate to the mounting layer, it is the default', () => {
         const root = Fantom.createRoot();
@@ -285,6 +344,7 @@ describe('<View>', () => {
         ).toEqual(<rn-view pointerEvents="none" />);
       });
     });
+
     describe('accessibility', () => {
       describe('accessibilityActions', () => {
         it('is propagated to the mounting layer', () => {
@@ -330,18 +390,30 @@ describe('<View>', () => {
       });
 
       describe('accessibilityElementsHidden', () => {
-        it('is not propagated to mounting layer, it is iOS only prop', () => {
+        it("is an iOS-only prop and ignored by Fantom (Android)'s BaseViewConfig", () => {
           const root = Fantom.createRoot();
 
           Fantom.runTask(() => {
-            root.render(<View accessibilityElementsHidden={true} />);
+            root.render(
+              <View accessibilityElementsHidden={true} collapsable={false} />,
+            );
           });
 
-          expect(
-            root
-              .getRenderedOutput({props: ['accessibilityElementsHidden']})
-              .toJSX(),
-          ).toEqual(null);
+          expect(root.getRenderedOutput().toJSX()).toEqual(<rn-view />);
+        });
+      });
+
+      describe('aria-hidden', () => {
+        it('is mapped to importantForAccessibility', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<View aria-hidden={true} collapsable={false} />);
+          });
+
+          expect(root.getRenderedOutput().toJSX()).toEqual(
+            <rn-view importantForAccessibility="no-hide-descendants" />,
+          );
         });
       });
 
@@ -480,6 +552,33 @@ describe('<View>', () => {
           <rn-view accessible="true" />,
         );
       });
+    });
+  });
+
+  describe('ref', () => {
+    it('is an element node', () => {
+      const elementRef = createRef<HostInstance>();
+
+      const root = Fantom.createRoot();
+
+      Fantom.runTask(() => {
+        root.render(<View ref={elementRef} />);
+      });
+
+      expect(elementRef.current).toBeInstanceOf(ReactNativeElement);
+    });
+
+    it('uses the "RN:View" tag name', () => {
+      const elementRef = createRef<HostInstance>();
+
+      const root = Fantom.createRoot();
+
+      Fantom.runTask(() => {
+        root.render(<View ref={elementRef} />);
+      });
+
+      const element = ensureInstance(elementRef.current, ReactNativeElement);
+      expect(element.tagName).toBe('RN:View');
     });
   });
 });

@@ -17,7 +17,7 @@ internal class ReactTextInputSelectionEvent(
     surfaceId: Int,
     viewId: Int,
     private val selectionStart: Int,
-    private val selectionEnd: Int
+    private val selectionEnd: Int,
 ) : Event<ReactTextInputSelectionEvent>(surfaceId, viewId) {
   override fun getEventName(): String = EVENT_NAME
 

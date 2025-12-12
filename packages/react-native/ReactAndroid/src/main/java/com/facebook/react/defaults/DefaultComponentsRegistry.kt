@@ -25,5 +25,5 @@ public object DefaultComponentsRegistry {
     DefaultSoLoader.maybeLoadSoLibrary()
   }
 
-  @JvmStatic @DoNotStrip public external fun register(componentFactory: ComponentFactory): Unit
+  @JvmStatic @DoNotStrip public external fun register(componentFactory: ComponentFactory)
 }

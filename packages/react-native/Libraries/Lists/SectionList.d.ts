@@ -35,7 +35,11 @@ export interface SectionBase<ItemT, SectionT = DefaultSectionT> {
 
   renderItem?: SectionListRenderItem<ItemT, SectionT> | undefined;
 
-  ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
+  ItemSeparatorComponent?:
+    | React.ComponentType<any>
+    | React.ReactElement
+    | null
+    | undefined;
 
   keyExtractor?: ((item: ItemT, index: number) => string) | undefined;
 }

@@ -45,7 +45,7 @@ const UIManager: UIManagerJSInterface = {
         FabricUIManager.measure(shadowNode, callback);
       } else {
         console.warn(`measure cannot find view with tag #${reactTag}`);
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         callback();
       }
     } else {
@@ -71,7 +71,7 @@ const UIManager: UIManagerJSInterface = {
         FabricUIManager.measureInWindow(shadowNode, callback);
       } else {
         console.warn(`measure cannot find view with tag #${reactTag}`);
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         callback();
       }
     } else {
@@ -182,7 +182,7 @@ const UIManager: UIManagerJSInterface = {
       UIManagerImpl.dispatchViewManagerCommand(
         reactTag,
         // We have some legacy components that are actually already using strings. ¯\_(ツ)_/¯
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         commandName,
         commandArgs,
       );

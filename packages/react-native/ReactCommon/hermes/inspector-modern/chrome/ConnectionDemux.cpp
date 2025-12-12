@@ -7,7 +7,7 @@
 
 #include "ConnectionDemux.h"
 
-#ifdef HERMES_ENABLE_DEBUGGER
+#if defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
 
 #include <hermes/inspector/RuntimeAdapter.h>
 #include <hermes/inspector/chrome/CDPHandler.h>
@@ -89,8 +89,9 @@ DebugSessionToken ConnectionDemux::enableDebugging(
 
   auto waitForDebugger =
       (inspectedContexts_->find(title) != inspectedContexts_->end());
-  return addPage(hermes::inspector_modern::chrome::CDPHandler::create(
-      std::move(adapter), title, waitForDebugger));
+  return addPage(
+      hermes::inspector_modern::chrome::CDPHandler::create(
+          std::move(adapter), title, waitForDebugger));
 }
 
 void ConnectionDemux::disableDebugging(DebugSessionToken session) {
@@ -139,4 +140,4 @@ void ConnectionDemux::removePage(int pageId) {
 
 } // namespace facebook::hermes::inspector_modern::chrome
 
-#endif // HERMES_ENABLE_DEBUGGER
+#endif // defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)

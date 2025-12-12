@@ -10,7 +10,6 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../CodegenSchema';
 import type {Parser} from './parser';
 
 export type ParserType = 'Flow' | 'TypeScript';
@@ -338,26 +337,6 @@ class UnsupportedEnumDeclarationParserError extends ParserError {
 }
 
 /**
- * Union parsing errors
- */
-
-class UnsupportedUnionTypeAnnotationParserError extends ParserError {
-  constructor(
-    nativeModuleName: string,
-    arrayElementTypeAST: $FlowFixMe,
-    types: UnionTypeAnnotationMemberType[],
-  ) {
-    super(
-      nativeModuleName,
-      arrayElementTypeAST,
-      `Union members must be of the same type, but multiple types were found ${types.join(
-        ', ',
-      )}'.`,
-    );
-  }
-}
-
-/**
  * Module parsing errors
  */
 
@@ -460,7 +439,6 @@ module.exports = {
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedModuleEventEmitterTypePropertyParserError,
   UnsupportedModuleEventEmitterPropertyParserError,
   UnsupportedModulePropertyParserError,

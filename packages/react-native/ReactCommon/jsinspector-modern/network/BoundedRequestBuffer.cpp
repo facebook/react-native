@@ -51,8 +51,8 @@ bool BoundedRequestBuffer::put(
   // `data` is copied at the point of insertion
   responses_.emplace(
       requestId,
-      std::make_shared<ResponseBody>(
-          ResponseBody{std::string(data), base64Encoded}));
+      std::make_shared<ResponseBody>(ResponseBody{
+          .data = std::string(data), .base64Encoded = base64Encoded}));
   order_.push_back(requestId);
 
   return true;

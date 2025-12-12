@@ -13,42 +13,105 @@
 
 #import "CoreModulesPlugins.h"
 
-#import <string>
-#import <unordered_map>
+#import <string_view>
 
-Class RCTCoreModulesClassProvider(const char *name) {
-  // Intentionally leak to avoid crashing after static destructors are run.
-  static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
-    {"AccessibilityManager", RCTAccessibilityManagerCls},
-    {"ActionSheetManager", RCTActionSheetManagerCls},
-    {"AlertManager", RCTAlertManagerCls},
-    {"AppState", RCTAppStateCls},
-    {"Appearance", RCTAppearanceCls},
-    {"Clipboard", RCTClipboardCls},
-    {"DevLoadingView", RCTDevLoadingViewCls},
-    {"DevMenu", RCTDevMenuCls},
-    {"DevSettings", RCTDevSettingsCls},
-    {"DeviceInfo", RCTDeviceInfoCls},
-    {"EventDispatcher", RCTEventDispatcherCls},
-    {"ExceptionsManager", RCTExceptionsManagerCls},
-    {"I18nManager", RCTI18nManagerCls},
-    {"KeyboardObserver", RCTKeyboardObserverCls},
-    {"LogBox", RCTLogBoxCls},
-    {"PerfMonitor", RCTPerfMonitorCls},
-    {"PlatformConstants", RCTPlatformCls},
-    {"RedBox", RCTRedBoxCls},
-    {"SourceCode", RCTSourceCodeCls},
-    {"StatusBarManager", RCTStatusBarManagerCls},
-    {"Timing", RCTTimingCls},
-    {"WebSocketModule", RCTWebSocketModuleCls},
-    {"BlobModule", RCTBlobManagerCls},
-  };
+using namespace std::literals;
 
-  auto p = sCoreModuleClassMap->find(name);
-  if (p != sCoreModuleClassMap->end()) {
-    auto classFunc = p->second;
-    return classFunc();
+Class RCTCoreModulesClassProvider(const char *name)
+{
+
+  if (name == "AccessibilityManager"sv) {
+    return RCTAccessibilityManagerCls();
   }
+
+  if (name == "ActionSheetManager"sv) {
+    return RCTActionSheetManagerCls();
+  }
+
+  if (name == "AlertManager"sv) {
+    return RCTAlertManagerCls();
+  }
+
+  if (name == "AppState"sv) {
+    return RCTAppStateCls();
+  }
+
+  if (name == "Appearance"sv) {
+    return RCTAppearanceCls();
+  }
+
+  if (name == "Clipboard"sv) {
+    return RCTClipboardCls();
+  }
+
+  if (name == "DevLoadingView"sv) {
+    return RCTDevLoadingViewCls();
+  }
+
+  if (name == "DevMenu"sv) {
+    return RCTDevMenuCls();
+  }
+
+  if (name == "DevSettings"sv) {
+    return RCTDevSettingsCls();
+  }
+
+  if (name == "DeviceInfo"sv) {
+    return RCTDeviceInfoCls();
+  }
+
+  if (name == "EventDispatcher"sv) {
+    return RCTEventDispatcherCls();
+  }
+
+  if (name == "ExceptionsManager"sv) {
+    return RCTExceptionsManagerCls();
+  }
+
+  if (name == "I18nManager"sv) {
+    return RCTI18nManagerCls();
+  }
+
+  if (name == "KeyboardObserver"sv) {
+    return RCTKeyboardObserverCls();
+  }
+
+  if (name == "LogBox"sv) {
+    return RCTLogBoxCls();
+  }
+
+  if (name == "PerfMonitor"sv) {
+    return RCTPerfMonitorCls();
+  }
+
+  if (name == "PlatformConstants"sv) {
+    return RCTPlatformCls();
+  }
+
+  if (name == "RedBox"sv) {
+    return RCTRedBoxCls();
+  }
+
+  if (name == "SourceCode"sv) {
+    return RCTSourceCodeCls();
+  }
+
+  if (name == "StatusBarManager"sv) {
+    return RCTStatusBarManagerCls();
+  }
+
+  if (name == "Timing"sv) {
+    return RCTTimingCls();
+  }
+
+  if (name == "WebSocketModule"sv) {
+    return RCTWebSocketModuleCls();
+  }
+
+  if (name == "BlobModule"sv) {
+    return RCTBlobManagerCls();
+  }
+
   return nil;
 }
 

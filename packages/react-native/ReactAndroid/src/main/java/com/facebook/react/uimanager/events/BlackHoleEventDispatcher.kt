@@ -17,7 +17,8 @@ internal object BlackHoleEventDispatcher : EventDispatcher {
   override fun dispatchEvent(event: Event<*>) {
     FLog.d(
         "BlackHoleEventDispatcher",
-        "Trying to emit event to JS, but the React instance isn't ready. Event: ${event.getEventName()}")
+        "Trying to emit event to JS, but the React instance isn't ready. Event: ${event.getEventName()}",
+    )
   }
 
   override fun dispatchAllEvents(): Unit = Unit

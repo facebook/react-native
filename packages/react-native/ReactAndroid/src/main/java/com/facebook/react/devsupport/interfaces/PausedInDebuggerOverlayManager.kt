@@ -11,7 +11,7 @@ public interface PausedInDebuggerOverlayManager {
   /** Shows the "paused in debugger" overlay with the given message. */
   public fun showPausedInDebuggerOverlay(
       message: String,
-      listener: DevSupportManager.PausedInDebuggerOverlayCommandListener
+      listener: DevSupportManager.PausedInDebuggerOverlayCommandListener,
   )
 
   /** Hides the "paused in debugger" overlay, if currently shown. */

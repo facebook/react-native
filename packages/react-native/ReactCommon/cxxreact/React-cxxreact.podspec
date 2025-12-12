@@ -44,6 +44,7 @@ Pod::Spec.new do |s|
   s.dependency "React-logger", version
   s.dependency "React-debug", version
   s.dependency "React-timing", version
+  add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 
   s.resource_bundles = {'React-cxxreact_privacy' => 'PrivacyInfo.xcprivacy'}
 

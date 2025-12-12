@@ -134,7 +134,7 @@ using namespace facebook::react;
   }
 
   auto imageSource = _state->getData().getImageSource();
-  imageSource.size = {image.size.width, image.size.height};
+  imageSource.size = {.width = image.size.width, .height = image.size.height};
 
   static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoad(imageSource);
   static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoadEnd();

@@ -18,16 +18,10 @@ namespace facebook::react {
 class TextProps : public Props, public BaseTextProps {
  public:
   TextProps() = default;
-  TextProps(
-      const PropsParserContext& context,
-      const TextProps& sourceProps,
-      const RawProps& rawProps);
+  TextProps(const PropsParserContext &context, const TextProps &sourceProps, const RawProps &rawProps);
 
-  void setProp(
-      const PropsParserContext& context,
-      RawPropsPropNameHash hash,
-      const char* propName,
-      const RawValue& value);
+  void
+  setProp(const PropsParserContext &context, RawPropsPropNameHash hash, const char *propName, const RawValue &value);
 
 #pragma mark - DebugStringConvertible
 
@@ -37,7 +31,7 @@ class TextProps : public Props, public BaseTextProps {
 
 #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
-  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  folly::dynamic getDiffProps(const Props *prevProps) const override;
 #endif
 };
 

@@ -7,6 +7,8 @@
 
 #import <React/RCTBaseTextInputShadowView.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/RCTBridge.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTUIManager.h>
@@ -283,9 +285,8 @@
   [_layoutManager ensureLayoutForTextContainer:_textContainer];
   CGSize size = [_layoutManager usedRectForTextContainer:_textContainer].size;
 
-  return (CGSize){
-      MAX(minimumSize.width, MIN(RCTCeilPixelValue(size.width), maximumSize.width)),
-      MAX(minimumSize.height, MIN(RCTCeilPixelValue(size.height), maximumSize.height))};
+  return (CGSize){MAX(minimumSize.width, MIN(RCTCeilPixelValue(size.width), maximumSize.width)),
+                  MAX(minimumSize.height, MIN(RCTCeilPixelValue(size.height), maximumSize.height))};
 }
 
 - (CGFloat)lastBaselineForSize:(CGSize)size
@@ -346,8 +347,8 @@ static YGSize RCTBaseTextInputShadowViewMeasure(
 
   CGSize measuredSize = [shadowView sizeThatFitsMinimumSize:minimumSize maximumSize:maximumSize];
 
-  return (YGSize){
-      RCTYogaFloatFromCoreGraphicsFloat(measuredSize.width), RCTYogaFloatFromCoreGraphicsFloat(measuredSize.height)};
+  return (YGSize){RCTYogaFloatFromCoreGraphicsFloat(measuredSize.width),
+                  RCTYogaFloatFromCoreGraphicsFloat(measuredSize.height)};
 }
 
 static float RCTTextInputShadowViewBaseline(YGNodeConstRef node, const float width, const float height)
@@ -362,3 +363,5 @@ static float RCTTextInputShadowViewBaseline(YGNodeConstRef node, const float wid
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

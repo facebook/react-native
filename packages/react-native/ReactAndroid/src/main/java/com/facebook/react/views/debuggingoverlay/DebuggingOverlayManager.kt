@@ -41,7 +41,9 @@ internal class DebuggingOverlayManager :
         ReactSoftExceptionLogger.logSoftException(
             REACT_CLASS,
             ReactNoCrashSoftException(
-                "Unexpected payload for highlighting trace updates: rectangle field is null"))
+                "Unexpected payload for highlighting trace updates: rectangle field is null"
+            ),
+        )
         successfullyParsedPayload = false
         break
       }
@@ -66,7 +68,9 @@ internal class DebuggingOverlayManager :
                 REACT_CLASS,
                 ReactNoCrashSoftException(
                     "Unexpected payload for highlighting trace updates: rectangle field should" +
-                        " have x, y, width, height fields"))
+                        " have x, y, width, height fields"
+                ),
+            )
             successfullyParsedPayload = false
           }
           else -> throw ex
@@ -101,7 +105,9 @@ internal class DebuggingOverlayManager :
                 REACT_CLASS,
                 ReactNoCrashSoftException(
                     "Unexpected payload for highlighting elements: every element should have x," +
-                        " y, width, height fields"))
+                        " y, width, height fields"
+                ),
+            )
             successfullyParsedPayload = false
           }
           else -> throw ex

@@ -81,7 +81,7 @@ inline static NSURL *NSURLFromImageSource(const facebook::react::ImageSource &im
 
     NSURL *url = [[NSURL alloc] initWithString:urlString];
 
-    if (url.scheme) {
+    if (url.scheme != nullptr) {
       // Well-formed absolute URL.
       return url;
     }
@@ -119,7 +119,7 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
 {
   NSURL *url = NSURLFromImageSource(imageSource);
 
-  if (!url) {
+  if (url == nullptr) {
     RCTLogError(@"URI parsing error.");
     return nil;
   }

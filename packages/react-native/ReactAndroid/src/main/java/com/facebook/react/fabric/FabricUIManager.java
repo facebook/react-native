@@ -65,11 +65,14 @@ import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
+import com.facebook.react.fabric.mounting.mountitems.PrefetchResourcesMountItem;
+import com.facebook.react.fabric.mounting.mountitems.SynchronousMountItem;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
@@ -176,7 +179,7 @@ public class FabricUIManager
 
   private final BatchEventDispatchedListener mBatchEventDispatchedListener;
 
-  private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
+  private final List<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
   private boolean mMountNotificationScheduled = false;
   private List<Integer> mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
@@ -725,6 +728,29 @@ public class FabricUIManager
     return true;
   }
 
+  /**
+   * This method is used to get the encoded screen size without vertical insets for a given surface.
+   * It's used by the Modal component to determine the size of the screen without vertical insets.
+   * The method is private as it's accessed via JNI from C++.
+   *
+   * @param surfaceId The surface ID of the surface for which the Modal is going to render.
+   * @return The encoded screen size as a long (both width and height) are represented without
+   *     vertical insets.
+   */
+  private long getEncodedScreenSizeWithoutVerticalInsets(int surfaceId) {
+    ThemedReactContext context =
+        mMountingManager
+            .getSurfaceManagerEnforced(surfaceId, "getEncodedScreenSizeWithoutVerticalInsets")
+            .getContext();
+    if (context == null) {
+      FLog.w(TAG, "Couldn't get context from SurfaceMountingManager for surfaceId %d", surfaceId);
+      return 0;
+    } else {
+      return DisplayMetricsHolder.getEncodedScreenSizeWithoutVerticalInsets(
+          context.getCurrentActivity());
+    }
+  }
+
   @Override
   public void addUIManagerEventListener(UIManagerListener listener) {
     mListeners.add(listener);
@@ -766,34 +792,7 @@ public class FabricUIManager
     //    android.view.View.updateDisplayListIfDirty(View.java:20466)
     // 3. A view is deleted while its parent is being drawn, causing a crash.
 
-    MountItem synchronousMountItem =
-        new MountItem() {
-          @Override
-          public void execute(MountingManager mountingManager) {
-            try {
-              mountingManager.updateProps(reactTag, props);
-            } catch (Exception ex) {
-              // TODO T42943890: Fix animations in Fabric and remove this try/catch?
-              // There might always be race conditions between surface teardown and
-              // animations/other operations, so it may not be feasible to remove this.
-              // Practically 100% of reported errors from this point are because the
-              // surface has stopped by this point, but the MountItem was queued before
-              // the surface was stopped. It's likely not feasible to prevent all such races.
-            }
-          }
-
-          @Override
-          public int getSurfaceId() {
-            return View.NO_ID;
-          }
-
-          @Override
-          public String toString() {
-            String propsString =
-                IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>";
-            return String.format("SYNC UPDATE PROPS [%d]: %s", reactTag, propsString);
-          }
-        };
+    MountItem synchronousMountItem = new SynchronousMountItem(reactTag, props);
 
     // If the reactTag exists, we assume that it might at the end of the next
     // batch of MountItems. Otherwise, we try to execute immediately.
@@ -916,14 +915,14 @@ public class FabricUIManager
     if (shouldSchedule) {
       Assertions.assertNotNull(mountItem, "MountItem is null");
       mMountItemDispatcher.addMountItem(mountItem);
-      Runnable runnable =
-          new GuardedRunnable(mReactApplicationContext) {
-            @Override
-            public void runGuarded() {
-              mMountItemDispatcher.tryDispatchMountItems();
-            }
-          };
       if (UiThreadUtil.isOnUiThread()) {
+        Runnable runnable =
+            new GuardedRunnable(mReactApplicationContext) {
+              @Override
+              public void runGuarded() {
+                mMountItemDispatcher.tryDispatchMountItems();
+              }
+            };
         runnable.run();
       }
     }
@@ -965,10 +964,17 @@ public class FabricUIManager
    * by an ImageView.
    */
   @UnstableReactNativeAPI
-  public void experimental_prefetchResource(
-      String componentName, int surfaceId, int reactTag, ReadableMapBuffer params) {
-    mMountingManager.experimental_prefetchResource(
-        mReactApplicationContext, componentName, surfaceId, reactTag, params);
+  public void experimental_prefetchResources(
+      int surfaceId, String componentName, ReadableMapBuffer params) {
+    if (ReactNativeFeatureFlags.enableImagePrefetchingOnUiThreadAndroid()) {
+      mMountItemDispatcher.addMountItem(
+          new PrefetchResourcesMountItem(surfaceId, componentName, params));
+    } else {
+      SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+      if (surfaceMountingManager != null) {
+        surfaceMountingManager.experimental_prefetchResources(surfaceId, componentName, params);
+      }
+    }
   }
 
   void setBinding(FabricUIManagerBinding binding) {
@@ -1353,6 +1359,7 @@ public class FabricUIManager
       // Collect surface IDs for all the mount items
       for (MountItem mountItem : mountItems) {
         if (mountItem != null
+            && mountItem.getSurfaceId() != View.NO_ID
             && !mSurfaceIdsWithPendingMountNotification.contains(mountItem.getSurfaceId())) {
           mSurfaceIdsWithPendingMountNotification.add(mountItem.getSurfaceId());
         }
@@ -1365,24 +1372,21 @@ public class FabricUIManager
         // delay paint.
         UiThreadUtil.getUiThreadHandler()
             .postAtFrontOfQueue(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    mMountNotificationScheduled = false;
+                () -> {
+                  mMountNotificationScheduled = false;
 
-                    // Create a copy in case mount hooks trigger more mutations
-                    final List<Integer> surfaceIdsToReportMount =
-                        mSurfaceIdsWithPendingMountNotification;
-                    mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
+                  // Create a copy in case mount hooks trigger more mutations
+                  final List<Integer> surfaceIdsToReportMount =
+                      mSurfaceIdsWithPendingMountNotification;
+                  mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
 
-                    final @Nullable FabricUIManagerBinding binding = mBinding;
-                    if (binding == null || mDestroyed) {
-                      return;
-                    }
+                  final @Nullable FabricUIManagerBinding binding = mBinding;
+                  if (binding == null || mDestroyed) {
+                    return;
+                  }
 
-                    for (int surfaceId : surfaceIdsToReportMount) {
-                      binding.reportMount(surfaceId);
-                    }
+                  for (int surfaceId : surfaceIdsToReportMount) {
+                    binding.reportMount(surfaceId);
                   }
                 });
       }
@@ -1481,7 +1485,7 @@ public class FabricUIManager
         mBinding.driveCxxAnimations();
       }
 
-      if (mBinding != null) {
+      if (!ReactNativeFeatureFlags.disableViewPreallocationAndroid() && mBinding != null) {
         mBinding.drainPreallocateViewsQueue();
       }
 

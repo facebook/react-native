@@ -88,6 +88,16 @@ WebSocket handler for registering device connections.
 
 WebSocket handler that proxies CDP messages to/from the corresponding device.
 
+## Experimental features
+
+React Native frameworks may pass an `unstable_experiments` option to `createDevMiddleware` to configure experimental features. Note that these features might not work correctly, and they may change or be removed in the future without notice. Some of the experiment flags available are documented below.
+
+### `unstable_experiments.enableStandaloneFuseboxShell`
+
+Enables launching the debugger frontend in a standalone app shell (provided by the `@react-native/debugger-shell` package) rather than in a browser window. Since React Native 0.83 this defaults to `true`, and may be disabled by explicitly passing `false`.
+
+The shell is powered by a separate binary that is downloaded and cached in the background (immediately after the call to `createDevMiddleware`). If there is a problem downloading or invoking this binary for the first time, the debugger frontend will revert to launching in a browser window until the next time `createDevMiddleware` is called (typically, on the next dev server start).
+
 ## Contributing
 
 Changes to this package can be made locally and tested against the `rn-tester` app, per the [Contributing guide](https://reactnative.dev/contributing/overview#contributing-code). During development, this package is automatically run from source with no build step.

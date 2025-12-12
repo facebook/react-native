@@ -14,31 +14,27 @@ RCTLayoutMetrics RCTLayoutMetricsFromYogaNode(YGNodeRef yogaNode)
 {
   RCTLayoutMetrics layoutMetrics;
 
-  CGRect frame = (CGRect){
-      (CGPoint){
-          RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetLeft(yogaNode)),
-          RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetTop(yogaNode))},
-      (CGSize){
-          RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(yogaNode)),
-          RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(yogaNode))}};
+  CGRect frame = (CGRect){(CGPoint){RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetLeft(yogaNode)),
+                                    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetTop(yogaNode))},
+                          (CGSize){RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(yogaNode)),
+                                   RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(yogaNode))}};
 
-  UIEdgeInsets padding = (UIEdgeInsets){
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeTop)),
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft)),
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom)),
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeRight))};
+  UIEdgeInsets padding =
+      (UIEdgeInsets){RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeTop)),
+                     RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft)),
+                     RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom)),
+                     RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeRight))};
 
-  UIEdgeInsets borderWidth = (UIEdgeInsets){
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeTop)),
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft)),
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom)),
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeRight))};
+  UIEdgeInsets borderWidth =
+      (UIEdgeInsets){RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeTop)),
+                     RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft)),
+                     RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom)),
+                     RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeRight))};
 
-  UIEdgeInsets compoundInsets = (UIEdgeInsets){
-      borderWidth.top + padding.top,
-      borderWidth.left + padding.left,
-      borderWidth.bottom + padding.bottom,
-      borderWidth.right + padding.right};
+  UIEdgeInsets compoundInsets = (UIEdgeInsets){borderWidth.top + padding.top,
+                                               borderWidth.left + padding.left,
+                                               borderWidth.bottom + padding.bottom,
+                                               borderWidth.right + padding.right};
 
   CGRect bounds = (CGRect){CGPointZero, frame.size};
   CGRect contentFrame = UIEdgeInsetsInsetRect(bounds, compoundInsets);

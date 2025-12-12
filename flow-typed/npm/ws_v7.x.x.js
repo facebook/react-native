@@ -21,7 +21,7 @@ declare type ws$PerMessageDeflateOptions = {
   maxPayload?: number,
 };
 
-/* $FlowFixMe[incompatible-extend] - Found with Flow v0.143.1 upgrade
+/* $FlowFixMe[incompatible-type] - Found with Flow v0.143.1 upgrade
  * "on" definition failing with string is incompatible with string literal */
 declare class ws$WebSocketServer extends events$EventEmitter {
   /**
@@ -141,7 +141,7 @@ declare type ws$UnexpectedResponseListener = (
 ) => mixed;
 declare type ws$UpgradeListener = (response: http$IncomingMessage<>) => mixed;
 
-/* $FlowFixMe[incompatible-extend] - Found with Flow v0.143.1 upgrade
+/* $FlowFixMe[incompatible-type] - Found with Flow v0.143.1 upgrade
  * "on" definition failing with string is incompatible with string literal */
 declare class ws$WebSocket extends events$EventEmitter {
   static Server: typeof ws$WebSocketServer;

@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
 });
 
 class AutoFocusWithSelectOnFocusTextExample extends React.Component<
-  $FlowFixMeProps,
+  $FlowFixMe,
   any,
 > {
   constructor(props: any | void) {
@@ -108,7 +108,7 @@ class AutoFocusWithSelectOnFocusTextExample extends React.Component<
   }
 }
 
-class WithLabel extends React.Component<$FlowFixMeProps> {
+class WithLabel extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View style={styles.labelContainer}>
@@ -119,7 +119,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class RewriteExample extends React.Component<$FlowFixMeProps, any> {
+class RewriteExample extends React.Component<$FlowFixMe, any> {
   constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
@@ -149,10 +149,7 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
   }
 }
 
-class RewriteExampleInvalidCharacters extends React.Component<
-  $FlowFixMeProps,
-  any,
-> {
+class RewriteExampleInvalidCharacters extends React.Component<$FlowFixMe, any> {
   constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
@@ -175,7 +172,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
 }
 
 class RewriteInvalidCharactersAndClearExample extends React.Component<
-  $FlowFixMeProps,
+  $FlowFixMe,
   any,
 > {
   inputRef: ?React.ElementRef<typeof TextInput> = null;
@@ -359,7 +356,7 @@ class SubmitBehaviorExample extends React.Component<{...}> {
   }
 }
 
-class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
+class TextEventsExample extends React.Component<{...}, $FlowFixMe> {
   state:
     | any
     | {
@@ -427,10 +424,7 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class TokenizedTextExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+class TokenizedTextExample extends React.Component<$FlowFixMe, $FlowFixMe> {
   constructor(props: any | void) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -500,7 +494,7 @@ type SelectionExampleState = {
 };
 
 class SelectionExample extends React.Component<
-  $FlowFixMeProps,
+  $FlowFixMe,
   SelectionExampleState,
 > {
   _textInput: React.ElementRef<typeof TextInput> | null = null;

@@ -61,7 +61,7 @@ export function createMockFunction<TArgs: Array<mixed>, TReturn>(
 
     mock.calls.push(args);
     mock.lastCall = args;
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     mock.instances.push(new.target ? this : undefined);
     mock.contexts.push(this);
     mock.results.push(result);
@@ -77,6 +77,6 @@ export function createMockFunction<TArgs: Array<mixed>, TReturn>(
   // $FlowExpectedError[invalid-computed-prop]
   mockFunction[MOCK_FN_TAG] = true;
 
-  // $FlowExpectedError[prop-missing]
+  // $FlowExpectedError[incompatible-type]
   return mockFunction;
 }

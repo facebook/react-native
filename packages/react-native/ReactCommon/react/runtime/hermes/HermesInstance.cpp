@@ -14,7 +14,11 @@
 
 #ifdef HERMES_ENABLE_DEBUGGER
 #include <hermes/inspector-modern/chrome/Registration.h>
+
+#ifndef HERMES_V1_ENABLED
 #include <hermes/inspector/RuntimeAdapter.h>
+#endif
+
 #include <jsi/decorator.h>
 #endif
 
@@ -23,7 +27,7 @@ using namespace facebook::jsi;
 
 namespace facebook::react {
 
-#ifdef HERMES_ENABLE_DEBUGGER
+#if defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
 
 // Wrapper that strongly retains the HermesRuntime for on device debugging.
 //
@@ -90,7 +94,7 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
   inspector_modern::chrome::DebugSessionToken debugToken_;
 };
 
-#endif
+#endif // defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
 
 class HermesJSRuntime : public JSRuntime {
  public:
@@ -157,7 +161,7 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
                             .getPropertyAsObject(*hermesRuntime, "prototype");
   errorPrototype.setProperty(*hermesRuntime, "jsEngine", "hermes");
 
-#ifdef HERMES_ENABLE_DEBUGGER
+#if defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
   if (!inspectorFlags.getFuseboxEnabled()) {
     std::unique_ptr<DecoratedRuntime> decoratedRuntime =

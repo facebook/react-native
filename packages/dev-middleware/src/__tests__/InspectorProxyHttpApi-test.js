@@ -27,7 +27,6 @@ jest.useFakeTimers();
 describe('inspector proxy HTTP API', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
-    projectRoot: '',
   });
   const autoCleanup = withAbortSignalForEachTest();
   afterEach(() => {
@@ -261,7 +260,6 @@ describe('inspector proxy HTTP API', () => {
     describe('HTTP vs HTTPS', () => {
       const secureServerRef = withServerForEachTest({
         logger: undefined,
-        projectRoot: '',
         secure: true,
       });
 

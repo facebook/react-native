@@ -35,13 +35,11 @@ class EventEmitter {
 
   static std::string normalizeEventType(std::string type);
 
-  static std::mutex& DispatchMutex();
+  static std::mutex &DispatchMutex();
 
   static ValueFactory defaultPayloadFactory();
 
-  EventEmitter(
-      SharedEventTarget eventTarget,
-      EventDispatcher::Weak eventDispatcher);
+  EventEmitter(SharedEventTarget eventTarget, EventDispatcher::Weak eventDispatcher);
 
   virtual ~EventEmitter() = default;
 
@@ -60,16 +58,16 @@ class EventEmitter {
   /*
    * Sets a weak reference to the cooresponding ShadowNodeFamily
    */
-  void setShadowNodeFamily(
-      std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) const;
+  void setShadowNodeFamily(std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) const;
 
-  const SharedEventTarget& getEventTarget() const;
+  const SharedEventTarget &getEventTarget() const;
 
   /*
    * Experimental API that will change in the future.
    */
   template <typename Lambda>
-  void experimental_flushSync(Lambda syncFunc) const {
+  void experimental_flushSync(Lambda syncFunc) const
+  {
     auto eventDispatcher = eventDispatcher_.lock();
     if (!eventDispatcher) {
       return;
@@ -85,13 +83,12 @@ class EventEmitter {
    */
   void dispatchEvent(
       std::string type,
-      const ValueFactory& payloadFactory =
-          EventEmitter::defaultPayloadFactory(),
+      const ValueFactory &payloadFactory = EventEmitter::defaultPayloadFactory(),
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
       std::string type,
-      folly::dynamic&& payload,
+      folly::dynamic &&payload,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
@@ -99,12 +96,10 @@ class EventEmitter {
       SharedEventPayload payload,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
-  void dispatchUniqueEvent(std::string type, folly::dynamic&& payload) const;
+  void dispatchUniqueEvent(std::string type, folly::dynamic &&payload) const;
 
-  void dispatchUniqueEvent(
-      std::string type,
-      const ValueFactory& payloadFactory =
-          EventEmitter::defaultPayloadFactory()) const;
+  void dispatchUniqueEvent(std::string type, const ValueFactory &payloadFactory = EventEmitter::defaultPayloadFactory())
+      const;
 
   void dispatchUniqueEvent(std::string type, SharedEventPayload payload) const;
 

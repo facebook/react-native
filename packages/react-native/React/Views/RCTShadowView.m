@@ -16,6 +16,8 @@
 #import "UIView+Private.h"
 #import "UIView+React.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
 
@@ -292,9 +294,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   YGNodeRef yogaNode = _yogaNode;
 
-  CGSize oldMinimumSize = (CGSize){
-      RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
-      RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)};
+  CGSize oldMinimumSize = (CGSize){RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinWidth(yogaNode), 0.0),
+                                   RCTCoreGraphicsFloatFromYogaValue(YGNodeStyleGetMinHeight(yogaNode), 0.0)};
 
   if (!CGSizeEqualToSize(oldMinimumSize, minimumSize)) {
     YGNodeStyleSetMinWidth(yogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
@@ -735,3 +736,93 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 }
 
 @end
+
+#else // RCT_REMOVE_LEGACY_ARCH
+@implementation RCTShadowView
+@synthesize reactTag = _reactTag;
+@synthesize rootTag = _rootTag;
+
++ (YGConfigRef)yogaConfig
+{
+  return YGConfigNew();
+}
+
+- (NSNumber *)reactTagAtPoint:(CGPoint)point
+{
+  return [NSNumber numberWithInt:0];
+}
+
+- (BOOL)isReactRootView
+{
+  return NO;
+}
+
+- (NSArray<RCTShadowView *> *)reactSubviews
+{
+  return @[];
+}
+- (RCTShadowView *)reactSuperview
+{
+  return nil;
+}
+- (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
+{
+}
+- (void)removeReactSubview:(RCTShadowView *)subview
+{
+}
+
+- (void)setLocalData:(NSObject *)localData
+{
+}
+
+#pragma mark - Layout
+- (void)layoutWithMinimumSize:(CGSize)minimumSize
+                  maximumSize:(CGSize)maximumSize
+              layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+                layoutContext:(RCTLayoutContext)layoutContext
+{
+}
+
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics layoutContext:(RCTLayoutContext)layoutContext
+{
+}
+
+- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
+{
+}
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  return CGSizeMake(0, 0);
+}
+
+- (BOOL)canHaveSubviews
+{
+  return NO;
+}
+
+- (BOOL)isYogaLeafNode
+{
+  return NO;
+}
+
+- (void)didUpdateReactSubviews
+{
+}
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+}
+
+- (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
+{
+  return CGRectNull;
+}
+
+- (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor
+{
+  return NO;
+}
+
+@end
+#endif // RCT_REMOVE_LEGACY_ARCH

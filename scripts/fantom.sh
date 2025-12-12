@@ -6,9 +6,14 @@
 
 set -e
 
+
 if [[ -f "BUCK" && -z "$FANTOM_FORCE_OSS_BUILD" ]]; then
-  JS_DIR='..' yarn jest --config private/react-native-fantom/config/jest.config.js "$@"
+  export JS_DIR='..'
 else
   yarn workspace @react-native/fantom build
-  FANTOM_FORCE_OSS_BUILD=1 yarn jest --config private/react-native-fantom/config/jest.config.js "$@"
+  export FANTOM_FORCE_OSS_BUILD=1
 fi
+
+export NODE_OPTIONS='--max-old-space-size=8192'
+
+yarn jest --config private/react-native-fantom/config/jest.config.js "$@"

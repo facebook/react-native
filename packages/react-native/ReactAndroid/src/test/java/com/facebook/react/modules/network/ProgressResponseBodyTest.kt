@@ -35,7 +35,7 @@ class ProgressResponseBodyTest {
   private fun createResponseBody(
       contentType: MediaType? = MediaType.parse("application/octet-stream"),
       contentLength: Long = 0L,
-      content: ByteArray = ByteArray(0)
+      content: ByteArray = ByteArray(0),
   ): ResponseBody {
     val inputStream = ByteArrayInputStream(content)
     val bufferedSource = Okio.buffer(Okio.source(inputStream))

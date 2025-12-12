@@ -12,6 +12,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(facebook-hte-CArray)
 const char ScrollViewComponentName[] = "ScrollView";
 
 void ScrollViewShadowNode::updateStateIfNeeded() {
@@ -68,10 +69,12 @@ Point ScrollViewShadowNode::getContentOriginOffset(
   auto stateData = getStateData();
   auto contentOffset = stateData.contentOffset;
   auto transform = includeTransform ? getTransform() : Transform::Identity();
-  auto result =
-      transform * Vector{-contentOffset.x, -contentOffset.y, 0.0f, 1.0f};
+  auto result = transform *
+      Vector{
+          .x = -contentOffset.x, .y = -contentOffset.y, .z = 0.0f, .w = 1.0f};
 
   return {
-      result.x, result.y + static_cast<float>(stateData.scrollAwayPaddingTop)};
+      .x = result.x,
+      .y = result.y + static_cast<float>(stateData.scrollAwayPaddingTop)};
 }
 } // namespace facebook::react

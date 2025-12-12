@@ -58,8 +58,10 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
       val uri = intent.data
 
       val initialURL =
-          if (uri != null &&
-              (Intent.ACTION_VIEW == action || NfcAdapter.ACTION_NDEF_DISCOVERED == action)) {
+          if (
+              uri != null &&
+                  (Intent.ACTION_VIEW == action || NfcAdapter.ACTION_NDEF_DISCOVERED == action)
+          ) {
             uri.toString()
           } else {
             null
@@ -68,7 +70,8 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
       promise.resolve(initialURL)
     } catch (e: Exception) {
       promise.reject(
-          JSApplicationIllegalArgumentException("Could not get the initial URL : ${e.message}"))
+          JSApplicationIllegalArgumentException("Could not get the initial URL : ${e.message}")
+      )
     }
   }
 
@@ -120,7 +123,8 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
       promise.resolve(true)
     } catch (e: Exception) {
       promise.reject(
-          JSApplicationIllegalArgumentException("Could not open URL '${url}': ${e.message}"))
+          JSApplicationIllegalArgumentException("Could not open URL '${url}': ${e.message}")
+      )
     }
   }
 
@@ -141,13 +145,15 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
       // We need Intent.FLAG_ACTIVITY_NEW_TASK since getReactApplicationContext() returns
       // the ApplicationContext instead of the Activity context.
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      val packageManager = getReactApplicationContext().getPackageManager()
+      val packageManager = reactApplicationContext.packageManager
       val canOpen = packageManager != null && intent.resolveActivity(packageManager) != null
       promise.resolve(canOpen)
     } catch (e: Exception) {
       promise.reject(
           JSApplicationIllegalArgumentException(
-              "Could not check if URL '${url}' can be opened: ${e.message}"))
+              "Could not check if URL '${url}' can be opened: ${e.message}"
+          )
+      )
     }
   }
 
@@ -159,9 +165,8 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
   override fun openSettings(promise: Promise) {
     try {
       val intent = Intent()
-      val currentActivity: Activity =
-          checkNotNull(getReactApplicationContext().getCurrentActivity())
-      val selfPackageName = getReactApplicationContext().getPackageName()
+      val currentActivity: Activity = checkNotNull(reactApplicationContext.getCurrentActivity())
+      val selfPackageName = reactApplicationContext.packageName
 
       intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
       intent.addCategory(Intent.CATEGORY_DEFAULT)
@@ -174,7 +179,8 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
       promise.resolve(true)
     } catch (e: Exception) {
       promise.reject(
-          JSApplicationIllegalArgumentException("Could not open the Settings: ${e.message}"))
+          JSApplicationIllegalArgumentException("Could not open the Settings: ${e.message}")
+      )
     }
   }
 
@@ -196,10 +202,11 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
 
     val intent = Intent(action)
 
-    val packageManager = getReactApplicationContext().getPackageManager()
+    val packageManager = reactApplicationContext.packageManager
     if (packageManager == null || intent.resolveActivity(packageManager) == null) {
       promise.reject(
-          JSApplicationIllegalArgumentException("Could not launch Intent with action $action."))
+          JSApplicationIllegalArgumentException("Could not launch Intent with action $action.")
+      )
       return
     }
 
@@ -226,7 +233,8 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
             }
             else -> {
               promise.reject(
-                  JSApplicationIllegalArgumentException("Extra type for $name not supported."))
+                  JSApplicationIllegalArgumentException("Extra type for $name not supported.")
+              )
               return
             }
           }
@@ -241,10 +249,10 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
   }
 
   private fun sendOSIntent(intent: Intent, useNewTaskFlag: Boolean) {
-    val currentActivity = getReactApplicationContext().getCurrentActivity()
+    val currentActivity = reactApplicationContext.getCurrentActivity()
 
-    val selfPackageName = getReactApplicationContext().getPackageName()
-    val packageManager = getReactApplicationContext().getPackageManager()
+    val selfPackageName = reactApplicationContext.packageName
+    val packageManager = reactApplicationContext.packageManager
     val componentName =
         if (packageManager == null) {
           intent.component
@@ -262,7 +270,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
     if (currentActivity != null) {
       currentActivity.startActivity(intent)
     } else {
-      getReactApplicationContext().startActivity(intent)
+      reactApplicationContext.startActivity(intent)
     }
   }
 

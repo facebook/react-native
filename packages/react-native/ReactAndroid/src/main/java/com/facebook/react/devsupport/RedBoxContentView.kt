@@ -7,8 +7,8 @@
 
 @file:Suppress(
     "DEPRECATION_ERROR", // Conflicting okhttp versions
-    "DEPRECATION" // Need to migrate away from AsyncTasks
-    )
+    "DEPRECATION", // Need to migrate away from AsyncTasks
+)
 
 package com.facebook.react.devsupport
 
@@ -139,7 +139,8 @@ internal class RedBoxContentView(
         holder.fileView.text = StackTraceHelper.formatFrameSource(frame)
         holder.methodView.setTextColor(if (frame.isCollapsed) 0xFFAAAAAA.toInt() else Color.WHITE)
         holder.fileView.setTextColor(
-            if (frame.isCollapsed) 0xFF808080.toInt() else 0xFFB3B3B3.toInt())
+            if (frame.isCollapsed) 0xFF808080.toInt() else 0xFFB3B3B3.toInt()
+        )
         return frameView
       }
     }
@@ -186,7 +187,9 @@ internal class RedBoxContentView(
                   "file" to frame.file,
                   "methodName" to frame.method,
                   "lineNumber" to frame.line,
-                  "column" to frame.column))
+                  "column" to frame.column,
+              )
+          )
     }
   }
 
@@ -221,7 +224,7 @@ internal class RedBoxContentView(
   }
 
   fun setExceptionDetails(title: String, stack: Array<StackFrame>) {
-    stackView.setAdapter(StackAdapter(title, stack))
+    stackView.adapter = StackAdapter(title, stack)
   }
 
   /** Show the report button, hide the report textview and the loading indicator. */
@@ -240,7 +243,9 @@ internal class RedBoxContentView(
   override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
     OpenStackFrameTask(devSupportManager)
         .executeOnExecutor(
-            AsyncTask.THREAD_POOL_EXECUTOR, stackView.adapter.getItem(position) as StackFrame)
+            AsyncTask.THREAD_POOL_EXECUTOR,
+            stackView.adapter.getItem(position) as StackFrame,
+        )
   }
 
   /** Refresh the content view with latest errors from dev support manager */

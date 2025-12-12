@@ -21,6 +21,7 @@ struct InspectorFlagOverrides {
   // the implementation file.
   std::optional<bool> fuseboxEnabledRelease;
   std::optional<bool> networkInspectionEnabled;
+  std::optional<bool> enableNetworkEventReporting;
 };
 
 /**
@@ -29,13 +30,11 @@ struct InspectorFlagOverrides {
  */
 class InspectorFlagOverridesGuard {
  public:
-  explicit InspectorFlagOverridesGuard(const InspectorFlagOverrides& overrides);
-  InspectorFlagOverridesGuard(const InspectorFlagOverridesGuard&) = delete;
-  InspectorFlagOverridesGuard(InspectorFlagOverridesGuard&&) = default;
-  InspectorFlagOverridesGuard& operator=(const InspectorFlagOverridesGuard&) =
-      delete;
-  InspectorFlagOverridesGuard& operator=(InspectorFlagOverridesGuard&&) =
-      default;
+  explicit InspectorFlagOverridesGuard(const InspectorFlagOverrides &overrides);
+  InspectorFlagOverridesGuard(const InspectorFlagOverridesGuard &) = delete;
+  InspectorFlagOverridesGuard(InspectorFlagOverridesGuard &&) = default;
+  InspectorFlagOverridesGuard &operator=(const InspectorFlagOverridesGuard &) = delete;
+  InspectorFlagOverridesGuard &operator=(InspectorFlagOverridesGuard &&) = default;
 
   ~InspectorFlagOverridesGuard();
 };

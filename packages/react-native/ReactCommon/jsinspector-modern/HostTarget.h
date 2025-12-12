@@ -12,11 +12,19 @@
 #include "InspectorInterfaces.h"
 #include "InstanceTarget.h"
 #include "NetworkIOAgent.h"
+#include "PerfMonitorV2.h"
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
 #include <optional>
+#include <set>
 #include <string>
+
+#include <jsinspector-modern/tracing/FrameTimingSequence.h>
+#include <jsinspector-modern/tracing/HostTracingProfile.h>
+#include <jsinspector-modern/tracing/TraceRecordingState.h>
+#include <jsinspector-modern/tracing/TracingCategory.h>
+#include <jsinspector-modern/tracing/TracingMode.h>
 
 #ifndef JSINSPECTOR_EXPORT
 #ifdef _MSC_VER
@@ -34,16 +42,49 @@ namespace facebook::react::jsinspector_modern {
 
 class HostTargetSession;
 class HostAgent;
+class HostTracingAgent;
 class HostCommandSender;
+class HostRuntimeBinding;
 class HostTarget;
+class HostTargetTraceRecording;
 
 struct HostTargetMetadata {
-  std::optional<std::string> appDisplayName;
-  std::optional<std::string> appIdentifier;
-  std::optional<std::string> deviceName;
+  std::optional<std::string> appDisplayName{};
+  std::optional<std::string> appIdentifier{};
+  std::optional<std::string> deviceName{};
   std::optional<std::string> integrationName;
-  std::optional<std::string> platform;
-  std::optional<std::string> reactNativeVersion;
+  std::optional<std::string> platform{};
+  std::optional<std::string> reactNativeVersion{};
+};
+
+/**
+ * Receives any performance-related events from a HostTarget: could be Tracing, Performance Monitor, etc.
+ */
+class HostTargetTracingDelegate {
+ public:
+  HostTargetTracingDelegate() = default;
+  virtual ~HostTargetTracingDelegate() = default;
+
+  /**
+   * Fired when the corresponding HostTarget started recording a tracing session.
+   * The tracing state is expected to be initialized at this point and the delegate should be able to record events
+   * through HostTarget.
+   */
+  virtual void onTracingStarted(tracing::Mode /* tracingMode */, bool /* screenshotsCategoryEnabled */) {}
+
+  /**
+   * Fired when the corresponding HostTarget is about to end recording a tracing session.
+   * The tracing state is expected to be still initialized during the call and the delegate should be able to record
+   * events through HostTarget.
+   *
+   * Any attempts to record events after this callback is finished will fail.
+   */
+  virtual void onTracingStopped() {}
+
+  HostTargetTracingDelegate(const HostTargetTracingDelegate &) = delete;
+  HostTargetTracingDelegate(HostTargetTracingDelegate &&) = delete;
+  HostTargetTracingDelegate &operator=(const HostTargetTracingDelegate &) = delete;
+  HostTargetTracingDelegate &operator=(HostTargetTracingDelegate &&) = delete;
 };
 
 /**
@@ -54,10 +95,10 @@ struct HostTargetMetadata {
 class HostTargetDelegate : public LoadNetworkResourceDelegate {
  public:
   HostTargetDelegate() = default;
-  HostTargetDelegate(const HostTargetDelegate&) = delete;
-  HostTargetDelegate(HostTargetDelegate&&) = delete;
-  HostTargetDelegate& operator=(const HostTargetDelegate&) = delete;
-  HostTargetDelegate& operator=(HostTargetDelegate&&) = delete;
+  HostTargetDelegate(const HostTargetDelegate &) = delete;
+  HostTargetDelegate(HostTargetDelegate &&) = delete;
+  HostTargetDelegate &operator=(const HostTargetDelegate &) = delete;
+  HostTargetDelegate &operator=(HostTargetDelegate &&) = delete;
 
   // TODO(moti): This is 1:1 the shape of the corresponding CDP message -
   // consider reusing typed/generated CDP interfaces when we have those.
@@ -72,9 +113,9 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
     /**
      * Equality operator, useful for unit tests
      */
-    inline bool operator==(const PageReloadRequest& rhs) const {
-      return ignoreCache == rhs.ignoreCache &&
-          scriptToEvaluateOnLoad == rhs.scriptToEvaluateOnLoad;
+    inline bool operator==(const PageReloadRequest &rhs) const
+    {
+      return ignoreCache == rhs.ignoreCache && scriptToEvaluateOnLoad == rhs.scriptToEvaluateOnLoad;
     }
   };
 
@@ -87,8 +128,8 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
     /**
      * Equality operator, useful for unit tests
      */
-    inline bool operator==(
-        const OverlaySetPausedInDebuggerMessageRequest& rhs) const {
+    inline bool operator==(const OverlaySetPausedInDebuggerMessageRequest &rhs) const
+    {
       return message == rhs.message;
     }
   };
@@ -106,7 +147,7 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
    * the thread on which messages are dispatched to the session (that is, where
    * ILocalConnection::sendMessage was called).
    */
-  virtual void onReload(const PageReloadRequest& request) = 0;
+  virtual void onReload(const PageReloadRequest &request) = 0;
 
   /**
    * Called when the debugger requests that the "paused in debugger" overlay be
@@ -118,8 +159,13 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
    * the timing and payload of these messages are fully controlled by the
    * client.
    */
-  virtual void onSetPausedInDebuggerMessage(
-      const OverlaySetPausedInDebuggerMessageRequest& request) = 0;
+  virtual void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) = 0;
+
+  /**
+   * [Experimental] Called when the runtime has new data for the V2 Perf
+   * Monitor overlay. This is called on the inspector thread.
+   */
+  virtual void unstable_onPerfIssueAdded(const PerfIssuePayload & /*issue*/) {}
 
   /**
    * Called by NetworkIOAgent on handling a `Network.loadNetworkResource` CDP
@@ -128,10 +174,32 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
    * of headers, data chunks, and errors.
    */
   void loadNetworkResource(
-      const LoadNetworkResourceRequest& /*params*/,
-      ScopedExecutor<NetworkRequestListener> /*executor*/) override {
+      const LoadNetworkResourceRequest & /*params*/,
+      ScopedExecutor<NetworkRequestListener> /*executor*/) override
+  {
     throw NotImplementedException(
         "LoadNetworkResourceDelegate.loadNetworkResource is not implemented by this host target delegate.");
+  }
+
+  /**
+   * [Experimental] Will be called at the CDP session initialization to get the
+   * trace recording that may have been stashed by the Host from the previous
+   * background session.
+   *
+   * \return the HostTracingProfile if there is one that needs to be
+   * displayed, otherwise std::nullopt.
+   */
+  virtual std::optional<tracing::HostTracingProfile> unstable_getHostTracingProfileThatWillBeEmittedOnInitialization()
+  {
+    return std::nullopt;
+  }
+
+  /**
+   * An optional delegate that will be used by HostTarget to notify about tracing-related events.
+   */
+  virtual HostTargetTracingDelegate *getTracingDelegate()
+  {
+    return nullptr;
   }
 };
 
@@ -141,11 +209,18 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
  */
 class HostTargetController final {
  public:
-  explicit HostTargetController(HostTarget& target);
+  explicit HostTargetController(HostTarget &target);
 
-  HostTargetDelegate& getDelegate();
+  HostTargetDelegate &getDelegate();
 
   bool hasInstance() const;
+
+  /**
+   * [Experimental] Install a runtime binding subscribing to new Performance
+   * Issues, which we broadcast to the V2 Perf Monitor overlay via
+   * \ref HostTargetDelegate::unstable_onPerfIssueAdded.
+   */
+  void installPerfIssuesBinding();
 
   /**
    * Increments the target's pause overlay counter. The counter represents the
@@ -166,8 +241,23 @@ class HostTargetController final {
    */
   bool decrementPauseOverlayCounter();
 
+  /**
+   * Starts trace recording for this HostTarget.
+   *
+   * \param mode In which mode to start the trace recording.
+   * \param enabledCategories The set of categories to enable.
+   *
+   * \return false if already tracing, true otherwise.
+   */
+  bool startTracing(tracing::Mode mode, std::set<tracing::Category> enabledCategories);
+
+  /**
+   * Stops previously started trace recording.
+   */
+  tracing::HostTracingProfile stopTracing();
+
  private:
-  HostTarget& target_;
+  HostTarget &target_;
   size_t pauseOverlayCounter_{0};
 };
 
@@ -176,30 +266,30 @@ class HostTargetController final {
  * "Host" in React Native's architecture - the entity that manages the
  * lifecycle of a React Instance.
  */
-class JSINSPECTOR_EXPORT HostTarget
-    : public EnableExecutorFromThis<HostTarget> {
+class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> {
  public:
   /**
    * Constructs a new HostTarget.
+   *
    * \param delegate The HostTargetDelegate that will
    * receive events from this HostTarget. The caller is responsible for ensuring
    * that the HostTargetDelegate outlives this object.
+   *
    * \param executor An executor that may be used to call methods on this
    * HostTarget while it exists. \c create additionally guarantees that the
    * executor will not be called after the HostTarget is destroyed.
+   *
    * \note Copies of the provided executor may be destroyed on arbitrary
    * threads, including after the HostTarget is destroyed. Callers must ensure
    * that such destructor calls are safe - e.g. if using a lambda as the
    * executor, all captured values must be safe to destroy from any thread.
    */
-  static std::shared_ptr<HostTarget> create(
-      HostTargetDelegate& delegate,
-      VoidExecutor executor);
+  static std::shared_ptr<HostTarget> create(HostTargetDelegate &delegate, VoidExecutor executor);
 
-  HostTarget(const HostTarget&) = delete;
-  HostTarget(HostTarget&&) = delete;
-  HostTarget& operator=(const HostTarget&) = delete;
-  HostTarget& operator=(HostTarget&&) = delete;
+  HostTarget(const HostTarget &) = delete;
+  HostTarget(HostTarget &&) = delete;
+  HostTarget &operator=(const HostTarget &) = delete;
+  HostTarget &operator=(HostTarget &&) = delete;
   ~HostTarget();
 
   /**
@@ -209,8 +299,7 @@ class JSINSPECTOR_EXPORT HostTarget
    * is destroyed, on the same thread where HostTarget's constructor and
    * destructor execute.
    */
-  std::unique_ptr<ILocalConnection> connect(
-      std::unique_ptr<IRemoteConnection> connectionToFrontend);
+  std::unique_ptr<ILocalConnection> connect(std::unique_ptr<IRemoteConnection> connectionToFrontend);
 
   /**
    * Registers an instance with this HostTarget.
@@ -222,14 +311,14 @@ class JSINSPECTOR_EXPORT HostTarget
    * (or the HostTarget is destroyed). \pre There isn't currently an instance
    * registered with this HostTarget.
    */
-  InstanceTarget& registerInstance(InstanceTargetDelegate& delegate);
+  InstanceTarget &registerInstance(InstanceTargetDelegate &delegate);
 
   /**
    * Unregisters an instance from this HostTarget.
    * \param instance The InstanceTarget reference previously returned by
    * registerInstance.
    */
-  void unregisterInstance(InstanceTarget& instance);
+  void unregisterInstance(InstanceTarget &instance);
 
   /**
    * Sends an imperative command to the HostTarget. May be called from any
@@ -237,17 +326,64 @@ class JSINSPECTOR_EXPORT HostTarget
    */
   void sendCommand(HostCommand command);
 
+#pragma region Tracing
+  /**
+   * Creates a new HostTracingAgent.
+   * This Agent is not owned by the HostTarget. The Agent will be destroyed at
+   * the end of the tracing session.
+   *
+   * \param state A reference to the state of the active trace recording.
+   */
+  std::shared_ptr<HostTracingAgent> createTracingAgent(tracing::TraceRecordingState &state);
+
+  /**
+   * Starts trace recording for this HostTarget.
+   *
+   * \param mode In which mode to start the trace recording.
+   * \param enabledCategories The set of categories to enable.
+   *
+   * \return false if already tracing, true otherwise.
+   */
+  bool startTracing(tracing::Mode mode, std::set<tracing::Category> enabledCategories);
+
+  /**
+   * Stops previously started trace recording.
+   */
+  tracing::HostTracingProfile stopTracing();
+
+  /**
+   * Returns whether there is an active session with the Fusebox client, i.e.
+   * with Chrome DevTools Frontend fork for React Native.
+   */
+  bool hasActiveSessionWithFuseboxClient() const;
+
+  /**
+   * Emits the HostTracingProfile for the first active session with the Fusebox
+   * client.
+   *
+   * @see \c hasActiveFrontendSession
+   */
+  void emitTracingProfileForFirstFuseboxClient(tracing::HostTracingProfile tracingProfile) const;
+
+  /**
+   * An endpoint for the Host to report frame timings that will be recorded if and only if there is currently an active
+   * tracing session.
+   */
+  void recordFrameTimings(tracing::FrameTimingSequence frameTimingSequence);
+#pragma endregion
+
  private:
   /**
    * Constructs a new HostTarget.
    * The caller must call setExecutor immediately afterwards.
+   *
    * \param delegate The HostTargetDelegate that will
    * receive events from this HostTarget. The caller is responsible for ensuring
    * that the HostTargetDelegate outlives this object.
    */
-  HostTarget(HostTargetDelegate& delegate);
+  HostTarget(HostTargetDelegate &delegate);
 
-  HostTargetDelegate& delegate_;
+  HostTargetDelegate &delegate_;
   WeakList<HostTargetSession> sessions_;
   HostTargetController controller_{*this};
   // executionContextManager_ is a shared_ptr to guarantee its validity while
@@ -256,14 +392,42 @@ class JSINSPECTOR_EXPORT HostTarget
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
   std::unique_ptr<HostCommandSender> commandSender_;
+  std::unique_ptr<PerfMonitorUpdateHandler> perfMonitorUpdateHandler_;
+  std::unique_ptr<HostRuntimeBinding> perfMetricsBinding_;
 
-  inline HostTargetDelegate& getDelegate() {
+#pragma region Tracing
+  /**
+   * Current pending trace recording, which encapsulates the configuration of
+   * the tracing session and the state.
+   *
+   * Should only be allocated when there is an active tracing session.
+   */
+  std::unique_ptr<HostTargetTraceRecording> traceRecording_{nullptr};
+  /**
+   * Protects the state inside traceRecording_.
+   *
+   * Calls to tracing subsystem could happen from different threads, depending on the mode (Background or CDP) and
+   * the method: the Host could report frame timings from any arbitrary thread.
+   */
+  std::mutex tracingMutex_;
+#pragma endregion
+
+  inline HostTargetDelegate &getDelegate()
+  {
     return delegate_;
   }
 
-  inline bool hasInstance() const {
+  inline bool hasInstance() const
+  {
     return currentInstance_ != nullptr;
   }
+
+  /**
+   * [Experimental] Install a runtime binding subscribing to new Peformance
+   * Issues, which we broadcast to the V2 Perf Monitor overlay via
+   * \ref HostTargetDelegate::unstable_onPerfMonitorUpdate.
+   */
+  void installPerfIssuesBinding();
 
   // Necessary to allow HostAgent to access HostTarget's internals in a
   // controlled way (i.e. only HostTargetController gets friend access, while
@@ -271,6 +435,6 @@ class JSINSPECTOR_EXPORT HostTarget
   friend class HostTargetController;
 };
 
-folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata);
+folly::dynamic createHostMetadataPayload(const HostTargetMetadata &metadata);
 
 } // namespace facebook::react::jsinspector_modern

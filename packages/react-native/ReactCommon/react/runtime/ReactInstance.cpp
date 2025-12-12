@@ -15,12 +15,13 @@
 #include <cxxreact/TraceSection.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
+#include <jsi/hermes-interfaces.h>
 #include <jsi/instrumentation.h>
 #include <jsinspector-modern/HostTarget.h>
-#include <jsireact/JSIExecutor.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/runtime/JSRuntimeBindings.h>
 #include <react/timing/primitives.h>
 #include <react/utils/jsi-utils.h>
 #include <iostream>
@@ -45,6 +46,12 @@ std::shared_ptr<RuntimeScheduler> createRuntimeScheduler(
       PerformanceEntryReporter::getInstance().get());
 
   return scheduler;
+}
+
+std::string getSyntheticBundlePath(uint32_t bundleId) {
+  std::array<char, 32> buffer{};
+  std::snprintf(buffer.data(), buffer.size(), "seg-%u.js", bundleId);
+  return buffer.data();
 }
 
 } // namespace
@@ -88,7 +95,7 @@ ReactInstance::ReactInstance(
               jsErrorHandler->handleError(jsiRuntime, originalError, true);
             } catch (std::exception& ex) {
               jsi::JSError error(
-                  jsiRuntime, std::string("Non-js exception: ") + ex.what());
+                  jsiRuntime, std::string("Non-JS exception: ") + ex.what());
               jsErrorHandler->handleError(jsiRuntime, error, true);
             }
           });
@@ -155,6 +162,11 @@ ReactInstance::ReactInstance(
         runtimeScheduler->scheduleWork(std::move(callback));
       });
 }
+ReactInstance::~ReactInstance() noexcept {
+  if (timerManager_ != nullptr) {
+    timerManager_->quit();
+  }
+}
 
 void ReactInstance::unregisterFromInspector() {
   if (inspectorTarget_ != nullptr) {
@@ -177,8 +189,8 @@ RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
 
 // This BufferedRuntimeExecutor ensures that the main JS bundle finished
 // execution before any JS queued into it from C++ are executed. Use
-// getUnbufferedRuntimeExecutor() instead if you do not need the main JS bundle
-// to have finished. e.g. setting global variables into JS runtime.
+// getUnbufferedRuntimeExecutor() instead if you do not need the main JS
+// bundle to have finished. e.g. setting global variables into JS runtime.
 RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
   return [weakBufferedRuntimeExecutor_ =
               std::weak_ptr<BufferedRuntimeExecutor>(bufferedRuntimeExecutor_)](
@@ -212,15 +224,15 @@ std::string simpleBasename(const std::string& path) {
  * Load the JS bundle and flush buffered JS calls, future JS calls won't be
  * buffered after calling this.
  * Note that this method is asynchronous. However, a completion callback
- * isn't needed because all calls into JS should be dispatched to the JSThread,
- * preferably via the runtimeExecutor_.
+ * isn't needed because all calls into JS should be dispatched to the
+ * JSThread, preferably via the runtimeExecutor_.
  */
 void ReactInstance::loadScript(
     std::unique_ptr<const JSBigString> script,
     const std::string& sourceURL,
     std::function<void(jsi::Runtime& runtime)>&& beforeLoad,
     std::function<void(jsi::Runtime& runtime)>&& afterLoad) {
-  auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
+  std::shared_ptr<const jsi::Buffer> buffer(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
   runtimeScheduler_->scheduleWork([this,
@@ -231,7 +243,7 @@ void ReactInstance::loadScript(
                                        std::weak_ptr<BufferedRuntimeExecutor>(
                                            bufferedRuntimeExecutor_),
                                    beforeLoad,
-                                   afterLoad](jsi::Runtime& runtime) {
+                                   afterLoad](jsi::Runtime& runtime) mutable {
     if (beforeLoad) {
       beforeLoad(runtime);
     }
@@ -240,9 +252,21 @@ void ReactInstance::loadScript(
     if (hasLogger) {
       ReactMarker::logTaggedMarkerBridgeless(
           ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
+      ReactMarker::logMarkerBridgeless(ReactMarker::INIT_REACT_RUNTIME_START);
+      ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_START);
     }
 
-    runtime.evaluateJavaScript(buffer, sourceURL);
+    // Check if the shermes unit is avaliable.
+    auto* shUnitAPI = jsi::castInterface<hermes::IHermesSHUnit>(&runtime);
+    auto* shUnitCreator = shUnitAPI ? shUnitAPI->getSHUnitCreator() : nullptr;
+    if (shUnitCreator) {
+      LOG(WARNING) << "ReactInstance: evaluateSHUnit";
+      auto* hermesAPI = jsi::castInterface<hermes::IHermes>(&runtime);
+      hermesAPI->evaluateSHUnit(shUnitCreator);
+    } else {
+      LOG(WARNING) << "ReactInstance: evaluateJavaScript() with JS bundle";
+      runtime.evaluateJavaScript(buffer, sourceURL);
+    }
 
     /**
      * TODO(T183610671): We need a safe/reliable way to enable the js
@@ -344,7 +368,6 @@ void ReactInstance::registerSegment(
       throw std::invalid_argument(
           "Empty segment registered with ID " + tag + " from " + segmentPath);
     }
-    auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
 
     bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl != nullptr);
     if (hasLogger) {
@@ -354,7 +377,7 @@ void ReactInstance::registerSegment(
     LOG(WARNING) << "Starting to evaluate segment " << segmentId
                  << " in ReactInstance::registerSegment";
     runtime.evaluateJavaScript(
-        buffer, JSExecutor::getSyntheticBundlePath(segmentId, segmentPath));
+        std::move(script), getSyntheticBundlePath(segmentId));
     LOG(WARNING) << "Finished evaluating segment " << segmentId
                  << " in ReactInstance::registerSegment";
     if (hasLogger) {

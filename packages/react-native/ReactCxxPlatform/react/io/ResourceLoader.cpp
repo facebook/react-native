@@ -6,9 +6,9 @@
  */
 
 #include "ResourceLoader.h"
+
+#include <cxxreact/JSBigString.h>
 #include <glog/logging.h>
-#include <fstream>
-#include <sstream>
 
 namespace facebook::react {
 /* static */ bool ResourceLoader::isAbsolutePath(const std::string& path) {
@@ -32,19 +32,13 @@ namespace facebook::react {
   return isResourceFile(path);
 }
 
-/* static */ std::string ResourceLoader::getFileContents(
+/* static */ std::unique_ptr<const JSBigString> ResourceLoader::getFileContents(
     const std::string& path) {
-  if (isAbsolutePath(path)) {
-    std::ifstream file(path, std::ios::binary);
-    if (!file.good()) {
-      return getResourceFileContents(path);
-    }
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
+  if (isResourceFile(path)) {
+    return getResourceFileContents(path);
+  } else {
+    return JSBigFileString::fromPath(path);
   }
-
-  return getResourceFileContents(path);
 }
 
 /* static */ std::filesystem::path ResourceLoader::getCacheDirectory(

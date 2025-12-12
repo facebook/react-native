@@ -98,7 +98,8 @@ public class JavaOnlyMap() : ReadableMap, WritableMap {
       value is Dynamic -> value.type
       else -> {
         throw IllegalArgumentException(
-            "Invalid value $value for key $name contained in JavaOnlyMap")
+            "Invalid value $value for key $name contained in JavaOnlyMap"
+        )
       }
     }
   }

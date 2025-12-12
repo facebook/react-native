@@ -7,6 +7,8 @@
 
 #import "RCTModalManager.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 @interface RCTModalManager ()
 
 @property BOOL shouldEmit;
@@ -40,3 +42,5 @@ RCT_EXPORT_MODULE();
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

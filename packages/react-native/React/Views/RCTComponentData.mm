@@ -50,7 +50,7 @@ static SEL selectorForType(NSString *type)
                               bridge:(RCTBridge *)bridge
                      eventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _bridge = bridge;
     _eventDispatcher = eventDispatcher;
     _managerClass = managerClass;
@@ -71,12 +71,12 @@ static SEL selectorForType(NSString *type)
 
 - (RCTViewManager *)manager
 {
-  if (!_manager && [self isBridgeMode]) {
+  if ((_manager == nullptr) && [self isBridgeMode]) {
     _manager = [_bridge moduleForClass:_managerClass];
-  } else if (!_manager && !_bridgelessViewManager) {
+  } else if ((_manager == nullptr) && (_bridgelessViewManager == nullptr)) {
     _bridgelessViewManager = [_bridge moduleForClass:_managerClass];
   }
-  return _manager ? _manager : _bridgelessViewManager;
+  return (_manager != nullptr) ? _manager : _bridgelessViewManager;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -106,7 +106,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   json = RCTNilIfNull(json);
   if (!isShadowView) {
-    if (!json && !_defaultView) {
+    if ((json == nullptr) && (_defaultView == nullptr)) {
       // Only create default view if json is null
       _defaultView = [self createViewWithTag:nil rootTag:nil];
     }
@@ -130,11 +130,11 @@ static RCTPropBlock createEventSetter(
       eventHandler = ^(NSDictionary *event) {
         // The component no longer exists, we shouldn't send the event
         id<RCTComponent> strongTarget = weakTarget;
-        if (!strongTarget) {
+        if (strongTarget == nullptr) {
           return;
         }
 
-        if (eventInterceptor) {
+        if (eventInterceptor != nullptr) {
           eventInterceptor(propName, event, strongTarget.reactTag);
         } else {
           RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
@@ -158,13 +158,13 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   __block NSMutableData *defaultValue = nil;
 
   return ^(id target, id json) {
-    if (!target) {
+    if (target == nullptr) {
       return;
     }
 
     // Get default value
-    if (!defaultValue) {
-      if (!json) {
+    if (defaultValue == nullptr) {
+      if (json == nullptr) {
         // We only set the defaultValue when we first pass a non-null
         // value, so if the first value sent for a prop is null, it's
         // a no-op (we'd be resetting it to its default when its
@@ -186,10 +186,10 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     // Get value
     BOOL freeValueOnCompletion = NO;
     void *value = defaultValue.mutableBytes;
-    if (json) {
+    if (json != nullptr) {
       freeValueOnCompletion = YES;
       value = malloc(typeSignature.methodReturnLength);
-      if (!value) {
+      if (value == nullptr) {
         // CWE - 391 : Unchecked error condition
         // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
         // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
@@ -201,7 +201,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     }
 
     // Set value
-    if (!targetInvocation) {
+    if (targetInvocation == nullptr) {
       NSMethodSignature *signature = [target methodSignatureForSelector:setter];
       targetInvocation = [NSInvocation invocationWithMethodSignature:signature];
       targetInvocation.selector = setter;
@@ -252,7 +252,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     // Disect keypath
     NSString *key = name;
     NSArray<NSString *> *parts = [keyPath componentsSeparatedByString:@"."];
-    if (parts) {
+    if (parts != nullptr) {
       key = parts.lastObject;
       parts = [parts subarrayWithRange:(NSRange){0, parts.count - 1}];
     }
@@ -275,7 +275,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     } else {
       // Ordinary property handlers
       NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
-      if (!typeSignature) {
+      if (typeSignature == nullptr) {
         RCTLogError(@"No +[RCTConvert %@] function found.", NSStringFromSelector(type));
         return ^(__unused id<RCTComponent> view, __unused id json) {
         };
@@ -347,7 +347,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 {
   RCTPropBlockDictionary *propBlocks = isShadowView ? _shadowPropBlocks : _viewPropBlocks;
   RCTPropBlock propBlock = propBlocks[name];
-  if (!propBlock) {
+  if (propBlock == nullptr) {
     propBlock = [self createPropBlock:name isShadowView:isShadowView];
 
 #if RCT_DEBUG
@@ -381,7 +381,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view isShadowView:(BOOL)isShadowView
 {
-  if (!view) {
+  if (view == nullptr) {
     return;
   }
 
@@ -467,13 +467,13 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
     // We need to handle both propConfig_* and propConfigShadow_* methods
     const char *underscorePos = strchr(selectorName + strlen("propConfig"), '_');
-    if (!underscorePos) {
+    if (underscorePos == nullptr) {
       continue;
     }
 
     NSString *name = @(underscorePos + 1);
     NSString *type = ((NSArray<NSString *> * (*)(id, SEL)) objc_msgSend)(managerClass, selector)[0];
-    if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
+    if (RCT_DEBUG && (propTypes[name] != nullptr) && ![propTypes[name] isEqualToString:type]) {
       RCTLogError(
           @"Property '%@' of component '%@' redefined from '%@' "
            "to '%@'",

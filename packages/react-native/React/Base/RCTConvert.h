@@ -177,9 +177,14 @@ typedef NSArray UIColorArray __deprecated_msg("Use NSArray<UIColor *>");
 /**
  * Underlying implementations of RCT_XXX_CONVERTER macros. Ignore these.
  */
-RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
-RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNumber *, id);
-RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
+RCT_EXTERN NSNumber *
+RCTConvertEnumValue(const char * /*typeName*/, NSDictionary * /*mapping*/, NSNumber * /*defaultValue*/, id /*json*/);
+RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(
+    const char * /*typeName*/,
+    NSDictionary * /*mapping*/,
+    NSNumber * /*defaultValue*/,
+    id /*json*/);
+RCT_EXTERN NSArray *RCTConvertArrayValue(SEL /*type*/, id /*json*/);
 
 /**
  * This macro is used for logging conversion errors. This is just used to

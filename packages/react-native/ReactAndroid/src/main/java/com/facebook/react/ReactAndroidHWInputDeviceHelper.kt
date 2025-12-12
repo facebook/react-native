@@ -14,7 +14,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 
 /** Responsible for dispatching events specific for hardware inputs. */
-internal class ReactAndroidHWInputDeviceHelper() {
+internal class ReactAndroidHWInputDeviceHelper {
   /**
    * We keep a reference to the last focused view id so that we can send it as a target for key
    * events and be able to send a blur event when focus changes.
@@ -25,8 +25,10 @@ internal class ReactAndroidHWInputDeviceHelper() {
   fun handleKeyEvent(ev: KeyEvent, context: ReactContext) {
     val eventKeyCode = ev.keyCode
     val eventKeyAction = ev.action
-    if ((eventKeyAction == KeyEvent.ACTION_UP || eventKeyAction == KeyEvent.ACTION_DOWN) &&
-        KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)) {
+    if (
+        (eventKeyAction == KeyEvent.ACTION_UP || eventKeyAction == KeyEvent.ACTION_DOWN) &&
+            KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)
+    ) {
       dispatchEvent(context, KEY_EVENTS_ACTIONS[eventKeyCode], lastFocusedViewId, eventKeyAction)
     }
   }

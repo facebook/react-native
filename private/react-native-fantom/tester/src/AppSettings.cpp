@@ -16,6 +16,7 @@ static constexpr int DEFAULT_WINDOW_HEIGHT = 720;
 DEFINE_uint32(windowWidth, DEFAULT_WINDOW_WIDTH, "Application window width");
 DEFINE_uint32(windowHeight, DEFAULT_WINDOW_HEIGHT, "Application window height");
 DEFINE_string(bundlePath, "", "Default path to the application's bundle");
+DEFINE_uint32(inspectorPort, 0, "React Native inspector port");
 DEFINE_string(
     featureFlags,
     "",
@@ -30,6 +31,7 @@ namespace facebook::react {
 unsigned int AppSettings::windowWidth{DEFAULT_WINDOW_WIDTH};
 unsigned int AppSettings::windowHeight{DEFAULT_WINDOW_HEIGHT};
 std::string AppSettings::defaultBundlePath{};
+std::optional<uint32_t> AppSettings::inspectorPort{};
 std::optional<folly::dynamic> AppSettings::dynamicFeatureFlags;
 int AppSettings::minLogLevel{google::GLOG_INFO};
 
@@ -46,12 +48,19 @@ void AppSettings::init(int argc, char** argv) {
 void AppSettings::initInternal() {
   windowWidth = FLAGS_windowWidth;
   windowHeight = FLAGS_windowHeight;
+
   if (!FLAGS_featureFlags.empty()) {
     dynamicFeatureFlags = folly::parseJson(FLAGS_featureFlags);
   }
+
   if (!FLAGS_bundlePath.empty()) {
     defaultBundlePath = FLAGS_bundlePath;
   }
+
+  if (FLAGS_inspectorPort != 0) {
+    inspectorPort = FLAGS_inspectorPort;
+  }
+
   if (!FLAGS_minLogLevel.empty()) {
     if (FLAGS_minLogLevel == "info") {
       minLogLevel = google::GLOG_INFO;

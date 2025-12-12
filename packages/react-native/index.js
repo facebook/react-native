@@ -66,6 +66,12 @@ module.exports = {
   get Modal() {
     return require('./Libraries/Modal/Modal').default;
   },
+  get unstable_NativeText() {
+    return require('./Libraries/Text/TextNativeComponent').NativeText;
+  },
+  get unstable_NativeView() {
+    return require('./Libraries/Components/View/ViewNativeComponent').default;
+  },
   get Pressable() {
     return require('./Libraries/Components/Pressable/Pressable').default;
   },
@@ -224,6 +230,12 @@ module.exports = {
    * @deprecated
    */
   get InteractionManager() {
+    warnOnce(
+      'interaction-manager-deprecated',
+      'InteractionManager has been deprecated and will be removed in a ' +
+        'future release. Please refactor long tasks into smaller ones, and ' +
+        " use 'requestIdleCallback' instead.",
+    );
     return require('./Libraries/Interaction/InteractionManager').default;
   },
   get Keyboard() {
@@ -240,6 +252,9 @@ module.exports = {
   },
   get NativeAppEventEmitter() {
     return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter').default;
+  },
+  get NativeComponentRegistry() {
+    return require('./Libraries/NativeComponent/NativeComponentRegistry');
   },
   get NativeDialogManagerAndroid() {
     return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
@@ -325,6 +340,9 @@ module.exports = {
   },
   get useColorScheme() {
     return require('./Libraries/Utilities/useColorScheme').default;
+  },
+  get usePressability() {
+    return require('./Libraries/Pressability/usePressability').default;
   },
   get useWindowDimensions() {
     return require('./Libraries/Utilities/useWindowDimensions').default;

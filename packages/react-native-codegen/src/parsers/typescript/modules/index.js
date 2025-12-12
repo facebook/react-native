@@ -34,6 +34,7 @@ const {
 const {parseObjectProperty} = require('../../parsers-commons');
 const {
   emitArrayType,
+  emitBooleanLiteral,
   emitCommonTypes,
   emitDictionary,
   emitFunction,
@@ -103,7 +104,7 @@ function translateObjectTypeAnnotation(
 
   return typeAliasResolution(
     typeResolutionStatus,
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     objectTypeAnnotation,
     aliasMap,
@@ -398,7 +399,18 @@ function translateTypeAnnotation(
       );
     }
     case 'TSUnionType': {
-      return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
+      return emitUnion(
+        nullable,
+        hasteModuleName,
+        typeAnnotation,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        translateTypeAnnotation,
+        parser,
+      );
     }
     case 'TSLiteralType': {
       const literal = typeAnnotation.literal;
@@ -408,6 +420,9 @@ function translateTypeAnnotation(
         }
         case 'NumericLiteral': {
           return emitNumberLiteral(nullable, literal.value);
+        }
+        case 'BooleanLiteral': {
+          return emitBooleanLiteral(nullable, literal.value);
         }
         default: {
           throw new UnsupportedTypeAnnotationParserError(

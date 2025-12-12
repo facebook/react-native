@@ -36,7 +36,10 @@ package com.facebook.react.uimanager.annotations
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(
-    AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER,
+)
 public annotation class ReactProp(
     /**
      * Name of the property exposed to JS that will be updated using setter method annotated with
@@ -83,7 +86,7 @@ public annotation class ReactProp(
      * method annotated with [ReactProp] if property with a given name gets removed from the
      * component description in JS
      */
-    public val defaultBoolean: Boolean = false
+    public val defaultBoolean: Boolean = false,
 ) {
   public companion object {
     // Used as a default value for "customType" property as "null" is not allowed. Moreover, when

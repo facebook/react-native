@@ -28,7 +28,7 @@ internal class ProcessedColorStop(var color: Int? = null, val position: Float? =
 internal object ColorStopUtils {
   fun getFixedColorStops(
       colorStops: List<ColorStop>,
-      gradientLineLength: Float
+      gradientLineLength: Float,
   ): List<ProcessedColorStop> {
     val fixedColorStops = Array<ProcessedColorStop>(colorStops.size) { ProcessedColorStop() }
     var hasNullPositions = false
@@ -81,7 +81,9 @@ internal object ColorStopUtils {
           for (j in 1..unpositionedStops) {
             fixedColorStops[lastDefinedIndex + j] =
                 ProcessedColorStop(
-                    colorStops[lastDefinedIndex + j].color, startPosition + increment * j)
+                    colorStops[lastDefinedIndex + j].color,
+                    startPosition + increment * j,
+                )
           }
           lastDefinedIndex = i
         }
@@ -190,7 +192,7 @@ internal object ColorStopUtils {
 
   private fun resolveColorStopPosition(
       position: LengthPercentage?,
-      gradientLineLength: Float
+      gradientLineLength: Float,
   ): Float? {
     if (position == null) {
       return null

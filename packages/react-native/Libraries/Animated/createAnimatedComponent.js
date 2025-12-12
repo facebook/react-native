@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {NativeColorValue} from '../StyleSheet/StyleSheetTypes';
 import type AnimatedAddition from './nodes/AnimatedAddition';
 import type AnimatedDiffClamp from './nodes/AnimatedDiffClamp';
 import type AnimatedDivision from './nodes/AnimatedDivision';
@@ -46,6 +47,7 @@ export type WithAnimatedValue<+T> = T extends Builtin | Nullable
         | AnimatedInterpolation<number | string>
         | AnimatedInterpolation<number>
         | AnimatedInterpolation<string>
+        | AnimatedInterpolation<NativeColorValue>
     : T extends $ReadOnlyArray<infer P>
       ? $ReadOnlyArray<WithAnimatedValue<P>>
       : T extends {...}
@@ -63,17 +65,29 @@ type PassThroughProps = $ReadOnly<{
   passthroughAnimatedPropExplicitValues?: ViewProps | null,
 }>;
 
-export type AnimatedProps<Props: {...}> = {
-  [K in keyof Props]: K extends NonAnimatedProps
-    ? Props[K]
-    : WithAnimatedValue<Props[K]>,
-} & PassThroughProps;
+type LooseOmit<O: interface {}, K: $Keys<$FlowFixMe>> = Pick<
+  O,
+  Exclude<$Keys<O>, K>,
+>;
 
-export type AnimatedBaseProps<Props: {...}> = {
-  [K in keyof Props]: K extends NonAnimatedProps
-    ? Props[K]
-    : WithAnimatedValue<Props[K]>,
-};
+export type AnimatedProps<Props: {...}> = LooseOmit<
+  {
+    [K in keyof Props]: K extends NonAnimatedProps
+      ? Props[K]
+      : WithAnimatedValue<Props[K]>,
+  },
+  'ref',
+> &
+  PassThroughProps;
+
+export type AnimatedBaseProps<Props: {...}> = LooseOmit<
+  {
+    [K in keyof Props]: K extends NonAnimatedProps
+      ? Props[K]
+      : WithAnimatedValue<Props[K]>,
+  },
+  'ref',
+>;
 
 export type AnimatedComponentType<Props: {...}, +Instance = mixed> = component(
   ref?: React.RefSetter<Instance>,
@@ -85,7 +99,7 @@ export default function createAnimatedComponent<
 >(
   Component: TInstance,
 ): AnimatedComponentType<
-  $ReadOnly<React.ElementProps<TInstance>>,
+  $ReadOnly<React.ElementConfig<TInstance>>,
   React.ElementRef<TInstance>,
 > {
   return unstable_createAnimatedComponentWithAllowlist(Component, null);
@@ -113,6 +127,7 @@ export function unstable_createAnimatedComponentWithAllowlist<
     const [reducedProps, callbackRef] = useAnimatedProps<
       TProps,
       React.ElementRef<TInstance>,
+      // $FlowFixMe[incompatible-type]
     >(props);
     const ref = useMergeRefs<React.ElementRef<TInstance>>(
       callbackRef,

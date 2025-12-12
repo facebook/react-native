@@ -71,12 +71,14 @@ RCT_EXPORT_MODULE()
 {
   [_callableJSModules invokeModule:@"RCTNativeAppEventEmitter"
                             method:@"emit"
-                          withArgs:body ? @[ name, body ] : @[ name ]];
+                          withArgs:(body != nullptr) ? @[ name, body ] : @[ name ]];
 }
 
 - (void)sendDeviceEventWithName:(NSString *)name body:(id)body
 {
-  [_callableJSModules invokeModule:@"RCTDeviceEventEmitter" method:@"emit" withArgs:body ? @[ name, body ] : @[ name ]];
+  [_callableJSModules invokeModule:@"RCTDeviceEventEmitter"
+                            method:@"emit"
+                          withArgs:(body != nullptr) ? @[ name, body ] : @[ name ]];
 }
 
 - (void)sendTextEventWithType:(RCTTextEventType)type
@@ -91,13 +93,13 @@ RCT_EXPORT_MODULE()
     @"eventCount" : @(eventCount),
   }];
 
-  if (text) {
+  if (text != nullptr) {
     // We copy the string here because if it's a mutable string it may get released before we dispatch the event on a
     // different thread, causing a crash.
     body[@"text"] = [text copy];
   }
 
-  if (key) {
+  if (key != nullptr) {
     if (key.length == 0) {
       key = @"Backspace"; // backspace
     } else {
@@ -142,7 +144,7 @@ RCT_EXPORT_MODULE()
   if (event.canCoalesce) {
     eventID = RCTGetEventID(event.viewTag, event.eventName, event.coalescingKey);
     id<RCTEvent> previousEvent = _events[eventID];
-    if (previousEvent) {
+    if (previousEvent != nullptr) {
       event = [previousEvent coalesceWithEvent:event];
     } else {
       [_eventQueue addObject:eventID];
@@ -173,13 +175,13 @@ RCT_EXPORT_MODULE()
   [_eventQueueLock unlock];
 
   if (scheduleEventsDispatch) {
-    if (_bridge) {
+    if (_bridge != nullptr) {
       [_bridge
           dispatchBlock:^{
             [self flushEventsQueue];
           }
                   queue:RCTJSThread];
-    } else if (_dispatchToJSThread) {
+    } else if (_dispatchToJSThread != nullptr) {
       _dispatchToJSThread(^{
         [self flushEventsQueue];
       });
@@ -236,7 +238,7 @@ RCT_EXPORT_MODULE()
 {
   NSDictionary *userInfo = notification.userInfo;
   id<RCTEvent> event = [userInfo objectForKey:@"event"];
-  if (event) {
+  if (event != nullptr) {
     [self notifyObserversOfEvent:event];
   }
 }

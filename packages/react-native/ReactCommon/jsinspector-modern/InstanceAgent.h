@@ -15,6 +15,7 @@
 #include <jsinspector-modern/RuntimeAgent.h>
 #include <jsinspector-modern/cdp/CdpJson.h>
 #include <jsinspector-modern/tracing/InstanceTracingProfile.h>
+#include <jsinspector-modern/tracing/TargetTracingAgent.h>
 
 #include <functional>
 
@@ -34,17 +35,14 @@ class InstanceAgent final {
    * object.
    * \param sessionState The state of the session that created this agent.
    */
-  explicit InstanceAgent(
-      FrontendChannel frontendChannel,
-      InstanceTarget& target,
-      SessionState& sessionState);
+  explicit InstanceAgent(FrontendChannel frontendChannel, InstanceTarget &target, SessionState &sessionState);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
    * \c FrontendChannel synchronously or asynchronously.
    * \param req The parsed request.
    */
-  bool handleRequest(const cdp::PreparsedRequest& req);
+  bool handleRequest(const cdp::PreparsedRequest &req);
 
   /**
    * Replace the current RuntimeAgent hostAgent_ with a new one
@@ -52,29 +50,12 @@ class InstanceAgent final {
    * \param runtime The new runtime target. May be nullptr to indicate
    * there's no current debuggable runtime.
    */
-  void setCurrentRuntime(RuntimeTarget* runtime);
+  void setCurrentRuntime(RuntimeTarget *runtime);
 
   /**
    * Send a console message to the frontend, or buffer it to be sent later.
    */
   void sendConsoleMessage(SimpleConsoleMessage message);
-
-  /**
-   * Notify Instance about started Tracing session. Should be initiated by
-   * TracingAgent on Tracing.start CDP method.
-   */
-  void startTracing();
-
-  /**
-   * Notify Instance about stopped Tracing session. Should be initiated by
-   * TracingAgent on Tracing.end CDP method.
-   */
-  void stopTracing();
-
-  /**
-   * Return recorded profile for the previous tracing session.
-   */
-  tracing::InstanceTracingProfile collectTracingProfile();
 
  private:
   void maybeSendExecutionContextCreatedNotification();
@@ -82,9 +63,32 @@ class InstanceAgent final {
   void maybeSendPendingConsoleMessages();
 
   FrontendChannel frontendChannel_;
-  InstanceTarget& target_;
+  InstanceTarget &target_;
   std::shared_ptr<RuntimeAgent> runtimeAgent_;
-  SessionState& sessionState_;
+  SessionState &sessionState_;
+};
+
+#pragma mark - Tracing
+
+/**
+ * An Agent that handles Tracing events for a particular InstanceTarget.
+ *
+ * Lifetime of this agent is bound to the lifetime of the Tracing session -
+ * HostTargetTraceRecording and to the lifetime of the InstanceTarget.
+ */
+class InstanceTracingAgent : tracing::TargetTracingAgent {
+ public:
+  explicit InstanceTracingAgent(tracing::TraceRecordingState &state);
+
+  ~InstanceTracingAgent();
+
+  /**
+   * Registers the RuntimeTarget with this tracing agent.
+   */
+  void setTracedRuntime(RuntimeTarget *runtimeTarget);
+
+ private:
+  std::shared_ptr<RuntimeTracingAgent> runtimeTracingAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern

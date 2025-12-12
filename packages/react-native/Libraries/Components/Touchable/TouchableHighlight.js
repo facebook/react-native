@@ -328,7 +328,7 @@ class TouchableHighlightImpl extends React.Component<
     const accessibilityLiveRegion =
       this.props['aria-live'] === 'off'
         ? 'none'
-        : this.props['aria-live'] ?? this.props.accessibilityLiveRegion;
+        : (this.props['aria-live'] ?? this.props.accessibilityLiveRegion);
 
     const accessibilityLabel =
       this.props['aria-label'] ?? this.props.accessibilityLabel;

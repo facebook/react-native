@@ -17,17 +17,15 @@ namespace facebook::react {
  */
 class StubErrorUtils : public jsi::HostObject {
  public:
-  static std::shared_ptr<StubErrorUtils> createAndInstallIfNeeded(
-      jsi::Runtime& runtime) {
+  static std::shared_ptr<StubErrorUtils> createAndInstallIfNeeded(jsi::Runtime &runtime)
+  {
     auto errorUtilsModuleName = "ErrorUtils";
-    auto errorUtilsValue =
-        runtime.global().getProperty(runtime, errorUtilsModuleName);
+    auto errorUtilsValue = runtime.global().getProperty(runtime, errorUtilsModuleName);
 
     if (errorUtilsValue.isUndefined()) {
       auto stubErrorUtils = std::make_shared<StubErrorUtils>();
       auto object = jsi::Object::createFromHostObject(runtime, stubErrorUtils);
-      runtime.global().setProperty(
-          runtime, errorUtilsModuleName, std::move(object));
+      runtime.global().setProperty(runtime, errorUtilsModuleName, std::move(object));
       return stubErrorUtils;
     }
 
@@ -38,7 +36,8 @@ class StubErrorUtils : public jsi::HostObject {
   /*
    * `jsi::HostObject` specific overloads.
    */
-  jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override {
+  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override
+  {
     auto propertyName = name.utf8(runtime);
 
     if (propertyName == "reportFatalError") {
@@ -47,10 +46,7 @@ class StubErrorUtils : public jsi::HostObject {
           name,
           1,
           [this](
-              jsi::Runtime& runtime,
-              const jsi::Value&,
-              const jsi::Value* arguments,
-              size_t) noexcept -> jsi::Value {
+              jsi::Runtime &runtime, const jsi::Value &, const jsi::Value *arguments, size_t) noexcept -> jsi::Value {
             reportFatalCallCount_++;
             return jsi::Value::undefined();
           });
@@ -59,7 +55,8 @@ class StubErrorUtils : public jsi::HostObject {
     return jsi::Value::undefined();
   }
 
-  int getReportFatalCallCount() const {
+  int getReportFatalCallCount() const
+  {
     return reportFatalCallCount_;
   }
 

@@ -28,27 +28,25 @@ struct CSSDataTypeParser {};
  * concrete representation.
  */
 template <typename T, typename ReturnT = std::any>
-concept CSSFunctionBlockSink =
-    requires(const CSSFunctionBlock& func, CSSSyntaxParser& parser) {
-      { T::consumeFunctionBlock(func, parser) } -> std::convertible_to<ReturnT>;
-    };
+concept CSSFunctionBlockSink = requires(const CSSFunctionBlock &func, CSSSyntaxParser &parser) {
+  { T::consumeFunctionBlock(func, parser) } -> std::convertible_to<ReturnT>;
+};
 
 /**
  * Accepts a CSS simple block and may parse it (and future syntax) into a
  * concrete representation.
  */
 template <typename T, typename ReturnT = std::any>
-concept CSSSimpleBlockSink =
-    requires(const CSSSimpleBlock& block, CSSSyntaxParser& parser) {
-      { T::consumeSimpleBlock(block, parser) } -> std::convertible_to<ReturnT>;
-    };
+concept CSSSimpleBlockSink = requires(const CSSSimpleBlock &block, CSSSyntaxParser &parser) {
+  { T::consumeSimpleBlock(block, parser) } -> std::convertible_to<ReturnT>;
+};
 
 /**
  * Accepts a CSS preserved token and may parse it (and future syntax) into a
  * concrete representation.
  */
 template <typename T, typename ReturnT = std::any>
-concept CSSPreservedTokenSink = requires(const CSSPreservedToken& token) {
+concept CSSPreservedTokenSink = requires(const CSSPreservedToken &token) {
   { T::consumePreservedToken(token) } -> std::convertible_to<ReturnT>;
 };
 
@@ -56,7 +54,7 @@ concept CSSPreservedTokenSink = requires(const CSSPreservedToken& token) {
  * Accepts a raw syntax parser, to be able to parse compounded values
  */
 template <typename T, typename ReturnT = std::any>
-concept CSSParserSink = requires(CSSSyntaxParser& parser) {
+concept CSSParserSink = requires(CSSSyntaxParser &parser) {
   { T::consume(parser) } -> std::convertible_to<ReturnT>;
 };
 
@@ -65,8 +63,7 @@ concept CSSParserSink = requires(CSSSyntaxParser& parser) {
  */
 template <typename T, typename ReturnT = std::any>
 concept CSSValidDataTypeParser =
-    ((CSSFunctionBlockSink<T, ReturnT> || CSSSimpleBlockSink<T, ReturnT> ||
-      CSSPreservedTokenSink<T, ReturnT>) &&
+    ((CSSFunctionBlockSink<T, ReturnT> || CSSSimpleBlockSink<T, ReturnT> || CSSPreservedTokenSink<T, ReturnT>) &&
      !CSSParserSink<T, ReturnT>) ||
     CSSParserSink<T, ReturnT>;
 
@@ -74,8 +71,6 @@ concept CSSValidDataTypeParser =
  * Concrete representation for a CSS data type
  */
 template <typename T>
-concept CSSDataType =
-    CSSValidDataTypeParser<CSSDataTypeParser<T>, std::optional<T>> &&
-    std::equality_comparable<T>;
+concept CSSDataType = CSSValidDataTypeParser<CSSDataTypeParser<T>, std::optional<T>> && std::equality_comparable<T>;
 
 } // namespace facebook::react

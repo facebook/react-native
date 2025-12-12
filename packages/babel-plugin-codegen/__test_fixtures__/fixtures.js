@@ -59,6 +59,92 @@ export default codegenNativeComponent<ModuleProps>('Module', {
 });
 `;
 
+// Coverage instrumentation test cases - should be recognized as valid
+const COMMANDS_WITH_SIMPLE_COVERAGE = `
+// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponentType} from 'codegenNativeComponent';
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+|}>;
+
+type NativeType = NativeComponentType<ModuleProps>;
+
+interface NativeCommands {
+  +pause: (viewRef: React.ElementRef<NativeType>) => void;
+  +play: (viewRef: React.ElementRef<NativeType>) => void;
+}
+
+export const Commands = (cov_1234567890.s[0]++, codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['pause', 'play'],
+}));
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
+
+const COMMANDS_WITH_COMPLEX_COVERAGE = `
+// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponentType} from 'codegenNativeComponent';
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+|}>;
+
+type NativeType = NativeComponentType<ModuleProps>;
+
+interface NativeCommands {
+  +seek: (viewRef: React.ElementRef<NativeType>, position: number) => void;
+  +stop: (viewRef: React.ElementRef<NativeType>) => void;
+}
+
+export const Commands = (
+  cov_abcdef123().f[2]++,
+  cov_abcdef123().s[5]++,
+  codegenNativeCommands<NativeCommands>({
+    supportedCommands: ['seek', 'stop'],
+  })
+);
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
+
+const COMMANDS_WITH_TYPE_CAST_COVERAGE = `
+// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponentType} from 'codegenNativeComponent';
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+|}>;
+
+type NativeType = NativeComponentType<ModuleProps>;
+
+interface NativeCommands {
+  +mute: (viewRef: React.ElementRef<NativeType>) => void;
+  +unmute: (viewRef: React.ElementRef<NativeType>) => void;
+}
+
+export const Commands: NativeCommands = (cov_xyz789().s[1]++, codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['mute', 'unmute'],
+}));
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
+
 const FULL_NATIVE_COMPONENT_WITH_TYPE_EXPORT = `
 // @flow
 
@@ -107,4 +193,9 @@ module.exports = {
   'NotANativeComponent.js': NOT_A_NATIVE_COMPONENT,
   'FullNativeComponent.js': FULL_NATIVE_COMPONENT,
   'FullTypedNativeComponent.js': FULL_NATIVE_COMPONENT_WITH_TYPE_EXPORT,
+  'CommandsWithSimpleCoverageNativeComponent.js': COMMANDS_WITH_SIMPLE_COVERAGE,
+  'CommandsWithComplexCoverageNativeComponent.js':
+    COMMANDS_WITH_COMPLEX_COVERAGE,
+  'CommandsWithTypeCastCoverageNativeComponent.js':
+    COMMANDS_WITH_TYPE_CAST_COVERAGE,
 };

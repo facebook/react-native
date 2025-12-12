@@ -46,7 +46,7 @@ RCT_EXPORT_MODULE()
 - (BOOL)isValid
 {
   // if session == nil and delegates != nil, we've been invalidated
-  return _session || !_delegates;
+  return (_session != nullptr) || (_delegates == nullptr);
 }
 
 #pragma mark - NSURLRequestHandler
@@ -67,7 +67,7 @@ RCT_EXPORT_MODULE()
 {
   std::lock_guard<std::mutex> lock(_mutex);
   // Lazy setup
-  if (!_session && [self isValid]) {
+  if ((_session == nullptr) && [self isValid]) {
     // You can override default NSURLSession instance property allowsCellularAccess (default value YES)
     //  by providing the following key to your RN project (edit ios/project/Info.plist file in Xcode):
     // <key>ReactNetworkForceWifiOnly</key>    <true/>
@@ -80,12 +80,12 @@ RCT_EXPORT_MODULE()
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_moduleRegistry moduleForName:"Networking"] methodQueue];
     NSURLSessionConfiguration *configuration;
-    if (urlSessionConfigurationProvider) {
+    if (urlSessionConfigurationProvider != nullptr) {
       configuration = urlSessionConfigurationProvider();
     } else {
       configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
       // Set allowsCellularAccess to NO ONLY if key ReactNetworkForceWifiOnly exists AND its value is YES
-      if (useWifiOnly) {
+      if (useWifiOnly != nullptr) {
         configuration.allowsCellularAccess = ![useWifiOnly boolValue];
       }
       [configuration setHTTPShouldSetCookies:YES];

@@ -8,14 +8,25 @@
  * @format
  */
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import Pressability, {
   type EventHandlers,
   type PressabilityConfig,
 } from './Pressability';
-import {useEffect, useRef} from 'react';
+import {useEffect, useInsertionEffect, useRef} from 'react';
 
 declare function usePressability(config: PressabilityConfig): EventHandlers;
 declare function usePressability(config: null | void): null | EventHandlers;
+
+// Experiments with using `useInsertionEffect` instead of `useEffect`, which
+// changes whether `Pressability` is configured or reset when inm a hidden
+// Activity. With `useInsertionEffect`, `Pressability` behaves more like a
+// platform control (e.g. Pointer Events), especially with respect to events
+// like focus and blur.
+const useConfigurationEffect =
+  ReactNativeFeatureFlags.configurePressabilityDuringInsertion()
+    ? useInsertionEffect
+    : useEffect;
 
 /**
  * Creates a persistent instance of `Pressability` that automatically configures
@@ -40,7 +51,7 @@ export default function usePressability(
 
   // On the initial mount, this is a no-op. On updates, `pressability` will be
   // re-configured to use the new configuration.
-  useEffect(() => {
+  useConfigurationEffect(() => {
     if (config != null && pressability != null) {
       pressability.configure(config);
     }
@@ -48,7 +59,7 @@ export default function usePressability(
 
   // On unmount, reset pending state and timers inside `pressability`. This is
   // a separate effect because we do not want to reset when `config` changes.
-  useEffect(() => {
+  useConfigurationEffect(() => {
     if (pressability != null) {
       return () => {
         pressability.reset();

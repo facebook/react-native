@@ -30,8 +30,15 @@ internal class DevLoadingModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  override fun showMessage(message: String, color: Double?, backgroundColor: Double?) {
-    UiThreadUtil.runOnUiThread { devLoadingViewManager?.showMessage(message) }
+  override fun showMessage(
+      message: String,
+      color: Double?,
+      backgroundColor: Double?,
+      dismissButton: Boolean?,
+  ) {
+    UiThreadUtil.runOnUiThread {
+      devLoadingViewManager?.showMessage(message, color, backgroundColor, dismissButton)
+    }
   }
 
   override fun hide() {

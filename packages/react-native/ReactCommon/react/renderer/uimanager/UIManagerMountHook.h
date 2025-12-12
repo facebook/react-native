@@ -25,12 +25,11 @@ class UIManagerMountHook {
    * Called right after a `ShadowTree` is mounted in the host platform.
    */
   virtual void shadowTreeDidMount(
-      const RootShadowNode::Shared& rootShadowNode,
+      const RootShadowNode::Shared &rootShadowNode,
       HighResTimeStamp mountTime) noexcept = 0;
 
-  virtual void shadowTreeDidUnmount(
-      SurfaceId /*surfaceId*/,
-      HighResTimeStamp /*unmountTime*/) noexcept {
+  virtual void shadowTreeDidUnmount(SurfaceId /*surfaceId*/, HighResTimeStamp /*unmountTime*/) noexcept
+  {
     // Default no-op implementation for backwards compatibility.
   }
 

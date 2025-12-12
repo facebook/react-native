@@ -18,7 +18,7 @@ import com.facebook.react.bridge.queue.MessageQueueThreadSpec.Companion.newBackg
 public class ReactQueueConfigurationSpec
 public constructor(
     public val nativeModulesQueueThreadSpec: MessageQueueThreadSpec,
-    public val jSQueueThreadSpec: MessageQueueThreadSpec
+    public val jSQueueThreadSpec: MessageQueueThreadSpec,
 ) {
   public class Builder public constructor() {
     private var nativeModulesQueueSpec: MessageQueueThreadSpec? = null
@@ -46,6 +46,8 @@ public constructor(
     @JvmStatic
     public fun createDefault(): ReactQueueConfigurationSpec =
         ReactQueueConfigurationSpec(
-            newBackgroundThreadSpec("native_modules"), newBackgroundThreadSpec("js"))
+            newBackgroundThreadSpec("native_modules"),
+            newBackgroundThreadSpec("js"),
+        )
   }
 }

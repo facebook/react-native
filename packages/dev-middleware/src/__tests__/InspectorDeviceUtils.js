@@ -90,7 +90,7 @@ export class DeviceAgent {
     });
   }
 
-  // $FlowIgnore[unsafe-getters-setters]
+  // $FlowFixMe[unsafe-getters-setters]
   get socket(): WebSocket {
     return nullthrows(this.#ws);
   }
@@ -152,12 +152,12 @@ export class DeviceMock extends DeviceAgent {
         if (!payload) {
           return;
         }
-        // $FlowFixMe[incompatible-call] TODO(moti) Figure out the right way to type maybePayload generically
+        // $FlowFixMe[incompatible-type] TODO(moti) Figure out the right way to type maybePayload generically
         this.send({event, payload});
       });
       return;
     }
-    // $FlowFixMe[incompatible-call] TODO(moti) Figure out the right way to type maybePayload generically
+    // $FlowFixMe[incompatible-type] TODO(moti) Figure out the right way to type maybePayload generically
     this.send({event, payload: maybePayload});
   }
 }

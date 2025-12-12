@@ -379,7 +379,7 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
               yogaStyle.border(yoga::Edge::Vertical),
               defaultYogaStyle.border(yoga::Edge::Vertical)),
           debugStringConvertibleItem(
-              "bordeWidth",
+              "borderWidth",
               yogaStyle.border(yoga::Edge::All),
               defaultYogaStyle.border(yoga::Edge::All)),
           debugStringConvertibleItem(

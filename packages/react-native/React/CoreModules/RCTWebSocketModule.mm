@@ -62,11 +62,9 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect
-                  : (NSURL *)URL protocols
-                  : (NSArray *)protocols options
-                  : (JS::NativeWebSocketModule::SpecConnectOptions &)options socketID
-                  : (double)socketID)
+RCT_EXPORT_METHOD(
+    connect : (NSURL *)URL protocols : (NSArray *)protocols options : (JS::NativeWebSocketModule::SpecConnectOptions &)
+        options socketID : (double)socketID)
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
 

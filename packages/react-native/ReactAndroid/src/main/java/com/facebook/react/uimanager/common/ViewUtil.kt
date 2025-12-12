@@ -73,7 +73,8 @@ public object ViewUtil {
   @Deprecated(
       "You should not check the tag of the view to inspect if it's the rootTag. " +
           "Relying on this logic could make your app/library break in the future.",
-      ReplaceWith(""))
+      ReplaceWith(""),
+  )
   @JvmStatic
   public fun isRootTag(viewTag: Int): Boolean = viewTag % 10 == 1
 }

@@ -7,7 +7,7 @@
 
 #include "jsireact/JSINativeModules.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
@@ -111,4 +111,4 @@ std::optional<Object> JSINativeModules::createModule(
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

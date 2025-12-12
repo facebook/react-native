@@ -9,5 +9,7 @@ package com.facebook.react.uimanager
 
 /** A task to execute on the UI View for third party libraries. */
 public fun interface UIBlock {
-  public fun execute(nativeViewHierarchyManager: NativeViewHierarchyManager): Unit
+  public fun execute(
+      @Suppress("DEPRECATION") nativeViewHierarchyManager: NativeViewHierarchyManager
+  )
 }

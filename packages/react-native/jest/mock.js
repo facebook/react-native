@@ -34,6 +34,6 @@ export default function mock<TModuleRef: $Flow$ModuleRef<mixed>>(
 }
 
 function deref(ref: $Flow$ModuleRef<mixed>): string {
-  // $FlowIgnore[incompatible-cast]
+  // $FlowFixMe[incompatible-type]
   return (ref as string).substring(2);
 }

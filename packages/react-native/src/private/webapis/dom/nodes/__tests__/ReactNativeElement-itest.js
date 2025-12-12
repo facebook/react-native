@@ -13,10 +13,11 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
+import TextInputState from '../../../../../../Libraries/Components/TextInput/TextInputState';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
-import {ScrollView, View} from 'react-native';
+import {ScrollView, TextInput, View} from 'react-native';
 import {
   NativeText,
   NativeVirtualText,
@@ -34,7 +35,7 @@ function ensureReactNativeElement(value: mixed): ReactNativeElement {
 /* eslint-disable no-bitwise */
 
 describe('ReactNativeElement', () => {
-  it('should be used to create public instances when the `enableAccessToHostTreeInFabric` feature flag is enabled', () => {
+  it('should be used to create public instances', () => {
     const ref = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
@@ -1199,6 +1200,316 @@ describe('ReactNativeElement', () => {
 
         expect(element.offsetTop).toBe(11);
         expect(element.offsetLeft).toBe(5);
+      });
+    });
+  });
+
+  describe('legacy methods', () => {
+    describe('blur', () => {
+      test('blur() invokes TextInputState', () => {
+        const root = Fantom.createRoot();
+        const nodeRef = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput ref={nodeRef} />);
+        });
+
+        const node = ensureReactNativeElement(nodeRef.current);
+
+        const blurTextInput = jest.fn();
+
+        // We don't support view commands in Fantom yet, so we have to mock this.
+        TextInputState.blurTextInput = blurTextInput;
+
+        Fantom.runTask(() => {
+          node.blur();
+        });
+
+        expect(blurTextInput).toHaveBeenCalledTimes(1);
+        expect(blurTextInput.mock.calls).toEqual([[node]]);
+      });
+    });
+
+    describe('focus', () => {
+      test('focus() invokes TextInputState', () => {
+        const root = Fantom.createRoot();
+        const ref = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(<TextInput ref={ref} />);
+        });
+
+        const node = ensureReactNativeElement(ref.current);
+
+        const focusTextInput = jest.fn();
+
+        // We don't support view commands in Fantom yet, so we have to mock this.
+        TextInputState.focusTextInput = focusTextInput;
+
+        Fantom.runTask(() => {
+          node.focus();
+        });
+
+        expect(focusTextInput).toHaveBeenCalledTimes(1);
+        expect(focusTextInput.mock.calls).toEqual([[node]]);
+      });
+    });
+
+    describe('measure', () => {
+      it('component.measure(...) invokes callback', () => {
+        const root = Fantom.createRoot();
+        const ref = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{width: 100, height: 100, left: 10, top: 10}}
+              ref={ref}
+            />,
+          );
+        });
+
+        const node = ensureReactNativeElement(ref.current);
+
+        const callback = jest.fn();
+        node.measure(callback);
+
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(callback.mock.calls).toEqual([[10, 10, 100, 100, 10, 10]]);
+      });
+
+      it('unmounted.measure(...) does nothing', () => {
+        const root = Fantom.createRoot();
+        const ref = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{width: 100, height: 100, left: 10, top: 10}}
+              ref={ref}
+            />,
+          );
+        });
+
+        const node = ensureReactNativeElement(ref.current);
+
+        Fantom.runTask(() => {
+          root.render(<></>);
+        });
+
+        const callback = jest.fn();
+        node.measure(callback);
+
+        expect(callback).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('measureInWindow', () => {
+      it('component.measureInWindow(...) invokes callback', () => {
+        const root = Fantom.createRoot();
+        const ref = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{width: 100, height: 100, left: 10, top: 10}}
+              ref={ref}
+            />,
+          );
+        });
+
+        const node = ensureReactNativeElement(ref.current);
+
+        const callback = jest.fn();
+        node.measureInWindow(callback);
+
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(callback.mock.calls).toEqual([[10, 10, 100, 100]]);
+      });
+
+      it('unmounted.measureInWindow(...) does nothing', () => {
+        const root = Fantom.createRoot();
+        const ref = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{width: 100, height: 100, left: 10, top: 10}}
+              ref={ref}
+            />,
+          );
+        });
+
+        const node = ensureReactNativeElement(ref.current);
+
+        Fantom.runTask(() => {
+          root.render(<></>);
+        });
+
+        const callback = jest.fn();
+        node.measureInWindow(callback);
+
+        expect(callback).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('measureLayout', () => {
+      it('component.measureLayout(component, ...) invokes callback', () => {
+        const root = Fantom.createRoot();
+        const parentRef = createRef<HostInstance>();
+        const childRef = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{width: 100, height: 100, left: 10, top: 10}}
+              ref={parentRef}>
+              <View
+                style={{width: 10, height: 10, left: 20, top: 20}}
+                ref={childRef}
+              />
+            </View>,
+          );
+        });
+
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNode = ensureReactNativeElement(childRef.current);
+
+        const callback = jest.fn();
+        childNode.measureLayout(parentNode, callback);
+
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(callback.mock.calls).toEqual([[20, 20, 10, 10]]);
+      });
+
+      it('unmounted.measureLayout(component, ...) does nothing', () => {
+        const root = Fantom.createRoot();
+        const parentRef = createRef<HostInstance>();
+        const childRef = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{width: 100, height: 100, left: 10, top: 10}}
+              ref={parentRef}>
+              <View
+                style={{width: 10, height: 10, left: 20, top: 20}}
+                ref={childRef}
+              />
+            </View>,
+          );
+        });
+
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNode = ensureReactNativeElement(childRef.current);
+
+        Fantom.runTask(() => {
+          root.render(
+            <View style={{width: 100, height: 100, left: 10, top: 10}} />,
+          );
+        });
+
+        const callback = jest.fn();
+        childNode.measureLayout(parentNode, callback);
+
+        expect(callback).not.toHaveBeenCalled();
+      });
+
+      it('component.measureLayout(unmounted, ...) does nothing', () => {
+        const root = Fantom.createRoot();
+        const parentRef = createRef<HostInstance>();
+        const childRef = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{width: 100, height: 100, left: 10, top: 10}}
+              ref={parentRef}>
+              <View
+                style={{width: 10, height: 10, left: 20, top: 20}}
+                ref={childRef}
+              />
+            </View>,
+          );
+        });
+
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNode = ensureReactNativeElement(childRef.current);
+
+        Fantom.runTask(() => {
+          root.render(
+            <View style={{width: 100, height: 100, left: 10, top: 10}} />,
+          );
+        });
+
+        const callback = jest.fn();
+        parentNode.measureLayout(childNode, callback);
+
+        expect(callback).not.toHaveBeenCalled();
+      });
+
+      it('unmounted.measureLayout(unmounted, ...) does nothing', () => {
+        const root = Fantom.createRoot();
+        const parentRef = createRef<HostInstance>();
+        const childRef = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{width: 100, height: 100, left: 10, top: 10}}
+              ref={parentRef}>
+              <View
+                style={{width: 10, height: 10, left: 20, top: 20}}
+                ref={childRef}
+              />
+            </View>,
+          );
+        });
+
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNode = ensureReactNativeElement(childRef.current);
+
+        Fantom.runTask(() => {
+          root.render(<></>);
+        });
+
+        const callback = jest.fn();
+        childNode.measureLayout(parentNode, callback);
+
+        expect(callback).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('setNativeProps', () => {
+      it('should propagate changes to the host component', () => {
+        const root = Fantom.createRoot();
+        const nodeRef = createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(<View ref={nodeRef} testID="first test id" />);
+        });
+
+        expect(
+          root
+            .getRenderedOutput({
+              props: ['testID'],
+            })
+            .toJSX(),
+        ).toEqual(<rn-view testID={'first test id'} />);
+
+        const element = ensureReactNativeElement(nodeRef.current);
+
+        Fantom.runTask(() => {
+          element.setNativeProps({testID: 'second test id'});
+        });
+
+        expect(
+          root
+            .getRenderedOutput({
+              props: ['testID'],
+            })
+            .toJSX(),
+        ).toEqual(<rn-view testID={'second test id'} />);
       });
     });
   });

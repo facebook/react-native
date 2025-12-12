@@ -125,7 +125,7 @@ class DisabledSwitchExample extends React.Component<
   }
 }
 
-class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
+class ColorSwitchExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {colorFalseSwitchIsOn: boolean, colorTrueSwitchIsOn: boolean} = {
     colorTrueSwitchIsOn: true,
     colorFalseSwitchIsOn: false,
@@ -160,7 +160,7 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
+class EventSwitchExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {eventSwitchIsOn: boolean, eventSwitchRegressionIsOn: boolean} =
     {
       eventSwitchIsOn: false,
@@ -213,7 +213,7 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
+class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMe> {
   state: any | {iosBackgroundColor: string} = {
     iosBackgroundColor: '#ffa500',
   };
@@ -235,7 +235,7 @@ class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
+class OnChangeExample extends React.Component<{...}, $FlowFixMe> {
   render(): React.Node {
     return (
       <View>
@@ -252,7 +252,7 @@ class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
 
 class ContainerBackgroundColorStyleExample extends React.Component<
   {...},
-  $FlowFixMeState,
+  $FlowFixMe,
 > {
   render(): React.Node {
     return (

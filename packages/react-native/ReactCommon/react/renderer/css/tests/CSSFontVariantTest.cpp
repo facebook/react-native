@@ -38,8 +38,9 @@ TEST(CSSFontVariant, multiple_variants) {
 
   auto commonLigaturesAndHistoricalForms =
       parseCSSProperty<CSSFontVariantList>("common-ligatures no-contextual");
-  EXPECT_TRUE(std::holds_alternative<CSSFontVariantList>(
-      commonLigaturesAndHistoricalForms));
+  EXPECT_TRUE(
+      std::holds_alternative<CSSFontVariantList>(
+          commonLigaturesAndHistoricalForms));
   EXPECT_EQ(
       std::get<CSSFontVariantList>(commonLigaturesAndHistoricalForms).size(),
       2);

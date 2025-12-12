@@ -34,13 +34,16 @@ jdouble JDynamicNative::asDouble() {
 }
 
 jni::local_ref<ReadableArray> JDynamicNative::asArray() {
-  return jni::adopt_local(reinterpret_cast<ReadableArray::javaobject>(
-      ReadableNativeArray::newObjectCxxArgs(payload_).release()));
+  return jni::adopt_local(
+      reinterpret_cast<ReadableArray::javaobject>(
+          ReadableNativeArray::newObjectCxxArgs(payload_).release()));
 }
 
 jni::local_ref<ReadableMap> JDynamicNative::asMap() {
-  return jni::adopt_local(reinterpret_cast<ReadableMap::javaobject>(
-      ReadableNativeMap::createWithContents(std::move(payload_)).release()));
+  return jni::adopt_local(
+      reinterpret_cast<ReadableMap::javaobject>(
+          ReadableNativeMap::createWithContents(std::move(payload_))
+              .release()));
 }
 
 } // namespace facebook::react

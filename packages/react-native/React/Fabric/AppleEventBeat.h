@@ -25,13 +25,12 @@ class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
   AppleEventBeat(
       std::shared_ptr<OwnerBox> ownerBox,
       std::unique_ptr<const RunLoopObserver> uiRunLoopObserver,
-      RuntimeScheduler& RuntimeScheduler);
+      RuntimeScheduler &RuntimeScheduler);
 
 #pragma mark - RunLoopObserver::Delegate
 
-  void activityDidChange(
-      const RunLoopObserver::Delegate* delegate,
-      RunLoopObserver::Activity activity) const noexcept override;
+  void activityDidChange(const RunLoopObserver::Delegate *delegate, RunLoopObserver::Activity activity)
+      const noexcept override;
 
  private:
   std::unique_ptr<const RunLoopObserver> uiRunLoopObserver_;

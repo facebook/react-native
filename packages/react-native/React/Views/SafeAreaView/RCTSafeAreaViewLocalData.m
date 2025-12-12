@@ -7,6 +7,8 @@
 
 #import "RCTSafeAreaViewLocalData.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 @implementation RCTSafeAreaViewLocalData
 
 - (instancetype)initWithInsets:(UIEdgeInsets)insets
@@ -19,3 +21,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

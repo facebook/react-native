@@ -11,7 +11,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.View.MeasureSpec
-import android.view.ViewGroup
 import androidx.annotation.UiThread
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactHost
@@ -66,7 +65,7 @@ internal constructor(
   public constructor(
       context: Context,
       moduleName: String,
-      initialProps: Bundle?
+      initialProps: Bundle?,
   ) : this(SurfaceHandlerBinding(moduleName), context) {
     val nativeProps = initialProps?.let { Arguments.fromBundle(it) as NativeMap }
     surfaceHandler.setProps(nativeProps)
@@ -80,7 +79,8 @@ internal constructor(
         doRTLSwap(context),
         isRTL(context),
         displayMetrics.density,
-        getFontScale(context))
+        getFontScale(context),
+    )
   }
 
   /**
@@ -115,7 +115,7 @@ internal constructor(
     reactHostRef.set(null)
   }
 
-  public override val view: ViewGroup?
+  public override val view: ReactSurfaceView?
     get() = surfaceViewRef.get()
 
   override fun prerender(): TaskInterface<Void> {
@@ -123,21 +123,26 @@ internal constructor(
         reactHost
             ?: return Task.forError(
                 IllegalStateException(
-                    "Trying to call ReactSurface.prerender(), but no ReactHost is attached."))
+                    "Trying to call ReactSurface.prerender(), but no ReactHost is attached."
+                )
+            )
     return host.prerenderSurface(this)
   }
 
   override fun start(): TaskInterface<Void> {
     if (surfaceViewRef.get() == null) {
       return Task.forError(
-          IllegalStateException("Trying to call ReactSurface.start(), but view is not created."))
+          IllegalStateException("Trying to call ReactSurface.start(), but view is not created.")
+      )
     }
 
     val host =
         reactHost
             ?: return Task.forError(
                 IllegalStateException(
-                    "Trying to call ReactSurface.start(), but no ReactHost is attached."))
+                    "Trying to call ReactSurface.start(), but no ReactHost is attached."
+                )
+            )
     return host.startSurface(this)
   }
 
@@ -146,7 +151,9 @@ internal constructor(
         reactHost
             ?: return Task.forError(
                 IllegalStateException(
-                    "Trying to call ReactSurface.stop(), but no ReactHost is attached."))
+                    "Trying to call ReactSurface.stop(), but no ReactHost is attached."
+                )
+            )
     return host.stopSurface(this)
   }
 
@@ -172,7 +179,7 @@ internal constructor(
       widthMeasureSpec: Int,
       heightMeasureSpec: Int,
       offsetX: Int,
-      offsetY: Int
+      offsetY: Int,
   ) {
     surfaceHandler.setLayoutConstraints(
         widthMeasureSpec,
@@ -182,7 +189,8 @@ internal constructor(
         doRTLSwap(context),
         isRTL(context),
         context.resources.displayMetrics.density,
-        getFontScale(context))
+        getFontScale(context),
+    )
   }
 
   internal val eventDispatcher: EventDispatcher?
@@ -199,7 +207,7 @@ internal constructor(
     public fun createWithView(
         context: Context,
         moduleName: String,
-        initialProps: Bundle?
+        initialProps: Bundle?,
     ): ReactSurfaceImpl {
       val surface = ReactSurfaceImpl(context, moduleName, initialProps)
       surface.attachView(ReactSurfaceView(context, surface))
@@ -210,7 +218,7 @@ internal constructor(
 
     private fun getFontScale(context: Context): Float =
         if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout())
-            context.getResources().getConfiguration().fontScale
+            context.resources.configuration.fontScale
         else 1f
 
     private fun doRTLSwap(context: Context): Boolean =

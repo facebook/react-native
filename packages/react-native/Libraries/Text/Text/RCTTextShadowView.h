@@ -7,10 +7,13 @@
 
 #import <React/RCTShadowView.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import "RCTBaseTextShadowView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTTextShadowView : RCTBaseTextShadowView
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
@@ -26,3 +29,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_REMOVE_LEGACY_ARCH

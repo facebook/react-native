@@ -14,7 +14,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
-  if ((self = [super initWithTag:tag config:config])) {
+  if ((self = [super initWithTag:tag config:config]) != nullptr) {
     _propsDictionary = [NSMutableDictionary new];
   }
   return self;

@@ -90,9 +90,15 @@ uint32_t RCTInterpolateColorInRange(CGFloat value, NSArray<NSNumber *> *inputRan
   CGFloat inputMin = inputRange[rangeIndex].doubleValue;
   CGFloat inputMax = inputRange[rangeIndex + 1].doubleValue;
 
-  CGFloat redMin, greenMin, blueMin, alphaMin;
+  CGFloat redMin;
+  CGFloat greenMin;
+  CGFloat blueMin;
+  CGFloat alphaMin;
   [outputRange[rangeIndex] getRed:&redMin green:&greenMin blue:&blueMin alpha:&alphaMin];
-  CGFloat redMax, greenMax, blueMax, alphaMax;
+  CGFloat redMax;
+  CGFloat greenMax;
+  CGFloat blueMax;
+  CGFloat alphaMax;
   [outputRange[rangeIndex + 1] getRed:&redMax green:&greenMax blue:&blueMax alpha:&alphaMax];
 
   return RCTColorFromComponents(

@@ -19,12 +19,14 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat.FocusDirection
 import androidx.core.view.ViewCompat.FocusRealDirection
 import com.facebook.common.logging.FLog
+import com.facebook.react.animated.NativeAnimatedModule
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
+import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
 import com.facebook.react.uimanager.ReactClippingViewGroup
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
@@ -65,44 +67,42 @@ public object ReactScrollViewHelper {
 
   /** Shared by [ReactScrollView] and [ReactHorizontalScrollView]. */
   @JvmStatic
-  public fun <T> emitScrollEvent(scrollView: T, xVelocity: Float, yVelocity: Float) where
-  T : HasScrollEventThrottle?,
-  T : ViewGroup {
+  public fun <T> emitScrollEvent(scrollView: T, xVelocity: Float, yVelocity: Float)
+      where T : HasScrollEventThrottle?, T : ViewGroup {
     emitScrollEvent(scrollView, ScrollEventType.SCROLL, xVelocity, yVelocity)
   }
 
   @JvmStatic
-  public fun <T> emitScrollBeginDragEvent(scrollView: T) where
-  T : HasScrollEventThrottle?,
-  T : ViewGroup {
+  public fun <T> emitScrollBeginDragEvent(scrollView: T)
+      where T : HasScrollEventThrottle?, T : ViewGroup {
     emitScrollEvent(scrollView, ScrollEventType.BEGIN_DRAG)
   }
 
   @JvmStatic
-  public fun <T> emitScrollEndDragEvent(scrollView: T, xVelocity: Float, yVelocity: Float) where
-  T : HasScrollEventThrottle?,
-  T : ViewGroup {
+  public fun <T> emitScrollEndDragEvent(scrollView: T, xVelocity: Float, yVelocity: Float)
+      where T : HasScrollEventThrottle?, T : ViewGroup {
     emitScrollEvent(scrollView, ScrollEventType.END_DRAG, xVelocity, yVelocity)
   }
 
   @JvmStatic
-  public fun <T> emitScrollMomentumBeginEvent(scrollView: T, xVelocity: Int, yVelocity: Int) where
-  T : HasScrollEventThrottle?,
-  T : ViewGroup {
+  public fun <T> emitScrollMomentumBeginEvent(scrollView: T, xVelocity: Int, yVelocity: Int)
+      where T : HasScrollEventThrottle?, T : ViewGroup {
     emitScrollEvent(
-        scrollView, ScrollEventType.MOMENTUM_BEGIN, xVelocity.toFloat(), yVelocity.toFloat())
+        scrollView,
+        ScrollEventType.MOMENTUM_BEGIN,
+        xVelocity.toFloat(),
+        yVelocity.toFloat(),
+    )
   }
 
   @JvmStatic
-  public fun <T> emitScrollMomentumEndEvent(scrollView: T) where
-  T : HasScrollEventThrottle?,
-  T : ViewGroup {
+  public fun <T> emitScrollMomentumEndEvent(scrollView: T)
+      where T : HasScrollEventThrottle?, T : ViewGroup {
     emitScrollEvent(scrollView, ScrollEventType.MOMENTUM_END)
   }
 
-  private fun <T> emitScrollEvent(scrollView: T, scrollEventType: ScrollEventType) where
-  T : HasScrollEventThrottle?,
-  T : ViewGroup {
+  private fun <T> emitScrollEvent(scrollView: T, scrollEventType: ScrollEventType)
+      where T : HasScrollEventThrottle?, T : ViewGroup {
     emitScrollEvent(scrollView, scrollEventType, 0f, 0f)
   }
 
@@ -116,8 +116,10 @@ public object ReactScrollViewHelper {
     // Throttle the scroll event if scrollEventThrottle is set to be equal or more than 17 ms.
     // We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
     // inadvertently filter out any scroll events.
-    if (scrollEventType == ScrollEventType.SCROLL &&
-        scrollView.scrollEventThrottle >= max(17, now - scrollView.lastScrollDispatchTime)) {
+    if (
+        scrollEventType == ScrollEventType.SCROLL &&
+            scrollView.scrollEventThrottle >= max(17, now - scrollView.lastScrollDispatchTime)
+    ) {
       // Scroll events are throttled.
       return
     }
@@ -146,9 +148,24 @@ public object ReactScrollViewHelper {
               contentView.width,
               contentView.height,
               scrollView.width,
-              scrollView.height))
+              scrollView.height,
+          )
+      )
       if (scrollEventType == ScrollEventType.SCROLL) {
         scrollView.lastScrollDispatchTime = now
+      }
+    }
+  }
+
+  // TODO: Remove this once C++ animation driver is complete
+  @JvmStatic
+  @JvmName("notifyUserDrivenScrollEnded_internal")
+  internal fun notifyUserDrivenScrollEnded(scrollView: ViewGroup) {
+    val reactContext = scrollView.context as? ReactContext
+    if (reactContext != null) {
+      val nativeAnimated = reactContext.getNativeModule(NativeAnimatedModule::class.java)
+      if (nativeAnimated != null) {
+        nativeAnimated.userDrivenScrollEnded(scrollView.id)
       }
     }
   }
@@ -229,7 +246,15 @@ public object ReactScrollViewHelper {
   @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeScrollListener(listener: ScrollListener) {
-    scrollListeners.removeIf { it.get() == null || it.get() == listener }
+    // Avoid using removeIf, only available in API 26+
+    val toRemove = ArrayList<WeakReference<ScrollListener>>()
+    for (ref in scrollListeners) {
+      val target = ref.get()
+      if (target == null || target == listener) {
+        toRemove.add(ref)
+      }
+    }
+    scrollListeners.removeAll(toRemove)
   }
 
   @JvmStatic
@@ -240,7 +265,15 @@ public object ReactScrollViewHelper {
   @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeLayoutChangeListener(listener: LayoutChangeListener) {
-    layoutChangeListeners.removeIf { it.get() == null || it.get() == listener }
+    // Avoid using removeIf, only available in API 26+
+    val toRemove = ArrayList<WeakReference<LayoutChangeListener>>()
+    for (ref in layoutChangeListeners) {
+      val target = ref.get()
+      if (target == null || target == listener) {
+        toRemove.add(ref)
+      }
+    }
+    layoutChangeListeners.removeAll(toRemove)
   }
 
   /**
@@ -249,11 +282,8 @@ public object ReactScrollViewHelper {
    * y), then apply that to the animator.
    */
   @JvmStatic
-  public fun <T> smoothScrollTo(scrollView: T, x: Int, y: Int) where
-  T : HasFlingAnimator?,
-  T : HasScrollState?,
-  T : HasStateWrapper?,
-  T : ViewGroup {
+  public fun <T> smoothScrollTo(scrollView: T, x: Int, y: Int)
+      where T : HasFlingAnimator?, T : HasScrollState?, T : HasStateWrapper?, T : ViewGroup {
     if (DEBUG_MODE) {
       FLog.i(TAG, "smoothScrollTo[%d] x %d y %d", scrollView.id, x, y)
     }
@@ -283,7 +313,7 @@ public object ReactScrollViewHelper {
       scrollView: T,
       currentValue: Int,
       postAnimationValue: Int,
-      velocity: Int
+      velocity: Int,
   ): Int where T : HasFlingAnimator?, T : HasScrollState?, T : ViewGroup {
     val scrollState = scrollView.reactScrollViewScrollState
     val velocityDirectionMask = if (velocity != 0) velocity / abs(velocity) else 0
@@ -294,8 +324,9 @@ public object ReactScrollViewHelper {
     // the final animated value, we will return the final animated value. This is because follow up
     // animation should consider the "would be" animated location, so that previous quick small
     // scrolls are still working.
-    return if (!scrollState.isFinished ||
-        (scrollState.isCanceled && isMovingTowardsAnimatedValue)) {
+    return if (
+        !scrollState.isFinished || (scrollState.isCanceled && isMovingTowardsAnimatedValue)
+    ) {
       postAnimationValue
     } else {
       currentValue
@@ -303,24 +334,24 @@ public object ReactScrollViewHelper {
   }
 
   @JvmStatic
-  public fun <T> updateFabricScrollState(scrollView: T) where
-  T : HasFlingAnimator?,
-  T : HasScrollState?,
-  T : HasStateWrapper?,
-  T : ViewGroup {
+  public fun <T> updateFabricScrollState(scrollView: T)
+      where T : HasFlingAnimator?, T : HasScrollState?, T : HasStateWrapper?, T : ViewGroup {
     updateFabricScrollState(scrollView, scrollView.scrollX, scrollView.scrollY)
   }
 
   /**
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
-  public fun <T> updateFabricScrollState(scrollView: T, scrollX: Int, scrollY: Int) where
-  T : HasScrollState?,
-  T : HasStateWrapper?,
-  T : ViewGroup {
+  public fun <T> updateFabricScrollState(scrollView: T, scrollX: Int, scrollY: Int)
+      where T : HasScrollState?, T : HasStateWrapper?, T : ViewGroup {
     if (DEBUG_MODE) {
       FLog.i(
-          TAG, "updateFabricScrollState[%d] scrollX %d scrollY %d", scrollView.id, scrollX, scrollY)
+          TAG,
+          "updateFabricScrollState[%d] scrollX %d scrollY %d",
+          scrollView.id,
+          scrollX,
+          scrollY,
+      )
     }
     if (ViewUtil.getUIManagerType(scrollView.id) == UIManagerType.LEGACY) {
       return
@@ -331,6 +362,10 @@ public object ReactScrollViewHelper {
       return
     }
     val scrollState = scrollView.reactScrollViewScrollState
+
+    // User driven scrolling should disable scroll state updates coming from Fabric
+    scrollState.isUpdatedByScroll = true
+
     // Dedupe events to reduce JNI traffic
     if (scrollState.lastStateUpdateScroll.equals(scrollX, scrollY)) {
       return
@@ -340,10 +375,8 @@ public object ReactScrollViewHelper {
   }
 
   @JvmStatic
-  public fun <T> forceUpdateState(scrollView: T) where
-  T : HasScrollState?,
-  T : HasStateWrapper?,
-  T : ViewGroup {
+  public fun <T> forceUpdateState(scrollView: T)
+      where T : HasScrollState?, T : HasStateWrapper?, T : ViewGroup {
     val scrollState = scrollView.reactScrollViewScrollState
     val scrollAwayPaddingTop = scrollState.scrollAwayPaddingTop
     val scrollPos = scrollState.lastStateUpdateScroll
@@ -351,7 +384,12 @@ public object ReactScrollViewHelper {
     val scrollY = scrollPos.y
     if (DEBUG_MODE) {
       FLog.i(
-          TAG, "updateFabricScrollState[%d] scrollX %d scrollY %d", scrollView.id, scrollX, scrollY)
+          TAG,
+          "updateFabricScrollState[%d] scrollX %d scrollY %d",
+          scrollView.id,
+          scrollX,
+          scrollY,
+      )
     }
     val stateWrapper = scrollView.stateWrapper
     if (stateWrapper != null) {
@@ -359,22 +397,44 @@ public object ReactScrollViewHelper {
       newStateData.putDouble(CONTENT_OFFSET_LEFT, toDIPFromPixel(scrollX.toFloat()).toDouble())
       newStateData.putDouble(CONTENT_OFFSET_TOP, toDIPFromPixel(scrollY.toFloat()).toDouble())
       newStateData.putDouble(
-          SCROLL_AWAY_PADDING_TOP, toDIPFromPixel(scrollAwayPaddingTop.toFloat()).toDouble())
+          SCROLL_AWAY_PADDING_TOP,
+          toDIPFromPixel(scrollAwayPaddingTop.toFloat()).toDouble(),
+      )
       stateWrapper.updateState(newStateData)
     }
   }
 
   @JvmStatic
-  public fun <T> updateStateOnScrollChanged(
-      scrollView: T,
-      xVelocity: Float,
-      yVelocity: Float
-  ) where
-  T : HasFlingAnimator?,
-  T : HasScrollEventThrottle?,
-  T : HasScrollState?,
-  T : HasStateWrapper?,
-  T : ViewGroup {
+  internal fun <T> loadFabricScrollState(scrollView: T, stateWrapper: StateWrapper)
+      where T : HasScrollState?, T : HasStateWrapper?, T : ViewGroup {
+    if (scrollView.reactScrollViewScrollState.isUpdatedByScroll) {
+      return
+    }
+
+    val stateData = stateWrapper.stateData
+    if (stateData == null) {
+      return
+    }
+
+    // Assign the data loaded from the shadow node state
+    val scrollX = toPixelFromDIP(stateData.getDouble(CONTENT_OFFSET_LEFT)).toInt()
+    val scrollY = toPixelFromDIP(stateData.getDouble(CONTENT_OFFSET_TOP)).toInt()
+    val scrollAwayPaddingTop = toPixelFromDIP(stateData.getDouble(SCROLL_AWAY_PADDING_TOP)).toInt()
+
+    val scrollState =
+        scrollView.reactScrollViewScrollState.copy(scrollAwayPaddingTop = scrollAwayPaddingTop)
+    scrollState.setLastStateUpdateScroll(scrollX, scrollY)
+    scrollView.reactScrollViewScrollState = scrollState
+  }
+
+  @JvmStatic
+  public fun <T> updateStateOnScrollChanged(scrollView: T, xVelocity: Float, yVelocity: Float)
+      where
+          T : HasFlingAnimator?,
+          T : HasScrollEventThrottle?,
+          T : HasScrollState?,
+          T : HasStateWrapper?,
+          T : ViewGroup {
     // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
     // when JS processes the scroll event, the C++ ShadowNode representation will have a
     // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
@@ -383,11 +443,8 @@ public object ReactScrollViewHelper {
     emitScrollEvent(scrollView, xVelocity, yVelocity)
   }
 
-  public fun <T> registerFlingAnimator(scrollView: T) where
-  T : HasFlingAnimator?,
-  T : HasScrollState?,
-  T : HasStateWrapper?,
-  T : ViewGroup {
+  public fun <T> registerFlingAnimator(scrollView: T)
+      where T : HasFlingAnimator?, T : HasScrollState?, T : HasStateWrapper?, T : ViewGroup {
     scrollView
         .getFlingAnimator()
         .addListener(
@@ -400,22 +457,23 @@ public object ReactScrollViewHelper {
 
               override fun onAnimationEnd(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isFinished = true
+                notifyUserDrivenScrollEnded(scrollView)
                 updateFabricScrollState(scrollView)
               }
 
               override fun onAnimationCancel(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isCanceled = true
+                notifyUserDrivenScrollEnded(scrollView)
               }
 
               override fun onAnimationRepeat(animator: Animator) = Unit
-            })
+            }
+        )
   }
 
   @JvmStatic
-  public fun <T> dispatchMomentumEndOnAnimationEnd(scrollView: T) where
-  T : HasFlingAnimator?,
-  T : HasScrollEventThrottle?,
-  T : ViewGroup {
+  public fun <T> dispatchMomentumEndOnAnimationEnd(scrollView: T)
+      where T : HasFlingAnimator?, T : HasScrollEventThrottle?, T : ViewGroup {
     scrollView
         .getFlingAnimator()
         .addListener(
@@ -433,7 +491,8 @@ public object ReactScrollViewHelper {
               }
 
               override fun onAnimationRepeat(animator: Animator) = Unit
-            })
+            }
+        )
   }
 
   @JvmStatic
@@ -442,7 +501,7 @@ public object ReactScrollViewHelper {
       velocityX: Int,
       velocityY: Int,
       maximumOffsetX: Int,
-      maximumOffsetY: Int
+      maximumOffsetY: Int,
   ): Point where T : HasFlingAnimator?, T : HasScrollState?, T : ViewGroup {
     val scrollState = scrollView.reactScrollViewScrollState
     // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
@@ -452,14 +511,22 @@ public object ReactScrollViewHelper {
     scroller.setFriction(1.0f - scrollState.decelerationRate)
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    val width = scrollView.width - scrollView.getPaddingStart() - scrollView.getPaddingEnd()
+    val width = scrollView.width - scrollView.paddingStart - scrollView.paddingEnd
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(
         getNextFlingStartValue(
-            scrollView, scrollView.scrollX, finalAnimatedPositionScroll.x, velocityX), // startX
+            scrollView,
+            scrollView.scrollX,
+            finalAnimatedPositionScroll.x,
+            velocityX,
+        ), // startX
         getNextFlingStartValue(
-            scrollView, scrollView.scrollY, finalAnimatedPositionScroll.y, velocityY), // startY
+            scrollView,
+            scrollView.scrollY,
+            finalAnimatedPositionScroll.y,
+            velocityY,
+        ), // startY
         velocityX, // velocityX
         velocityY, // velocityY
         0, // minX
@@ -467,8 +534,8 @@ public object ReactScrollViewHelper {
         0, // minY
         maximumOffsetY, // maxY
         width / 2, // overX
-        height / 2 // overY
-        )
+        height / 2, // overY
+    )
     return Point(scroller.finalX, scroller.finalY)
   }
 
@@ -506,7 +573,7 @@ public object ReactScrollViewHelper {
   public fun resolveAbsoluteDirection(
       @FocusRealDirection direction: Int,
       horizontal: Boolean,
-      layoutDirection: Int
+      layoutDirection: Int,
   ): Int {
     val rtl: Boolean = layoutDirection == View.LAYOUT_DIRECTION_RTL
 
@@ -526,7 +593,7 @@ public object ReactScrollViewHelper {
         scrollView: ViewGroup?,
         scrollEventType: ScrollEventType?,
         xVelocity: Float,
-        yVelocity: Float
+        yVelocity: Float,
     )
 
     public fun onLayout(scrollView: ViewGroup?)
@@ -557,25 +624,26 @@ public object ReactScrollViewHelper {
     }
   }
 
-  public class ReactScrollViewScrollState {
-
-    /** Get the position after current animation is finished */
-    public val finalAnimatedPositionScroll: Point = Point()
-    /** Get the padding on the top for nav bar */
-    public var scrollAwayPaddingTop: Int = 0
-    /** Get the Fabric state of last scroll position */
-    public val lastStateUpdateScroll: Point = Point(-1, -1)
-    /** Get true if the previous animation was canceled */
-    public var isCanceled: Boolean = false
-    /** Get true if previous animation was finished */
-    public var isFinished: Boolean = true
-    /** Get true if previous animation was finished */
-    public var decelerationRate: Float = 0.985f
-
+  public data class ReactScrollViewScrollState(
+      /** Get the position after current animation is finished */
+      val finalAnimatedPositionScroll: Point = Point(),
+      /** Get the padding on the top for nav bar */
+      var scrollAwayPaddingTop: Int = 0,
+      /** Get the Fabric state of last scroll position */
+      val lastStateUpdateScroll: Point = Point(-1, -1),
+      /** Get true if the previous animation was canceled */
+      var isCanceled: Boolean = false,
+      /** Get true if previous animation was finished */
+      var isFinished: Boolean = true,
+      /** Get true if previous animation was finished */
+      var decelerationRate: Float = 0.985f,
+      /** Get true if the component submitted the state through user scrolling */
+      var isUpdatedByScroll: Boolean = false,
+  ) {
     /** Set the final scroll position after scrolling animation is finished */
     public fun setFinalAnimatedPositionScroll(
         finalAnimatedPositionScrollX: Int,
-        finalAnimatedPositionScrollY: Int
+        finalAnimatedPositionScrollY: Int,
     ): ReactScrollViewScrollState {
       finalAnimatedPositionScroll.set(finalAnimatedPositionScrollX, finalAnimatedPositionScrollY)
       return this
@@ -584,7 +652,7 @@ public object ReactScrollViewHelper {
     /** Set the Fabric state of last scroll position */
     public fun setLastStateUpdateScroll(
         lastStateUpdateScrollX: Int,
-        lastStateUpdateScrollY: Int
+        lastStateUpdateScrollY: Int,
     ): ReactScrollViewScrollState {
       lastStateUpdateScroll.set(lastStateUpdateScrollX, lastStateUpdateScrollY)
       return this
@@ -593,7 +661,7 @@ public object ReactScrollViewHelper {
 
   public interface HasScrollState {
     /** Get the scroll state for the current ScrollView */
-    public val reactScrollViewScrollState: ReactScrollViewScrollState
+    public var reactScrollViewScrollState: ReactScrollViewScrollState
   }
 
   public interface HasFlingAnimator {

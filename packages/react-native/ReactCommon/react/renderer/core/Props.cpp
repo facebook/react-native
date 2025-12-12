@@ -33,14 +33,8 @@ void Props::initialize(
       ? sourceProps.nativeId
       : convertRawProp(context, rawProps, "nativeID", sourceProps.nativeId, {});
 #ifdef RN_SERIALIZABLE_STATE
-  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
-    auto& oldRawProps = sourceProps.rawProps;
-    auto newRawProps = rawProps.toDynamic(filterObjectKeys);
-    auto mergedRawProps = mergeDynamicProps(
-        oldRawProps, newRawProps, NullValueStrategy::Override);
-    this->rawProps = mergedRawProps;
-  } else {
-    this->rawProps = rawProps.toDynamic(filterObjectKeys);
+  if (!ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid()) {
+    initializeDynamicProps(sourceProps, rawProps, filterObjectKeys);
   }
 #endif
 }
@@ -56,6 +50,27 @@ void Props::setProp(
       return;
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+void Props::initializeDynamicProps(
+    const Props& sourceProps,
+    const RawProps& rawProps,
+    const std::function<bool(const std::string&)>& filterObjectKeys) {
+  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+    auto& oldRawProps = sourceProps.rawProps;
+    auto newRawProps = rawProps.toDynamic(filterObjectKeys);
+    auto mergedRawProps = mergeDynamicProps(
+        oldRawProps, newRawProps, NullValueStrategy::Override);
+    this->rawProps = mergedRawProps;
+  } else {
+    this->rawProps = rawProps.toDynamic(filterObjectKeys);
+  }
+}
+
+ComponentName Props::getDiffPropsImplementationTarget() const {
+  return "";
+}
+#endif
 
 #pragma mark - DebugStringConvertible
 

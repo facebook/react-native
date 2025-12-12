@@ -28,7 +28,7 @@ public class BlobProvider : ContentProvider() {
       projection: Array<String>?,
       selection: String?,
       selectionArgs: Array<String>?,
-      sortOrder: String?
+      sortOrder: String?,
   ): Cursor? = null
 
   override fun getType(uri: Uri): String? = null
@@ -41,7 +41,7 @@ public class BlobProvider : ContentProvider() {
       uri: Uri,
       values: ContentValues?,
       selection: String?,
-      selectionArgs: Array<String>?
+      selectionArgs: Array<String>?,
   ): Int = 0
 
   @Throws(FileNotFoundException::class)

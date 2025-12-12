@@ -235,8 +235,8 @@ class StatusBar extends React.Component<StatusBarProps> {
   static _defaultProps: any = createStackEntry({
     backgroundColor:
       Platform.OS === 'android'
-        ? NativeStatusBarManagerAndroid.getConstants()
-            .DEFAULT_BACKGROUND_COLOR ?? 'black'
+        ? (NativeStatusBarManagerAndroid.getConstants()
+            .DEFAULT_BACKGROUND_COLOR ?? 'black')
         : 'black',
     barStyle: 'default',
     translucent: false,

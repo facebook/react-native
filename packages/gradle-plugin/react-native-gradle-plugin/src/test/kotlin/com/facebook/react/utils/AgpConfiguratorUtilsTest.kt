@@ -34,10 +34,11 @@ class AgpConfiguratorUtilsTest {
           writeText(
               // language=xml
               """
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-          </manifest>
-          """
-                  .trimIndent())
+              <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              </manifest>
+              """
+                  .trimIndent()
+          )
         }
 
     val actual = getPackageNameFromManifest(manifest)
@@ -52,10 +53,11 @@ class AgpConfiguratorUtilsTest {
           writeText(
               // language=xml
               """
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.facebook.react" >
-          </manifest>
-          """
-                  .trimIndent())
+              <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.facebook.react" >
+              </manifest>
+              """
+                  .trimIndent()
+          )
         }
 
     val actual = getPackageNameFromManifest(manifest)

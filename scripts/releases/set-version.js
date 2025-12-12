@@ -36,7 +36,7 @@ async function main() {
   const {
     positionals: [version],
     values: {help, skipReactNativeVersion},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
@@ -72,19 +72,16 @@ async function setVersion(
   skipReactNativeVersion /*: boolean */ = false,
 ) /*: Promise<void> */ {
   const packages = await getPackages({
-    includePrivate: true,
     includeReactNative: true,
+    forceIncludeRNTester: true,
   });
   const newPackageVersions = Object.fromEntries(
-    Object.entries(packages).map(([packageName, {packageJson}]) => {
-      let packageVersion = version;
-      if (packageName === 'react-native' && skipReactNativeVersion) {
-        packageVersion = '1000.0.0';
-      } else if (packageJson.private === true) {
-        packageVersion = packageJson.version ?? '0.0.0';
-      }
-      return [packageName, packageVersion];
-    }),
+    Object.keys(packages).map(packageName => [
+      packageName,
+      packageName === 'react-native' && skipReactNativeVersion
+        ? '1000.0.0'
+        : version,
+    ]),
   );
 
   const packagesToUpdate = [

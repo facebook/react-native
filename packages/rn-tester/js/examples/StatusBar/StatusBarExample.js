@@ -32,7 +32,7 @@ function getValue<T>(values: Array<T>, index: number): T {
   return values[index % values.length];
 }
 
-class StatusBarHiddenExample extends React.Component<{...}, $FlowFixMeState> {
+class StatusBarHiddenExample extends React.Component<{...}, $FlowFixMe> {
   state:
     | $FlowFixMe
     | {animated: boolean, hidden: boolean, showHideTransition: string} = {
@@ -104,7 +104,7 @@ class StatusBarHiddenExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class StatusBarStyleExample extends React.Component<{...}, $FlowFixMeState> {
+class StatusBarStyleExample extends React.Component<{...}, $FlowFixMe> {
   _barStyleIndex = 0;
 
   _onChangeBarStyle = () => {
@@ -159,7 +159,7 @@ class StatusBarStyleExample extends React.Component<{...}, $FlowFixMeState> {
 
 class StatusBarBackgroundColorExample extends React.Component<
   {...},
-  $FlowFixMeState,
+  $FlowFixMe,
 > {
   state: $FlowFixMe | {animated: boolean, backgroundColor: string} = {
     animated: true,
@@ -207,10 +207,7 @@ class StatusBarBackgroundColorExample extends React.Component<
   }
 }
 
-class StatusBarTranslucentExample extends React.Component<
-  {...},
-  $FlowFixMeState,
-> {
+class StatusBarTranslucentExample extends React.Component<{...}, $FlowFixMe> {
   state: $FlowFixMe | {translucent: boolean} = {
     translucent: false,
   };
@@ -413,7 +410,7 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
   }
 }
 
-class ModalExample extends React.Component<{...}, $FlowFixMeState> {
+class ModalExample extends React.Component<{...}, $FlowFixMe> {
   state: $FlowFixMe | {modalVisible: boolean} = {
     modalVisible: false,
   };

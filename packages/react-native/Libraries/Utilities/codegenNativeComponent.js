@@ -65,7 +65,7 @@ function codegenNativeComponent<Props: {...}>(
   }
 
   return (requireNativeComponent<Props>(
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     componentNameInUse,
   ): HostComponent<Props>);
 }

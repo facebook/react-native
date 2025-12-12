@@ -60,9 +60,9 @@ inline PhysicalEdge flexStartEdge(FlexDirection flexDirection) {
       return PhysicalEdge::Left;
     case FlexDirection::RowReverse:
       return PhysicalEdge::Right;
+    default:
+      fatalWithMessage("Invalid FlexDirection");
   }
-
-  fatalWithMessage("Invalid FlexDirection");
 }
 
 inline PhysicalEdge flexEndEdge(FlexDirection flexDirection) {
@@ -75,9 +75,9 @@ inline PhysicalEdge flexEndEdge(FlexDirection flexDirection) {
       return PhysicalEdge::Right;
     case FlexDirection::RowReverse:
       return PhysicalEdge::Left;
+    default:
+      fatalWithMessage("Invalid FlexDirection");
   }
-
-  fatalWithMessage("Invalid FlexDirection");
 }
 
 inline PhysicalEdge inlineStartEdge(
@@ -112,9 +112,9 @@ inline Dimension dimension(FlexDirection flexDirection) {
       return Dimension::Width;
     case FlexDirection::RowReverse:
       return Dimension::Width;
+    default:
+      fatalWithMessage("Invalid FlexDirection");
   }
-
-  fatalWithMessage("Invalid FlexDirection");
 }
 
 } // namespace facebook::yoga

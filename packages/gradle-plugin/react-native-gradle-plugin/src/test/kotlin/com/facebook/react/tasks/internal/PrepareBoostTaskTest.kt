@@ -26,7 +26,8 @@ class PrepareBoostTaskTest {
     assertThatThrownBy { task.taskAction() }
         .isInstanceOf(IllegalStateException::class.java)
         .hasMessage(
-            "Cannot query the value of task ':PrepareBoostTask' property 'boostVersion' because it has no value available.")
+            "Cannot query the value of task ':PrepareBoostTask' property 'boostVersion' because it has no value available."
+        )
   }
 
   @Test
@@ -57,11 +58,11 @@ class PrepareBoostTaskTest {
     val boostThirdPartyJniPath = tempFolder.newFolder("boostpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareBoostTask> {
-          it.boostPath.setFrom(boostpath)
-          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
-          it.boostVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareBoostTask> { task ->
+          task.boostPath.setFrom(boostpath)
+          task.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
+          task.boostVersion.set("1.0.0")
+          task.outputDir.set(output)
         }
     File(boostpath, "asm/asm.S").apply {
       parentFile.mkdirs()
@@ -78,11 +79,11 @@ class PrepareBoostTaskTest {
     val boostThirdPartyJniPath = tempFolder.newFolder("boostpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareBoostTask> {
-          it.boostPath.setFrom(boostpath)
-          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
-          it.boostVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareBoostTask> { task ->
+          task.boostPath.setFrom(boostpath)
+          task.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
+          task.boostVersion.set("1.0.0")
+          task.outputDir.set(output)
         }
     File(boostpath, "boost_1.0.0/boost/config.hpp").apply {
       parentFile.mkdirs()
@@ -99,11 +100,11 @@ class PrepareBoostTaskTest {
     val boostThirdPartyJniPath = tempFolder.newFolder("boostpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareBoostTask> {
-          it.boostPath.setFrom(boostpath)
-          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
-          it.boostVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareBoostTask> { task ->
+          task.boostPath.setFrom(boostpath)
+          task.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
+          task.boostVersion.set("1.0.0")
+          task.outputDir.set(output)
         }
     File(boostpath, "boost/boost/config.hpp").apply {
       parentFile.mkdirs()

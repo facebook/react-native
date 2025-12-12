@@ -33,9 +33,9 @@ class GeneratePackageListTaskTest {
     val inputFile = tempFolder.newFile("config.json")
 
     val task =
-        createTestTask<GeneratePackageListTask> {
-          it.generatedOutputDirectory.set(outputFolder)
-          it.autolinkInputFile.set(inputFile)
+        createTestTask<GeneratePackageListTask> { testTask ->
+          testTask.generatedOutputDirectory.set(outputFolder)
+          testTask.autolinkInputFile.set(inputFile)
         }
 
     assertThat(task.inputs.files.singleFile).isEqualTo(inputFile)
@@ -43,28 +43,17 @@ class GeneratePackageListTaskTest {
   }
 
   @Test
-  fun composePackageImports_withNoPackages_returnsEmpty() {
+  fun extractFqcnFromImport_withValidImport_returnsClassName() {
     val task = createTestTask<GeneratePackageListTask>()
-    val packageName = "com.facebook.react"
-    val result = task.composePackageImports(packageName, emptyMap())
-    assertThat(result).isEqualTo("")
+    val result = task.extractFqcnFromImport("import com.facebook.react.APackage;")
+    assertThat(result).isEqualTo("com.facebook.react.APackage")
   }
 
   @Test
-  fun composePackageImports_withPackages_returnsImportCorrectly() {
+  fun extractFqcnFromImport_withInvalidImport_returnsNull() {
     val task = createTestTask<GeneratePackageListTask>()
-    val packageName = "com.facebook.react"
-
-    val result = task.composePackageImports(packageName, testDependencies)
-    assertThat(result)
-        .isEqualTo(
-            """
-      // @react-native/a-package
-      import com.facebook.react.aPackage;
-      // @react-native/another-package
-      import com.facebook.react.anotherPackage;
-    """
-                .trimIndent())
+    val result = task.extractFqcnFromImport("invalid import statement")
+    assertThat(result).isNull()
   }
 
   @Test
@@ -76,7 +65,7 @@ class GeneratePackageListTaskTest {
   }
 
   @Test
-  fun composePackageInstance_withPackages_returnsImportCorrectly() {
+  fun composePackageInstance_withPackages_returnsFqcnCorrectly() {
     val task = createTestTask<GeneratePackageListTask>()
     val packageName = "com.facebook.react"
 
@@ -84,11 +73,14 @@ class GeneratePackageListTaskTest {
     assertThat(result)
         .isEqualTo(
             """
-      ,
-            new APackage(),
-            new AnotherPackage()
-    """
-                .trimIndent())
+            ,
+                  // @react-native/a-package
+                  new com.facebook.react.APackage(),
+                  // @react-native/another-package
+                  new com.facebook.react.AnotherPackage()
+            """
+                .trimIndent()
+        )
   }
 
   @Test
@@ -146,8 +138,12 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = null))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = null),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result)
         .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
@@ -174,8 +170,12 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = android),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result.entries.size).isEqualTo(1)
     assertThat(result["a-dependency"]).isEqualTo(android)
   }
@@ -189,7 +189,8 @@ class GeneratePackageListTaskTest {
             packageImportPath = "import com.facebook.react.aPackage;",
             packageInstance = "new APackage()",
             buildTypes = emptyList(),
-            isPureCxxDependency = true)
+            isPureCxxDependency = true,
+        )
 
     val result =
         task.filterAndroidPackages(
@@ -202,8 +203,12 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-pure-cxx-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = android),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result)
         .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
@@ -211,160 +216,154 @@ class GeneratePackageListTaskTest {
   @Test
   fun composeFileContent_withNoPackages_returnsValidFile() {
     val task = createTestTask<GeneratePackageListTask>()
-    val packageName = "com.facebook.react"
-    val imports = task.composePackageImports(packageName, emptyMap())
-    val instance = task.composePackageInstance(packageName, emptyMap())
-    val result = task.composeFileContent(imports, instance)
+    val instance = task.composePackageInstance("com.facebook.react", emptyMap())
+    val result = task.composeFileContent(instance)
     // language=java
     assertThat(result)
         .isEqualTo(
             """
-    package com.facebook.react;
+            package com.facebook.react;
 
-    import android.app.Application;
-    import android.content.Context;
-    import android.content.res.Resources;
+            import android.app.Application;
+            import android.content.Context;
+            import android.content.res.Resources;
 
-    import com.facebook.react.ReactPackage;
-    import com.facebook.react.shell.MainPackageConfig;
-    import com.facebook.react.shell.MainReactPackage;
-    import java.util.Arrays;
-    import java.util.ArrayList;
+            import com.facebook.react.ReactPackage;
+            import com.facebook.react.shell.MainPackageConfig;
+            import com.facebook.react.shell.MainReactPackage;
+            import java.util.Arrays;
+            import java.util.ArrayList;
 
+            @SuppressWarnings("deprecation")
+            public class PackageList {
+              private Application application;
+              private ReactNativeHost reactNativeHost;
+              private MainPackageConfig mConfig;
 
+              public PackageList(ReactNativeHost reactNativeHost) {
+                this(reactNativeHost, null);
+              }
 
-    @SuppressWarnings("deprecation")
-    public class PackageList {
-      private Application application;
-      private ReactNativeHost reactNativeHost;
-      private MainPackageConfig mConfig;
+              public PackageList(Application application) {
+                this(application, null);
+              }
 
-      public PackageList(ReactNativeHost reactNativeHost) {
-        this(reactNativeHost, null);
-      }
+              public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
+                this.reactNativeHost = reactNativeHost;
+                mConfig = config;
+              }
 
-      public PackageList(Application application) {
-        this(application, null);
-      }
+              public PackageList(Application application, MainPackageConfig config) {
+                this.reactNativeHost = null;
+                this.application = application;
+                mConfig = config;
+              }
 
-      public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
-        this.reactNativeHost = reactNativeHost;
-        mConfig = config;
-      }
+              private ReactNativeHost getReactNativeHost() {
+                return this.reactNativeHost;
+              }
 
-      public PackageList(Application application, MainPackageConfig config) {
-        this.reactNativeHost = null;
-        this.application = application;
-        mConfig = config;
-      }
+              private Resources getResources() {
+                return this.getApplication().getResources();
+              }
 
-      private ReactNativeHost getReactNativeHost() {
-        return this.reactNativeHost;
-      }
+              private Application getApplication() {
+                if (this.reactNativeHost == null) return this.application;
+                return this.reactNativeHost.getApplication();
+              }
 
-      private Resources getResources() {
-        return this.getApplication().getResources();
-      }
+              private Context getApplicationContext() {
+                return this.getApplication().getApplicationContext();
+              }
 
-      private Application getApplication() {
-        if (this.reactNativeHost == null) return this.application;
-        return this.reactNativeHost.getApplication();
-      }
-
-      private Context getApplicationContext() {
-        return this.getApplication().getApplicationContext();
-      }
-
-      public ArrayList<ReactPackage> getPackages() {
-        return new ArrayList<>(Arrays.<ReactPackage>asList(
-          new MainReactPackage(mConfig)
-        ));
-      }
-    }
-    """
-                .trimIndent())
+              public ArrayList<ReactPackage> getPackages() {
+                return new ArrayList<>(Arrays.<ReactPackage>asList(
+                  new MainReactPackage(mConfig)
+                ));
+              }
+            }
+            """
+                .trimIndent()
+        )
   }
 
   @Test
   fun composeFileContent_withPackages_returnsValidFile() {
     val task = createTestTask<GeneratePackageListTask>()
     val packageName = "com.facebook.react"
-    val imports = task.composePackageImports(packageName, testDependencies)
     val instance = task.composePackageInstance(packageName, testDependencies)
-    val result = task.composeFileContent(imports, instance)
+    val result = task.composeFileContent(instance)
     // language=java
     assertThat(result)
         .isEqualTo(
             """
-    package com.facebook.react;
+            package com.facebook.react;
 
-    import android.app.Application;
-    import android.content.Context;
-    import android.content.res.Resources;
+            import android.app.Application;
+            import android.content.Context;
+            import android.content.res.Resources;
 
-    import com.facebook.react.ReactPackage;
-    import com.facebook.react.shell.MainPackageConfig;
-    import com.facebook.react.shell.MainReactPackage;
-    import java.util.Arrays;
-    import java.util.ArrayList;
+            import com.facebook.react.ReactPackage;
+            import com.facebook.react.shell.MainPackageConfig;
+            import com.facebook.react.shell.MainReactPackage;
+            import java.util.Arrays;
+            import java.util.ArrayList;
 
-    // @react-native/a-package
-    import com.facebook.react.aPackage;
-    // @react-native/another-package
-    import com.facebook.react.anotherPackage;
-    
-    @SuppressWarnings("deprecation")
-    public class PackageList {
-      private Application application;
-      private ReactNativeHost reactNativeHost;
-      private MainPackageConfig mConfig;
+            @SuppressWarnings("deprecation")
+            public class PackageList {
+              private Application application;
+              private ReactNativeHost reactNativeHost;
+              private MainPackageConfig mConfig;
 
-      public PackageList(ReactNativeHost reactNativeHost) {
-        this(reactNativeHost, null);
-      }
+              public PackageList(ReactNativeHost reactNativeHost) {
+                this(reactNativeHost, null);
+              }
 
-      public PackageList(Application application) {
-        this(application, null);
-      }
+              public PackageList(Application application) {
+                this(application, null);
+              }
 
-      public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
-        this.reactNativeHost = reactNativeHost;
-        mConfig = config;
-      }
+              public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
+                this.reactNativeHost = reactNativeHost;
+                mConfig = config;
+              }
 
-      public PackageList(Application application, MainPackageConfig config) {
-        this.reactNativeHost = null;
-        this.application = application;
-        mConfig = config;
-      }
+              public PackageList(Application application, MainPackageConfig config) {
+                this.reactNativeHost = null;
+                this.application = application;
+                mConfig = config;
+              }
 
-      private ReactNativeHost getReactNativeHost() {
-        return this.reactNativeHost;
-      }
+              private ReactNativeHost getReactNativeHost() {
+                return this.reactNativeHost;
+              }
 
-      private Resources getResources() {
-        return this.getApplication().getResources();
-      }
+              private Resources getResources() {
+                return this.getApplication().getResources();
+              }
 
-      private Application getApplication() {
-        if (this.reactNativeHost == null) return this.application;
-        return this.reactNativeHost.getApplication();
-      }
+              private Application getApplication() {
+                if (this.reactNativeHost == null) return this.application;
+                return this.reactNativeHost.getApplication();
+              }
 
-      private Context getApplicationContext() {
-        return this.getApplication().getApplicationContext();
-      }
+              private Context getApplicationContext() {
+                return this.getApplication().getApplicationContext();
+              }
 
-      public ArrayList<ReactPackage> getPackages() {
-        return new ArrayList<>(Arrays.<ReactPackage>asList(
-          new MainReactPackage(mConfig),
-          new APackage(),
-          new AnotherPackage()
-        ));
-      }
-    }
-    """
-                .trimIndent())
+              public ArrayList<ReactPackage> getPackages() {
+                return new ArrayList<>(Arrays.<ReactPackage>asList(
+                  new MainReactPackage(mConfig),
+                  // @react-native/a-package
+                  new com.facebook.react.APackage(),
+                  // @react-native/another-package
+                  new com.facebook.react.AnotherPackage()
+                ));
+              }
+            }
+            """
+                .trimIndent()
+        )
   }
 
   private val testDependencies =
@@ -372,7 +371,7 @@ class GeneratePackageListTaskTest {
           "@react-native/a-package" to
               ModelAutolinkingDependenciesPlatformAndroidJson(
                   sourceDir = "./a/directory",
-                  packageImportPath = "import com.facebook.react.aPackage;",
+                  packageImportPath = "import com.facebook.react.APackage;",
                   packageInstance = "new APackage()",
                   buildTypes = emptyList(),
                   libraryName = "aPackage",
@@ -382,11 +381,12 @@ class GeneratePackageListTaskTest {
           "@react-native/another-package" to
               ModelAutolinkingDependenciesPlatformAndroidJson(
                   sourceDir = "./another/directory",
-                  packageImportPath = "import com.facebook.react.anotherPackage;",
+                  packageImportPath = "import com.facebook.react.AnotherPackage;",
                   packageInstance = "new AnotherPackage()",
                   buildTypes = emptyList(),
                   libraryName = "anotherPackage",
                   componentDescriptors = emptyList(),
                   cmakeListsPath = "./another/directory/CMakeLists.txt",
-              ))
+              ),
+      )
 }

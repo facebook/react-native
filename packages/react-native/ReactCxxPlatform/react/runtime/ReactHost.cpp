@@ -9,35 +9,19 @@
 
 #include <ReactCommon/TurboModuleBinding.h>
 #include <cxxreact/JSBigString.h>
+#include <folly/system/ThreadName.h>
 #include <glog/logging.h>
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsinspector-modern/InspectorFlags.h>
-#include <react/coremodules/AppStateModule.h>
-#include <react/coremodules/DeviceInfoModule.h>
-#include <react/coremodules/PlatformConstantsModule.h>
 #include <react/debug/react_native_assert.h>
-#include <react/devsupport/DevLoadingViewModule.h>
 #include <react/devsupport/DevServerHelper.h>
-#include <react/devsupport/DevSettingsModule.h>
 #include <react/devsupport/IDevUIDelegate.h>
-#include <react/devsupport/LogBoxModule.h>
 #include <react/devsupport/PackagerConnection.h>
-#include <react/devsupport/SourceCodeModule.h>
 #include <react/devsupport/inspector/Inspector.h>
 #include <react/http/IHttpClient.h>
 #include <react/http/IWebSocketClient.h>
-#include <react/io/ImageLoaderModule.h>
-#include <react/io/NetworkingModule.h>
 #include <react/io/ResourceLoader.h>
-#include <react/io/WebSocketModule.h>
 #include <react/logging/LogOnce.h>
-#include <react/logging/NativeExceptionsManager.h>
-#include <react/nativemodule/defaults/DefaultTurboModules.h>
-#include <react/nativemodule/intersectionobserver/NativeIntersectionObserver.h>
-#include <react/nativemodule/mutationobserver/NativeMutationObserver.h>
-#include <react/nativemodule/webperformance/NativePerformance.h>
-#include <react/renderer/animated/AnimatedModule.h>
-#include <react/renderer/animated/AnimatedMountingOverrideDelegate.h>
 #include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
@@ -45,9 +29,12 @@
 #include <react/renderer/scheduler/SurfaceDelegate.h>
 #include <react/renderer/scheduler/SurfaceManager.h>
 #include <react/renderer/uimanager/IMountingManager.h>
+#include <react/runtime/JSRuntimeBindings.h>
 #include <react/runtime/PlatformTimerRegistryImpl.h>
 #include <react/runtime/hermes/HermesInstance.h>
 #include <react/threading/MessageQueueThreadImpl.h>
+
+#include "TurboModuleManager.h"
 
 namespace facebook::react {
 
@@ -60,7 +47,7 @@ struct ReactInstanceData {
   JsErrorHandler::OnJsError onJsError;
   Logger logger;
   std::shared_ptr<IDevUIDelegate> devUIDelegate;
-  TurboModuleManagerDelegates turboModuleManagerDelegates;
+  TurboModuleProviders turboModuleProviders;
   std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate;
   std::shared_ptr<NativeAnimatedNodesManagerProvider>
       animatedNodesManagerProvider;
@@ -75,7 +62,7 @@ ReactHost::ReactHost(
     JsErrorHandler::OnJsError onJsError,
     Logger logger,
     std::shared_ptr<IDevUIDelegate> devUIDelegate,
-    TurboModuleManagerDelegates turboModuleManagerDelegates,
+    TurboModuleProviders turboModuleProviders,
     std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate,
     std::shared_ptr<NativeAnimatedNodesManagerProvider>
         animatedNodesManagerProvider,
@@ -92,7 +79,7 @@ ReactHost::ReactHost(
       .onJsError = std::move(onJsError),
       .logger = std::move(logger),
       .devUIDelegate = devUIDelegate,
-      .turboModuleManagerDelegates = std::move(turboModuleManagerDelegates),
+      .turboModuleProviders = std::move(turboModuleProviders),
       .logBoxSurfaceDelegate = logBoxSurfaceDelegate,
       .animatedNodesManagerProvider = animatedNodesManagerProvider,
       .bindingsInstallFunc = std::move(bindingsInstallFunc)});
@@ -136,52 +123,63 @@ void ReactHost::createReactInstance() {
       reactInstanceData_->contextContainer->at<WebSocketClientFactory>(
           WebSocketClientFactoryKey);
 
+  auto devToolsHttpClientFactory =
+      reactInstanceData_->contextContainer
+          ->find<HttpClientFactory>(DevToolsHttpClientFactoryKey)
+          .value_or(httpClientFactory);
+
+  auto devToolsWebSocketClientFactory =
+      reactInstanceData_->contextContainer
+          ->find<WebSocketClientFactory>(DevToolsWebSocketClientFactoryKey)
+          .value_or(webSocketClientFactory);
+
   // Create devServerHelper
-  if (reactInstanceConfig_.enableDebugging) {
-    if (!devServerHelper_) {
-      devServerHelper_ = std::make_shared<DevServerHelper>(
-          reactInstanceConfig_.appId,
-          reactInstanceConfig_.deviceName,
-          reactInstanceConfig_.devServerHost,
-          reactInstanceConfig_.devServerPort,
-          httpClientFactory,
-          [this](
-              const std::string& moduleName,
-              const std::string& methodName,
-              folly::dynamic&& args) {
-            reactInstance_->callFunctionOnModule(
-                moduleName, methodName, std::move(args));
-          });
-    }
-    if (!inspector_) {
-      inspector_ = std::make_shared<Inspector>(
-          reactInstanceConfig_.appId,
-          reactInstanceConfig_.deviceName,
-          webSocketClientFactory,
-          httpClientFactory);
-      inspector_->ensureHostTarget(
-          [this]() { reloadReactInstance(); },
-          [weakDevUIDelegate = std::weak_ptr<IDevUIDelegate>(
-               reactInstanceData_->devUIDelegate)](
-              bool showDebuggerOverlay,
-              std::function<void()>&& resumeDebuggerFn) {
-            if (auto debugUIDelegate = weakDevUIDelegate.lock()) {
-              if (showDebuggerOverlay) {
-                debugUIDelegate->showDebuggerOverlay(
-                    std::move(resumeDebuggerFn));
-              } else {
-                debugUIDelegate->hideDebuggerOverlay();
-              }
+  if (!devServerHelper_ &&
+      (reactInstanceConfig_.enableInspector ||
+       reactInstanceConfig_.enableDevMode)) {
+    devServerHelper_ = std::make_shared<DevServerHelper>(
+        reactInstanceConfig_.appId,
+        reactInstanceConfig_.deviceName,
+        reactInstanceConfig_.devServerHost,
+        reactInstanceConfig_.devServerPort,
+        devToolsHttpClientFactory,
+        [this](
+            const std::string& moduleName,
+            const std::string& methodName,
+            folly::dynamic&& args) {
+          reactInstance_->callFunctionOnModule(
+              moduleName, methodName, std::move(args));
+        });
+  }
+
+  if (!inspector_ && reactInstanceConfig_.enableInspector) {
+    inspector_ = std::make_shared<Inspector>(
+        reactInstanceConfig_.appId,
+        reactInstanceConfig_.deviceName,
+        devToolsWebSocketClientFactory,
+        devToolsHttpClientFactory);
+    inspector_->ensureHostTarget(
+        [this]() { reloadReactInstance(); },
+        [weakDevUIDelegate =
+             std::weak_ptr<IDevUIDelegate>(reactInstanceData_->devUIDelegate)](
+            bool showDebuggerOverlay,
+            std::function<void()>&& resumeDebuggerFn) {
+          if (auto debugUIDelegate = weakDevUIDelegate.lock()) {
+            if (showDebuggerOverlay) {
+              debugUIDelegate->showDebuggerOverlay(std::move(resumeDebuggerFn));
+            } else {
+              debugUIDelegate->hideDebuggerOverlay();
             }
-          });
-    }
-    if (!packagerConnection_) {
-      packagerConnection_ = std::make_unique<PackagerConnection>(
-          webSocketClientFactory,
-          devServerHelper_->getPackagerConnectionUrl(),
-          [this]() { reloadReactInstance(); },
-          []() {});
-    }
+          }
+        });
+  }
+
+  if (!packagerConnection_ && reactInstanceConfig_.enableDevMode) {
+    packagerConnection_ = std::make_unique<PackagerConnection>(
+        devToolsWebSocketClientFactory,
+        devServerHelper_->getPackagerConnectionUrl(),
+        [this]() { reloadReactInstance(); },
+        []() {});
   }
 
   // Create the React Instance
@@ -194,7 +192,7 @@ void ReactHost::createReactInstance() {
       reactInstanceData_->messageQueueThread,
       /* allocInOldGenBeforeTTI */ false);
 
-  if (reactInstanceConfig_.enableDebugging) {
+  if (reactInstanceConfig_.enableInspector) {
     react_native_assert(
         inspector_ != nullptr && "Inspector is not initialized");
   }
@@ -240,33 +238,37 @@ void ReactHost::createReactInstance() {
   auto jsInvoker = std::make_shared<RuntimeSchedulerCallInvoker>(
       reactInstance_->getRuntimeScheduler());
 
+  if (inspector_ != nullptr) {
+    inspector_->connectDebugger(devServerHelper_->getInspectorUrl());
+  }
+
   auto liveReloadCallback = [this]() { reloadReactInstance(); };
+  TurboModuleManager turboModuleManager(
+      reactInstanceData_->turboModuleProviders,
+      jsInvoker,
+      reactInstanceData_->onJsError,
+      reactInstanceData_->animatedNodesManagerProvider,
+      reactInstanceConfig_.enableDevMode ? devServerHelper_ : nullptr,
+      reactInstanceData_->devUIDelegate,
+      reactInstanceData_->logBoxSurfaceDelegate,
+      httpClientFactory,
+      webSocketClientFactory,
+      std::move(liveReloadCallback));
+
   reactInstance_->initializeRuntime(
       {
 #if defined(WITH_PERFETTO) || defined(RNCXX_WITH_PROFILING_PROVIDER)
-          .isProfiling = true
+          .isProfiling = true,
 #else
-          .isProfiling = false
+          .isProfiling = false,
 #endif
-          ,
           .runtimeDiagnosticFlags = ""},
       [weakMountingManager =
            std::weak_ptr<IMountingManager>(reactInstanceData_->mountingManager),
        logger = reactInstanceData_->logger,
-       devUIDelegate = reactInstanceData_->devUIDelegate,
-       turboModuleManagerDelegates =
-           reactInstanceData_->turboModuleManagerDelegates,
-       jsInvoker = std::move(jsInvoker),
-       logBoxSurfaceDelegate = reactInstanceData_->logBoxSurfaceDelegate,
-       devServerHelper = devServerHelper_,
-       animatedNodesManagerProvider =
-           reactInstanceData_->animatedNodesManagerProvider,
-       onJsError = reactInstanceData_->onJsError,
        bindingsInstallFunc = reactInstanceData_->bindingsInstallFunc,
-       httpClientFactory = std::move(httpClientFactory),
-       webSocketClientFactory = std::move(webSocketClientFactory),
-       liveReloadCallback =
-           std::move(liveReloadCallback)](jsi::Runtime& runtime) {
+       turboModuleManager =
+           std::move(turboModuleManager)](jsi::Runtime& runtime) mutable {
         if (logger) {
           bindNativeLogger(runtime, logger);
         }
@@ -280,87 +282,9 @@ void ReactHost::createReactInstance() {
               return false;
             });
 
-        auto turboModuleProvider =
-            [turboModuleManagerDelegates,
-             jsInvoker,
-             logBoxSurfaceDelegate,
-             devServerHelper,
-             devUIDelegate,
-             animatedNodesManagerProvider,
-             onJsError,
-             httpClientFactory = httpClientFactory,
-             webSocketClientFactory = webSocketClientFactory,
-             liveReloadCallback = liveReloadCallback](
-                const std::string& name) -> std::shared_ptr<TurboModule> {
-          react_native_assert(
-              !name.empty() && "TurboModule name must not be empty");
-
-          for (const auto& turboModuleManagerDelegate :
-               turboModuleManagerDelegates) {
-            if (turboModuleManagerDelegate) {
-              if (auto turboModule =
-                      turboModuleManagerDelegate(name, jsInvoker)) {
-                return turboModule;
-              }
-            }
-          }
-
-          if (auto turboModule =
-                  DefaultTurboModules::getTurboModule(name, jsInvoker)) {
-            return turboModule;
-          }
-
-          if (name == AnimatedModule::kModuleName) {
-            return std::make_shared<AnimatedModule>(
-                jsInvoker, animatedNodesManagerProvider);
-          } else if (name == AppStateModule::kModuleName) {
-            return std::make_shared<AppStateModule>(jsInvoker);
-          } else if (name == DeviceInfoModule::kModuleName) {
-            return std::make_shared<DeviceInfoModule>(jsInvoker);
-          } else if (
-              devUIDelegate != nullptr &&
-              name == DevLoadingViewModule::kModuleName) {
-            return std::make_shared<DevLoadingViewModule>(
-                jsInvoker, devUIDelegate);
-          } else if (
-              devServerHelper && name == DevSettingsModule::kModuleName) {
-            return std::make_shared<DevSettingsModule>(
-                jsInvoker, devServerHelper, liveReloadCallback);
-          } else if (name == PlatformConstantsModule::kModuleName) {
-            return std::make_shared<PlatformConstantsModule>(jsInvoker);
-          } else if (name == ImageLoaderModule::kModuleName) {
-            return std::make_shared<ImageLoaderModule>(jsInvoker);
-          } else if (name == SourceCodeModule::kModuleName) {
-            return std::make_shared<SourceCodeModule>(
-                jsInvoker, devServerHelper);
-          } else if (name == WebSocketModule::kModuleName) {
-            return std::make_shared<WebSocketModule>(
-                jsInvoker, webSocketClientFactory);
-          } else if (name == NativeExceptionsManager::kModuleName) {
-            return std::make_shared<NativeExceptionsManager>(
-                onJsError, jsInvoker);
-          } else if (name == NativePerformance::kModuleName) {
-            return std::make_shared<NativePerformance>(jsInvoker);
-          } else if (name == NativeIntersectionObserver::kModuleName) {
-            return std::make_shared<NativeIntersectionObserver>(jsInvoker);
-          } else if (name == NativeMutationObserver::kModuleName) {
-            return std::make_shared<NativeMutationObserver>(jsInvoker);
-          } else if (name == NetworkingModule::kModuleName) {
-            return std::make_shared<NetworkingModule>(
-                jsInvoker, httpClientFactory);
-          } else if (name == LogBoxModule::kModuleName) {
-            if (logBoxSurfaceDelegate) {
-              return std::make_shared<LogBoxModule>(
-                  jsInvoker, logBoxSurfaceDelegate);
-            }
-          }
-
-          LOG_WARNING_ONCE << "Failed to load TurboModule: " << name;
-          return nullptr;
-        };
-
         // Set up TurboModules
-        TurboModuleBinding::install(runtime, turboModuleProvider);
+        TurboModuleBinding::install(runtime, std::move(turboModuleManager));
+
         if (bindingsInstallFunc) {
           bindingsInstallFunc(runtime);
         }
@@ -386,11 +310,13 @@ void ReactHost::destroyReactInstance() {
 }
 
 void ReactHost::reloadReactInstance() {
-  if (isReloadingReactInstance_) {
+  if (isReloadingReactInstance_.exchange(true)) {
     return;
   }
-  isReloadingReactInstance_ = true;
+
   std::thread([this]() {
+    folly::setThreadName("ReactReload");
+
     std::vector<SurfaceManager::SurfaceProps> surfaceProps;
     for (auto& surfaceId : surfaceManager_->getRunningSurfaces()) {
       if (auto surfaceProp = surfaceManager_->getSurfaceProps(surfaceId);
@@ -417,7 +343,7 @@ bool ReactHost::loadScript(
     const std::string& bundlePath,
     const std::string& sourcePath) noexcept {
   bool isLoaded = false;
-  if (devServerHelper_) {
+  if (reactInstanceConfig_.enableDevMode && devServerHelper_) {
     devServerHelper_->setSourcePath(sourcePath);
     isLoaded = loadScriptFromDevServer();
   }
@@ -426,6 +352,12 @@ bool ReactHost::loadScript(
     isLoaded = loadScriptFromBundlePath(bundlePath);
   }
   return isLoaded;
+}
+
+void ReactHost::openDebugger() {
+  if (inspector_ != nullptr && devServerHelper_ != nullptr) {
+    devServerHelper_->openDebugger();
+  }
 }
 
 bool ReactHost::loadScriptFromDevServer() {
@@ -448,12 +380,8 @@ bool ReactHost::loadScriptFromDevServer() {
                   }
                 })
             .get();
-    auto script = std::make_unique<JSBigStdString>(response);
-    reactInstance_->loadScript(
-        std::move(script), devServerHelper_->getBundleUrl());
-    if (inspector_ != nullptr) {
-      inspector_->connectDebugger(devServerHelper_->getInspectorUrl());
-    }
+    auto script = std::make_unique<JSBigStdString>(std::move(response));
+    reactInstance_->loadScript(std::move(script), bundleUrl);
     devServerHelper_->setupHMRClient();
     return true;
   } catch (...) {
@@ -468,8 +396,7 @@ bool ReactHost::loadScriptFromDevServer() {
 bool ReactHost::loadScriptFromBundlePath(const std::string& bundlePath) {
   try {
     LOG(INFO) << "Loading JS bundle from bundle path: " << bundlePath;
-    auto script = std::make_unique<JSBigStdString>(
-        ResourceLoader::getFileContents(bundlePath));
+    auto script = ResourceLoader::getFileContents(bundlePath);
     reactInstance_->loadScript(std::move(script), bundlePath);
     LOG(INFO) << "Loaded JS bundle from bundle path: " << bundlePath;
     return true;
@@ -515,7 +442,9 @@ std::unordered_set<SurfaceId> ReactHost::getRunningSurfaces() const noexcept {
 
 void ReactHost::runOnScheduler(
     std::function<void(Scheduler& scheduler)>&& task) const {
-  task(*scheduler_);
+  if (!isReloadingReactInstance_) {
+    task(*scheduler_);
+  }
 }
 
 void ReactHost::runOnRuntimeScheduler(

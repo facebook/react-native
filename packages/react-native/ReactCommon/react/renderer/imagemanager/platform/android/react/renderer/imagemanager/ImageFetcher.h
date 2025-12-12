@@ -10,21 +10,34 @@
 #include <react/renderer/imagemanager/ImageRequest.h>
 #include <react/renderer/imagemanager/ImageRequestParams.h>
 #include <react/utils/ContextContainer.h>
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
 namespace facebook::react {
 
+extern const char ImageFetcherKey[];
+
 class ImageFetcher {
  public:
-  ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer)
-      : contextContainer_(std::move(contextContainer)) {}
+  ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer);
+  ~ImageFetcher() = default;
+  ImageFetcher(const ImageFetcher &) = delete;
+  ImageFetcher &operator=(const ImageFetcher &) = delete;
+  ImageFetcher(ImageFetcher &&) = delete;
+  ImageFetcher &operator=(ImageFetcher &&) = delete;
 
-  ImageRequest requestImage(
-      const ImageSource& imageSource,
-      const ImageRequestParams& imageRequestParams,
-      SurfaceId surfaceId,
-      Tag tag) const;
+  void flushImageRequests();
 
  private:
+  friend class ImageManager;
+  ImageRequest requestImage(
+      const ImageSource &imageSource,
+      SurfaceId surfaceId,
+      const ImageRequestParams &imageRequestParams,
+      Tag tag);
+
+  std::unordered_map<SurfaceId, std::vector<ImageRequestItem>> items_;
   std::shared_ptr<const ContextContainer> contextContainer_;
 };
 } // namespace facebook::react

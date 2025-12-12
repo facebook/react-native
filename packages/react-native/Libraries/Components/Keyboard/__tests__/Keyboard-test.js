@@ -31,7 +31,7 @@ describe('Keyboard', () => {
       duration: null | number,
       easing: null | string,
     ): void =>
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       Keyboard.scheduleLayoutAnimation({duration, easing});
 
     it('triggers layout animation', () => {

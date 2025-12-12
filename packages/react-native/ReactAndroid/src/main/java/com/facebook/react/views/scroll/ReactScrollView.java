@@ -18,6 +18,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -37,8 +38,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
-import com.facebook.react.animated.NativeAnimatedModule;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
@@ -98,43 +97,42 @@ public class ReactScrollView extends ScrollView
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mTempRect = new Rect();
-  private final Rect mOverflowInset = new Rect();
+  private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
 
+  private Rect mOverflowInset;
   private @Nullable VirtualViewContainerState mVirtualViewContainerState;
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
-  private Overflow mOverflow = Overflow.SCROLL;
+  private Overflow mOverflow;
   private boolean mDragging;
-  private boolean mPagingEnabled = false;
+  private boolean mPagingEnabled;
   private @Nullable Runnable mPostTouchRunnable;
   private boolean mRemoveClippedSubviews;
-  private boolean mScrollEnabled = true;
+  private boolean mScrollEnabled;
   private boolean mSendMomentumEvents;
-  private @Nullable FpsListener mFpsListener = null;
+  private @Nullable FpsListener mFpsListener;
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
-  private int mEndFillColor = Color.TRANSPARENT;
-  private boolean mDisableIntervalMomentum = false;
-  private int mSnapInterval = 0;
+  private int mEndFillColor;
+  private boolean mDisableIntervalMomentum;
+  private int mSnapInterval;
   private @Nullable List<Integer> mSnapOffsets;
-  private boolean mSnapToStart = true;
-  private boolean mSnapToEnd = true;
-  private int mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
+  private boolean mSnapToStart;
+  private boolean mSnapToEnd;
+  private int mSnapToAlignment;
   private @Nullable View mContentView;
-  private @Nullable ReadableMap mCurrentContentOffset = null;
-  private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
-  private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
-  private @Nullable StateWrapper mStateWrapper = null;
-  private final ReactScrollViewScrollState mReactScrollViewScrollState =
-      new ReactScrollViewScrollState();
-  private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
-  private PointerEvents mPointerEvents = PointerEvents.AUTO;
-  private long mLastScrollDispatchTime = 0;
-  private int mScrollEventThrottle = 0;
-  private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper =
-      null;
-  private int mFadingEdgeLengthStart = 0;
-  private int mFadingEdgeLengthEnd = 0;
+  private @Nullable ReadableMap mCurrentContentOffset;
+  private int mPendingContentOffsetX;
+  private int mPendingContentOffsetY;
+  private @Nullable StateWrapper mStateWrapper;
+  private ReactScrollViewScrollState mReactScrollViewScrollState;
+  private PointerEvents mPointerEvents;
+  private long mLastScrollDispatchTime;
+  private int mScrollEventThrottle;
+  private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
+  private int mFadingEdgeLengthStart;
+  private int mFadingEdgeLengthEnd;
+  private boolean mEmittedOverScrollSinceScrollBegin;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -150,12 +148,74 @@ public class ReactScrollView extends ScrollView
     setClipChildren(false);
 
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
+    initView();
   }
+
+  /**
+   * Set all default values here as opposed to in the constructor or field defaults. It is important
+   * that these properties are set during the constructor, but also on-demand whenever an existing
+   * ReactTextView is recycled.
+   */
+  private void initView() {
+    mOverflowInset = new Rect();
+    mVirtualViewContainerState = null;
+    mActivelyScrolling = false;
+    mClippingRect = null;
+
+    // The default value for `overflow` is set to `Visible` in the Yoga style props.
+    mOverflow =
+        ReactNativeFeatureFlags.enablePropsUpdateReconciliationAndroid()
+            ? Overflow.VISIBLE
+            : Overflow.SCROLL;
+
+    mDragging = false;
+    mPagingEnabled = false;
+    mPostTouchRunnable = null;
+    mRemoveClippedSubviews = false;
+    mScrollEnabled = true;
+    mSendMomentumEvents = false;
+    mScrollPerfTag = null;
+    mEndBackground = null;
+    mEndFillColor = Color.TRANSPARENT;
+    mDisableIntervalMomentum = false;
+    mSnapInterval = 0;
+    mSnapOffsets = null;
+    mSnapToStart = true;
+    mSnapToEnd = true;
+    mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
+    mContentView = null;
+    mCurrentContentOffset = null;
+    mPendingContentOffsetX = UNSET_CONTENT_OFFSET;
+    mPendingContentOffsetY = UNSET_CONTENT_OFFSET;
+    mStateWrapper = null;
+    mReactScrollViewScrollState = new ReactScrollViewScrollState();
+    mPointerEvents = PointerEvents.AUTO;
+    mLastScrollDispatchTime = 0;
+    mScrollEventThrottle = 0;
+    mMaintainVisibleContentPositionHelper = null;
+    mFadingEdgeLengthStart = 0;
+    mFadingEdgeLengthEnd = 0;
+    mEmittedOverScrollSinceScrollBegin = false;
+  }
+
+  /* package */ void recycleView() {
+    // Set default field values
+    initView();
+
+    // If the view is still attached to a parent, we need to remove it from the parent
+    // before we can recycle it.
+    if (getParent() != null) {
+      ((ViewGroup) getParent()).removeView(this);
+    }
+    updateView();
+  }
+
+  private void updateView() {}
 
   @Override
   public VirtualViewContainerState getVirtualViewContainerState() {
     if (mVirtualViewContainerState == null) {
-      mVirtualViewContainerState = new VirtualViewContainerState(this);
+      mVirtualViewContainerState = VirtualViewContainerState.create(this);
     }
 
     return mVirtualViewContainerState;
@@ -311,7 +371,12 @@ public class ReactScrollView extends ScrollView
       mOverflow = Overflow.SCROLL;
     } else {
       @Nullable Overflow parsedOverflow = Overflow.fromString(overflow);
-      mOverflow = parsedOverflow == null ? Overflow.SCROLL : parsedOverflow;
+      mOverflow =
+          parsedOverflow == null
+              ? (ReactNativeFeatureFlags.enablePropsUpdateReconciliationAndroid()
+                  ? Overflow.VISIBLE
+                  : Overflow.SCROLL)
+              : parsedOverflow;
     }
 
     invalidate();
@@ -370,9 +435,9 @@ public class ReactScrollView extends ScrollView
       // If a "pending" content offset value has been set, we restore that value.
       // Upon call to scrollTo, the "pending" values will be re-set.
       int scrollToX =
-          pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
+          mPendingContentOffsetX != UNSET_CONTENT_OFFSET ? mPendingContentOffsetX : getScrollX();
       int scrollToY =
-          pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
+          mPendingContentOffsetY != UNSET_CONTENT_OFFSET ? mPendingContentOffsetY : getScrollY();
       scrollTo(scrollToX, scrollToY);
     }
 
@@ -387,6 +452,9 @@ public class ReactScrollView extends ScrollView
     super.onSizeChanged(w, h, oldw, oldh);
     if (mRemoveClippedSubviews) {
       updateClippingRect();
+    }
+    if (mVirtualViewContainerState != null) {
+      mVirtualViewContainerState.updateState();
     }
   }
 
@@ -445,6 +513,15 @@ public class ReactScrollView extends ScrollView
     if (focused != null) {
       scrollToChild(focused);
     }
+    requestChildFocusWithoutScroll(child, focused);
+  }
+
+  /**
+   * In rare cases where an app overrides the built-in ReactScrollView by overriding it, and also
+   * needs to customize scroll into view on focus behaviors, this protected method can be used to
+   * unblocks such customization.
+   */
+  protected void requestChildFocusWithoutScroll(View child, View focused) {
     super.requestChildFocus(child, focused);
   }
 
@@ -463,11 +540,24 @@ public class ReactScrollView extends ScrollView
   }
 
   private void scrollToChild(View child) {
+    // Only scroll the nearest ReactScrollView ancestor into view, rather than the focused child.
+    // Nested ScrollView instances will handle scrolling the child into their respective viewports.
+    View parent = child;
+    View scrollViewAncestor = null;
+    while (parent != null && parent != this) {
+      if (parent instanceof ReactScrollView) {
+        scrollViewAncestor = parent;
+      }
+      parent = (View) parent.getParent();
+    }
+
+    View scrollIntoViewTarget = scrollViewAncestor != null ? scrollViewAncestor : child;
+
     Rect tempRect = new Rect();
-    child.getDrawingRect(tempRect);
+    scrollIntoViewTarget.getDrawingRect(tempRect);
 
     /* Offset from child's local coordinates to ScrollView coordinates */
-    offsetDescendantRectToMyCoords(child, tempRect);
+    offsetDescendantRectToMyCoords(scrollIntoViewTarget, tempRect);
 
     int scrollDelta = computeScrollDeltaToGetChildRectOnScreen(tempRect);
 
@@ -528,9 +618,12 @@ public class ReactScrollView extends ScrollView
   }
 
   protected void handleInterceptedTouchEvent(MotionEvent ev) {
-    NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    if (!ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid()) {
+      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+    }
     ReactScrollViewHelper.emitScrollBeginDragEvent(this);
     mDragging = true;
+    mEmittedOverScrollSinceScrollBegin = false;
     enableFpsListener();
     getFlingAnimator().cancel();
   }
@@ -554,7 +647,9 @@ public class ReactScrollView extends ScrollView
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(this, velocityX, velocityY);
-      NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      if (!ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid()) {
+        NativeGestureUtil.notifyNativeGestureEnded(this, ev);
+      }
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
@@ -575,6 +670,42 @@ public class ReactScrollView extends ScrollView
       return false;
     }
 
+    // Handle ACTION_SCROLL events (mouse wheel, trackpad, joystick)
+    if (ev.getActionMasked() == MotionEvent.ACTION_SCROLL) {
+      float vScroll = ev.getAxisValue(MotionEvent.AXIS_VSCROLL);
+      if (vScroll != 0) {
+        // Perform the scroll
+        boolean result = super.dispatchGenericMotionEvent(ev);
+        // Schedule snap alignment to run after scrolling stops
+        if (result
+            && (mPagingEnabled
+                || mSnapInterval != 0
+                || mSnapOffsets != null
+                || mSnapToAlignment != SNAP_ALIGNMENT_DISABLED)) {
+          // Cancel any pending post-touch runnable and reschedule
+          if (mPostTouchRunnable != null) {
+            removeCallbacks(mPostTouchRunnable);
+          }
+          mPostTouchRunnable =
+              new Runnable() {
+                @Override
+                public void run() {
+                  mPostTouchRunnable = null;
+                  // +1/-1 velocity if scrolling down or up. This is to ensure that the
+                  // next/previous page is picked rather than sliding backwards to the current page
+                  int velocityY = (int) -Math.signum(vScroll);
+                  if (mDisableIntervalMomentum) {
+                    velocityY = 0;
+                  }
+                  flingAndSnap(velocityY);
+                }
+              };
+          postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+        }
+        return result;
+      }
+    }
+
     return super.dispatchGenericMotionEvent(ev);
   }
 
@@ -591,6 +722,10 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void setRemoveClippedSubviews(boolean removeClippedSubviews) {
+    if (ReactNativeFeatureFlags.disableSubviewClippingAndroid()) {
+      return;
+    }
+
     if (removeClippedSubviews && mClippingRect == null) {
       mClippingRect = new Rect();
     }
@@ -645,8 +780,6 @@ public class ReactScrollView extends ScrollView
     if (mPagingEnabled) {
       flingAndSnap(correctedVelocityY);
     } else if (mScroller != null) {
-      // FB SCROLLVIEW CHANGE
-
       // We provide our own version of fling that uses a different call to the standard OverScroller
       // which takes into account the possibility of adding new content while the ScrollView is
       // animating. Because we give essentially no max Y for the fling, the fling will continue as
@@ -671,8 +804,6 @@ public class ReactScrollView extends ScrollView
           );
 
       ViewCompat.postInvalidateOnAnimation(this);
-
-      // END FB SCROLLVIEW CHANGE
     } else {
       super.fling(correctedVelocityY);
     }
@@ -785,8 +916,8 @@ public class ReactScrollView extends ScrollView
               // We are still scrolling.
               mActivelyScrolling = false;
               mStableFrames = 0;
-              ViewCompat.postOnAnimationDelayed(
-                  ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
+              ReactScrollView.this.postOnAnimationDelayed(
+                  this, ReactScrollViewHelper.MOMENTUM_DELAY);
             } else {
               // There has not been a scroll update since the last time this Runnable executed.
               ReactScrollViewHelper.updateFabricScrollState(ReactScrollView.this);
@@ -805,14 +936,7 @@ public class ReactScrollView extends ScrollView
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
                 }
-                ReactContext context = (ReactContext) getContext();
-                if (context != null) {
-                  NativeAnimatedModule nativeAnimated =
-                      context.getNativeModule(NativeAnimatedModule.class);
-                  if (nativeAnimated != null) {
-                    nativeAnimated.userDrivenScrollEnded(ReactScrollView.this.getId());
-                  }
-                }
+                ReactScrollViewHelper.notifyUserDrivenScrollEnded_internal(ReactScrollView.this);
                 disableFpsListener();
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {
@@ -822,14 +946,13 @@ public class ReactScrollView extends ScrollView
                   flingAndSnap(0);
                 }
                 // The scrollview has not "stabilized" so we just post to check again a frame later
-                ViewCompat.postOnAnimationDelayed(
-                    ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
+                ReactScrollView.this.postOnAnimationDelayed(
+                    this, ReactScrollViewHelper.MOMENTUM_DELAY);
               }
             }
           }
         };
-    ViewCompat.postOnAnimationDelayed(
-        this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+    postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
   private void cancelPostTouchScrolling() {
@@ -1139,11 +1262,8 @@ public class ReactScrollView extends ScrollView
   @Override
   protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
     if (mScroller != null && mContentView != null) {
-      // FB SCROLLVIEW CHANGE
-
       // This is part two of the reimplementation of fling to fix the bounce-back bug. See #fling()
-      // for
-      // more information.
+      // for more information.
 
       if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
         int scrollRange = getMaxScrollY();
@@ -1152,8 +1272,13 @@ public class ReactScrollView extends ScrollView
           scrollY = scrollRange;
         }
       }
+    }
 
-      // END FB SCROLLVIEW CHANGE
+    if (ReactNativeFeatureFlags.shouldTriggerResponderTransferOnScrollAndroid()
+        && clampedY
+        && mEmittedOverScrollSinceScrollBegin == false) {
+      ReactScrollViewHelper.emitScrollEvent(this, 0f, 0f);
+      mEmittedOverScrollSinceScrollBegin = true;
     }
 
     super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
@@ -1252,7 +1377,7 @@ public class ReactScrollView extends ScrollView
 
         mScroller.fling(getScrollX(), scrollY, 0, (int) flingVelocityY, 0, 0, 0, Integer.MAX_VALUE);
       } else {
-        scrollTo(getScrollX(), scrollY + (mScroller.getCurrX() - scrollerYBeforeTick));
+        scrollTo(getScrollX(), scrollY + (mScroller.getCurrY() - scrollerYBeforeTick));
       }
     }
   }
@@ -1278,11 +1403,11 @@ public class ReactScrollView extends ScrollView
    */
   private void setPendingContentOffsets(int x, int y) {
     if (isContentReady()) {
-      pendingContentOffsetX = UNSET_CONTENT_OFFSET;
-      pendingContentOffsetY = UNSET_CONTENT_OFFSET;
+      mPendingContentOffsetX = UNSET_CONTENT_OFFSET;
+      mPendingContentOffsetY = UNSET_CONTENT_OFFSET;
     } else {
-      pendingContentOffsetX = x;
-      pendingContentOffsetY = y;
+      mPendingContentOffsetX = x;
+      mPendingContentOffsetY = y;
     }
   }
 
@@ -1368,6 +1493,10 @@ public class ReactScrollView extends ScrollView
    * style. `translateY` must never be set from ReactJS while using this feature!
    */
   public void setScrollAwayTopPaddingEnabledUnstable(int topPadding) {
+    setScrollAwayTopPaddingEnabledUnstable(topPadding, true);
+  }
+
+  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding, boolean updateState) {
     int count = getChildCount();
 
     Assertions.assertCondition(
@@ -1387,13 +1516,27 @@ public class ReactScrollView extends ScrollView
       setPadding(0, 0, 0, topPadding);
     }
 
-    updateScrollAwayState(topPadding);
+    if (updateState) {
+      updateScrollAwayState(topPadding);
+    }
     setRemoveClippedSubviews(mRemoveClippedSubviews);
   }
 
   private void updateScrollAwayState(int scrollAwayPaddingTop) {
     getReactScrollViewScrollState().setScrollAwayPaddingTop(scrollAwayPaddingTop);
     ReactScrollViewHelper.forceUpdateState(this);
+  }
+
+  @Override
+  public void setReactScrollViewScrollState(ReactScrollViewScrollState scrollState) {
+    mReactScrollViewScrollState = scrollState;
+    if (ReactNativeFeatureFlags.enableViewCulling()
+        || ReactNativeFeatureFlags.useTraitHiddenOnAndroid()) {
+      setScrollAwayTopPaddingEnabledUnstable(scrollState.getScrollAwayPaddingTop(), false);
+
+      Point scrollPosition = scrollState.getLastStateUpdateScroll();
+      scrollTo(scrollPosition.x, scrollPosition.y);
+    }
   }
 
   @Override

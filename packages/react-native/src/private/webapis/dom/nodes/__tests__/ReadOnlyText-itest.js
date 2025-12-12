@@ -35,7 +35,7 @@ function ensureReactNativeElement(value: mixed): ReactNativeElement {
 }
 
 describe('ReadOnlyText', () => {
-  it('should be used to create public text instances when the `enableAccessToHostTreeInFabric` feature flag is enabled', () => {
+  it('should be used to create public text instances', () => {
     const parentNodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot();

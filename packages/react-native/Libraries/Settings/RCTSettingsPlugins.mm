@@ -13,20 +13,17 @@
 
 #import "RCTSettingsPlugins.h"
 
-#import <string>
-#import <unordered_map>
+#import <string_view>
 
-Class RCTSettingsClassProvider(const char *name) {
-  // Intentionally leak to avoid crashing after static destructors are run.
-  static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
-    {"SettingsManager", RCTSettingsManagerCls},
-  };
+using namespace std::literals;
 
-  auto p = sCoreModuleClassMap->find(name);
-  if (p != sCoreModuleClassMap->end()) {
-    auto classFunc = p->second;
-    return classFunc();
+Class RCTSettingsClassProvider(const char *name)
+{
+
+  if (name == "SettingsManager"sv) {
+    return RCTSettingsManagerCls();
   }
+
   return nil;
 }
 

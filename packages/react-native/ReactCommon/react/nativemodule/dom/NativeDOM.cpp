@@ -172,6 +172,23 @@ std::vector<jsi::Value> NativeDOM::getChildNodes(
   return getArrayOfInstanceHandlesFromShadowNodes(childNodes, rt);
 }
 
+jsi::Value NativeDOM::getElementById(
+    jsi::Runtime& rt,
+    SurfaceId surfaceId,
+    const std::string& id) {
+  auto currentRevision = getCurrentShadowTreeRevision(rt, surfaceId);
+  if (currentRevision == nullptr) {
+    return jsi::Value::undefined();
+  }
+
+  auto elementById = dom::getElementById(currentRevision, id);
+  if (elementById == nullptr) {
+    return jsi::Value::undefined();
+  }
+
+  return elementById->getInstanceHandle(rt);
+}
+
 jsi::Value NativeDOM::getParentNode(
     jsi::Runtime& rt,
     jsi::Value nativeNodeReference) {

@@ -46,13 +46,13 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       offsetX: Float,
       offsetY: Float,
       isRTL: Boolean,
-      doLeftAndRightSwapInRTL: Boolean
+      doLeftAndRightSwapInRTL: Boolean,
   )
 
   external fun startSurfaceWithSurfaceHandler(
       surfaceId: Int,
       surfaceHandler: SurfaceHandlerBinding,
-      isMountable: Boolean
+      isMountable: Boolean,
   )
 
   external fun findNextFocusableElement(parentTag: Int, focusedTag: Int, direction: Int): Int
@@ -74,7 +74,7 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       offsetX: Float,
       offsetY: Float,
       isRTL: Boolean,
-      doLeftAndRightSwapInRTL: Boolean
+      doLeftAndRightSwapInRTL: Boolean,
   )
 
   external fun driveCxxAnimations()
@@ -92,7 +92,12 @@ internal class FabricUIManagerBinding : HybridClassBase() {
   ) {
     fabricUIManager.setBinding(this)
     installFabricUIManager(
-        runtimeExecutor, runtimeScheduler, fabricUIManager, eventBeatManager, componentFactory)
+        runtimeExecutor,
+        runtimeScheduler,
+        fabricUIManager,
+        eventBeatManager,
+        componentFactory,
+    )
     setPixelDensity(getDisplayMetricDensity())
   }
 

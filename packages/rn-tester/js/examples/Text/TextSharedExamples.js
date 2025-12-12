@@ -14,7 +14,7 @@ import type {TextLayoutLine} from 'react-native/Libraries/Types/CoreEventTypes';
 import RNTesterText from '../../components/RNTesterText';
 import {useTheme} from '../../components/RNTesterTheme';
 import {useState} from 'react';
-import {View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 function InlineView(props: {
   textAlign: 'auto' | 'left' | 'right' | 'center' | 'justify',
@@ -28,11 +28,15 @@ function InlineView(props: {
         <RNTesterText style={{fontWeight: 'bold'}}>Child</RNTesterText>
         <View style={{width: 30, height: 30, backgroundColor: 'red'}} />
         <RNTesterText style={{fontWeight: 'bold'}}>Child</RNTesterText>
-        {props !== null && props.long === true && (
-          <RNTesterText style={{fontWeight: 'bold'}}>
-            aaaa a aaaa aaaaaa aaa a a a aaaaa sdsds dsdSAD asd ASDasd ASDas
-          </RNTesterText>
-        )}
+        {
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/5whu3i34. */
+          props !== null && props.long === true && (
+            <RNTesterText style={{fontWeight: 'bold'}}>
+              aaaa a aaaa aaaaaa aaa a a a aaaaa sdsds dsdSAD asd ASDasd ASDas
+            </RNTesterText>
+          )
+        }
       </RNTesterText>
     </View>
   );
@@ -189,6 +193,49 @@ component RtlAndInlineViewsExample() {
   );
 }
 
+component TextWithLinkRoleExample() {
+  const handlePress = () => console.log('Link Press');
+
+  return (
+    <View>
+      <Text role="link" style={styles.link} onPress={handlePress}>
+        Link Text
+      </Text>
+
+      <Text>
+        <Text role="link" style={styles.link} onPress={handlePress}>
+          Nested Link
+        </Text>
+      </Text>
+
+      <Text>
+        Before{' '}
+        <Text role="link" style={styles.link} onPress={handlePress}>
+          Nested Link
+        </Text>
+        {' After'}
+      </Text>
+
+      <Text>
+        <Text role="link" style={styles.link} onPress={handlePress}>
+          Nested Link 1
+        </Text>
+        {' - '}
+        <Text role="link" style={styles.link} onPress={handlePress}>
+          Nested Link 2
+        </Text>
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  link: {
+    color: 'teal',
+    textDecorationLine: 'underline',
+  },
+});
+
 export default [
   {
     title: 'Empty Text',
@@ -217,5 +264,11 @@ export default [
       'Shows the behavior of numberOfLines and ellipsizeMode in conjunction with the onTextLayout event',
     scrollable: true,
     render: NumberOfLinesTextLayoutExample,
+  },
+  {
+    title: 'Text with link role',
+    name: 'textWithLinkRole',
+    description: 'Shows the a11y behavior of Text with role="link"',
+    render: TextWithLinkRoleExample,
   },
 ] as $ReadOnlyArray<RNTesterModuleExample>;

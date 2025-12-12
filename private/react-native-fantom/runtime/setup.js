@@ -8,8 +8,10 @@
  * @format
  */
 
+import type {BenchmarkResult} from '../src/Benchmark';
 import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 
+import {getConstants} from '../src/Constants';
 import expect from './expect';
 import {createMockFunction} from './mocks';
 import patchWeakRef from './patchWeakRef';
@@ -34,9 +36,12 @@ export type FailureDetail = {
   cause?: FailureDetail,
 };
 
+export opaque type CoverageMap = mixed;
+
 export type TestSuiteResult =
   | {
       testResults: Array<TestCaseResult>,
+      coverageMap?: CoverageMap,
     }
   | {
       error: FailureDetail,
@@ -399,6 +404,13 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
   );
 }
 
+export function reportBenchmarkResult(result: BenchmarkResult): void {
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+  NativeFantom.reportTestSuiteResultsJSON(JSON.stringify(result));
+}
+
 function validateEmptyMessageQueue(): void {
   // Force the import of the native module to be lazy
   const NativeFantom =
@@ -418,6 +430,33 @@ function serializeError(error: Error): FailureDetail {
   return result;
 }
 
+function runTest(): Array<TestCaseResult> {
+  const {jsTraceOutputPath} = getConstants();
+  if (jsTraceOutputPath == null) {
+    return runSuite(currentContext);
+  }
+
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+
+  try {
+    NativeFantom.startJSSamplingProfiler();
+  } catch (e) {
+    console.error('Could not start JS sampling profiler', e);
+  }
+
+  try {
+    return runSuite(currentContext);
+  } finally {
+    try {
+      NativeFantom.stopJSSamplingProfilerAndSaveToFile(jsTraceOutputPath);
+    } catch (e) {
+      console.error('Could not stop JS sampling profiler', e);
+    }
+  }
+}
+
 global.$$RunTests$$ = () => {
   if (testSetupError != null) {
     reportTestSuiteResult({
@@ -428,7 +467,8 @@ global.$$RunTests$$ = () => {
     });
   } else {
     reportTestSuiteResult({
-      testResults: runSuite(currentContext),
+      testResults: runTest(),
+      coverageMap: global.__coverage__,
     });
   }
 };

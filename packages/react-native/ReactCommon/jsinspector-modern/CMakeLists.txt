@@ -26,6 +26,7 @@ target_link_libraries(jsinspector
         react_featureflags
         runtimeexecutor
         reactperflogger
+        react_utils
 )
 target_compile_reactnative_options(jsinspector PRIVATE)
 if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
