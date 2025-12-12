@@ -212,8 +212,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                   CGFloat descender = fabs(font.descender);
                                   CGFloat textHeight = ascender + descender;
                                   CGFloat leading = usedRect.size.height - textHeight;
-                                  CGFloat adjustedAscender = ascender + ceil(leading / 2.0);
-                                  CGFloat adjustedDescender = descender + floor(leading / 2.0);
+                                  CGFloat adjustedAscender = ascender + round(leading / 2.0);
+                                  CGFloat adjustedDescender = descender + (leading - round(leading / 2.0));
                                   auto line = LineMeasurement{
                                       std::string([renderedString UTF8String]),
                                       rect,
