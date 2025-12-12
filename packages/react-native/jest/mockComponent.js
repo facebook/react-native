@@ -39,7 +39,7 @@ export default function mockComponent<
 
   const SuperClass: typeof React.Component<{...}> =
     typeof RealComponent === 'function' &&
-    RealComponent.prototype.constructor instanceof React.Component
+    RealComponent.prototype?.constructor instanceof React.Component
       ? RealComponent
       : React.Component;
 
