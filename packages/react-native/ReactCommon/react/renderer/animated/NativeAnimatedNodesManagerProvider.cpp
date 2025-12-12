@@ -95,7 +95,8 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           std::move(stopOnRenderCallback_),
           std::move(directManipulationCallback),
           std::move(fabricCommitCallback),
-          uiManager);
+          uiManager,
+          jsInvoker);
 
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(animationBackend_);
