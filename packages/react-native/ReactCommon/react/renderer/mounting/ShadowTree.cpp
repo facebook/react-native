@@ -390,13 +390,9 @@ ShadowTreeRevision ShadowTree::getCurrentRevision() const {
 
 void ShadowTree::mount(ShadowTreeRevision revision, bool mountSynchronously)
     const {
-  LOG(WARNING) << "⚙️ Mounting revision " << revision.number
-               << " (" << (mountSynchronously ? "synchronously" : "asynchronously") << ")";
   mountingCoordinator_->push(std::move(revision));
   delegate_.shadowTreeDidFinishTransaction(
       mountingCoordinator_, mountSynchronously);
-  LOG(WARNING) << "☑️ Finished mount-phase revision " << revision.number
-               << " (" << (mountSynchronously ? "synchronously" : "asynchronously") << ")";
 }
 
 void ShadowTree::commitEmptyTree() const {
