@@ -38,15 +38,16 @@ class MultipartStreamReaderTest {
           override fun onChunkComplete(headers: Map<String, String>, body: BufferedSource, done: Boolean) {
             super.onChunkComplete(headers, body, done)
 
-            assertThat(done).isTrue
+            assertThat(done).isTrue()
             assertThat(headers["Content-Type"]).isEqualTo("application/json; charset=utf-8")
             assertThat(body.readUtf8()).isEqualTo("{}")
           }
         }
+
     val success = reader.readAllParts(callback)
 
     assertThat(callback.callCount).isEqualTo(1)
-    assertThat(success).isTrue
+    assertThat(success).isTrue()
   }
 
   @Test
@@ -81,7 +82,7 @@ class MultipartStreamReaderTest {
     val success = reader.readAllParts(callback)
 
     assertThat(callback.callCount).isEqualTo(3)
-    assertThat(success).isTrue
+    assertThat(success).isTrue()
   }
 
   @Test
@@ -97,7 +98,7 @@ class MultipartStreamReaderTest {
     val success = reader.readAllParts(callback)
 
     assertThat(callback.callCount).isEqualTo(0)
-    assertThat(success).isFalse
+    assertThat(success).isFalse()
   }
 
   @Test
@@ -121,8 +122,82 @@ class MultipartStreamReaderTest {
     val callback = CallCountTrackingChunkCallback()
     val success = reader.readAllParts(callback)
 
+    // First part was complete, then stream ended without a close delimiter.
     assertThat(callback.callCount).isEqualTo(1)
-    assertThat(success).isFalse
+    assertThat(success).isFalse()
+  }
+
+  @Test
+  fun testListenerDoesNotNeedToFullyReadBody() {
+    val response: ByteString =
+        encodeUtf8(
+            "preamble\r\n" +
+                "--sample_boundary\r\n" +
+                "Content-Type: text/plain\r\n" +
+                "Content-Length: 4\r\n\r\n" +
+                "ABCD\r\n" +
+                "--sample_boundary\r\n" +
+                "Content-Type: text/plain\r\n" +
+                "Content-Length: 1\r\n\r\n" +
+                "Z\r\n" +
+                "--sample_boundary--\r\n"
+        )
+
+    val source = Buffer().apply { write(response) }
+    val reader = MultipartStreamReader(source, "sample_boundary")
+
+    val parts = mutableListOf<String>()
+    val callback =
+        object : MultipartStreamReader.ChunkListener {
+          override fun onChunkComplete(headers: Map<String, String>, body: BufferedSource, isLastChunk: Boolean) {
+            if (parts.isEmpty()) {
+              // Intentionally only read 1 byte from the first part.
+              parts.add(body.readUtf8(1))
+              return
+            }
+            parts.add(body.readUtf8())
+          }
+
+          override fun onChunkProgress(headers: Map<String, String>, loaded: Long, total: Long) = Unit
+        }
+
+    val success = reader.readAllParts(callback)
+
+    assertThat(success).isTrue()
+    assertThat(parts).containsExactly("A", "Z")
+  }
+
+  @Test
+  fun testHeaderNamesAreCaseInsensitive() {
+    val response: ByteString =
+        encodeUtf8(
+            "preamble\r\n" +
+                "--sample_boundary\r\n" +
+                "content-type: application/json\r\n" +
+                "content-length: 2\r\n\r\n" +
+                "{}\r\n" +
+                "--sample_boundary--\r\n"
+        )
+
+    val source = Buffer().apply { write(response) }
+    val reader = MultipartStreamReader(source, "sample_boundary")
+
+    val callback =
+        object : CallCountTrackingChunkCallback() {
+          override fun onChunkComplete(headers: Map<String, String>, body: BufferedSource, done: Boolean) {
+            super.onChunkComplete(headers, body, done)
+
+            // Lookup using canonical case should still work.
+            assertThat(headers["Content-Type"]).isEqualTo("application/json")
+            assertThat(headers["Content-Length"]).isEqualTo("2")
+            assertThat(body.readUtf8()).isEqualTo("{}")
+          }
+        }
+
+    val success = reader.readAllParts(callback)
+
+    assertThat(success).isTrue()
+    assertThat(callback.callCount).isEqualTo(1)
   }
 
   internal open class CallCountTrackingChunkCallback : MultipartStreamReader.ChunkListener {

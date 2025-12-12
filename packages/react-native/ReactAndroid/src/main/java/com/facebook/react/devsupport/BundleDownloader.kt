@@ -26,7 +26,6 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import okio.Buffer
 import okio.BufferedSource
 import okio.Okio
 import org.json.JSONException
@@ -120,14 +119,10 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                   downloadBundleFromURLCall = null
 
                   val url = resp.request().url().toString()
-                  // Make sure the result is a multipart response and parse the boundary.
-                  var contentType = resp.header("content-type")
-                  if (contentType == null) {
-                    // fallback to empty string for nullability
-                    contentType = ""
-                  }
+                  val contentType = resp.header("content-type") ?: ""
                   val regex = Pattern.compile("multipart/mixed;.*boundary=\"([^\"]+)\"")
                   val match = regex.matcher(contentType)
+
                   if (contentType.isNotEmpty() && match.find()) {
                     val boundary = Assertions.assertNotNull(match.group(1))
                     processMultipartResponse(url, resp, boundary, outputFile, bundleInfo, callback)
@@ -135,18 +130,23 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     // In case the server doesn't support multipart/mixed responses, fallback to
                     // normal
                     // download.
-                    resp.body().use { body ->
-                      if (body != null) {
+                    val body = resp.body()
+                    if (body != null) {
+                      body.use {
                         processBundleResult(
                             url,
                             resp.code(),
                             resp.headers(),
-                            body.source(),
+                            it.source(),
                             outputFile,
                             bundleInfo,
                             callback,
                         )
                       }
+                    } else {
+                      callback.onFailure(
+                          makeGeneric(url, "Development server response body was empty.", "URL: $url", null)
+                      )
                     }
                   }
                 }
@@ -164,24 +164,26 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       bundleInfo: BundleInfo?,
       callback: DevBundleDownloadListener,
   ) {
-    if (response.body() == null) {
+    val responseBody = response.body()
+    if (responseBody == null) {
       callback.onFailure(
           DebugServerException(
               ("""
                     Error while reading multipart response.
-                    
+
                     Response body was empty: ${response.code()}
-                    
+
                     URL: $url
-                    
-                    
+
+
                     """
                   .trimIndent())
           )
       )
       return
     }
-    val source = checkNotNull(response.body()?.source())
+
+    val source = responseBody.source()
     val bodyReader = MultipartStreamReader(source, boundary)
     val completed =
         bodyReader.readAllParts(
@@ -191,48 +193,43 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                   body: BufferedSource,
                   isLastChunk: Boolean,
               ) {
-                  if (isLastChunk) {
-                      // The http status code for each separate chunk is in the X-Http-Status header.
-                      var status = response.code()
-                      if (headers.containsKey("X-Http-Status")) {
-                          status = headers.getOrDefault("X-Http-Status", "0").toInt()
-                      }
-                      processBundleResult(
-                          url,
-                          status,
-                          Headers.of(headers),
-                          body,
-                          outputFile,
-                          bundleInfo,
-                          callback,
-                      )
-                  } else {
-                    if (!headers.containsKey("Content-Type") ||
-                        headers["Content-Type"] != "application/json"
-                    ) {
-                      return
-                    }
+                if (isLastChunk) {
+                  val status =
+                      headers["X-Http-Status"]?.toIntOrNull()
+                          ?: response.code()
 
-                      try {
-                          // Read exactly Content-Length bytes, not everything
-                          val contentLength = headers["Content-Length"]?.toLongOrNull() ?: return
-                          val progress = JSONObject(body.readUtf8(contentLength))
-                          val status = if (progress.has("status")) progress.getString("status") else "Bundling"
-                          val done: Int? = if (progress.has("done")) progress.getInt("done") else null
-                          val total: Int? = if (progress.has("total")) progress.getInt("total") else null
-                          callback.onProgress(status, done, total)
-                      } catch (e: JSONException) {
-                          FLog.e(ReactConstants.TAG, "Error parsing progress JSON. $e")
-                      }
-                  }
+                  processBundleResult(
+                      url,
+                      status,
+                      Headers.of(headers),
+                      body,
+                      outputFile,
+                      bundleInfo,
+                      callback,
+                  )
+                  return
+                }
+
+                val contentType = headers["Content-Type"] ?: return
+                if (!isJsonContentType(contentType)) {
+                  return
+                }
+
+                try {
+                  // Body is already bounded to this part; safe to read fully.
+                  val progress = JSONObject(body.readUtf8())
+                  val status = if (progress.has("status")) progress.getString("status") else "Bundling"
+                  val done: Int? = if (progress.has("done")) progress.getInt("done") else null
+                  val total: Int? = if (progress.has("total")) progress.getInt("total") else null
+                  callback.onProgress(status, done, total)
+                } catch (e: JSONException) {
+                  FLog.e(ReactConstants.TAG, "Error parsing progress JSON.", e)
+                }
               }
 
-              override fun onChunkProgress(
-                  headers: Map<String, String>,
-                  loaded: Long,
-                  total: Long,
-              ) {
-                if ("application/javascript" == headers["Content-Type"]) {
+              override fun onChunkProgress(headers: Map<String, String>, loaded: Long, total: Long) {
+                val contentType = headers["Content-Type"] ?: return
+                if (isJavaScriptContentType(contentType)) {
                   callback.onProgress(
                       "Downloading",
                       (loaded / 1024).toInt(),
@@ -242,17 +239,18 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
               }
             }
         )
+
     if (!completed) {
       callback.onFailure(
           DebugServerException(
               ("""
                     Error while reading multipart response.
-                    
+
                     Response code: ${response.code()}
-                    
+
                     URL: $url
-                    
-                    
+
+
                     """
                   .trimIndent())
           )
@@ -292,15 +290,15 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
     }
 
     if (bundleInfo != null) {
-        populateBundleInfo(url, headers, bundleInfo)
+      populateBundleInfo(url, headers, bundleInfo)
     }
 
-    val contentLength = headers["Content-Length"]?.toLongOrNull()
-        ?: throw IOException("Missing Content-Length header for bundle")
+    val tmpFile = File(outputFile.path + ".tmp")
 
-    // streams directly to file
-    Okio.buffer(Okio.sink(outputFile)).use { sink ->
-        sink.write(body, contentLength)  
+    if (storePlainJSInFile(body, tmpFile)) {
+      if (!tmpFile.renameTo(outputFile)) {
+        throw IOException("Couldn't rename $tmpFile to $outputFile")
+      }
     }
 
     callback.onSuccess()
@@ -311,6 +309,14 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
 
     // Should be kept in sync with constants in RCTJavaScriptLoader.h
     private const val FILES_CHANGED_COUNT_NOT_BUILT_BY_BUNDLER = -2
+
+    @Throws(IOException::class)
+    private fun storePlainJSInFile(body: BufferedSource, outputFile: File): Boolean {
+      Okio.sink(outputFile).use { sink ->
+        body.readAll(sink)
+      }
+      return true
+    }
 
     private fun populateBundleInfo(url: String, headers: Headers, bundleInfo: BundleInfo) {
       bundleInfo._url = url
@@ -325,5 +331,11 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
         }
       }
     }
+
+    private fun isJsonContentType(value: String): Boolean =
+        value.startsWith("application/json")
+
+    private fun isJavaScriptContentType(value: String): Boolean =
+        value.startsWith("application/javascript")
   }
 }
