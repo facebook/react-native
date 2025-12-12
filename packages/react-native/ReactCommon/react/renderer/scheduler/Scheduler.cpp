@@ -224,10 +224,18 @@ void Scheduler::registerSurface(
     const SurfaceHandler& surfaceHandler) const noexcept {
   surfaceHandler.setContextContainer(getContextContainer());
   surfaceHandler.setUIManager(uiManager_.get());
+
+  if (ReactNativeFeatureFlags::enableFabricCommitBranching()) {
+    surfaceHandler.registerCommitHook(uiManager_.get());
+  }
 }
 
 void Scheduler::unregisterSurface(
     const SurfaceHandler& surfaceHandler) const noexcept {
+  if (ReactNativeFeatureFlags::enableFabricCommitBranching()) {
+    surfaceHandler.unregisterCommitHook(uiManager_.get());
+  }
+
   surfaceHandler.setUIManager(nullptr);
 }
 
