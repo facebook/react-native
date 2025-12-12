@@ -15,6 +15,8 @@
 #include <jsi/instrumentation.h>
 #include <jsi/jsi.h>
 
+#include <array>
+
 namespace facebook {
 namespace jsi {
 
@@ -454,6 +456,16 @@ void Runtime::deleteProperty(const Object& object, const Value& name) {
   if (!res) {
     throw JSError(*this, "Failed to delete property");
   }
+}
+
+size_t Runtime::push(const Array& arr, const Value* elements, size_t count) {
+  size_t newSize = size(arr);
+  for (size_t i = 0; i < count; i++) {
+    arr.setProperty(*this, Value((int)newSize), elements[i]);
+    ++newSize;
+  }
+  arr.setProperty(*this, "length", Value((int)newSize));
+  return newSize;
 }
 
 void Runtime::setRuntimeDataImpl(
