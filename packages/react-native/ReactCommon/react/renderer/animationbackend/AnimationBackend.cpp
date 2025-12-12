@@ -55,21 +55,25 @@ AnimationBackend::AnimationBackend(
     StopOnRenderCallback&& stopOnRenderCallback,
     DirectManipulationCallback&& directManipulationCallback,
     FabricCommitCallback&& fabricCommitCallback,
-    UIManager* uiManager)
+    UIManager* uiManager,
+    std::shared_ptr<CallInvoker> jsInvoker)
     : startOnRenderCallback_(std::move(startOnRenderCallback)),
       stopOnRenderCallback_(std::move(stopOnRenderCallback)),
       directManipulationCallback_(std::move(directManipulationCallback)),
       fabricCommitCallback_(std::move(fabricCommitCallback)),
       animatedPropsRegistry_(std::make_shared<AnimatedPropsRegistry>()),
       uiManager_(uiManager),
+      jsInvoker_(std::move(jsInvoker)),
       commitHook_(uiManager, animatedPropsRegistry_) {}
 
 void AnimationBackend::onAnimationFrame(double timestamp) {
   std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
+  bool shouldRequestAsyncFlush = false;
 
   for (auto& callback : callbacks) {
-    auto muatations = callback(static_cast<float>(timestamp));
-    for (auto& mutation : muatations.batch) {
+    auto mutations = callback(static_cast<float>(timestamp));
+    shouldRequestAsyncFlush |= mutations.shouldRequestAsyncFlush;
+    for (auto& mutation : mutations.batch) {
       const auto family = mutation.family;
       react_native_assert(family != nullptr);
 
@@ -89,6 +93,22 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
     } else {
       synchronouslyUpdateProps(surfaceUpdates.propsMap);
     }
+  }
+
+  if (shouldRequestAsyncFlush) {
+    // for (const auto& [surfaceId, _] : surfaceUpdates) {
+    jsInvoker_->invokeAsync([this]() {
+      uiManager_->getShadowTreeRegistry().enumerate(
+          [](const ShadowTree& shadowTree, bool& stop) {
+            shadowTree.commit(
+                [](const RootShadowNode& oldRootShadowNode) {
+                  return std::static_pointer_cast<RootShadowNode>(
+                      oldRootShadowNode.ShadowNode::clone({}));
+                },
+                {.source = ShadowTreeCommitSource::React});
+          });
+    });
+    // }
   }
 }
 

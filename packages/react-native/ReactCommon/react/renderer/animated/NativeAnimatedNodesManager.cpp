@@ -909,6 +909,9 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     bool layoutStyleUpdated,
     bool forceFabricCommit) noexcept {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    if (forceFabricCommit) {
+      shouldRequestAsyncFlush_ = true;
+    }
     if (layoutStyleUpdated) {
       mergeObjects(updateViewProps_[viewTag], props);
     } else {
@@ -962,7 +965,7 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
     task();
   }
 
-  AnimationMutations mutations;
+  AnimationMutations mutations{};
 
   // Step through the animation loop
   if (isAnimationUpdateNeeded()) {
@@ -1105,6 +1108,8 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
     // There is no active animation. Stop the render callback.
     stopRenderCallbackIfNeeded(false);
   }
+  mutations.shouldRequestAsyncFlush = shouldRequestAsyncFlush_;
+  shouldRequestAsyncFlush_ = false;
   return mutations;
 }
 #endif
