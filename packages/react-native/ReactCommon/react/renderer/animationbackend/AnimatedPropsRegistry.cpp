@@ -70,6 +70,13 @@ AnimatedPropsRegistry::getMap(SurfaceId surfaceId) {
       map.insert_or_assign(tag, std::move(propsSnapshot));
     } else {
       auto& currentSnapshot = currentIt->second;
+      if (propsSnapshot->rawProps) {
+        if (currentSnapshot->rawProps) {
+          currentSnapshot->rawProps->merge_patch(*propsSnapshot->rawProps);
+        } else {
+          currentSnapshot->rawProps = std::move(propsSnapshot->rawProps);
+        }
+      }
       for (auto& propName : propsSnapshot->propNames) {
         currentSnapshot->propNames.insert(propName);
         updateProp(propName, currentSnapshot->props, *propsSnapshot);
