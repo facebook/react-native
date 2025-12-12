@@ -30,6 +30,8 @@ export const JS_HEAP_SNAPSHOTS_OUTPUT_PATH: string = path.join(
   'js-heap-snapshots',
 );
 
+export const COVERAGE_OUTPUT_PATH: string = path.join(OUTPUT_PATH, 'coverage');
+
 export function getTestBuildOutputPath(): string {
   const fantomRunID = process.env.__FANTOM_RUN_ID__;
   if (fantomRunID == null) {
@@ -39,6 +41,16 @@ export function getTestBuildOutputPath(): string {
   }
 
   return path.join(JS_BUILD_OUTPUT_PATH, fantomRunID);
+}
+
+export function getCoverageFilePath(): string {
+  const fantomRunID = process.env.__FANTOM_RUN_ID__;
+  if (fantomRunID == null) {
+    throw new Error(
+      'Expected Fantom run ID to be set by global setup, but it was not (process.env.__FANTOM_RUN_ID__ is null)',
+    );
+  }
+  return `${COVERAGE_OUTPUT_PATH}/${fantomRunID}.profraw`;
 }
 
 export function buildJSTracesOutputPath({
