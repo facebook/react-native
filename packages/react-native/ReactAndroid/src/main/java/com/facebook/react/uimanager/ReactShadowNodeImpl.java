@@ -350,15 +350,11 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
     float layoutX = getLayoutX();
     float layoutY = getLayoutY();
-    int newAbsoluteLeft = Math.round(absoluteX + layoutX);
-    int newAbsoluteTop = Math.round(absoluteY + layoutY);
-    int newAbsoluteRight = Math.round(absoluteX + layoutX + getLayoutWidth());
-    int newAbsoluteBottom = Math.round(absoluteY + layoutY + getLayoutHeight());
 
     int newScreenX = Math.round(layoutX);
     int newScreenY = Math.round(layoutY);
-    int newScreenWidth = newAbsoluteRight - newAbsoluteLeft;
-    int newScreenHeight = newAbsoluteBottom - newAbsoluteTop;
+    int newScreenWidth = Math.round(getLayoutWidth());
+    int newScreenHeight = Math.round(getLayoutHeight());
 
     return newScreenX != mScreenX
         || newScreenY != mScreenY
