@@ -9,30 +9,20 @@
  */
 
 import {RNTesterThemeContext} from './RNTesterTheme';
-
-const React = require('react');
-const {StyleSheet, Text} = require('react-native');
+import React from 'react';
+import {StyleSheet, Text} from 'react-native';
 
 type Props = $ReadOnly<{
-  children: string,
+  children: React.Node,
 }>;
 
-class RNTesterComponentTitle extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
-
-  render(): React.Node {
-    return (
-      <RNTesterThemeContext.Consumer>
-        {theme => (
-          <Text style={[styles.titleText, {color: theme.LabelColor}]}>
-            {this.props.children}
-          </Text>
-        )}
-      </RNTesterThemeContext.Consumer>
-    );
-  }
+export default function RNTesterComponentTitle({children}: Props): React.Node {
+  const theme = React.useContext(RNTesterThemeContext);
+  return (
+    <Text style={[styles.titleText, {color: theme.LabelColor}]}>
+      {children}
+    </Text>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -41,5 +31,3 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
 });
-
-module.exports = RNTesterComponentTitle;
