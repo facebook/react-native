@@ -374,10 +374,10 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
   return nil;
 }
 
-- (CGRect)calculateCenteredFrameWithAttributedText:(NSAttributedString *)attributedText
-                                             frame:(CGRect)frame {
+- (void)adjustFrameForLineHeightCentering:(NSAttributedString *)attributedText
+                                     frame:(CGRect *)frame {
   if (!attributedText || attributedText.length == 0) {
-    return frame;
+    return;
   }
   
   UIFont *font = [attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
@@ -388,7 +388,7 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
   NSParagraphStyle *paragraphStyle = [attributedText attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
 
   if (!paragraphStyle || paragraphStyle.minimumLineHeight == 0) {
-    return frame;
+    return;
   }
   
   CGFloat lineHeight = paragraphStyle.minimumLineHeight;
@@ -400,9 +400,7 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
   CGFloat difference = MAX(0, textHeight - lineHeight);
   CGFloat verticalOffset = difference / 2.0;
 
-  frame.origin.y += verticalOffset;
-
-  return frame;
+  frame->origin.y += verticalOffset;
 }
 
 - (void)drawRect:(CGRect)rect
@@ -424,7 +422,7 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
 
   if (ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS()) {
     NSAttributedString *attributedText = RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
-    frame = [self calculateCenteredFrameWithAttributedText:attributedText frame:frame];
+    [self adjustFrameForLineHeightCentering:attributedText frame:&frame];
   }
 
   [nativeTextLayoutManager drawAttributedString:stateData.attributedString
