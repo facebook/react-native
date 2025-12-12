@@ -297,6 +297,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableFabricCommitBranching: {
+      defaultValue: true /* @nocommit */,
+      metadata: {
+        description:
+          'Enables Fabric commit branching to fix starvation problems and atomic JS updates.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
     enableFabricLogs: {
       defaultValue: false,
       metadata: {
