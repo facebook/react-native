@@ -55,7 +55,8 @@ static inline bool mutationHasLayoutUpdates(
     // TODO: there should also be a check for the dynamic part
     if (animatedProp->propName == WIDTH || animatedProp->propName == HEIGHT ||
         animatedProp->propName == FLEX || animatedProp->propName == MARGIN ||
-        animatedProp->propName == PADDING) {
+        animatedProp->propName == PADDING ||
+        animatedProp->propName == POSITION) {
       return true;
     }
   }
