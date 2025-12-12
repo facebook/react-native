@@ -224,11 +224,13 @@ void ReactHost::createReactInstance() {
             ownerBox, *runtimeScheduler);
       };
 
-  schedulerDelegate_ = std::make_unique<SchedulerDelegateImpl>(
+  auto schedulerDelegate = std::make_unique<SchedulerDelegateImpl>(
       reactInstanceData_->mountingManager);
   scheduler_ =
-      std::make_unique<Scheduler>(toolbox, nullptr, schedulerDelegate_.get());
+      std::make_unique<Scheduler>(toolbox, nullptr, schedulerDelegate.get());
   surfaceManager_ = std::make_unique<SurfaceManager>(*scheduler_);
+  schedulerDelegate->setUIManager(scheduler_->getUIManager());
+  schedulerDelegate_ = std::move(schedulerDelegate);
 
   reactInstanceData_->mountingManager->setSchedulerTaskExecutor(
       [this](SchedulerTask&& task) { runOnScheduler(std::move(task)); });
