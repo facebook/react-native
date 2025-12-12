@@ -32,10 +32,7 @@ const includesSummary = body_contains('## summary', 'summary:');
 
 const snapshot_output = JSON.parse(
   fs.readFileSync(
-    path.join(
-      process.env.RUNNER_TEMP,
-      'diff-js-api-breaking-changes/output.json',
-    ),
+    path.join(process.env.RUNNER_TEMP, 'diff-js-api-changes/output.json'),
     'utf8',
   ),
 );
