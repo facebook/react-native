@@ -36,9 +36,12 @@ struct AnimationMutation {
   Tag tag;
   std::shared_ptr<const ShadowNodeFamily> family;
   AnimatedProps props;
+  bool hasLayoutUpdates{false};
 };
 
-using AnimationMutations = std::vector<AnimationMutation>;
+struct AnimationMutations {
+  std::vector<AnimationMutation> batch;
+};
 
 class AnimationBackend : public UIManagerAnimationBackend {
  public:
@@ -63,7 +66,7 @@ class AnimationBackend : public UIManagerAnimationBackend {
       DirectManipulationCallback &&directManipulationCallback,
       FabricCommitCallback &&fabricCommitCallback,
       UIManager *uiManager);
-  void commitUpdates(std::unordered_map<SurfaceId, SurfaceUpdates> &surfaceUpdates);
+  void commitUpdates(SurfaceId surfaceId, SurfaceUpdates &surfaceUpdates);
   void synchronouslyUpdateProps(const std::unordered_map<Tag, AnimatedProps> &updates);
   void clearRegistry(SurfaceId surfaceId) override;
 
