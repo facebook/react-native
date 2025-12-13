@@ -31,6 +31,18 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<CascadedBorderRadii>>(BORDER_RADII, value));
   }
+  void setMargin(CascadedRectangleEdges<yoga::StyleLength> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(MARGIN, value));
+  }
+  void setPadding(CascadedRectangleEdges<yoga::StyleLength> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(PADDING, value));
+  }
+  void setPosition(CascadedRectangleEdges<yoga::StyleLength> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(POSITION, value));
+  }
   void setTransform(Transform &t)
   {
     props.push_back(std::make_unique<AnimatedProp<Transform>>(TRANSFORM, std::move(t)));
