@@ -153,7 +153,8 @@ class NativeAnimatedNodesManager {
       Tag viewTag,
       const folly::dynamic &props,
       bool layoutStyleUpdated,
-      bool forceFabricCommit) noexcept;
+      bool forceFabricCommit,
+      ShadowNodeFamily::Weak shadowNodeFamily = {}) noexcept;
 
   /**
    * Commits all pending animated property updates to their respective views.
@@ -260,9 +261,9 @@ class NativeAnimatedNodesManager {
 
   std::unordered_map<Tag, folly::dynamic> updateViewProps_{};
   std::unordered_map<Tag, folly::dynamic> updateViewPropsDirect_{};
-
-  mutable std::mutex tagToShadowNodeFamilyMutex_;
-  std::unordered_map<Tag, std::weak_ptr<const ShadowNodeFamily>> tagToShadowNodeFamily_{};
+  std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> updateViewPropsForBackend_{};
+  std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> updateViewPropsDirectForBackend_{};
+  bool shouldRequestAsyncFlush_{false};
 
   /*
    * Sometimes a view is not longer connected to a PropsAnimatedNode, but
