@@ -217,6 +217,63 @@ const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
       },
     ],
   },
+
+  // ReactCommon.podspec has multiple subspecs with different header_dir values
+  // that the generic parser cannot handle (it only extracts the first header_dir).
+  'ReactCommon/ReactCommon.podspec': {
+    name: 'ReactCommon',
+    headerPatterns: [],
+    headerDir: 'ReactCommon',
+    subSpecs: [
+      {
+        name: 'bridging',
+        headerPatterns: ['react/bridging/**/*.h'],
+        excludePatterns: ['react/bridging/tests/**'],
+        headerDir: 'react/bridging',
+      },
+      {
+        name: 'core',
+        headerPatterns: ['react/nativemodule/core/ReactCommon/**/*.h'],
+        headerDir: 'ReactCommon',
+      },
+    ],
+  },
+
+  // these podspecs set `header_dir` via Ruby variables, which the generic
+  // podspec parser cannot infer. Add explicit exceptions so headers are emitted under
+  // the expected `jsinspector-modern/...` include paths.
+  'React/Runtime/React-RCTRuntime.podspec': {
+    name: 'React-RCTRuntime',
+    headerPatterns: ['*.h'],
+    headerDir: 'React',
+  },
+
+  'ReactCommon/jsinspector-modern/React-jsinspector.podspec': {
+    name: 'React-jsinspector',
+    headerPatterns: ['*.h'],
+    headerDir: 'jsinspector-modern',
+  },
+  'ReactCommon/jsinspector-modern/cdp/React-jsinspectorcdp.podspec': {
+    name: 'React-jsinspectorcdp',
+    headerPatterns: ['*.h'],
+    headerDir: 'jsinspector-modern/cdp',
+  },
+  'ReactCommon/jsinspector-modern/network/React-jsinspectornetwork.podspec': {
+    name: 'React-jsinspectornetwork',
+    headerPatterns: ['*.h'],
+    headerDir: 'jsinspector-modern/network',
+  },
+  'ReactCommon/jsinspector-modern/tracing/React-jsinspectortracing.podspec': {
+    name: 'React-jsinspectortracing',
+    headerPatterns: ['*.h'],
+    headerDir: 'jsinspector-modern/tracing',
+  },
+  'React/React-RCTFabric.podspec': {
+    name: 'React-RCTFabric',
+    headerPatterns: ['Fabric/**/*.h'],
+    headerDir: 'React',
+  },
+
   'React/React-RCTFBReactNativeSpec.podspec': {
     name: 'React-RCTFBReactNativeSpec',
     headerPatterns: ['FBReactNativeSpec/**/*.h'],
