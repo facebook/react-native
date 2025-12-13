@@ -47,7 +47,7 @@ function buildVFSStructure(
     }
   }
 
-  // Build the root-level directory entries
+  // Build the root-level entries (files at root + top-level directories)
   const rootDirs /*: Set<string> */ = new Set();
   for (const dirPath of dirTree.keys()) {
     const topLevel = dirPath.split('/')[0];
@@ -57,6 +57,20 @@ function buildVFSStructure(
   }
 
   const roots /*: Array<VFSEntry> */ = [];
+
+  // Add files that live at the root (e.g. key === 'RCTAppDelegate.h')
+  const rootFiles = dirTree.get('');
+  if (rootFiles) {
+    for (const [fileName, sourcePath] of Array.from(
+      rootFiles.entries(),
+    ).sort()) {
+      roots.push({
+        name: fileName,
+        type: 'file',
+        'external-contents': toPosix(sourcePath),
+      });
+    }
+  }
 
   for (const rootDir of Array.from(rootDirs).sort()) {
     const dirEntry = buildDirectoryEntry(rootDir, '', dirTree);
@@ -189,13 +203,30 @@ function createVFSOverlayContents(rootFolder /*: string */) /*: VFSOverlay */ {
       headerMap.headers.forEach(header => {
         // The key is just the target path (the import path)
         // e.g., 'react/renderer/graphics/Size.h' for #import <react/renderer/graphics/Size.h>
-        const key = toPosix(header.target);
+        let key = toPosix(header.target);
+
+        // If the podspec doesn't specify a header_dir, CocoaPods exposes public headers under
+        // <PodName/Header.h> (and umbrella headers typically use quoted imports resolved relative
+        // to the pod's public headers directory). To mirror that layout and avoid collisions
+        // between pods, prefix root-level header targets with the pod spec name.
+        if (
+          !key.includes('/') &&
+          (!headerMap.headerDir || headerMap.headerDir === '')
+        ) {
+          key = `${podSpecName}/${key}`;
+        }
 
         // The external-contents path uses the full target path because headers are copied
         // with their directory structure preserved in the XCFramework's root Headers folder
         // (see xcframework.js where headerFile.target is used).
-        // The path is: ${ROOT_PATH}/Headers/{podSpecName}/{target}
-        const sourcePath = `${ROOT_PATH_PLACEHOLDER}/Headers/${podSpecName}/${toPosix(header.target)}`;
+        // Avoid double-nesting when target already starts with the pod name
+        // e.g., ReactCommon/AString.h should not become ReactCommon/ReactCommon/AString.h
+        const targetFirstDir = toPosix(header.target).split('/')[0];
+        const targetPath =
+          targetFirstDir === podSpecName
+            ? toPosix(header.target)
+            : `${podSpecName}/${toPosix(header.target)}`;
+        const sourcePath = `${ROOT_PATH_PLACEHOLDER}/Headers/${targetPath}`;
 
         mappings.push({
           key,
