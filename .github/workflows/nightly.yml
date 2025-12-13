@@ -49,7 +49,7 @@ jobs:
         ORG_GRADLE_PROJECT_SONATYPE_PASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPE_PASSWORD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build Android
         uses: ./.github/actions/build-android
         with:
@@ -80,7 +80,7 @@ jobs:
       ORG_GRADLE_PROJECT_SONATYPE_PASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPE_PASSWORD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build and Publish NPM Package
         uses: ./.github/actions/build-npm-package
         with:

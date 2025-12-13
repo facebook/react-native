@@ -18,16 +18,16 @@ jobs:
         flavor: [debug, release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22.14.0'
           cache: yarn
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'zulu'
