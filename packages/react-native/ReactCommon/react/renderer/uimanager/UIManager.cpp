@@ -188,8 +188,10 @@ void UIManager::completeSurface(
     ShadowTree::CommitOptions commitOptions) {
   TraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
+  ShadowTree::CommitStatus result;
+
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
-    auto result = shadowTree.commit(
+    result = shadowTree.commit(
         [&](const RootShadowNode& oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               oldRootShadowNode,
@@ -199,20 +201,19 @@ void UIManager::completeSurface(
               });
         },
         commitOptions);
+  });
 
-    if (result == ShadowTree::CommitStatus::Succeeded) {
-      // It's safe to update the visible revision of the shadow tree immediately
-      // after we commit a specific one.
-      lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(
-          surfaceId, shadowTree.getCurrentRevision().rootShadowNode);
+  if (result == ShadowTree::CommitStatus::Succeeded) {
+    // It's safe to update the visible revision of the shadow tree immediately
+    // after we commit a specific one.
+    lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(surfaceId);
 
-      if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-        if (auto animationBackend = animationBackend_.lock()) {
-          animationBackend->clearRegistry(surfaceId);
-        }
+    if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+      if (auto animationBackend = animationBackend_.lock()) {
+        animationBackend->clearRegistry(surfaceId);
       }
     }
-  });
+  }
 }
 
 void UIManager::setIsJSResponder(
@@ -642,6 +643,13 @@ void UIManager::shadowTreeDidFinishTransaction(
   if (delegate_ != nullptr) {
     delegate_->uiManagerDidFinishTransaction(
         std::move(mountingCoordinator), mountSynchronously);
+  }
+}
+
+void UIManager::shadowTreeDidFinishJSCommit(
+    const ShadowTree& shadowTree) const {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidFinishJSCommit(shadowTree);
   }
 }
 

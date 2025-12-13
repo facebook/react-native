@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b9af351de972ddff807bd25f98f3ff42>>
+ * @generated SignedSource<<74926c76bdfbb63f36baca7804123cfb>>
  */
 
 /**
@@ -174,6 +174,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableExclusivePropsUpdateAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableExclusivePropsUpdateAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableFabricCommitBranching() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricCommitBranching");
     return method(javaProvider_);
   }
 
@@ -698,6 +704,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableExclusivePropsUpdateAndroid(
   return ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableFabricCommitBranching(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFabricCommitBranching();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFabricLogs();
@@ -1133,6 +1144,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableExclusivePropsUpdateAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableExclusivePropsUpdateAndroid),
+      makeNativeMethod(
+        "enableFabricCommitBranching",
+        JReactNativeFeatureFlagsCxxInterop::enableFabricCommitBranching),
       makeNativeMethod(
         "enableFabricLogs",
         JReactNativeFeatureFlagsCxxInterop::enableFabricLogs),
