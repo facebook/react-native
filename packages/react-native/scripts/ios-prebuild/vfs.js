@@ -216,17 +216,10 @@ function createVFSOverlayContents(rootFolder /*: string */) /*: VFSOverlay */ {
           key = `${podSpecName}/${key}`;
         }
 
-        // The external-contents path uses the full target path because headers are copied
-        // with their directory structure preserved in the XCFramework's root Headers folder
-        // (see xcframework.js where headerFile.target is used).
-        // Avoid double-nesting when target already starts with the pod name
-        // e.g., ReactCommon/AString.h should not become ReactCommon/ReactCommon/AString.h
-        const targetFirstDir = toPosix(header.target).split('/')[0];
-        const targetPath =
-          targetFirstDir === podSpecName
-            ? toPosix(header.target)
-            : `${podSpecName}/${toPosix(header.target)}`;
-        const sourcePath = `${ROOT_PATH_PLACEHOLDER}/Headers/${targetPath}`;
+        // The external-contents path is always podSpecName + header.target because
+        // xcframework.js copies headers to: outputHeadersPath/podSpecName/headerFile.target
+        // So the VFS must point to that same location.
+        const sourcePath = `${ROOT_PATH_PLACEHOLDER}/Headers/${podSpecName}/${toPosix(header.target)}`;
 
         mappings.push({
           key,
