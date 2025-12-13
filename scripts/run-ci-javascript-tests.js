@@ -65,7 +65,7 @@ try {
   const flowCommand =
     FLOW_BINARY == null
       ? `${YARN_BINARY} run flow-check`
-      : `${FLOW_BINARY} check`;
+      : `${FLOW_BINARY} full-check`;
   execAndLog(flowCommand);
 
   /*
