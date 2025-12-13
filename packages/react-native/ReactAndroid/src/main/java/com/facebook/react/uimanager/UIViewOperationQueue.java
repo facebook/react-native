@@ -181,30 +181,6 @@ public class UIViewOperationQueue {
     }
   }
 
-  private final class ManageChildrenOperation extends ViewOperation {
-
-    private final @Nullable int[] mIndicesToRemove;
-    private final @Nullable ViewAtIndex[] mViewsToAdd;
-    private final @Nullable int[] mTagsToDelete;
-
-    public ManageChildrenOperation(
-        int tag,
-        @Nullable int[] indicesToRemove,
-        @Nullable ViewAtIndex[] viewsToAdd,
-        @Nullable int[] tagsToDelete) {
-      super(tag);
-      mIndicesToRemove = indicesToRemove;
-      mViewsToAdd = viewsToAdd;
-      mTagsToDelete = tagsToDelete;
-    }
-
-    @Override
-    public void execute() {
-      mNativeViewHierarchyManager.manageChildren(
-          mTag, mIndicesToRemove, mViewsToAdd, mTagsToDelete);
-    }
-  }
-
   private final class SetChildrenOperation extends ViewOperation {
 
     private final ReadableArray mChildrenTags;
@@ -732,15 +708,6 @@ public class UIViewOperationQueue {
       YogaDirection layoutDirection) {
     mOperations.add(
         new UpdateLayoutOperation(parentTag, reactTag, x, y, width, height, layoutDirection));
-  }
-
-  public void enqueueManageChildren(
-      int reactTag,
-      @Nullable int[] indicesToRemove,
-      @Nullable ViewAtIndex[] viewsToAdd,
-      @Nullable int[] tagsToDelete) {
-    mOperations.add(
-        new ManageChildrenOperation(reactTag, indicesToRemove, viewsToAdd, tagsToDelete));
   }
 
   public void enqueueSetChildren(int reactTag, ReadableArray childrenTags) {
