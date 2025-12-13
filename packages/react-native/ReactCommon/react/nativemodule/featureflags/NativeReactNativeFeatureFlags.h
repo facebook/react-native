@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3caa7ab068af35b4b198bce5925dea1d>>
+ * @generated SignedSource<<e2f575f33c064d137d5bad7568a76fc1>>
  */
 
 /**
@@ -111,6 +111,8 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
+
+  bool enableLineHeightCenteringOnIOS(jsi::Runtime& runtime);
 
   bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
 
