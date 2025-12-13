@@ -23,7 +23,7 @@ import type {
 import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
-const {parseValidUnionType} = require('../Utils');
+const {toCppString, parseValidUnionType} = require('../Utils');
 const {createAliasResolver, getModules} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
@@ -50,7 +50,7 @@ const HostFunctionTemplate = ({
 }>) => {
   return `static facebook::jsi::Value __hostFunction_${hasteModuleName}SpecJSI_${propertyName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, ${jsReturnType}, "${propertyName}", "${jniSignature}", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, ${jsReturnType}, ${toCppString(propertyName)}, ${toCppString(jniSignature)}, args, count, cachedMethodId);
 }`;
 };
 
@@ -71,14 +71,14 @@ ${hasteModuleName}SpecJSI::${hasteModuleName}SpecJSI(const JavaTurboModule::Init
   : JavaTurboModule(params) {
 ${methods
   .map(({propertyName, argCount}) => {
-    return `  methodMap_["${propertyName}"] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${propertyName}};`;
+    return `  methodMap_[${toCppString(propertyName)}] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${propertyName}};`;
   })
   .join('\n')}${
     eventEmitters.length > 0
       ? eventEmitters
           .map(eventEmitter => {
             return `
-  eventEmitterMap_["${eventEmitter.name}"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();`;
+  eventEmitterMap_[${toCppString(eventEmitter.name)}] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();`;
           })
           .join('')
       : ''
@@ -95,7 +95,7 @@ const ModuleLookupTemplate = ({
   moduleName,
   hasteModuleName,
 }: $ReadOnly<{moduleName: string, hasteModuleName: string}>) => {
-  return `  if (moduleName == "${moduleName}") {
+  return `  if (moduleName == ${toCppString(moduleName)}) {
     return std::make_shared<${hasteModuleName}SpecJSI>(params);
   }`;
 };

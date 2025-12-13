@@ -17,6 +17,7 @@ import type {
 } from '../serializeMethod';
 import type {Struct} from '../StructCollector';
 
+const {toCppString, toObjCString} = require('../../../Utils');
 const {
   EventEmitterImplementationTemplate,
 } = require('./../serializeEventEmitter');
@@ -78,7 +79,7 @@ namespace facebook::react {
           ? eventEmitters
               .map(eventEmitter => {
                 return `
-        eventEmitterMap_["${eventEmitter.name}"] = std::make_shared<AsyncEventEmitter<id>>();`;
+        eventEmitterMap_[${toCppString(eventEmitter.name)}] = std::make_shared<AsyncEventEmitter<id>>();`;
               })
               .join('')
           : ''
@@ -118,7 +119,7 @@ const InlineHostFunctionTemplate = ({
   selector: string,
 }>) => `
     static facebook::jsi::Value __hostFunction_${hasteModuleName}SpecJSI_${methodName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ${returnJSType}, "${methodName}", ${selector}, args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ${returnJSType}, ${toCppString(methodName)}, ${selector}, args, count);
     }`;
 
 const MethodMapEntryTemplate = ({
@@ -132,10 +133,10 @@ const MethodMapEntryTemplate = ({
   structParamRecords: $ReadOnlyArray<StructParameterRecord>,
   argCount: number,
 }>) => `
-        methodMap_["${methodName}"] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${methodName}};
+        methodMap_[${toCppString(methodName)}] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${methodName}};
         ${structParamRecords
           .map(({paramIndex, structName}) => {
-            return `setMethodArgConversionSelector(@"${methodName}", ${paramIndex}, @"JS_${hasteModuleName}_${structName}:");`;
+            return `setMethodArgConversionSelector(${toObjCString(methodName)}, ${paramIndex}, @"JS_${hasteModuleName}_${structName}:");`;
           })
           .join('\n' + ' '.repeat(8))}`;
 

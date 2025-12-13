@@ -19,7 +19,7 @@ const {wrapOptional: wrapCxxOptional} = require('../../../TypeUtils/Cxx');
 const {
   wrapOptional: wrapObjCOptional,
 } = require('../../../TypeUtils/Objective-C');
-const {capitalize} = require('../../../Utils');
+const {capitalize, toObjCString} = require('../../../Utils');
 const {getNamespacedStructName, getSafePropertyName} = require('../Utils');
 
 const StructTemplate = ({
@@ -62,7 +62,7 @@ const MethodTemplate = ({
   safePropertyName: string,
 }>) => `inline ${returnType}JS::${hasteModuleName}::${structName}::${safePropertyName}() const
 {
-  id const p = _v[@"${propertyName}"];
+  id const p = _v[${toObjCString(propertyName)}];
   return ${returnValue};
 }`;
 
