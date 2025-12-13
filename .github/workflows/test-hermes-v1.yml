@@ -17,7 +17,7 @@ jobs:
     if: github.repository == 'facebook/react-native'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Check nightly
         run: |
           TODAY=$(date "+%Y%m%d")

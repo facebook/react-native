@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           fetch-depth: 0
@@ -21,7 +21,7 @@ jobs:
           git config --local user.email "bot@reactnative.dev"
           git config --local user.name "React Native Bot"
       - name: Generate Changelog
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           script: |
             const {generateChangelog} = require('./.github/workflow-scripts/generateChangelog');

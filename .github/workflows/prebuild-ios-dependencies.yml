@@ -10,12 +10,12 @@ jobs:
     runs-on: macos-15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Restore cache if present
         id: restore-ios-prebuilds
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: packages/react-native/third-party/
           key: v3-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
@@ -32,12 +32,12 @@ jobs:
         run: |
           node scripts/releases/prepare-ios-prebuilds.js -w
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4.3.4
+        uses: actions/upload-artifact@v6
         with:
           name: ios-prebuilds-workspace
           path: packages/react-native/third-party/
       - name: Save Cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
         with:
           key: v3-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
@@ -62,12 +62,12 @@ jobs:
                 'xros-simulator']
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Restore slice folder
         id: restore-slice-folder
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: packages/react-native/third-party/.build/Build/Products
           key: v3-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
@@ -81,7 +81,7 @@ jobs:
         uses: ./.github/actions/yarn-install
       - name: Restore workspace
         if: steps.restore-slice-folder.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ios-prebuilds-workspace
           path: packages/react-native/third-party/
@@ -92,13 +92,13 @@ jobs:
         if: steps.restore-slice-folder.outputs.cache-hit != 'true'
         run:  node scripts/releases/prepare-ios-prebuilds.js -b -p ${{ matrix.slice }} -r ${{ matrix.flavor }}
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4.3.4
+        uses: actions/upload-artifact@v6
         with:
           name: prebuild-slice-${{ matrix.flavor }}-${{ matrix.slice }}
           path: |
             packages/react-native/third-party/.build/Build/Products
       - name: Save Cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
         with:
           key: v3-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
@@ -119,7 +119,7 @@ jobs:
       REACT_ORG_CODE_SIGNING_P12_CERT_PWD: ${{ secrets.REACT_ORG_CODE_SIGNING_P12_CERT_PWD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Setup xcode
@@ -128,7 +128,7 @@ jobs:
           xcode-version: '16.1'
       - name: Restore XCFramework
         id: restore-xcframework
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             packages/react-native/third-party/
@@ -139,13 +139,13 @@ jobs:
         uses: ./.github/actions/yarn-install
       - name: Restore workspace
         if: steps.restore-xcframework.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ios-prebuilds-workspace
           path: packages/react-native/third-party/
       - name: Download slices
         if: steps.restore-xcframework.outputs.cache-hit != 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: prebuild-slice-${{ matrix.flavor }}-*
           path: packages/react-native/third-party/.build/Build/Products
@@ -177,19 +177,19 @@ jobs:
           tar -cz -f ../ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz .
           mv ../ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz ./ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
       - name: Upload XCFramework Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
           path: packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
       - name: Upload dSYM Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
           path: |
             packages/react-native/third-party/Symbols/ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
       - name: Save XCFramework in Cache
         if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
