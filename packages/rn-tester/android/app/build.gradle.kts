@@ -61,7 +61,14 @@ react {
 
   /* Hermes Commands */
   //   The hermes compiler command to run. By default it is 'hermesc'
-  hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+  hermesCommand =
+      if (
+          project.findProperty("react.internal.useHermesStable")?.toString()?.toBoolean() == true ||
+              project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoolean() ==
+                  true
+      )
+          "$rootDir/node_modules/hermes-compiler/hermesc/%OS-BIN%/hermesc"
+      else "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
 
   autolinkLibrariesWithApp()
 }
@@ -179,8 +186,10 @@ tasks.withType<KotlinCompile>().configureEach {
 
 afterEvaluate {
   if (
-      project.findProperty("react.internal.useHermesNightly") == null ||
-          project.findProperty("react.internal.useHermesNightly").toString() == "false"
+      (project.findProperty("react.internal.useHermesNightly") == null ||
+          project.findProperty("react.internal.useHermesNightly").toString() == "false") &&
+          (project.findProperty("react.internal.useHermesStable") == null ||
+              project.findProperty("react.internal.useHermesStable").toString() == "false")
   ) {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task

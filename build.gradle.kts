@@ -109,16 +109,43 @@ tasks.register("publishAllToMavenTempLocal") {
 tasks.register("publishAndroidToSonatype") {
   description = "Publish the Android artifacts to Sonatype (Maven Central or Snapshot repository)"
   dependsOn(":packages:react-native:ReactAndroid:publishToSonatype")
-  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:publishToSonatype")
 }
 
-if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoolean() == true) {
+var hermesSubstitution: Pair<String, String>? = null
+
+if (project.findProperty("react.internal.useHermesStable")?.toString()?.toBoolean() == true) {
+  val hermesVersions = java.util.Properties()
+  val hermesVersionPropertiesFile =
+      File("./packages/react-native/sdks/hermes-engine/version.properties")
+  hermesVersionPropertiesFile.inputStream().use { hermesVersions.load(it) }
+  val selectedHermesVersion = hermesVersions["HERMES_VERSION_NAME"] as String
+
+  hermesSubstitution = selectedHermesVersion to "Users opted to use stable hermes release"
+} else if (
+    project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoolean() == true
+) {
+  val reactNativePackageJson = File("./packages/react-native/package.json")
+  val reactNativePackageJsonContent = reactNativePackageJson.readText()
+  val packageJson = groovy.json.JsonSlurper().parseText(reactNativePackageJsonContent) as Map<*, *>
+
+  val hermesCompilerVersion =
+      (packageJson["dependencies"] as Map<*, *>)["hermes-compiler"] as String
+
+  if (hermesCompilerVersion == "0.0.0") {
+    throw RuntimeException(
+        "Trying to use Hermes Nightly but hermes-compiler version is not specified"
+    )
+  }
+
+  hermesSubstitution = "$hermesCompilerVersion-SNAPSHOT" to "Users opted to use hermes nightly"
+} else {
   logger.warn(
       """
       ********************************************************************************
-      INFO: You're using Hermes from nightly as you set
+      INFO: You're building Hermes from source as you set
 
-      react.internal.useHermesNightly=true
+      react.internal.useHermesStable=false
+      react.internal.useHermesNightly=false
 
       in the ./gradle.properties file.
 
@@ -127,12 +154,20 @@ if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoole
       """
           .trimIndent()
   )
+}
+
+if (hermesSubstitution != null) {
+  val (hermesVersion, reason) = hermesSubstitution!!
+  project(":packages:react-native:ReactAndroid:hermes-engine") {
+    tasks.configureEach { enabled = false }
+  }
+
   allprojects {
     configurations.all {
       resolutionStrategy.dependencySubstitution {
         substitute(project(":packages:react-native:ReactAndroid:hermes-engine"))
-            .using(module("com.facebook.hermes:hermes-android:0.+"))
-            .because("Users opted to use hermes from nightly")
+            .using(module("com.facebook.hermes:hermes-android:$hermesVersion"))
+            .because(reason)
       }
     }
   }
