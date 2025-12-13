@@ -5,6 +5,7 @@
         }]
     ],
     "plugins": [
+        "babel-plugin-react-compiler",
         "babel-plugin-transform-flow-enums"
     ]
 }
