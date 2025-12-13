@@ -260,6 +260,7 @@ class NativeAnimatedNodesManager {
 
   std::unordered_map<Tag, folly::dynamic> updateViewProps_{};
   std::unordered_map<Tag, folly::dynamic> updateViewPropsDirect_{};
+  bool shouldRequestAsyncFlush_{false};
 
   mutable std::mutex tagToShadowNodeFamilyMutex_;
   std::unordered_map<Tag, std::weak_ptr<const ShadowNodeFamily>> tagToShadowNodeFamily_{};

@@ -35,6 +35,18 @@ void AnimatedPropsRegistry::update(
       auto& snapshot = it->second;
       auto& viewProps = snapshot->props;
 
+      if (animatedProps.rawProps) {
+        const auto& newRawProps = *animatedProps.rawProps;
+        auto& currentRawProps = snapshot->rawProps;
+
+        if (currentRawProps) {
+          auto newRawPropsDynamic = newRawProps.toDynamic();
+          currentRawProps->merge_patch(newRawPropsDynamic);
+        } else {
+          currentRawProps =
+              std::make_unique<folly::dynamic>(newRawProps.toDynamic());
+        }
+      }
       for (const auto& animatedProp : animatedProps.props) {
         snapshot->propNames.insert(animatedProp->propName);
         cloneProp(viewProps, *animatedProp);
@@ -58,6 +70,13 @@ AnimatedPropsRegistry::getMap(SurfaceId surfaceId) {
       map.insert_or_assign(tag, std::move(propsSnapshot));
     } else {
       auto& currentSnapshot = currentIt->second;
+      if (propsSnapshot->rawProps) {
+        if (currentSnapshot->rawProps) {
+          currentSnapshot->rawProps->merge_patch(*propsSnapshot->rawProps);
+        } else {
+          currentSnapshot->rawProps = std::move(propsSnapshot->rawProps);
+        }
+      }
       for (auto& propName : propsSnapshot->propNames) {
         currentSnapshot->propNames.insert(propName);
         updateProp(propName, currentSnapshot->props, *propsSnapshot);
