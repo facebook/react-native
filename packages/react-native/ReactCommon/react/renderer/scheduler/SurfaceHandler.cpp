@@ -12,6 +12,8 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/uimanager/UIManager.h>
 
+#include "SurfaceHandlerCommitHook.h"
+
 namespace facebook::react {
 
 using Status = SurfaceHandler::Status;
@@ -21,13 +23,15 @@ SurfaceHandler::SurfaceHandler(
     SurfaceId surfaceId) noexcept {
   parameters_.moduleName = moduleName;
   parameters_.surfaceId = surfaceId;
+  commitHook_ = std::make_shared<SurfaceHandlerCommitHook>(surfaceId);
 }
 
 #pragma mark - Surface Life-Cycle Management
 
 void SurfaceHandler::setContextContainer(
     std::shared_ptr<const ContextContainer> contextContainer) const noexcept {
-  parameters_.contextContainer = std::move(contextContainer);
+  parameters_.contextContainer = contextContainer;
+  commitHook_->setContextContainer(contextContainer);
 }
 
 Status SurfaceHandler::getStatus() const noexcept {
@@ -213,78 +217,6 @@ Size SurfaceHandler::measure(
   return rootShadowNode->getLayoutMetrics().frame.size;
 }
 
-std::shared_ptr<const ShadowNode> SurfaceHandler::dirtyMeasurableNodesRecursive(
-    std::shared_ptr<const ShadowNode> node) const {
-  const auto nodeHasChildren = !node->getChildren().empty();
-  const auto isMeasurableYogaNode =
-      node->getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode);
-
-  // Node is not measurable and has no children, its layout will not be affected
-  if (!nodeHasChildren && !isMeasurableYogaNode) {
-    return nullptr;
-  }
-
-  ShadowNode::SharedListOfShared newChildren =
-      ShadowNodeFragment::childrenPlaceholder();
-
-  if (nodeHasChildren) {
-    std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>>
-        newChildrenMutable = nullptr;
-    for (size_t i = 0; i < node->getChildren().size(); i++) {
-      const auto& child = node->getChildren()[i];
-
-      if (const auto& layoutableNode =
-              std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
-                  child)) {
-        auto newChild = dirtyMeasurableNodesRecursive(layoutableNode);
-
-        if (newChild != nullptr) {
-          if (newChildrenMutable == nullptr) {
-            newChildrenMutable = std::make_shared<
-                std::vector<std::shared_ptr<const ShadowNode>>>(
-                node->getChildren());
-            newChildren = newChildrenMutable;
-          }
-
-          (*newChildrenMutable)[i] = newChild;
-        }
-      }
-    }
-
-    // Node is not measurable and its children were not dirtied, its layout will
-    // not be affected
-    if (!isMeasurableYogaNode && newChildrenMutable == nullptr) {
-      return nullptr;
-    }
-  }
-
-  const auto newNode = node->getComponentDescriptor().cloneShadowNode(
-      *node,
-      {
-          .children = newChildren,
-          // Preserve the original state of the node
-          .state = node->getState(),
-      });
-
-  if (isMeasurableYogaNode) {
-    std::static_pointer_cast<YogaLayoutableShadowNode>(newNode)->dirtyLayout();
-  }
-
-  return newNode;
-}
-
-void SurfaceHandler::dirtyMeasurableNodes(ShadowNode& root) const {
-  for (const auto& child : root.getChildren()) {
-    if (const auto& layoutableNode =
-            std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child)) {
-      const auto newChild = dirtyMeasurableNodesRecursive(layoutableNode);
-      if (newChild != nullptr) {
-        root.replaceChild(*child, newChild);
-      }
-    }
-  }
-}
-
 void SurfaceHandler::constraintLayout(
     const LayoutConstraints& layoutConstraints,
     const LayoutContext& layoutContext) const {
@@ -308,26 +240,16 @@ void SurfaceHandler::constraintLayout(
       return;
     }
 
-    PropsParserContext propsParserContext{
-        parameters_.surfaceId, *parameters_.contextContainer};
+    commitHook_->setLayoutConstraints(layoutConstraints, layoutContext);
 
     react_native_assert(
         link_.shadowTree && "`link_.shadowTree` must not be null.");
     link_.shadowTree->commit(
         [&](const RootShadowNode& oldRootShadowNode) {
-          auto newRoot = oldRootShadowNode.clone(
-              propsParserContext, layoutConstraints, layoutContext);
-
-          // Dirty all measurable nodes when the fontSizeMultiplier changes to
-          // trigger re-measurement.
-          if (ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() &&
-              layoutContext.fontSizeMultiplier !=
-                  oldRootShadowNode.getConcreteProps()
-                      .layoutContext.fontSizeMultiplier) {
-            dirtyMeasurableNodes(*newRoot);
-          }
-
-          return newRoot;
+          // Commit hook will update the layout constraints and context on the
+          // root node
+          return std::make_shared<RootShadowNode>(
+              oldRootShadowNode, ShadowNodeFragment{});
         },
         {/* default commit options */});
   }
@@ -392,6 +314,14 @@ void SurfaceHandler::setUIManager(const UIManager* uiManager) const noexcept {
   link_.uiManager = uiManager;
   link_.status =
       uiManager != nullptr ? Status::Registered : Status::Unregistered;
+}
+
+void SurfaceHandler::registerCommitHook(UIManager* uiManager) const noexcept {
+  uiManager->registerCommitHook(*commitHook_);
+}
+
+void SurfaceHandler::unregisterCommitHook(UIManager* uiManager) const noexcept {
+  uiManager->unregisterCommitHook(*commitHook_);
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {

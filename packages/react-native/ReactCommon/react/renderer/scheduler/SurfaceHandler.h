@@ -22,6 +22,7 @@ class Scheduler;
 class ShadowTree;
 class MountingCoordinator;
 class UIManager;
+class SurfaceHandlerCommitHook;
 
 /*
  * Represents a running React Native surface and provides control over it.
@@ -148,14 +149,12 @@ class SurfaceHandler {
    * Must be called by `Scheduler` during registration process.
    */
   void setUIManager(const UIManager *uiManager) const noexcept;
+  void registerCommitHook(UIManager *uiManager) const noexcept;
+  void unregisterCommitHook(UIManager *uiManager) const noexcept;
 
   void applyDisplayMode(DisplayMode displayMode) const;
 
-  /*
-   * An utility for dirtying all measurable shadow nodes present in the tree.
-   */
-  void dirtyMeasurableNodes(ShadowNode &root) const;
-  std::shared_ptr<const ShadowNode> dirtyMeasurableNodesRecursive(std::shared_ptr<const ShadowNode> node) const;
+  std::shared_ptr<SurfaceHandlerCommitHook> commitHook_;
 
 #pragma mark - Link & Parameters
 

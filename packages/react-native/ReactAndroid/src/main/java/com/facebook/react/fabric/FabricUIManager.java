@@ -959,6 +959,19 @@ public class FabricUIManager
     }
   }
 
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void scheduleJSRevisionMerge(int surfaceId) {
+    UiThreadUtil.runOnUiThread(
+        () -> {
+          FabricUIManagerBinding binding = mBinding;
+          if (binding != null) {
+            binding.mergeJSRevision(surfaceId);
+          }
+        });
+  }
+
   /**
    * This method initiates preloading of an image specified by ImageSource. It can later be consumed
    * by an ImageView.
