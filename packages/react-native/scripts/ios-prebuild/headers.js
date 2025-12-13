@@ -47,7 +47,6 @@ function getHeaderFilesFromPodspecs(
     if (exception) {
       // Check if the exception is disabled
       if ('disabled' in exception && exception.disabled === true) {
-        headersLog(`⏭️ Skipping disabled podspec: ${relativeKey}`);
         return;
       }
 
@@ -64,6 +63,16 @@ function getHeaderFilesFromPodspecs(
 
     // Open file and read content
     const fileContent = require('fs').readFileSync(podspecPath, 'utf8');
+
+    // Try to infer header_dir when it's a string literal.
+    // We intentionally keep this simple and do not attempt to resolve Ruby variables.
+    // Examples supported:
+    //   s.header_dir = "ReactCommon"
+    //   ss.header_dir = 'jsinspector-modern/cdp'
+    const headerDirMatch = fileContent.match(
+      /\.header_dir\s*=\s*(['"])([^'"\n]+)\1/,
+    );
+    const inferredHeaderDir = headerDirMatch ? headerDirMatch[2].trim() : '';
 
     // Check if it contains 'podspec_sources'
     if (fileContent.includes('podspec_sources')) {
@@ -147,11 +156,13 @@ function getHeaderFilesFromPodspecs(
 
         result[podspecPath] = [
           {
-            headerDir: '', // We don't have headerDir info here
+            headerDir: inferredHeaderDir,
             specName: path.basename(podspecPath, '.podspec'),
             headers: foundHeaderFiles.map(headerFile => ({
               source: headerFile,
-              target: path.basename(headerFile),
+              target: inferredHeaderDir
+                ? path.join(inferredHeaderDir, path.basename(headerFile))
+                : path.basename(headerFile),
             })),
           },
         ];
