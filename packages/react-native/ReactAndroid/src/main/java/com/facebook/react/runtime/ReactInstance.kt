@@ -43,6 +43,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
 import com.facebook.react.devsupport.StackTraceHelper
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.fabric.BundleWrapper
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.fabric.FabricUIManagerBinding
@@ -298,6 +299,11 @@ internal class ReactInstance(
     }
   }
 
+  fun beforeLoad(bundle: BundleWrapper, sourceURL: String){
+    context.setSourceURL(sourceURL)
+    context.setBundle(bundle)
+  }
+
   fun loadJSBundle(bundleLoader: JSBundleLoader) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.loadJSBundle")
     bundleLoader.loadScript(
@@ -307,12 +313,17 @@ internal class ReactInstance(
               sourceURL: String,
               loadSynchronously: Boolean,
           ) {
-            context.sourceURL = sourceURL
-            loadJSBundleFromFile(fileName, sourceURL)
+            val bundle = BundleWrapper(fileName);
+
+            beforeLoad(bundle, sourceURL);
+            loadJSBundle(bundle, sourceURL)
           }
 
           override fun loadSplitBundleFromFile(fileName: String, sourceURL: String) {
-            loadJSBundleFromFile(fileName, sourceURL)
+            val bundle = BundleWrapper(fileName)
+
+            beforeLoad(bundle, sourceURL)
+            loadJSBundle(bundle, sourceURL)
           }
 
           override fun loadScriptFromAssets(
@@ -320,8 +331,11 @@ internal class ReactInstance(
               assetURL: String,
               loadSynchronously: Boolean,
           ) {
-            context.sourceURL = assetURL
-            loadJSBundleFromAssets(assetManager, assetURL)
+            val sourceURL = assetURL.removePrefix("assets://")
+            val bundle = BundleWrapper(assetManager, sourceURL)
+
+            beforeLoad(bundle, assetURL)
+            loadJSBundle(bundle, assetURL)
           }
 
           override fun setSourceURLs(deviceURL: String, remoteURL: String) {
@@ -436,7 +450,7 @@ internal class ReactInstance(
       reactHostInspectorTarget: ReactHostInspectorTarget?,
   ): HybridData
 
-  private external fun loadJSBundleFromFile(fileName: String, sourceURL: String)
+  private external fun loadJSBundle(bundle: BundleWrapper, sourceURL: String)
 
   private external fun loadJSBundleFromAssets(assetManager: AssetManager, assetURL: String)
 
