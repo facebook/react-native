@@ -35,6 +35,18 @@ void AnimatedPropsRegistry::update(
       auto& snapshot = it->second;
       auto& viewProps = snapshot->props;
 
+      if (animatedProps.rawProps) {
+        const auto& newRawProps = *animatedProps.rawProps;
+        auto& currentRawProps = snapshot->rawProps;
+
+        if (currentRawProps) {
+          auto newRawPropsDynamic = newRawProps.toDynamic();
+          currentRawProps->merge_patch(newRawPropsDynamic);
+        } else {
+          currentRawProps =
+              std::make_unique<folly::dynamic>(newRawProps.toDynamic());
+        }
+      }
       for (const auto& animatedProp : animatedProps.props) {
         snapshot->propNames.insert(animatedProp->propName);
         cloneProp(viewProps, *animatedProp);
