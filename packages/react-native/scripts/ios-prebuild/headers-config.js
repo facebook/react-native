@@ -217,6 +217,13 @@ const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
       },
     ],
   },
+  // Yoga should preserve its directory structure
+  'ReactCommon/yoga/Yoga.podspec': {
+    name: 'Yoga',
+    headerPatterns: ['yoga/**/*.h'],
+    headerDir: 'yoga',
+    preservePaths: ['yoga/**/*.h'],
+  },
 
   // ReactCommon.podspec has multiple subspecs with different header_dir values
   // that the generic parser cannot handle (it only extracts the first header_dir).
