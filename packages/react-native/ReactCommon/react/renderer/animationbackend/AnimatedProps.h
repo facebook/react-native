@@ -19,6 +19,7 @@ enum PropName {
   BORDER_RADII,
   MARGIN,
   PADDING,
+  POSITION,
   FLEX,
   TRANSFORM,
   BACKGROUND_COLOR,
@@ -137,6 +138,38 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
       }
       if (paddings.all.has_value()) {
         viewProps.yogaStyle.setPadding(yoga::Edge::All, paddings.all.value());
+      }
+      break;
+    }
+
+    case POSITION: {
+      const auto &positions = get<CascadedRectangleEdges<yoga::StyleLength>>(animatedProp);
+      if (positions.left.has_value()) {
+        viewProps.yogaStyle.setPosition(yoga::Edge::Left, positions.left.value());
+      }
+      if (positions.top.has_value()) {
+        viewProps.yogaStyle.setPosition(yoga::Edge::Top, positions.top.value());
+      }
+      if (positions.right.has_value()) {
+        viewProps.yogaStyle.setPosition(yoga::Edge::Right, positions.right.value());
+      }
+      if (positions.bottom.has_value()) {
+        viewProps.yogaStyle.setPosition(yoga::Edge::Bottom, positions.bottom.value());
+      }
+      if (positions.start.has_value()) {
+        viewProps.yogaStyle.setPosition(yoga::Edge::Start, positions.start.value());
+      }
+      if (positions.end.has_value()) {
+        viewProps.yogaStyle.setPosition(yoga::Edge::End, positions.end.value());
+      }
+      if (positions.horizontal.has_value()) {
+        viewProps.yogaStyle.setPosition(yoga::Edge::Horizontal, positions.horizontal.value());
+      }
+      if (positions.vertical.has_value()) {
+        viewProps.yogaStyle.setPosition(yoga::Edge::Vertical, positions.vertical.value());
+      }
+      if (positions.all.has_value()) {
+        viewProps.yogaStyle.setPosition(yoga::Edge::All, positions.all.value());
       }
       break;
     }
