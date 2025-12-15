@@ -115,6 +115,18 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
       viewProps.yogaStyle.setPadding(yoga::Edge::Horizontal, snapshot.props.yogaStyle.padding(yoga::Edge::Horizontal));
       viewProps.yogaStyle.setPadding(yoga::Edge::Vertical, snapshot.props.yogaStyle.padding(yoga::Edge::Vertical));
       break;
+
+    case POSITION:
+      viewProps.yogaStyle.setPosition(yoga::Edge::Left, snapshot.props.yogaStyle.position(yoga::Edge::Left));
+      viewProps.yogaStyle.setPosition(yoga::Edge::Right, snapshot.props.yogaStyle.position(yoga::Edge::Right));
+      viewProps.yogaStyle.setPosition(yoga::Edge::Top, snapshot.props.yogaStyle.position(yoga::Edge::Top));
+      viewProps.yogaStyle.setPosition(yoga::Edge::Bottom, snapshot.props.yogaStyle.position(yoga::Edge::Bottom));
+      viewProps.yogaStyle.setPosition(yoga::Edge::Start, snapshot.props.yogaStyle.position(yoga::Edge::Start));
+      viewProps.yogaStyle.setPosition(yoga::Edge::End, snapshot.props.yogaStyle.position(yoga::Edge::End));
+      viewProps.yogaStyle.setPosition(
+          yoga::Edge::Horizontal, snapshot.props.yogaStyle.position(yoga::Edge::Horizontal));
+      viewProps.yogaStyle.setPosition(yoga::Edge::Vertical, snapshot.props.yogaStyle.position(yoga::Edge::Vertical));
+      break;
   }
 }
 
