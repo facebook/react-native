@@ -27,7 +27,7 @@ runs:
         cache-read-only: "false"
         cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
     - name: Restore Fantom ccache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: /github/home/.cache/ccache
         key: v2-ccache-fantom-${{ github.job }}-${{ github.ref }}-${{ hashFiles(
@@ -56,7 +56,7 @@ runs:
         CXX: clang++
     - name: Save Fantom ccache
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }}
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: /github/home/.cache/ccache
         key: v2-ccache-fantom-${{ github.job }}-${{ github.ref }}-${{ hashFiles(
@@ -75,7 +75,7 @@ runs:
       run: ccache -s -v
     - name: Upload test results
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v6
       with:
         name: run-fantom-tests-results
         compression-level: 1
