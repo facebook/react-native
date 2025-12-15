@@ -17,6 +17,8 @@ enum PropName {
   WIDTH,
   HEIGHT,
   BORDER_RADII,
+  MARGIN,
+  PADDING,
   FLEX,
   TRANSFORM,
   BACKGROUND_COLOR,
@@ -74,6 +76,70 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
     case BORDER_RADII:
       viewProps.borderRadii = get<CascadedBorderRadii>(animatedProp);
       break;
+
+    case MARGIN: {
+      const auto &margins = get<CascadedRectangleEdges<yoga::StyleLength>>(animatedProp);
+      if (margins.left.has_value()) {
+        viewProps.yogaStyle.setMargin(yoga::Edge::Left, margins.left.value());
+      }
+      if (margins.top.has_value()) {
+        viewProps.yogaStyle.setMargin(yoga::Edge::Top, margins.top.value());
+      }
+      if (margins.right.has_value()) {
+        viewProps.yogaStyle.setMargin(yoga::Edge::Right, margins.right.value());
+      }
+      if (margins.bottom.has_value()) {
+        viewProps.yogaStyle.setMargin(yoga::Edge::Bottom, margins.bottom.value());
+      }
+      if (margins.start.has_value()) {
+        viewProps.yogaStyle.setMargin(yoga::Edge::Start, margins.start.value());
+      }
+      if (margins.end.has_value()) {
+        viewProps.yogaStyle.setMargin(yoga::Edge::End, margins.end.value());
+      }
+      if (margins.horizontal.has_value()) {
+        viewProps.yogaStyle.setMargin(yoga::Edge::Horizontal, margins.horizontal.value());
+      }
+      if (margins.vertical.has_value()) {
+        viewProps.yogaStyle.setMargin(yoga::Edge::Vertical, margins.vertical.value());
+      }
+      if (margins.all.has_value()) {
+        viewProps.yogaStyle.setMargin(yoga::Edge::All, margins.all.value());
+      }
+      break;
+    }
+
+    case PADDING: {
+      const auto &paddings = get<CascadedRectangleEdges<yoga::StyleLength>>(animatedProp);
+      if (paddings.left.has_value()) {
+        viewProps.yogaStyle.setPadding(yoga::Edge::Left, paddings.left.value());
+      }
+      if (paddings.top.has_value()) {
+        viewProps.yogaStyle.setPadding(yoga::Edge::Top, paddings.top.value());
+      }
+      if (paddings.right.has_value()) {
+        viewProps.yogaStyle.setPadding(yoga::Edge::Right, paddings.right.value());
+      }
+      if (paddings.bottom.has_value()) {
+        viewProps.yogaStyle.setPadding(yoga::Edge::Bottom, paddings.bottom.value());
+      }
+      if (paddings.start.has_value()) {
+        viewProps.yogaStyle.setPadding(yoga::Edge::Start, paddings.start.value());
+      }
+      if (paddings.end.has_value()) {
+        viewProps.yogaStyle.setPadding(yoga::Edge::End, paddings.end.value());
+      }
+      if (paddings.horizontal.has_value()) {
+        viewProps.yogaStyle.setPadding(yoga::Edge::Horizontal, paddings.horizontal.value());
+      }
+      if (paddings.vertical.has_value()) {
+        viewProps.yogaStyle.setPadding(yoga::Edge::Vertical, paddings.vertical.value());
+      }
+      if (paddings.all.has_value()) {
+        viewProps.yogaStyle.setPadding(yoga::Edge::All, paddings.all.value());
+      }
+      break;
+    }
 
     case FLEX:
       viewProps.yogaStyle.setFlex(get<yoga::FloatOptional>(animatedProp));
