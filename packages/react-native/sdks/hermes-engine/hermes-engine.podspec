@@ -28,6 +28,14 @@ else
   version = versionProperties['HERMES_VERSION_NAME']
 end
 
+# Local monorepo build
+if package['version'] == "1000.0.0" then
+  hermesCompilerVersion = package['dependencies']['hermes-compiler']
+  if hermesCompilerVersion != "0.0.0" then
+    version = hermesCompilerVersion
+  end
+end
+
 source_type = hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
 
