@@ -1055,8 +1055,8 @@ namespace JS {
 - (NSString *)getEnums:(double)enumInt
              enumFloat:(double)enumFloat
             enumString:(NSString *)enumString;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants>)getConstants;
 
 @end
 

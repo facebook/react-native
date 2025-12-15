@@ -64,7 +64,7 @@ RCT_EXPORT_MODULE()
 
 - (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)constantsToExport
 {
-  return (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)[self getConstants];
+  return [self getConstants];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)getConstants
