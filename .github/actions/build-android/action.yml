@@ -45,16 +45,19 @@ runs:
         if [[ "${{ inputs.release-type }}" == "dry-run" ]]; then
           # dry-run: we only build ARM64 to save time/resources. For release/nightlies the default is to build all archs.
           export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a,x86" # x86 is required for E2E testing
+          export HERMES_PREBUILT_FLAG="ORG_GRADLE_PROJECT_react.internal.useHermesNightly=true"
           TASKS="publishAllToMavenTempLocal build"
         elif [[ "${{ inputs.release-type }}" == "nightly" ]]; then
           # nightly: we set isSnapshot to true so artifacts are sent to the right repository on Maven Central.
           export ORG_GRADLE_PROJECT_isSnapshot="true"
+          export HERMES_PREBUILT_FLAG="ORG_GRADLE_PROJECT_react.internal.useHermesNightly=true"
           TASKS="publishAllToMavenTempLocal publishAndroidToSonatype build"
         else
           # release: we want to build all archs (default)
+          export HERMES_PREBUILT_FLAG="ORG_GRADLE_PROJECT_react.internal.useHermesStable=true"
           TASKS="publishAllToMavenTempLocal publishAndroidToSonatype build"
         fi
-        ./gradlew $TASKS -PenableWarningsAsErrors=true
+        env "$HERMES_PREBUILT_FLAG" ./gradlew $TASKS -PenableWarningsAsErrors=true
     - name: Save Android ccache
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }}
       uses: actions/cache/save@v5

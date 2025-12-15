@@ -139,9 +139,17 @@ val prepareRNCodegen by
       into(codegenOutDir)
     }
 
+val enableHermesBuild by
+    tasks.registering {
+      project(":packages:react-native:ReactAndroid:hermes-engine") {
+        tasks.configureEach { enabled = true }
+      }
+    }
+
 val prepareHermesDependencies by
     tasks.registering {
       dependsOn(
+          enableHermesBuild,
           ":packages:react-native:ReactAndroid:hermes-engine:buildHermesLib",
           ":packages:react-native:ReactAndroid:hermes-engine:prepareHeadersForPrefab",
       )
