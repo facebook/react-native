@@ -191,15 +191,126 @@ test('animate layout props and rerender', () => {
     _setWidth(200);
   });
 
+  // TODO: getFabricUpdateProps is not working with the cloneMutliple method
+  // expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(50);
+  expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
+    <rn-view height="50.000000" width="200.000000" />,
+  );
+
+  Fantom.unstable_produceFramesForDuration(500);
+
   // TODO: this shouldn't be neccessary since animation should be stopped after duration
   Fantom.runTask(() => {
     _heightAnimation?.stop();
   });
 
+  expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
+    <rn-view height="100.000000" width="200.000000" />,
+  );
+
+  Fantom.runTask(() => {
+    _setWidth(300);
+  });
+
+  expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
+    <rn-view height="100.000000" width="300.000000" />,
+  );
+});
+
+test('animate non-layout props and rerender', () => {
+  const viewRef = createRef<HostInstance>();
+
+  let _animatedOpacity;
+  let _opacityAnimation;
+  let _setWidth;
+
+  function MyApp() {
+    const animatedOpacity = useAnimatedValue(0);
+    const [width, setWidth] = useState(100);
+    _animatedOpacity = animatedOpacity;
+    _setWidth = setWidth;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: width,
+            opacity: animatedOpacity,
+          },
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+  Fantom.runTask(() => {
+    _opacityAnimation = Animated.timing(_animatedOpacity, {
+      toValue: 0.5,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  });
+
+  Fantom.unstable_produceFramesForDuration(500);
+
+  // TODO: rendered output should be <rn-view opacity="0,5" width="100.000000" /> at this point, but synchronous updates are not captured by fantom
+  expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
+    <rn-view width="100.000000" />,
+  );
+
+  expect(
+    Fantom.unstable_getDirectManipulationProps(viewElement).opacity,
+  ).toBeCloseTo(0.25, 0.001);
+
+  // Re-render
+  Fantom.runTask(() => {
+    _setWidth(150);
+  });
+
+  expect(root.getRenderedOutput({props: ['opacity', 'width']}).toJSX()).toEqual(
+    <rn-view opacity="0.25" width="150.000000" />,
+  );
+
+  Fantom.runTask(() => {
+    _setWidth(200);
+  });
+
   // TODO: getFabricUpdateProps is not working with the cloneMutliple method
   // expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(50);
-  expect(root.getRenderedOutput({props: ['height', 'width']}).toJSX()).toEqual(
-    <rn-view height="50.000000" width="200.000000" />,
+  expect(root.getRenderedOutput({props: ['opacity', 'width']}).toJSX()).toEqual(
+    <rn-view opacity="0.25" width="200.000000" />,
+  );
+
+  Fantom.unstable_produceFramesForDuration(500);
+
+  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  Fantom.runTask(() => {
+    _opacityAnimation?.stop();
+  });
+
+  // TODO: T246961305 rendered output should be <rn-view opacity="1" /> at this point
+  expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
+    <rn-view width="200.000000" />,
+  );
+
+  expect(Fantom.unstable_getDirectManipulationProps(viewElement).opacity).toBe(
+    0.5,
+  );
+
+  // Re-render
+  Fantom.runTask(() => {
+    _setWidth(300);
+  });
+
+  expect(root.getRenderedOutput({props: ['opacity', 'width']}).toJSX()).toEqual(
+    <rn-view opacity="0.5" width="300.000000" />,
   );
 });
 
@@ -297,4 +408,73 @@ test('animate layout props and rerender in many components', () => {
       ))}
     </rn-view>,
   );
+});
+
+test('animate width, height and opacity at once', () => {
+  const viewRef = createRef<HostInstance>();
+  allowStyleProp('width');
+  allowStyleProp('height');
+
+  let _animatedWidth;
+  let _animatedHeight;
+  let _animatedOpacity;
+  let _parallelAnimation;
+
+  function MyApp() {
+    const animatedWidth = useAnimatedValue(100);
+    const animatedHeight = useAnimatedValue(100);
+    const animatedOpacity = useAnimatedValue(1);
+    _animatedWidth = animatedWidth;
+    _animatedHeight = animatedHeight;
+    _animatedOpacity = animatedOpacity;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: animatedWidth,
+            height: animatedHeight,
+            opacity: animatedOpacity,
+          },
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  Fantom.runTask(() => {
+    _parallelAnimation = Animated.parallel([
+      Animated.timing(_animatedWidth, {
+        toValue: 200,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(_animatedHeight, {
+        toValue: 200,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(_animatedOpacity, {
+        toValue: 0.5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  });
+
+  Fantom.unstable_produceFramesForDuration(100);
+
+  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  Fantom.runTask(() => {
+    _parallelAnimation?.stop();
+  });
+
+  expect(
+    root.getRenderedOutput({props: ['width', 'height', 'opacity']}).toJSX(),
+  ).toEqual(<rn-view height="200.000000" opacity="0.5" width="200.000000" />);
 });
