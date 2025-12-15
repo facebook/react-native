@@ -19,6 +19,7 @@ namespace facebook::react {
 struct PropsSnapshot {
   BaseViewProps props;
   std::unordered_set<PropName> propNames;
+  std::unique_ptr<folly::dynamic> rawProps;
 };
 
 struct SurfaceContext {
@@ -29,6 +30,7 @@ struct SurfaceContext {
 struct SurfaceUpdates {
   std::unordered_set<const ShadowNodeFamily *> families;
   std::unordered_map<Tag, AnimatedProps> propsMap;
+  bool hasLayoutUpdates{false};
 };
 
 using SnapshotMap = std::unordered_map<Tag, std::unique_ptr<PropsSnapshot>>;
