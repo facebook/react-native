@@ -137,6 +137,12 @@ class PerformanceTracer {
       const Headers &headers);
 
   /**
+   * Record a "ResourceReceivedData" event.
+   * If not currently tracing, this is a no-op.
+   */
+  void reportResourceReceivedData(const std::string &devtoolsRequestId, HighResTimeStamp start, int encodedDataLength);
+
+  /**
    * Record a "ResourceReceiveResponse" event. Paired with other "Resource*"
    * events, renders a network request timeline in the Performance panel Network
    * track.
@@ -281,6 +287,14 @@ class PerformanceTracer {
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
 
+  struct PerformanceTracerResourceReceivedData {
+    std::string requestId;
+    HighResTimeStamp start;
+    int encodedDataLength;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
   struct PerformanceTracerResourceReceiveResponse {
     std::string requestId;
     HighResTimeStamp start;
@@ -302,6 +316,7 @@ class PerformanceTracer {
       PerformanceTracerEventMeasure,
       PerformanceTracerResourceSendRequest,
       PerformanceTracerResourceReceiveResponse,
+      PerformanceTracerResourceReceivedData,
       PerformanceTracerResourceFinish>;
 
 #pragma mark - Private fields and methods
