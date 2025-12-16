@@ -23,7 +23,7 @@ import type {
 import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
-const {toCppString, parseValidUnionType} = require('../Utils');
+const {parseValidUnionType, toCppString} = require('../Utils');
 const {createAliasResolver, getModules} = require('./Utils');
 
 type FilesOutput = Map<string, string>;

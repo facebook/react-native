@@ -18,7 +18,7 @@ import type {
   SchemaType,
 } from '../../CodegenSchema';
 
-const {toCppString, indent, parseValidUnionType} = require('../Utils');
+const {indent, parseValidUnionType, toCppString} = require('../Utils');
 const {IncludeTemplate, generateEventStructName} = require('./CppHelpers');
 
 // File path -> contents
