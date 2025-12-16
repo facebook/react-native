@@ -38,7 +38,7 @@ export type {FlatListProps} from './Libraries/Lists/FlatList';
 export {default as FlatList} from './Libraries/Lists/FlatList';
 
 export type {
-  ImageBackgroundProps,
+  // @nocommit
   ImageErrorEvent,
   ImageLoadEvent,
   ImageProgressEventIOS,
