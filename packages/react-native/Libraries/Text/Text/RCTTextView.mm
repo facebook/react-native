@@ -131,21 +131,23 @@
                            inRange:characterRange
                            options:0
                         usingBlock:^(id value, NSRange range, BOOL *stop) {
-    if (value && [value isKindOfClass:[NSNumber class]]) {
-      CGFloat width = [value floatValue];
-      if (width > 0) {
-        hasStroke = YES;
-        strokeWidth = width;
-        strokeColor = [_textStorage attribute:@"RCTTextStrokeColor" atIndex:range.location effectiveRange:NULL];
+                          if (value && [value isKindOfClass:[NSNumber class]]) {
+                            CGFloat width = [value floatValue];
+                            if (width > 0) {
+                              hasStroke = YES;
+                              strokeWidth = width;
+                              strokeColor = [_textStorage attribute:@"RCTTextStrokeColor"
+                                                            atIndex:range.location
+                                                     effectiveRange:NULL];
 
-        if (strokeColor) {
-          CGFloat r, g, b, a;
-          [strokeColor getRed:&r green:&g blue:&b alpha:&a];
-        }
-        *stop = YES;
-      }
-    }
-  }];
+                              if (strokeColor) {
+                                CGFloat r, g, b, a;
+                                [strokeColor getRed:&r green:&g blue:&b alpha:&a];
+                              }
+                              *stop = YES;
+                            }
+                          }
+                        }];
 
   if (hasStroke && strokeColor) {
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -157,16 +159,17 @@
     CGFloat strokeInset = strokeWidth / 2;
 
     // PASS 1: Draw stroke outline
+    // Note: Only offset X by strokeInset, not Y, to match Android behavior
+    // This ensures consistent vertical spacing when stroke is applied
     CGContextSaveGState(context);
     CGContextSetTextDrawingMode(context, kCGTextStroke);
 
     NSMutableAttributedString *strokeText = [_textStorage mutableCopy];
-    [strokeText addAttribute:NSForegroundColorAttributeName
-                       value:strokeColor
-                       range:characterRange];
+    [strokeText addAttribute:NSForegroundColorAttributeName value:strokeColor range:characterRange];
 
     CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-    CGContextTranslateCTM(context, _contentFrame.origin.x + strokeInset, self.bounds.size.height - _contentFrame.origin.y + strokeInset);
+    CGContextTranslateCTM(
+        context, _contentFrame.origin.x + strokeInset, self.bounds.size.height - _contentFrame.origin.y);
     CGContextScaleCTM(context, 1.0, -1.0);
 
     CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)strokeText);
@@ -184,7 +187,8 @@
     CGContextSetTextDrawingMode(context, kCGTextFill);
 
     CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-    CGContextTranslateCTM(context, _contentFrame.origin.x + strokeInset, self.bounds.size.height - _contentFrame.origin.y + strokeInset);
+    CGContextTranslateCTM(
+        context, _contentFrame.origin.x + strokeInset, self.bounds.size.height - _contentFrame.origin.y);
     CGContextScaleCTM(context, 1.0, -1.0);
 
     framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)_textStorage);

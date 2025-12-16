@@ -405,28 +405,13 @@
   [attributedText enumerateAttribute:NSFontAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                        usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
-                          if (maximumDescender > font.descender) {
-                            maximumDescender = font.descender;
-                          }
-                        }];
+                          usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
+                            if (maximumDescender > font.descender) {
+                              maximumDescender = font.descender;
+                            }
+                          }];
 
-  // Account for stroke width in baseline calculation
-  __block CGFloat strokeWidth = 0;
-  [attributedText enumerateAttribute:@"RCTTextStrokeWidth"
-                             inRange:NSMakeRange(0, attributedText.length)
-                             options:0
-                          usingBlock:^(id value, NSRange range, BOOL *stop) {
-    if (value && [value isKindOfClass:[NSNumber class]]) {
-      CGFloat width = [value floatValue];
-      if (width > 0) {
-        strokeWidth = MAX(strokeWidth, width);
-        *stop = YES;
-      }
-    }
-  }];
-
-  return size.height + maximumDescender + strokeWidth;
+  return size.height + maximumDescender;
 }
 
 static YGSize RCTTextShadowViewMeasure(
@@ -463,29 +448,27 @@ static YGSize RCTTextShadowViewMeasure(
                           inRange:NSMakeRange(0, textStorage.length)
                           options:0
                        usingBlock:^(id value, NSRange range, BOOL *stop) {
-    if (value && [value isKindOfClass:[NSNumber class]]) {
-      CGFloat width = [value floatValue];
-      if (width > 0) {
-        strokeWidth = MAX(strokeWidth, width);
-        *stop = YES;
-      }
-    }
-  }];
+                         if (value && [value isKindOfClass:[NSNumber class]]) {
+                           CGFloat width = [value floatValue];
+                           if (width > 0) {
+                             strokeWidth = MAX(strokeWidth, width);
+                             *stop = YES;
+                           }
+                         }
+                       }];
 
   if (strokeWidth > 0) {
     size.width += strokeWidth;
-    size.height += strokeWidth;
   }
 
-  size = (CGSize){
-      MIN(RCTCeilPixelValue(size.width), maximumSize.width), MIN(RCTCeilPixelValue(size.height), maximumSize.height)};
+  size = (CGSize){MIN(RCTCeilPixelValue(size.width), maximumSize.width),
+                  MIN(RCTCeilPixelValue(size.height), maximumSize.height)};
 
   // Adding epsilon value illuminates problems with converting values from
   // `double` to `float`, and then rounding them to pixel grid in Yoga.
   CGFloat epsilon = 0.001;
-  return (YGSize){
-      RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
-      RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)};
+  return (YGSize){RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
+                  RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)};
 }
 
 static float RCTTextShadowViewBaseline(YGNodeConstRef node, const float width, const float height)
