@@ -15,7 +15,7 @@ permissions:
 jobs:
   danger:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'feat/prebuild-0.80.1'
     steps:
       - uses: actions/checkout@v4
       - name: Run yarn install

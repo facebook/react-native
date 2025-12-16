@@ -11,7 +11,7 @@ on:
 jobs:
   check-nightly:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'feat/prebuild-0.80.1'
     steps:
       - name: Checkout
         uses: actions/checkout@v4

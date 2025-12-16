@@ -14,7 +14,7 @@ jobs:
       issues: write # for react-native-community/needs-attention to label issues
     name: Apply Needs Attention Label
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'feat/prebuild-0.80.1'
     steps:
       - uses: actions/checkout@v4
       - name: Apply Needs Attention Label

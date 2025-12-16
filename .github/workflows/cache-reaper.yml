@@ -8,7 +8,7 @@ on:
 
 jobs:
   cache-cleaner:
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'feat/prebuild-0.80.1'
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
