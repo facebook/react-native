@@ -35,11 +35,7 @@ export interface Spec extends TurboModule {
   +getObjectShape: (arg: {prop: number}) => {prop: number};
   +getAlias: (arg: Animal) => Animal;
   +getRootTag: (arg: RootTag) => RootTag;
-  +getValue: (
-    x: number,
-    getValuegetValuegetValuegetValuegetValuey: string,
-    z: Object,
-  ) => Object;
+  +getValue: (x: number, y: string, z: Object) => Object;
   +getValueWithCallback: (callback: (value: string) => void) => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;
 }
