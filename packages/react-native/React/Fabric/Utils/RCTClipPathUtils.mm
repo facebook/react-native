@@ -12,6 +12,21 @@
 
 using namespace facebook::react;
 
+float computeMargin(const facebook::yoga::Style &yogaStyle, facebook::yoga::Edge edge) {
+	auto value = yogaStyle.margin(edge).value();
+	if (value.isDefined()) {
+		return value.unwrap();
+	}
+	
+	auto isHorizontal = edge == facebook::yoga::Edge::Left || edge == facebook::yoga::Edge::Right;
+	value = yogaStyle.margin(isHorizontal ? facebook::yoga::Edge::Horizontal : facebook::yoga::Edge::Vertical).value();
+	if (value.isDefined()) {
+		return value.unwrap();
+	}
+	
+	return yogaStyle.margin(facebook::yoga::Edge::All).value().unwrapOrDefault(0.0f);
+}
+
 @implementation RCTClipPathUtils
 
 + (RCTCornerRadii)adjustCornerRadiiForGeometryBox:(GeometryBox)geometryBox
@@ -19,12 +34,12 @@ using namespace facebook::react;
                                      layoutMetrics:(const LayoutMetrics &)layoutMetrics
                                          yogaStyle:(const facebook::yoga::Style &)yogaStyle
 {
-  auto marginLeft = yogaStyle.margin(facebook::yoga::Edge::Left).value().unwrapOrDefault(0.0f);
-  auto marginRight = yogaStyle.margin(facebook::yoga::Edge::Right).value().unwrapOrDefault(0.0f);
-  auto marginTop = yogaStyle.margin(facebook::yoga::Edge::Top).value().unwrapOrDefault(0.0f);
-  auto marginBottom = yogaStyle.margin(facebook::yoga::Edge::Bottom).value().unwrapOrDefault(0.0f);
-  
-  RCTCornerRadii adjustedRadii = cornerRadii;
+	auto marginLeft = computeMargin(yogaStyle, facebook::yoga::Edge::Left);
+  auto marginRight = computeMargin(yogaStyle, facebook::yoga::Edge::Right);
+  auto marginTop = computeMargin(yogaStyle, facebook::yoga::Edge::Top);
+	auto marginBottom = computeMargin(yogaStyle, facebook::yoga::Edge::Bottom);
+	
+	RCTCornerRadii adjustedRadii = cornerRadii;
   
   switch (geometryBox) {
     case GeometryBox::MarginBox: {
@@ -82,11 +97,11 @@ using namespace facebook::react;
                    yogaStyle:(const facebook::yoga::Style &)yogaStyle
                       bounds:(CGRect)bounds
 {
-  auto marginLeft = yogaStyle.margin(facebook::yoga::Edge::Left).value().unwrapOrDefault(0.0f);
-  auto marginRight = yogaStyle.margin(facebook::yoga::Edge::Right).value().unwrapOrDefault(0.0f);
-  auto marginTop = yogaStyle.margin(facebook::yoga::Edge::Top).value().unwrapOrDefault(0.0f);
-  auto marginBottom = yogaStyle.margin(facebook::yoga::Edge::Bottom).value().unwrapOrDefault(0.0f);
-  
+	auto marginLeft = computeMargin(yogaStyle, facebook::yoga::Edge::Left);
+	auto marginRight = computeMargin(yogaStyle, facebook::yoga::Edge::Right);
+	auto marginTop = computeMargin(yogaStyle, facebook::yoga::Edge::Top);
+	auto marginBottom = computeMargin(yogaStyle, facebook::yoga::Edge::Bottom);
+
   switch (geometryBox) {
     case GeometryBox::ContentBox:
     case GeometryBox::FillBox:
