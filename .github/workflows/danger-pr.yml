@@ -19,8 +19,6 @@ jobs:
     steps:
       - name: Check out PR branch
         uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn install
