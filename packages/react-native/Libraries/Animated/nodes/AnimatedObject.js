@@ -31,7 +31,7 @@ export function isPlainObject(
   }
   return (
     // $FlowFixMe[incompatible-type-guard]
-    (proto === null || proto.isPrototypeOf(Object)) &&
+    (proto == null || proto.isPrototypeOf(Object)) &&
     !isValidElement(value)
   );
 }
