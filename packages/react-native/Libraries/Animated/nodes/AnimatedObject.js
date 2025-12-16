@@ -25,7 +25,10 @@ export function isPlainObject(
      and ReactElement checks preserve the type refinement of `value`. */
 ): value is $ReadOnly<{[string]: mixed}> {
   const proto = value !== null && typeof value === 'object' ? Object.getPrototypeOf(value) : undefined;
-  if (proto === undefined) return false
+  if (proto === undefined) {
+    // $FlowFixMe[incompatible-type-guard]
+    return false;
+  }
   return (
     // $FlowFixMe[incompatible-type-guard]
     (proto === null || proto.isPrototypeOf(Object)) &&
