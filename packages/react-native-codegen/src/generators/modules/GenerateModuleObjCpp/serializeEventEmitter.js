@@ -10,11 +10,7 @@
 
 import type {NativeModuleEventEmitterShape} from '../../../CodegenSchema';
 
-const {
-  parseValidUnionType,
-  toCppString,
-  toPascalCase,
-} = require('../../Utils');
+const {parseValidUnionType, toCppString, toPascalCase} = require('../../Utils');
 
 function getEventEmitterTypeObjCType(
   eventEmitter: NativeModuleEventEmitterShape,
