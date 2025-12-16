@@ -3,27 +3,22 @@ description: Check for breaking changes in the public React Native JS API
 runs:
   using: composite
   steps:
-    - name: Get merge base commit with main
+    - name: Compute merge base with main
       id: merge_base
       shell: bash
       run: |
         git fetch origin main
-        git fetch origin ${{ github.event.pull_request.head.sha }} --depth=100
-        BASE=$(git merge-base ${{ github.event.pull_request.head.sha }} origin/main)
-        echo "merge_base=$BASE" >> $GITHUB_OUTPUT
+        git fetch --deepen=500
+        echo "merge_base=$(git merge-base HEAD origin/main)" >> $GITHUB_OUTPUT
 
-    - name: Fetch snapshots from PR head and merge base
+    - name: Output snapshot before state for comparison
       shell: bash
       env:
         SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-changes
       run: |
         mkdir -p $SCRATCH_DIR
-        # Fetch from merge base
         git show ${{ steps.merge_base.outputs.merge_base }}:packages/react-native/ReactNativeApi.d.ts > $SCRATCH_DIR/ReactNativeApi-before.d.ts \
           || echo "" > $SCRATCH_DIR/ReactNativeApi-before.d.ts
-        # Fetch from PR head
-        git show ${{ github.event.pull_request.head.sha }}:packages/react-native/ReactNativeApi.d.ts > $SCRATCH_DIR/ReactNativeApi-after.d.ts \
-          || echo "" > $SCRATCH_DIR/ReactNativeApi-after.d.ts
 
     - name: Run breaking change detection
       shell: bash
@@ -31,6 +26,6 @@ runs:
         SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-changes
       run: |
         node ./scripts/js-api/diff-api-snapshot \
-        $SCRATCH_DIR/ReactNativeApi-before.d.ts \
-        $SCRATCH_DIR/ReactNativeApi-after.d.ts \
-        > $SCRATCH_DIR/output.json
+          $SCRATCH_DIR/ReactNativeApi-before.d.ts \
+          ./packages/react-native/ReactNativeApi.d.ts \
+          > $SCRATCH_DIR/output.json
