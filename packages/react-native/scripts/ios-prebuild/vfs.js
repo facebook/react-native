@@ -17,13 +17,6 @@ const {getHeaderFilesFromPodspecs} = headers;
 const ROOT_PATH_PLACEHOLDER = '${ROOT_PATH}';
 
 /**
- * Converts a path to use POSIX-style separators (forward slashes)
- */
-function toPosix(value /*: string */) /*: string */ {
-  return value.split(/[\\/]/).join('/');
-}
-
-/**
  * Builds a hierarchical VFS directory structure from a list of header mappings.
  * Clang's VFS overlay requires a tree structure where directories contain their children.
  */
@@ -67,7 +60,7 @@ function buildVFSStructure(
       roots.push({
         name: fileName,
         type: 'file',
-        'external-contents': toPosix(sourcePath),
+        'external-contents': sourcePath,
       });
     }
   }
@@ -100,7 +93,7 @@ function buildDirectoryEntry(
       contents.push({
         name: fileName,
         type: 'file',
-        'external-contents': toPosix(sourcePath),
+        'external-contents': sourcePath,
       });
     }
   }
@@ -203,7 +196,7 @@ function createVFSOverlayContents(rootFolder /*: string */) /*: VFSOverlay */ {
       headerMap.headers.forEach(header => {
         // The key is just the target path (the import path)
         // e.g., 'react/renderer/graphics/Size.h' for #import <react/renderer/graphics/Size.h>
-        let key = toPosix(header.target);
+        let key = header.target;
 
         // If the podspec doesn't specify a header_dir, CocoaPods exposes public headers under
         // <PodName/Header.h> (and umbrella headers typically use quoted imports resolved relative
@@ -219,7 +212,7 @@ function createVFSOverlayContents(rootFolder /*: string */) /*: VFSOverlay */ {
         // The external-contents path is always podSpecName + header.target because
         // xcframework.js copies headers to: outputHeadersPath/podSpecName/headerFile.target
         // So the VFS must point to that same location.
-        const sourcePath = `${ROOT_PATH_PLACEHOLDER}/Headers/${podSpecName}/${toPosix(header.target)}`;
+        const sourcePath = `${ROOT_PATH_PLACEHOLDER}/Headers/${podSpecName}/${header.target}`;
 
         mappings.push({
           key,
