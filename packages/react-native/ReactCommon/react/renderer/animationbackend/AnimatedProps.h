@@ -29,7 +29,11 @@ enum PropName {
   SHADOW_OFFSET,
   SHADOW_OPACITY,
   SHADOW_RADIUS,
-  FILTER
+  FILTER,
+  OUTLINE_COLOR,
+  OUTLINE_OFFSET,
+  OUTLINE_STYLE,
+  OUTLINE_WIDTH
 };
 
 struct AnimatedPropBase {
@@ -243,6 +247,22 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case FILTER:
       viewProps.filter = get<std::vector<FilterFunction>>(animatedProp);
+      break;
+
+    case OUTLINE_COLOR:
+      viewProps.outlineColor = get<SharedColor>(animatedProp);
+      break;
+
+    case OUTLINE_OFFSET:
+      viewProps.outlineOffset = get<Float>(animatedProp);
+      break;
+
+    case OUTLINE_STYLE:
+      viewProps.outlineStyle = get<OutlineStyle>(animatedProp);
+      break;
+
+    case OUTLINE_WIDTH:
+      viewProps.outlineWidth = get<Float>(animatedProp);
       break;
 
     default:

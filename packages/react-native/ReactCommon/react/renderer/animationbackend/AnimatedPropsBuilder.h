@@ -80,6 +80,22 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<std::vector<FilterFunction>>>(FILTER, std::move(value)));
   }
+  void setOutlineColor(SharedColor value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<SharedColor>>(OUTLINE_COLOR, value));
+  }
+  void setOutlineOffset(Float value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Float>>(OUTLINE_OFFSET, value));
+  }
+  void setOutlineStyle(OutlineStyle value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<OutlineStyle>>(OUTLINE_STYLE, value));
+  }
+  void setOutlineWidth(Float value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Float>>(OUTLINE_WIDTH, value));
+  }
   void storeDynamic(folly::dynamic &d)
   {
     rawProps = std::make_unique<RawProps>(std::move(d));
