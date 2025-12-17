@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b16ca6ca4e47b347e4f5cb8555d3308f>>
+ * @generated SignedSource<<6b37c02e334fb00f22ce27bb787104cc>>
  * @flow strict
  * @noformat
  */
@@ -558,7 +558,7 @@ export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useR
 /**
  * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
  */
-export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', false);
+export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', true);
 /**
  * Use shared animation backend in C++ Animated
  */
