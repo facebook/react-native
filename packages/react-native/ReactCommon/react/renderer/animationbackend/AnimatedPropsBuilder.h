@@ -31,6 +31,14 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<CascadedBorderRadii>>(BORDER_RADII, value));
   }
+  void setBorderWidth(CascadedRectangleEdges<yoga::StyleLength> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(BORDER_WIDTH, value));
+  }
+  void setBorderColor(CascadedBorderColors &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedBorderColors>>(BORDER_COLOR, value));
+  }
   void setMargin(CascadedRectangleEdges<yoga::StyleLength> &value)
   {
     props.push_back(std::make_unique<AnimatedProp<CascadedRectangleEdges<yoga::StyleLength>>>(MARGIN, value));

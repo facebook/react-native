@@ -110,6 +110,32 @@ void packShadowRadius(
   dyn.insert("shadowRadius", get<Float>(animatedProp));
 }
 
+void packBorderColorEdge(
+    folly::dynamic& dyn,
+    const std::string& propName,
+    const std::optional<SharedColor>& colorValue) {
+  if (colorValue.has_value() && colorValue.value()) {
+    dyn.insert(propName, static_cast<int32_t>(*colorValue.value()));
+  }
+}
+
+void packBorderColor(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& borderColors = get<CascadedBorderColors>(animatedProp);
+
+  packBorderColorEdge(dyn, "borderLeftColor", borderColors.left);
+  packBorderColorEdge(dyn, "borderTopColor", borderColors.top);
+  packBorderColorEdge(dyn, "borderRightColor", borderColors.right);
+  packBorderColorEdge(dyn, "borderBottomColor", borderColors.bottom);
+  packBorderColorEdge(dyn, "borderStartColor", borderColors.start);
+  packBorderColorEdge(dyn, "borderEndColor", borderColors.end);
+
+  if (borderColors.all.has_value() && borderColors.all.value()) {
+    dyn.insert("borderColor", static_cast<int32_t>(*borderColors.all.value()));
+  }
+}
+
 void packAnimatedProp(
     folly::dynamic& dyn,
     const std::unique_ptr<AnimatedPropBase>& animatedProp) {
@@ -146,12 +172,17 @@ void packAnimatedProp(
       packShadowRadius(dyn, *animatedProp);
       break;
 
+    case BORDER_COLOR:
+      packBorderColor(dyn, *animatedProp);
+      break;
+
     case WIDTH:
     case HEIGHT:
     case FLEX:
     case PADDING:
     case MARGIN:
     case POSITION:
+    case BORDER_WIDTH:
       throw std::runtime_error("Tried to synchronously update layout props");
   }
 }

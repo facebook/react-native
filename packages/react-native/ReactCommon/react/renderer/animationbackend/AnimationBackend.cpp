@@ -56,7 +56,8 @@ static inline bool mutationHasLayoutUpdates(
     if (animatedProp->propName == WIDTH || animatedProp->propName == HEIGHT ||
         animatedProp->propName == FLEX || animatedProp->propName == MARGIN ||
         animatedProp->propName == PADDING ||
-        animatedProp->propName == POSITION) {
+        animatedProp->propName == POSITION ||
+        animatedProp->propName == BORDER_WIDTH) {
       return true;
     }
   }
