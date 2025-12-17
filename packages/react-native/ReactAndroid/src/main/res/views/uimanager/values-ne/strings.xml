@@ -15,6 +15,7 @@
     <string name="spinbutton_description" gender="unknown">स्पिन बटन</string>
     <string name="rn_tab_description" gender="unknown">टयाब</string>
     <string name="timer_description" gender="unknown">टाइमर</string>
+    <string name="toolbar_description" gender="unknown">टुल बार</string>
     <string name="state_busy_description" gender="unknown">व्यस्त</string>
     <string name="state_expanded_description" gender="unknown">विस्तार गरियो</string>
     <string name="state_unselected_description" gender="unknown">चयन हटाइयो</string>
