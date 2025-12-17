@@ -84,6 +84,11 @@ def use_react_native! (
   # This is needed as part of our migration away from cocoapods
   ENV['RCT_SKIP_CODEGEN'] = ENV['RCT_SKIP_CODEGEN'] == '1' || ENV['RCT_IGNORE_PODS_DEPRECATION'] == '1' ? '1' : '0'
 
+  # Use the React Native precompiled binaries by default.
+  # Users can still turn them off and build from source by setting the environment variable to 0.
+  ENV['RCT_USE_RN_DEP'] = ENV['RCT_USE_RN_DEP'] == '0' ? '0' : '1'
+  ENV['RCT_USE_PREBUILT_RNCORE'] = ENV['RCT_USE_PREBUILT_RNCORE'] == '0' ? '0' : '1'
+
   ReactNativePodsUtils.check_minimum_required_xcode()
 
   # Current target definition is provided by Cocoapods and it refers to the target
