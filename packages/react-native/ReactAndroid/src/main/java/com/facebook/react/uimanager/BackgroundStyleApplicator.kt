@@ -580,20 +580,27 @@ public object BackgroundStyleApplicator {
     // Draw the content first
     drawContent()
 
-    // Create the antialiased mask path with Porter-Duff DST_IN to clip
     val maskPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     maskPaint.style = Paint.Style.FILL
-    maskPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
 
     // Transparent pixels with INVERSE_WINDING only works on API 28
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      maskPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
       maskPaint.color = Color.TRANSPARENT
       paddingBoxPath.setFillType(Path.FillType.INVERSE_WINDING)
+      canvas.drawPath(paddingBoxPath, maskPaint)
     } else {
-      maskPaint.color = Color.BLACK
-    }
+      // Create an inverse path: outer rect minus the rounded rect (using even-odd fill rule)
+      val inversePath = Path()
+      inversePath.addRect(0f, 0f, view.width.toFloat(), view.height.toFloat(), Path.Direction.CW)
+      inversePath.addPath(paddingBoxPath)
+      inversePath.setFillType(Path.FillType.EVEN_ODD)
 
-    canvas.drawPath(paddingBoxPath, maskPaint)
+      // Use DST_OUT to remove content where the mask is drawn (outside the rounded rect)
+      maskPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+      maskPaint.color = Color.BLACK
+      canvas.drawPath(inversePath, maskPaint)
+    }
 
     // Restore the layer
     canvas.restoreToCount(saveCount)
