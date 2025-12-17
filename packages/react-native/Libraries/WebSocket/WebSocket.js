@@ -289,35 +289,35 @@ class WebSocket extends EventTarget {
     ];
   }
 
-  get onclose(): EventCallback | null {
+  get onclose(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'close');
   }
 
-  set onclose(listener: ?EventCallback) {
+  set onclose(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'close', listener);
   }
 
-  get onerror(): EventCallback | null {
+  get onerror(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'error');
   }
 
-  set onerror(listener: ?EventCallback) {
+  set onerror(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'error', listener);
   }
 
-  get onmessage(): EventCallback | null {
+  get onmessage(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'message');
   }
 
-  set onmessage(listener: ?EventCallback) {
+  set onmessage(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'message', listener);
   }
 
-  get onopen(): EventCallback | null {
+  get onopen(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'open');
   }
 
-  set onopen(listener: ?EventCallback) {
+  set onopen(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'open', listener);
   }
 }
