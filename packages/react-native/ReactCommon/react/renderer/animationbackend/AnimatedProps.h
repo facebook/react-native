@@ -33,7 +33,21 @@ enum PropName {
   OUTLINE_COLOR,
   OUTLINE_OFFSET,
   OUTLINE_STYLE,
-  OUTLINE_WIDTH
+  OUTLINE_WIDTH,
+  ALIGN_CONTENT,
+  ALIGN_ITEMS,
+  ALIGN_SELF,
+  ASPECT_RATIO,
+  BOX_SIZING,
+  DISPLAY,
+  FLEX_BASIS,
+  FLEX_DIRECTION,
+  ROW_GAP,
+  COLUMN_GAP,
+  FLEX_GROW,
+  FLEX_SHRINK,
+  FLEX_WRAP,
+  JUSTIFY_CONTENT
 };
 
 struct AnimatedPropBase {
@@ -263,6 +277,62 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case OUTLINE_WIDTH:
       viewProps.outlineWidth = get<Float>(animatedProp);
+      break;
+
+    case ALIGN_CONTENT:
+      viewProps.yogaStyle.setAlignContent(get<yoga::Align>(animatedProp));
+      break;
+
+    case ALIGN_ITEMS:
+      viewProps.yogaStyle.setAlignItems(get<yoga::Align>(animatedProp));
+      break;
+
+    case ALIGN_SELF:
+      viewProps.yogaStyle.setAlignSelf(get<yoga::Align>(animatedProp));
+      break;
+
+    case ASPECT_RATIO:
+      viewProps.yogaStyle.setAspectRatio(get<yoga::FloatOptional>(animatedProp));
+      break;
+
+    case BOX_SIZING:
+      viewProps.yogaStyle.setBoxSizing(get<yoga::BoxSizing>(animatedProp));
+      break;
+
+    case DISPLAY:
+      viewProps.yogaStyle.setDisplay(get<yoga::Display>(animatedProp));
+      break;
+
+    case FLEX_BASIS:
+      viewProps.yogaStyle.setFlexBasis(get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case FLEX_DIRECTION:
+      viewProps.yogaStyle.setFlexDirection(get<yoga::FlexDirection>(animatedProp));
+      break;
+
+    case ROW_GAP:
+      viewProps.yogaStyle.setGap(yoga::Gutter::Row, get<yoga::Style::Length>(animatedProp));
+      break;
+
+    case COLUMN_GAP:
+      viewProps.yogaStyle.setGap(yoga::Gutter::Column, get<yoga::Style::Length>(animatedProp));
+      break;
+
+    case FLEX_GROW:
+      viewProps.yogaStyle.setFlexGrow(get<yoga::FloatOptional>(animatedProp));
+      break;
+
+    case FLEX_SHRINK:
+      viewProps.yogaStyle.setFlexShrink(get<yoga::FloatOptional>(animatedProp));
+      break;
+
+    case FLEX_WRAP:
+      viewProps.yogaStyle.setFlexWrap(get<yoga::Wrap>(animatedProp));
+      break;
+
+    case JUSTIFY_CONTENT:
+      viewProps.yogaStyle.setJustifyContent(get<yoga::Justify>(animatedProp));
       break;
 
     default:

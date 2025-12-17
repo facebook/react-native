@@ -265,6 +265,20 @@ void packAnimatedProp(
     case MARGIN:
     case POSITION:
     case BORDER_WIDTH:
+    case ALIGN_CONTENT:
+    case ALIGN_ITEMS:
+    case ALIGN_SELF:
+    case ASPECT_RATIO:
+    case BOX_SIZING:
+    case DISPLAY:
+    case FLEX_BASIS:
+    case FLEX_DIRECTION:
+    case ROW_GAP:
+    case COLUMN_GAP:
+    case FLEX_GROW:
+    case FLEX_SHRINK:
+    case FLEX_WRAP:
+    case JUSTIFY_CONTENT:
       throw std::runtime_error("Tried to synchronously update layout props");
   }
 }
