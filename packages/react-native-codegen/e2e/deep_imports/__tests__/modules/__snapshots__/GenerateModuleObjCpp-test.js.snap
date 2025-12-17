@@ -275,6 +275,9 @@ namespace JS {
     struct ConstantsEEE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsEEE;
+
         struct Input {
           RCTRequired<bool> D;
           RCTRequired<double> E;
@@ -304,6 +307,9 @@ namespace JS {
     struct ConstantsEE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsEE;
+
         struct Input {
           RCTRequired<bool> D;
           RCTRequired<JS::NativeObjectTurboModule::ConstantsEEE::Builder> E;
@@ -333,6 +339,9 @@ namespace JS {
     struct ConstantsE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsE;
+
         struct Input {
           RCTRequired<bool> D;
           RCTRequired<JS::NativeObjectTurboModule::ConstantsEE::Builder> E;
@@ -362,6 +371,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<bool> D;
           RCTRequired<JS::NativeObjectTurboModule::ConstantsE::Builder> E;
@@ -420,6 +432,9 @@ namespace JS {
     struct ConstantsEEE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsEEE;
+
         struct Input {
           std::optional<bool> D;
           std::optional<double> E;
@@ -449,6 +464,9 @@ namespace JS {
     struct ConstantsEE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsEE;
+
         struct Input {
           std::optional<bool> D;
           std::optional<JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder> E;
@@ -478,6 +496,9 @@ namespace JS {
     struct ConstantsE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsE;
+
         struct Input {
           std::optional<bool> D;
           std::optional<JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder> E;
@@ -507,6 +528,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           std::optional<bool> D;
           id<NSObject> _Nullable A;
@@ -698,6 +722,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<bool> const1;
           RCTRequired<double> const2;
@@ -768,6 +795,9 @@ namespace JS {
     struct ConstantsIdElement {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsIdElement;
+
         struct Input {
           RCTRequired<double> prop;
         };
@@ -795,6 +825,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<std::vector<bool>> const1;
           RCTRequired<std::vector<double>> const2;
@@ -896,6 +929,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<std::optional<bool>> const1;
           RCTRequired<std::optional<double>> const2;
@@ -996,6 +1032,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           std::optional<bool> const1;
           std::optional<double> const2;
@@ -1096,6 +1135,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           std::optional<bool> const1;
           std::optional<double> const2;
@@ -1787,6 +1829,9 @@ namespace JS {
     struct ConstantsEEE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsEEE;
+
         struct Input {
           RCTRequired<bool> D;
           RCTRequired<double> E;
@@ -1816,6 +1861,9 @@ namespace JS {
     struct ConstantsEE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsEE;
+
         struct Input {
           RCTRequired<bool> D;
           RCTRequired<JS::NativeObjectTurboModule::ConstantsEEE::Builder> E;
@@ -1845,6 +1893,9 @@ namespace JS {
     struct ConstantsE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsE;
+
         struct Input {
           RCTRequired<bool> D;
           RCTRequired<JS::NativeObjectTurboModule::ConstantsEE::Builder> E;
@@ -1874,6 +1925,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<bool> D;
           RCTRequired<JS::NativeObjectTurboModule::ConstantsE::Builder> E;
@@ -1932,6 +1986,9 @@ namespace JS {
     struct ConstantsEEE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsEEE;
+
         struct Input {
           std::optional<bool> D;
           std::optional<double> E;
@@ -1961,6 +2018,9 @@ namespace JS {
     struct ConstantsEE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsEE;
+
         struct Input {
           std::optional<bool> D;
           std::optional<JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder> E;
@@ -1990,6 +2050,9 @@ namespace JS {
     struct ConstantsE {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsE;
+
         struct Input {
           std::optional<bool> D;
           std::optional<JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder> E;
@@ -2019,6 +2082,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           std::optional<bool> D;
           id<NSObject> _Nullable A;
@@ -2210,6 +2276,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<bool> const1;
           RCTRequired<double> const2;
@@ -2280,6 +2349,9 @@ namespace JS {
     struct ConstantsIdElement {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ConstantsIdElement;
+
         struct Input {
           RCTRequired<double> prop;
         };
@@ -2307,6 +2379,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<std::vector<bool>> const1;
           RCTRequired<std::vector<double>> const2;
@@ -2408,6 +2483,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           RCTRequired<std::optional<bool>> const1;
           RCTRequired<std::optional<double>> const2;
@@ -2508,6 +2586,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           std::optional<bool> const1;
           std::optional<double> const2;
@@ -2608,6 +2689,9 @@ namespace JS {
     struct Constants {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = Constants;
+
         struct Input {
           std::optional<bool> const1;
           std::optional<double> const2;

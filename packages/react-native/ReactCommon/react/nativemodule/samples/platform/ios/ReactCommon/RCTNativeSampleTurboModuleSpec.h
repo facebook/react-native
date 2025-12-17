@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 namespace JS::NativeSampleTurboModule {
 struct Constants {
   struct Builder {
+    using ResultT = Constants;
+
     struct Input {
       RCTRequired<bool> const1;
       RCTRequired<double> const2;
