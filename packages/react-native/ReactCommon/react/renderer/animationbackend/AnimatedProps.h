@@ -28,7 +28,8 @@ enum PropName {
   SHADOW_COLOR,
   SHADOW_OFFSET,
   SHADOW_OPACITY,
-  SHADOW_RADIUS
+  SHADOW_RADIUS,
+  FILTER
 };
 
 struct AnimatedPropBase {
@@ -238,6 +239,10 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case SHADOW_RADIUS:
       viewProps.shadowRadius = get<Float>(animatedProp);
+      break;
+
+    case FILTER:
+      viewProps.filter = get<std::vector<FilterFunction>>(animatedProp);
       break;
 
     default:
