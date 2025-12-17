@@ -15,6 +15,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableArray
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import java.net.SocketTimeoutException
 import okhttp3.Headers
@@ -30,13 +31,21 @@ internal object NetworkEventUtil {
   fun onCreateRequest(devToolsRequestId: String, request: Request) {
     if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
       val headersMap = okHttpHeadersToMap(request.headers())
+      var requestBody = ""
+
+      if (ReactBuildConfig.DEBUG) {
+        // Debug build: Process request body for preview (CDP only)
+        requestBody =
+            (request.body() as? ProgressRequestBody)?.getBodyPreview()
+                ?: request.body()?.toString().orEmpty()
+      }
+
       InspectorNetworkReporter.reportRequestStart(
           devToolsRequestId,
           request.url().toString(),
           request.method(),
           headersMap,
-          (request.body() as? ProgressRequestBody)?.getBodyPreview()
-              ?: request.body()?.toString().orEmpty(),
+          requestBody,
           request.body()?.contentLength() ?: 0,
       )
       InspectorNetworkReporter.reportConnectionTiming(devToolsRequestId, headersMap)
