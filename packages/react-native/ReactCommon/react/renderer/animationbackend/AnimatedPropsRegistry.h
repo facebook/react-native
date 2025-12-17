@@ -127,6 +127,21 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
           yoga::Edge::Horizontal, snapshot.props.yogaStyle.position(yoga::Edge::Horizontal));
       viewProps.yogaStyle.setPosition(yoga::Edge::Vertical, snapshot.props.yogaStyle.position(yoga::Edge::Vertical));
       break;
+
+    case BORDER_WIDTH:
+      viewProps.yogaStyle.setBorder(yoga::Edge::Left, snapshot.props.yogaStyle.border(yoga::Edge::Left));
+      viewProps.yogaStyle.setBorder(yoga::Edge::Right, snapshot.props.yogaStyle.border(yoga::Edge::Right));
+      viewProps.yogaStyle.setBorder(yoga::Edge::Top, snapshot.props.yogaStyle.border(yoga::Edge::Top));
+      viewProps.yogaStyle.setBorder(yoga::Edge::Bottom, snapshot.props.yogaStyle.border(yoga::Edge::Bottom));
+      viewProps.yogaStyle.setBorder(yoga::Edge::Start, snapshot.props.yogaStyle.border(yoga::Edge::Start));
+      viewProps.yogaStyle.setBorder(yoga::Edge::End, snapshot.props.yogaStyle.border(yoga::Edge::End));
+      viewProps.yogaStyle.setBorder(yoga::Edge::Horizontal, snapshot.props.yogaStyle.border(yoga::Edge::Horizontal));
+      viewProps.yogaStyle.setBorder(yoga::Edge::Vertical, snapshot.props.yogaStyle.border(yoga::Edge::Vertical));
+      break;
+
+    case BORDER_COLOR:
+      viewProps.borderColors = snapshot.props.borderColors;
+      break;
   }
 }
 
