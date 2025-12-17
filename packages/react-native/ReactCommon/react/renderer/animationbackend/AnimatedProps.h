@@ -17,6 +17,8 @@ enum PropName {
   WIDTH,
   HEIGHT,
   BORDER_RADII,
+  BORDER_WIDTH,
+  BORDER_COLOR,
   MARGIN,
   PADDING,
   POSITION,
@@ -76,6 +78,42 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case BORDER_RADII:
       viewProps.borderRadii = get<CascadedBorderRadii>(animatedProp);
+      break;
+
+    case BORDER_WIDTH: {
+      const auto &borderWidths = get<CascadedRectangleEdges<yoga::StyleLength>>(animatedProp);
+      if (borderWidths.left.has_value()) {
+        viewProps.yogaStyle.setBorder(yoga::Edge::Left, borderWidths.left.value());
+      }
+      if (borderWidths.top.has_value()) {
+        viewProps.yogaStyle.setBorder(yoga::Edge::Top, borderWidths.top.value());
+      }
+      if (borderWidths.right.has_value()) {
+        viewProps.yogaStyle.setBorder(yoga::Edge::Right, borderWidths.right.value());
+      }
+      if (borderWidths.bottom.has_value()) {
+        viewProps.yogaStyle.setBorder(yoga::Edge::Bottom, borderWidths.bottom.value());
+      }
+      if (borderWidths.start.has_value()) {
+        viewProps.yogaStyle.setBorder(yoga::Edge::Start, borderWidths.start.value());
+      }
+      if (borderWidths.end.has_value()) {
+        viewProps.yogaStyle.setBorder(yoga::Edge::End, borderWidths.end.value());
+      }
+      if (borderWidths.horizontal.has_value()) {
+        viewProps.yogaStyle.setBorder(yoga::Edge::Horizontal, borderWidths.horizontal.value());
+      }
+      if (borderWidths.vertical.has_value()) {
+        viewProps.yogaStyle.setBorder(yoga::Edge::Vertical, borderWidths.vertical.value());
+      }
+      if (borderWidths.all.has_value()) {
+        viewProps.yogaStyle.setBorder(yoga::Edge::All, borderWidths.all.value());
+      }
+      break;
+    }
+
+    case BORDER_COLOR:
+      viewProps.borderColors = get<CascadedBorderColors>(animatedProp);
       break;
 
     case MARGIN: {
