@@ -371,6 +371,10 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
+  if ([_hostDelegate respondsToSelector:@selector(host:didInitializeRuntime:)]) {
+    [_hostDelegate host:self didInitializeRuntime:runtime];
+  }
+  // Runtime delegate is deprecated as of 0.84
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
 }
 
