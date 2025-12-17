@@ -158,6 +158,46 @@ void packFilter(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
   dyn.insert("filter", filterArray);
 }
 
+void packOutlineColor(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& outlineColor = get<SharedColor>(animatedProp);
+  dyn.insert("outlineColor", static_cast<int32_t>(*outlineColor));
+}
+
+void packOutlineOffset(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  dyn.insert("outlineOffset", get<Float>(animatedProp));
+}
+
+void packOutlineStyle(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& outlineStyle = get<OutlineStyle>(animatedProp);
+  std::string styleStr;
+  switch (outlineStyle) {
+    case OutlineStyle::Solid:
+      styleStr = "solid";
+      break;
+    case OutlineStyle::Dotted:
+      styleStr = "dotted";
+      break;
+    case OutlineStyle::Dashed:
+      styleStr = "dashed";
+      break;
+    default:
+      throw std::runtime_error("Unknown outline style");
+  }
+  dyn.insert("outlineStyle", styleStr);
+}
+
+void packOutlineWidth(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  dyn.insert("outlineWidth", get<Float>(animatedProp));
+}
+
 void packAnimatedProp(
     folly::dynamic& dyn,
     const std::unique_ptr<AnimatedPropBase>& animatedProp) {
@@ -200,6 +240,22 @@ void packAnimatedProp(
 
     case FILTER:
       packFilter(dyn, *animatedProp);
+      break;
+
+    case OUTLINE_COLOR:
+      packOutlineColor(dyn, *animatedProp);
+      break;
+
+    case OUTLINE_OFFSET:
+      packOutlineOffset(dyn, *animatedProp);
+      break;
+
+    case OUTLINE_STYLE:
+      packOutlineStyle(dyn, *animatedProp);
+      break;
+
+    case OUTLINE_WIDTH:
+      packOutlineWidth(dyn, *animatedProp);
       break;
 
     case WIDTH:
