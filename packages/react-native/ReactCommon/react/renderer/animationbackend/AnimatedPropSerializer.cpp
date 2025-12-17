@@ -136,6 +136,28 @@ void packBorderColor(
   }
 }
 
+void packFilter(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
+  const auto& filters = get<std::vector<FilterFunction>>(animatedProp);
+  auto filterArray = folly::dynamic::array();
+  for (const auto& f : filters) {
+    folly::dynamic filterObj = folly::dynamic::object();
+    std::string typeKey = toString(f.type);
+    if (std::holds_alternative<Float>(f.parameters)) {
+      filterObj[typeKey] = std::get<Float>(f.parameters);
+    } else if (std::holds_alternative<DropShadowParams>(f.parameters)) {
+      const auto& dropShadowParams = std::get<DropShadowParams>(f.parameters);
+      folly::dynamic shadowObj = folly::dynamic::object();
+      shadowObj["offsetX"] = dropShadowParams.offsetX;
+      shadowObj["offsetY"] = dropShadowParams.offsetY;
+      shadowObj["standardDeviation"] = dropShadowParams.standardDeviation;
+      shadowObj["color"] = static_cast<int32_t>(*dropShadowParams.color);
+      filterObj[typeKey] = shadowObj;
+    }
+    filterArray.push_back(filterObj);
+  }
+  dyn.insert("filter", filterArray);
+}
+
 void packAnimatedProp(
     folly::dynamic& dyn,
     const std::unique_ptr<AnimatedPropBase>& animatedProp) {
@@ -174,6 +196,10 @@ void packAnimatedProp(
 
     case BORDER_COLOR:
       packBorderColor(dyn, *animatedProp);
+      break;
+
+    case FILTER:
+      packFilter(dyn, *animatedProp);
       break;
 
     case WIDTH:

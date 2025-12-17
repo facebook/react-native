@@ -7,6 +7,7 @@
 
 #pragma once
 #include <react/renderer/components/view/BaseViewProps.h>
+#include <react/renderer/graphics/Filter.h>
 #include "AnimatedProps.h"
 
 namespace facebook::react {
@@ -74,6 +75,10 @@ struct AnimatedPropsBuilder {
   void setShadowOffset(Size value)
   {
     props.push_back(std::make_unique<AnimatedProp<Size>>(SHADOW_OFFSET, value));
+  }
+  void setFilter(const std::vector<FilterFunction> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<std::vector<FilterFunction>>>(FILTER, std::move(value)));
   }
   void storeDynamic(folly::dynamic &d)
   {
