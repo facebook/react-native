@@ -35,6 +35,9 @@ const StructTemplate = ({
     struct ${structName} {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ${structName};
+
         struct Input {
           ${builderInputProps}
         };
