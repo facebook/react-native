@@ -142,6 +142,10 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case BORDER_COLOR:
       viewProps.borderColors = snapshot.props.borderColors;
       break;
+
+    case FILTER:
+      viewProps.filter = snapshot.props.filter;
+      break;
   }
 }
 
