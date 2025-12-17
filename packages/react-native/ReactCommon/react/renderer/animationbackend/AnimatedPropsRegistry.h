@@ -146,6 +146,22 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case FILTER:
       viewProps.filter = snapshot.props.filter;
       break;
+
+    case OUTLINE_COLOR:
+      viewProps.outlineColor = snapshot.props.outlineColor;
+      break;
+
+    case OUTLINE_OFFSET:
+      viewProps.outlineOffset = snapshot.props.outlineOffset;
+      break;
+
+    case OUTLINE_STYLE:
+      viewProps.outlineStyle = snapshot.props.outlineStyle;
+      break;
+
+    case OUTLINE_WIDTH:
+      viewProps.outlineWidth = snapshot.props.outlineWidth;
+      break;
   }
 }
 
