@@ -34,6 +34,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _textTransform = RCTTextTransformUndefined;
     _textStrokeWidth = NAN;
     _gradientAngle = NAN;
+    _gradientWidth = NAN;
   }
 
   return self;
@@ -50,6 +51,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _backgroundColor = textAttributes->_backgroundColor ?: _backgroundColor;
   _gradientColors = textAttributes->_gradientColors ?: _gradientColors;
   _gradientAngle = !isnan(textAttributes->_gradientAngle) ? textAttributes->_gradientAngle : _gradientAngle;
+  _gradientWidth = !isnan(textAttributes->_gradientWidth) ? textAttributes->_gradientWidth : _gradientWidth;
   _opacity =
       !isnan(textAttributes->_opacity) ? (isnan(_opacity) ? 1.0 : _opacity) * textAttributes->_opacity : _opacity;
 
@@ -168,10 +170,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   // Colors
-  UIColor *effectiveForegroundColor = self.effectiveForegroundColor;
-
-  if (_foregroundColor || !isnan(_opacity)) {
-    attributes[NSForegroundColorAttributeName] = effectiveForegroundColor;
+  if (_foregroundColor || _gradientColors || !isnan(_opacity)) {
+    attributes[NSForegroundColorAttributeName] = self.effectiveForegroundColor;
   }
 
   if (_backgroundColor || !isnan(_opacity)) {
@@ -204,8 +204,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   if (_textDecorationColor || isTextDecorationEnabled) {
-    attributes[NSStrikethroughColorAttributeName] = _textDecorationColor ?: effectiveForegroundColor;
-    attributes[NSUnderlineColorAttributeName] = _textDecorationColor ?: effectiveForegroundColor;
+    UIColor *baseForegroundColor = _foregroundColor ?: [UIColor blackColor];
+    attributes[NSStrikethroughColorAttributeName] = _textDecorationColor ?: baseForegroundColor;
+    attributes[NSUnderlineColorAttributeName] = _textDecorationColor ?: baseForegroundColor;
   }
 
   // Shadow
@@ -220,11 +221,11 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   // We don't use NSStrokeWidthAttributeName because it centers the stroke on the text path
   // Instead, we do custom two-pass rendering to get true outer stroke
   if (!isnan(_textStrokeWidth) && _textStrokeWidth > 0) {
-    UIColor *strokeColorToUse = _textStrokeColor ?: effectiveForegroundColor;
+    UIColor *baseForegroundColor = _foregroundColor ?: [UIColor blackColor];
+    UIColor *strokeColorToUse = _textStrokeColor ?: baseForegroundColor;
     attributes[@"RCTTextStrokeWidth"] = @(_textStrokeWidth);
     attributes[@"RCTTextStrokeColor"] = strokeColorToUse;
   }
-
 
   // Special
   if (_isHighlighted) {
@@ -323,8 +324,10 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
       if([cgColors count] > 0) {
           [cgColors addObject:cgColors[0]];
           CAGradientLayer *gradient = [CAGradientLayer layer];
-          // this pattern width corresponds roughly to desktop's pattern width
-          int patternWidth = 100;
+          
+          // Use gradientWidth if specified, otherwise default to 100
+          CGFloat patternWidth = (!isnan(_gradientWidth) && _gradientWidth > 0) ? _gradientWidth : 100;
+          
           CGFloat height = _lineHeight * self.effectiveFontSizeMultiplier;
           gradient.frame = CGRectMake(0, 0, patternWidth, height);
           gradient.colors = cgColors;
@@ -423,7 +426,7 @@ static NSString *capitalizeText(NSString *text)
 
   return RCTTextAttributesCompareObjects(_foregroundColor) && RCTTextAttributesCompareObjects(_backgroundColor) &&
       RCTTextAttributesCompareObjects(_gradientColors) && RCTTextAttributesCompareFloats(_gradientAngle) &&
-      RCTTextAttributesCompareFloats(_opacity) &&
+      RCTTextAttributesCompareFloats(_gradientWidth) && RCTTextAttributesCompareFloats(_opacity) &&
       // Font
       RCTTextAttributesCompareObjects(_fontFamily) && RCTTextAttributesCompareFloats(_fontSize) &&
       RCTTextAttributesCompareFloats(_fontSizeMultiplier) && RCTTextAttributesCompareFloats(_maxFontSizeMultiplier) &&
