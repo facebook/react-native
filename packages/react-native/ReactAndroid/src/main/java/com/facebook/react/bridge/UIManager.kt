@@ -177,18 +177,4 @@ public interface UIManager : PerformanceCounter {
    * @param reactTag The react tag for the specific view
    */
   public fun sweepActiveTouchForTag(surfaceId: Int, reactTag: Int)
-
-  /**
-   * Mark a view as being in or out of an Android view transition.
-   *
-   * When a ViewManager calls ViewGroup.startViewTransition/endViewTransition, or uses 
-   * LayoutTransition it should call this method to notify the UI manager. This allows 
-   * the mounting system to queue operations that would otherwise fail because the view
-   * is temporarily in a transitioning state.
-   *
-   * @param surfaceId The surface ID where the view is rendered
-   * @param reactTag The react tag for the specific view
-   * @param isTransitioning True if the view is entering a transition, false if exiting
-   */
-  public fun markViewAsInTransition(surfaceId: Int, reactTag: Int, isTransitioning: Boolean)
 }

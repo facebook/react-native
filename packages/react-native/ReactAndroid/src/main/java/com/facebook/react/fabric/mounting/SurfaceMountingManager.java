@@ -9,9 +9,7 @@ package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
-import static com.facebook.react.fabric.mounting.ViewOperationsKt.DELETE_VIEW_PARENT_TAG;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -78,6 +76,9 @@ public class SurfaceMountingManager {
   private RootViewManager mRootViewManager;
   private MountItemExecutor mMountItemExecutor;
 
+  @ThreadConfined(UI)
+  private final Set<Integer> mErroneouslyReaddedReactTags = new HashSet<>();
+
   // This set is used to keep track of views that are currently being interacted with (i.e.
   // views that saw a ACTION_DOWN but not a ACTION_UP event yet). This is used to prevent
   // views from being removed while they are being interacted with as their event emitter will
@@ -94,9 +95,6 @@ public class SurfaceMountingManager {
 
   private final int mSurfaceId;
 
-  // Coordinates view operations that need to wait for Android view transitions
-  private final ViewTransitionCoordinator mViewTransitionCoordinator;
-
   public SurfaceMountingManager(
       int surfaceId,
       @NonNull JSResponderHandler jsResponderHandler,
@@ -110,7 +108,6 @@ public class SurfaceMountingManager {
     mRootViewManager = rootViewManager;
     mMountItemExecutor = mountItemExecutor;
     mThemedReactContext = reactContext;
-    mViewTransitionCoordinator = new ViewTransitionCoordinator(surfaceId);
   }
 
   public boolean isStopped() {
@@ -297,9 +294,6 @@ public class SurfaceMountingManager {
     // causes further operations to noop.
     mIsStopped = true;
 
-    // Clear all pending operations
-    mViewTransitionCoordinator.clearAllPending();
-
     // Reset all StateWrapper objects
     // Since this can happen on any thread, is it possible to race between StateWrapper destruction
     // and some accesses from View classes in the UI thread?
@@ -348,32 +342,6 @@ public class SurfaceMountingManager {
     }
   }
 
-  /**
-   * Mark a view as being in or out of an Android view transition.
-   * This is called by ViewManagers when they call ViewGroup.startViewTransition/endViewTransition.
-   *
-   * @param tag The React tag of the view
-   * @param isTransitioning True if the view is entering a transition, false if exiting
-   */
-  @UiThread
-  public void markViewInTransition(final int tag, boolean isTransitioning) {
-    UiThreadUtil.assertOnUiThread();
-
-    ViewState viewState = getNullableViewState(tag);
-    if (viewState == null) {
-      return;
-    }
-
-    View view = viewState.mView;
-
-    // Delegate to coordinator with a callback to drain queues when transition completes
-    mViewTransitionCoordinator.markViewInTransition(
-        tag,
-        isTransitioning,
-        view,
-        () -> mViewTransitionCoordinator.drainOperationsForChild(tag, this));
-  }
-
   @UiThread
   public void addViewAt(final int parentTag, final int tag, final int index) {
     UiThreadUtil.assertOnUiThread();
@@ -401,74 +369,62 @@ public class SurfaceMountingManager {
           "Unable to find view for viewState " + viewState + " and tag " + tag);
     }
 
-    ViewParent viewParent = view.getParent();
-    boolean shouldEnqueueOperation = mViewTransitionCoordinator.shouldEnqueueOperation(tag, parentTag);
-    // Fast path: no queue, no parent, we can just add the view immediately
-    if (!shouldEnqueueOperation && viewParent == null) {
-      addViewAtInternal(parentView, view, index);
-      return;
-    }
-
-
-    // Either we explicitly need to enqueue, or …
-    if (!shouldEnqueueOperation) {
-      // … the view has a parent, which we treat as signal to enqueue (as the view must be in transition)
-      mViewTransitionCoordinator.markViewInTransition(
-        tag,
-        true,
-        view,
-        () -> mViewTransitionCoordinator.drainOperationsForChild(tag, this)
-      );
-    }
-
-    AddViewOperation operation =
-      new AddViewOperation(tag, parentTag, index, parentView, view);
-    mViewTransitionCoordinator.enqueueOperation(operation);
-  }
-
-  /**
-   * Internal method to add a view to its parent. This is called either directly from addViewAt
-   * (for immediate execution) or from the coordinator (for delayed execution).
-   */
-  @UiThread
-  private void addViewAtInternal(ViewGroup parentView, View child, int atIndex) {
-    UiThreadUtil.assertOnUiThread();
-    if (isStopped()) {
-      return;
-    }
-
-    if (child.getParent() != null) {
-      throw new IllegalViewOperationException(
-          "addViewAtInternal: cannot insert view ["
-              + child.getId()
-              + "] into parent ["
-              + parentView.getId()
-              + "]: View already has a parent: ["
-              + ((ViewGroup) child.getParent()).getId()
-              + "]");
-    }
-
     // Display children before inserting
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
-      FLog.e(
-          TAG,
-          "addViewAt: [" + child.getId() + "] -> [" + parentView.getId() + "] idx: " + atIndex
-              + " BEFORE");
+      FLog.e(TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
       logViewHierarchy(parentView, false);
     }
 
-    ViewState parentViewState = getViewState(parentView.getId());
+    ViewParent viewParent = view.getParent();
+    if (viewParent != null) {
+      int actualParentId =
+          viewParent instanceof ViewGroup ? ((ViewGroup) viewParent).getId() : View.NO_ID;
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "addViewAt: cannot insert view ["
+                  + tag
+                  + "] into parent ["
+                  + parentTag
+                  + "]: View already has a parent: ["
+                  + actualParentId
+                  + "] "
+                  + " Parent: "
+                  + viewParent.getClass().getSimpleName()
+                  + " View: "
+                  + view.getClass().getSimpleName()));
+
+      // We've hit an error case, and `addView` will crash below
+      // if we don't take evasive action (it is an error to add a View
+      // to the hierarchy if it already has a parent).
+      // We don't know /why/ this happens yet, but it does happen
+      // very infrequently in production.
+      // Thus, we do three things here:
+      // (1) We logged a SoftException above, so if there's a crash later
+      // on, we might have some hints about what caused it.
+      // (2) We remove the View from its parent.
+      // (3) In case the View was removed from the hierarchy with the
+      // RemoveDeleteTree instruction, and is now being readded - which
+      // should be impossible - we mark this as a "readded" View and
+      // thus prevent the RemoveDeleteTree worker from deleting this
+      // View in the future.
+      if (viewParent instanceof ViewGroup) {
+        ((ViewGroup) viewParent).removeView(view);
+      }
+      mErroneouslyReaddedReactTags.add(tag);
+    }
+
     try {
-      getViewGroupManager(parentViewState).addView(parentView, child, atIndex);
+      getViewGroupManager(parentViewState).addView(parentView, view, index);
     } catch (IllegalStateException | IndexOutOfBoundsException e) {
       // Wrap error with more context for debugging
       throw new IllegalStateException(
           "addViewAt: failed to insert view ["
-              + child.getId()
+              + tag
               + "] into parent ["
-              + parentView.getId()
+              + parentTag
               + "] at index "
-              + atIndex,
+              + index,
           e);
     }
 
@@ -485,31 +441,28 @@ public class SurfaceMountingManager {
             @Override
             public void run() {
               FLog.e(
-                  TAG,
-                  "addViewAt: ["
-                      + child.getId()
-                      + "] -> ["
-                      + parentView.getId()
-                      + "] idx: "
-                      + atIndex
-                      + " AFTER");
+                  TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
               logViewHierarchy(parentView, false);
             }
           });
     }
   }
 
-  /**
-   * Execute an AddViewOperation from the coordinator.
-   * This is called by ViewOperation.execute() after notifying the coordinator.
-   */
-  public void executeAddViewOperation(AddViewOperation operation) {
-    addViewAtInternal(operation.getParent(), operation.getChild(), operation.getIndex());
-  }
-
   @UiThread
   public void removeViewAt(final int tag, final int parentTag, int index) {
     if (isStopped()) {
+      return;
+    }
+
+    // This is "impossible". See comments above.
+    if (mErroneouslyReaddedReactTags.contains(tag)) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalViewOperationException(
+              "removeViewAt tried to remove a React View that was actually reused. This indicates a"
+                  + " bug in the Differ (specifically instruction ordering). ["
+                  + tag
+                  + "]"));
       return;
     }
 
@@ -543,33 +496,12 @@ public class SurfaceMountingManager {
       throw new IllegalStateException("Unable to find view for tag [" + parentTag + "]");
     }
 
-    if (mViewTransitionCoordinator.shouldEnqueueOperation(tag, parentTag, /* checkTransitionStatus */ false)) {
-      // ^ checkTransitionStatus = false means we don't check if the view is marked as in transition.
-      // When a view is in transition we want to call removeViewAt immediately, so it gets marked for removal
-      // and the onDetach listener will actually fire at some point.
-      // Only queue if there is already a queue (ie. remove (immediate), add (queued), remove (queued))
-      RemoveViewOperation operation =
-          new RemoveViewOperation(tag, parentTag, index, parentView);
-      mViewTransitionCoordinator.enqueueOperation(operation);
-      return;
-    }
-
-    removeViewAtInternal(parentTag, parentView, tag, index);
-  }
-
-  /**
-   * Internal method to remove a view from its parent. This is called either directly from
-   * removeViewAt (for immediate execution) or from the coordinator (for delayed execution).
-   */
-  @UiThread
-  private void removeViewAtInternal(int parentTag, final ViewGroup parentView, final int tag, int index) {
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
       // Display children before deleting any
       FLog.e(TAG, "removeViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
       logViewHierarchy(parentView, false);
     }
 
-    ViewState parentViewState = getViewState(parentTag);
     IViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(parentViewState);
 
     // Verify that the view we're about to remove has the same tag we expect
@@ -633,7 +565,6 @@ public class SurfaceMountingManager {
     }
 
     try {
-      Log.d("SurfaceMountingManager", "Removing view with tag " + tag + " at index " + index + " from parent " + parentTag);
       viewGroupManager.removeViewAt(parentView, index);
     } catch (RuntimeException e) {
       // Note: `getChildCount` may not always be accurate!
@@ -686,14 +617,6 @@ public class SurfaceMountingManager {
             }
           });
     }
-  }
-
-  public void executeRemoveViewOperation(RemoveViewOperation operation) {
-    removeViewAtInternal(
-        operation.getParentTag(),
-        operation.getParentView(),
-        operation.getChildTag(),
-        operation.getIndex());
   }
 
   @UiThread
@@ -1109,8 +1032,6 @@ public class SurfaceMountingManager {
       viewState.mEventEmitter = null;
     }
 
-    // TODO: i think we should also clear out pending operations?
-
     // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
     ViewManager viewManager = viewState.mViewManager;
     if (!viewState.mIsRoot && viewManager != null) {
@@ -1125,24 +1046,13 @@ public class SurfaceMountingManager {
       return;
     }
 
-    if (mViewTransitionCoordinator.shouldEnqueueOperation(reactTag, DELETE_VIEW_PARENT_TAG)) {
-      DeleteViewOperation operation = new DeleteViewOperation(reactTag);
-      mViewTransitionCoordinator.enqueueOperation(operation);
-      return;
-    }
-
-    deleteViewInternal(reactTag);
-  }
-
-  @UiThread
-  private void deleteViewInternal(int reactTag) {
     ViewState viewState = getNullableViewState(reactTag);
 
     if (viewState == null) {
       ReactSoftExceptionLogger.logSoftException(
-        ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
-        new ReactNoCrashSoftException(
-          "Unable to find viewState for tag: " + reactTag + " for deleteView"));
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          new ReactNoCrashSoftException(
+              "Unable to find viewState for tag: " + reactTag + " for deleteView"));
       return;
     }
 
@@ -1157,16 +1067,10 @@ public class SurfaceMountingManager {
       // To delete we simply remove the tag from the registry.
       // We want to rely on the correct set of MountInstructions being sent to the platform,
       // or StopSurface being called, so we do not handle deleting descendants of the View.
-      android.util.Log.d("SurfaceMountingManager", "Deleting view with tag: " + reactTag);
       mTagToViewState.remove(reactTag);
 
       onViewStateDeleted(viewState);
     }
-  }
-
-  @UiThread
-  protected void executeDeleteViewOperation(DeleteViewOperation operation) {
-    deleteViewInternal(operation.getChildTag());
   }
 
   @UiThread
@@ -1322,7 +1226,8 @@ public class SurfaceMountingManager {
     @Nullable EventEmitterWrapper mEventEmitter = null;
 
     @ThreadConfined(UI)
-    @Nullable Queue<PendingViewEvent> mPendingEventQueue = null;
+    @Nullable
+    Queue<PendingViewEvent> mPendingEventQueue = null;
 
     private ViewState(int reactTag) {
       this(reactTag, null, null, false);
@@ -1380,5 +1285,4 @@ public class SurfaceMountingManager {
       }
     }
   }
-
 }

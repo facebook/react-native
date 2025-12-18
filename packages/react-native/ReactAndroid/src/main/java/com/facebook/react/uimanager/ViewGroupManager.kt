@@ -28,8 +28,44 @@ constructor(reactContext: ReactApplicationContext? = null) :
 
     public override fun updateExtraData(root: T, extraData: Any): Unit = Unit
 
+    // parent: childIndex[] - Used when we can't immediately add a view
+    protected val operationsMap: WeakHashMap<T, MutableMap<Int, Boolean>> = WeakHashMap()
+
+    public fun addViewSafely(parent: T, child: View, index: Int, callback: () -> Unit) {
+        UiThreadUtil.assertOnUiThread()
+
+        if (child.parent == null) {
+            callback()
+            return
+        }
+
+        operationsMap.getOrPut(parent) {
+            mutableMapOf()
+        }[index] = true
+
+        // When the child-parent relation is removed, onDetachedFromWindow will be called.
+        // Its important to wait for detaching as the view might be in a transition, and isn't removed immediately.
+        child.doOnDetach {
+            // Looking at how endViewTransition is implemented, dispatchDetachedFromWindow
+            // gets called _before_ the parent relation is removed, so we need to post this to the end of the frame:
+            child.post {
+                if(operationsMap.remove(parent) == null) {
+                    // The addView operation was already countered by a removeView operation while we were waiting
+                    FLog.w("ReactClippingViewManager", "Tried to add a view to a parent after the child was detached, but a remove operation was already enqueued")
+                    return@post
+                }
+                FLog.w("ReactClippingViewManager", "addView(): ${child::class.java.simpleName} had a parent, removed from previous parent and after onDetach adding to new parent $parent")
+                callback()
+            }
+        }
+
+        // With the detach listener in place, we can now remove the view from the previous parent:
+        // Note: This call here is potentially redundant, as SurfaceMountingManager.kt is already removing it
+        (child.parent as? ViewGroup)?.removeView(child)
+    }
+
     public override fun addView(parent: T, child: View, index: Int): Unit =
-        parent.addView(child, index)
+        addViewSafely(parent, child, index) { parent.addView(child, index) }
 
     /**
      * Convenience method for batching a set of addView calls Note that this adds the views to the
@@ -50,6 +86,7 @@ constructor(reactContext: ReactApplicationContext? = null) :
     public override fun removeViewAt(parent: T, index: Int) {
         UiThreadUtil.assertOnUiThread()
         parent.removeViewAt(index)
+        operationsMap[parent]?.remove(index)
     }
 
     /**

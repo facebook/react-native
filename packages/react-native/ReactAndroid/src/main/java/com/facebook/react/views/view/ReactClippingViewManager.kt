@@ -8,10 +8,15 @@
 package com.facebook.react.views.view
 
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.doOnDetach
+import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.annotations.ReactProp
+import java.util.HashMap
+import java.util.WeakHashMap
 
 /**
  * View manager which handles clipped subviews. Useful for custom views which extends from
@@ -29,11 +34,13 @@ public abstract class ReactClippingViewManager<T : ReactViewGroup> : ViewGroupMa
   override fun addView(parent: T, child: View, index: Int) {
     UiThreadUtil.assertOnUiThread()
 
-    val removeClippedSubviews = parent.removeClippedSubviews
-    if (removeClippedSubviews) {
-      parent.addViewWithSubviewClippingEnabled(child, index)
-    } else {
-      parent.addView(child, index)
+    addViewSafely(parent, child, index) {
+      val removeClippedSubviews = parent.removeClippedSubviews
+      if (removeClippedSubviews) {
+        parent.addViewWithSubviewClippingEnabled(child, index)
+      } else {
+        parent.addView(child, index)
+      }
     }
   }
 
@@ -67,6 +74,7 @@ public abstract class ReactClippingViewManager<T : ReactViewGroup> : ViewGroupMa
     } else {
       parent.removeViewAt(index)
     }
+    operationsMap[parent]?.remove(index)
   }
 
   override fun removeAllViews(parent: T) {
@@ -77,6 +85,7 @@ public abstract class ReactClippingViewManager<T : ReactViewGroup> : ViewGroupMa
       parent.removeAllViewsWithSubviewClippingEnabled()
     } else {
       parent.removeAllViews()
+      operationsMap.remove(parent)
     }
   }
 }

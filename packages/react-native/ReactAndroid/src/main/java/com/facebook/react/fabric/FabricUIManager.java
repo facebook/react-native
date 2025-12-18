@@ -496,14 +496,6 @@ public class FabricUIManager
     }
   }
 
-  @Override
-  public void markViewAsInTransition(int surfaceId, int reactTag, boolean isTransitioning) {
-    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
-    if (surfaceMountingManager != null) {
-      surfaceMountingManager.markViewInTransition(reactTag, isTransitioning);
-    }
-  }
-
   /**
    * Method added to Fabric for backward compatibility reasons, as users on Paper could call
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
