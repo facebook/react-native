@@ -646,6 +646,13 @@ void UIManager::shadowTreeDidFinishTransaction(
   }
 }
 
+void UIManager::shadowTreeDidFinishReactCommit(
+    const ShadowTree& shadowTree) const {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidFinishJSCommit(shadowTree);
+  }
+}
+
 void UIManager::reportMount(SurfaceId surfaceId) const {
   TraceSection s("UIManager::reportMount");
 
