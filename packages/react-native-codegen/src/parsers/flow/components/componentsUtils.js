@@ -58,7 +58,10 @@ function getTypeAnnotationForArray<+T>(
       };
     }
 
-    if (objectType.id.name === '$ReadOnlyArray') {
+    if (
+      objectType.id.name === '$ReadOnlyArray' ||
+      objectType.id.name === 'ReadonlyArray'
+    ) {
       // We need to go yet another level deeper to resolve
       // types that may be defined in a type alias
       const nestedObjectType = getValueFromTypes(
@@ -226,7 +229,8 @@ function getTypeAnnotation<+T>(
 
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
-    parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnlyArray'
+    (parser.getTypeAnnotationName(typeAnnotation) === '$ReadOnlyArray' ||
+      parser.getTypeAnnotationName(typeAnnotation) === 'ReadonlyArray')
   ) {
     return {
       type: 'ArrayTypeAnnotation',

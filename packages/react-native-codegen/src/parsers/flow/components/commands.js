@@ -105,11 +105,12 @@ function buildCommandSchema(
         break;
       case 'Array':
       case '$ReadOnlyArray':
+      case 'ReadonlyArray':
         /* $FlowFixMe[invalid-compare] Error discovered during Constant
          * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
         if (!paramValue.type === 'GenericTypeAnnotation') {
           throw new Error(
-            'Array and $ReadOnlyArray are GenericTypeAnnotation for array',
+            'Array, $ReadOnlyArray and ReadonlyArray are GenericTypeAnnotation for array',
           );
         }
         returnType = {

@@ -100,7 +100,8 @@ function translateTypeAnnotation(
           );
         }
         case 'Array':
-        case '$ReadOnlyArray': {
+        case '$ReadOnlyArray':
+        case 'ReadonlyArray': {
           return emitArrayType(
             hasteModuleName,
             typeAnnotation,
