@@ -24,7 +24,9 @@ LazyShadowTreeRevisionConsistencyManager::updateCurrentRevision(
   // root shadow nodes concurrently.
   RootShadowNode::Shared rootShadowNode;
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
-    rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
+    auto reactRevision = shadowTree.getCurrentReactRevision();
+    rootShadowNode =
+        reactRevision.value_or(shadowTree.getCurrentRevision()).rootShadowNode;
   });
 
   std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
