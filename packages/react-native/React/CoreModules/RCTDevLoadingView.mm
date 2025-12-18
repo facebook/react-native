@@ -17,14 +17,11 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTDevLoadingViewSetEnabled.h>
-#import <React/RCTResizeThrottler.h>
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
 
 using namespace facebook::react;
-
-const NSInteger LOADING_VIEW_HEIGHT = 25;
 
 @interface RCTDevLoadingView () <NativeDevLoadingViewSpec>
 @end
@@ -39,9 +36,6 @@ const NSInteger LOADING_VIEW_HEIGHT = 25;
   NSDate *_showDate;
   BOOL _hiding;
   dispatch_block_t _initialMessageBlock;
-  NSLayoutConstraint *_containerHeightConstraint;
-  NSLayoutConstraint *_windowWidthConstraint;
-  RCTResizeThrottler *_resizeThrottler;
 }
 
 RCT_EXPORT_MODULE()
@@ -57,24 +51,6 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(hide)
                                                  name:RCTJavaScriptDidFailToLoadNotification
                                                object:nil];
-    self->_resizeThrottler = [[RCTResizeThrottler alloc] initWithTrailingDelay:0];
-
-    __weak __typeof(self) weakSelf = self;
-    self->_resizeThrottler.updateBlock = ^(CGFloat width, CGFloat height) {
-      UIWindow *mainWindow = RCTKeyWindow();
-      auto *strongSelf = weakSelf;
-      if (!mainWindow || !strongSelf->_window || !strongSelf->_containerHeightConstraint)
-        return;
-
-      CGRect newFrame = CGRectMake(0, 0, width, height);
-
-      // update if the size has actually changed
-      if (!CGRectEqualToRect(strongSelf->_window.frame, newFrame)) {
-        strongSelf->_window.frame = newFrame;
-        strongSelf->_containerHeightConstraint.constant = height;
-        [strongSelf->_window layoutIfNeeded];
-      }
-    };
   }
   return self;
 }
@@ -207,28 +183,24 @@ RCT_EXPORT_MODULE()
       } else {
         self->_window = [[UIWindow alloc] init];
       }
+
+      self->_window.frame = self->_window.windowScene.coordinateSpace.bounds;
+
       self->_window.windowLevel = UIWindowLevelStatusBar + 1;
       self->_window.rootViewController = [UIViewController new];
       [self->_window.rootViewController.view addSubview:self->_container];
     }
 
     CGFloat topSafeAreaHeight = mainWindow.safeAreaInsets.top;
-    CGFloat height = topSafeAreaHeight + LOADING_VIEW_HEIGHT;
-    self->_window.frame = CGRectMake(0, 0, mainWindow.frame.size.width, height);
-
     self->_window.hidden = NO;
 
     [self->_window layoutIfNeeded];
-
-    // Store constraints that need to be updated on resize
-    self->_containerHeightConstraint = [self->_container.heightAnchor constraintEqualToConstant:height];
 
     NSMutableArray *constraints = [NSMutableArray arrayWithArray:@[
       // Container constraints
       [self->_container.topAnchor constraintEqualToAnchor:self->_window.rootViewController.view.topAnchor],
       [self->_container.leadingAnchor constraintEqualToAnchor:self->_window.rootViewController.view.leadingAnchor],
       [self->_container.trailingAnchor constraintEqualToAnchor:self->_window.rootViewController.view.trailingAnchor],
-      self -> _containerHeightConstraint,
 
       // Label constraints
       [self->_label.topAnchor constraintEqualToAnchor:self->_container.topAnchor constant:topSafeAreaHeight + 8],
@@ -252,10 +224,6 @@ RCT_EXPORT_MODULE()
     [NSLayoutConstraint activateConstraints:constraints];
 
     [self->_window layoutIfNeeded];
-    self->_window.frame = CGRectMake(0, 0, mainWindow.frame.size.width, self->_container.frame.size.height);
-
-    // Observe window frame changes using KVO
-    [mainWindow addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
   });
 }
 
@@ -267,7 +235,6 @@ RCT_EXPORT_METHOD(showMessage : (NSString *)message withColor : (NSNumber *__non
       backgroundColor:[RCTConvert UIColor:backgroundColor]
         dismissButton:[dismissButton boolValue]];
 }
-
 RCT_EXPORT_METHOD(hide)
 {
   if (!RCTDevLoadingViewGetEnabled()) {
@@ -282,28 +249,17 @@ RCT_EXPORT_METHOD(hide)
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
-    CGRect windowFrame = self->_window.frame;
+    CGFloat height = self->_container.bounds.size.height;
     [UIView animateWithDuration:0.25
         delay:delay
         options:0
         animations:^{
-          self->_window.frame = CGRectOffset(windowFrame, 0, -windowFrame.size.height);
+          self->_container.transform = CGAffineTransformMakeTranslation(0, -height);
         }
         completion:^(__unused BOOL finished) {
-          // Remove KVO observers before cleanup
-          UIWindow *mainWindow = RCTKeyWindow();
-          if (mainWindow != nil) {
-            @try {
-              [mainWindow removeObserver:self forKeyPath:@"frame"];
-            } @catch (NSException *exception) {
-              // Observer might not have been added, ignore
-            }
-          }
-
-          self->_window.frame = windowFrame;
+          self->_container.transform = CGAffineTransformIdentity;
           self->_window.hidden = YES;
           self->_window = nil;
-          self->_containerHeightConstraint = nil;
           self->_container = nil;
           self->_label = nil;
           self->_dismissButton = nil;
@@ -354,20 +310,6 @@ RCT_EXPORT_METHOD(hide)
   // banner would have a different color than the JavaScript banner
   // (which always passes nil). This would result in an inconsistent UI.
   return [RCTColorSchemePreference(nil) isEqualToString:@"dark"];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
-                       context:(void *)context
-{
-  if ([keyPath isEqualToString:@"frame"]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      UIWindow *mainWindow = RCTKeyWindow();
-      [self->_resizeThrottler sourceSizeChangedToWidth:mainWindow.frame.size.width
-                                                height:mainWindow.safeAreaInsets.top + LOADING_VIEW_HEIGHT];
-    });
-  }
 }
 - (void)showWithURL:(NSURL *)URL
 {
