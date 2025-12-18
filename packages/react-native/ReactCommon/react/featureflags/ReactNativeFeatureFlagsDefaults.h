@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<33cacaaeb6994f78f5a2d9379618e2a0>>
+ * @generated SignedSource<<06b786f98c25c4d63129083757577538>>
  */
 
 /**
@@ -116,6 +116,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableExclusivePropsUpdateAndroid() override {
+    return false;
+  }
+
+  bool enableFabricCommitBranching() override {
     return false;
   }
 
