@@ -62,6 +62,7 @@ function getPropertyType(
     case 'Float':
       return emitFloatProp(name, optional);
     case '$ReadOnly':
+    case 'Readonly':
       return getPropertyType(
         name,
         optional,
@@ -187,7 +188,7 @@ function findEventArgumentsAndType(
 ): EventArgumentReturnType {
   throwIfEventHasNoName(typeAnnotation, parser);
   const name = parser.getTypeAnnotationName(typeAnnotation);
-  if (name === '$ReadOnly') {
+  if (name === '$ReadOnly' || name === 'Readonly') {
     return {
       argumentProps: typeAnnotation.typeParameters.params[0].properties,
       paperTopLevelNameDeprecated: paperName,

@@ -114,7 +114,8 @@ function translateTypeAnnotation(
             translateTypeAnnotation,
           );
         }
-        case '$ReadOnly': {
+        case '$ReadOnly':
+        case 'Readonly': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
             hasteModuleName,
             typeAnnotation,
