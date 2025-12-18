@@ -25,11 +25,15 @@ class SchedulerDelegateImpl : public SchedulerDelegate {
   SchedulerDelegateImpl(const SchedulerDelegateImpl &) = delete;
   SchedulerDelegateImpl &operator=(const SchedulerDelegateImpl &) = delete;
 
+  void setUIManager(std::shared_ptr<UIManager> uiManager) noexcept;
+
  private:
   void schedulerDidFinishTransaction(const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override;
 
   void schedulerShouldRenderTransactions(
       const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override;
+
+  void schedulerShouldMergeReactRevision(SurfaceId surfaceId) override;
 
   void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) override;
 
@@ -48,6 +52,7 @@ class SchedulerDelegateImpl : public SchedulerDelegate {
   void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
 
   std::shared_ptr<IMountingManager> mountingManager_;
+  std::shared_ptr<UIManager> uiManager_;
 };
 
 }; // namespace facebook::react

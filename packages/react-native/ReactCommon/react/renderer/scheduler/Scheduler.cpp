@@ -356,9 +356,13 @@ void Scheduler::uiManagerShouldRemoveEventListener(
 }
 
 void Scheduler::uiManagerDidFinishJSCommit(const ShadowTree& shadowTree) {
-  runtimeScheduler_->scheduleRenderingUpdate(
-      shadowTree.getSurfaceId(),
-      [&shadowTree]() { shadowTree.mergeReactRevision(); });
+  if (delegate_ != nullptr) {
+    SurfaceId surfaceId = shadowTree.getSurfaceId();
+    runtimeScheduler_->scheduleRenderingUpdate(
+        shadowTree.getSurfaceId(), [delegate = delegate_, surfaceId]() {
+          delegate->schedulerShouldMergeReactRevision(surfaceId);
+        });
+  }
 }
 
 void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {
