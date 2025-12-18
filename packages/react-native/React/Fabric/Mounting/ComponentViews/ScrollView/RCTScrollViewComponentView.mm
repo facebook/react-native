@@ -680,6 +680,8 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
   const auto &props = static_cast<const ScrollViewProps &>(*_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
+  // Reset zoom scale to default
+  _scrollView.zoomScale = 1.0;
   // We set the default behavior to "never" so that iOS
   // doesn't do weird things to UIScrollView insets automatically
   // and keeps it as an opt-in behavior.

@@ -31,6 +31,8 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 {
   [super setUp];
 
+  XCTSkip(@"Skipping RCTDevMenuTests since they rely on deprecated RCTBridge functionality.");
+
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
   _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"RNTesterUnitTestsBundle" withExtension:@"js"]
                                   moduleProvider:nil

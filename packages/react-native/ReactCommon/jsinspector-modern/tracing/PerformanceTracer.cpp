@@ -7,6 +7,7 @@
 
 #include "PerformanceTracer.h"
 #include "Timing.h"
+#include "TraceEventGenerator.h"
 #include "TraceEventSerializer.h"
 #include "TracingCategory.h"
 
@@ -311,6 +312,27 @@ void PerformanceTracer::reportResourceSendRequest(
       });
 }
 
+void PerformanceTracer::reportResourceReceivedData(
+    const std::string& devtoolsRequestId,
+    HighResTimeStamp start,
+    int encodedDataLength) {
+  if (!tracingAtomic_) {
+    return;
+  };
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  enqueueEvent(
+      PerformanceTracerResourceReceivedData{
+          .requestId = devtoolsRequestId,
+          .start = start,
+          .encodedDataLength = encodedDataLength,
+          .threadId = getCurrentThreadId()});
+}
+
 void PerformanceTracer::reportResourceReceiveResponse(
     const std::string& devtoolsRequestId,
     HighResTimeStamp start,
@@ -362,50 +384,6 @@ void PerformanceTracer::reportResourceFinish(
           .encodedDataLength = encodedDataLength,
           .decodedBodyLength = decodedBodyLength,
           .threadId = getCurrentThreadId(),
-      });
-}
-
-void PerformanceTracer::setLayerTreeId(std::string frame, int layerTreeId) {
-  enqueueEvent(
-      PerformanceTracerSetLayerTreeIdEvent{
-          .frame = std::move(frame),
-          .layerTreeId = layerTreeId,
-          .start = HighResTimeStamp::now(),
-          .threadId = getCurrentThreadId(),
-      });
-}
-
-void PerformanceTracer::reportFrameTiming(
-    int frameSeqId,
-    HighResTimeStamp start,
-    HighResTimeStamp end) {
-  if (!tracingAtomic_) {
-    return;
-  }
-
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracingAtomic_) {
-    return;
-  }
-
-  ThreadId threadId = getCurrentThreadId();
-  enqueueEvent(
-      PerformanceTracerFrameBeginDrawEvent{
-          .frameSeqId = frameSeqId,
-          .start = start,
-          .threadId = threadId,
-      });
-  enqueueEvent(
-      PerformanceTracerFrameCommitEvent{
-          .frameSeqId = frameSeqId,
-          .start = start,
-          .threadId = threadId,
-      });
-  enqueueEvent(
-      PerformanceTracerFrameDrawEvent{
-          .frameSeqId = frameSeqId,
-          .start = end,
-          .threadId = threadId,
       });
 }
 
@@ -749,6 +727,23 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                     .args = folly::dynamic::object("data", std::move(data)),
                 });
           },
+          [&](PerformanceTracerResourceReceivedData&& event) {
+            folly::dynamic data = folly::dynamic::object(
+                "encodedDataLength", event.encodedDataLength)(
+                "requestId", std::move(event.requestId));
+
+            events.emplace_back(
+                TraceEvent{
+                    .name = "ResourceReceivedData",
+                    .cat = {Category::Timeline},
+                    .ph = 'I',
+                    .ts = event.start,
+                    .pid = processId_,
+                    .s = 't',
+                    .tid = event.threadId,
+                    .args = folly::dynamic::object("data", std::move(data)),
+                });
+          },
           [&](PerformanceTracerResourceReceiveResponse&& event) {
             folly::dynamic headersEntries = folly::dynamic::array;
             for (const auto& [key, value] : event.headers) {
@@ -791,70 +786,6 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                     .s = 't',
                     .tid = event.threadId,
                     .args = folly::dynamic::object("data", std::move(data)),
-                });
-          },
-          [&](PerformanceTracerSetLayerTreeIdEvent&& event) {
-            folly::dynamic data = folly::dynamic::object("frame", event.frame)(
-                "layerTreeId", event.layerTreeId);
-
-            events.emplace_back(
-                TraceEvent{
-                    .name = "SetLayerTreeId",
-                    .cat = {Category::Timeline},
-                    .ph = 'I',
-                    .ts = event.start,
-                    .pid = processId_,
-                    .s = 't',
-                    .tid = event.threadId,
-                    .args = folly::dynamic::object("data", std::move(data)),
-                });
-          },
-          [&](PerformanceTracerFrameBeginDrawEvent&& event) {
-            folly::dynamic data = folly::dynamic::object(
-                "frameSeqId", event.frameSeqId)("layerTreeId", 1);
-
-            events.emplace_back(
-                TraceEvent{
-                    .name = "BeginFrame",
-                    .cat = {Category::Timeline},
-                    .ph = 'I',
-                    .ts = event.start,
-                    .pid = processId_,
-                    .s = 't',
-                    .tid = event.threadId,
-                    .args = std::move(data),
-                });
-          },
-          [&](PerformanceTracerFrameCommitEvent&& event) {
-            folly::dynamic data = folly::dynamic::object(
-                "frameSeqId", event.frameSeqId)("layerTreeId", 1);
-
-            events.emplace_back(
-                TraceEvent{
-                    .name = "Commit",
-                    .cat = {Category::Timeline},
-                    .ph = 'I',
-                    .ts = event.start,
-                    .pid = processId_,
-                    .s = 't',
-                    .tid = event.threadId,
-                    .args = std::move(data),
-                });
-          },
-          [&](PerformanceTracerFrameDrawEvent&& event) {
-            folly::dynamic data = folly::dynamic::object(
-                "frameSeqId", event.frameSeqId)("layerTreeId", 1);
-
-            events.emplace_back(
-                TraceEvent{
-                    .name = "DrawFrame",
-                    .cat = {Category::Timeline},
-                    .ph = 'I',
-                    .ts = event.start,
-                    .pid = processId_,
-                    .s = 't',
-                    .tid = event.threadId,
-                    .args = std::move(data),
                 });
           },
       },

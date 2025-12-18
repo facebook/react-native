@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<131ac718d90f03a63bbfcfdcc9d85ed7>>
+ * @generated SignedSource<<f22bdf728cccaf9d95e62256f630ee1b>>
  */
 
 /**
@@ -59,19 +59,9 @@ bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
 }
 
-bool NativeReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
-}
-
 bool NativeReactNativeFeatureFlags::disableEarlyViewCommandExecution(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::disableEarlyViewCommandExecution();
-}
-
-bool NativeReactNativeFeatureFlags::disableFabricCommitInCXXAnimated(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
 }
 
 bool NativeReactNativeFeatureFlags::disableImageViewPreallocationAndroid(
@@ -112,6 +102,11 @@ bool NativeReactNativeFeatureFlags::enableAccessibilityOrder(
 bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableAndroidAntialiasedBorderRadiusClipping(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableAndroidAntialiasedBorderRadiusClipping();
 }
 
 bool NativeReactNativeFeatureFlags::enableAndroidLinearText(
@@ -219,6 +214,11 @@ bool NativeReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizat
   return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
 }
 
+bool NativeReactNativeFeatureFlags::enableIntersectionObserverByDefault(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableIntersectionObserverByDefault();
+}
+
 bool NativeReactNativeFeatureFlags::enableKeyEvents(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableKeyEvents();
@@ -299,11 +299,6 @@ bool NativeReactNativeFeatureFlags::enableViewRecyclingForView(
   return ReactNativeFeatureFlags::enableViewRecyclingForView();
 }
 
-bool NativeReactNativeFeatureFlags::enableVirtualViewClippingWithoutScrollViewClipping(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableVirtualViewClippingWithoutScrollViewClipping();
-}
-
 bool NativeReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental();
@@ -332,6 +327,11 @@ bool NativeReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault(
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool NativeReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxAssertSingleHostState(
@@ -384,9 +384,24 @@ bool NativeReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHove
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
 }
 
+bool NativeReactNativeFeatureFlags::shouldResetClickableWhenRecyclingView(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::shouldResetClickableWhenRecyclingView();
+}
+
+bool NativeReactNativeFeatureFlags::shouldResetOnClickListenerWhenRecyclingView(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::shouldResetOnClickListenerWhenRecyclingView();
+}
+
 bool NativeReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState();
+}
+
+bool NativeReactNativeFeatureFlags::shouldSetIsClickableByDefault(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::shouldSetIsClickableByDefault();
 }
 
 bool NativeReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid(

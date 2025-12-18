@@ -7,6 +7,7 @@
 
 #import "RCTBundleManager.h"
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTDevLoadingViewSetEnabled.h>
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
@@ -48,6 +49,12 @@
     {
       return options;
     };
+
+    // When the bundleFilePath is set in the RCTBundleConfiguration the Metro connection
+    // shouldn't be suggested/required.
+    if (_bundleFilePath != nil) {
+      RCTDevLoadingViewSetEnabled(false);
+    }
   }
 
   return self;
@@ -160,7 +167,13 @@
       _bridgelessBundleURLGetter != nil,
       @"RCTBundleManager: In bridgeless mode, RCTBridgelessBundleURLGetter must not be nil.");
 
-  return _bridgelessBundleURLGetter();
+  NSURL *bundleURL = [_bundleConfig getBundleURL];
+
+  if (bundleURL == nil) {
+    return _bridgelessBundleURLGetter();
+  }
+
+  return bundleURL;
 }
 
 - (void)resetBundleURL

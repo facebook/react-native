@@ -113,6 +113,7 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 export interface Spec extends TurboModule {
   readonly passBool?: (arg: boolean) => void;
   readonly passNumber: (arg: number) => void;
+  readonly passBooleanLiteral: (arg: true) => void;
   readonly passNumberLiteral: (arg: 4) => void;
   readonly passString: (arg: string) => void;
   readonly passStringish: (arg: Stringish) => void;

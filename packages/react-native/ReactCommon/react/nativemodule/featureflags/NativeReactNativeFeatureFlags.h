@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<38054c031fa946345d83e7a7220edd33>>
+ * @generated SignedSource<<3caa7ab068af35b4b198bce5925dea1d>>
  */
 
 /**
@@ -42,11 +42,7 @@ class NativeReactNativeFeatureFlags
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
-  bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
-
   bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
-
-  bool disableFabricCommitInCXXAnimated(jsi::Runtime& runtime);
 
   bool disableImageViewPreallocationAndroid(jsi::Runtime& runtime);
 
@@ -63,6 +59,8 @@ class NativeReactNativeFeatureFlags
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
+
+  bool enableAndroidAntialiasedBorderRadiusClipping(jsi::Runtime& runtime);
 
   bool enableAndroidLinearText(jsi::Runtime& runtime);
 
@@ -106,6 +104,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
 
+  bool enableIntersectionObserverByDefault(jsi::Runtime& runtime);
+
   bool enableKeyEvents(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
@@ -138,8 +138,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
-  bool enableVirtualViewClippingWithoutScrollViewClipping(jsi::Runtime& runtime);
-
   bool enableVirtualViewContainerStateExperimental(jsi::Runtime& runtime);
 
   bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
@@ -151,6 +149,8 @@ class NativeReactNativeFeatureFlags
   bool enableWebPerformanceAPIsByDefault(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
+
+  bool fixTextClippingAndroid15useBoundsForWidth(jsi::Runtime& runtime);
 
   bool fuseboxAssertSingleHostState(jsi::Runtime& runtime);
 
@@ -172,7 +172,13 @@ class NativeReactNativeFeatureFlags
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
+  bool shouldResetClickableWhenRecyclingView(jsi::Runtime& runtime);
+
+  bool shouldResetOnClickListenerWhenRecyclingView(jsi::Runtime& runtime);
+
   bool shouldSetEnabledBasedOnAccessibilityState(jsi::Runtime& runtime);
+
+  bool shouldSetIsClickableByDefault(jsi::Runtime& runtime);
 
   bool shouldTriggerResponderTransferOnScrollAndroid(jsi::Runtime& runtime);
 

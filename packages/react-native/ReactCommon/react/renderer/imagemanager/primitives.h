@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
@@ -48,14 +49,15 @@ class ImageSource {
   {
     folly::dynamic imageSourceResult = folly::dynamic::object();
     switch (type) {
-      case ImageSource::Type::Invalid:
-        imageSourceResult["type"] = "invalid";
-        break;
       case ImageSource::Type::Remote:
         imageSourceResult["type"] = "remote";
         break;
       case ImageSource::Type::Local:
         imageSourceResult["type"] = "local";
+        break;
+      case ImageSource::Type::Invalid:
+      default:
+        imageSourceResult["type"] = "invalid";
         break;
     }
 
@@ -72,9 +74,6 @@ class ImageSource {
     imageSourceResult["method"] = method;
 
     switch (cache) {
-      case ImageSource::CacheStategy::Default:
-        imageSourceResult["cache"] = "default";
-        break;
       case ImageSource::CacheStategy::Reload:
         imageSourceResult["cache"] = "reload";
         break;
@@ -83,6 +82,10 @@ class ImageSource {
         break;
       case ImageSource::CacheStategy::OnlyIfCached:
         imageSourceResult["cache"] = "only-if-cached";
+        break;
+      case ImageSource::CacheStategy::Default:
+      default:
+        imageSourceResult["cache"] = "default";
         break;
     }
 
@@ -128,6 +131,9 @@ class ImageSource {
         return "remote";
       case ImageSource::Type::Local:
         return "local";
+      default:
+        react_native_assert(false && "Invalid ImageSource::Type");
+        return "";
     }
   }
 
@@ -142,6 +148,9 @@ class ImageSource {
         return "force-cache";
       case ImageSource::CacheStategy::OnlyIfCached:
         return "only-if-cached";
+      default:
+        react_native_assert(false && "Invalid ImageSource::CacheStategy");
+        return "";
     }
   }
 #endif

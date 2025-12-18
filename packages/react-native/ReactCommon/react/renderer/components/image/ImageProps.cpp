@@ -98,7 +98,7 @@ ImageProps::ImageProps(
                     rawProps,
                     "resizeMethod",
                     sourceProps.resizeMethod,
-                    {})),
+                    {"auto"})),
       resizeMultiplier(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.resizeMultiplier
@@ -107,7 +107,7 @@ ImageProps::ImageProps(
                     rawProps,
                     "resizeMultiplier",
                     sourceProps.resizeMultiplier,
-                    {})),
+                    1)),
       shouldNotifyLoadEvents(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.shouldNotifyLoadEvents

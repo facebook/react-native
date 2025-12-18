@@ -49,7 +49,11 @@ PropsAnimatedNode::PropsAnimatedNode(
     const folly::dynamic& config,
     NativeAnimatedNodesManager& manager)
     : AnimatedNode(tag, config, manager, AnimatedNodeType::Props),
-      props_(folly::dynamic::object()) {}
+      props_(folly::dynamic::object()) {
+  if (auto it = getConfig().find("rootTag"); it != getConfig().items().end()) {
+    connectedRootTag_ = static_cast<Tag>(it->second.asInt());
+  }
+}
 
 void PropsAnimatedNode::connectToView(Tag viewTag) {
   react_native_assert(

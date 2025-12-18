@@ -33,10 +33,10 @@ let isInterceptorEnabled = false;
 
 /**
  * A network interceptor which monkey-patches RCTWebSocketModule methods
- * to gather all websocket network requests/responses, in order to show
- * their information in the React Native inspector development tool.
+ * to gather all websocket network events.
+ *
+ * @deprecated Since React Native 0.84
  */
-
 const WebSocketInterceptor = {
   /**
    * Invoked when RCTWebSocketModule.close(...) is called.

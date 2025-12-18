@@ -19,7 +19,6 @@ import com.facebook.react.ReactInstanceManager.initializeSoLoaderIfNecessary
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.JSExceptionHandler
 import com.facebook.react.bridge.JavaScriptExecutorFactory
-import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener
 import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.SurfaceDelegateFactory
@@ -49,7 +48,6 @@ public class ReactInstanceManagerBuilder {
   private var jsBundleAssetUrl: String? = null
   private var jsBundleLoader: JSBundleLoader? = null
   private var jsMainModulePath: String? = null
-  private var bridgeIdleDebugListener: NotThreadSafeBridgeIdleDebugListener? = null
   private var application: Application? = null
   private var useDeveloperSupport = false
   private var devSupportManagerFactory: DevSupportManagerFactory? = null
@@ -142,13 +140,6 @@ public class ReactInstanceManagerBuilder {
 
   public fun addPackages(reactPackages: List<ReactPackage>): ReactInstanceManagerBuilder {
     packages.addAll(reactPackages)
-    return this
-  }
-
-  public fun setBridgeIdleDebugListener(
-      bridgeIdleDebugListener: NotThreadSafeBridgeIdleDebugListener
-  ): ReactInstanceManagerBuilder {
-    this.bridgeIdleDebugListener = bridgeIdleDebugListener
     return this
   }
 
@@ -359,7 +350,6 @@ public class ReactInstanceManagerBuilder {
         devSupportManagerFactory ?: DefaultDevSupportManagerFactory(),
         requireActivity,
         keepActivity,
-        bridgeIdleDebugListener,
         checkNotNull(initialLifecycleState) { "Initial lifecycle state was not set" },
         jsExceptionHandler,
         redBoxHandler,

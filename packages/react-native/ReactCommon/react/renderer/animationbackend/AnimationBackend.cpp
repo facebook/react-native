@@ -6,7 +6,10 @@
  */
 
 #include "AnimationBackend.h"
+#include <react/renderer/animationbackend/AnimatedPropsSerializer.h>
+#include <react/renderer/graphics/Color.h>
 #include <chrono>
+#include "AnimatedPropsRegistry.h"
 
 namespace facebook::react {
 
@@ -41,34 +44,7 @@ static inline Props::Shared cloneProps(
   auto viewProps = std::const_pointer_cast<BaseViewProps>(
       std::static_pointer_cast<const BaseViewProps>(newProps));
   for (auto& animatedProp : animatedProps.props) {
-    switch (animatedProp->propName) {
-      case OPACITY:
-        viewProps->opacity = get<Float>(animatedProp);
-        break;
-
-      case WIDTH:
-        viewProps->yogaStyle.setDimension(
-            yoga::Dimension::Width, get<yoga::Style::SizeLength>(animatedProp));
-        break;
-
-      case HEIGHT:
-        viewProps->yogaStyle.setDimension(
-            yoga::Dimension::Height,
-            get<yoga::Style::SizeLength>(animatedProp));
-        break;
-
-      case BORDER_RADII:
-        viewProps->borderRadii = get<CascadedBorderRadii>(animatedProp);
-        break;
-
-      case FLEX:
-        viewProps->yogaStyle.setFlex(get<yoga::FloatOptional>(animatedProp));
-        break;
-
-      case TRANSFORM:
-        viewProps->transform = get<Transform>(animatedProp);
-        break;
-    }
+    cloneProp(*viewProps, *animatedProp);
   }
   return newProps;
 }
@@ -78,7 +54,10 @@ static inline bool mutationHasLayoutUpdates(
   for (auto& animatedProp : mutation.props.props) {
     // TODO: there should also be a check for the dynamic part
     if (animatedProp->propName == WIDTH || animatedProp->propName == HEIGHT ||
-        animatedProp->propName == FLEX) {
+        animatedProp->propName == FLEX || animatedProp->propName == MARGIN ||
+        animatedProp->propName == PADDING ||
+        animatedProp->propName == POSITION ||
+        animatedProp->propName == BORDER_WIDTH) {
       return true;
     }
   }
@@ -95,12 +74,14 @@ AnimationBackend::AnimationBackend(
       stopOnRenderCallback_(std::move(stopOnRenderCallback)),
       directManipulationCallback_(std::move(directManipulationCallback)),
       fabricCommitCallback_(std::move(fabricCommitCallback)),
-      uiManager_(uiManager) {}
+      animatedPropsRegistry_(std::make_shared<AnimatedPropsRegistry>()),
+      uiManager_(uiManager),
+      commitHook_(uiManager, animatedPropsRegistry_) {}
 
 void AnimationBackend::onAnimationFrame(double timestamp) {
-  std::unordered_map<Tag, AnimatedProps> updates;
-  std::unordered_map<SurfaceId, std::unordered_set<const ShadowNodeFamily*>>
-      surfaceToFamilies;
+  std::unordered_map<Tag, AnimatedProps> synchronousUpdates;
+  std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
+
   bool hasAnyLayoutUpdates = false;
   for (auto& callback : callbacks) {
     auto muatations = callback(static_cast<float>(timestamp));
@@ -108,22 +89,28 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
       hasAnyLayoutUpdates |= mutationHasLayoutUpdates(mutation);
       const auto family = mutation.family;
       if (family != nullptr) {
-        surfaceToFamilies[family->getSurfaceId()].insert(family);
+        auto& [families, updates] = surfaceUpdates[family->getSurfaceId()];
+        families.insert(family.get());
+        updates[mutation.tag] = std::move(mutation.props);
+      } else {
+        synchronousUpdates[mutation.tag] = std::move(mutation.props);
       }
-      updates[mutation.tag] = std::move(mutation.props);
     }
   }
 
+  animatedPropsRegistry_->update(surfaceUpdates);
+
   if (hasAnyLayoutUpdates) {
-    commitUpdates(surfaceToFamilies, updates);
+    commitUpdates(surfaceUpdates);
   } else {
-    synchronouslyUpdateProps(updates);
+    synchronouslyUpdateProps(synchronousUpdates);
   }
 }
 
 void AnimationBackend::start(const Callback& callback, bool isAsync) {
   callbacks.push_back(callback);
-  // TODO: startOnRenderCallback_ should provide the timestamp from the platform
+  // TODO: startOnRenderCallback_ should provide the timestamp from the
+  // platform
   if (startOnRenderCallback_) {
     startOnRenderCallback_(
         [this]() {
@@ -142,13 +129,11 @@ void AnimationBackend::stop(bool isAsync) {
 }
 
 void AnimationBackend::commitUpdates(
-    const std::unordered_map<
-        SurfaceId,
-        std::unordered_set<const ShadowNodeFamily*>>& surfaceToFamilies,
-    std::unordered_map<Tag, AnimatedProps>& updates) {
-  for (const auto& surfaceEntry : surfaceToFamilies) {
+    std::unordered_map<SurfaceId, SurfaceUpdates>& surfaceUpdates) {
+  for (auto& surfaceEntry : surfaceUpdates) {
     const auto& surfaceId = surfaceEntry.first;
-    const auto& surfaceFamilies = surfaceEntry.second;
+    const auto& surfaceFamilies = surfaceEntry.second.families;
+    auto& updates = surfaceEntry.second.propsMap;
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId, [&surfaceFamilies, &updates](const ShadowTree& shadowTree) {
           shadowTree.commit(
@@ -183,29 +168,15 @@ void AnimationBackend::commitUpdates(
 void AnimationBackend::synchronouslyUpdateProps(
     const std::unordered_map<Tag, AnimatedProps>& updates) {
   for (auto& [tag, animatedProps] : updates) {
-    auto dyn = animatedProps.rawProps ? animatedProps.rawProps->toDynamic()
-                                      : folly::dynamic::object();
-    for (auto& animatedProp : animatedProps.props) {
-      // TODO: We shouldn't repack it into dynamic, but for that a rewrite of
-      // directManipulationCallback_ is needed
-      switch (animatedProp->propName) {
-        case OPACITY:
-          dyn.insert("opacity", get<Float>(animatedProp));
-          break;
-
-        case BORDER_RADII:
-        case TRANSFORM:
-          // TODO: handle other things than opacity
-          break;
-
-        case WIDTH:
-        case HEIGHT:
-        case FLEX:
-          throw "Tried to synchronously update layout props";
-      }
-    }
-    directManipulationCallback_(tag, dyn);
+    // TODO: We shouldn't repack it into dynamic, but for that a rewrite of
+    // directManipulationCallback_ is needed
+    auto dyn = animationbackend::packAnimatedProps(animatedProps);
+    directManipulationCallback_(tag, std::move(dyn));
   }
+}
+
+void AnimationBackend::clearRegistry(SurfaceId surfaceId) {
+  animatedPropsRegistry_->clear(surfaceId);
 }
 
 } // namespace facebook::react

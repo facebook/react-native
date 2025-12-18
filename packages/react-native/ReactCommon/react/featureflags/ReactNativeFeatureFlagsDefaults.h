@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bce5d52ac8a180d1750bb64dd21c1bd3>>
+ * @generated SignedSource<<33cacaaeb6994f78f5a2d9379618e2a0>>
  */
 
 /**
@@ -39,15 +39,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool cxxNativeAnimatedRemoveJsSync() override {
-    return false;
-  }
-
   bool disableEarlyViewCommandExecution() override {
-    return false;
-  }
-
-  bool disableFabricCommitInCXXAnimated() override {
     return false;
   }
 
@@ -80,6 +72,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
+    return false;
+  }
+
+  bool enableAndroidAntialiasedBorderRadiusClipping() override {
     return false;
   }
 
@@ -167,6 +163,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableIntersectionObserverByDefault() override {
+    return false;
+  }
+
   bool enableKeyEvents() override {
     return false;
   }
@@ -231,10 +231,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool enableVirtualViewClippingWithoutScrollViewClipping() override {
-    return true;
-  }
-
   bool enableVirtualViewContainerStateExperimental() override {
     return false;
   }
@@ -256,6 +252,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    return false;
+  }
+
+  bool fixTextClippingAndroid15useBoundsForWidth() override {
     return false;
   }
 
@@ -299,7 +299,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool shouldResetClickableWhenRecyclingView() override {
+    return true;
+  }
+
+  bool shouldResetOnClickListenerWhenRecyclingView() override {
+    return true;
+  }
+
   bool shouldSetEnabledBasedOnAccessibilityState() override {
+    return true;
+  }
+
+  bool shouldSetIsClickableByDefault() override {
     return false;
   }
 
@@ -344,7 +356,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useShadowNodeStateOnClone() override {
-    return false;
+    return true;
   }
 
   bool useSharedAnimatedBackend() override {

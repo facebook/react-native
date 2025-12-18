@@ -34,9 +34,9 @@ class InstanceTargetDelegate {
  public:
   InstanceTargetDelegate() = default;
   InstanceTargetDelegate(const InstanceTargetDelegate &) = delete;
-  InstanceTargetDelegate(InstanceTargetDelegate &&) = default;
+  InstanceTargetDelegate(InstanceTargetDelegate &&) = delete;
   InstanceTargetDelegate &operator=(const InstanceTargetDelegate &) = delete;
-  InstanceTargetDelegate &operator=(InstanceTargetDelegate &&) = default;
+  InstanceTargetDelegate &operator=(InstanceTargetDelegate &&) = delete;
 
   virtual ~InstanceTargetDelegate();
 };

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a3267843d7400974e8686c83d359c7b>>
+ * @generated SignedSource<<b9af351de972ddff807bd25f98f3ff42>>
  */
 
 /**
@@ -57,21 +57,9 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool cxxNativeAnimatedRemoveJsSync() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedRemoveJsSync");
-    return method(javaProvider_);
-  }
-
   bool disableEarlyViewCommandExecution() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableEarlyViewCommandExecution");
-    return method(javaProvider_);
-  }
-
-  bool disableFabricCommitInCXXAnimated() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableFabricCommitInCXXAnimated");
     return method(javaProvider_);
   }
 
@@ -120,6 +108,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAccumulatedUpdatesInRawPropsAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableAndroidAntialiasedBorderRadiusClipping() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidAntialiasedBorderRadiusClipping");
     return method(javaProvider_);
   }
 
@@ -249,6 +243,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableIntersectionObserverByDefault() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIntersectionObserverByDefault");
+    return method(javaProvider_);
+  }
+
   bool enableKeyEvents() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableKeyEvents");
@@ -345,12 +345,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool enableVirtualViewClippingWithoutScrollViewClipping() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewClippingWithoutScrollViewClipping");
-    return method(javaProvider_);
-  }
-
   bool enableVirtualViewContainerStateExperimental() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewContainerStateExperimental");
@@ -384,6 +378,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMappingOfEventPrioritiesBetweenFabricAndReact");
+    return method(javaProvider_);
+  }
+
+  bool fixTextClippingAndroid15useBoundsForWidth() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixTextClippingAndroid15useBoundsForWidth");
     return method(javaProvider_);
   }
 
@@ -447,9 +447,27 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool shouldResetClickableWhenRecyclingView() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldResetClickableWhenRecyclingView");
+    return method(javaProvider_);
+  }
+
+  bool shouldResetOnClickListenerWhenRecyclingView() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldResetOnClickListenerWhenRecyclingView");
+    return method(javaProvider_);
+  }
+
   bool shouldSetEnabledBasedOnAccessibilityState() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldSetEnabledBasedOnAccessibilityState");
+    return method(javaProvider_);
+  }
+
+  bool shouldSetIsClickableByDefault() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldSetIsClickableByDefault");
     return method(javaProvider_);
   }
 
@@ -580,19 +598,9 @@ bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableEarlyViewCommandExecution();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::disableImageViewPreallocationAndroid(
@@ -633,6 +641,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder(
 bool JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableAndroidAntialiasedBorderRadiusClipping(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableAndroidAntialiasedBorderRadiusClipping();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableAndroidLinearText(
@@ -740,6 +753,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOpti
   return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverByDefault(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableIntersectionObserverByDefault();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableKeyEvents(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableKeyEvents();
@@ -820,11 +838,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
   return ReactNativeFeatureFlags::enableViewRecyclingForView();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewClippingWithoutScrollViewClipping(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableVirtualViewClippingWithoutScrollViewClipping();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental();
@@ -853,6 +866,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableWebPerformanceAPIsByDefault(
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::fixTextClippingAndroid15useBoundsForWidth(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixTextClippingAndroid15useBoundsForWidth();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxAssertSingleHostState(
@@ -905,9 +923,24 @@ bool JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsFo
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::shouldResetClickableWhenRecyclingView(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::shouldResetClickableWhenRecyclingView();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::shouldResetOnClickListenerWhenRecyclingView(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::shouldResetOnClickListenerWhenRecyclingView();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::shouldSetEnabledBasedOnAccessibilityState(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::shouldSetIsClickableByDefault(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::shouldSetIsClickableByDefault();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::shouldTriggerResponderTransferOnScrollAndroid(
@@ -1041,14 +1074,8 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
       makeNativeMethod(
-        "cxxNativeAnimatedRemoveJsSync",
-        JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync),
-      makeNativeMethod(
         "disableEarlyViewCommandExecution",
         JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution),
-      makeNativeMethod(
-        "disableFabricCommitInCXXAnimated",
-        JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated),
       makeNativeMethod(
         "disableImageViewPreallocationAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableImageViewPreallocationAndroid),
@@ -1073,6 +1100,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableAccumulatedUpdatesInRawPropsAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid),
+      makeNativeMethod(
+        "enableAndroidAntialiasedBorderRadiusClipping",
+        JReactNativeFeatureFlagsCxxInterop::enableAndroidAntialiasedBorderRadiusClipping),
       makeNativeMethod(
         "enableAndroidLinearText",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidLinearText),
@@ -1137,6 +1167,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableInteropViewManagerClassLookUpOptimizationIOS",
         JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOptimizationIOS),
       makeNativeMethod(
+        "enableIntersectionObserverByDefault",
+        JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverByDefault),
+      makeNativeMethod(
         "enableKeyEvents",
         JReactNativeFeatureFlagsCxxInterop::enableKeyEvents),
       makeNativeMethod(
@@ -1185,9 +1218,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableViewRecyclingForView",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView),
       makeNativeMethod(
-        "enableVirtualViewClippingWithoutScrollViewClipping",
-        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewClippingWithoutScrollViewClipping),
-      makeNativeMethod(
         "enableVirtualViewContainerStateExperimental",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewContainerStateExperimental),
       makeNativeMethod(
@@ -1205,6 +1235,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
+      makeNativeMethod(
+        "fixTextClippingAndroid15useBoundsForWidth",
+        JReactNativeFeatureFlagsCxxInterop::fixTextClippingAndroid15useBoundsForWidth),
       makeNativeMethod(
         "fuseboxAssertSingleHostState",
         JReactNativeFeatureFlagsCxxInterop::fuseboxAssertSingleHostState),
@@ -1236,8 +1269,17 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "shouldPressibilityUseW3CPointerEventsForHover",
         JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsForHover),
       makeNativeMethod(
+        "shouldResetClickableWhenRecyclingView",
+        JReactNativeFeatureFlagsCxxInterop::shouldResetClickableWhenRecyclingView),
+      makeNativeMethod(
+        "shouldResetOnClickListenerWhenRecyclingView",
+        JReactNativeFeatureFlagsCxxInterop::shouldResetOnClickListenerWhenRecyclingView),
+      makeNativeMethod(
         "shouldSetEnabledBasedOnAccessibilityState",
         JReactNativeFeatureFlagsCxxInterop::shouldSetEnabledBasedOnAccessibilityState),
+      makeNativeMethod(
+        "shouldSetIsClickableByDefault",
+        JReactNativeFeatureFlagsCxxInterop::shouldSetIsClickableByDefault),
       makeNativeMethod(
         "shouldTriggerResponderTransferOnScrollAndroid",
         JReactNativeFeatureFlagsCxxInterop::shouldTriggerResponderTransferOnScrollAndroid),

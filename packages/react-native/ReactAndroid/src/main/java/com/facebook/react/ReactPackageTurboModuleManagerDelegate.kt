@@ -8,7 +8,6 @@
 package com.facebook.react
 
 import com.facebook.jni.HybridData
-import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
@@ -16,7 +15,6 @@ import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
-import javax.inject.Provider
 
 public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManagerDelegate {
   internal fun interface ModuleProvider {
@@ -57,26 +55,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
         moduleProviders.add(moduleProvider)
         packageModuleInfos[moduleProvider] =
             reactPackage.getReactModuleInfoProvider().getReactModuleInfos()
-        continue
-      }
-
-      @Suppress("DEPRECATION")
-      if (shouldSupportLegacyPackages() && reactPackage is LazyReactPackage) {
-        // TODO(T145105887): Output warnings that LazyReactPackage was used
-        val lazyPkg = reactPackage
-        val moduleSpecs: List<ModuleSpec> =
-            lazyPkg.internal_getNativeModules(reactApplicationContext)
-        val moduleSpecProviderMap: MutableMap<String?, Provider<out NativeModule>> = mutableMapOf()
-        for (moduleSpec in moduleSpecs) {
-          moduleSpecProviderMap[moduleSpec.getName()] = moduleSpec.getProvider()
-        }
-
-        val moduleProvider = ModuleProvider { moduleName: String ->
-          moduleSpecProviderMap[moduleName]?.get()
-        }
-
-        moduleProviders.add(moduleProvider)
-        packageModuleInfos[moduleProvider] = lazyPkg.reactModuleInfoProvider.getReactModuleInfos()
         continue
       }
 

@@ -78,4 +78,9 @@ internal class ProgressRequestBody(
         }
     )
   }
+
+  fun getBodyPreview(): String {
+    // TODO: Safely implement request body previews
+    return "[Preview unavailable]"
+  }
 }

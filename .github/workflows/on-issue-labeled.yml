@@ -16,10 +16,10 @@ jobs:
     if: "${{ github.repository == 'facebook/react-native' && contains(github.event.label.name, 'Needs: Triage :mag:') }}"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Verify RN version
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
@@ -39,7 +39,7 @@ jobs:
             }
 
       - name: Add descriptive label
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
@@ -51,8 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/github-script@v6
+      - uses: actions/checkout@v6
+      - uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |

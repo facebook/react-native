@@ -421,6 +421,8 @@ static inline std::string toString(const EnumPropNativeComponentViewAlignment &v
     case EnumPropNativeComponentViewAlignment::Top: return \\"top\\";
     case EnumPropNativeComponentViewAlignment::Center: return \\"center\\";
     case EnumPropNativeComponentViewAlignment::BottomRight: return \\"bottom-right\\";
+    default:
+      abort();
   }
 }
 
@@ -447,8 +449,9 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
     case 60:
       result = EnumPropNativeComponentViewIntervals::Intervals60;
       return;
+    default:
+      abort();
   }
-  abort();
 }
 
 static inline std::string toString(const EnumPropNativeComponentViewIntervals &value) {
@@ -457,6 +460,8 @@ static inline std::string toString(const EnumPropNativeComponentViewIntervals &v
     case EnumPropNativeComponentViewIntervals::Intervals15: return \\"15\\";
     case EnumPropNativeComponentViewIntervals::Intervals30: return \\"30\\";
     case EnumPropNativeComponentViewIntervals::Intervals60: return \\"60\\";
+    default:
+      abort();
   }
 }
 
@@ -467,6 +472,8 @@ static inline folly::dynamic toDynamic(const EnumPropNativeComponentViewInterval
     case EnumPropNativeComponentViewIntervals::Intervals15: return 15;
     case EnumPropNativeComponentViewIntervals::Intervals30: return 30;
     case EnumPropNativeComponentViewIntervals::Intervals60: return 60;
+    default:
+      abort();
   }
 }
 #endif
@@ -926,6 +933,8 @@ static inline std::string toString(const ObjectPropsNativeComponentStringEnumPro
   switch (value) {
     case ObjectPropsNativeComponentStringEnumProp::Small: return \\"small\\";
     case ObjectPropsNativeComponentStringEnumProp::Large: return \\"large\\";
+    default:
+      abort();
   }
 }
 
@@ -946,14 +955,17 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
     case 1:
       result = ObjectPropsNativeComponentIntEnumProp::IntEnumProp1;
       return;
+    default:
+      abort();
   }
-  abort();
 }
 
 static inline std::string toString(const ObjectPropsNativeComponentIntEnumProp &value) {
   switch (value) {
     case ObjectPropsNativeComponentIntEnumProp::IntEnumProp0: return \\"0\\";
     case ObjectPropsNativeComponentIntEnumProp::IntEnumProp1: return \\"1\\";
+    default:
+      abort();
   }
 }
 
@@ -962,6 +974,8 @@ static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentIntEnumPr
   switch (value) {
     case ObjectPropsNativeComponentIntEnumProp::IntEnumProp0: return 0;
     case ObjectPropsNativeComponentIntEnumProp::IntEnumProp1: return 1;
+    default:
+      abort();
   }
 }
 #endif

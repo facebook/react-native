@@ -30,7 +30,7 @@ jobs:
     if: github.repository == 'facebook/react-native'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -42,7 +42,7 @@ jobs:
           git config --local user.email "bot@reactnative.dev"
           git config --local user.name "React Native Bot"
       - name: Validate DotSlash artifacts
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           script: |
             const {validateDotSlashArtifacts} = require('./scripts/releases/validate-dotslash-artifacts.js');

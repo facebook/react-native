@@ -46,12 +46,19 @@ struct TimerCallback {
 class TimerManager {
  public:
   explicit TimerManager(std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept;
+  TimerManager(const TimerManager &) = delete;
+  TimerManager(TimerManager &&) = delete;
+  TimerManager &operator=(const TimerManager &) = delete;
+  TimerManager &operator=(TimerManager &&) = delete;
+  ~TimerManager() noexcept;
 
   void setRuntimeExecutor(RuntimeExecutor runtimeExecutor) noexcept;
 
   void callTimer(TimerHandle handle);
 
   void attachGlobals(jsi::Runtime &runtime);
+
+  void quit();
 
  private:
   TimerHandle createTimer(

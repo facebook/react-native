@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<11de61ca7deceb1931bf078b9125e97a>>
+ * @generated SignedSource<<6b37c02e334fb00f22ce27bb787104cc>>
  * @flow strict
  * @noformat
  */
@@ -54,9 +54,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   cdpInteractionMetricsEnabled: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
-  cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
   disableEarlyViewCommandExecution: Getter<boolean>,
-  disableFabricCommitInCXXAnimated: Getter<boolean>,
   disableImageViewPreallocationAndroid: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean>,
@@ -65,6 +63,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   disableViewPreallocationAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
+  enableAndroidAntialiasedBorderRadiusClipping: Getter<boolean>,
   enableAndroidLinearText: Getter<boolean>,
   enableAndroidTextMeasurementOptimizations: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -86,6 +85,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean>,
   enableImperativeFocus: Getter<boolean>,
   enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
+  enableIntersectionObserverByDefault: Getter<boolean>,
   enableKeyEvents: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
@@ -102,13 +102,13 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecyclingForScrollView: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
-  enableVirtualViewClippingWithoutScrollViewClipping: Getter<boolean>,
   enableVirtualViewContainerStateExperimental: Getter<boolean>,
   enableVirtualViewDebugFeatures: Getter<boolean>,
   enableVirtualViewRenderState: Getter<boolean>,
   enableVirtualViewWindowFocusDetection: Getter<boolean>,
   enableWebPerformanceAPIsByDefault: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
+  fixTextClippingAndroid15useBoundsForWidth: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
@@ -119,7 +119,10 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   preparedTextCacheSize: Getter<number>,
   preventShadowTreeCommitExhaustion: Getter<boolean>,
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
+  shouldResetClickableWhenRecyclingView: Getter<boolean>,
+  shouldResetOnClickListenerWhenRecyclingView: Getter<boolean>,
   shouldSetEnabledBasedOnAccessibilityState: Getter<boolean>,
+  shouldSetIsClickableByDefault: Getter<boolean>,
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
@@ -203,7 +206,7 @@ export const shouldUseAnimatedObjectForTransform: Getter<boolean> = createJavaSc
 /**
  * Set accessibilityRole to "link" for pressable Text components by default.
  */
-export const shouldUseLinkRoleForPressableText: Getter<boolean> = createJavaScriptFlagGetter('shouldUseLinkRoleForPressableText', false);
+export const shouldUseLinkRoleForPressableText: Getter<boolean> = createJavaScriptFlagGetter('shouldUseLinkRoleForPressableText', true);
 
 /**
  * removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android
@@ -237,17 +240,9 @@ export const cdpInteractionMetricsEnabled: Getter<boolean> = createNativeFlagGet
  */
 export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
 /**
- * Removes JS sync at end of native animation
- */
-export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedRemoveJsSync', false);
-/**
  * Dispatch view commands in mount item order.
  */
 export const disableEarlyViewCommandExecution: Getter<boolean> = createNativeFlagGetter('disableEarlyViewCommandExecution', false);
-/**
- * Prevents use of Fabric commit in C++ Animated implementation
- */
-export const disableFabricCommitInCXXAnimated: Getter<boolean> = createNativeFlagGetter('disableFabricCommitInCXXAnimated', false);
 /**
  * Force disable view preallocation for images triggered from createNode off the main thread on Android
  */
@@ -280,6 +275,10 @@ export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter(
  * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
  */
 export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
+/**
+ * Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing
+ */
+export const enableAndroidAntialiasedBorderRadiusClipping: Getter<boolean> = createNativeFlagGetter('enableAndroidAntialiasedBorderRadiusClipping', false);
 /**
  * Enables linear text rendering on Android wherever subpixel text rendering is enabled
  */
@@ -365,6 +364,10 @@ export const enableImperativeFocus: Getter<boolean> = createNativeFlagGetter('en
  */
 export const enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean> = createNativeFlagGetter('enableInteropViewManagerClassLookUpOptimizationIOS', false);
 /**
+ * Enables the IntersectionObserver Web API in React Native.
+ */
+export const enableIntersectionObserverByDefault: Getter<boolean> = createNativeFlagGetter('enableIntersectionObserverByDefault', false);
+/**
  * Enables key up/down/press events to be sent to JS from components
  */
 export const enableKeyEvents: Getter<boolean> = createNativeFlagGetter('enableKeyEvents', false);
@@ -429,10 +432,6 @@ export const enableViewRecyclingForText: Getter<boolean> = createNativeFlagGette
  */
 export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForView', true);
 /**
- * Set clipping to drawingRect of ScrollView.
- */
-export const enableVirtualViewClippingWithoutScrollViewClipping: Getter<boolean> = createNativeFlagGetter('enableVirtualViewClippingWithoutScrollViewClipping', true);
-/**
  * Enables the experimental version of `VirtualViewContainerState`.
  */
 export const enableVirtualViewContainerStateExperimental: Getter<boolean> = createNativeFlagGetter('enableVirtualViewContainerStateExperimental', false);
@@ -456,6 +455,10 @@ export const enableWebPerformanceAPIsByDefault: Getter<boolean> = createNativeFl
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
+/**
+ * Fix text clipping starting in Android 15 due to usage of useBoundsForWidth
+ */
+export const fixTextClippingAndroid15useBoundsForWidth: Getter<boolean> = createNativeFlagGetter('fixTextClippingAndroid15useBoundsForWidth', false);
 /**
  * Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.
  */
@@ -497,9 +500,21 @@ export const preventShadowTreeCommitExhaustion: Getter<boolean> = createNativeFl
  */
 export const shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean> = createNativeFlagGetter('shouldPressibilityUseW3CPointerEventsForHover', false);
 /**
+ * Reset isClickable to false when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
+ */
+export const shouldResetClickableWhenRecyclingView: Getter<boolean> = createNativeFlagGetter('shouldResetClickableWhenRecyclingView', true);
+/**
+ * Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
+ */
+export const shouldResetOnClickListenerWhenRecyclingView: Getter<boolean> = createNativeFlagGetter('shouldResetOnClickListenerWhenRecyclingView', true);
+/**
  * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
  */
-export const shouldSetEnabledBasedOnAccessibilityState: Getter<boolean> = createNativeFlagGetter('shouldSetEnabledBasedOnAccessibilityState', false);
+export const shouldSetEnabledBasedOnAccessibilityState: Getter<boolean> = createNativeFlagGetter('shouldSetEnabledBasedOnAccessibilityState', true);
+/**
+ * Sets isClickable=true by default on all React Native views on Android to improve UI harvesting detection while maintaining focusable=false to preserve expected behavior.
+ */
+export const shouldSetIsClickableByDefault: Getter<boolean> = createNativeFlagGetter('shouldSetIsClickableByDefault', false);
 /**
  * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
  */
@@ -543,7 +558,7 @@ export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useR
 /**
  * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
  */
-export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', false);
+export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', true);
 /**
  * Use shared animation backend in C++ Animated
  */

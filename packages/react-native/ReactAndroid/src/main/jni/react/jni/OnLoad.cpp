@@ -13,7 +13,6 @@
 #include "CatalystInstanceImpl.h"
 #include "InspectorNetworkRequestListener.h"
 #include "JavaScriptExecutorHolder.h"
-#include "ReactInstanceManagerInspectorTarget.h"
 
 #ifndef WITH_GLOGINIT
 #define WITH_GLOGINIT 1
@@ -41,7 +40,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     CatalystInstanceImpl::registerNatives();
 #pragma clang diagnostic pop
 #endif
-    ReactInstanceManagerInspectorTarget::registerNatives();
     InspectorNetworkRequestListener::registerNatives();
   });
 }

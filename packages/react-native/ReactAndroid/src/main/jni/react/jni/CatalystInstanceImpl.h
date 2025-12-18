@@ -19,7 +19,6 @@
 #include "JSLoader.h"
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
-#include "ReactInstanceManagerInspectorTarget.h"
 
 #ifndef RCT_REMOVE_LEGACY_ARCH
 
@@ -59,8 +58,7 @@ class [[deprecated("This API will be removed along with the legacy architecture.
       JavaScriptExecutorHolder *jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
-      jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
-      jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject> inspectorTarget);
+      jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules);
 
   void extendNativeModules(jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules);
 

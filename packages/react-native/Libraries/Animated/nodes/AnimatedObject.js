@@ -24,12 +24,17 @@ export function isPlainObject(
   /* $FlowFixMe[incompatible-type-guard] - Flow does not know that the prototype
      and ReactElement checks preserve the type refinement of `value`. */
 ): value is $ReadOnly<{[string]: mixed}> {
+  const proto =
+    value !== null && typeof value === 'object'
+      ? Object.getPrototypeOf(value)
+      : undefined;
+  if (proto === undefined) {
+    // $FlowFixMe[incompatible-type-guard]
+    return false;
+  }
   return (
     // $FlowFixMe[incompatible-type-guard]
-    value !== null &&
-    typeof value === 'object' &&
-    Object.getPrototypeOf(value).isPrototypeOf(Object) &&
-    !isValidElement(value)
+    (proto == null || proto.isPrototypeOf(Object)) && !isValidElement(value)
   );
 }
 

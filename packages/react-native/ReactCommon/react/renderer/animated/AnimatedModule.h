@@ -87,6 +87,11 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>, publi
     Tag viewTag{};
   };
 
+  struct ConnectAnimatedNodeToShadowNodeFamilyOp {
+    Tag nodeTag{};
+    std::shared_ptr<const ShadowNodeFamily> shadowNodeFamily{};
+  };
+
   struct DisconnectAnimatedNodeFromViewOp {
     Tag nodeTag{};
     Tag viewTag{};
@@ -124,6 +129,7 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>, publi
       SetAnimatedNodeOffsetOp,
       SetAnimatedNodeValueOp,
       ConnectAnimatedNodeToViewOp,
+      ConnectAnimatedNodeToShadowNodeFamilyOp,
       DisconnectAnimatedNodeFromViewOp,
       RestoreDefaultValuesOp,
       FlattenAnimatedNodeOffsetOp,
@@ -176,6 +182,8 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>, publi
 
   void connectAnimatedNodeToView(jsi::Runtime &rt, Tag nodeTag, Tag viewTag);
 
+  void connectAnimatedNodeToShadowNodeFamily(jsi::Runtime &rt, Tag nodeTag, jsi::Object shadowNode);
+
   void disconnectAnimatedNodeFromView(jsi::Runtime &rt, Tag nodeTag, Tag viewTag);
 
   void restoreDefaultValues(jsi::Runtime &rt, Tag nodeTag);
@@ -194,11 +202,11 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>, publi
 
  private:
   std::shared_ptr<NativeAnimatedNodesManagerProvider> nodesManagerProvider_;
-  std::shared_ptr<NativeAnimatedNodesManager> nodesManager_;
+  std::weak_ptr<NativeAnimatedNodesManager> nodesManager_;
   std::vector<Operation> preOperations_;
   std::vector<Operation> operations_;
 
-  void executeOperation(const Operation &operation);
+  void executeOperation(const Operation &operation, std::weak_ptr<NativeAnimatedNodesManager> nodesManagerWeak);
   void installJSIBindingsWithRuntime(jsi::Runtime &runtime) override;
 };
 

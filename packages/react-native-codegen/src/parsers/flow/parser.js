@@ -18,10 +18,10 @@ import type {
   NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
+  NativeModuleUnionTypeAnnotationMemberType,
   Nullable,
   PropTypeAnnotation,
   SchemaType,
-  UnionTypeAnnotationMemberType,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {
@@ -111,7 +111,7 @@ class FlowParser implements Parser {
 
   remapUnionTypeAnnotationMemberNames(
     membersTypes: $FlowFixMe[],
-  ): UnionTypeAnnotationMemberType[] {
+  ): NativeModuleUnionTypeAnnotationMemberType[] {
     const remapLiteral = (item: $FlowFixMe) => {
       return item.type
         .replace('NumberLiteralTypeAnnotation', 'NumberTypeAnnotation')
@@ -119,12 +119,6 @@ class FlowParser implements Parser {
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];
-  }
-
-  getStringLiteralUnionTypeAnnotationStringLiterals(
-    membersTypes: $FlowFixMe[],
-  ): string[] {
-    return membersTypes.map((item: $FlowFixMe) => item.value);
   }
 
   parseFile(filename: string): SchemaType {

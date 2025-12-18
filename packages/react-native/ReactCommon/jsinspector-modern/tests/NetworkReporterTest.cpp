@@ -654,6 +654,13 @@ TEST_P(
         AtJsonPtr("/params/hasExtraInfo", false))));
 
     this->expectMessageFromPage(JsonParsed(AllOf(
+        AtJsonPtr("/method", "Network.dataReceived"),
+        AtJsonPtr("/params/requestId", "trace-events-request"),
+        AtJsonPtr("/params/timestamp", Gt(0)),
+        AtJsonPtr("/params/dataLength", 512),
+        AtJsonPtr("/params/encodedDataLength", 512))));
+
+    this->expectMessageFromPage(JsonParsed(AllOf(
         AtJsonPtr("/method", "Network.loadingFinished"),
         AtJsonPtr("/params/requestId", "trace-events-request"),
         AtJsonPtr("/params/timestamp", Gt(0)),
@@ -681,6 +688,9 @@ TEST_P(
           .headers = Headers{{"Content-Type", "application/json"}},
       },
       1024);
+
+  NetworkReporter::getInstance().reportDataReceived(
+      "trace-events-request", 512, 512);
 
   NetworkReporter::getInstance().reportResponseEnd(
       "trace-events-request", 1024);
@@ -730,6 +740,18 @@ TEST_P(
                   AtJsonPtr("/sendEnd", Ge(0)),
                   AtJsonPtr("/receiveHeadersStart", Ge(0)),
                   AtJsonPtr("/receiveHeadersEnd", Ge(0)))))));
+
+  EXPECT_THAT(
+      allTraceEvents,
+      Contains(AllOf(
+          AtJsonPtr("/name", "ResourceReceivedData"),
+          AtJsonPtr("/cat", "devtools.timeline"),
+          AtJsonPtr("/ph", "I"),
+          AtJsonPtr("/s", "t"),
+          AtJsonPtr("/tid", oscompat::getCurrentThreadId()),
+          AtJsonPtr("/pid", oscompat::getCurrentProcessId()),
+          AtJsonPtr("/args/data/requestId", "trace-events-request"),
+          AtJsonPtr("/args/data/encodedDataLength", 512))));
 
   EXPECT_THAT(
       allTraceEvents,

@@ -13,6 +13,7 @@ packages/*/dist
 packages/*/types_generated
 packages/debugger-frontend/dist/**/*
 packages/react-native-codegen/lib
+private/react-native-codegen-typescript-test/lib/**/*
 **/Pods/*
 **/*.macos.js
 **/*.windows.js

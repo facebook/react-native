@@ -19,6 +19,8 @@ class TurboModule;
 
 @interface RCTAnimatedModuleProvider : NSObject
 
+- (void)invalidate;
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:
                                                           (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;

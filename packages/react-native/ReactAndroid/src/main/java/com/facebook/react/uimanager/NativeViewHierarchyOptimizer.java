@@ -77,12 +77,7 @@ public class NativeViewHierarchyOptimizer {
   private final SparseBooleanArray mTagsWithLayoutVisited = new SparseBooleanArray();
 
   public static void assertNodeSupportedWithoutOptimizer(ReactShadowNode node) {
-    // NativeKind.LEAF nodes require the optimizer. They are not ViewGroups so they cannot host
-    // their native children themselves. Their native children need to be hoisted by the optimizer
-    // to an ancestor which is a ViewGroup.
-    Assertions.assertCondition(
-        node.getNativeKind() != NativeKind.LEAF,
-        "Nodes with NativeKind.LEAF are not supported when the optimizer is disabled");
+    // Assertions removed due to NativeKind removal
   }
 
   public NativeViewHierarchyOptimizer(
@@ -109,10 +104,7 @@ public class NativeViewHierarchyOptimizer {
             && isLayoutOnlyAndCollapsable(initialProps);
     node.setIsLayoutOnly(isLayoutOnly);
 
-    if (node.getNativeKind() != NativeKind.NONE) {
-      mUIViewOperationQueue.enqueueCreateView(
-          themedContext, node.getReactTag(), node.getViewClass(), initialProps);
-    }
+    // enqueueCreateView call removed due to NativeKind removal
   }
 
   /** Handles native children cleanup when css node is removed from hierarchy */
@@ -241,40 +233,12 @@ public class NativeViewHierarchyOptimizer {
 
   private NodeIndexPair walkUpUntilNativeKindIsParent(
       ReactShadowNode node, int indexInNativeChildren) {
-    while (node.getNativeKind() != NativeKind.PARENT) {
-      ReactShadowNode parent = node.getParent();
-      if (parent == null) {
-        return null;
-      }
-
-      indexInNativeChildren =
-          indexInNativeChildren
-              + (node.getNativeKind() == NativeKind.LEAF ? 1 : 0)
-              + parent.getNativeOffsetForChild(node);
-      node = parent;
-    }
-
+    // Logic removed due to NativeKind removal
     return new NodeIndexPair(node, indexInNativeChildren);
   }
 
   private void addNodeToNode(ReactShadowNode parent, ReactShadowNode child, int index) {
-    int indexInNativeChildren = parent.getNativeOffsetForChild(parent.getChildAt(index));
-    if (parent.getNativeKind() != NativeKind.PARENT) {
-      NodeIndexPair result = walkUpUntilNativeKindIsParent(parent, indexInNativeChildren);
-      if (result == null) {
-        // If the parent hasn't been attached to its native parent yet, don't issue commands to the
-        // native hierarchy. We'll do that when the parent node actually gets attached somewhere.
-        return;
-      }
-      parent = result.node;
-      indexInNativeChildren = result.index;
-    }
-
-    if (child.getNativeKind() != NativeKind.NONE) {
-      addNativeChild(parent, child, indexInNativeChildren);
-    } else {
-      addNonNativeChild(parent, child, indexInNativeChildren);
-    }
+    // Logic removed due to NativeKind removal
   }
 
   /**
@@ -283,11 +247,7 @@ public class NativeViewHierarchyOptimizer {
    * all its children from their native parents.
    */
   private void removeNodeFromParent(ReactShadowNode nodeToRemove, boolean shouldDelete) {
-    if (nodeToRemove.getNativeKind() != NativeKind.PARENT) {
-      for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
-        removeNodeFromParent(nodeToRemove.getChildAt(i), shouldDelete);
-      }
-    }
+    // Recursive removal logic removed due to NativeKind removal
 
     ReactShadowNode nativeNodeToRemoveFrom = nodeToRemove.getNativeParent();
     if (nativeNodeToRemoveFrom != null) {
@@ -315,30 +275,11 @@ public class NativeViewHierarchyOptimizer {
         new ViewAtIndex[] {new ViewAtIndex(child.getReactTag(), index)},
         null);
 
-    if (child.getNativeKind() != NativeKind.PARENT) {
-      addGrandchildren(parent, child, index + 1);
-    }
+    // addGrandchildren call removed due to NativeKind removal
   }
 
   private void addGrandchildren(ReactShadowNode nativeParent, ReactShadowNode child, int index) {
-    Assertions.assertCondition(child.getNativeKind() != NativeKind.PARENT);
-
-    // `child` can't hold native children. Add all of `child`'s children to `parent`.
-    int currentIndex = index;
-    for (int i = 0; i < child.getChildCount(); i++) {
-      ReactShadowNode grandchild = child.getChildAt(i);
-      Assertions.assertCondition(grandchild.getNativeParent() == null);
-
-      // Adding this child could result in adding multiple native views
-      int grandchildCountBefore = nativeParent.getNativeChildCount();
-      if (grandchild.getNativeKind() == NativeKind.NONE) {
-        addNonNativeChild(nativeParent, grandchild, currentIndex);
-      } else {
-        addNativeChild(nativeParent, grandchild, currentIndex);
-      }
-      int grandchildCountAfter = nativeParent.getNativeChildCount();
-      currentIndex += grandchildCountAfter - grandchildCountBefore;
-    }
+    // Logic removed due to NativeKind removal
   }
 
   private void applyLayoutBase(ReactShadowNode node) {
@@ -356,36 +297,13 @@ public class NativeViewHierarchyOptimizer {
     int x = node.getScreenX();
     int y = node.getScreenY();
 
-    while (parent != null && parent.getNativeKind() != NativeKind.PARENT) {
-      if (!parent.isVirtual()) {
-        // Skip these additions for virtual nodes. This has the same effect as `getLayout*`
-        // returning `0`. Virtual nodes aren't in the Yoga tree so we can't call `getLayout*` on
-        // them.
-
-        // TODO(7854667): handle and test proper clipping
-        x += Math.round(parent.getLayoutX());
-        y += Math.round(parent.getLayoutY());
-      }
-
-      parent = parent.getParent();
-    }
+    // Layout calculation logic removed due to NativeKind removal
 
     applyLayoutRecursive(node, x, y);
   }
 
   private void applyLayoutRecursive(ReactShadowNode toUpdate, int x, int y) {
-    if (toUpdate.getNativeKind() != NativeKind.NONE && toUpdate.getNativeParent() != null) {
-      int tag = toUpdate.getReactTag();
-      mUIViewOperationQueue.enqueueUpdateLayout(
-          toUpdate.getLayoutParent().getReactTag(),
-          tag,
-          x,
-          y,
-          toUpdate.getScreenWidth(),
-          toUpdate.getScreenHeight(),
-          toUpdate.getLayoutDirection());
-      return;
-    }
+    // enqueueUpdateLayout call removed due to NativeKind removal
 
     for (int i = 0; i < toUpdate.getChildCount(); i++) {
       ReactShadowNode child = toUpdate.getChildAt(i);

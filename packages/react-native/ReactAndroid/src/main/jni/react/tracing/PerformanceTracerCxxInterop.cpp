@@ -200,7 +200,7 @@ jint PerformanceTracerCxxInterop::subscribeToTracingStateChanges(
               onTracingStateChangedMethod(
                   callback, static_cast<jboolean>(isTracing));
             });
-          } catch (const std::exception& e) {
+          } catch (const std::exception&) {
           }
         }
       });

@@ -67,8 +67,8 @@ class InspectorImpl : public IInspector {
    public:
     explicit SystemStateListener(InspectorSystemState& state) : state_(state) {}
 
-    void onPageAdded(int /*pageId*/) override {
-      state_.registeredPagesCount++;
+    void unstable_onHostTargetAdded() override {
+      state_.registeredHostsCount++;
     }
 
    private:
@@ -94,6 +94,7 @@ class InspectorImpl : public IInspector {
     ConnectFunc connectFunc_;
     InspectorTargetCapabilities capabilities_;
   };
+
   mutable std::mutex mutex_;
   int nextPageId_{1};
   std::map<int, Page> pages_;
@@ -142,9 +143,13 @@ int InspectorImpl::addPage(
       pageId,
       Page{pageId, description, vm, std::move(connectFunc), capabilities});
 
-  for (const auto& listenerWeak : listeners_) {
-    if (auto listener = listenerWeak.lock()) {
-      listener->onPageAdded(pageId);
+  // Strong assumption: If prefersFuseboxFrontend is set, the page added is a
+  // HostTarget and not a legacy Hermes runtime target.
+  if (capabilities.prefersFuseboxFrontend) {
+    for (const auto& listenerWeak : listeners_) {
+      if (auto listener = listenerWeak.lock()) {
+        listener->unstable_onHostTargetAdded();
+      }
     }
   }
 

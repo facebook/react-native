@@ -19,8 +19,8 @@ import java.io.File
 
 /**
  * Interface for accessing and interacting with development features. In dev mode, use the
- * implementation [com.facebook.react.devsupport.BridgeDevSupportManager]. In production mode, use
- * the dummy implementation [com.facebook.react.devsupport.ReleaseDevSupportManager].
+ * implementation [com.facebook.react.devsupport.BridgelessDevSupportManager]. In production mode,
+ * use the dummy implementation [com.facebook.react.devsupport.ReleaseDevSupportManager].
  */
 public interface DevSupportManager : JSExceptionHandler {
 

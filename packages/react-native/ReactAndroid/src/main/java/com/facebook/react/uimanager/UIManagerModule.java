@@ -25,7 +25,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMarker;
@@ -45,7 +44,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
-import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -90,7 +88,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Deprecated(
     since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class UIManagerModule extends ReactContextBaseJavaModule
-    implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
+    implements LifecycleEventListener, UIManager {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
         "UIManagerModule", LegacyArchitectureLogLevel.ERROR);
@@ -660,50 +658,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void configureNextLayoutAnimation(ReadableMap config, Callback success, Callback error) {
     mUIImplementation.configureNextLayoutAnimation(config, success);
-  }
-
-  /**
-   * To implement the transactional requirement mentioned in the class javadoc, we only commit UI
-   * changes to the actual view hierarchy once a batch of JS->Java calls have been completed. We
-   * know this is safe because all JS->Java calls that are triggered by a Java->JS call (e.g. the
-   * delivery of a touch event or execution of 'renderApplication') end up in a single JS->Java
-   * transaction.
-   *
-   * <p>A better way to do this would be to have JS explicitly signal to this module when a UI
-   * transaction is done. Right now, though, this is how iOS does it, and we should probably update
-   * the JS and native code and make this change at the same time.
-   *
-   * <p>TODO(5279396): Make JS UI library explicitly notify the native UI module of the end of a UI
-   * transaction using a standard native call
-   */
-  @Override
-  public void onBatchComplete() {
-    int batchId = mBatchId;
-    mBatchId++;
-
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "onBatchCompleteUI")
-        .arg("BatchId", batchId)
-        .flush();
-    for (UIManagerListener listener : mUIManagerListeners) {
-      listener.willDispatchViewUpdates(this);
-    }
-    try {
-      // If there are no RootViews registered, there will be no View updates to dispatch.
-      // This is a hack to prevent this from being called when Fabric is used everywhere.
-      // This should no longer be necessary in Bridgeless Mode.
-      if (mUIImplementation.getRootViewNum() > 0) {
-        mUIImplementation.dispatchViewUpdates(batchId);
-      }
-    } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT);
-    }
-  }
-
-  // NOTE: When converted to Kotlin this method should be `internal` due to
-  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
-  public void setViewHierarchyUpdateDebugListener(
-      @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
-    mUIImplementation.setViewHierarchyUpdateDebugListener(listener);
   }
 
   @Override

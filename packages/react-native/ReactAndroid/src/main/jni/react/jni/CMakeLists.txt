@@ -55,7 +55,6 @@ add_library(
           InspectorNetworkRequestListener.cpp
           JExecutor.cpp
           JMessageQueueThread.cpp
-          JReactCxxErrorHandler.cpp
           JReactSoftExceptionLogger.cpp
           JRuntimeExecutor.cpp
           JRuntimeScheduler.cpp
@@ -66,8 +65,7 @@ add_library(
           MethodInvoker.cpp
           ModuleRegistryBuilder.cpp
           OnLoad.cpp
-          ReactInstanceManagerInspectorTarget.cpp
-          SafeReleaseJniRef.cpp
+        SafeReleaseJniRef.cpp
 )
 target_merge_so(reactnativejni)
 

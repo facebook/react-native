@@ -445,7 +445,7 @@ describe('Native Animated', () => {
       );
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
-        {type: 'props', props: {style: expect.any(Number)}},
+        {type: 'props', props: {style: expect.any(Number)}, rootTag: 0},
       );
     });
 
@@ -1195,7 +1195,7 @@ describe('Native Animated', () => {
       );
       expect(NativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         expect.any(Number),
-        {type: 'props', props: {style: expect.any(Number)}},
+        {type: 'props', props: {style: expect.any(Number)}, rootTag: 0},
       );
     });
   });
@@ -1565,7 +1565,7 @@ describe('Native Animated', () => {
             type: 'style',
           },
         ],
-        [5, {debugID: undefined, props: {style: 2}, type: 'props'}],
+        [5, {debugID: undefined, props: {style: 2}, type: 'props', rootTag: 0}],
       ]);
 
       createAnimatedNodeCalledTimes += 5;
@@ -1613,7 +1613,7 @@ describe('Native Animated', () => {
             type: 'style',
           },
         ],
-        [9, {debugID: undefined, props: {style: 7}, type: 'props'}],
+        [9, {debugID: undefined, props: {style: 7}, type: 'props', rootTag: 0}],
       ]);
 
       createAnimatedNodeCalledTimes += 4;
@@ -1672,7 +1672,10 @@ describe('Native Animated', () => {
             type: 'style',
           },
         ],
-        [13, {debugID: undefined, props: {style: 12}, type: 'props'}],
+        [
+          13,
+          {debugID: undefined, props: {style: 12}, type: 'props', rootTag: 0},
+        ],
       ]);
 
       createAnimatedNodeCalledTimes += 4;

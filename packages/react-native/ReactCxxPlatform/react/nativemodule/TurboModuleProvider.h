@@ -7,14 +7,15 @@
 
 #pragma once
 
-#include <ReactCommon/CallInvoker.h>
-#include <ReactCommon/TurboModule.h>
-
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace facebook::react {
+
+class CallInvoker;
+class TurboModule;
 
 using TurboModuleProvider =
     std::function<std::shared_ptr<TurboModule>(const std::string &name, const std::shared_ptr<CallInvoker> &jsInvoker)>;

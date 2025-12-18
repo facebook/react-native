@@ -31,7 +31,7 @@ const TESTS = [
   require('./WebSocketTest'),
   require('./AccessibilityManagerTest'),
   require('./GlobalEvalWithSourceUrlTest'),
-];
+].map(mod => mod.default);
 
 TESTS.forEach(test =>
   AppRegistry.registerComponent(

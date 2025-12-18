@@ -14,7 +14,7 @@ jobs:
       GHA_NPM_TOKEN: ${{ secrets.GHA_NPM_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run Yarn Install

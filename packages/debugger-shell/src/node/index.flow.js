@@ -29,7 +29,7 @@ async function unstable_spawnDebuggerShellWithArgs(
   args: string[],
   {
     mode = 'detached',
-    flavor = 'prebuilt',
+    flavor = process.env.RNDT_DEV === '1' ? 'dev' : 'prebuilt',
     prebuiltBinaryPath,
   }: $ReadOnly<{
     // In 'syncAndExit' mode, the current process will block until the spawned process exits, and then it will exit
@@ -38,7 +38,7 @@ async function unstable_spawnDebuggerShellWithArgs(
     // continue to run normally.
     mode?: 'syncThenExit' | 'detached',
     flavor?: DebuggerShellFlavor,
-    prebuiltBinaryPath?: string,
+    prebuiltBinaryPath?: ?string,
   }> = {},
 ): Promise<void> {
   const [binaryPath, baseArgs] = getShellBinaryAndArgs(
@@ -47,10 +47,18 @@ async function unstable_spawnDebuggerShellWithArgs(
   );
 
   return new Promise((resolve, reject) => {
+    const {
+      // If this package is used in an Electron app (e.g. inside a VS Code extension),
+      // ELECTRON_RUN_AS_NODE=1 can leak from the parent process.
+      // Since this is never the right way to launch the Fusebox shell, we guard against it here.
+      ELECTRON_RUN_AS_NODE: _,
+      ...env
+    } = process.env;
     const child = spawn(binaryPath, [...baseArgs, ...args], {
       stdio: 'inherit',
       windowsHide: true,
       detached: mode === 'detached',
+      env,
     });
     if (mode === 'detached') {
       child.on('spawn', () => {
@@ -112,10 +120,13 @@ export type DebuggerShellPreparationResult = $ReadOnly<{
  * instantly when the user tries to open it (and conversely, the user is
  * informed ASAP if it is not ready to use).
  */
-async function unstable_prepareDebuggerShell(
-  flavor: DebuggerShellFlavor,
-  {prebuiltBinaryPath}: {prebuiltBinaryPath?: string} = {},
-): Promise<DebuggerShellPreparationResult> {
+async function unstable_prepareDebuggerShell({
+  prebuiltBinaryPath,
+  flavor = process.env.RNDT_DEV === '1' ? 'dev' : 'prebuilt',
+}: {
+  prebuiltBinaryPath?: ?string,
+  flavor?: DebuggerShellFlavor,
+} = {}): Promise<DebuggerShellPreparationResult> {
   try {
     switch (flavor) {
       case 'prebuilt':

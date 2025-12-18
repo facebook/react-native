@@ -20,10 +20,10 @@ const {
 const babel = require('@babel/core');
 const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
-const glob = require('glob');
 const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
+const {globSync} = require('tinyglobby');
 const ts = require('typescript');
 const {parseArgs, styleText} = require('util');
 
@@ -103,15 +103,15 @@ async function buildPackage(packageName /*: string */) {
     const {emitTypeScriptDefs} = getBuildOptions(packageName);
     const entryPoints = await getEntryPoints(packageName);
 
-    const files = glob
-      .sync(path.resolve(PACKAGES_DIR, packageName, SRC_DIR, '**/*'), {
-        nodir: true,
-      })
-      .filter(
-        file =>
-          !entryPoints.has(file) &&
-          !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
-      );
+    const files = globSync('**/*', {
+      cwd: path.resolve(PACKAGES_DIR, packageName, SRC_DIR),
+      onlyFiles: true,
+      absolute: true,
+    }).filter(
+      file =>
+        !entryPoints.has(file) &&
+        !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
+    );
 
     process.stdout.write(
       `${packageName} ${styleText('dim', '.').repeat(72 - packageName.length)} `,
@@ -135,9 +135,6 @@ async function buildPackage(packageName /*: string */) {
     if (emitTypeScriptDefs) {
       validateTypeScriptDefs(packageName);
     }
-
-    // Rewrite package.json "exports" field (src -> dist)
-    await rewritePackageExports(packageName);
 
     process.stdout.write(
       styleText(['reset', 'inverse', 'bold', 'green'], ' DONE '),
@@ -330,18 +327,15 @@ async function getEntryPoints(
         continue;
       }
 
-      // Normalize to original path if previously rewritten
-      const original = normalizeExportsTarget(target);
-
-      if (original.endsWith('.flow.js')) {
+      if (target.endsWith('.flow.js')) {
         throw new Error(
-          `Package ${packageName} defines exports["${subpath}"] = "${original}". ` +
+          `Package ${packageName} defines exports["${subpath}"] = "${target}". ` +
             'Expecting a .js wrapper file. See other monorepo packages for examples.',
         );
       }
 
       // Our special case for wrapper files that need to be stripped
-      const resolvedTarget = path.resolve(PACKAGES_DIR, packageName, original);
+      const resolvedTarget = path.resolve(PACKAGES_DIR, packageName, target);
       const resolvedFlowTarget = resolvedTarget.replace(/\.js$/, '.flow.js');
 
       try {
@@ -383,55 +377,12 @@ function getBuildPath(file /*: string */) /*: string */ {
   );
 }
 
-async function rewritePackageExports(packageName /*: string */) {
-  const packageJsonPath = path.join(PACKAGES_DIR, packageName, 'package.json');
-  const pkg = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
-
-  pkg.exports = rewriteExportsField(pkg.exports);
-
-  if (pkg.main != null) {
-    pkg.main = rewriteExportsTarget(pkg.main);
-  }
-
-  await fs.writeFile(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
-}
-
-/*::
-type ExportsField = {
-  [subpath: string]: ExportsField | string,
-} | string;
-*/
-
-function rewriteExportsField(
-  exportsField /*: ExportsField */,
-) /*: ExportsField */ {
-  if (typeof exportsField === 'string') {
-    return rewriteExportsTarget(exportsField);
-  }
-
-  for (const key in exportsField) {
-    if (typeof exportsField[key] === 'string') {
-      exportsField[key] = rewriteExportsTarget(exportsField[key]);
-    } else if (typeof exportsField[key] === 'object') {
-      exportsField[key] = rewriteExportsField(exportsField[key]);
-    }
-  }
-
-  return exportsField;
-}
-
-function rewriteExportsTarget(target /*: string */) /*: string */ {
-  return target.replace('./' + SRC_DIR + '/', './' + BUILD_DIR + '/');
-}
-
-function normalizeExportsTarget(target /*: string */) /*: string */ {
-  return target.replace('./' + BUILD_DIR + '/', './' + SRC_DIR + '/');
-}
-
 function validateTypeScriptDefs(packageName /*: string */) {
-  const files = glob.sync(
-    path.resolve(PACKAGES_DIR, packageName, BUILD_DIR, '**/*.d.ts'),
-  );
+  const files = globSync('**/*.d.ts', {
+    cwd: path.resolve(PACKAGES_DIR, packageName, BUILD_DIR),
+    absolute: true,
+    onlyFiles: true,
+  });
   const compilerOptions = {
     ...getTypeScriptCompilerOptions(packageName),
     noEmit: true,

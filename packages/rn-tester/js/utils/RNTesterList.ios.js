@@ -327,10 +327,6 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/TurboModule/LegacyModuleExample'),
   },
   {
-    key: 'TurboCxxModuleExample',
-    module: require('../examples/TurboModule/TurboCxxModuleExample'),
-  },
-  {
     key: 'VibrationExample',
     module: require('../examples/Vibration/VibrationExample'),
   },
@@ -342,6 +338,17 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'XHRExample',
     module: require('../examples/XHR/XHRExample'),
   },
+  // Basic check to detect the availability of the IntersectionObserver API.
+  // $FlowExpectedError[cannot-resolve-name]
+  ...(typeof IntersectionObserver === 'function'
+    ? [
+        {
+          key: 'IntersectionObserver',
+          category: 'UI',
+          module: require('../examples/IntersectionObserver/IntersectionObserverIndex'),
+        },
+      ]
+    : []),
   // Basic check to detect the availability of the modern Performance API.
   ...(typeof performance.getEntries === 'function'
     ? [

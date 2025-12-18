@@ -30,6 +30,10 @@ export type FloatTypeAnnotation = $ReadOnly<{
   type: 'FloatTypeAnnotation',
 }>;
 
+export type NumberTypeAnnotation = $ReadOnly<{
+  type: 'NumberTypeAnnotation',
+}>;
+
 export type BooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
@@ -52,10 +56,13 @@ export type StringLiteralTypeAnnotation = $ReadOnly<{
   value: string,
 }>;
 
-export type StringLiteralUnionTypeAnnotation = $ReadOnly<{
-  type: 'StringLiteralUnionTypeAnnotation',
-  types: $ReadOnlyArray<StringLiteralTypeAnnotation>,
+export type BooleanLiteralTypeAnnotation = $ReadOnly<{
+  type: 'BooleanLiteralTypeAnnotation',
+  value: boolean,
 }>;
+
+export type StringLiteralUnionTypeAnnotation =
+  UnionTypeAnnotation<StringLiteralTypeAnnotation>;
 
 export type VoidTypeAnnotation = $ReadOnly<{
   type: 'VoidTypeAnnotation',
@@ -66,6 +73,11 @@ export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   properties: $ReadOnlyArray<NamedShape<T>>,
   // metadata for objects that generated from interfaces
   baseTypes?: $ReadOnlyArray<string>,
+}>;
+
+export type UnionTypeAnnotation<+T> = $ReadOnly<{
+  type: 'UnionTypeAnnotation',
+  types: $ReadOnlyArray<T>,
 }>;
 
 export type MixedTypeAnnotation = $ReadOnly<{
@@ -116,6 +128,10 @@ export type OptionsShape = $ReadOnly<{
   // Use for components currently being renamed in paper
   // Will use new name if it is available and fallback to this name
   paperComponentNameDeprecated?: string,
+  // Use to generate C++ Props with optional types for properties defined as optional
+  generateOptionalProperties?: boolean,
+  // Use to generate C++ Props with optional types for object properties defined as optional
+  generateOptionalObjectProperties?: boolean,
 }>;
 
 export type ExtendsPropsShape = $ReadOnly<{
@@ -358,15 +374,17 @@ export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   elementType: VoidTypeAnnotation | Nullable<NativeModuleBaseTypeAnnotation>,
 }>;
 
-export type UnionTypeAnnotationMemberType =
-  | 'NumberTypeAnnotation'
-  | 'ObjectTypeAnnotation'
-  | 'StringTypeAnnotation';
+export type NativeModuleUnionTypeAnnotationMemberType =
+  | NativeModuleObjectTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | NumberTypeAnnotation;
 
-export type NativeModuleUnionTypeAnnotation = $ReadOnly<{
-  type: 'UnionTypeAnnotation',
-  memberType: UnionTypeAnnotationMemberType,
-}>;
+export type NativeModuleUnionTypeAnnotation =
+  UnionTypeAnnotation<NativeModuleUnionTypeAnnotationMemberType>;
 
 export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
@@ -379,6 +397,7 @@ type NativeModuleEventEmitterBaseTypeAnnotation =
   | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | StringTypeAnnotation
   | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
@@ -396,6 +415,7 @@ export type NativeModuleBaseTypeAnnotation =
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NumberLiteralTypeAnnotation
+  | BooleanLiteralTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
@@ -448,6 +468,7 @@ export type CompleteTypeAnnotation =
   | UnsafeAnyTypeAnnotation
   | ArrayTypeAnnotation<CompleteTypeAnnotation>
   | ObjectTypeAnnotation<CompleteTypeAnnotation>
+  | NativeModuleUnionTypeAnnotationMemberType
   // Components
   | CommandTypeAnnotation
   | CompleteReservedTypeAnnotation;

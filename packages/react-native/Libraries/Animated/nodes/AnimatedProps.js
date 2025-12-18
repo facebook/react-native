@@ -8,12 +8,15 @@
  * @format
  */
 
+import type {RootTag} from '../../Types/RootTagTypes';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimatedNodeConfig} from './AnimatedNode';
 import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
+import {getNodeFromPublicInstance} from '../../ReactPrivate/ReactNativePrivateInterface';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import {AnimatedEvent} from '../AnimatedEvent';
 import AnimatedNode from './AnimatedNode';
@@ -97,11 +100,13 @@ export default class AnimatedProps extends AnimatedNode {
   _nodes: $ReadOnlyArray<AnimatedNode>;
   _props: {[string]: mixed};
   _target: ?TargetView = null;
+  _rootTag: ?RootTag = undefined;
 
   constructor(
     inputProps: {[string]: mixed},
     callback: () => void,
     allowlist?: ?AnimatedPropsAllowlist,
+    rootTag?: RootTag,
     config?: ?AnimatedNodeConfig,
   ) {
     super(config);
@@ -110,6 +115,7 @@ export default class AnimatedProps extends AnimatedNode {
     this._nodes = nodes;
     this._props = props;
     this._callback = callback;
+    this._rootTag = rootTag;
   }
 
   __getValue(): Object {
@@ -247,7 +253,9 @@ export default class AnimatedProps extends AnimatedNode {
       super.__setPlatformConfig(platformConfig);
 
       if (this._target != null) {
-        this.#connectAnimatedView(this._target);
+        const target = this._target;
+        this.#connectAnimatedView(target);
+        this.#connectShadowNode(target);
       }
     }
   }
@@ -256,9 +264,10 @@ export default class AnimatedProps extends AnimatedNode {
     if (this._target?.instance === instance) {
       return;
     }
-    this._target = {instance, connectedViewTag: null};
+    const target = (this._target = {instance, connectedViewTag: null});
     if (this.__isNative) {
-      this.#connectAnimatedView(this._target);
+      this.#connectAnimatedView(target);
+      this.#connectShadowNode(target);
     }
   }
 
@@ -277,6 +286,27 @@ export default class AnimatedProps extends AnimatedNode {
       viewTag,
     );
     target.connectedViewTag = viewTag;
+  }
+
+  #connectShadowNode(target: TargetView): void {
+    if (
+      !ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() ||
+      //eslint-disable-next-line
+      !ReactNativeFeatureFlags.useSharedAnimatedBackend()
+    ) {
+      return;
+    }
+
+    invariant(this.__isNative, 'Expected node to be marked as "native"');
+    // $FlowExpectedError[incompatible-type] - target.instance may be an HTMLElement but we need ReactNativeElement for Fabric
+    const shadowNode = getNodeFromPublicInstance(target.instance);
+    if (shadowNode == null) {
+      return;
+    }
+    NativeAnimatedHelper.API.connectAnimatedNodeToShadowNodeFamily(
+      this.__getNativeTag(),
+      shadowNode,
+    );
   }
 
   #disconnectAnimatedView(target: TargetView): void {
@@ -318,6 +348,7 @@ export default class AnimatedProps extends AnimatedNode {
     return {
       type: 'props',
       props: propsConfig,
+      rootTag: this._rootTag ?? undefined,
       debugID: this.__getDebugID(),
     };
   }

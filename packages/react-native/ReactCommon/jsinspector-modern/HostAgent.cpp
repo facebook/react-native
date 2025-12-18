@@ -147,7 +147,7 @@ class HostAgent::Impl final {
     if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
       if (req.method == "Network.enable") {
         auto& inspector = getInspectorInstance();
-        if (inspector.getSystemState().registeredPagesCount > 1) {
+        if (inspector.getSystemState().registeredHostsCount > 1) {
           frontendChannel_(
               cdp::jsonError(
                   req.id,
@@ -231,16 +231,16 @@ class HostAgent::Impl final {
               "ReactNativeApplication.metadataUpdated",
               createHostMetadataPayload(hostMetadata_)));
       auto& inspector = getInspectorInstance();
-      bool isSingleHost = inspector.getSystemState().registeredPagesCount <= 1;
+      bool isSingleHost = inspector.getSystemState().registeredHostsCount <= 1;
       if (!isSingleHost) {
         emitSystemStateChanged(isSingleHost);
       }
 
       auto stashedTraceRecording =
           targetController_.getDelegate()
-              .unstable_getTraceRecordingThatWillBeEmittedOnInitialization();
+              .unstable_getHostTracingProfileThatWillBeEmittedOnInitialization();
       if (stashedTraceRecording.has_value()) {
-        tracingAgent_.emitExternalTraceRecording(
+        tracingAgent_.emitExternalHostTracingProfile(
             std::move(stashedTraceRecording.value()));
       }
 
@@ -385,12 +385,12 @@ class HostAgent::Impl final {
     return fuseboxClientType_ == FuseboxClientType::Fusebox;
   }
 
-  void emitExternalTraceRecording(
-      tracing::TraceRecordingState traceRecording) const {
+  void emitExternalTracingProfile(
+      tracing::HostTracingProfile tracingProfile) const {
     assert(
         hasFuseboxClientConnected() &&
         "Attempted to emit a trace recording to a non-Fusebox client");
-    tracingAgent_.emitExternalTraceRecording(std::move(traceRecording));
+    tracingAgent_.emitExternalHostTracingProfile(std::move(tracingProfile));
   }
 
   void emitSystemStateChanged(bool isSingleHost) {
@@ -506,8 +506,7 @@ class HostAgent::Impl final {
   bool hasFuseboxClientConnected() const {
     return false;
   }
-  void emitExternalTraceRecording(tracing::TraceRecordingState traceRecording) {
-  }
+  void emitExternalTracingProfile(tracing::HostTracingProfile tracingProfile) {}
   void emitSystemStateChanged(bool isSingleHost) {}
 };
 
@@ -543,9 +542,9 @@ bool HostAgent::hasFuseboxClientConnected() const {
   return impl_->hasFuseboxClientConnected();
 }
 
-void HostAgent::emitExternalTraceRecording(
-    tracing::TraceRecordingState traceRecording) const {
-  impl_->emitExternalTraceRecording(std::move(traceRecording));
+void HostAgent::emitExternalTracingProfile(
+    tracing::HostTracingProfile tracingProfile) const {
+  impl_->emitExternalTracingProfile(std::move(tracingProfile));
 }
 
 void HostAgent::emitSystemStateChanged(bool isSingleHost) const {

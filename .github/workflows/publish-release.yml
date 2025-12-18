@@ -27,7 +27,7 @@ jobs:
       HERMES_V1_VERSION: ${{ steps.set_hermes_versions.outputs.HERMES_V1_VERSION }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - id: set_hermes_versions
         run: |
           echo "Setting hermes versions to latest"
@@ -75,7 +75,7 @@ jobs:
       REACT_NATIVE_BOT_GITHUB_TOKEN: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -87,7 +87,7 @@ jobs:
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Publish @react-native-community/template
         id: publish-template-to-npm
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
@@ -97,7 +97,7 @@ jobs:
             await publishTemplate(github, version, isDryRun);
       - name: Wait for template to be published
         timeout-minutes: 3
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
@@ -112,7 +112,7 @@ jobs:
             -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${{ github.ref_name }}\" }}"
       - name: Verify Release is on NPM
         timeout-minutes: 3
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
@@ -121,7 +121,7 @@ jobs:
             const version = "${{ github.ref_name }}";
             await verifyReleaseOnNpm(version, isLatest());
       - name: Verify that artifacts are on Maven
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           script: |
             const {verifyArtifactsAreOnMaven} = require('./.github/workflow-scripts/verifyArtifactsAreOnMaven.js');

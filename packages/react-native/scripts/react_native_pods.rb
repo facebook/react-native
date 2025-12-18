@@ -84,6 +84,14 @@ def use_react_native! (
   # This is needed as part of our migration away from cocoapods
   ENV['RCT_SKIP_CODEGEN'] = ENV['RCT_SKIP_CODEGEN'] == '1' || ENV['RCT_IGNORE_PODS_DEPRECATION'] == '1' ? '1' : '0'
 
+  # Use the React Native precompiled binaries by default.
+  # Users can still turn them off and build from source by setting the environment variable to 0.
+  ENV['RCT_USE_RN_DEP'] = ENV['RCT_USE_RN_DEP'] == '0' ? '0' : '1'
+  ENV['RCT_USE_PREBUILT_RNCORE'] = ENV['RCT_USE_PREBUILT_RNCORE'] == '0' ? '0' : '1'
+  # Make `REMOVE_LEGACY_ARCH` enabled by default. This will build React Native
+  # excluding the legacy arch unless the user turns this flag off explicitly.
+  ENV['RCT_REMOVE_LEGACY_ARCH'] = ENV['RCT_REMOVE_LEGACY_ARCH'] == '0' ? '0' : '1'
+
   ReactNativePodsUtils.check_minimum_required_xcode()
 
   # Current target definition is provided by Cocoapods and it refers to the target
@@ -143,6 +151,7 @@ def use_react_native! (
   pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
   pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
   pod 'React-idlecallbacksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/idlecallbacks"
+  pod 'React-intersectionobservernativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/intersectionobserver"
   pod 'React-webperformancenativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/webperformance"
   pod 'React-domnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/dom"
   pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"

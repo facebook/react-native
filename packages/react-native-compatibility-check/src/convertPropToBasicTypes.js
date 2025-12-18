@@ -50,7 +50,7 @@ export default function convertPropToBasicTypes(
       break;
     case 'StringEnumTypeAnnotation':
       resultingType = {
-        type: 'StringLiteralUnionTypeAnnotation',
+        type: 'UnionTypeAnnotation',
         types: inputType.options.map(option => {
           return {
             type: 'StringLiteralTypeAnnotation',

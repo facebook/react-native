@@ -38,7 +38,6 @@ enum TurboModuleMethodValueKind {
  */
 TurboModuleMethodValueKind getTurboModuleMethodValueKind(jsi::Runtime &rt, const jsi::Value *value);
 
-class TurboCxxModule;
 class TurboModuleBinding;
 
 /**

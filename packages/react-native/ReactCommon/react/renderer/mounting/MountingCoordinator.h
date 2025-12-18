@@ -101,9 +101,6 @@ class MountingCoordinator final {
    * `MountingOverrideDelegate` only.
    */
  public:
-  void updateBaseRevision(const ShadowTreeRevision &baseRevision) const;
-  void resetLatestRevision() const;
-
   void setMountingOverrideDelegate(std::weak_ptr<const MountingOverrideDelegate> delegate) const;
 
   /*
@@ -123,7 +120,6 @@ class MountingCoordinator final {
    */
   void revoke() const;
 
- private:
   const SurfaceId surfaceId_;
 
   // Protects access to `baseRevision_`, `lastRevision_` and

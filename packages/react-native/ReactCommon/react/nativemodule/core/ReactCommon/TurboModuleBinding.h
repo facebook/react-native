@@ -21,7 +21,7 @@ class BridgelessNativeModuleProxy;
 /**
  * Represents the JavaScript binding for the TurboModule system.
  */
-class TurboModuleBinding {
+class TurboModuleBinding final {
  public:
   /*
    * Installs TurboModuleBinding into JavaScript runtime.
@@ -38,7 +38,7 @@ class TurboModuleBinding {
       TurboModuleProviderFunctionType &&moduleProvider,
       std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
 
-  virtual ~TurboModuleBinding();
+  ~TurboModuleBinding();
 
  private:
   friend BridgelessNativeModuleProxy;

@@ -58,9 +58,13 @@ class ReactNativePodsUtils
 
     def self.set_gcc_preprocessor_definition_for_debugger(installer)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-jsinspectornetwork", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-RCTNetwork", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-networking", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-jsinspectornetwork", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-RCTNetwork", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-networking", :debug)
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
@@ -190,13 +194,13 @@ class ReactNativePodsUtils
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             if pod_name.to_s == target_pod_name
                 target_installation_result.native_target.build_configurations.each do |config|
-                        if configuration_type == nil || (configuration_type != nil && config.type == configuration_type)
-                            config.build_settings[settings_name] ||= '$(inherited) '
-                            config.build_settings[settings_name] << settings_value
-                        end
+                    if configuration_type == nil || (configuration_type != nil && config.type == configuration_type)
+                        config.build_settings[settings_name] ||= '$(inherited) '
+                        config.build_settings[settings_name] << settings_value
                     end
                 end
             end
+        end
     end
 
     def self.fix_library_search_path(config)

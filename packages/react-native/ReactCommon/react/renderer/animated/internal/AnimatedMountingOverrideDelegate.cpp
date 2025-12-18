@@ -40,7 +40,7 @@ AnimatedMountingOverrideDelegate::pullTransaction(
   for (const auto& mutation : mutations) {
     if (mutation.type == ShadowViewMutation::Update) {
       const auto tag = mutation.newChildShadowView.tag;
-      auto props = animatedManager_->managedProps(tag);
+      auto props = animatedManager_->getManagedProps(tag);
       if (!props.isNull()) {
         animatedManagedProps.insert({tag, std::move(props)});
       }

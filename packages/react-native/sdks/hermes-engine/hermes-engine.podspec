@@ -28,6 +28,14 @@ else
   version = versionProperties['HERMES_VERSION_NAME']
 end
 
+# Local monorepo build
+if package['version'] == "1000.0.0" then
+  hermesCompilerVersion = package['dependencies']['hermes-compiler']
+  if hermesCompilerVersion != "0.0.0" then
+    version = hermesCompilerVersion
+  end
+end
+
 source_type = hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
 
@@ -72,10 +80,7 @@ Pod::Spec.new do |spec|
     # In other cases, when using Hermes V1, the prebuilt versioned binaries can be used.
     if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL
       hermes_compiler_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
-        'require.resolve(
-        "hermes-compiler",
-        {paths: [process.argv[1]]}
-        )', __dir__]).strip
+        "require.resolve(\"hermes-compiler\", {paths: [\"#{react_native_path}\"]})", __dir__]).strip
       )
 
       spec.user_target_xcconfig = {

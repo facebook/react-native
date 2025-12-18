@@ -17,6 +17,9 @@ import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboMo
 type StringLiteral0 = 'foo';
 type StringLiteral1 = 'bar';
 
+type BooleanLiteral0 = true;
+type BooleanLiteral1 = false;
+
 type NumericLiteral0 = 1;
 type NumericLiteral1 = 2;
 
@@ -169,6 +172,9 @@ enum EnumUnsorted {
 export interface Spec extends TurboModule {
   +stringLiteral0: (a: StringLiteral0) => void;
   +stringLiteral1: (a: StringLiteral1) => void;
+
+  +booleanLiteral0: (a: BooleanLiteral0) => void;
+  +booleanLiteral1: (a: BooleanLiteral1) => void;
 
   +numericLiteral0: (a: NumericLiteral0) => void;
   +numericLiteral1: (a: NumericLiteral1) => void;

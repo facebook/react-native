@@ -8,11 +8,21 @@
 #include "DynamicEventPayload.h"
 
 #include <jsi/JSIDynamic.h>
+#include <react/renderer/core/DynamicPointerEvent.h>
 
 namespace facebook::react {
 
 DynamicEventPayload::DynamicEventPayload(folly::dynamic&& payload)
     : payload_(std::move(payload)) {}
+
+/* static */ SharedEventPayload DynamicEventPayload::create(
+    folly::dynamic&& payload) {
+  if (payload.find("pointerId") != payload.items().end()) {
+    return std::make_shared<DynamicPointerEvent>(std::move(payload));
+  } else {
+    return std::make_shared<DynamicEventPayload>(std::move(payload));
+  }
+}
 
 jsi::Value DynamicEventPayload::asJSIValue(jsi::Runtime& runtime) const {
   return jsi::valueFromDynamic(runtime, payload_);

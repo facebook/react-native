@@ -51,7 +51,7 @@ jobs:
       [prebuild_apple_dependencies, prebuild_react_native_core]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
@@ -66,13 +66,13 @@ jobs:
         flavor: [Debug, Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
-          flavor: Debug
+          flavor: ${{ matrix.flavor }}
           use-frameworks: true
-
+          run-unit-tests: false # tests for dynamic frameworks are already run in the test_ios_rntester job; this is to just a test build from source (no prebuilds)
 
   test_ios_rntester:
     runs-on: macos-15-large
@@ -86,7 +86,7 @@ jobs:
         frameworks: [false, true]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
@@ -103,11 +103,11 @@ jobs:
         flavor: [Debug, Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
       - name: Download App
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: RNTesterApp-NewArch-${{ matrix.flavor }}
           path: /tmp/RNTesterBuild/RNTester.app
@@ -134,7 +134,7 @@ jobs:
         flavor: [Debug, Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup xcode
         uses: ./.github/actions/setup-xcode
         with:
@@ -148,14 +148,14 @@ jobs:
         with:
           ruby-version: 2.6.10
       - name: Download React Native Package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: react-native-package
           path: /tmp/react-native-tmp
       - name: Print /tmp folder
         run: ls -lR /tmp/react-native-tmp
       - name: Download ReactNativeDependencies
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
           path: /tmp/third-party
@@ -163,7 +163,7 @@ jobs:
         shell: bash
         run: ls -lR /tmp/third-party
       - name: Download React Native Prebuilds
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ReactCore${{ matrix.flavor }}.xcframework.tar.gz
           path: /tmp/ReactCore
@@ -223,23 +223,23 @@ jobs:
         flavor: [debug, release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn
         uses: ./.github/actions/yarn-install
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'zulu'
       - name: Download Maven Local
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: maven-local
           path: /tmp/react-native-tmp/maven-local
       - name: Download React Native Package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: react-native-package
           path: /tmp/react-native-tmp
@@ -294,7 +294,7 @@ jobs:
         ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build and Test Fantom
         uses: ./.github/actions/run-fantom-tests
         with:
@@ -313,7 +313,7 @@ jobs:
         ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build Android
         uses: ./.github/actions/build-android
         with:
@@ -329,13 +329,13 @@ jobs:
         flavor: [debug, release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Install node dependencies
         uses: ./.github/actions/yarn-install
       - name: Download APK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: rntester-${{ matrix.flavor }}
           path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.flavor }}/
@@ -366,7 +366,7 @@ jobs:
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build NPM Package
         uses: ./.github/actions/build-npm-package
         with:
@@ -393,16 +393,16 @@ jobs:
         flavor: [Debug, Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup git safe folders
         run: git config --global --add safe.directory '*'
       - name: Download npm package artifact
-        uses: actions/download-artifact@v4.1.3
+        uses: actions/download-artifact@v7
         with:
           name: react-native-package
           path: build
       - name: Download maven-local artifact
-        uses: actions/download-artifact@v4.1.3
+        uses: actions/download-artifact@v7
         with:
           name: maven-local
           path: /tmp/maven-local
@@ -431,7 +431,7 @@ jobs:
           fi
           yarn build android "${args[@]}" -P reactNativeArchitectures="$TARGET_ARCHITECTURE" -P react.internal.mavenLocalRepo="/tmp/maven-local"
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.3.4
+        uses: actions/upload-artifact@v6
         with:
           name: helloworld-apk-${{ matrix.flavor }}-NewArch-hermes
           path: ./private/helloworld/android/app/build/outputs/apk/
@@ -445,7 +445,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - uses: ./.github/actions/test-ios-helloworld
         with:
           ruby-version: 3.2.0
@@ -467,7 +467,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - uses: ./.github/actions/test-ios-helloworld
         with:
           flavor: ${{ matrix.flavor }}
@@ -479,10 +479,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["24.4.1", "22", "20.19.4"]
+        node-version: ["24", "22", "20.19.4"]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Test JS
         uses: ./.github/actions/test-js
         with:
@@ -495,7 +495,7 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run all the linters
         uses: ./.github/actions/lint
         with:
@@ -516,7 +516,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' && always() }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Rerun failed jobs in the current workflow
         env:
           GH_TOKEN: ${{ github.token }}

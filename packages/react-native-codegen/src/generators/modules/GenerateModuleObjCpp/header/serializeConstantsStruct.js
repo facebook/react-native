@@ -35,6 +35,9 @@ const StructTemplate = ({
     struct ${structName} {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ${structName};
+
         struct Input {
           ${builderInputProps}
         };
@@ -96,8 +99,9 @@ function toObjCType(
       return 'NSString *';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'NSString *';
+    case 'UnionTypeAnnotation':
+      // TODO(T247151345): Implement proper heterogeneous union support. This is unsafe.
+      return 'NSObject *';
     case 'NumberTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -109,6 +113,8 @@ function toObjCType(
     case 'DoubleTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapCxxOptional('bool', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapCxxOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -181,7 +187,7 @@ function toObjCValue(
       return value;
     case 'StringLiteralTypeAnnotation':
       return value;
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'UnionTypeAnnotation':
       return value;
     case 'NumberTypeAnnotation':
       return wrapPrimitive('double');
@@ -194,6 +200,8 @@ function toObjCValue(
     case 'DoubleTypeAnnotation':
       return wrapPrimitive('double');
     case 'BooleanTypeAnnotation':
+      return wrapPrimitive('BOOL');
+    case 'BooleanLiteralTypeAnnotation':
       return wrapPrimitive('BOOL');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {

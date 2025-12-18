@@ -196,7 +196,7 @@ Object {
         Object {
           "errorCode": "addedUnionCases",
           "message": "NativeComponent.sizes: Union added items, but native will not expect/support them
-  -- position 2 huge",
+  -- Member \\"huge\\"",
         },
       ],
     },
@@ -237,7 +237,7 @@ Object {
         Object {
           "errorCode": "addedUnionCases",
           "message": "NativeComponent.size: Union added items, but native will not expect/support them
-  -- position 1 huge",
+  -- Member \\"huge\\"",
         },
       ],
     },
@@ -266,9 +266,11 @@ Object {
   -- simpleFunction4
   -- simpleUnion
   -- simpleUnion2
+  -- simpleUnion2OrderChanged
   -- simpleUnion3
   -- simpleUnion4
   -- simpleUnionLonger
+  -- simpleUnionOrderChanged
   -- stringType",
         },
       ],
@@ -709,7 +711,33 @@ Object {
         Object {
           "errorCode": "addedUnionCases",
           "message": "NativeModuleTest.exampleFunction parameter 0: Union added items, but native will not expect/support them
-  -- position 3 d",
+  -- Member \\"d\\"",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-union-boolean-changes/NativeModule to native-module-with-union-boolean/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- exampleFunction: has conflicting type changes
+      --new: (a: true, b: number)=>void
+      --old: (a: (true | false), b: number)=>void
+      Parameter at index 0 did not match
+          --new: (a: true, b: number)=>void
+          --old: (a: (true | false), b: number)=>void
+          Type annotations are not the same.
+              --new: true
+              --old: (true | false)",
         },
       ],
     },
@@ -727,8 +755,8 @@ Object {
         Object {
           "errorCode": "addedUnionCases",
           "message": "NativeModuleTest.exampleFunction parameter 0: Union added items, but native will not expect/support them
-  -- position 1 b
-  -- position 2 c",
+  -- Member \\"b\\"
+  -- Member \\"c\\"",
         },
       ],
     },
@@ -746,7 +774,51 @@ Object {
         Object {
           "errorCode": "removedUnionCases",
           "message": "NativeModuleTest.getConstants.exampleConstant: Union removed items, but native may still provide them
-  -- position 3 d",
+  -- Member \\"d\\"",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-union-number-changes/NativeModule to native-module-with-union-number/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- exampleFunction: has conflicting type changes
+      --new: (a: (1 | 2 | 3), b: number)=>void
+      --old: (a: (4 | 5 | 6), b: number)=>void
+      Parameter at index 0 did not match
+          --new: (a: (1 | 2 | 3), b: number)=>void
+          --old: (a: (4 | 5 | 6), b: number)=>void
+          Union types do not match.
+              --new: (1 | 2 | 3)
+              --old: (4 | 5 | 6)",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-union-object-changes/NativeModule to native-module-with-union-object/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "addedUnionCases",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Union added items, but native will not expect/support them
+  -- Member TypeAliasTypeAnnotation",
         },
       ],
     },
@@ -766,13 +838,13 @@ Object {
           "message": "NativeModuleTest: Object contained a property with a type mismatch
   -- exampleFunction: has conflicting type changes
       --new: (a: (a | b | c), b: number)=>void
-      --old: (a: Union<number>, b: number)=>void
+      --old: (a: (1 | 2 | 3), b: number)=>void
       Parameter at index 0 did not match
           --new: (a: (a | b | c), b: number)=>void
-          --old: (a: Union<number>, b: number)=>void
-          Type annotations are not the same.
+          --old: (a: (1 | 2 | 3), b: number)=>void
+          Union types do not match.
               --new: (a | b | c)
-              --old: Union<number>",
+              --old: (1 | 2 | 3)",
         },
       ],
     },

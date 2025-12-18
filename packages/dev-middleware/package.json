@@ -18,9 +18,18 @@
     ".": "./src/index.js",
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "files": [
     "dist"
   ],
+  "scripts": {
+    "prepack": "node ../../scripts/build/prepack.js"
+  },
   "dependencies": {
     "@isaacs/ttlcache": "^1.4.1",
     "@react-native/debugger-frontend": "0.84.0-main",
@@ -35,13 +44,13 @@
     "serve-static": "^1.16.2",
     "ws": "^7.5.10"
   },
-  "engines": {
-    "node": ">= 20.19.4"
-  },
   "devDependencies": {
     "@react-native/debugger-shell": "0.84.0-main",
-    "selfsigned": "^2.4.1",
+    "selfsigned": "^4.0.0",
     "undici": "^5.29.0",
     "wait-for-expect": "^3.0.2"
+  },
+  "engines": {
+    "node": ">= 20.19.4"
   }
 }

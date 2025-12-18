@@ -2430,7 +2430,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -2447,7 +2447,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -2464,7 +2464,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -2481,7 +2481,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -2881,7 +2881,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -2901,7 +2901,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -2921,7 +2921,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -2941,7 +2941,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3241,7 +3241,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -3258,7 +3258,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -3275,7 +3275,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -3292,7 +3292,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -3692,7 +3692,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3712,7 +3712,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3732,7 +3732,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -3752,7 +3752,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -4051,7 +4051,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4068,7 +4068,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4085,7 +4085,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4102,7 +4102,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4502,7 +4502,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -4522,7 +4522,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -4542,7 +4542,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -4562,7 +4562,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -4862,7 +4862,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4879,7 +4879,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4896,7 +4896,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -4913,7 +4913,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -5313,7 +5313,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -5333,7 +5333,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -5353,7 +5353,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -5373,7 +5373,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -5971,7 +5971,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -5988,7 +5988,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6005,7 +6005,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6022,7 +6022,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6422,7 +6422,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -6442,7 +6442,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -6462,7 +6462,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -6482,7 +6482,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -6781,7 +6781,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6798,7 +6798,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6815,7 +6815,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -6832,7 +6832,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -7232,7 +7232,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -7252,7 +7252,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -7272,7 +7272,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -7292,7 +7292,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -7591,7 +7591,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -7608,7 +7608,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -7625,7 +7625,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -7642,7 +7642,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8042,7 +8042,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8062,7 +8062,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8082,7 +8082,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8102,7 +8102,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8401,7 +8401,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8418,7 +8418,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8435,7 +8435,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8452,7 +8452,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -8852,7 +8852,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8872,7 +8872,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8892,7 +8892,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -8912,7 +8912,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -9212,7 +9212,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -9229,7 +9229,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -9246,7 +9246,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -9263,7 +9263,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -9663,7 +9663,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -9683,7 +9683,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -9703,7 +9703,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -9723,7 +9723,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10022,7 +10022,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10039,7 +10039,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10056,7 +10056,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10073,7 +10073,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10473,7 +10473,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10493,7 +10493,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10513,7 +10513,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10533,7 +10533,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -10832,7 +10832,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10849,7 +10849,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10866,7 +10866,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -10883,7 +10883,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -11283,7 +11283,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -11303,7 +11303,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -11323,7 +11323,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -11343,7 +11343,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -11642,7 +11642,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -11659,7 +11659,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -11676,7 +11676,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -11693,7 +11693,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -12093,7 +12093,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12113,7 +12113,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12133,7 +12133,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12153,7 +12153,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12452,7 +12452,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -12469,7 +12469,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -12486,7 +12486,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -12503,7 +12503,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -12903,7 +12903,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12923,7 +12923,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12943,7 +12943,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -12963,7 +12963,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -13263,7 +13263,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -13280,7 +13280,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -13297,7 +13297,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -13314,7 +13314,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -13714,7 +13714,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -13734,7 +13734,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -13754,7 +13754,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -13774,7 +13774,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -16328,7 +16328,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -16345,7 +16345,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -16362,7 +16362,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -16379,7 +16379,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -16779,7 +16779,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -16799,7 +16799,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -16819,7 +16819,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -16839,7 +16839,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17139,7 +17139,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17156,7 +17156,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17173,7 +17173,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17190,7 +17190,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17590,7 +17590,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17610,7 +17610,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17630,7 +17630,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17650,7 +17650,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -17949,7 +17949,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17966,7 +17966,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -17983,7 +17983,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -18000,7 +18000,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -18400,7 +18400,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -18420,7 +18420,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -18440,7 +18440,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -18460,7 +18460,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -18760,7 +18760,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -18777,7 +18777,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -18794,7 +18794,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -18811,7 +18811,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -19211,7 +19211,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -19231,7 +19231,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -19251,7 +19251,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -19271,7 +19271,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_COMMANDS_E
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -19869,7 +19869,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -19886,7 +19886,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -19903,7 +19903,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -19920,7 +19920,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20320,7 +20320,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -20340,7 +20340,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -20360,7 +20360,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -20380,7 +20380,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -20679,7 +20679,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20696,7 +20696,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20713,7 +20713,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -20730,7 +20730,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -21130,7 +21130,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21150,7 +21150,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21170,7 +21170,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21190,7 +21190,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21489,7 +21489,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -21506,7 +21506,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -21523,7 +21523,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -21540,7 +21540,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -21940,7 +21940,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21960,7 +21960,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -21980,7 +21980,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22000,7 +22000,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22299,7 +22299,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -22316,7 +22316,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -22333,7 +22333,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -22350,7 +22350,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -22750,7 +22750,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22770,7 +22770,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22790,7 +22790,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -22810,7 +22810,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23110,7 +23110,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23127,7 +23127,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23144,7 +23144,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23161,7 +23161,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23561,7 +23561,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23581,7 +23581,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23601,7 +23601,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23621,7 +23621,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -23920,7 +23920,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23937,7 +23937,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23954,7 +23954,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -23971,7 +23971,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24371,7 +24371,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -24391,7 +24391,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -24411,7 +24411,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -24431,7 +24431,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -24730,7 +24730,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24747,7 +24747,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24764,7 +24764,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -24781,7 +24781,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -25181,7 +25181,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -25201,7 +25201,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -25221,7 +25221,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -25241,7 +25241,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -25540,7 +25540,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -25557,7 +25557,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -25574,7 +25574,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -25591,7 +25591,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -25991,7 +25991,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26011,7 +26011,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26031,7 +26031,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26051,7 +26051,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26350,7 +26350,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -26367,7 +26367,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -26384,7 +26384,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -26401,7 +26401,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -26801,7 +26801,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26821,7 +26821,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26841,7 +26841,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -26861,7 +26861,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -27161,7 +27161,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -27178,7 +27178,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -27195,7 +27195,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -27212,7 +27212,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -27612,7 +27612,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -27632,7 +27632,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -27652,7 +27652,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -27672,7 +27672,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_EVENTS_DEF
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -28846,7 +28846,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -28863,7 +28863,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -28880,7 +28880,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -28897,7 +28897,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29297,7 +29297,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -29317,7 +29317,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -29337,7 +29337,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -29357,7 +29357,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -29657,7 +29657,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29674,7 +29674,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29691,7 +29691,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -29708,7 +29708,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -30108,7 +30108,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30128,7 +30128,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30148,7 +30148,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30168,7 +30168,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30467,7 +30467,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -30484,7 +30484,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -30501,7 +30501,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -30518,7 +30518,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -30918,7 +30918,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30938,7 +30938,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30958,7 +30958,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -30978,7 +30978,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -31278,7 +31278,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -31295,7 +31295,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -31312,7 +31312,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -31329,7 +31329,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -31729,7 +31729,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -31749,7 +31749,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -31769,7 +31769,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -31789,7 +31789,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NAMESPACED_PROPS_AND_
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -33415,7 +33415,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -33432,7 +33432,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -33449,7 +33449,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -33466,7 +33466,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -33866,7 +33866,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -33886,7 +33886,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -33906,7 +33906,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -33926,7 +33926,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -34226,7 +34226,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -34243,7 +34243,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -34260,7 +34260,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -34277,7 +34277,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -34677,7 +34677,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -34697,7 +34697,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -34717,7 +34717,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -34737,7 +34737,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -35036,7 +35036,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -35053,7 +35053,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -35070,7 +35070,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -35087,7 +35087,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -35487,7 +35487,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -35507,7 +35507,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -35527,7 +35527,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -35547,7 +35547,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -35847,7 +35847,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -35864,7 +35864,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -35881,7 +35881,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -35898,7 +35898,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'type': 'UnionTypeAnnotation',
                         'types': [
                           {
                             'type': 'StringLiteralTypeAnnotation',
@@ -36298,7 +36298,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -36318,7 +36318,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -36338,7 +36338,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',
@@ -36358,7 +36358,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'type': 'UnionTypeAnnotation',
                           'types': [
                             {
                               'type': 'StringLiteralTypeAnnotation',

@@ -62,6 +62,7 @@ function getPropertyType(
     case 'Float':
       return emitFloatProp(name, optional);
     case '$ReadOnly':
+    case 'Readonly':
       return getPropertyType(
         name,
         optional,
@@ -82,6 +83,7 @@ function getPropertyType(
       return emitMixedProp(name, optional);
     case 'ArrayTypeAnnotation':
     case '$ReadOnlyArray':
+    case 'ReadonlyArray':
       return {
         name,
         optional,
@@ -115,7 +117,7 @@ function extractArrayElementType(
       };
     case 'UnionTypeAnnotation':
       return {
-        type: 'StringLiteralUnionTypeAnnotation',
+        type: 'UnionTypeAnnotation',
         types: typeAnnotation.types.map(option => ({
           type: 'StringLiteralTypeAnnotation',
           value: parser.getLiteralValue(option),
@@ -142,6 +144,7 @@ function extractArrayElementType(
         ),
       };
     case '$ReadOnlyArray':
+    case 'ReadonlyArray':
       const genericParams = typeAnnotation.typeParameters.params;
       if (genericParams.length !== 1) {
         throw new Error(
@@ -185,7 +188,7 @@ function findEventArgumentsAndType(
 ): EventArgumentReturnType {
   throwIfEventHasNoName(typeAnnotation, parser);
   const name = parser.getTypeAnnotationName(typeAnnotation);
-  if (name === '$ReadOnly') {
+  if (name === '$ReadOnly' || name === 'Readonly') {
     return {
       argumentProps: typeAnnotation.typeParameters.params[0].properties,
       paperTopLevelNameDeprecated: paperName,

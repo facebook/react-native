@@ -30,6 +30,11 @@
 
 - (void)dealloc
 {
+  [self invalidate];
+}
+
+- (void)invalidate
+{
   if (_displayLink != nil) {
 #if TARGET_OS_OSX
     RCTPlatformDisplayLink *displayLink = _displayLink;

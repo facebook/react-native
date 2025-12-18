@@ -6,7 +6,6 @@
  */
 
 #include "CatalystInstanceImpl.h"
-#include "ReactInstanceManagerInspectorTarget.h"
 
 #include <fstream>
 #include <memory>
@@ -31,7 +30,6 @@
 
 #include <logger/react_native_log.h>
 
-#include "JReactCxxErrorHandler.h"
 #include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
@@ -148,7 +146,6 @@ void log(ReactNativeLogLevel level, const char* message) {
       break;
     case ReactNativeLogLevelError:
       LOG(ERROR) << message;
-      JReactCxxErrorHandler::handleError(message);
       break;
     case ReactNativeLogLevelFatal:
       LOG(FATAL) << message;
@@ -163,9 +160,7 @@ void CatalystInstanceImpl::initializeBridge(
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
     jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
-        javaModules,
-    jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject>
-        inspectorTarget) {
+        javaModules) {
   set_react_native_logfunc(&log);
 
   // TODO mhorowitz: how to assert here?
@@ -198,10 +193,7 @@ void CatalystInstanceImpl::initializeBridge(
       std::make_unique<InstanceCallbackImpl>(callback),
       jseh->getExecutorFactory(),
       std::make_unique<JMessageQueueThread>(jsQueue),
-      moduleRegistry_,
-      inspectorTarget != nullptr
-          ? inspectorTarget->cthis()->getInspectorTarget()
-          : nullptr);
+      moduleRegistry_);
 }
 
 void CatalystInstanceImpl::extendNativeModules(

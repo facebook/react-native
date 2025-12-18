@@ -44,7 +44,11 @@ const COLOR_SCHEME = {
 };
 
 export default {
-  showMessage(message: string, type: 'load' | 'refresh' | 'error') {
+  showMessage(
+    message: string,
+    type: 'load' | 'refresh' | 'error',
+    options?: {dismissButton?: boolean},
+  ) {
     if (NativeDevLoadingView) {
       const colorScheme =
         getColorScheme() === 'dark' ? COLOR_SCHEME.dark : COLOR_SCHEME.default;
@@ -59,10 +63,13 @@ export default {
         textColor = processColor(colorSet.textColor);
       }
 
+      const hasDismissButton = options?.dismissButton ?? false;
+
       NativeDevLoadingView.showMessage(
         message,
         typeof textColor === 'number' ? textColor : null,
         typeof backgroundColor === 'number' ? backgroundColor : null,
+        hasDismissButton,
       );
     }
   },

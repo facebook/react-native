@@ -82,33 +82,12 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    cxxNativeAnimatedRemoveJsSync: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-06-16',
-        description: 'Removes JS sync at end of native animation',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     disableEarlyViewCommandExecution: {
       defaultValue: false,
       metadata: {
         dateAdded: '2025-10-07',
         description: 'Dispatch view commands in mount item order.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    disableFabricCommitInCXXAnimated: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-10-26',
-        description:
-          'Prevents use of Fabric commit in C++ Animated implementation',
-        expectedReleaseValue: false,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
@@ -196,6 +175,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-12-10',
         description:
           'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableAndroidAntialiasedBorderRadiusClipping: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-14',
+        description:
+          'Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -423,6 +413,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableIntersectionObserverByDefault: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables the IntersectionObserver Web API in React Native.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'canary',
+    },
     enableKeyEvents: {
       defaultValue: false,
       metadata: {
@@ -594,16 +594,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableVirtualViewClippingWithoutScrollViewClipping: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-10-30',
-        description: 'Set clipping to drawingRect of ScrollView.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableVirtualViewContainerStateExperimental: {
       defaultValue: false,
       metadata: {
@@ -667,6 +657,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
+    },
+    fixTextClippingAndroid15useBoundsForWidth: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-12-03',
+        description:
+          'Fix text clipping starting in Android 15 due to usage of useBoundsForWidth',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
     },
     fuseboxAssertSingleHostState: {
       defaultValue: true,
@@ -774,14 +775,43 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    shouldSetEnabledBasedOnAccessibilityState: {
-      defaultValue: false,
+    shouldResetClickableWhenRecyclingView: {
+      defaultValue: true,
       metadata: {
-        dateAdded: '2025-11-11',
+        description:
+          'Reset isClickable to false when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldResetOnClickListenerWhenRecyclingView: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldSetEnabledBasedOnAccessibilityState: {
+      defaultValue: true,
+      metadata: {
         description:
           'Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldSetIsClickableByDefault: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Sets isClickable=true by default on all React Native views on Android to improve UI harvesting detection while maintaining focusable=false to preserve expected behavior.',
+        expectedReleaseValue: true,
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -891,7 +921,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     useShadowNodeStateOnClone: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-04-16',
         description:
@@ -899,7 +929,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'stable',
     },
     useSharedAnimatedBackend: {
       defaultValue: false,
@@ -1098,13 +1128,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     shouldUseLinkRoleForPressableText: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2025-11-10',
         description:
           'Set accessibilityRole to "link" for pressable Text components by default.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },

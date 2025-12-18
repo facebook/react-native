@@ -28,7 +28,8 @@ void DevLoadingViewModule::showMessage(
     jsi::Runtime& /*rt*/,
     const std::string& message,
     std::optional<int32_t> textColor,
-    std::optional<int32_t> backgroundColor) {
+    std::optional<int32_t> backgroundColor,
+    std::optional<bool> /*dismissButton*/) {
   if (auto devUIDelegate = devUIDelegate_.lock()) {
     devUIDelegate->showLoadingView(
         message,

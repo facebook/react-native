@@ -13,31 +13,15 @@
 #include <glog/logging.h>
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsinspector-modern/InspectorFlags.h>
-#include <react/coremodules/AppStateModule.h>
-#include <react/coremodules/DeviceInfoModule.h>
-#include <react/coremodules/PlatformConstantsModule.h>
 #include <react/debug/react_native_assert.h>
-#include <react/devsupport/DevLoadingViewModule.h>
 #include <react/devsupport/DevServerHelper.h>
-#include <react/devsupport/DevSettingsModule.h>
 #include <react/devsupport/IDevUIDelegate.h>
-#include <react/devsupport/LogBoxModule.h>
 #include <react/devsupport/PackagerConnection.h>
-#include <react/devsupport/SourceCodeModule.h>
 #include <react/devsupport/inspector/Inspector.h>
 #include <react/http/IHttpClient.h>
 #include <react/http/IWebSocketClient.h>
-#include <react/io/ImageLoaderModule.h>
-#include <react/io/NetworkingModule.h>
 #include <react/io/ResourceLoader.h>
-#include <react/io/WebSocketModule.h>
 #include <react/logging/LogOnce.h>
-#include <react/logging/NativeExceptionsManager.h>
-#include <react/nativemodule/defaults/DefaultTurboModules.h>
-#include <react/nativemodule/intersectionobserver/NativeIntersectionObserver.h>
-#include <react/nativemodule/mutationobserver/NativeMutationObserver.h>
-#include <react/nativemodule/webperformance/NativePerformance.h>
-#include <react/renderer/animated/AnimatedModule.h>
 #include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
@@ -49,6 +33,8 @@
 #include <react/runtime/PlatformTimerRegistryImpl.h>
 #include <react/runtime/hermes/HermesInstance.h>
 #include <react/threading/MessageQueueThreadImpl.h>
+
+#include "TurboModuleManager.h"
 
 namespace facebook::react {
 
@@ -257,6 +243,18 @@ void ReactHost::createReactInstance() {
   }
 
   auto liveReloadCallback = [this]() { reloadReactInstance(); };
+  TurboModuleManager turboModuleManager(
+      reactInstanceData_->turboModuleProviders,
+      jsInvoker,
+      reactInstanceData_->onJsError,
+      reactInstanceData_->animatedNodesManagerProvider,
+      reactInstanceConfig_.enableDevMode ? devServerHelper_ : nullptr,
+      reactInstanceData_->devUIDelegate,
+      reactInstanceData_->logBoxSurfaceDelegate,
+      httpClientFactory,
+      webSocketClientFactory,
+      std::move(liveReloadCallback));
+
   reactInstance_->initializeRuntime(
       {
 #if defined(WITH_PERFETTO) || defined(RNCXX_WITH_PROFILING_PROVIDER)
@@ -268,20 +266,9 @@ void ReactHost::createReactInstance() {
       [weakMountingManager =
            std::weak_ptr<IMountingManager>(reactInstanceData_->mountingManager),
        logger = reactInstanceData_->logger,
-       devUIDelegate = reactInstanceData_->devUIDelegate,
-       turboModuleProviders = reactInstanceData_->turboModuleProviders,
-       jsInvoker = std::move(jsInvoker),
-       logBoxSurfaceDelegate = reactInstanceData_->logBoxSurfaceDelegate,
-       devServerHelper =
-           reactInstanceConfig_.enableDevMode ? devServerHelper_ : nullptr,
-       animatedNodesManagerProvider =
-           reactInstanceData_->animatedNodesManagerProvider,
-       onJsError = reactInstanceData_->onJsError,
        bindingsInstallFunc = reactInstanceData_->bindingsInstallFunc,
-       httpClientFactory = std::move(httpClientFactory),
-       webSocketClientFactory = std::move(webSocketClientFactory),
-       liveReloadCallback =
-           std::move(liveReloadCallback)](jsi::Runtime& runtime) {
+       turboModuleManager =
+           std::move(turboModuleManager)](jsi::Runtime& runtime) mutable {
         if (logger) {
           bindNativeLogger(runtime, logger);
         }
@@ -295,85 +282,9 @@ void ReactHost::createReactInstance() {
               return false;
             });
 
-        auto turboModuleProvider =
-            [turboModuleProviders,
-             jsInvoker,
-             logBoxSurfaceDelegate,
-             devServerHelper,
-             devUIDelegate,
-             animatedNodesManagerProvider,
-             onJsError,
-             httpClientFactory = httpClientFactory,
-             webSocketClientFactory = webSocketClientFactory,
-             liveReloadCallback = liveReloadCallback](
-                const std::string& name) -> std::shared_ptr<TurboModule> {
-          react_native_assert(
-              !name.empty() && "TurboModule name must not be empty");
-
-          for (const auto& turboModuleProvider : turboModuleProviders) {
-            if (turboModuleProvider) {
-              if (auto turboModule = turboModuleProvider(name, jsInvoker)) {
-                return turboModule;
-              }
-            }
-          }
-
-          if (auto turboModule =
-                  DefaultTurboModules::getTurboModule(name, jsInvoker)) {
-            return turboModule;
-          }
-
-          if (name == AnimatedModule::kModuleName) {
-            return std::make_shared<AnimatedModule>(
-                jsInvoker, animatedNodesManagerProvider);
-          } else if (name == AppStateModule::kModuleName) {
-            return std::make_shared<AppStateModule>(jsInvoker);
-          } else if (name == DeviceInfoModule::kModuleName) {
-            return std::make_shared<DeviceInfoModule>(jsInvoker);
-          } else if (
-              devUIDelegate != nullptr &&
-              name == DevLoadingViewModule::kModuleName) {
-            return std::make_shared<DevLoadingViewModule>(
-                jsInvoker, devUIDelegate);
-          } else if (
-              devServerHelper && name == DevSettingsModule::kModuleName) {
-            return std::make_shared<DevSettingsModule>(
-                jsInvoker, devServerHelper, liveReloadCallback);
-          } else if (name == PlatformConstantsModule::kModuleName) {
-            return std::make_shared<PlatformConstantsModule>(jsInvoker);
-          } else if (name == ImageLoaderModule::kModuleName) {
-            return std::make_shared<ImageLoaderModule>(jsInvoker);
-          } else if (name == SourceCodeModule::kModuleName) {
-            return std::make_shared<SourceCodeModule>(
-                jsInvoker, devServerHelper);
-          } else if (name == WebSocketModule::kModuleName) {
-            return std::make_shared<WebSocketModule>(
-                jsInvoker, webSocketClientFactory);
-          } else if (name == NativeExceptionsManager::kModuleName) {
-            return std::make_shared<NativeExceptionsManager>(
-                onJsError, jsInvoker);
-          } else if (name == NativePerformance::kModuleName) {
-            return std::make_shared<NativePerformance>(jsInvoker);
-          } else if (name == NativeIntersectionObserver::kModuleName) {
-            return std::make_shared<NativeIntersectionObserver>(jsInvoker);
-          } else if (name == NativeMutationObserver::kModuleName) {
-            return std::make_shared<NativeMutationObserver>(jsInvoker);
-          } else if (name == NetworkingModule::kModuleName) {
-            return std::make_shared<NetworkingModule>(
-                jsInvoker, httpClientFactory);
-          } else if (name == LogBoxModule::kModuleName) {
-            if (logBoxSurfaceDelegate) {
-              return std::make_shared<LogBoxModule>(
-                  jsInvoker, logBoxSurfaceDelegate);
-            }
-          }
-
-          LOG_WARNING_ONCE << "Failed to load TurboModule: " << name;
-          return nullptr;
-        };
-
         // Set up TurboModules
-        TurboModuleBinding::install(runtime, turboModuleProvider);
+        TurboModuleBinding::install(runtime, std::move(turboModuleManager));
+
         if (bindingsInstallFunc) {
           bindingsInstallFunc(runtime);
         }

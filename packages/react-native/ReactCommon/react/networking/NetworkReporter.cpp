@@ -168,9 +168,16 @@ void NetworkReporter::reportDataReceived(
     int dataLength,
     const std::optional<int>& encodedDataLength) {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  auto now = HighResTimeStamp::now();
+
   // Debugger enabled: CDP event handling
   jsinspector_modern::NetworkHandler::getInstance().onDataReceived(
       requestId, dataLength, encodedDataLength.value_or(dataLength));
+
+  // Debugger enabled: Add trace event to Performance timeline
+  jsinspector_modern::tracing::PerformanceTracer::getInstance()
+      .reportResourceReceivedData(
+          requestId, now, encodedDataLength.value_or(dataLength));
 #endif
 }
 

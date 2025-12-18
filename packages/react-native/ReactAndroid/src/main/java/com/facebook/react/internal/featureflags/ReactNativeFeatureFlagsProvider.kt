@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<da5879ddbaea7cd51f828e284bc0e913>>
+ * @generated SignedSource<<09cef8cedd515f477a32c2ed77d86fc4>>
  */
 
 /**
@@ -29,11 +29,7 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
-  @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
-
   @DoNotStrip public fun disableEarlyViewCommandExecution(): Boolean
-
-  @DoNotStrip public fun disableFabricCommitInCXXAnimated(): Boolean
 
   @DoNotStrip public fun disableImageViewPreallocationAndroid(): Boolean
 
@@ -50,6 +46,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
+
+  @DoNotStrip public fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean
 
   @DoNotStrip public fun enableAndroidLinearText(): Boolean
 
@@ -93,6 +91,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
 
+  @DoNotStrip public fun enableIntersectionObserverByDefault(): Boolean
+
   @DoNotStrip public fun enableKeyEvents(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
@@ -125,8 +125,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
-  @DoNotStrip public fun enableVirtualViewClippingWithoutScrollViewClipping(): Boolean
-
   @DoNotStrip public fun enableVirtualViewContainerStateExperimental(): Boolean
 
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
@@ -138,6 +136,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableWebPerformanceAPIsByDefault(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
+
+  @DoNotStrip public fun fixTextClippingAndroid15useBoundsForWidth(): Boolean
 
   @DoNotStrip public fun fuseboxAssertSingleHostState(): Boolean
 
@@ -159,7 +159,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 
+  @DoNotStrip public fun shouldResetClickableWhenRecyclingView(): Boolean
+
+  @DoNotStrip public fun shouldResetOnClickListenerWhenRecyclingView(): Boolean
+
   @DoNotStrip public fun shouldSetEnabledBasedOnAccessibilityState(): Boolean
+
+  @DoNotStrip public fun shouldSetIsClickableByDefault(): Boolean
 
   @DoNotStrip public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 

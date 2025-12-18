@@ -19,6 +19,7 @@ import type {
 } from '../../CodegenSchema';
 
 const {indent} = require('../Utils');
+const {parseValidUnionType} = require('../Utils');
 const {IncludeTemplate, generateEventStructName} = require('./CppHelpers');
 
 // File path -> contents
@@ -207,7 +208,11 @@ function handleArrayElementType(
         loopLocalVariable,
         val => `jsi::valueFromDynamic(runtime, ${val})`,
       );
-    case 'StringLiteralUnionTypeAnnotation':
+    case 'UnionTypeAnnotation':
+      const validUnionType = parseValidUnionType(elementType);
+      if (validUnionType !== 'string') {
+        throw new Error('Invalid since it is a union of non strings');
+      }
       return setValueAtIndex(
         propertyName,
         indexVariable,
@@ -320,7 +325,11 @@ function generateSetters(
             usingEvent,
             prop => `jsi::valueFromDynamic(runtime, ${prop})`,
           );
-        case 'StringLiteralUnionTypeAnnotation':
+        case 'UnionTypeAnnotation':
+          const validUnionType = parseValidUnionType(typeAnnotation);
+          if (validUnionType !== 'string') {
+            throw new Error('Invalid since it is a union of non strings');
+          }
           return generateSetter(
             parentPropertyName,
             eventProperty.name,

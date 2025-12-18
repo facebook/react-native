@@ -198,8 +198,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   boolean isLayoutOnly();
 
-  NativeKind getNativeKind();
-
   int getTotalNativeChildren();
 
   boolean isDescendantOf(T ancestorNode);

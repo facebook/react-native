@@ -30,6 +30,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
   private var coalescingKey = UNSET_COALESCING_KEY
   private var pointersEventData: List<WritableMap>? = null
   private var eventState: PointerEventState? = null
+  private var activeHitPathViewIds: List<Int>? = null
 
   private fun init(
       eventName: String,
@@ -37,12 +38,14 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
       eventState: PointerEventState,
       motionEventToCopy: MotionEvent,
       coalescingKey: Short,
+      activeHitPathViewIds: List<Int>?,
   ) {
     super.init(eventState.getSurfaceId(), targetTag, motionEventToCopy.eventTime)
     this._eventName = eventName
     this.motionEvent = MotionEvent.obtain(motionEventToCopy)
     this.coalescingKey = coalescingKey
     this.eventState = eventState
+    this.activeHitPathViewIds = activeHitPathViewIds
   }
 
   override fun getEventName(): String = _eventName
@@ -213,6 +216,13 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
     pointerEvent.putDouble("pressure", pressure)
     pointerEvent.putDouble("tangentialPressure", 0.0)
 
+    if (activeHitPathViewIds != null) {
+      pointerEvent.putArray(
+          "hitPathForEventListener",
+          Arguments.makeNativeArray(activeHitPathViewIds),
+      )
+    }
+
     addModifierKeyData(pointerEvent, motionEvent.metaState)
 
     return pointerEvent
@@ -296,6 +306,9 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
 
     val hitPathForActivePointer: List<ViewTarget>
       get() = checkNotNull(hitPathByPointerId[activePointerId])
+
+    val hitPathViewIdsForActivePointer: List<Int>
+      get() = checkNotNull(hitPathByPointerId[activePointerId]).map { it.getViewId() }
   }
 
   companion object {
@@ -310,6 +323,15 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
         targetTag: Int,
         eventState: PointerEventState,
         motionEventToCopy: MotionEvent?,
+    ): PointerEvent = obtain(eventName, targetTag, eventState, motionEventToCopy, null)
+
+    @JvmStatic
+    fun obtain(
+        eventName: String,
+        targetTag: Int,
+        eventState: PointerEventState,
+        motionEventToCopy: MotionEvent?,
+        activeHitPathViewIds: List<Int>?,
     ): PointerEvent {
       var event = EVENTS_POOL.acquire()
       if (event == null) {
@@ -321,6 +343,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
           eventState,
           Assertions.assertNotNull(motionEventToCopy),
           0.toShort(),
+          activeHitPathViewIds,
       )
       return event
     }
@@ -343,6 +366,7 @@ internal class PointerEvent private constructor() : Event<PointerEvent>() {
           eventState,
           Assertions.assertNotNull(motionEventToCopy),
           coalescingKey,
+          null,
       )
       return event
     }
