@@ -82,6 +82,7 @@ function getPropertyType(
       return emitMixedProp(name, optional);
     case 'ArrayTypeAnnotation':
     case '$ReadOnlyArray':
+    case 'ReadonlyArray':
       return {
         name,
         optional,
@@ -142,6 +143,7 @@ function extractArrayElementType(
         ),
       };
     case '$ReadOnlyArray':
+    case 'ReadonlyArray':
       const genericParams = typeAnnotation.typeParameters.params;
       if (genericParams.length !== 1) {
         throw new Error(
