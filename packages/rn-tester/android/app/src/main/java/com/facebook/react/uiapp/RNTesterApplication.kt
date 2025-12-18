@@ -29,6 +29,7 @@ import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage
 import com.facebook.react.popupmenu.PopupMenuPackage
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
+import com.facebook.react.uiapp.component.CustomViewManager
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
 import com.facebook.react.uiapp.component.ReportFullyDrawnViewManager
@@ -92,7 +93,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
             },
             object : ReactPackage, ViewManagerOnDemandReactPackage {
               override fun getViewManagerNames(reactContext: ReactApplicationContext) =
-                  listOf("RNTMyNativeView", "RNTMyLegacyNativeView", "RNTReportFullyDrawnView")
+                  listOf("RNTMyNativeView", "RNTMyLegacyNativeView", "RNTReportFullyDrawnView", CustomViewManager.REACT_CLASS)
 
               override fun createViewManagers(
                   reactContext: ReactApplicationContext
@@ -100,7 +101,8 @@ internal class RNTesterApplication : Application(), ReactApplication {
                   listOf(
                       MyNativeViewManager(),
                       MyLegacyViewManager(reactContext),
-                      ReportFullyDrawnViewManager())
+                      ReportFullyDrawnViewManager(),
+                      CustomViewManager())
 
               override fun createViewManager(
                   reactContext: ReactApplicationContext,
@@ -110,6 +112,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
                     "RNTMyNativeView" -> MyNativeViewManager()
                     "RNTMyLegacyNativeView" -> MyLegacyViewManager(reactContext)
                     "RNTReportFullyDrawnView" -> ReportFullyDrawnViewManager()
+                    CustomViewManager.REACT_CLASS -> CustomViewManager()
                     else -> null
                   }
             })

@@ -53,6 +53,9 @@
       "components": {
         "RNTMyNativeView": {
           "className": "RNTMyNativeViewComponentView"
+        },
+        "CustomView": {
+          "className": "CustomViewComponentView"
         }
       }
     }

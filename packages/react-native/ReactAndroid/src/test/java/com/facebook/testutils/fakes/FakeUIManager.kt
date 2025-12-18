@@ -120,6 +120,10 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     error("Not yet implemented")
   }
 
+  override fun markViewAsInTransition(surfaceId: Int, reactTag: Int, isTransitioning: Boolean) {
+    error("Not yet implemented")
+  }
+
   override val performanceCounters: Map<String, Long>?
     get() = null
 }
