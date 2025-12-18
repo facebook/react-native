@@ -14,12 +14,12 @@ import type {
 } from '../types/RNTesterTypes';
 
 export const RNTesterNavigationActionsType = {
-  NAVBAR_PRESS: 'NAVBAR_PRESS',
   BACK_BUTTON_PRESS: 'BACK_BUTTON_PRESS',
-  MODULE_CARD_PRESS: 'MODULE_CARD_PRESS',
   EXAMPLE_CARD_PRESS: 'EXAMPLE_CARD_PRESS',
   EXAMPLE_OPEN_URL_REQUEST: 'EXAMPLE_OPEN_URL_REQUEST',
+  MODULE_CARD_PRESS: 'MODULE_CARD_PRESS',
   NAVBAR_OPEN_MODULE_PRESS: 'NAVBAR_OPEN_MODULE_PRESS',
+  NAVBAR_PRESS: 'NAVBAR_PRESS',
 } as const;
 
 const getUpdatedRecentlyUsed = ({
@@ -34,7 +34,7 @@ const getUpdatedRecentlyUsed = ({
   const updatedRecentlyUsed = recentlyUsed
     ? {...recentlyUsed}
     : // $FlowFixMe[missing-empty-array-annot]
-      {components: [], apis: []};
+      {apis: [], components: []};
 
   if (!exampleType || !key) {
     return updatedRecentlyUsed;
@@ -55,7 +55,7 @@ const getUpdatedRecentlyUsed = ({
 
 export const RNTesterNavigationReducer = (
   state: RNTesterNavigationState,
-  action: {type: $Keys<typeof RNTesterNavigationActionsType>, data?: any},
+  action: {type: keyof typeof RNTesterNavigationActionsType, data?: any},
 ): RNTesterNavigationState => {
   const {
     data: {
@@ -71,34 +71,34 @@ export const RNTesterNavigationReducer = (
     case RNTesterNavigationActionsType.NAVBAR_PRESS:
       return {
         ...state,
+        activeModuleExampleKey: null,
         activeModuleKey: null,
         activeModuleTitle: null,
-        activeModuleExampleKey: null,
-        screen,
         hadDeepLink: false,
+        screen,
       };
 
     case RNTesterNavigationActionsType.NAVBAR_OPEN_MODULE_PRESS:
       return {
         ...state,
+        activeModuleExampleKey: null,
         activeModuleKey: key,
         activeModuleTitle: title,
-        activeModuleExampleKey: null,
-        screen,
         hadDeepLink: false,
+        screen,
       };
 
     case RNTesterNavigationActionsType.MODULE_CARD_PRESS:
       return {
         ...state,
+        activeModuleExampleKey: null,
         activeModuleKey: key,
         activeModuleTitle: title,
-        activeModuleExampleKey: null,
         hadDeepLink: false,
         // $FlowFixMe[incompatible-return]
         recentlyUsed: getUpdatedRecentlyUsed({
-          exampleType: exampleType,
-          key: key,
+          exampleType,
+          key,
           recentlyUsed: state.recentlyUsed,
         }),
       };
@@ -106,8 +106,8 @@ export const RNTesterNavigationReducer = (
     case RNTesterNavigationActionsType.EXAMPLE_CARD_PRESS:
       return {
         ...state,
-        hadDeepLink: false,
         activeModuleExampleKey: key,
+        hadDeepLink: false,
       };
 
     case RNTesterNavigationActionsType.BACK_BUTTON_PRESS:
@@ -131,9 +131,9 @@ export const RNTesterNavigationReducer = (
     case RNTesterNavigationActionsType.EXAMPLE_OPEN_URL_REQUEST:
       return {
         ...state,
+        activeModuleExampleKey: exampleKey,
         activeModuleKey: key,
         activeModuleTitle: title,
-        activeModuleExampleKey: exampleKey,
         hadDeepLink: true,
         screen: 'components',
       };

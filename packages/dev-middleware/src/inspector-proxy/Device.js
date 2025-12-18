@@ -36,18 +36,18 @@ const debug = require('debug')('Metro:InspectorProxy');
 const PAGES_POLLING_INTERVAL = 1000;
 
 const WS_CLOSURE_CODE = {
-  NORMAL: 1000,
   INTERNAL_ERROR: 1011,
+  NORMAL: 1000,
 };
 
 // should be aligned with
 // https://github.com/facebook/react-native-devtools-frontend/blob/3d17e0fd462dc698db34586697cce2371b25e0d3/front_end/ui/legacy/components/utils/TargetDetachedDialog.ts#L50-L64
 export const WS_CLOSE_REASON = {
-  PAGE_NOT_FOUND: '[PAGE_NOT_FOUND] Debugger page not found',
   CONNECTION_LOST: '[CONNECTION_LOST] Connection lost to corresponding device',
-  RECREATING_DEVICE: '[RECREATING_DEVICE] Recreating device connection',
   NEW_DEBUGGER_OPENED:
     '[NEW_DEBUGGER_OPENED] New debugger opened for the same app instance',
+  PAGE_NOT_FOUND: '[PAGE_NOT_FOUND] Debugger page not found',
+  RECREATING_DEVICE: '[RECREATING_DEVICE] Recreating device connection',
 };
 
 // Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
@@ -160,9 +160,9 @@ export default class Device {
     this.#deviceRelativeBaseUrl = deviceRelativeBaseUrl;
     this.#deviceEventReporter = eventReporter
       ? new DeviceEventReporter(eventReporter, {
+          appId: app,
           deviceId: id,
           deviceName: name,
-          appId: app,
         })
       : null;
     this.#createCustomMessageHandler = createMessageMiddleware;
@@ -334,17 +334,17 @@ export default class Device {
     );
 
     this.#deviceEventReporter?.logConnection('debugger', {
-      pageId,
       frontendUserAgent: userAgent,
+      pageId,
     });
 
     const debuggerInfo: ?DebuggerConnection & DebuggerConnection = {
-      socket,
-      prependedFilePrefix: false,
-      pageId,
-      userAgent: userAgent,
       customHandler: null,
       debuggerRelativeBaseUrl,
+      pageId,
+      prependedFilePrefix: false,
+      socket,
+      userAgent,
     };
 
     this.#debuggerConnection = debuggerInfo;
@@ -357,9 +357,7 @@ export default class Device {
     if (this.#debuggerConnection && this.#createCustomMessageHandler) {
       this.#debuggerConnection.customHandler = this.#createCustomMessageHandler(
         {
-          page,
           debugger: {
-            userAgent: debuggerInfo.userAgent,
             sendMessage: message => {
               try {
                 const payload = JSON.stringify(message);
@@ -367,6 +365,7 @@ export default class Device {
                 socket.send(payload);
               } catch {}
             },
+            userAgent: debuggerInfo.userAgent,
           },
           device: {
             appId: this.#app,
@@ -386,6 +385,7 @@ export default class Device {
               } catch {}
             },
           },
+          page,
         },
       );
 
@@ -405,8 +405,8 @@ export default class Device {
       this.#cdpDebugLogging.log('DebuggerToProxy', message);
       const debuggerRequest = JSON.parse(message);
       this.#deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
         frontendUserAgent: userAgent,
+        pageId: this.#debuggerConnection?.pageId ?? null,
         prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
           this.#debuggerConnection?.pageId,
         ),
@@ -482,7 +482,7 @@ export default class Device {
   /**
    * Returns `true` if a page supports the given target capability flag.
    */
-  #pageHasCapability(page: Page, flag: $Keys<TargetCapabilityFlags>): boolean {
+  #pageHasCapability(page: Page, flag: keyof TargetCapabilityFlags): boolean {
     return page.capabilities[flag] === true;
   }
 
@@ -491,11 +491,11 @@ export default class Device {
    */
   #createSyntheticPage(): Page {
     return {
+      app: this.#app,
+      capabilities: {},
       id: REACT_NATIVE_RELOADABLE_PAGE_ID,
       title: 'React Native Experimental (Improved Chrome Reloads)',
       vm: "don't use",
-      app: this.#app,
-      capabilities: {},
     };
   }
 
@@ -596,8 +596,8 @@ export default class Device {
       const pageId = this.#debuggerConnection?.pageId ?? null;
       if ('id' in parsedPayload) {
         this.#deviceEventReporter?.logResponse(parsedPayload, 'device', {
-          pageId,
           frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+          pageId,
           prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
         });
       }
@@ -665,15 +665,15 @@ export default class Device {
     this.#sendConnectEventToDevice(page.id);
 
     const toSend = [
-      {method: 'Runtime.enable', id: 1e9},
-      {method: 'Debugger.enable', id: 1e9},
+      {id: 1e9, method: 'Runtime.enable'},
+      {id: 1e9, method: 'Debugger.enable'},
     ];
 
     for (const message of toSend) {
       const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logRequest(message, 'proxy', {
-        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        pageId,
         prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
       this.#sendMessageToDevice({
@@ -820,10 +820,10 @@ export default class Device {
       //
       // This is not an issue in VSCode/Nuclide where the IDE knows to resume
       // at its convenience.
-      const resumeMessage = {method: 'Debugger.resume', id: 0};
+      const resumeMessage = {id: 0, method: 'Debugger.resume'};
       this.#deviceEventReporter?.logRequest(resumeMessage, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        pageId: this.#debuggerConnection?.pageId ?? null,
         prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
           this.#debuggerConnection?.pageId,
         ),
@@ -894,8 +894,8 @@ export default class Device {
         socket.send(JSON.stringify(response));
         const pageId = this.#debuggerConnection?.pageId ?? null;
         this.#deviceEventReporter?.logResponse(response, 'proxy', {
-          pageId,
           frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+          pageId,
           prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
         });
         return null;
@@ -973,8 +973,8 @@ export default class Device {
       socket.send(JSON.stringify(response));
       const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
-        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        pageId,
         prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
@@ -988,8 +988,8 @@ export default class Device {
       this.#sendErrorToDebugger(error);
       const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
-        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        pageId,
         prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
