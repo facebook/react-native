@@ -524,21 +524,38 @@ class ReactNativeCoreUtils
         # Add flags to aggregate target xcconfigs (these are used by the main app target)
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                # Add VFS overlay to compiler flags (C/C++ and Swift)
-                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_CFLAGS", vfs_overlay_flag)
-                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_CPLUSPLUSFLAGS", vfs_overlay_flag)
-
-                # For Swift, we need to use -Xcc to pass the flag to the underlying Clang compiler
-                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_SWIFT_FLAGS", swift_vfs_overlay_flag)
-
-                # Suppress incomplete umbrella warnings for the prebuilt frameworks (it is expected, as our umbrella headers do not include all headers)
-                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_SWIFT_FLAGS",  " -Xcc -Wno-incomplete-umbrella")
-
+                add_vfs_overlay_flags(config_file.attributes, vfs_overlay_flag, swift_vfs_overlay_flag)
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
                 config_file.save_as(xcconfig_path)
             end
         end
 
+        # Add flags to ALL pod targets (for third-party pods that don't call add_rncore_dependency)
+        installer.pod_targets.each do |pod_target|
+            pod_target.build_settings.each do |config_name, build_settings|
+                xcconfig_path = pod_target.xcconfig_path(config_name)
+                next unless File.exist?(xcconfig_path)
+
+                xcconfig = Xcodeproj::Config.new(xcconfig_path)
+
+                # Check if VFS overlay is already present
+                other_cflags = xcconfig.attributes["OTHER_CFLAGS"] || ""
+                next if other_cflags.include?("ivfsoverlay")
+
+                add_vfs_overlay_flags(xcconfig.attributes, vfs_overlay_flag, swift_vfs_overlay_flag)
+                xcconfig.save_as(xcconfig_path)
+            end
+        end
+
         rncore_log("Prebuilt xcconfig configuration complete")
+    end
+
+    # Helper method to add VFS overlay flags to an xcconfig attributes map
+    def self.add_vfs_overlay_flags(attributes, vfs_overlay_flag, swift_vfs_overlay_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(attributes, "OTHER_CFLAGS", vfs_overlay_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(attributes, "OTHER_CPLUSPLUSFLAGS", vfs_overlay_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(attributes, "OTHER_SWIFT_FLAGS", swift_vfs_overlay_flag)
+        # Suppress incomplete umbrella warnings for the prebuilt frameworks (it is expected, as our umbrella headers do not include all headers)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(attributes, "OTHER_SWIFT_FLAGS", " -Xcc -Wno-incomplete-umbrella")
     end
 end
