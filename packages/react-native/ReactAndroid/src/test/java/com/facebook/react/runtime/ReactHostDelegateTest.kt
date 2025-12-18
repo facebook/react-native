@@ -7,6 +7,7 @@
 
 package com.facebook.react.runtime
 
+import android.content.Context
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -36,12 +37,15 @@ class ReactHostDelegateTest {
         Mockito.mock(ReactPackageTurboModuleManagerDelegate.Builder::class.java)
     val hermesInstance: JSRuntimeFactory = Mockito.mock(HermesInstance::class.java)
     val jsMainModulePathMocked = "mockedJSMainModulePath"
+    val createReactSurfaceViewCallback: (Context, ReactSurfaceImpl) -> ReactSurfaceView =
+      { ctx, surfaceImpl -> ReactSurfaceView(ctx, surfaceImpl) }
     val delegate =
         DefaultReactHostDelegate(
             jsMainModulePath = jsMainModulePathMocked,
             jsBundleLoader = jsBundleLoader,
             jsRuntimeFactory = hermesInstance,
-            turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock)
+            turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock,
+            createReactSurfaceViewCallback = createReactSurfaceViewCallback)
 
     assertThat(delegate.jsMainModulePath).isEqualTo(jsMainModulePathMocked)
   }
