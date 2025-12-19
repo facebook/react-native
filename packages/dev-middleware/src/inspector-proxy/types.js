@@ -56,7 +56,7 @@ export type PageFromDevice = $ReadOnly<{
 
 export type Page = $ReadOnly<{
   ...PageFromDevice,
-  capabilities: $NonMaybeType<PageFromDevice['capabilities']>,
+  capabilities: NonNullable<PageFromDevice['capabilities']>,
 }>;
 
 // Chrome Debugger Protocol message/event passed between device and debugger.

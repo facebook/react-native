@@ -67,13 +67,13 @@ export function createJavaScriptFlagGetter<
   );
 }
 
-type NativeFeatureFlags = $NonMaybeType<typeof NativeReactNativeFeatureFlags>;
+type NativeFeatureFlags = NonNullable<typeof NativeReactNativeFeatureFlags>;
 
 export function createNativeFlagGetter<K: $Keys<NativeFeatureFlags>>(
   configName: K,
-  defaultValue: ReturnType<$NonMaybeType<NativeFeatureFlags[K]>>,
+  defaultValue: ReturnType<NonNullable<NativeFeatureFlags[K]>>,
   skipUnavailableNativeModuleError: boolean = false,
-): Getter<ReturnType<$NonMaybeType<NativeFeatureFlags[K]>>> {
+): Getter<ReturnType<NonNullable<NativeFeatureFlags[K]>>> {
   return createGetter(
     configName,
     () => {
