@@ -12,57 +12,36 @@
 
 using namespace facebook::react;
 
-float computeMargin(const facebook::yoga::Style &yogaStyle, facebook::yoga::Edge edge) {
-	auto value = yogaStyle.margin(edge).value();
-	if (value.isDefined()) {
-		return value.unwrap();
-	}
-	
-	auto isHorizontal = edge == facebook::yoga::Edge::Left || edge == facebook::yoga::Edge::Right;
-	value = yogaStyle.margin(isHorizontal ? facebook::yoga::Edge::Horizontal : facebook::yoga::Edge::Vertical).value();
-	if (value.isDefined()) {
-		return value.unwrap();
-	}
-	
-	return yogaStyle.margin(facebook::yoga::Edge::All).value().unwrapOrDefault(0.0f);
-}
-
 @implementation RCTClipPathUtils
 
 + (RCTCornerRadii)adjustCornerRadiiForGeometryBox:(GeometryBox)geometryBox
                                        cornerRadii:(RCTCornerRadii)cornerRadii
                                      layoutMetrics:(const LayoutMetrics &)layoutMetrics
                                          yogaStyle:(const facebook::yoga::Style &)yogaStyle
-{
-	auto marginLeft = computeMargin(yogaStyle, facebook::yoga::Edge::Left);
-  auto marginRight = computeMargin(yogaStyle, facebook::yoga::Edge::Right);
-  auto marginTop = computeMargin(yogaStyle, facebook::yoga::Edge::Top);
-	auto marginBottom = computeMargin(yogaStyle, facebook::yoga::Edge::Bottom);
-	
+{	
 	RCTCornerRadii adjustedRadii = cornerRadii;
   
   switch (geometryBox) {
     case GeometryBox::MarginBox: {
-      // margin-box: extend border-radius by margin amount
-      adjustedRadii.topLeftHorizontal += marginLeft;
-      adjustedRadii.topLeftVertical += marginTop;
-      adjustedRadii.topRightHorizontal += marginRight;
-      adjustedRadii.topRightVertical += marginTop;
-      adjustedRadii.bottomLeftHorizontal += marginLeft;
-      adjustedRadii.bottomLeftVertical += marginBottom;
-      adjustedRadii.bottomRightHorizontal += marginRight;
-      adjustedRadii.bottomRightVertical += marginBottom;
+      // Margin-box: extend border-radius by margin amount
+			adjustedRadii.topLeftHorizontal += layoutMetrics.marginInsets.left;
+      adjustedRadii.topLeftVertical += layoutMetrics.marginInsets.top;
+      adjustedRadii.topRightHorizontal += layoutMetrics.marginInsets.right;
+      adjustedRadii.topRightVertical += layoutMetrics.marginInsets.top;
+      adjustedRadii.bottomLeftHorizontal += layoutMetrics.marginInsets.left;
+      adjustedRadii.bottomLeftVertical += layoutMetrics.marginInsets.bottom;
+      adjustedRadii.bottomRightHorizontal += layoutMetrics.marginInsets.right;
+      adjustedRadii.bottomRightVertical += layoutMetrics.marginInsets.bottom;
       break;
     }
     case GeometryBox::BorderBox:
     case GeometryBox::StrokeBox:
     case GeometryBox::ViewBox:
-      // border-box: use border-radius as-is (this is the reference)
+      // Border-box: use border-radius as-is (this is the reference)
       break;
       
     case GeometryBox::PaddingBox: {
-      // padding-box: reduce border-radius by border width
-      // Formula: max(0, border-radius - border-width)
+      // Padding-box: reduce border-radius by border width
       adjustedRadii.topLeftHorizontal = MAX(0.0f, cornerRadii.topLeftHorizontal - layoutMetrics.borderWidth.left);
       adjustedRadii.topLeftVertical = MAX(0.0f, cornerRadii.topLeftVertical - layoutMetrics.borderWidth.top);
       adjustedRadii.topRightHorizontal = MAX(0.0f, cornerRadii.topRightHorizontal - layoutMetrics.borderWidth.right);
@@ -75,16 +54,15 @@ float computeMargin(const facebook::yoga::Style &yogaStyle, facebook::yoga::Edge
     }
     case GeometryBox::ContentBox:
     case GeometryBox::FillBox: {
-      // content-box: reduce border-radius by border width + padding
-      // contentInsets = border + padding, so we reduce by full contentInsets
-      adjustedRadii.topLeftHorizontal = MAX(0.0f, cornerRadii.topLeftHorizontal - layoutMetrics.contentInsets.left);
-      adjustedRadii.topLeftVertical = MAX(0.0f, cornerRadii.topLeftVertical - layoutMetrics.contentInsets.top);
-      adjustedRadii.topRightHorizontal = MAX(0.0f, cornerRadii.topRightHorizontal - layoutMetrics.contentInsets.right);
-      adjustedRadii.topRightVertical = MAX(0.0f, cornerRadii.topRightVertical - layoutMetrics.contentInsets.top);
-      adjustedRadii.bottomLeftHorizontal = MAX(0.0f, cornerRadii.bottomLeftHorizontal - layoutMetrics.contentInsets.left);
-      adjustedRadii.bottomLeftVertical = MAX(0.0f, cornerRadii.bottomLeftVertical - layoutMetrics.contentInsets.bottom);
-      adjustedRadii.bottomRightHorizontal = MAX(0.0f, cornerRadii.bottomRightHorizontal - layoutMetrics.contentInsets.right);
-      adjustedRadii.bottomRightVertical = MAX(0.0f, cornerRadii.bottomRightVertical - layoutMetrics.contentInsets.bottom);
+      // Content-box: reduce border-radius by border width + padding
+      adjustedRadii.topLeftHorizontal = MAX(0.0f, cornerRadii.topLeftHorizontal - layoutMetrics.borderWidth.left - layoutMetrics.paddingInsets.left);
+      adjustedRadii.topLeftVertical = MAX(0.0f, cornerRadii.topLeftVertical - layoutMetrics.borderWidth.top - layoutMetrics.paddingInsets.top);
+      adjustedRadii.topRightHorizontal = MAX(0.0f, cornerRadii.topRightHorizontal - layoutMetrics.borderWidth.right - layoutMetrics.paddingInsets.right);
+      adjustedRadii.topRightVertical = MAX(0.0f, cornerRadii.topRightVertical - layoutMetrics.borderWidth.top - layoutMetrics.paddingInsets.top);
+      adjustedRadii.bottomLeftHorizontal = MAX(0.0f, cornerRadii.bottomLeftHorizontal - layoutMetrics.borderWidth.left - layoutMetrics.paddingInsets.left);
+      adjustedRadii.bottomLeftVertical = MAX(0.0f, cornerRadii.bottomLeftVertical - layoutMetrics.borderWidth.bottom - layoutMetrics.paddingInsets.bottom);
+      adjustedRadii.bottomRightHorizontal = MAX(0.0f, cornerRadii.bottomRightHorizontal - layoutMetrics.borderWidth.right - layoutMetrics.paddingInsets.right);
+      adjustedRadii.bottomRightVertical = MAX(0.0f, cornerRadii.bottomRightVertical - layoutMetrics.borderWidth.bottom - layoutMetrics.paddingInsets.bottom);
       break;
     }
   }
@@ -97,11 +75,6 @@ float computeMargin(const facebook::yoga::Style &yogaStyle, facebook::yoga::Edge
                    yogaStyle:(const facebook::yoga::Style &)yogaStyle
                       bounds:(CGRect)bounds
 {
-	auto marginLeft = computeMargin(yogaStyle, facebook::yoga::Edge::Left);
-	auto marginRight = computeMargin(yogaStyle, facebook::yoga::Edge::Right);
-	auto marginTop = computeMargin(yogaStyle, facebook::yoga::Edge::Top);
-	auto marginBottom = computeMargin(yogaStyle, facebook::yoga::Edge::Bottom);
-
   switch (geometryBox) {
     case GeometryBox::ContentBox:
     case GeometryBox::FillBox:
@@ -114,10 +87,10 @@ float computeMargin(const facebook::yoga::Style &yogaStyle, facebook::yoga::Edge
       return bounds;
     case GeometryBox::MarginBox:
       return CGRectMake(
-        bounds.origin.x - marginLeft,
-        bounds.origin.y - marginTop,
-        bounds.size.width + marginLeft + marginRight,
-        bounds.size.height + marginTop + marginBottom
+        bounds.origin.x - layoutMetrics.marginInsets.left,
+        bounds.origin.y - layoutMetrics.marginInsets.top,
+        bounds.size.width + layoutMetrics.marginInsets.left + layoutMetrics.marginInsets.right,
+        bounds.size.height + layoutMetrics.marginInsets.top + layoutMetrics.marginInsets.bottom
       );
   }
   
