@@ -7,6 +7,7 @@
 
 #include "FabricMountingManager.h"
 
+#include "ComputedBoxModelRegistry.h"
 #include "EventEmitterWrapper.h"
 #include "MountItem.h"
 #include "StateWrapperImpl.h"
@@ -15,6 +16,8 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/components/view/BaseViewProps.h>
+#include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/mounting/MountingTransaction.h>
@@ -50,9 +53,22 @@ void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
 void FabricMountingManager::onSurfaceStop(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
   allocatedViewRegistry_.erase(surfaceId);
+  if (computedBoxModelRegistry_) {
+    computedBoxModelRegistry_->clearSurface(surfaceId);
+  }
+}
+
+void FabricMountingManager::setComputedBoxModelRegistry(
+    const std::shared_ptr<ComputedBoxModelRegistry>& registry) {
+  computedBoxModelRegistry_ = registry;
 }
 
 namespace {
+
+inline bool hasClipPath(const ShadowView& shadowView) {
+  auto props = std::dynamic_pointer_cast<const BaseViewProps>(shadowView.props);
+  return props && props->clipPath.has_value();
+}
 
 #ifdef REACT_NATIVE_DEBUG
 // List of layout-only props extracted from ViewProps.kt used to filter out
@@ -639,6 +655,11 @@ void FabricMountingManager::executeMount(
             LOG(ERROR) << "Emitting delete for unallocated view "
                        << oldChildShadowView.tag;
           }
+
+          if (computedBoxModelRegistry_) {
+            computedBoxModelRegistry_->remove(
+                surfaceId, oldChildShadowView.tag);
+          }
           break;
         }
         case ShadowViewMutation::Update: {
@@ -694,6 +715,30 @@ void FabricMountingManager::executeMount(
                   .push_back(
                       CppMountItem::UpdateOverflowInsetMountItem(
                           newChildShadowView));
+            }
+
+            // Store BoxModel data (margin and padding) only if layout
+            // information has changed and clipPath prop is present. This
+            // information is needed for proper calculation of the clipPath
+            // geometry box.
+            auto oldHasClipPath = hasClipPath(oldChildShadowView);
+            auto newHasClipPath = hasClipPath(newChildShadowView);
+
+            if (computedBoxModelRegistry_) {
+              if (newHasClipPath &&
+                  (oldChildShadowView.layoutMetrics.marginInsets !=
+                       newChildShadowView.layoutMetrics.marginInsets ||
+                   oldChildShadowView.layoutMetrics.paddingInsets !=
+                       newChildShadowView.layoutMetrics.paddingInsets)) {
+                computedBoxModelRegistry_->store(
+                    surfaceId,
+                    newChildShadowView.tag,
+                    newChildShadowView.layoutMetrics.marginInsets,
+                    newChildShadowView.layoutMetrics.paddingInsets);
+              } else if (oldHasClipPath && !newHasClipPath) {
+                computedBoxModelRegistry_->remove(
+                    surfaceId, newChildShadowView.tag);
+              }
             }
           }
 
@@ -777,6 +822,20 @@ void FabricMountingManager::executeMount(
                   .push_back(
                       CppMountItem::UpdateOverflowInsetMountItem(
                           newChildShadowView));
+            }
+
+            // Store BoxModel data (margin and padding) only if layout
+            // information has changed and clipPath prop is present. This
+            // information is needed for proper calculation of the clipPath
+            // geometry box.
+            if (hasClipPath(newChildShadowView)) {
+              if (computedBoxModelRegistry_) {
+                computedBoxModelRegistry_->store(
+                    surfaceId,
+                    newChildShadowView.tag,
+                    newChildShadowView.layoutMetrics.marginInsets,
+                    newChildShadowView.layoutMetrics.paddingInsets);
+              }
             }
           }
 

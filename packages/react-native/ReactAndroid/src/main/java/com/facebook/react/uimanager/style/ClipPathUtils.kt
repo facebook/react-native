@@ -198,10 +198,10 @@ internal object ClipPathUtils {
   public fun createRoundedRectPath(bounds: RectF, borderRadius: ComputedBorderRadius): Path {
     val path = Path()
 
-    val topLeftRadii = borderRadius.topLeft
-    val topRightRadii = borderRadius.topRight
-    val bottomRightRadii = borderRadius.bottomRight
-    val bottomLeftRadii = borderRadius.bottomLeft
+    val topLeftRadii = borderRadius.topLeft.toPixelFromDIP()
+    val topRightRadii = borderRadius.topRight.toPixelFromDIP()
+    val bottomRightRadii = borderRadius.bottomRight.toPixelFromDIP()
+    val bottomLeftRadii = borderRadius.bottomLeft.toPixelFromDIP()
 
     val radii = floatArrayOf(
         topLeftRadii.horizontal, topLeftRadii.vertical,

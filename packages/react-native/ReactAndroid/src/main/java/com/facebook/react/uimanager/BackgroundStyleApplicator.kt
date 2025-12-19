@@ -486,7 +486,18 @@ public object BackgroundStyleApplicator {
   @JvmStatic
   public fun applyClipPathIfPresent(view: View, canvas: Canvas) {
     val clipPath = getClipPath(view) ?: return
-    val bounds = getGeometryBoxBounds(view, clipPath.geometryBox, getComputedBorderInsets(view))
+    val composite = getCompositeBackgroundDrawable(view)
+    val computedMarginInsets = UIManagerHelper.getComputedMarginInsets(view)
+    val computedPaddingInsets = UIManagerHelper.getComputedPaddingInsets(view)
+    val computedBorderInsets =
+      composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
+    val bounds = getGeometryBoxBounds(
+      view,
+      clipPath.geometryBox,
+      computedMarginInsets,
+      computedPaddingInsets,
+      computedBorderInsets
+    )
     val drawingRect = Rect()
     view.getDrawingRect(drawingRect)
     bounds.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
@@ -494,24 +505,16 @@ public object BackgroundStyleApplicator {
     val path: Path? = if (clipPath.shape != null) {
       ClipPathUtils.createPathFromBasicShape(clipPath.shape, bounds)
     } else if (clipPath.geometryBox != null) {
-      val composite = getCompositeBackgroundDrawable(view)
       val borderRadius = composite?.borderRadius
-      val computedBorderInsets =
-        composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
-
       if (borderRadius != null) {
         val adjustedBorderRadius = GeometryBoxUtil.adjustBorderRadiusForGeometryBox(
-          clipPath.geometryBox,
-          borderRadius.resolve(
+          view, clipPath.geometryBox, borderRadius.resolve(
             composite.layoutDirection,
             view.context,
             PixelUtil.toDIPFromPixel(drawingRect.width().toFloat()),
             PixelUtil.toDIPFromPixel(drawingRect.height().toFloat())
-          ), 
-          computedBorderInsets, 
-          view
+          ), computedMarginInsets, computedPaddingInsets, computedBorderInsets
         )
-
         if (adjustedBorderRadius != null) {
           ClipPathUtils.createRoundedRectPath(bounds, adjustedBorderRadius)
         } else {

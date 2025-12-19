@@ -9,9 +9,6 @@ package com.facebook.react.views.view
 
 import android.graphics.Rect
 import android.view.View
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
-import android.view.ViewGroup.MarginLayoutParams
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.DynamicFromObject
@@ -48,22 +45,6 @@ import com.facebook.react.uimanager.style.LogicalEdge
 /** View manager for AndroidViews (plain React Views). */
 @ReactModule(name = ReactViewManager.REACT_CLASS)
 public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() {
-
-  private enum class MarginIndex {
-    ALL,
-    VERTICAL,
-    HORIZONTAL,
-    LEFT,
-    RIGHT,
-    TOP,
-    BOTTOM,
-    START,
-    END;
-
-    companion object {
-      fun fromIndex(index: Int): MarginIndex? = values().getOrNull(index)
-    }
-  }
 
   public companion object {
     public const val REACT_CLASS: String = ViewProps.VIEW_CLASS_NAME
@@ -370,66 +351,6 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing)
   }
 
-@ReactPropGroup(
-      names =
-          [
-              ViewProps.MARGIN,
-              ViewProps.MARGIN_VERTICAL,
-              ViewProps.MARGIN_HORIZONTAL,
-              ViewProps.MARGIN_LEFT,
-              ViewProps.MARGIN_RIGHT,
-              ViewProps.MARGIN_TOP,
-              ViewProps.MARGIN_BOTTOM,
-              ViewProps.MARGIN_START,
-              ViewProps.MARGIN_END
-          ],
-      defaultFloat = Float.NaN,
-  )
-  public open fun setMargin(view: ReactViewGroup, index: Int, margin: Float) {
-    
-    val layoutParams = view.layoutParams as? MarginLayoutParams ?: MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-    val leftMargin = layoutParams.leftMargin;
-    val topMargin = layoutParams.topMargin;
-    val rightMargin = layoutParams.rightMargin;
-    val bottomMargin = layoutParams.bottomMargin;
-    when (MarginIndex.fromIndex(index)) {
-      MarginIndex.ALL -> {
-        layoutParams.setMargins(margin.toInt(), margin.toInt(), margin.toInt(), margin.toInt())
-      }
-      MarginIndex.VERTICAL -> {
-        layoutParams.setMargins(leftMargin, margin.toInt(), rightMargin, margin.toInt())
-      }
-      MarginIndex.HORIZONTAL -> {
-        layoutParams.setMargins(margin.toInt(), topMargin, margin.toInt(), bottomMargin)
-      }
-      MarginIndex.LEFT -> {
-        layoutParams.setMargins(margin.toInt(), topMargin, rightMargin, bottomMargin)
-      }
-      MarginIndex.RIGHT -> {
-        layoutParams.setMargins(leftMargin, topMargin, margin.toInt(), bottomMargin)
-      }
-      MarginIndex.TOP -> {
-        layoutParams.setMargins(leftMargin, margin.toInt(), rightMargin, bottomMargin)
-      }
-      MarginIndex.BOTTOM -> {
-        layoutParams.setMargins(leftMargin, topMargin, rightMargin, margin.toInt())
-      }
-      MarginIndex.START -> {
-        layoutParams.setMargins(margin.toInt(), topMargin, rightMargin, bottomMargin)
-      }
-      MarginIndex.END -> {
-        layoutParams.setMargins(leftMargin, topMargin, margin.toInt(), bottomMargin)
-      }
-      null -> {
-        // Unknown index, do nothing
-      }
-    }
-    view.layoutParams = layoutParams
-  }
-
-  override fun setPadding(view: ReactViewGroup, left: Int, top: Int, right: Int, bottom: Int) {
-    view.setPadding(left, top, right, bottom)
-  }
 
   @ReactPropGroup(
       names =
