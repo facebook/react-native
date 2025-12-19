@@ -279,6 +279,10 @@ void packAnimatedProp(
     case FLEX_SHRINK:
     case FLEX_WRAP:
     case JUSTIFY_CONTENT:
+    case MAX_HEIGHT:
+    case MAX_WIDTH:
+    case MIN_HEIGHT:
+    case MIN_WIDTH:
       throw std::runtime_error("Tried to synchronously update layout props");
   }
 }

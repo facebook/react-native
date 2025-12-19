@@ -47,7 +47,11 @@ enum PropName {
   FLEX_GROW,
   FLEX_SHRINK,
   FLEX_WRAP,
-  JUSTIFY_CONTENT
+  JUSTIFY_CONTENT,
+  MAX_HEIGHT,
+  MAX_WIDTH,
+  MIN_HEIGHT,
+  MIN_WIDTH
 };
 
 struct AnimatedPropBase {
@@ -333,6 +337,22 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case JUSTIFY_CONTENT:
       viewProps.yogaStyle.setJustifyContent(get<yoga::Justify>(animatedProp));
+      break;
+
+    case MAX_HEIGHT:
+      viewProps.yogaStyle.setMaxDimension(yoga::Dimension::Height, get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case MAX_WIDTH:
+      viewProps.yogaStyle.setMaxDimension(yoga::Dimension::Width, get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case MIN_HEIGHT:
+      viewProps.yogaStyle.setMinDimension(yoga::Dimension::Height, get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case MIN_WIDTH:
+      viewProps.yogaStyle.setMinDimension(yoga::Dimension::Width, get<yoga::Style::SizeLength>(animatedProp));
       break;
 
     default:
