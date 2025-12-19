@@ -152,6 +152,22 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<yoga::Justify>>(JUSTIFY_CONTENT, value));
   }
+  void setMaxHeight(yoga::Style::SizeLength value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(MAX_HEIGHT, value));
+  }
+  void setMaxWidth(yoga::Style::SizeLength value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(MAX_WIDTH, value));
+  }
+  void setMinHeight(yoga::Style::SizeLength value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(MIN_HEIGHT, value));
+  }
+  void setMinWidth(yoga::Style::SizeLength value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(MIN_WIDTH, value));
+  }
   void storeDynamic(folly::dynamic &d)
   {
     rawProps = std::make_unique<RawProps>(std::move(d));
