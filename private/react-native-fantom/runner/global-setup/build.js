@@ -37,7 +37,7 @@ async function tryOrLog(
   }
 }
 
-export default async function build(): Promise<void> {
+export default async function build(enableCoverage: boolean): Promise<void> {
   try {
     fs.rmSync(NATIVE_BUILD_OUTPUT_PATH, {recursive: true});
   } catch {}
@@ -45,10 +45,10 @@ export default async function build(): Promise<void> {
   fs.mkdirSync(NATIVE_BUILD_OUTPUT_PATH, {recursive: true});
 
   if (isCI) {
-    for (const isOptimizedMode of [false, true]) {
+    for (const enableRelease of [false, true]) {
       for (const hermesVariant of HermesVariant.members()) {
-        buildFantomTester({isOptimizedMode, hermesVariant});
-        buildHermesCompiler({isOptimizedMode, hermesVariant});
+        buildFantomTester({enableRelease, hermesVariant, enableCoverage});
+        buildHermesCompiler({enableRelease, hermesVariant, enableCoverage});
       }
     }
 
