@@ -38,7 +38,10 @@ struct AnimationMutation {
   AnimatedProps props;
 };
 
-using AnimationMutations = std::vector<AnimationMutation>;
+struct AnimationMutations {
+  std::vector<AnimationMutation> batch;
+  bool hasLayoutUpdates{false};
+};
 
 class AnimationBackend : public UIManagerAnimationBackend {
  public:
