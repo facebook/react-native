@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.83.1
+
+### Fixed
+
+#### Android specific
+
+- **Networking**: Fix Network error that could occur for `FormData` uploads with binary data ([471ef7212e](https://github.com/facebook/react-native/commit/471ef7212e8f7778bb7692a372a58c6fba9d081d) by [@huntie](https://github.com/huntie))
+
 ## v0.83.0
 
 ### Breaking
