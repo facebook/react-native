@@ -9,170 +9,175 @@ package com.facebook.react.uimanager.style
 
 import android.graphics.RectF
 import android.view.View
-import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
-import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PixelUtil.dpToPx
-import com.facebook.react.uimanager.style.ComputedBorderRadius
-import com.facebook.react.uimanager.style.CornerRadii
-import com.facebook.react.uimanager.style.GeometryBox
-import kotlin.math.max
-import kotlin.math.roundToInt
+
+private inline val RectF?.leftOrZero: Float
+  get() = this?.left ?: 0f
+
+private inline val RectF?.topOrZero: Float
+  get() = this?.top ?: 0f
+
+private inline val RectF?.rightOrZero: Float
+  get() = this?.right ?: 0f
+
+private inline val RectF?.bottomOrZero: Float
+  get() = this?.bottom ?: 0f
 
 internal object GeometryBoxUtil {
-
   @JvmStatic
   fun adjustBorderRadiusForGeometryBox(
-      geometryBox: GeometryBox?,
-      borderRadius: ComputedBorderRadius?,
-      computedBorderInsets: RectF?,
-      view: View
+    view: View,
+    geometryBox: GeometryBox?,
+    borderRadius: ComputedBorderRadius?,
+    marginInsets: RectF?,
+    paddingInsets: RectF?,
+    borderInsets: RectF?
   ): ComputedBorderRadius? {
     if (borderRadius == null) {
       return null
     }
 
-    val params = view.layoutParams as? MarginLayoutParams
-
     return when (geometryBox) {
       GeometryBox.MarginBox -> {
-        // margin-box: extend border-radius by margin amount
-        val marginLeft = params?.leftMargin?.toFloat() ?: 0f
-        val marginTop = params?.topMargin?.toFloat() ?: 0f
-        val marginRight = params?.rightMargin?.toFloat() ?: 0f
-        val marginBottom = params?.bottomMargin?.toFloat() ?: 0f
-
+        // Margin-box: extend border-radius by margin
         ComputedBorderRadius(
-            topLeft = CornerRadii(
-                horizontal = borderRadius.topLeft.horizontal + marginLeft,
-                vertical = borderRadius.topLeft.vertical + marginTop
-            ),
-            topRight = CornerRadii(
-                horizontal = borderRadius.topRight.horizontal + marginRight,
-                vertical = borderRadius.topRight.vertical + marginTop
-            ),
-            bottomLeft = CornerRadii(
-                horizontal = borderRadius.bottomLeft.horizontal + marginLeft,
-                vertical = borderRadius.bottomLeft.vertical + marginBottom
-            ),
-            bottomRight = CornerRadii(
-                horizontal = borderRadius.bottomRight.horizontal + marginRight,
-                vertical = borderRadius.bottomRight.vertical + marginBottom
-            )
-        )
-      }
-
-      GeometryBox.BorderBox, null -> {
-        // border-box: use border-radius as-is (this is the reference)
-        ComputedBorderRadius(
-            topLeft = borderRadius.topLeft.toPixelFromDIP(),
-            topRight = borderRadius.topRight.toPixelFromDIP(),
-            bottomLeft = borderRadius.bottomLeft.toPixelFromDIP(),
-            bottomRight = borderRadius.bottomRight.toPixelFromDIP()
+          topLeft = CornerRadii(
+            horizontal = borderRadius.topLeft.horizontal + marginInsets.leftOrZero,
+            vertical = borderRadius.topLeft.vertical + marginInsets.topOrZero
+          ),
+          topRight = CornerRadii(
+            horizontal = borderRadius.topRight.horizontal + marginInsets.rightOrZero,
+            vertical = borderRadius.topRight.vertical + marginInsets.topOrZero
+          ),
+          bottomLeft = CornerRadii(
+            horizontal = borderRadius.bottomLeft.horizontal + marginInsets.leftOrZero,
+            vertical = borderRadius.bottomLeft.vertical + marginInsets.bottomOrZero
+          ),
+          bottomRight = CornerRadii(
+            horizontal = borderRadius.bottomRight.horizontal + marginInsets.rightOrZero,
+            vertical = borderRadius.bottomRight.vertical + marginInsets.bottomOrZero
+          )
         )
       }
 
       GeometryBox.PaddingBox -> {
-        // padding-box: reduce border-radius by border width
-        val borderLeft = computedBorderInsets?.left ?: 0f
-        val borderTop = computedBorderInsets?.top ?: 0f
-        val borderRight = computedBorderInsets?.right ?: 0f
-        val borderBottom = computedBorderInsets?.bottom ?: 0f
-
+        // Padding-box: reduce border-radius by border width
         ComputedBorderRadius(
-            topLeft = CornerRadii(
-                horizontal = max(0f, borderRadius.topLeft.horizontal - borderLeft).dpToPx(),
-                vertical = max(0f, borderRadius.topLeft.vertical - borderTop).dpToPx()
+          topLeft = CornerRadii(
+            horizontal = (borderRadius.topLeft.horizontal - borderInsets.leftOrZero).coerceAtLeast(
+              0f
             ),
-            topRight = CornerRadii(
-                horizontal = max(0f, borderRadius.topRight.horizontal - borderRight).dpToPx(),
-                vertical = max(0f, borderRadius.topRight.vertical - borderTop).dpToPx()
+            vertical = (borderRadius.topLeft.vertical - borderInsets.topOrZero.coerceAtLeast(0f))
+          ),
+          topRight = CornerRadii(
+            horizontal = (borderRadius.topRight.horizontal - borderInsets.rightOrZero).coerceAtLeast(
+              0f
             ),
-            bottomLeft = CornerRadii(
-                horizontal = max(0f, borderRadius.bottomLeft.horizontal - borderLeft).dpToPx(),
-                vertical = max(0f, borderRadius.bottomLeft.vertical - borderBottom).dpToPx()
+            vertical = (borderRadius.topRight.vertical - borderInsets.topOrZero.coerceAtLeast(0f))
+          ),
+          bottomLeft = CornerRadii(
+            horizontal = (borderRadius.bottomLeft.horizontal - borderInsets.leftOrZero).coerceAtLeast(
+              0f
             ),
-            bottomRight = CornerRadii(
-                horizontal = max(0f, borderRadius.bottomRight.horizontal - borderRight).dpToPx(),
-                vertical = max(0f, borderRadius.bottomRight.vertical - borderBottom).dpToPx()
-            )
+            vertical = (borderRadius.bottomLeft.vertical - borderInsets.bottomOrZero.coerceAtLeast(
+              0f
+            ))
+          ),
+          bottomRight = CornerRadii(
+            horizontal = (borderRadius.bottomRight.horizontal - borderInsets.rightOrZero).coerceAtLeast(
+              0f
+            ),
+            vertical = (borderRadius.bottomRight.vertical - borderInsets.bottomOrZero.coerceAtLeast(
+              0f
+            ))
+          )
         )
       }
 
       GeometryBox.ContentBox -> {
-        // content-box: reduce border-radius by border width + padding
-        // padding already includes border width
-        val paddingLeft = PixelUtil.toDIPFromPixel(view.paddingLeft.toFloat()).roundToInt()
-        val paddingTop = PixelUtil.toDIPFromPixel(view.paddingTop.toFloat()).roundToInt()
-        val paddingRight = PixelUtil.toDIPFromPixel(view.paddingRight.toFloat()).roundToInt()
-        val paddingBottom = PixelUtil.toDIPFromPixel(view.paddingBottom.toFloat()).roundToInt()
-
+        // Content-box: reduce border-radius by border width and padding
         ComputedBorderRadius(
-            topLeft = CornerRadii(
-                horizontal = max(0f, borderRadius.topLeft.horizontal - paddingLeft).dpToPx(),
-                vertical = max(0f, borderRadius.topLeft.vertical - paddingTop).dpToPx()
+          topLeft = CornerRadii(
+            horizontal = (borderRadius.topLeft.horizontal - paddingInsets.leftOrZero - borderInsets.leftOrZero).coerceAtLeast(
+              0f
             ),
-            topRight = CornerRadii(
-                horizontal = max(0f, borderRadius.topRight.horizontal - paddingRight).dpToPx(),
-                vertical = max(0f, borderRadius.topRight.vertical - paddingTop).dpToPx()
+            vertical = (borderRadius.topLeft.vertical - paddingInsets.topOrZero - borderInsets.topOrZero.coerceAtLeast(
+              0f
+            ))
+          ),
+          topRight = CornerRadii(
+            horizontal = (borderRadius.topRight.horizontal - paddingInsets.rightOrZero - borderInsets.rightOrZero).coerceAtLeast(
+              0f
             ),
-            bottomLeft = CornerRadii(
-                horizontal = max(0f, borderRadius.bottomLeft.horizontal - paddingLeft).dpToPx(),
-                vertical = max(0f, borderRadius.bottomLeft.vertical - paddingBottom).dpToPx()
+            vertical = (borderRadius.topRight.vertical - paddingInsets.topOrZero - borderInsets.topOrZero.coerceAtLeast(
+              0f
+            ))
+          ),
+          bottomLeft = CornerRadii(
+            horizontal = (borderRadius.bottomLeft.horizontal - paddingInsets.leftOrZero - borderInsets.leftOrZero).coerceAtLeast(
+              0f
             ),
-            bottomRight = CornerRadii(
-                horizontal = max(0f, borderRadius.bottomRight.horizontal - paddingRight).dpToPx(),
-                vertical = max(0f, borderRadius.bottomRight.vertical - paddingBottom).dpToPx()
-            )
+            vertical = (borderRadius.bottomLeft.vertical - paddingInsets.bottomOrZero - borderInsets.bottomOrZero.coerceAtLeast(
+              0f
+            ))
+          ),
+          bottomRight = CornerRadii(
+            horizontal = (borderRadius.bottomRight.horizontal - paddingInsets.rightOrZero - borderInsets.rightOrZero).coerceAtLeast(
+              0f
+            ),
+            vertical = (borderRadius.bottomRight.vertical - paddingInsets.bottomOrZero - borderInsets.bottomOrZero.coerceAtLeast(
+              0f
+            ))
+          )
         )
       }
 
-      else -> borderRadius // StrokeBox, ViewBox, FillBox - use border-box as fallback
+      else -> borderRadius // BorderBox, StrokeBox, ViewBox, FillBox - use border-box as fallback
     }
   }
 
   @JvmStatic
-  fun getGeometryBoxBounds(view: View, geometryBox: GeometryBox?, computedBorderInsets: RectF?): RectF {
+  fun getGeometryBoxBounds(
+    view: View,
+    geometryBox: GeometryBox?,
+    marginInsets: RectF?,
+    paddingInsets: RectF?,
+    borderInsets: RectF?
+  )
+    : RectF {
     val bounds = RectF(0f, 0f, view.width.toFloat(), view.height.toFloat())
-    val params = view.layoutParams as? MarginLayoutParams
-    val box = when (geometryBox) {
-          GeometryBox.ContentBox -> {
-            // ContentBox = BorderBox + padding
-            RectF(
-                bounds.left + view.paddingLeft,
-                bounds.top + view.paddingTop,
-                bounds.right - view.paddingRight,
-                bounds.bottom - view.paddingBottom
+    return when (geometryBox) {
+      GeometryBox.MarginBox -> {
+        // MarginBox = BorderBox + margin
+        RectF(
+          bounds.left - marginInsets.leftOrZero.dpToPx(),
+          bounds.top - marginInsets.topOrZero.dpToPx(),
+          bounds.right + marginInsets.rightOrZero.dpToPx(),
+          bounds.bottom + marginInsets.bottomOrZero.dpToPx()
         )
-          }
+      }
 
-          GeometryBox.PaddingBox -> {
-            // PaddingBox = BorderBox - border
-            RectF(
-                bounds.left + (computedBorderInsets?.left?.dpToPx() ?: 0f),
-                bounds.top + (computedBorderInsets?.top?.dpToPx() ?: 0f),
-                bounds.right - (computedBorderInsets?.right?.dpToPx() ?: 0f),
-                bounds.bottom - (computedBorderInsets?.bottom?.dpToPx() ?: 0f)
+      GeometryBox.PaddingBox -> {
+        // PaddingBox = BorderBox - border
+        RectF(
+          bounds.left + borderInsets.leftOrZero.dpToPx(),
+          bounds.top + borderInsets.topOrZero.dpToPx(),
+          bounds.right - borderInsets.rightOrZero.dpToPx(),
+          bounds.bottom - borderInsets.bottomOrZero.dpToPx()
         )
-          }
+      }
 
-          GeometryBox.MarginBox -> {
-            // MarginBox = BorderBox + margin
-            RectF(
-                bounds.left - (params?.leftMargin?.dpToPx() ?: 0f),
-                bounds.top - (params?.topMargin?.dpToPx() ?: 0f),
-                bounds.right + (params?.rightMargin?.dpToPx() ?: 0f),
-                bounds.bottom + (params?.bottomMargin?.dpToPx() ?: 0f)
+      GeometryBox.ContentBox -> {
+        // ContentBox = BorderBox + padding
+        RectF(
+          bounds.left + (borderInsets.leftOrZero + paddingInsets.leftOrZero).dpToPx(),
+          bounds.top + (borderInsets.topOrZero + paddingInsets.topOrZero).dpToPx(),
+          bounds.right - (borderInsets.rightOrZero + paddingInsets.rightOrZero).dpToPx(),
+          bounds.bottom - (borderInsets.bottomOrZero + paddingInsets.bottomOrZero).dpToPx()
         )
-          }
+      }
 
-      GeometryBox.BorderBox, null -> {
-            // BorderBox = view bounds
-            bounds
-          }
-
-          else -> bounds // StrokeBox, ViewBox - use border-box as fallback
-        }
-    return box
+      else -> bounds // BorderBox, StrokeBox, ViewBox - use border-box as fallback
+    }
   }
 }
