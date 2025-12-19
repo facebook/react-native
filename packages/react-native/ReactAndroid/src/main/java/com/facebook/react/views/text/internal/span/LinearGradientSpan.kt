@@ -27,11 +27,12 @@ public class LinearGradientSpan(
         tp.setColor(colors[0])
 
         val radians = Math.toRadians(angle.toDouble())
+        val width = if (gradientWidth.isNaN()) 100f else gradientWidth
         val height = tp.textSize
-
-        val centerX = start + gradientWidth / 2
+        
+        val centerX = start + width / 2
         val centerY = height / 2
-        val length = Math.sqrt((gradientWidth * gradientWidth + height * height).toDouble()).toFloat() / 2
+        val length = Math.sqrt((width * width + height * height).toDouble()).toFloat() / 2
 
         val startX = centerX - length * Math.cos(radians).toFloat()
         val startY = centerY - length * Math.sin(radians).toFloat()
