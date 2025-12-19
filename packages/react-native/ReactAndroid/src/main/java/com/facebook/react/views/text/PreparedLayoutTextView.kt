@@ -119,6 +119,8 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     if (overflow != Overflow.VISIBLE) {
       BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
     }
+
+    super.onDraw(canvas)
     canvas.translate(
         paddingLeft.toFloat(),
         paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f),

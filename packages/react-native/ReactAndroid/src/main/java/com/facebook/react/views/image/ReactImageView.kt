@@ -378,7 +378,7 @@ public class ReactImageView(
       BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
     }
 
-    super.onDraw(canvas)
+    super.draw(canvas)
 
     if (clipPath != null) {
       canvas.restore()
