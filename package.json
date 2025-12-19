@@ -55,7 +55,7 @@
     "@react-native/metro-babel-transformer": "0.81.5",
     "@react-native/metro-config": "0.81.5",
     "@tsconfig/node22": "22.0.2",
-    "@types/react": "^19.1.2",
+    "@types/react": "^19.1.4",
     "@typescript-eslint/parser": "^7.1.1",
     "ansi-styles": "^4.2.1",
     "babel-plugin-minify-dead-code-elimination": "^0.5.2",
@@ -98,8 +98,8 @@
     "nullthrows": "^1.1.1",
     "prettier": "2.8.8",
     "prettier-plugin-hermes-parser": "0.29.1",
-    "react": "19.1.2",
-    "react-test-renderer": "19.1.2",
+    "react": "19.1.4",
+    "react-test-renderer": "19.1.4",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
@@ -111,6 +111,6 @@
   },
   "resolutions": {
     "eslint-plugin-react-hooks": "6.1.0-canary-12bc60f5-20250613",
-    "react-is": "19.1.2"
+    "react-is": "19.1.4"
   }
 }

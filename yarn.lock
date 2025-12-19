@@ -2446,7 +2446,7 @@
   dependencies:
     undici-types "~6.21.0"
 
-"@types/react@^19.1.2":
+"@types/react@^19.1.4":
   version "19.2.7"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-19.2.7.tgz#84e62c0f23e8e4e5ac2cadcea1ffeacccae7f62f"
   integrity sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==
@@ -8113,28 +8113,28 @@ react-devtools-core@^6.1.5:
     shell-quote "^1.6.1"
     ws "^7"
 
-react-is@19.1.2, react-is@^16.13.1, react-is@^16.8.4, react-is@^17.0.1, react-is@^18.0.0, react-is@^19.1.2:
-  version "19.1.2"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-19.1.2.tgz#a360d7b7336449d78d21405dc350a96e9a399eb4"
-  integrity sha512-22EHThcFsiyqJAZQrNW0HdFKeSjTe2VbkbU1r1kBByllKsmi7Erklm6Pjz1rRjkn0elVoE9jWx6Em72mQ+hdNw==
+react-is@19.1.4, react-is@^16.13.1, react-is@^16.8.4, react-is@^17.0.1, react-is@^18.0.0, react-is@^19.1.4:
+  version "19.1.4"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-19.1.4.tgz#56ef4fe07a33fe6ed08a4b8729ddb38620803092"
+  integrity sha512-4oz30Hl3G6Ji4MpJEMwfXCjsfjAarc9nUPLmSXJLDjHbQRTeXMgf8UAPcrsUYVV+7E7mPHqNfhi5KVVMhl+zcg==
 
 react-refresh@^0.14.0:
   version "0.14.2"
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.14.2.tgz#3833da01ce32da470f1f936b9d477da5c7028bf9"
   integrity sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==
 
-react-test-renderer@19.1.2:
-  version "19.1.2"
-  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-19.1.2.tgz#8141f237335ddc4d73a376de028b5acd4ea5bc29"
-  integrity sha512-vZKLbMorBLmWl0g8a3tcbjHIXASMZJp4RSR+aAp08rkg6oUCYrxlnCNbH3bNd1xqApYUnFWjyN91V7Wz6AlhRA==
+react-test-renderer@19.1.4:
+  version "19.1.4"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-19.1.4.tgz#1be80fc16f6733d9a0ac41cabb9daad39f165ace"
+  integrity sha512-dmcR2lSwouaNJKNRd53eeZHuWjF4YYZIq/q6wLiVz50ENrkU/Pds+pS+4XyJ/nwWmjA1ZhHxAp+vfR8A9PEcYQ==
   dependencies:
-    react-is "^19.1.2"
+    react-is "^19.1.4"
     scheduler "^0.26.0"
 
-react@19.1.2:
-  version "19.1.2"
-  resolved "https://registry.yarnpkg.com/react/-/react-19.1.2.tgz#fd75c4f684b52fe45101381535c58486f4407545"
-  integrity sha512-MdWVitvLbQULD+4DP8GYjZUrepGW7d+GQkNVqJEzNxE+e9WIa4egVFE/RDfVb1u9u/Jw7dNMmPB4IqxzbFYJ0w==
+react@19.1.4:
+  version "19.1.4"
+  resolved "https://registry.yarnpkg.com/react/-/react-19.1.4.tgz#d8a59f8ce3257cb383474586be4c8aab92afefa7"
+  integrity sha512-DHINL3PAmPUiK1uszfbKiXqfE03eszdt5BpVSuEAHb5nfmNPwnsy7g39h2t8aXFc/Bv99GH81s+j8dobtD+jOw==
 
 read-pkg-up@^2.0.0:
   version "2.0.0"

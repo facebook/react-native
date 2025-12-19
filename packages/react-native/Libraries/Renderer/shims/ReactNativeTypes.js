@@ -7,7 +7,6 @@
  * @noformat
  * @nolint
  * @flow strict
- * @generated SignedSource<<5c76b092e0c981f96ca894e381ee593b>>
  */
 
 import type {
