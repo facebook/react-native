@@ -9,9 +9,20 @@
 #include <react/renderer/animationbackend/AnimatedPropsSerializer.h>
 #include <react/renderer/graphics/Color.h>
 #include <chrono>
+#include <set>
 #include "AnimatedPropsRegistry.h"
 
 namespace facebook::react {
+
+static const auto layoutProps = std::set<PropName>{
+    PropName::WIDTH,        PropName::HEIGHT,        PropName::FLEX,
+    PropName::MARGIN,       PropName::PADDING,       PropName::POSITION,
+    PropName::BORDER_WIDTH, PropName::ALIGN_CONTENT, PropName::ALIGN_ITEMS,
+    PropName::ALIGN_SELF,   PropName::ASPECT_RATIO,  PropName::BOX_SIZING,
+    PropName::DISPLAY,      PropName::FLEX_BASIS,    PropName::FLEX_DIRECTION,
+    PropName::ROW_GAP,      PropName::COLUMN_GAP,    PropName::FLEX_GROW,
+    PropName::FLEX_SHRINK,  PropName::FLEX_WRAP,     PropName::JUSTIFY_CONTENT,
+};
 
 UIManagerNativeAnimatedDelegateBackendImpl::
     UIManagerNativeAnimatedDelegateBackendImpl(
@@ -53,11 +64,7 @@ static inline bool mutationHasLayoutUpdates(
     facebook::react::AnimationMutation& mutation) {
   for (auto& animatedProp : mutation.props.props) {
     // TODO: there should also be a check for the dynamic part
-    if (animatedProp->propName == WIDTH || animatedProp->propName == HEIGHT ||
-        animatedProp->propName == FLEX || animatedProp->propName == MARGIN ||
-        animatedProp->propName == PADDING ||
-        animatedProp->propName == POSITION ||
-        animatedProp->propName == BORDER_WIDTH) {
+    if (layoutProps.contains(animatedProp->propName)) {
       return true;
     }
   }

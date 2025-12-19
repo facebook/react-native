@@ -162,6 +162,62 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case OUTLINE_WIDTH:
       viewProps.outlineWidth = snapshot.props.outlineWidth;
       break;
+
+    case ALIGN_CONTENT:
+      viewProps.yogaStyle.setAlignContent(snapshot.props.yogaStyle.alignContent());
+      break;
+
+    case ALIGN_ITEMS:
+      viewProps.yogaStyle.setAlignItems(snapshot.props.yogaStyle.alignItems());
+      break;
+
+    case ALIGN_SELF:
+      viewProps.yogaStyle.setAlignSelf(snapshot.props.yogaStyle.alignSelf());
+      break;
+
+    case ASPECT_RATIO:
+      viewProps.yogaStyle.setAspectRatio(snapshot.props.yogaStyle.aspectRatio());
+      break;
+
+    case BOX_SIZING:
+      viewProps.yogaStyle.setBoxSizing(snapshot.props.yogaStyle.boxSizing());
+      break;
+
+    case DISPLAY:
+      viewProps.yogaStyle.setDisplay(snapshot.props.yogaStyle.display());
+      break;
+
+    case FLEX_BASIS:
+      viewProps.yogaStyle.setFlexBasis(snapshot.props.yogaStyle.flexBasis());
+      break;
+
+    case FLEX_DIRECTION:
+      viewProps.yogaStyle.setFlexDirection(snapshot.props.yogaStyle.flexDirection());
+      break;
+
+    case ROW_GAP:
+      viewProps.yogaStyle.setGap(yoga::Gutter::Row, snapshot.props.yogaStyle.gap(yoga::Gutter::Row));
+      break;
+
+    case COLUMN_GAP:
+      viewProps.yogaStyle.setGap(yoga::Gutter::Column, snapshot.props.yogaStyle.gap(yoga::Gutter::Column));
+      break;
+
+    case FLEX_GROW:
+      viewProps.yogaStyle.setFlexGrow(snapshot.props.yogaStyle.flexGrow());
+      break;
+
+    case FLEX_SHRINK:
+      viewProps.yogaStyle.setFlexShrink(snapshot.props.yogaStyle.flexShrink());
+      break;
+
+    case FLEX_WRAP:
+      viewProps.yogaStyle.setFlexWrap(snapshot.props.yogaStyle.flexWrap());
+      break;
+
+    case JUSTIFY_CONTENT:
+      viewProps.yogaStyle.setJustifyContent(snapshot.props.yogaStyle.justifyContent());
+      break;
   }
 }
 

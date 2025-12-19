@@ -96,6 +96,62 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<Float>>(OUTLINE_WIDTH, value));
   }
+  void setAlignContent(yoga::Align value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Align>>(ALIGN_CONTENT, value));
+  }
+  void setAlignItems(yoga::Align value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Align>>(ALIGN_ITEMS, value));
+  }
+  void setAlignSelf(yoga::Align value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Align>>(ALIGN_SELF, value));
+  }
+  void setAspectRatio(yoga::FloatOptional value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::FloatOptional>>(ASPECT_RATIO, value));
+  }
+  void setBoxSizing(yoga::BoxSizing value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::BoxSizing>>(BOX_SIZING, value));
+  }
+  void setDisplay(yoga::Display value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Display>>(DISPLAY, value));
+  }
+  void setFlexBasis(yoga::Style::SizeLength value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(FLEX_BASIS, value));
+  }
+  void setFlexDirection(yoga::FlexDirection value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::FlexDirection>>(FLEX_DIRECTION, value));
+  }
+  void setRowGap(yoga::Style::Length value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::Length>>(ROW_GAP, value));
+  }
+  void setColumnGap(yoga::Style::Length value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::Length>>(COLUMN_GAP, value));
+  }
+  void setFlexGrow(yoga::FloatOptional value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::FloatOptional>>(FLEX_GROW, value));
+  }
+  void setFlexShrink(yoga::FloatOptional value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::FloatOptional>>(FLEX_SHRINK, value));
+  }
+  void setFlexWrap(yoga::Wrap value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Wrap>>(FLEX_WRAP, value));
+  }
+  void setJustifyContent(yoga::Justify value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Justify>>(JUSTIFY_CONTENT, value));
+  }
   void storeDynamic(folly::dynamic &d)
   {
     rawProps = std::make_unique<RawProps>(std::move(d));
