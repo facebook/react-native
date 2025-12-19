@@ -152,6 +152,66 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<yoga::Justify>>(JUSTIFY_CONTENT, value));
   }
+  void setMaxHeight(yoga::Style::SizeLength value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(MAX_HEIGHT, value));
+  }
+  void setMaxWidth(yoga::Style::SizeLength value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(MAX_WIDTH, value));
+  }
+  void setMinHeight(yoga::Style::SizeLength value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(MIN_HEIGHT, value));
+  }
+  void setMinWidth(yoga::Style::SizeLength value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(MIN_WIDTH, value));
+  }
+  void setOverflow(yoga::Overflow value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Overflow>>(STYLE_OVERFLOW, value));
+  }
+  void setPositionType(yoga::PositionType value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::PositionType>>(POSITION_TYPE, value));
+  }
+  void setZIndex(std::optional<int> value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<std::optional<int>>>(Z_INDEX, value));
+  }
+  void setDirection(yoga::Direction value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Direction>>(DIRECTION, value));
+  }
+  void setBorderCurves(CascadedBorderCurves &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedBorderCurves>>(BORDER_CURVES, value));
+  }
+  void setBorderStyles(CascadedBorderStyles &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<CascadedBorderStyles>>(BORDER_STYLES, value));
+  }
+  void setPointerEvents(PointerEventsMode value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<PointerEventsMode>>(POINTER_EVENTS, value));
+  }
+  void setIsolation(Isolation value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Isolation>>(ISOLATION, value));
+  }
+  void setCursor(Cursor value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<Cursor>>(CURSOR, value));
+  }
+  void setBoxShadow(const std::vector<BoxShadow> &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<std::vector<BoxShadow>>>(BOX_SHADOW, value));
+  }
+  void setMixBlendMode(BlendMode value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<BlendMode>>(MIX_BLEND_MODE, value));
+  }
   void storeDynamic(folly::dynamic &d)
   {
     rawProps = std::make_unique<RawProps>(std::move(d));

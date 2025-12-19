@@ -219,6 +219,70 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case JUSTIFY_CONTENT:
       viewProps.yogaStyle.setJustifyContent(snapshot.props.yogaStyle.justifyContent());
       break;
+
+    case MAX_HEIGHT:
+      viewProps.yogaStyle.setMaxDimension(
+          yoga::Dimension::Height, snapshot.props.yogaStyle.maxDimension(yoga::Dimension::Height));
+      break;
+
+    case MAX_WIDTH:
+      viewProps.yogaStyle.setMaxDimension(
+          yoga::Dimension::Width, snapshot.props.yogaStyle.maxDimension(yoga::Dimension::Width));
+      break;
+
+    case MIN_HEIGHT:
+      viewProps.yogaStyle.setMinDimension(
+          yoga::Dimension::Height, snapshot.props.yogaStyle.minDimension(yoga::Dimension::Height));
+      break;
+
+    case MIN_WIDTH:
+      viewProps.yogaStyle.setMinDimension(
+          yoga::Dimension::Width, snapshot.props.yogaStyle.minDimension(yoga::Dimension::Width));
+      break;
+
+    case STYLE_OVERFLOW:
+      viewProps.yogaStyle.setOverflow(snapshot.props.yogaStyle.overflow());
+      break;
+
+    case POSITION_TYPE:
+      viewProps.yogaStyle.setPositionType(snapshot.props.yogaStyle.positionType());
+      break;
+
+    case Z_INDEX:
+      viewProps.zIndex = snapshot.props.zIndex;
+      break;
+
+    case DIRECTION:
+      viewProps.yogaStyle.setDirection(snapshot.props.yogaStyle.direction());
+      break;
+
+    case BORDER_CURVES:
+      viewProps.borderCurves = snapshot.props.borderCurves;
+      break;
+
+    case BORDER_STYLES:
+      viewProps.borderStyles = snapshot.props.borderStyles;
+      break;
+
+    case POINTER_EVENTS:
+      viewProps.pointerEvents = snapshot.props.pointerEvents;
+      break;
+
+    case ISOLATION:
+      viewProps.isolation = snapshot.props.isolation;
+      break;
+
+    case CURSOR:
+      viewProps.cursor = snapshot.props.cursor;
+      break;
+
+    case BOX_SHADOW:
+      viewProps.boxShadow = snapshot.props.boxShadow;
+      break;
+
+    case MIX_BLEND_MODE:
+      viewProps.mixBlendMode = snapshot.props.mixBlendMode;
+      break;
   }
 }
 
