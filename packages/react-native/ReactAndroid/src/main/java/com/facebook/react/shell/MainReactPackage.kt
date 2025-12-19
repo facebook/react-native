@@ -139,7 +139,7 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactHorizontalScrollViewManager(),
           ReactHorizontalScrollContainerViewManager(),
           ReactProgressBarViewManager(),
-          ReactScrollViewManager(),
+//          ReactScrollViewManager(),
           ReactSwitchManager(),
           ReactSafeAreaViewManager(),
           SwipeRefreshLayoutManager(),
@@ -172,8 +172,8 @@ constructor(private val config: MainPackageConfig? = null) :
               ModuleSpec.viewManagerSpec { ReactProgressBarViewManager() },
           ReactSafeAreaViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactSafeAreaViewManager() },
-          ReactScrollViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactScrollViewManager() },
+//          ReactScrollViewManager.REACT_CLASS to
+//              ModuleSpec.viewManagerSpec { ReactScrollViewManager() },
           ReactSwitchManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactSwitchManager() },
           SwipeRefreshLayoutManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { SwipeRefreshLayoutManager() },
