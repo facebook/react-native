@@ -16,15 +16,12 @@
 namespace facebook::react {
 
 static const auto layoutProps = std::set<PropName>{
-    PropName::WIDTH,        PropName::HEIGHT,        PropName::FLEX,
-    PropName::MARGIN,       PropName::PADDING,       PropName::POSITION,
-    PropName::BORDER_WIDTH, PropName::ALIGN_CONTENT, PropName::ALIGN_ITEMS,
-    PropName::ALIGN_SELF,   PropName::ASPECT_RATIO,  PropName::BOX_SIZING,
-    PropName::DISPLAY,      PropName::FLEX_BASIS,    PropName::FLEX_DIRECTION,
-    PropName::ROW_GAP,      PropName::COLUMN_GAP,    PropName::FLEX_GROW,
-    PropName::FLEX_SHRINK,  PropName::FLEX_WRAP,     PropName::JUSTIFY_CONTENT,
-    PropName::MAX_HEIGHT,   PropName::MAX_WIDTH,     PropName::MIN_HEIGHT,
-    PropName::MIN_WIDTH,
+    WIDTH,           HEIGHT,        FLEX,          MARGIN,      PADDING,
+    POSITION,        BORDER_WIDTH,  ALIGN_CONTENT, ALIGN_ITEMS, ALIGN_SELF,
+    ASPECT_RATIO,    BOX_SIZING,    DISPLAY,       FLEX_BASIS,  FLEX_DIRECTION,
+    ROW_GAP,         COLUMN_GAP,    FLEX_GROW,     FLEX_SHRINK, FLEX_WRAP,
+    JUSTIFY_CONTENT, MAX_HEIGHT,    MAX_WIDTH,     MIN_HEIGHT,  MIN_WIDTH,
+    STYLE_OVERFLOW,  POSITION_TYPE, DIRECTION,     Z_INDEX,
 };
 
 UIManagerNativeAnimatedDelegateBackendImpl::
