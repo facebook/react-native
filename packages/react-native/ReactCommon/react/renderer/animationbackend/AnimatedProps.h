@@ -47,7 +47,15 @@ enum PropName {
   FLEX_GROW,
   FLEX_SHRINK,
   FLEX_WRAP,
-  JUSTIFY_CONTENT
+  JUSTIFY_CONTENT,
+  MAX_HEIGHT,
+  MAX_WIDTH,
+  MIN_HEIGHT,
+  MIN_WIDTH,
+  STYLE_OVERFLOW,
+  POSITION_TYPE,
+  Z_INDEX,
+  DIRECTION,
 };
 
 struct AnimatedPropBase {
@@ -335,7 +343,36 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
       viewProps.yogaStyle.setJustifyContent(get<yoga::Justify>(animatedProp));
       break;
 
-    default:
+    case MAX_HEIGHT:
+      viewProps.yogaStyle.setMaxDimension(yoga::Dimension::Height, get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case MAX_WIDTH:
+      viewProps.yogaStyle.setMaxDimension(yoga::Dimension::Width, get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case MIN_HEIGHT:
+      viewProps.yogaStyle.setMinDimension(yoga::Dimension::Height, get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case MIN_WIDTH:
+      viewProps.yogaStyle.setMinDimension(yoga::Dimension::Width, get<yoga::Style::SizeLength>(animatedProp));
+      break;
+
+    case STYLE_OVERFLOW:
+      viewProps.yogaStyle.setOverflow(get<yoga::Overflow>(animatedProp));
+      break;
+
+    case POSITION_TYPE:
+      viewProps.yogaStyle.setPositionType(get<yoga::PositionType>(animatedProp));
+      break;
+
+    case Z_INDEX:
+      viewProps.zIndex = get<std::optional<int>>(animatedProp);
+      break;
+
+    case DIRECTION:
+      viewProps.yogaStyle.setDirection(get<yoga::Direction>(animatedProp));
       break;
   }
 }
