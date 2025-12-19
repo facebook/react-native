@@ -18,7 +18,7 @@ public class LinearGradientSpan(
     private val start: Float,
     private val colors: IntArray,
     private val angle: Float = 0f,
-    private val gradientWidth: Float = 100f,
+    private val gradientWidth: Float = Float.NaN,
 ) : CharacterStyle(), ReactSpan,
     UpdateAppearance {
     public override fun updateDrawState(tp: TextPaint) {
@@ -29,7 +29,7 @@ public class LinearGradientSpan(
         val radians = Math.toRadians(angle.toDouble())
         val width = if (gradientWidth.isNaN()) 100f else gradientWidth
         val height = tp.textSize
-        
+
         val centerX = start + width / 2
         val centerY = height / 2
         val length = Math.sqrt((width * width + height * height).toDouble()).toFloat() / 2

@@ -34,7 +34,6 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _textTransform = RCTTextTransformUndefined;
     _textStrokeWidth = NAN;
     _gradientAngle = NAN;
-    _gradientWidth = NAN;
   }
 
   return self;
@@ -170,8 +169,10 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   // Colors
-  if (_foregroundColor || _gradientColors || !isnan(_opacity)) {
-    attributes[NSForegroundColorAttributeName] = self.effectiveForegroundColor;
+  UIColor *effectiveForegroundColor = self.effectiveForegroundColor;
+
+  if (_foregroundColor || !isnan(_opacity)) {
+    attributes[NSForegroundColorAttributeName] = effectiveForegroundColor;
   }
 
   if (_backgroundColor || !isnan(_opacity)) {
@@ -204,9 +205,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   if (_textDecorationColor || isTextDecorationEnabled) {
-    UIColor *baseForegroundColor = _foregroundColor ?: [UIColor blackColor];
-    attributes[NSStrikethroughColorAttributeName] = _textDecorationColor ?: baseForegroundColor;
-    attributes[NSUnderlineColorAttributeName] = _textDecorationColor ?: baseForegroundColor;
+    attributes[NSStrikethroughColorAttributeName] = _textDecorationColor ?: effectiveForegroundColor;
+    attributes[NSUnderlineColorAttributeName] = _textDecorationColor ?: effectiveForegroundColor;
   }
 
   // Shadow
@@ -221,11 +221,11 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   // We don't use NSStrokeWidthAttributeName because it centers the stroke on the text path
   // Instead, we do custom two-pass rendering to get true outer stroke
   if (!isnan(_textStrokeWidth) && _textStrokeWidth > 0) {
-    UIColor *baseForegroundColor = _foregroundColor ?: [UIColor blackColor];
-    UIColor *strokeColorToUse = _textStrokeColor ?: baseForegroundColor;
+    UIColor *strokeColorToUse = _textStrokeColor ?: effectiveForegroundColor;
     attributes[@"RCTTextStrokeWidth"] = @(_textStrokeWidth);
     attributes[@"RCTTextStrokeColor"] = strokeColorToUse;
   }
+
 
   // Special
   if (_isHighlighted) {
@@ -324,10 +324,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
       if([cgColors count] > 0) {
           [cgColors addObject:cgColors[0]];
           CAGradientLayer *gradient = [CAGradientLayer layer];
-          
           // Use gradientWidth if specified, otherwise default to 100
           CGFloat patternWidth = (!isnan(_gradientWidth) && _gradientWidth > 0) ? _gradientWidth : 100;
-          
           CGFloat height = _lineHeight * self.effectiveFontSizeMultiplier;
           gradient.frame = CGRectMake(0, 0, patternWidth, height);
           gradient.colors = cgColors;
