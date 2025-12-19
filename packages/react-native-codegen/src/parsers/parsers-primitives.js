@@ -664,6 +664,7 @@ function emitCommonTypes(
     StringTypeAnnotation: emitString,
     MixedTypeAnnotation: cxxOnly ? emitMixed : emitGenericObject,
     UnsafeMixed: cxxOnly ? emitMixed : emitGenericObject,
+    unknown: cxxOnly ? emitMixed : emitGenericObject,
   };
 
   const typeAnnotationName = parser.convertKeywordToTypeAnnotation(
