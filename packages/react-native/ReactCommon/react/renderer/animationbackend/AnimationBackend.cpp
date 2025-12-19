@@ -22,6 +22,8 @@ static const auto layoutProps = std::set<PropName>{
     PropName::DISPLAY,      PropName::FLEX_BASIS,    PropName::FLEX_DIRECTION,
     PropName::ROW_GAP,      PropName::COLUMN_GAP,    PropName::FLEX_GROW,
     PropName::FLEX_SHRINK,  PropName::FLEX_WRAP,     PropName::JUSTIFY_CONTENT,
+    PropName::MAX_HEIGHT,   PropName::MAX_WIDTH,     PropName::MIN_HEIGHT,
+    PropName::MIN_WIDTH,
 };
 
 UIManagerNativeAnimatedDelegateBackendImpl::

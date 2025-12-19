@@ -218,6 +218,26 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case JUSTIFY_CONTENT:
       viewProps.yogaStyle.setJustifyContent(snapshot.props.yogaStyle.justifyContent());
       break;
+
+    case MAX_HEIGHT:
+      viewProps.yogaStyle.setMaxDimension(
+          yoga::Dimension::Height, snapshot.props.yogaStyle.maxDimension(yoga::Dimension::Height));
+      break;
+
+    case MAX_WIDTH:
+      viewProps.yogaStyle.setMaxDimension(
+          yoga::Dimension::Width, snapshot.props.yogaStyle.maxDimension(yoga::Dimension::Width));
+      break;
+
+    case MIN_HEIGHT:
+      viewProps.yogaStyle.setMinDimension(
+          yoga::Dimension::Height, snapshot.props.yogaStyle.minDimension(yoga::Dimension::Height));
+      break;
+
+    case MIN_WIDTH:
+      viewProps.yogaStyle.setMinDimension(
+          yoga::Dimension::Width, snapshot.props.yogaStyle.minDimension(yoga::Dimension::Width));
+      break;
   }
 }
 
