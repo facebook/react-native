@@ -283,6 +283,10 @@ void packAnimatedProp(
     case MAX_WIDTH:
     case MIN_HEIGHT:
     case MIN_WIDTH:
+    case STYLE_OVERFLOW:
+    case POSITION_TYPE:
+    case Z_INDEX:
+    case DIRECTION:
       throw std::runtime_error("Tried to synchronously update layout props");
   }
 }

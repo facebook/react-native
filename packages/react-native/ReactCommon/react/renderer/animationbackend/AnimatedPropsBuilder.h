@@ -168,6 +168,22 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<yoga::Style::SizeLength>>(MIN_WIDTH, value));
   }
+  void setOverflow(yoga::Overflow value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Overflow>>(STYLE_OVERFLOW, value));
+  }
+  void setPositionType(yoga::PositionType value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::PositionType>>(POSITION_TYPE, value));
+  }
+  void setZIndex(std::optional<int> value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<std::optional<int>>>(Z_INDEX, value));
+  }
+  void setDirection(yoga::Direction value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<yoga::Direction>>(DIRECTION, value));
+  }
   void storeDynamic(folly::dynamic &d)
   {
     rawProps = std::make_unique<RawProps>(std::move(d));

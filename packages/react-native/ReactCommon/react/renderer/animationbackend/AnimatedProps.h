@@ -51,7 +51,11 @@ enum PropName {
   MAX_HEIGHT,
   MAX_WIDTH,
   MIN_HEIGHT,
-  MIN_WIDTH
+  MIN_WIDTH,
+  STYLE_OVERFLOW,
+  POSITION_TYPE,
+  Z_INDEX,
+  DIRECTION,
 };
 
 struct AnimatedPropBase {
@@ -355,7 +359,20 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
       viewProps.yogaStyle.setMinDimension(yoga::Dimension::Width, get<yoga::Style::SizeLength>(animatedProp));
       break;
 
-    default:
+    case STYLE_OVERFLOW:
+      viewProps.yogaStyle.setOverflow(get<yoga::Overflow>(animatedProp));
+      break;
+
+    case POSITION_TYPE:
+      viewProps.yogaStyle.setPositionType(get<yoga::PositionType>(animatedProp));
+      break;
+
+    case Z_INDEX:
+      viewProps.zIndex = get<std::optional<int>>(animatedProp);
+      break;
+
+    case DIRECTION:
+      viewProps.yogaStyle.setDirection(get<yoga::Direction>(animatedProp));
       break;
   }
 }
