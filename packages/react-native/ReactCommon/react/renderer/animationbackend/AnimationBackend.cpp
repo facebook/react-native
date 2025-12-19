@@ -6,6 +6,7 @@
  */
 
 #include "AnimationBackend.h"
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/animationbackend/AnimatedPropsSerializer.h>
 #include <react/renderer/graphics/Color.h>
 #include <chrono>
@@ -60,17 +61,6 @@ static inline Props::Shared cloneProps(
   return newProps;
 }
 
-static inline bool mutationHasLayoutUpdates(
-    facebook::react::AnimationMutation& mutation) {
-  for (auto& animatedProp : mutation.props.props) {
-    // TODO: there should also be a check for the dynamic part
-    if (layoutProps.contains(animatedProp->propName)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 AnimationBackend::AnimationBackend(
     StartOnRenderCallback&& startOnRenderCallback,
     StopOnRenderCallback&& stopOnRenderCallback,
@@ -89,17 +79,19 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
   std::unordered_map<Tag, AnimatedProps> synchronousUpdates;
   std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
 
-  bool hasAnyLayoutUpdates = false;
   for (auto& callback : callbacks) {
     auto muatations = callback(static_cast<float>(timestamp));
-    for (auto& mutation : muatations) {
-      hasAnyLayoutUpdates |= mutationHasLayoutUpdates(mutation);
-      const auto family = mutation.family;
-      if (family != nullptr) {
+    if (muatations.hasLayoutUpdates) {
+      for (auto& mutation : muatations.batch) {
+        const auto family = mutation.family;
+        react_native_assert(family != nullptr);
+
         auto& [families, updates] = surfaceUpdates[family->getSurfaceId()];
         families.insert(family.get());
         updates[mutation.tag] = std::move(mutation.props);
-      } else {
+      }
+    } else {
+      for (auto& mutation : muatations.batch) {
         synchronousUpdates[mutation.tag] = std::move(mutation.props);
       }
     }
@@ -107,9 +99,11 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
 
   animatedPropsRegistry_->update(surfaceUpdates);
 
-  if (hasAnyLayoutUpdates) {
+  if (!surfaceUpdates.empty()) {
     commitUpdates(surfaceUpdates);
-  } else {
+  }
+
+  if (!synchronousUpdates.empty()) {
     synchronouslyUpdateProps(synchronousUpdates);
   }
 }
@@ -175,8 +169,8 @@ void AnimationBackend::commitUpdates(
 void AnimationBackend::synchronouslyUpdateProps(
     const std::unordered_map<Tag, AnimatedProps>& updates) {
   for (auto& [tag, animatedProps] : updates) {
-    // TODO: We shouldn't repack it into dynamic, but for that a rewrite of
-    // directManipulationCallback_ is needed
+    // TODO: We shouldn't repack it into dynamic, but for that a rewrite
+    // of directManipulationCallback_ is needed
     auto dyn = animationbackend::packAnimatedProps(animatedProps);
     directManipulationCallback_(tag, std::move(dyn));
   }
