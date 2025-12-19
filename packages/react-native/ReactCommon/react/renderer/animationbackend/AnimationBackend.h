@@ -78,6 +78,7 @@ class AnimationBackend : public UIManagerAnimationBackend {
   void clearRegistry(SurfaceId surfaceId) override;
 
   void onAnimationFrame(double timestamp) override;
+  void trigger() override;
   void start(const Callback &callback, bool isAsync);
   void stop(bool isAsync) override;
 };
