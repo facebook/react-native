@@ -50,8 +50,8 @@ const emitter = new NativeEventEmitter<$FlowFixMe>(
 const RCTNetworking = {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
     eventType: K,
-    listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
-    context?: mixed,
+    listener: (...RCTNetworkingEventDefinitions[K]) => unknown,
+    context?: unknown,
   ): EventSubscription {
     // $FlowFixMe[incompatible-type]
     return emitter.addListener(eventType, listener, context);
@@ -66,7 +66,7 @@ const RCTNetworking = {
     responseType: NativeResponseType,
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => mixed,
+    callback: (requestId: number) => unknown,
     withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);

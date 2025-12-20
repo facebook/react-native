@@ -172,7 +172,7 @@ function numColumnsOrDefault(numColumns: ?number) {
   return numColumns ?? 1;
 }
 
-function isArrayLike(data: mixed): boolean {
+function isArrayLike(data: unknown): boolean {
   // $FlowExpectedError[incompatible-use]
   return typeof Object(data).length === 'number';
 }
@@ -413,7 +413,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
     }
   }
 
-  setNativeProps(props: {[string]: mixed, ...}) {
+  setNativeProps(props: {[string]: unknown, ...}) {
     if (this._listRef) {
       this._listRef.setNativeProps(props);
     }

@@ -29,7 +29,7 @@ import {useMemo} from 'react';
 
 type Nullable = void | null;
 type Primitive = string | number | boolean | symbol | void;
-type Builtin = (...$ReadOnlyArray<empty>) => mixed | Date | Error | RegExp;
+type Builtin = (...$ReadOnlyArray<empty>) => unknown | Date | Error | RegExp;
 
 export type WithAnimatedValue<+T> = T extends Builtin | Nullable
   ? T
@@ -89,10 +89,10 @@ export type AnimatedBaseProps<Props: {...}> = LooseOmit<
   'ref',
 >;
 
-export type AnimatedComponentType<Props: {...}, +Instance = mixed> = component(
-  ref?: React.RefSetter<Instance>,
-  ...AnimatedProps<Props>
-);
+export type AnimatedComponentType<
+  Props: {...},
+  +Instance = unknown,
+> = component(ref?: React.RefSetter<Instance>, ...AnimatedProps<Props>);
 
 export default function createAnimatedComponent<
   TInstance: React.ComponentType<any>,

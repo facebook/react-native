@@ -135,8 +135,8 @@ function reportException(
 }
 
 declare var console: {
-  error: (...data: $ReadOnlyArray<mixed>) => void,
-  _errorOriginal: (...data: $ReadOnlyArray<mixed>) => void,
+  error: (...data: $ReadOnlyArray<unknown>) => void,
+  _errorOriginal: (...data: $ReadOnlyArray<unknown>) => void,
   reportErrorsAsExceptions: boolean,
   ...
 };
@@ -148,7 +148,7 @@ let inExceptionHandler = false;
 /**
  * Logs exceptions to the (native) console and displays them
  */
-function handleException(e: mixed, isFatal: boolean) {
+function handleException(e: unknown, isFatal: boolean) {
   // TODO(T196834299): We should really use a c++ turbomodule for this
   const reportToConsole = true;
   if (

@@ -847,7 +847,7 @@ declare class dgram$Socket extends events$EventEmitter {
     msg: Buffer,
     port: number,
     address: string,
-    callback?: (err: ?Error, bytes: any) => mixed,
+    callback?: (err: ?Error, bytes: any) => unknown,
   ): void;
   send(
     msg: Buffer,
@@ -855,7 +855,7 @@ declare class dgram$Socket extends events$EventEmitter {
     length: number,
     port: number,
     address: string,
-    callback?: (err: ?Error, bytes: any) => mixed,
+    callback?: (err: ?Error, bytes: any) => unknown,
   ): void;
   setBroadcast(flag: boolean): void;
   setMulticastLoopback(flag: boolean): void;
@@ -2021,7 +2021,7 @@ declare class http$Server extends net$Server {
     callback?: Function,
   ): this;
   listening: boolean;
-  close(callback?: (error: ?Error) => mixed): this;
+  close(callback?: (error: ?Error) => unknown): this;
   closeAllConnections(): void;
   closeIdleConnections(): void;
   maxHeadersCount: number;
@@ -2057,7 +2057,7 @@ declare class https$Server extends tls$Server {
     },
     callback?: Function,
   ): this;
-  close(callback?: (error: ?Error) => mixed): this;
+  close(callback?: (error: ?Error) => unknown): this;
   closeAllConnections(): void;
   closeIdleConnections(): void;
   keepAliveTimeout: number;
@@ -2070,7 +2070,7 @@ type requestOptions = {|
   auth?: string,
   defaultPort?: number,
   family?: number,
-  headers?: {[key: string]: mixed, ...},
+  headers?: {[key: string]: unknown, ...},
   host?: string,
   hostname?: string,
   localAddress?: string,
@@ -2208,14 +2208,14 @@ declare class net$Socket extends stream$Duplex {
   bufferSize: number;
   bytesRead: number;
   bytesWritten: number;
-  connect(path: string, connectListener?: () => mixed): net$Socket;
+  connect(path: string, connectListener?: () => unknown): net$Socket;
   connect(
     port: number,
     host?: string,
-    connectListener?: () => mixed,
+    connectListener?: () => unknown,
   ): net$Socket;
-  connect(port: number, connectListener?: () => mixed): net$Socket;
-  connect(options: Object, connectListener?: () => mixed): net$Socket;
+  connect(port: number, connectListener?: () => unknown): net$Socket;
+  connect(options: Object, connectListener?: () => unknown): net$Socket;
   destroyed: boolean;
   end(
     chunkOrEncodingOrCallback?:
@@ -2275,7 +2275,7 @@ type net$connectOptions = {
     domain: string,
     options?: ?number | ?Object,
     callback?: (err: ?Error, address: string, family: number) => void,
-  ) => mixed,
+  ) => unknown,
   path?: string,
   ...
 };
@@ -2893,7 +2893,7 @@ type tls$connectOptions = {
     domain: string,
     options?: ?number | ?Object,
     callback?: (err: ?Error, address: string, family: number) => void,
-  ) => mixed,
+  ) => unknown,
   requestOCSP?: boolean,
   ...
 };
@@ -3095,7 +3095,7 @@ declare module 'url' {
         value: string,
         name: string,
         searchParams: URLSearchParams,
-      ) => mixed,
+      ) => unknown,
       thisArg?: This,
     ): void;
     get(name: string): string | null;
@@ -3270,45 +3270,45 @@ declare module 'util' {
   }
 
   declare var types: {
-    isAnyArrayBuffer: (value: mixed) => boolean,
-    isArgumentsObject: (value: mixed) => boolean,
-    isArrayBuffer: (value: mixed) => boolean,
-    isAsyncFunction: (value: mixed) => boolean,
-    isBigInt64Array: (value: mixed) => boolean,
-    isBigUint64Array: (value: mixed) => boolean,
-    isBooleanObject: (value: mixed) => boolean,
-    isBoxedPrimitive: (value: mixed) => boolean,
-    isDataView: (value: mixed) => boolean,
-    isDate: (value: mixed) => boolean,
-    isExternal: (value: mixed) => boolean,
-    isFloat32Array: (value: mixed) => boolean,
-    isFloat64Array: (value: mixed) => boolean,
-    isGeneratorFunction: (value: mixed) => boolean,
-    isGeneratorObject: (value: mixed) => boolean,
-    isInt8Array: (value: mixed) => boolean,
-    isInt16Array: (value: mixed) => boolean,
-    isInt32Array: (value: mixed) => boolean,
-    isMap: (value: mixed) => boolean,
-    isMapIterator: (value: mixed) => boolean,
-    isModuleNamespaceObject: (value: mixed) => boolean,
-    isNativeError: (value: mixed) => boolean,
-    isNumberObject: (value: mixed) => boolean,
-    isPromise: (value: mixed) => boolean,
-    isProxy: (value: mixed) => boolean,
-    isRegExp: (value: mixed) => boolean,
-    isSet: (value: mixed) => boolean,
-    isSetIterator: (value: mixed) => boolean,
-    isSharedArrayBuffer: (value: mixed) => boolean,
-    isStringObject: (value: mixed) => boolean,
-    isSymbolObject: (value: mixed) => boolean,
-    isTypedArray: (value: mixed) => boolean,
-    isUint8Array: (value: mixed) => boolean,
-    isUint8ClampedArray: (value: mixed) => boolean,
-    isUint16Array: (value: mixed) => boolean,
-    isUint32Array: (value: mixed) => boolean,
-    isWeakMap: (value: mixed) => boolean,
-    isWeakSet: (value: mixed) => boolean,
-    isWebAssemblyCompiledModule: (value: mixed) => boolean,
+    isAnyArrayBuffer: (value: unknown) => boolean,
+    isArgumentsObject: (value: unknown) => boolean,
+    isArrayBuffer: (value: unknown) => boolean,
+    isAsyncFunction: (value: unknown) => boolean,
+    isBigInt64Array: (value: unknown) => boolean,
+    isBigUint64Array: (value: unknown) => boolean,
+    isBooleanObject: (value: unknown) => boolean,
+    isBoxedPrimitive: (value: unknown) => boolean,
+    isDataView: (value: unknown) => boolean,
+    isDate: (value: unknown) => boolean,
+    isExternal: (value: unknown) => boolean,
+    isFloat32Array: (value: unknown) => boolean,
+    isFloat64Array: (value: unknown) => boolean,
+    isGeneratorFunction: (value: unknown) => boolean,
+    isGeneratorObject: (value: unknown) => boolean,
+    isInt8Array: (value: unknown) => boolean,
+    isInt16Array: (value: unknown) => boolean,
+    isInt32Array: (value: unknown) => boolean,
+    isMap: (value: unknown) => boolean,
+    isMapIterator: (value: unknown) => boolean,
+    isModuleNamespaceObject: (value: unknown) => boolean,
+    isNativeError: (value: unknown) => boolean,
+    isNumberObject: (value: unknown) => boolean,
+    isPromise: (value: unknown) => boolean,
+    isProxy: (value: unknown) => boolean,
+    isRegExp: (value: unknown) => boolean,
+    isSet: (value: unknown) => boolean,
+    isSetIterator: (value: unknown) => boolean,
+    isSharedArrayBuffer: (value: unknown) => boolean,
+    isStringObject: (value: unknown) => boolean,
+    isSymbolObject: (value: unknown) => boolean,
+    isTypedArray: (value: unknown) => boolean,
+    isUint8Array: (value: unknown) => boolean,
+    isUint8ClampedArray: (value: unknown) => boolean,
+    isUint16Array: (value: unknown) => boolean,
+    isUint32Array: (value: unknown) => boolean,
+    isWeakMap: (value: unknown) => boolean,
+    isWeakSet: (value: unknown) => boolean,
+    isWebAssemblyCompiledModule: (value: unknown) => boolean,
     ...
   };
 
@@ -4047,18 +4047,18 @@ declare class Process extends events$EventEmitter {
   emitWarning(warning: string | Error): void;
   emitWarning(
     warning: string,
-    typeOrCtor: string | ((...empty) => mixed),
+    typeOrCtor: string | ((...empty) => unknown),
   ): void;
   emitWarning(
     warning: string,
     type: string,
-    codeOrCtor: string | ((...empty) => mixed),
+    codeOrCtor: string | ((...empty) => unknown),
   ): void;
   emitWarning(
     warning: string,
     type: string,
     code: string,
-    ctor?: (...empty) => mixed,
+    ctor?: (...empty) => unknown,
   ): void;
   execArgv: Array<string>;
   execPath: string;
@@ -4088,7 +4088,7 @@ declare class Process extends events$EventEmitter {
     },
     rss: () => number,
   };
-  nextTick: <T>(cb: (...T) => mixed, ...T) => void;
+  nextTick: <T>(cb: (...T) => unknown, ...T) => void;
   pid: number;
   platform: string;
   release: {
@@ -4129,7 +4129,7 @@ declare var __filename: string;
 declare var __dirname: string;
 
 declare function setImmediate(
-  callback: (...args: Array<any>) => mixed,
+  callback: (...args: Array<any>) => unknown,
   ...args: Array<any>
 ): Object;
 declare function clearImmediate(immediateObject: any): Object;

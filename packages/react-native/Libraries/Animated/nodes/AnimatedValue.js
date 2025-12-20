@@ -134,7 +134,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  addListener(callback: (value: any) => mixed): string {
+  addListener(callback: (value: any) => unknown): string {
     const id = super.addListener(callback);
     this._listenerCount++;
     if (this.__isNative) {

@@ -683,7 +683,7 @@ describe('<Image>', () => {
             (width, height) => {
               size = {width, height};
             },
-            (e: mixed) => {
+            (e: unknown) => {
               if (e instanceof Error) {
                 err = e;
               }

@@ -38,7 +38,7 @@ describe('checkVersion', () => {
   });
 });
 
-function setDevelopmentModeForTests(dev: mixed) {
+function setDevelopmentModeForTests(dev: unknown) {
   let originalDev;
 
   beforeAll(() => {

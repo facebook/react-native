@@ -27,7 +27,7 @@ export type AnimatedColorConfig = $ReadOnly<{
   useNativeDriver: boolean,
 }>;
 
-type ColorListenerCallback = (value: ColorValue) => mixed;
+type ColorListenerCallback = (value: ColorValue) => unknown;
 
 export type RgbaValue = {
   +r: number,

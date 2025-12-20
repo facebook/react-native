@@ -201,7 +201,7 @@ const LayoutAnimation = {
     scaleY: 'scaleY',
     scaleXY: 'scaleXY',
   }) as LayoutAnimationProperties,
-  checkConfig(...args: Array<mixed>) {
+  checkConfig(...args: Array<unknown>) {
     console.error('LayoutAnimation.checkConfig(...) has been disabled.');
   },
   Presets,

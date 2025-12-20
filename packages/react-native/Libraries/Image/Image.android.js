@@ -48,7 +48,7 @@ function generateRequestId() {
 function getSize(
   url: string,
   success?: (width: number, height: number) => void,
-  failure?: (error: mixed) => void,
+  failure?: (error: unknown) => void,
 ): void | Promise<ImageSize> {
   const promise = NativeImageLoaderAndroid.getSize(url);
   if (typeof success !== 'function') {
@@ -74,7 +74,7 @@ function getSizeWithHeaders(
   url: string,
   headers: {[string]: string, ...},
   success?: (width: number, height: number) => void,
-  failure?: (error: mixed) => void,
+  failure?: (error: unknown) => void,
 ): void | Promise<ImageSize> {
   const promise = NativeImageLoaderAndroid.getSizeWithHeaders(url, headers);
   if (typeof success !== 'function') {

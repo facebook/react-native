@@ -21,7 +21,7 @@ export type AnimatedValueXYConfig = $ReadOnly<{
   ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
-type ValueXYListenerCallback = (value: {x: number, y: number, ...}) => mixed;
+type ValueXYListenerCallback = (value: {x: number, y: number, ...}) => unknown;
 
 let _uniqueId = 1;
 

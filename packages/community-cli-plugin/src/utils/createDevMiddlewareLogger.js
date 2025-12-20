@@ -34,7 +34,7 @@ function makeLogger(
   reporter: TerminalReporter,
   level: 'info' | 'warn' | 'error',
 ): LoggerFn {
-  return (...data: Array<mixed>) =>
+  return (...data: Array<unknown>) =>
     reporter.update({
       type: 'unstable_server_log',
       level,
