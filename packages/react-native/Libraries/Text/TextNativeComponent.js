@@ -21,7 +21,7 @@ export type NativeTextProps = $ReadOnly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
-  onClick?: ?(event: GestureResponderEvent) => mixed,
+  onClick?: ?(event: GestureResponderEvent) => unknown,
   // This is only needed for platforms that optimize text hit testing, e.g.,
   // react-native-windows. It can be used to only hit test virtual text spans
   // that have pressable events attached to them.

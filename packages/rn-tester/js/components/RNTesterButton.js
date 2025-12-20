@@ -19,7 +19,7 @@ type Props = $ReadOnly<{
   testID?: string,
   textTestID?: string,
   children?: React.Node,
-  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => unknown,
 }>;
 
 function RNTesterButton(props: Props): React.Node {

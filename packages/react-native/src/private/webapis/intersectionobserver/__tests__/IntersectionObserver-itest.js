@@ -28,7 +28,7 @@ declare const IntersectionObserver: Class<IntersectionObserverType>;
 
 setUpIntersectionObserver();
 
-function ensureReactNativeElement(value: mixed): ReactNativeElement {
+function ensureReactNativeElement(value: unknown): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
 }
 

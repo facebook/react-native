@@ -27,7 +27,7 @@ describe('Event Dispatching', () => {
 
     let onPointerUpPriority;
 
-    const onPointerUp = jest.fn((event: mixed) => {
+    const onPointerUp = jest.fn((event: unknown) => {
       onPointerUpPriority = UIManager.unstable_getCurrentEventPriority();
     });
 
@@ -57,7 +57,7 @@ describe('Event Dispatching', () => {
 
     let onPointerMovePriority;
 
-    const onPointerMove = jest.fn((event: mixed) => {
+    const onPointerMove = jest.fn((event: unknown) => {
       onPointerMovePriority = UIManager.unstable_getCurrentEventPriority();
     });
 
@@ -89,7 +89,7 @@ describe('Event Dispatching', () => {
 
     let onPointerMovePriority;
 
-    const onPointerMove = jest.fn((event: mixed) => {
+    const onPointerMove = jest.fn((event: unknown) => {
       onPointerMovePriority = UIManager.unstable_getCurrentEventPriority();
     });
 
@@ -123,10 +123,10 @@ describe('Event Dispatching', () => {
       let onPointerEnterPriority;
       let onPointerLeavePriority;
 
-      const onPointerEnter = jest.fn((event: mixed) => {
+      const onPointerEnter = jest.fn((event: unknown) => {
         onPointerEnterPriority = UIManager.unstable_getCurrentEventPriority();
       });
-      const onPointerLeave = jest.fn((event: mixed) => {
+      const onPointerLeave = jest.fn((event: unknown) => {
         onPointerLeavePriority = UIManager.unstable_getCurrentEventPriority();
       });
 
@@ -180,7 +180,7 @@ describe('Event Dispatching', () => {
       const ref = React.createRef<React.ElementRef<typeof View>>();
 
       let onPointerMovePriority;
-      const onPointerMove = jest.fn((event: mixed) => {
+      const onPointerMove = jest.fn((event: unknown) => {
         onPointerMovePriority = UIManager.unstable_getCurrentEventPriority();
       });
 
@@ -261,7 +261,7 @@ describe('Event Dispatching', () => {
       const ref = React.createRef<React.ElementRef<typeof View>>();
 
       let onPointerMovePriority;
-      const onPointerMove = jest.fn((event: mixed) => {
+      const onPointerMove = jest.fn((event: unknown) => {
         onPointerMovePriority = UIManager.unstable_getCurrentEventPriority();
       });
 

@@ -102,7 +102,7 @@ function buildCommandSchemaInternal(
         };
         break;
       default:
-        (type: mixed);
+        (type: unknown);
         throw new Error(
           `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
         );
@@ -129,7 +129,7 @@ function buildCommandSchemaInternal(
 }
 
 function getCommandArrayElementTypeType(
-  inputType: mixed,
+  inputType: unknown,
   parser: Parser,
 ): ComponentCommandArrayTypeAnnotation['elementType'] {
   // TODO: T172453752 support more complex type annotation for array element

@@ -15,7 +15,7 @@ import path from 'path';
 
 const logWatchman = debug('helloworld:cli:watchman');
 
-export async function pauseWatchman(command: () => Promise<mixed | void>) {
+export async function pauseWatchman(command: () => Promise<unknown | void>) {
   let p: ReturnType<typeof spawn> | null = null;
   try {
     const raw: string = execSync('watchman watch-project .', {

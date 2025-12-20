@@ -159,7 +159,7 @@ export default {
    */
   setStyleAttributePreprocessor(
     property: string,
-    process: (nextProp: mixed) => mixed,
+    process: (nextProp: unknown) => unknown,
   ) {
     let value;
 

@@ -12,7 +12,7 @@ import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export opaque type IdleCallbackID = mixed;
+export opaque type IdleCallbackID = unknown;
 
 export type RequestIdleCallbackOptions = {
   timeout?: number,
@@ -20,12 +20,12 @@ export type RequestIdleCallbackOptions = {
 
 export type IdleDeadline = {
   didTimeout: boolean,
-  timeRemaining: () => mixed,
+  timeRemaining: () => unknown,
 };
 
 export interface Spec extends TurboModule {
   +requestIdleCallback: (
-    callback: (idleDeadline: IdleDeadline) => mixed,
+    callback: (idleDeadline: IdleDeadline) => unknown,
     options?: RequestIdleCallbackOptions,
   ) => IdleCallbackID;
   +cancelIdleCallback: (handle: IdleCallbackID) => void;

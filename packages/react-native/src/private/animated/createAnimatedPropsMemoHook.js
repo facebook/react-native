@@ -24,8 +24,8 @@ type CompositeKey = {
   [string]:
     | CompositeKeyComponent
     | AnimatedEvent
-    | $ReadOnlyArray<mixed>
-    | $ReadOnly<{[string]: mixed}>,
+    | $ReadOnlyArray<unknown>
+    | $ReadOnly<{[string]: unknown}>,
 };
 
 type CompositeKeyComponent =
@@ -38,8 +38,8 @@ type $ReadOnlyCompositeKey = $ReadOnly<{
   [string]:
     | $ReadOnlyCompositeKeyComponent
     | AnimatedEvent
-    | $ReadOnlyArray<mixed>
-    | $ReadOnly<{[string]: mixed}>,
+    | $ReadOnlyArray<unknown>
+    | $ReadOnly<{[string]: unknown}>,
 }>;
 
 type $ReadOnlyCompositeKeyComponent =
@@ -49,7 +49,7 @@ type $ReadOnlyCompositeKeyComponent =
 
 type AnimatedPropsMemoHook = (
   () => AnimatedProps,
-  props: $ReadOnly<{[string]: mixed}>,
+  props: $ReadOnly<{[string]: unknown}>,
 ) => AnimatedProps;
 
 /**
@@ -62,7 +62,7 @@ export function createAnimatedPropsMemoHook(
 ): AnimatedPropsMemoHook {
   return function useAnimatedPropsMemo(
     create: () => AnimatedProps,
-    props: $ReadOnly<{[string]: mixed}>,
+    props: $ReadOnly<{[string]: unknown}>,
   ): AnimatedProps {
     const compositeKey = useMemo(
       () => createCompositeKeyForProps(props, allowlist),
@@ -107,7 +107,7 @@ export function createAnimatedPropsMemoHook(
  * returns null.
  */
 export function createCompositeKeyForProps(
-  props: $ReadOnly<{[string]: mixed}>,
+  props: $ReadOnly<{[string]: unknown}>,
   allowlist: ?AnimatedPropsAllowlist,
 ): $ReadOnlyCompositeKey | null {
   let compositeKey: CompositeKey | null = null;
@@ -122,7 +122,7 @@ export function createCompositeKeyForProps(
       if (key === 'style') {
         // $FlowFixMe[incompatible-call] - `style` is a valid argument.
         // $FlowFixMe[incompatible-type] - `flattenStyle` returns an object.
-        const flatStyle: ?{[string]: mixed} = flattenStyle(value);
+        const flatStyle: ?{[string]: unknown} = flattenStyle(value);
         if (flatStyle != null) {
           compositeKeyComponent = createCompositeKeyForObject(
             flatStyle,
@@ -160,7 +160,7 @@ export function createCompositeKeyForProps(
  * If `array` contains no `AnimatedNode` instances, this returns null.
  */
 function createCompositeKeyForArray(
-  array: $ReadOnlyArray<mixed>,
+  array: $ReadOnlyArray<unknown>,
 ): $ReadOnlyArray<$ReadOnlyCompositeKeyComponent | null> | null {
   let compositeKey: Array<$ReadOnlyCompositeKeyComponent | null> | null = null;
 
@@ -200,7 +200,7 @@ function createCompositeKeyForArray(
  * If `object` contains no `AnimatedNode` instances, this returns null.
  */
 function createCompositeKeyForObject(
-  object: $ReadOnly<{[string]: mixed}>,
+  object: $ReadOnly<{[string]: unknown}>,
   allowlist?: ?AnimatedStyleAllowlist,
 ): $ReadOnly<{[string]: $ReadOnlyCompositeKeyComponent}> | null {
   let compositeKey: {[string]: $ReadOnlyCompositeKeyComponent} | null = null;

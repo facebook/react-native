@@ -29,7 +29,7 @@ export type AppConfig = {
   ...
 };
 export type AppParameters = {
-  initialProps: $ReadOnly<{[string]: mixed, ...}>,
+  initialProps: $ReadOnly<{[string]: unknown, ...}>,
   rootTag: RootTag,
   fabric?: boolean,
 };

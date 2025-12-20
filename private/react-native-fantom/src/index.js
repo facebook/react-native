@@ -222,7 +222,7 @@ export function unstable_produceFramesForDuration(milliseconds: number) {
 export function unstable_getDirectManipulationProps(
   nodeOrRef: NodeOrRef,
 ): $ReadOnly<{
-  [string]: mixed,
+  [string]: unknown,
 }> {
   const node = getNode(nodeOrRef);
   const shadowNode = getNativeNodeReference(node);
@@ -230,7 +230,7 @@ export function unstable_getDirectManipulationProps(
 }
 
 export function unstable_getFabricUpdateProps(nodeOrRef: NodeOrRef): $ReadOnly<{
-  [string]: mixed,
+  [string]: unknown,
 }> {
   const node = getNode(nodeOrRef);
   const shadowNode = getNativeNodeReference(node);
@@ -400,7 +400,7 @@ export function createRoot(rootConfig?: RootConfig): Root {
 export function enqueueNativeEvent(
   nodeOrRef: NodeOrRef,
   type: string,
-  payload?: $ReadOnly<{[key: string]: mixed}>,
+  payload?: $ReadOnly<{[key: string]: unknown}>,
   options?: $ReadOnly<{category?: NativeEventCategory, isUnique?: boolean}>,
 ) {
   const node = getNode(nodeOrRef);
@@ -432,7 +432,7 @@ export function enqueueNativeEvent(
 export function dispatchNativeEvent(
   nodeOrRef: NodeOrRef,
   type: string,
-  payload?: $ReadOnly<{[key: string]: mixed}>,
+  payload?: $ReadOnly<{[key: string]: unknown}>,
   options?: $ReadOnly<{category?: NativeEventCategory, isUnique?: boolean}>,
 ) {
   const node = getNode(nodeOrRef);
@@ -632,7 +632,7 @@ export function takeJSMemoryHeapSnapshot(): void {
 
   try {
     NativeFantom.saveJSMemoryHeapSnapshot(filePath);
-  } catch (nativeError: mixed) {
+  } catch (nativeError: unknown) {
     let errorMessage = 'Error saving JS heap snapshot.';
     if (
       nativeError instanceof Error &&

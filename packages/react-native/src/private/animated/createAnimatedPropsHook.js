@@ -34,7 +34,7 @@ type ReducedProps<TProps> = {
   collapsable: boolean,
   ...
 };
-type CallbackRef<T> = T => mixed;
+type CallbackRef<T> = T => unknown;
 
 export type AnimatedPropsHook = <TProps: {...}, TInstance>(
   props: TProps,

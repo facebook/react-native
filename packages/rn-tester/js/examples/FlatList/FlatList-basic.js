@@ -107,7 +107,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this.setState({filterText});
   };
 
-  _onChangeScrollToIndex = (text: mixed) => {
+  _onChangeScrollToIndex = (text: unknown) => {
     this._listRef?.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
 
@@ -298,7 +298,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
       </RNTesterPage>
     );
   }
-  _captureRef = (ref: FlatList<mixed> | null) => {
+  _captureRef = (ref: FlatList<unknown> | null) => {
     this._listRef = ref;
   };
   // $FlowFixMe[missing-local-annot]
@@ -422,7 +422,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     }));
   };
 
-  _listRef: FlatList<mixed> | null;
+  _listRef: FlatList<unknown> | null;
 }
 
 const styles = StyleSheet.create({

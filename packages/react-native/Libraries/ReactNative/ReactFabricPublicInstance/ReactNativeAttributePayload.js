@@ -34,7 +34,7 @@ const deepDifferOptions = {
   unsafelyIgnoreFunctions: true,
 };
 
-function defaultDiffer(prevProp: mixed, nextProp: mixed): boolean {
+function defaultDiffer(prevProp: unknown, nextProp: unknown): boolean {
   if (typeof nextProp !== 'object' || nextProp === null) {
     // Scalars have already been checked for equality
     return true;

@@ -29,7 +29,7 @@ type State = {
   testResults: {
     [string]: {
       type: string,
-      value: mixed,
+      value: unknown,
       ...
     },
     ...
@@ -239,7 +239,7 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
       | {const1: boolean, const2: number, const3: string}
       | number
       | {[key: string]: ?number}
-      | Promise<mixed>
+      | Promise<unknown>
       | number
       | string,
   ) {

@@ -65,4 +65,4 @@ const mergeObjects: PluginObj<BaseVisitorState> = {
 };
 
 // Visitor state is only used internally, so we can safely cast to PluginObj<mixed>.
-module.exports = mergeObjects as $FlowFixMe as PluginObj<mixed>;
+module.exports = mergeObjects as $FlowFixMe as PluginObj<unknown>;

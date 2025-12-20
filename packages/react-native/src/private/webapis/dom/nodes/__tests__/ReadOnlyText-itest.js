@@ -22,15 +22,15 @@ import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/React
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
 
-function ensureReadOnlyText(value: mixed): ReadOnlyText {
+function ensureReadOnlyText(value: unknown): ReadOnlyText {
   return ensureInstance(value, ReadOnlyText);
 }
 
-function ensureReadOnlyNode(value: mixed): ReadOnlyNode {
+function ensureReadOnlyNode(value: unknown): ReadOnlyNode {
   return ensureInstance(value, ReadOnlyNode);
 }
 
-function ensureReactNativeElement(value: mixed): ReactNativeElement {
+function ensureReactNativeElement(value: unknown): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
 }
 

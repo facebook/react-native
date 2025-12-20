@@ -39,7 +39,6 @@ import typeof Platform from '../Utilities/Platform';
 // Expose these types to the React renderer
 export type {
   HostInstance as PublicInstance,
-
   // These types are only necessary for Paper
   NativeMethods as LegacyPublicInstance,
   MeasureOnSuccessCallback,
@@ -79,7 +78,7 @@ module.exports = {
     return require('../Utilities/differ/deepDiffer').default;
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
-    {...} | Array<mixed>,
+    {...} | Array<unknown>,
   > {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
   },

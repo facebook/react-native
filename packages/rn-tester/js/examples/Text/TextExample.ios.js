@@ -269,7 +269,7 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
-class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
+class TextBaseLineLayoutExample extends React.Component<{}, unknown> {
   render(): React.Node {
     const texts = [];
     for (let i = 9; i >= 0; i--) {

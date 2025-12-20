@@ -52,25 +52,25 @@ export interface Spec extends TurboModule {
    */
 
   +compareDocumentPosition: (
-    nativeNodeReference: mixed /* NativeNodeReference */,
-    otherNativeNodeReference: mixed /* NativeNodeReference */,
+    nativeNodeReference: unknown /* NativeNodeReference */,
+    otherNativeNodeReference: unknown /* NativeNodeReference */,
   ) => number;
 
   +getChildNodes: (
-    nativeNodeReference: mixed /* NativeNodeReference */,
-  ) => $ReadOnlyArray<mixed> /* $ReadOnlyArray<InstanceHandle> */;
+    nativeNodeReference: unknown /* NativeNodeReference */,
+  ) => $ReadOnlyArray<unknown> /* $ReadOnlyArray<InstanceHandle> */;
 
   +getElementById?: (
-    nativeNodeReference: mixed /* NativeNodeReference */,
+    nativeNodeReference: unknown /* NativeNodeReference */,
     id: string,
-  ) => mixed /* ?InstanceHandle */;
+  ) => unknown /* ?InstanceHandle */;
 
   +getParentNode: (
-    nativeNodeReference: mixed /* NativeNodeReference */,
-  ) => mixed /* ?InstanceHandle */;
+    nativeNodeReference: unknown /* NativeNodeReference */,
+  ) => unknown /* ?InstanceHandle */;
 
   +isConnected: (
-    nativeNodeReference: mixed /* NativeNodeReference */,
+    nativeNodeReference: unknown /* NativeNodeReference */,
   ) => boolean;
 
   /*
@@ -78,46 +78,46 @@ export interface Spec extends TurboModule {
    */
 
   +getBorderWidth: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
   ) => $ReadOnlyArray<number> /* [topWidth: number, rightWidth: number, bottomWidth: number, leftWidth: number] */;
 
   +getBoundingClientRect: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
     includeTransform: boolean,
   ) => $ReadOnlyArray<number> /* [x: number, y: number, width: number, height: number] */;
 
   +getInnerSize: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
   ) => $ReadOnlyArray<number> /* [width: number, height: number] */;
 
   +getScrollPosition: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
   ) => $ReadOnlyArray<number> /* [scrollLeft: number, scrollTop: number] */;
 
   +getScrollSize: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
   ) => $ReadOnlyArray<number> /* [scrollWidth: number, scrollHeight: number] */;
 
   +getTagName: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
   ) => string;
 
   +getTextContent: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
   ) => string;
 
   +hasPointerCapture: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
     pointerId: number,
   ) => boolean;
 
   +releasePointerCapture: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
     pointerId: number,
   ) => void;
 
   +setPointerCapture: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
     pointerId: number,
   ) => void;
 
@@ -126,8 +126,8 @@ export interface Spec extends TurboModule {
    */
 
   +getOffset: (
-    nativeElementReference: mixed /* NativeElementReference */,
-  ) => $ReadOnlyArray<mixed> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
+    nativeElementReference: unknown /* NativeElementReference */,
+  ) => $ReadOnlyArray<unknown> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
 
   /*
    * Special methods to handle the root node.
@@ -135,26 +135,26 @@ export interface Spec extends TurboModule {
 
   +linkRootNode?: (
     rootTag: number /* RootTag */,
-    instanceHandle: mixed /* InstanceHandle */,
-  ) => mixed /* ?NativeElementReference */;
+    instanceHandle: unknown /* InstanceHandle */,
+  ) => unknown /* ?NativeElementReference */;
 
   /**
    * Legacy layout APIs (for `ReactNativeElement`).
    */
 
   +measure: (
-    nativeElementReference: mixed,
+    nativeElementReference: unknown,
     callback: MeasureOnSuccessCallback,
   ) => void;
 
   +measureInWindow: (
-    nativeElementReference: mixed,
+    nativeElementReference: unknown,
     callback: MeasureInWindowOnSuccessCallback,
   ) => void;
 
   +measureLayout: (
-    nativeElementReference: mixed,
-    relativeNode: mixed,
+    nativeElementReference: unknown,
+    relativeNode: unknown,
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void;
@@ -164,8 +164,8 @@ export interface Spec extends TurboModule {
    */
 
   +setNativeProps: (
-    nativeElementReference: mixed,
-    updatePayload: mixed,
+    nativeElementReference: unknown,
+    updatePayload: unknown,
   ) => void;
 }
 

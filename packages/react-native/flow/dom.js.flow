@@ -101,7 +101,7 @@ declare class DataTransferItemList {
 declare class DataTransferItem {
   kind: string; // readonly
   type: string; // readonly
-  getAsString(_callback: ?(data: string) => mixed): void;
+  getAsString(_callback: ?(data: string) => unknown): void;
   getAsFile(): ?File;
   /*
    * This is not supported by all browsers, please have a fallback plan for it.
@@ -168,79 +168,79 @@ declare type ScrollToOptions = {
   ...
 };
 
-type EventHandler = (event: Event) => mixed;
+type EventHandler = (event: Event) => unknown;
 type EventListener = {handleEvent: EventHandler, ...} | EventHandler;
-type MouseEventHandler = (event: MouseEvent) => mixed;
+type MouseEventHandler = (event: MouseEvent) => unknown;
 type MouseEventListener =
   | {handleEvent: MouseEventHandler, ...}
   | MouseEventHandler;
-type FocusEventHandler = (event: FocusEvent) => mixed;
+type FocusEventHandler = (event: FocusEvent) => unknown;
 type FocusEventListener =
   | {handleEvent: FocusEventHandler, ...}
   | FocusEventHandler;
-type KeyboardEventHandler = (event: KeyboardEvent) => mixed;
+type KeyboardEventHandler = (event: KeyboardEvent) => unknown;
 type KeyboardEventListener =
   | {handleEvent: KeyboardEventHandler, ...}
   | KeyboardEventHandler;
-type InputEventHandler = (event: InputEvent) => mixed;
+type InputEventHandler = (event: InputEvent) => unknown;
 type InputEventListener =
   | {handleEvent: InputEventHandler, ...}
   | InputEventHandler;
-type TouchEventHandler = (event: TouchEvent) => mixed;
+type TouchEventHandler = (event: TouchEvent) => unknown;
 type TouchEventListener =
   | {handleEvent: TouchEventHandler, ...}
   | TouchEventHandler;
-type WheelEventHandler = (event: WheelEvent) => mixed;
+type WheelEventHandler = (event: WheelEvent) => unknown;
 type WheelEventListener =
   | {handleEvent: WheelEventHandler, ...}
   | WheelEventHandler;
-type AbortProgressEventHandler = (event: ProgressEvent) => mixed;
+type AbortProgressEventHandler = (event: ProgressEvent) => unknown;
 type AbortProgressEventListener =
   | {handleEvent: AbortProgressEventHandler, ...}
   | AbortProgressEventHandler;
-type ProgressEventHandler = (event: ProgressEvent) => mixed;
+type ProgressEventHandler = (event: ProgressEvent) => unknown;
 type ProgressEventListener =
   | {handleEvent: ProgressEventHandler, ...}
   | ProgressEventHandler;
-type DragEventHandler = (event: DragEvent) => mixed;
+type DragEventHandler = (event: DragEvent) => unknown;
 type DragEventListener =
   | {handleEvent: DragEventHandler, ...}
   | DragEventHandler;
-type PointerEventHandler = (event: PointerEvent) => mixed;
+type PointerEventHandler = (event: PointerEvent) => unknown;
 type PointerEventListener =
   | {handleEvent: PointerEventHandler, ...}
   | PointerEventHandler;
-type AnimationEventHandler = (event: AnimationEvent) => mixed;
+type AnimationEventHandler = (event: AnimationEvent) => unknown;
 type AnimationEventListener =
   | {handleEvent: AnimationEventHandler, ...}
   | AnimationEventHandler;
-type ClipboardEventHandler = (event: ClipboardEvent) => mixed;
+type ClipboardEventHandler = (event: ClipboardEvent) => unknown;
 type ClipboardEventListener =
   | {handleEvent: ClipboardEventHandler, ...}
   | ClipboardEventHandler;
-type TransitionEventHandler = (event: TransitionEvent) => mixed;
+type TransitionEventHandler = (event: TransitionEvent) => unknown;
 type TransitionEventListener =
   | {handleEvent: TransitionEventHandler, ...}
   | TransitionEventHandler;
-type MessageEventHandler = (event: MessageEvent) => mixed;
+type MessageEventHandler = (event: MessageEvent) => unknown;
 type MessageEventListener =
   | {handleEvent: MessageEventHandler, ...}
   | MessageEventHandler;
-type BeforeUnloadEventHandler = (event: BeforeUnloadEvent) => mixed;
+type BeforeUnloadEventHandler = (event: BeforeUnloadEvent) => unknown;
 type BeforeUnloadEventListener =
   | {handleEvent: BeforeUnloadEventHandler, ...}
   | BeforeUnloadEventHandler;
-type StorageEventHandler = (event: StorageEvent) => mixed;
+type StorageEventHandler = (event: StorageEvent) => unknown;
 type StorageEventListener =
   | {handleEvent: StorageEventHandler, ...}
   | StorageEventHandler;
 type SecurityPolicyViolationEventHandler = (
   event: SecurityPolicyViolationEvent,
-) => mixed;
+) => unknown;
 type SecurityPolicyViolationEventListener =
   | {handleEvent: SecurityPolicyViolationEventHandler, ...}
   | SecurityPolicyViolationEventHandler;
-type USBConnectionEventHandler = (event: USBConnectionEvent) => mixed;
+type USBConnectionEventHandler = (event: USBConnectionEvent) => unknown;
 type USBConnectionEventListener =
   | {handleEvent: USBConnectionEventHandler, ...}
   | USBConnectionEventHandler;
@@ -917,7 +917,7 @@ declare class PageTransitionEvent extends Event {
 // and
 // https://html.spec.whatwg.org/multipage/comms.html#the-messageevent-interfaces
 declare class MessageEvent extends Event {
-  data: mixed;
+  data: unknown;
   origin: string;
   lastEventId: string;
   source: WindowProxy;
@@ -1158,7 +1158,7 @@ declare class BroadcastChannel extends EventTarget {
   onmessageerror: ?(event: MessageEvent) => void;
 
   constructor(name: string): void;
-  postMessage(msg: mixed): void;
+  postMessage(msg: unknown): void;
   close(): void;
 }
 
@@ -1394,30 +1394,30 @@ type ElementRegistrationOptions = {
   +prototype?: {
     // from https://www.w3.org/TR/custom-elements/#types-of-callbacks
     // See also https://github.com/w3c/webcomponents/
-    +createdCallback?: () => mixed,
-    +attachedCallback?: () => mixed,
-    +detachedCallback?: () => mixed,
+    +createdCallback?: () => unknown,
+    +attachedCallback?: () => unknown,
+    +detachedCallback?: () => unknown,
     +attributeChangedCallback?: ((
       // attribute is set
       attributeLocalName: string,
       oldAttributeValue: null,
       newAttributeValue: string,
       attributeNamespace: string,
-    ) => mixed) &
+    ) => unknown) &
       // attribute is changed
       ((
         attributeLocalName: string,
         oldAttributeValue: string,
         newAttributeValue: string,
         attributeNamespace: string,
-      ) => mixed) &
+      ) => unknown) &
       // attribute is removed
       ((
         attributeLocalName: string,
         oldAttributeValue: string,
         newAttributeValue: null,
         attributeNamespace: string,
-      ) => mixed),
+      ) => unknown),
     ...
   },
   +extends?: string,
@@ -6245,13 +6245,13 @@ declare class Notification extends EventTarget {
   constructor(title: string, options?: NotificationOptions): void;
   static +permission: NotificationPermission;
   static requestPermission(
-    callback?: (perm: NotificationPermission) => mixed,
+    callback?: (perm: NotificationPermission) => unknown,
   ): Promise<NotificationPermission>;
   static +maxActions: number;
-  onclick: ?(evt: Event) => mixed;
-  onclose: ?(evt: Event) => mixed;
-  onerror: ?(evt: Event) => mixed;
-  onshow: ?(evt: Event) => mixed;
+  onclick: ?(evt: Event) => unknown;
+  onclose: ?(evt: Event) => unknown;
+  onerror: ?(evt: Event) => unknown;
+  onshow: ?(evt: Event) => unknown;
   +title: string;
   +dir: NotificationDirection;
   +lang: string;

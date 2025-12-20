@@ -15,10 +15,10 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
 export type MutationObserverId = number;
 
 // These types are not supported by the codegen.
-type ShadowNode = mixed;
-type InstanceHandle = mixed;
-type ReactNativeElement = mixed;
-type ReadOnlyNode = mixed;
+type ShadowNode = unknown;
+type InstanceHandle = unknown;
+type ReactNativeElement = unknown;
+type ReadOnlyNode = unknown;
 
 export type NativeMutationRecord = {
   mutationObserverId: MutationObserverId,

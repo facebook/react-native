@@ -34,7 +34,7 @@ export type PlatformTestResult = $ReadOnly<{
   name: string,
   status: PlatformTestResultStatus,
   assertions: $ReadOnlyArray<PlatformTestAssertionResult>,
-  error: mixed | null, // null is technically unnecessary but is kept to ensure the error is described as nullable
+  error: unknown | null, // null is technically unnecessary but is kept to ensure the error is described as nullable
 }>;
 
 export type PlatformTestContext = $ReadOnly<{

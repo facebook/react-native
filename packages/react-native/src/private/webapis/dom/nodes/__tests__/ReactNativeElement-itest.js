@@ -28,7 +28,7 @@ import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNod
 import HTMLCollection from 'react-native/src/private/webapis/dom/oldstylecollections/HTMLCollection';
 import NodeList from 'react-native/src/private/webapis/dom/oldstylecollections/NodeList';
 
-function ensureReactNativeElement(value: mixed): ReactNativeElement {
+function ensureReactNativeElement(value: unknown): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
 }
 
