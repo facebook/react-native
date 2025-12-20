@@ -172,6 +172,13 @@ public constructor(
     view.setOverflow(overflow)
   }
 
+  @ReactProp(name = "color", customType = "Color")
+  public fun setColor(view: ReactTextView, color: Int?) {
+    if (color != null) {
+      view.setTextColor(color)
+    }
+  }
+
   public companion object {
     private const val TX_STATE_KEY_ATTRIBUTED_STRING: Short = 0
     private const val TX_STATE_KEY_PARAGRAPH_ATTRIBUTES: Short = 1
