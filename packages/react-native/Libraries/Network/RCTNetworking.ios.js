@@ -18,7 +18,10 @@ import {type RCTNetworkingEventDefinitions} from './RCTNetworkingEventDefinition
 import {type NativeResponseType} from './XMLHttpRequest';
 
 const RCTNetworking = {
-  addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
+  abortRequest(requestId: number) {
+    NativeNetworkingIOS.abortRequest(requestId);
+  },
+  addListener<K: keyof RCTNetworkingEventDefinitions>(
     eventType: K,
     listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
     context?: mixed,
@@ -26,7 +29,9 @@ const RCTNetworking = {
     // $FlowFixMe[incompatible-type]
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   },
-
+  clearCookies(callback: (result: boolean) => void) {
+    NativeNetworkingIOS.clearCookies(callback);
+  },
   sendRequest(
     method: string,
     trackingName: string | void,
@@ -44,26 +49,18 @@ const RCTNetworking = {
       global.__NETWORK_REPORTER__?.createDevToolsRequestId();
     NativeNetworkingIOS.sendRequest(
       {
-        method,
-        url,
         data: {...body, trackingName},
         headers,
-        responseType,
         incrementalUpdates,
+        method,
+        responseType,
         timeout,
-        withCredentials,
         unstable_devToolsRequestId: devToolsRequestId,
+        url,
+        withCredentials,
       },
       callback,
     );
-  },
-
-  abortRequest(requestId: number) {
-    NativeNetworkingIOS.abortRequest(requestId);
-  },
-
-  clearCookies(callback: (result: boolean) => void) {
-    NativeNetworkingIOS.clearCookies(callback);
   },
 };
 

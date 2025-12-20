@@ -48,7 +48,10 @@ const emitter = new NativeEventEmitter<$FlowFixMe>(
  * requestId to each network request that can be used to abort that request later on.
  */
 const RCTNetworking = {
-  addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
+  abortRequest(requestId: number) {
+    NativeNetworkingAndroid.abortRequest(requestId);
+  },
+  addListener<K: keyof RCTNetworkingEventDefinitions>(
     eventType: K,
     listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
     context?: mixed,
@@ -56,7 +59,9 @@ const RCTNetworking = {
     // $FlowFixMe[incompatible-type]
     return emitter.addListener(eventType, listener, context);
   },
-
+  clearCookies(callback: (result: boolean) => void) {
+    NativeNetworkingAndroid.clearCookies(callback);
+  },
   sendRequest(
     method: string,
     trackingName: string | void,
@@ -84,21 +89,13 @@ const RCTNetworking = {
       url,
       requestId,
       convertHeadersMapToArray(headers),
-      {...body, trackingName, devToolsRequestId},
+      {...body, devToolsRequestId, trackingName},
       responseType,
       incrementalUpdates,
       timeout,
       withCredentials,
     );
     callback(requestId);
-  },
-
-  abortRequest(requestId: number) {
-    NativeNetworkingAndroid.abortRequest(requestId);
-  },
-
-  clearCookies(callback: (result: boolean) => void) {
-    NativeNetworkingAndroid.clearCookies(callback);
   },
 };
 

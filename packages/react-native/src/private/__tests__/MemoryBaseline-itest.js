@@ -28,17 +28,17 @@ declare var performance: Performance;
  * and set a new baseline. Otherwise, please try to optimize your code.
  */
 const MEMORY_LIMITS_KB = {
-  environmentSetup: {
-    dev: 1000,
-    opt: 500,
-  },
   basicSurfaceRender: {
     dev: 1200,
     opt: 700,
   },
+  environmentSetup: {
+    dev: 1000,
+    opt: 500,
+  },
 };
 
-function limitFor(scenario: $Keys<typeof MEMORY_LIMITS_KB>): number {
+function limitFor(scenario: keyof typeof MEMORY_LIMITS_KB): number {
   return MEMORY_LIMITS_KB[scenario][__DEV__ ? 'dev' : 'opt'];
 }
 

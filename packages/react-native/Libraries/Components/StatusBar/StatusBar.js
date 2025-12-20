@@ -20,7 +20,7 @@ import * as React from 'react';
 /**
  * Status bar style
  */
-export type StatusBarStyle = $Keys<{
+export type StatusBarStyle = keyof {
   /**
    * Default status bar style (dark for iOS, light for Android)
    */
@@ -34,12 +34,12 @@ export type StatusBarStyle = $Keys<{
    */
   'dark-content': string,
   ...
-}>;
+};
 
 /**
  * Status bar animation
  */
-export type StatusBarAnimation = $Keys<{
+export type StatusBarAnimation = keyof {
   /**
    * No animation
    */
@@ -53,7 +53,7 @@ export type StatusBarAnimation = $Keys<{
    */
   slide: string,
   ...
-}>;
+};
 
 export type StatusBarPropsAndroid = $ReadOnly<{
   /**
@@ -163,27 +163,27 @@ function createStackEntry(props: StatusBarProps): StackProps {
     backgroundColor:
       props.backgroundColor != null
         ? {
-            value: props.backgroundColor,
             animated,
+            value: props.backgroundColor,
           }
         : null,
     barStyle:
       props.barStyle != null
         ? {
-            value: props.barStyle,
             animated,
+            value: props.barStyle,
           }
         : null,
-    translucent: props.translucent,
     hidden:
       props.hidden != null
         ? {
-            value: props.hidden,
             animated,
             transition: showHideTransition,
+            value: props.hidden,
           }
         : null,
     networkActivityIndicatorVisible: props.networkActivityIndicatorVisible,
+    translucent: props.translucent,
   };
 }
 
@@ -239,9 +239,9 @@ class StatusBar extends React.Component<StatusBarProps> {
             .DEFAULT_BACKGROUND_COLOR ?? 'black')
         : 'black',
     barStyle: 'default',
-    translucent: false,
     hidden: false,
     networkActivityIndicatorVisible: false,
+    translucent: false,
   });
 
   // Timer for updating the native module values at the end of the frame.

@@ -118,7 +118,7 @@ let root: Root;
 
 function getAccessibilityProp(
   content: React.MixedElement,
-  name: $Keys<AccessibilityProps>,
+  name: keyof AccessibilityProps,
 ) {
   Fantom.runTask(() => {
     root.render(content);
@@ -128,7 +128,7 @@ function getAccessibilityProp(
 
 function getAccessibilityProps(
   content: React.MixedElement,
-  names: $ReadOnlyArray<$Keys<AccessibilityProps>>,
+  names: $ReadOnlyArray<keyof AccessibilityProps>,
 ) {
   Fantom.runTask(() => {
     root.render(content);
@@ -238,8 +238,8 @@ export default function accessibilityPropsSuite(
             ['accessibilityLabel', 'accessibilityHint'],
           ),
         ).toEqual({
-          accessibilityLabel: 'Touchable',
           accessibilityHint: 'Can be pressed to interact',
+          accessibilityLabel: 'Touchable',
         });
       });
     });
@@ -319,7 +319,7 @@ export default function accessibilityPropsSuite(
             <Component
               accessibilityActions={[
                 {name: 'activate'},
-                {name: 'spawn', label: 'open a panel'},
+                {label: 'open a panel', name: 'spawn'},
                 {name: 'escape'},
               ]}
             />,
