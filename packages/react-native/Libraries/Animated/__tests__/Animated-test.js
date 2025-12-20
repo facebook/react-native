@@ -193,7 +193,7 @@ describe('Animated', () => {
 
     it('renders animated and primitive style correctly', () => {
       const anim = new Animated.Value(0);
-      const staticProps: {[string]: mixed} = {
+      const staticProps: {[string]: unknown} = {
         style: [
           {transform: [{translateX: anim}]},
           {transform: [{translateX: 100}]},

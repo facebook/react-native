@@ -65,7 +65,7 @@ export type LogBoxLogData = $ReadOnly<{
   componentStack: ComponentStack,
   codeFrame?: ?CodeFrame,
   isComponentError: boolean,
-  extraData?: mixed,
+  extraData?: unknown,
   onNotificationPress?: ?() => void,
 }>;
 
@@ -81,7 +81,7 @@ class LogBoxLog {
   codeFrame: ?CodeFrame;
   componentCodeFrame: ?CodeFrame;
   isComponentError: boolean;
-  extraData: mixed | void;
+  extraData: unknown | void;
   symbolicated:
     | $ReadOnly<{error: null, stack: null, status: 'NONE'}>
     | $ReadOnly<{error: null, stack: null, status: 'PENDING'}>

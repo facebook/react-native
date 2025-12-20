@@ -98,7 +98,7 @@ const InteractionManagerStub = {
   runAfterInteractions(task: ?Task): {
     then: <U>(
       onFulfill?: ?(void) => ?(Promise<U> | U),
-      onReject?: ?(error: mixed) => ?(Promise<U> | U),
+      onReject?: ?(error: unknown) => ?(Promise<U> | U),
     ) => Promise<U>,
     cancel: () => void,
     ...
@@ -165,8 +165,8 @@ const InteractionManagerStub = {
   addListener(
     eventType: string,
     // $FlowFixMe[unclear-type]
-    listener: (...args: any) => mixed,
-    context: mixed,
+    listener: (...args: any) => unknown,
+    context: unknown,
   ): EventSubscription {
     return {
       remove() {},

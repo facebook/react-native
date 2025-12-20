@@ -38,7 +38,7 @@ export type ButtonProps = $ReadOnly<{
     Handler to be called when the user taps the button. The first function
     argument is an event in form of [GestureResponderEvent](pressevent).
    */
-  onPress?: (event?: GestureResponderEvent) => mixed,
+  onPress?: (event?: GestureResponderEvent) => unknown,
 
   /**
     If `true`, doesn't play system sound on touch.
@@ -148,7 +148,7 @@ export type ButtonProps = $ReadOnly<{
    */
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => unknown,
   accessibilityState?: ?AccessibilityState,
 
   /**

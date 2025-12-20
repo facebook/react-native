@@ -148,8 +148,8 @@ class KeyboardImpl {
    */
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
-    listener: (...KeyboardEventDefinitions[K]) => mixed,
-    context?: mixed,
+    listener: (...KeyboardEventDefinitions[K]) => unknown,
+    context?: unknown,
   ): EventSubscription {
     return this._emitter.addListener(eventType, listener);
   }

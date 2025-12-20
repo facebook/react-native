@@ -53,7 +53,7 @@ declare module '@babel/traverse' {
 
     constructor(
       scope: Scope,
-      opts: TraverseOptions<mixed>,
+      opts: TraverseOptions<unknown>,
       state: any,
       parentPath: NodePath<>,
     ): TraversalContext;
@@ -298,12 +298,12 @@ declare module '@babel/traverse' {
     parent: BabelNode;
     hub: HubInterface;
     contexts: Array<TraversalContext>;
-    data: {[key: string]: mixed} | null;
+    data: {[key: string]: unknown} | null;
     shouldSkip: boolean;
     shouldStop: boolean;
     removed: boolean;
-    state: mixed;
-    +opts: $ReadOnly<TraverseOptions<mixed>> | null;
+    state: unknown;
+    +opts: $ReadOnly<TraverseOptions<unknown>> | null;
     skipKeys: null | {[key: string]: boolean};
     parentPath: ?NodePath<>;
     context: TraversalContext;
@@ -338,7 +338,7 @@ declare module '@babel/traverse' {
     getScope(scope: Scope): Scope;
 
     setData<TVal>(key: string, val: TVal): TVal;
-    getData<TVal = mixed>(key: string, def?: TVal): TVal;
+    getData<TVal = unknown>(key: string, def?: TVal): TVal;
 
     buildCodeFrameError<TError: Error>(
       msg: string,
@@ -1881,8 +1881,8 @@ declare module '@babel/traverse' {
   declare export var visitors: Visitors;
 
   declare export type Cache = {
-    path: $ReadOnlyWeakMap<BabelNode, mixed>,
-    scope: $ReadOnlyWeakMap<BabelNode, mixed>,
+    path: $ReadOnlyWeakMap<BabelNode, unknown>,
+    scope: $ReadOnlyWeakMap<BabelNode, unknown>,
     clear(): void,
     clearPath(): void,
     clearScope(): void,

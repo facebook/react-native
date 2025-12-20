@@ -809,18 +809,18 @@ type TextInputBaseProps = $ReadOnly<{
   /**
    * Callback that is called when the text input is blurred.
    */
-  onBlur?: ?(e: TextInputBlurEvent) => mixed,
+  onBlur?: ?(e: TextInputBlurEvent) => unknown,
 
   /**
    * Callback that is called when the text input's text changes.
    */
-  onChange?: ?(e: TextInputChangeEvent) => mixed,
+  onChange?: ?(e: TextInputChangeEvent) => unknown,
 
   /**
    * Callback that is called when the text input's text changes.
    * Changed text is passed as an argument to the callback handler.
    */
-  onChangeText?: ?(text: string) => mixed,
+  onChangeText?: ?(text: string) => unknown,
 
   /**
    * Callback that is called when the text input's content size changes.
@@ -829,17 +829,17 @@ type TextInputBaseProps = $ReadOnly<{
    *
    * Only called for multiline text inputs.
    */
-  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
+  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => unknown,
 
   /**
    * Callback that is called when text input ends.
    */
-  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => unknown,
 
   /**
    * Callback that is called when the text input is focused.
    */
-  onFocus?: ?(e: TextInputFocusEvent) => mixed,
+  onFocus?: ?(e: TextInputFocusEvent) => unknown,
 
   /**
    * Callback that is called when a key is pressed.
@@ -848,42 +848,42 @@ type TextInputBaseProps = $ReadOnly<{
    * the typed-in character otherwise including `' '` for space.
    * Fires before `onChange` callbacks.
    */
-  onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
+  onKeyPress?: ?(e: TextInputKeyPressEvent) => unknown,
 
   /**
    * Called when a single tap gesture is detected.
    */
-  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Called when a touch is engaged.
    */
-  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Called when a touch is released.
    */
-  onPressOut?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Callback that is called when the text input selection is changed.
    * This will be called with
    * `{ nativeEvent: { selection: { start, end } } }`.
    */
-  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
+  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => unknown,
 
   /**
    * Callback that is called when the text input's submit button is pressed.
    * Invalid if `multiline={true}` is specified.
    */
-  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => unknown,
 
   /**
    * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
    * May also contain other properties from ScrollEvent but on Android contentSize
    * is not provided for performance reasons.
    */
-  onScroll?: ?(e: ScrollEvent) => mixed,
+  onScroll?: ?(e: ScrollEvent) => unknown,
 
   /**
    * The string that will be rendered before text input has been entered.

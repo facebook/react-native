@@ -25,7 +25,7 @@ export type Mapping =
   | AnimatedValue
   | AnimatedValueXY;
 export type EventConfig<T> = {
-  listener?: ?(NativeSyntheticEvent<T>) => mixed,
+  listener?: ?(NativeSyntheticEvent<T>) => unknown,
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
 };
@@ -40,7 +40,7 @@ export function attachNativeEventImpl(
   // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
   const eventMappings: Array<EventMapping> = [];
 
-  const traverse = (value: mixed, path: Array<string>) => {
+  const traverse = (value: unknown, path: Array<string>) => {
     if (value instanceof AnimatedValue) {
       value.__makeNative(platformConfig);
 

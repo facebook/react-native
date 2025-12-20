@@ -17,7 +17,7 @@ export type RawEventEmitterEvent = $ReadOnly<{
   // We expect, but do not/cannot require, that nativeEvent is an object
   // with the properties: key, elementType (string), type (string), tag (numeric),
   // and a stateNode of the native element/Fiber the event was emitted to.
-  nativeEvent: {[string]: mixed},
+  nativeEvent: {[string]: unknown},
 }>;
 
 type RawEventDefinitions = {
