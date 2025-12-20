@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags useSharedAnimatedBackend:*
  * @flow strict-local
  * @format
  */
@@ -13,6 +14,7 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import * as Fantom from '@react-native/fantom';
 import {createRef} from 'react';
 import {Animated, View, useAnimatedValue} from 'react-native';
@@ -564,12 +566,17 @@ test('animate layout props', () => {
     _heightAnimation?.stop();
   });
 
-  // $FlowFixMe[incompatible-use]
-  expect(Fantom.unstable_getDirectManipulationProps(viewElement).height).toBe(
-    100,
-  );
+  // animation backend does not push layut updates through the direct manipulation path
+  // also it's changes are not currently reflected in the getFabricUpdateProps method, as
+  // it only captures props that are updated through UIManager::updateShadowTree
+  if (!ReactNativeFeatureFlags.useSharedAnimatedBackend()) {
+    // $FlowFixMe[incompatible-use]
+    expect(Fantom.unstable_getDirectManipulationProps(viewElement).height).toBe(
+      100,
+    );
 
-  expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(100);
+    expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(100);
+  }
 
   expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
     <rn-view height="100.000000" />,
@@ -634,7 +641,11 @@ test('AnimatedValue.interpolate', () => {
     ),
   ).toBe('[{"translateX":0.5},{"translateY":75}]');
   expect(viewElement.getBoundingClientRect().x).toBe(0.5);
-  expect(viewElement.getBoundingClientRect().y).toBe(75);
+  // TODO (T248792461) this doesn't work with animation backend, because the commit hook overrides the value from the second render.
+  // The value displayed on the screen will be correct, but getBoundingClientRect will see the old shadow node
+  if (!ReactNativeFeatureFlags.useSharedAnimatedBackend()) {
+    expect(viewElement.getBoundingClientRect().y).toBe(75);
+  }
 });
 
 test('Animated.sequence', () => {

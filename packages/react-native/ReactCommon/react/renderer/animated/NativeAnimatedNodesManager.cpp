@@ -244,8 +244,7 @@ void NativeAnimatedNodesManager::connectAnimatedNodeToShadowNodeFamily(
   react_native_assert(propsNodeTag);
   auto node = getAnimatedNode<PropsAnimatedNode>(propsNodeTag);
   if (node != nullptr && family != nullptr) {
-    std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
-    tagToShadowNodeFamily_[family->getTag()] = family;
+    node->connectToShadowNodeFamily(family);
   } else {
     LOG(WARNING)
         << "Cannot ConnectAnimatedNodeToShadowNodeFamily, animated node has to be props type";
@@ -264,10 +263,6 @@ void NativeAnimatedNodesManager::disconnectAnimatedNodeFromView(
     {
       std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
       connectedAnimatedNodes_.erase(viewTag);
-    }
-    {
-      std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
-      tagToShadowNodeFamily_.erase(viewTag);
     }
     updatedNodeTags_.insert(node->tag());
 
@@ -519,7 +514,15 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
     // That's why, in case this is called from the UI thread, we need to
     // proactivelly trigger the animation loop to avoid showing stale
     // frames.
-    onRender();
+    if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+#ifdef RN_USE_ANIMATION_BACKEND
+      if (auto animationBackend = animationBackend_.lock()) {
+        animationBackend->trigger();
+      }
+#endif
+    } else {
+      onRender();
+    }
   }
 }
 
@@ -907,13 +910,17 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     Tag viewTag,
     const folly::dynamic& props,
     bool layoutStyleUpdated,
-    bool forceFabricCommit) noexcept {
+    bool forceFabricCommit,
+    ShadowNodeFamily::Weak shadowNodeFamily) noexcept {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    if (layoutStyleUpdated) {
-      mergeObjects(updateViewProps_[viewTag], props);
-    } else {
-      mergeObjects(updateViewPropsDirect_[viewTag], props);
+    if (forceFabricCommit) {
+      shouldRequestAsyncFlush_.insert(viewTag);
     }
+    auto& current = layoutStyleUpdated
+        ? updateViewPropsForBackend_[viewTag]
+        : updateViewPropsDirectForBackend_[viewTag];
+    current.first = std::move(shadowNodeFamily);
+    mergeObjects(current.second, props);
     return;
   }
 
@@ -940,6 +947,77 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
 }
 
 #ifdef RN_USE_ANIMATION_BACKEND
+
+void NativeAnimatedNodesManager::insertMutations(
+    std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>>&
+        updates,
+    AnimationMutations& mutations,
+    AnimatedPropsBuilder& propsBuilder,
+    bool hasLayoutUpdates) {
+  for (auto& [tag, update] : updates) {
+    auto weakFamily = update.first;
+
+    if (auto family = weakFamily.lock()) {
+      propsBuilder.storeDynamic(update.second);
+      if (shouldRequestAsyncFlush_.contains(tag)) {
+        mutations.asyncFlushSurfaces.insert(family->getSurfaceId());
+      }
+      mutations.batch.push_back(
+          AnimationMutation{
+              .tag = tag,
+              .family = family,
+              .props = propsBuilder.get(),
+              .hasLayoutUpdates = hasLayoutUpdates,
+          });
+    }
+  }
+}
+
+AnimationMutations NativeAnimatedNodesManager::onAnimationFrameForBackend(
+    AnimatedPropsBuilder& propsBuilder,
+    double timestamp) {
+  AnimationMutations mutations{};
+  // Run all active animations
+  auto hasFinishedAnimations = false;
+  std::set<int> finishedAnimationValueNodes;
+  for (const auto& [_id, driver] : activeAnimations_) {
+    driver->runAnimationStep(timestamp);
+
+    if (driver->getIsComplete()) {
+      hasFinishedAnimations = true;
+      finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
+    }
+  }
+
+  // Update all animated nodes
+  updateNodes(finishedAnimationValueNodes);
+
+  // remove finished animations
+  if (hasFinishedAnimations) {
+    std::vector<int> finishedAnimations;
+    for (const auto& [animationId, driver] : activeAnimations_) {
+      if (driver->getIsComplete()) {
+        if (getAnimatedNode<ValueAnimatedNode>(driver->getAnimatedValueTag()) !=
+            nullptr) {
+          driver->stopAnimation();
+        }
+        finishedAnimations.emplace_back(animationId);
+      }
+    }
+    for (const auto& id : finishedAnimations) {
+      activeAnimations_.erase(id);
+    }
+  }
+
+  insertMutations(updateViewPropsDirectForBackend_, mutations, propsBuilder);
+  insertMutations(updateViewPropsForBackend_, mutations, propsBuilder, true);
+
+  updateViewPropsForBackend_.clear();
+  updateViewPropsDirectForBackend_.clear();
+
+  return mutations;
+}
+
 AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
   if (!ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
     return {};
@@ -971,89 +1049,10 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
                             .count();
 
     auto timestamp = static_cast<double>(microseconds) / 1000.0;
-    bool containsChange = false;
     AnimatedPropsBuilder propsBuilder;
-    {
-      // copied from onAnimationFrame
-      // Run all active animations
-      auto hasFinishedAnimations = false;
-      std::set<int> finishedAnimationValueNodes;
-      for (const auto& [_id, driver] : activeAnimations_) {
-        driver->runAnimationStep(timestamp);
+    mutations = onAnimationFrameForBackend(propsBuilder, timestamp);
 
-        if (driver->getIsComplete()) {
-          hasFinishedAnimations = true;
-          finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
-        }
-      }
-
-      // Update all animated nodes
-      updateNodes(finishedAnimationValueNodes);
-
-      // remove finished animations
-      if (hasFinishedAnimations) {
-        std::vector<int> finishedAnimations;
-        for (const auto& [animationId, driver] : activeAnimations_) {
-          if (driver->getIsComplete()) {
-            if (getAnimatedNode<ValueAnimatedNode>(
-                    driver->getAnimatedValueTag()) != nullptr) {
-              driver->stopAnimation();
-            }
-            finishedAnimations.emplace_back(animationId);
-          }
-        }
-        for (const auto& id : finishedAnimations) {
-          activeAnimations_.erase(id);
-        }
-      }
-
-      for (auto& [tag, props] : updateViewPropsDirect_) {
-        auto familyIt = tagToShadowNodeFamily_.find(tag);
-        if (familyIt == tagToShadowNodeFamily_.end()) {
-          continue;
-        }
-
-        auto weakFamily = familyIt->second;
-        if (auto family = weakFamily.lock()) {
-          propsBuilder.storeDynamic(props);
-          mutations.batch.push_back(
-              AnimationMutation{
-                  .tag = tag,
-                  .family = family,
-                  .props = propsBuilder.get(),
-              });
-        }
-        containsChange = true;
-      }
-      {
-        std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
-        for (auto& [tag, props] : updateViewProps_) {
-          auto familyIt = tagToShadowNodeFamily_.find(tag);
-          if (familyIt == tagToShadowNodeFamily_.end()) {
-            continue;
-          }
-
-          auto weakFamily = familyIt->second;
-          if (auto family = weakFamily.lock()) {
-            propsBuilder.storeDynamic(props);
-            mutations.hasLayoutUpdates = true;
-            mutations.batch.push_back(
-                AnimationMutation{
-                    .tag = tag,
-                    .family = family,
-                    .props = propsBuilder.get(),
-                });
-          }
-          containsChange = true;
-        }
-      }
-      if (containsChange) {
-        updateViewPropsDirect_.clear();
-        updateViewProps_.clear();
-      }
-    }
-
-    if (!containsChange) {
+    if (mutations.batch.empty()) {
       // The last animation tick didn't result in any changes to the UI.
       // It is safe to assume any event animation that was in progress has
       // completed.
@@ -1076,49 +1075,20 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
 
       isEventAnimationInProgress_ = false;
 
-      for (auto& [tag, props] : updateViewPropsDirect_) {
-        auto familyIt = tagToShadowNodeFamily_.find(tag);
-        if (familyIt == tagToShadowNodeFamily_.end()) {
-          continue;
-        }
+      insertMutations(
+          updateViewPropsDirectForBackend_, mutations, propsBuilder);
 
-        auto weakFamily = familyIt->second;
-        if (auto family = weakFamily.lock()) {
-          propsBuilder.storeDynamic(props);
-          mutations.batch.push_back(
-              AnimationMutation{
-                  .tag = tag,
-                  .family = family,
-                  .props = propsBuilder.get(),
-              });
-        }
-      }
-      {
-        std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
-        for (auto& [tag, props] : updateViewProps_) {
-          auto familyIt = tagToShadowNodeFamily_.find(tag);
-          if (familyIt == tagToShadowNodeFamily_.end()) {
-            continue;
-          }
+      insertMutations(
+          updateViewPropsForBackend_, mutations, propsBuilder, true);
 
-          auto weakFamily = familyIt->second;
-          if (auto family = weakFamily.lock()) {
-            propsBuilder.storeDynamic(props);
-            mutations.hasLayoutUpdates = true;
-            mutations.batch.push_back(
-                AnimationMutation{
-                    .tag = tag,
-                    .family = family,
-                    .props = propsBuilder.get(),
-                });
-          }
-        }
-      }
+      updateViewPropsForBackend_.clear();
+      updateViewPropsDirectForBackend_.clear();
     }
   } else {
     // There is no active animation. Stop the render callback.
     stopRenderCallbackIfNeeded(false);
   }
+  shouldRequestAsyncFlush_.clear();
   return mutations;
 }
 #endif

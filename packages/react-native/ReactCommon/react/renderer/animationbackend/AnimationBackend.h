@@ -7,11 +7,14 @@
 
 #pragma once
 
+#include <ReactCommon/CallInvoker.h>
 #include <folly/dynamic.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <functional>
+#include <memory>
+#include <set>
 #include <vector>
 #include "AnimatedProps.h"
 #include "AnimatedPropsBuilder.h"
@@ -36,11 +39,12 @@ struct AnimationMutation {
   Tag tag;
   std::shared_ptr<const ShadowNodeFamily> family;
   AnimatedProps props;
+  bool hasLayoutUpdates{false};
 };
 
 struct AnimationMutations {
   std::vector<AnimationMutation> batch;
-  bool hasLayoutUpdates{false};
+  std::set<SurfaceId> asyncFlushSurfaces;
 };
 
 class AnimationBackend : public UIManagerAnimationBackend {
@@ -58,6 +62,7 @@ class AnimationBackend : public UIManagerAnimationBackend {
   const FabricCommitCallback fabricCommitCallback_;
   std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry_;
   UIManager *uiManager_;
+  std::shared_ptr<CallInvoker> jsInvoker_;
   AnimationBackendCommitHook commitHook_;
 
   AnimationBackend(
@@ -65,12 +70,15 @@ class AnimationBackend : public UIManagerAnimationBackend {
       StopOnRenderCallback &&stopOnRenderCallback,
       DirectManipulationCallback &&directManipulationCallback,
       FabricCommitCallback &&fabricCommitCallback,
-      UIManager *uiManager);
-  void commitUpdates(std::unordered_map<SurfaceId, SurfaceUpdates> &surfaceUpdates);
+      UIManager *uiManager,
+      std::shared_ptr<CallInvoker> jsInvoker);
+  void commitUpdates(SurfaceId surfaceId, SurfaceUpdates &surfaceUpdates);
   void synchronouslyUpdateProps(const std::unordered_map<Tag, AnimatedProps> &updates);
+  void requestAsyncFlushForSurfaces(const std::set<SurfaceId> &surfaces);
   void clearRegistry(SurfaceId surfaceId) override;
 
   void onAnimationFrame(double timestamp) override;
+  void trigger() override;
   void start(const Callback &callback, bool isAsync);
   void stop(bool isAsync) override;
 };

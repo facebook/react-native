@@ -50,6 +50,7 @@ enum class ShadowTreeCommitMode {
 enum class ShadowTreeCommitSource {
   Unknown,
   React,
+  AnimationEndSync,
 };
 
 struct ShadowTreeCommitOptions {

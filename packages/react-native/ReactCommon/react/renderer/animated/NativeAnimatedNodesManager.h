@@ -121,6 +121,12 @@ class NativeAnimatedNodesManager {
   void setAnimatedNodeOffset(Tag tag, double offset);
 
 #ifdef RN_USE_ANIMATION_BACKEND
+  void insertMutations(
+      std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> &updates,
+      AnimationMutations &mutations,
+      AnimatedPropsBuilder &propsBuilder,
+      bool hasLayoutUpdates = false);
+  AnimationMutations onAnimationFrameForBackend(AnimatedPropsBuilder &propsBuilder, double timestamp);
   AnimationMutations pullAnimationMutations();
 #endif
 
@@ -153,7 +159,8 @@ class NativeAnimatedNodesManager {
       Tag viewTag,
       const folly::dynamic &props,
       bool layoutStyleUpdated,
-      bool forceFabricCommit) noexcept;
+      bool forceFabricCommit,
+      ShadowNodeFamily::Weak shadowNodeFamily = {}) noexcept;
 
   /**
    * Commits all pending animated property updates to their respective views.
@@ -260,10 +267,9 @@ class NativeAnimatedNodesManager {
 
   std::unordered_map<Tag, folly::dynamic> updateViewProps_{};
   std::unordered_map<Tag, folly::dynamic> updateViewPropsDirect_{};
-
-  mutable std::mutex tagToShadowNodeFamilyMutex_;
-  std::unordered_map<Tag, std::weak_ptr<const ShadowNodeFamily>> tagToShadowNodeFamily_{};
-
+  std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> updateViewPropsForBackend_{};
+  std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> updateViewPropsDirectForBackend_{};
+  std::unordered_set<Tag> shouldRequestAsyncFlush_{};
   /*
    * Sometimes a view is not longer connected to a PropsAnimatedNode, but
    * NativeAnimated has previously changed the view's props via direct

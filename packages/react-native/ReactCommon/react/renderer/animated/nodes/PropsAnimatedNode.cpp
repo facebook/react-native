@@ -12,6 +12,7 @@
 #include "PropsAnimatedNode.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 #include <react/renderer/animated/nodes/ColorAnimatedNode.h>
 #include <react/renderer/animated/nodes/ObjectAnimatedNode.h>
@@ -55,6 +56,11 @@ PropsAnimatedNode::PropsAnimatedNode(
   }
 }
 
+void PropsAnimatedNode::connectToShadowNodeFamily(
+    ShadowNodeFamily::Weak shadowNodeFamily) {
+  shadowNodeFamily_ = std::move(shadowNodeFamily);
+}
+
 void PropsAnimatedNode::connectToView(Tag viewTag) {
   react_native_assert(
       connectedViewTag_ == animated::undefinedAnimatedNodeIdentifier &&
@@ -67,6 +73,7 @@ void PropsAnimatedNode::disconnectFromView(Tag viewTag) {
       connectedViewTag_ == viewTag &&
       "Attempting to disconnect view that has not been connected with the given animated node.");
   connectedViewTag_ = animated::undefinedAnimatedNodeIdentifier;
+  shadowNodeFamily_.reset();
 }
 
 // restore the value to whatever the value was on the ShadowNode instead of in
@@ -74,8 +81,17 @@ void PropsAnimatedNode::disconnectFromView(Tag viewTag) {
 void PropsAnimatedNode::restoreDefaultValues() {
   // If node is already disconnected from View, we cannot restore default values
   if (connectedViewTag_ != animated::undefinedAnimatedNodeIdentifier) {
-    manager_->schedulePropsCommit(
-        connectedViewTag_, folly::dynamic::object(), false, false);
+    if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+      manager_->schedulePropsCommit(
+          connectedViewTag_,
+          folly::dynamic::object(),
+          false,
+          false,
+          shadowNodeFamily_);
+    } else {
+      manager_->schedulePropsCommit(
+          connectedViewTag_, folly::dynamic::object(), false, false);
+    }
   }
 }
 
@@ -147,8 +163,17 @@ void PropsAnimatedNode::update(bool forceFabricCommit) {
 
   layoutStyleUpdated_ = isLayoutStyleUpdated(getConfig()["props"], *manager_);
 
-  manager_->schedulePropsCommit(
-      connectedViewTag_, props_, layoutStyleUpdated_, forceFabricCommit);
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    manager_->schedulePropsCommit(
+        connectedViewTag_,
+        props_,
+        layoutStyleUpdated_,
+        forceFabricCommit,
+        shadowNodeFamily_);
+  } else {
+    manager_->schedulePropsCommit(
+        connectedViewTag_, props_, layoutStyleUpdated_, forceFabricCommit);
+  }
 }
 
 } // namespace facebook::react
