@@ -13,18 +13,17 @@ import type {
   Component as ReactComponent,
   ElementRef,
   ElementType,
-  MixedElement,
 } from 'react';
 import type {
   // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
-  MeasureOnSuccessCallback,
+  HostInstance as PublicInstance,
   // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
-  PublicInstance,
+  MeasureOnSuccessCallback,
   // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
   PublicRootInstance,
   // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
   PublicTextInstance,
-} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
+} from 'react-native';
 
 export type AttributeType<T, V> =
   | true
@@ -39,7 +38,7 @@ export type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
 
 export type AttributeConfiguration = $ReadOnly<{
   [propName: string]: AnyAttributeType,
-  style: $ReadOnly<{
+  style?: $ReadOnly<{
     [propName: string]: AnyAttributeType,
     ...
   }>,
@@ -83,8 +82,8 @@ export type ViewConfig = $ReadOnly<{
 }>;
 
 export type PartialViewConfig = $ReadOnly<{
-  bubblingEventTypes?: $PropertyType<ViewConfig, 'bubblingEventTypes'>,
-  directEventTypes?: $PropertyType<ViewConfig, 'directEventTypes'>,
+  bubblingEventTypes?: ViewConfig['bubblingEventTypes'],
+  directEventTypes?: ViewConfig['directEventTypes'],
   supportsRawText?: boolean,
   uiViewClassName: string,
   validAttributes?: PartialAttributeConfiguration,
@@ -97,7 +96,7 @@ type InspectorDataProps = $ReadOnly<{
 
 type InspectorDataGetter = (
   <TElementType: ElementType>(
-    componentOrHandle: ElementRef<TElementType> | number,
+    componentOrHandle: React.ElementRef<TElementType> | number,
   ) => ?number,
 ) => $ReadOnly<{
   measure: (callback: MeasureOnSuccessCallback) => void,
@@ -155,10 +154,10 @@ export type RenderRootOptions = {
  */
 export type ReactNativeType = {
   findHostInstance_DEPRECATED<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
+    componentOrHandle: ?(React.ElementRef<TElementType> | number),
   ): ?PublicInstance,
   findNodeHandle<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
+    componentOrHandle: ?(React.ElementRef<TElementType> | number),
   ): ?number,
   isChildPublicInstance(parent: PublicInstance, child: PublicInstance): boolean,
   dispatchCommand(
@@ -168,11 +167,11 @@ export type ReactNativeType = {
   ): void,
   sendAccessibilityEvent(handle: PublicInstance, eventType: string): void,
   render(
-    element: MixedElement,
+    element: React.MixedElement,
     containerTag: number,
     callback: ?() => void,
     options: ?RenderRootOptions,
-  ): ?ElementRef<ElementType>,
+  ): ?React.ElementRef<React.ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
   +unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
@@ -184,10 +183,10 @@ export opaque type InternalInstanceHandle = mixed;
 
 export type ReactFabricType = {
   findHostInstance_DEPRECATED<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
+    componentOrHandle: ?(React.ElementRef<TElementType> | number),
   ): ?PublicInstance,
   findNodeHandle<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
+    componentOrHandle: ?(React.ElementRef<TElementType> | number),
   ): ?number,
   dispatchCommand(
     handle: PublicInstance,
@@ -197,12 +196,12 @@ export type ReactFabricType = {
   isChildPublicInstance(parent: PublicInstance, child: PublicInstance): boolean,
   sendAccessibilityEvent(handle: PublicInstance, eventType: string): void,
   render(
-    element: MixedElement,
+    element: React.MixedElement,
     containerTag: number,
     callback: ?() => void,
     concurrentRoot: ?boolean,
     options: ?RenderRootOptions,
-  ): ?ElementRef<ElementType>,
+  ): ?React.ElementRef<React.ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   getNodeFromInternalInstanceHandle(
     internalInstanceHandle: InternalInstanceHandle,
