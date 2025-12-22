@@ -47,6 +47,9 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 {
   __weak RCTCxxInspectorWebSocketAdapter *weakSelf = self;
   NSString *messageStr = NSStringFromUTF8StringView(message);
+  if (messageStr == nil) {
+    RCTLogError(@"Failed to convert CDP message string to NSString, message will be dropped!");
+  }
   dispatch_async(dispatch_get_main_queue(), ^{
     RCTCxxInspectorWebSocketAdapter *strongSelf = weakSelf;
     if (strongSelf != nullptr) {
