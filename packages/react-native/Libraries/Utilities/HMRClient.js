@@ -8,8 +8,6 @@
  * @format
  */
 
-import type {ExtendedError} from '../Core/ExtendedError';
-
 import getDevServer from '../Core/Devtools/getDevServer';
 import LogBox from '../LogBox/LogBox';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
@@ -358,7 +356,8 @@ function dismissRedbox() {
 }
 
 function showCompileError() {
-  if (currentCompileErrorMessage === null) {
+  const message = currentCompileErrorMessage;
+  if (message === null) {
     return;
   }
 
@@ -366,17 +365,18 @@ function showCompileError() {
   // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
   dismissRedbox();
 
-  const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;
 
-  /* $FlowFixMe[class-object-subtyping] added when improving typing for this
-   * parameters */
-  // $FlowFixMe[incompatible-type]
-  const error: ExtendedError = new Error(message);
-  // Symbolicating compile errors is wasted effort
-  // because the stack trace is meaningless:
-  error.preventSymbolication = true;
-  throw error;
+  LogBox.addException({
+    message: message,
+    originalMessage: message,
+    name: undefined,
+    componentStack: undefined,
+    stack: [],
+    id: -1,
+    isFatal: true,
+    isComponentError: false,
+  });
 }
 
 export default HMRClient;
