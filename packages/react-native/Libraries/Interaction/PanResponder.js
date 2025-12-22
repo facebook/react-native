@@ -187,7 +187,7 @@ type ActiveCallback = (
 type PassiveCallback = (
   event: GestureResponderEvent,
   gestureState: PanResponderGestureState,
-) => mixed;
+) => unknown;
 
 export type GestureResponderHandlerMethods = {
   onMoveShouldSetResponder: (event: GestureResponderEvent) => boolean,

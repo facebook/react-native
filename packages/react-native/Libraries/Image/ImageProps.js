@@ -220,7 +220,7 @@ export type ImagePropsBase = $ReadOnly<{
    * See https://reactnative.dev/docs/image#onlayout
    */
 
-  onLayout?: ?(event: LayoutChangeEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => unknown,
 
   /**
    * Invoked when load completes successfully.

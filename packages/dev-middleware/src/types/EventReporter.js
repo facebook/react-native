@@ -15,7 +15,7 @@ type SuccessResult<Props: {...} | void = {}> = {
   ...Props,
 };
 
-type ErrorResult<ErrorT = mixed, Props: {...} | void = {}> = {
+type ErrorResult<ErrorT = unknown, Props: {...} | void = {}> = {
   status: 'error',
   error: ErrorT,
   prefersFuseboxFrontend?: ?boolean,
@@ -49,7 +49,7 @@ export type ReportableEvent =
             prefersFuseboxFrontend: boolean,
             ...DebuggerSessionIDs,
           }>
-        | ErrorResult<mixed>
+        | ErrorResult<unknown>
         | CodedErrorResult<'NO_APPS_FOUND'>,
     }
   | {
@@ -59,7 +59,7 @@ export type ReportableEvent =
             ...DebuggerSessionIDs,
             frontendUserAgent: string | null,
           }>
-        | ErrorResult<mixed, DebuggerSessionIDs>,
+        | ErrorResult<unknown, DebuggerSessionIDs>,
     }
   | {
       type: 'debugger_command',

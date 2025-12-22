@@ -31,7 +31,7 @@ export type SymbolicatedStackTrace = $ReadOnly<{
 
 export default async function symbolicateStackTrace(
   stack: Array<StackFrame>,
-  extraData?: mixed,
+  extraData?: unknown,
 ): Promise<SymbolicatedStackTrace> {
   const devServer = getDevServer();
   if (!devServer.bundleLoadedFromServer) {

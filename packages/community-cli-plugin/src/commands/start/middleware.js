@@ -22,7 +22,10 @@ type MiddlewareReturn = {
   },
   messageSocketEndpoint: {
     server: ws$WebSocketServer,
-    broadcast: (method: string, params?: Record<string, mixed> | null) => void,
+    broadcast: (
+      method: string,
+      params?: Record<string, unknown> | null,
+    ) => void,
   },
   eventsSocketEndpoint: {
     server: ws$WebSocketServer,
@@ -54,7 +57,7 @@ const communityMiddlewareFallback = {
       server: unusedStubWSServer,
       broadcast: (
         method: string,
-        _params?: Record<string, mixed> | null,
+        _params?: Record<string, unknown> | null,
       ): void => {},
     },
     eventsSocketEndpoint: {

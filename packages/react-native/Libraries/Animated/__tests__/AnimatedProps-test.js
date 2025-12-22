@@ -11,7 +11,7 @@
 import AnimatedProps from '../nodes/AnimatedProps';
 
 describe('AnimatedProps', () => {
-  function getValue(inputProps: {[string]: mixed}) {
+  function getValue(inputProps: {[string]: unknown}) {
     const animatedProps = new AnimatedProps(inputProps, jest.fn());
     return animatedProps.__getValue();
   }

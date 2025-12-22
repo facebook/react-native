@@ -13,7 +13,10 @@ import DevLoadingView from '../../Utilities/DevLoadingView';
 import HMRClient from '../../Utilities/HMRClient';
 import getDevServer from './getDevServer';
 
-declare var global: {globalEvalWithSourceUrl?: (string, string) => mixed, ...};
+declare var global: {
+  globalEvalWithSourceUrl?: (string, string) => unknown,
+  ...
+};
 
 let pendingRequests = 0;
 
@@ -26,7 +29,7 @@ export class LoadBundleFromServerError extends Error {
     message: string,
     url: string,
     isTimeout: boolean,
-    options?: {cause: mixed, ...},
+    options?: {cause: unknown, ...},
   ): void {
     super(message, options);
     this.url = url;
@@ -40,7 +43,7 @@ export class LoadBundleFromServerRequestError extends LoadBundleFromServerError 
     message: string,
     url: string,
     isTimeout: boolean,
-    options?: {cause: mixed, ...},
+    options?: {cause: unknown, ...},
   ): void {
     super(message, url, isTimeout, options);
     this.name = 'LoadBundleFromServerRequestError';

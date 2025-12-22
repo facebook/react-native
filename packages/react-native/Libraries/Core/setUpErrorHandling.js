@@ -20,7 +20,7 @@ if (global.RN$useAlwaysAvailableJSErrorHandling !== true) {
 
   // Set up error handler
   if (!global.__fbDisableExceptionsManager) {
-    const handleError = (e: mixed, isFatal: boolean) => {
+    const handleError = (e: unknown, isFatal: boolean) => {
       try {
         ExceptionsManager.handleException(e, isFatal);
       } catch (ee) {

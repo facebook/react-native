@@ -28,7 +28,7 @@ type ImageComponentStaticsIOS = $ReadOnly<{
   getSize(
     uri: string,
     success: (width: number, height: number) => void,
-    failure?: (error: mixed) => void,
+    failure?: (error: unknown) => void,
   ): void,
 
   getSizeWithHeaders(
@@ -39,7 +39,7 @@ type ImageComponentStaticsIOS = $ReadOnly<{
     uri: string,
     headers: {[string]: string, ...},
     success: (width: number, height: number) => void,
-    failure?: (error: mixed) => void,
+    failure?: (error: unknown) => void,
   ): void,
 
   prefetch(url: string): Promise<boolean>,

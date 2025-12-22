@@ -19,8 +19,8 @@ declare const RCTNetworking: interface {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
     eventType: K,
     // $FlowFixMe[invalid-computed-prop]
-    listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
-    context?: mixed,
+    listener: (...RCTNetworkingEventDefinitions[K]) => unknown,
+    context?: unknown,
   ): EventSubscription,
 
   sendRequest(

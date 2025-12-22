@@ -27,7 +27,7 @@ interface ILogBox {
   ignoreAllLogs(value?: boolean): void;
   clearAllLogs(): void;
   addLog(log: LogData): void;
-  addConsoleLog(level: 'warn' | 'error', ...args: Array<mixed>): void;
+  addConsoleLog(level: 'warn' | 'error', ...args: Array<unknown>): void;
   addException(error: ExtendedExceptionData): void;
 }
 
@@ -42,7 +42,7 @@ if (__DEV__) {
   } = require('./Data/parseLogBoxLog');
 
   let originalConsoleWarn;
-  let consoleWarnImpl: (...args: Array<mixed>) => void;
+  let consoleWarnImpl: (...args: Array<unknown>) => void;
 
   let isLogBoxInstalled: boolean = false;
 
@@ -56,7 +56,7 @@ if (__DEV__) {
 
       if (global.RN$registerExceptionListener != null) {
         global.RN$registerExceptionListener(
-          (error: ExtendedExceptionData & {preventDefault: () => mixed}) => {
+          (error: ExtendedExceptionData & {preventDefault: () => unknown}) => {
             if (global.RN$isRuntimeReady?.() || !error.isFatal) {
               error.preventDefault();
               addException(error);
@@ -140,7 +140,7 @@ if (__DEV__) {
       }
     },
 
-    addConsoleLog(level: 'warn' | 'error', ...args: Array<mixed>) {
+    addConsoleLog(level: 'warn' | 'error', ...args: Array<unknown>) {
       if (isLogBoxInstalled) {
         let filteredLevel: 'warn' | 'error' | 'fatal' = level;
         try {
@@ -207,13 +207,13 @@ if (__DEV__) {
     }
   }
 
-  const isRCTLogAdviceWarning = (...args: Array<mixed>) => {
+  const isRCTLogAdviceWarning = (...args: Array<unknown>) => {
     // RCTLogAdvice is a native logging function designed to show users
     // a message in the console, but not show it to them in Logbox.
     return typeof args[0] === 'string' && args[0].startsWith('(ADVICE)');
   };
 
-  const registerWarning = (...args: Array<mixed>): void => {
+  const registerWarning = (...args: Array<unknown>): void => {
     // Let warnings within LogBox itself fall through.
     if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
       return;
@@ -271,7 +271,7 @@ if (__DEV__) {
       // Do nothing.
     },
 
-    addConsoleLog(level: 'warn' | 'error', ...args: Array<mixed>): void {
+    addConsoleLog(level: 'warn' | 'error', ...args: Array<unknown>): void {
       // Do nothing.
     },
 

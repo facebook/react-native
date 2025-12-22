@@ -153,7 +153,7 @@ export default class OpenDebuggerKeyboardHandler {
     this.#targetsShownForSelection = null;
   }
 
-  #log(level: 'info' | 'warn' | 'error', ...data: Array<mixed>): void {
+  #log(level: 'info' | 'warn' | 'error', ...data: Array<unknown>): void {
     this.#reporter.update({
       type: 'unstable_server_log',
       level,

@@ -53,7 +53,7 @@ declare module '@octokit/rest' {
         repo: string,
         asset_id: string,
         ...
-      }) => Promise<mixed>,
+      }) => Promise<unknown>,
     }>;
   }
 

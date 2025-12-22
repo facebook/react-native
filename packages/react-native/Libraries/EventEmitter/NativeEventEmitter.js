@@ -85,8 +85,8 @@ export default class NativeEventEmitter<
 
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
-    context?: mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => unknown,
+    context?: unknown,
   ): EventSubscription {
     this._nativeModule?.addListener(eventType);
     let subscription: ?EventSubscription = RCTDeviceEventEmitter.addListener(

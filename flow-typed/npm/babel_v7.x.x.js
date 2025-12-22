@@ -304,9 +304,9 @@ declare module '@babel/core' {
 
   declare class Store {
     constructor(): Store;
-    setDynamic(key: string, fn: () => mixed): void;
-    set(key: string, val: mixed): void;
-    get(key: string): mixed;
+    setDynamic(key: string, fn: () => unknown): void;
+    set(key: string, val: unknown): void;
+    get(key: string): unknown;
   }
 
   declare export class File extends Store {
@@ -367,7 +367,7 @@ declare module '@babel/core' {
 
     transform(): TransformResult<>;
 
-    wrap(code: string, callback: () => mixed): TransformResult<>;
+    wrap(code: string, callback: () => unknown): TransformResult<>;
 
     addCode(code: string): void;
 
@@ -394,7 +394,7 @@ declare module '@babel/core' {
 
   declare export type PluginObj<TVisitorState = void> = {
     name?: string,
-    inherits?: mixed,
+    inherits?: unknown,
     maniuplateOptions?: (
       opts: BabelCoreOptions,
       parserOpts: ParserOptions,
@@ -411,7 +411,7 @@ declare module '@babel/core' {
   // but have not yet been executed to call functions with options.
   declare export type UnloadedDescriptor = {
     name: string | void,
-    value: PluginObj<mixed> | (() => PluginObj<mixed>),
+    value: PluginObj<unknown> | (() => PluginObj<unknown>),
     options: EntryOptions,
     dirname: string,
     alias: string,
@@ -423,7 +423,7 @@ declare module '@babel/core' {
   };
 
   declare export class ConfigItem {
-    +value: PluginObj<mixed> | (() => PluginObj<mixed>);
+    +value: PluginObj<unknown> | (() => PluginObj<unknown>);
     +options: EntryOptions;
     +dirname: string;
     +name: string | void;
@@ -924,8 +924,8 @@ declare module '@babel/core' {
   |};
 
   declare type TransformCallback<TMetadata> =
-    | ((Error, null) => mixed)
-    | ((null, TransformResult<TMetadata> | null) => mixed);
+    | ((Error, null) => unknown)
+    | ((null, TransformResult<TMetadata> | null) => unknown);
 
   /**
    * Transforms the passed in code. Calling a callback with an object with the generated code, source map, and AST.
@@ -1059,20 +1059,20 @@ declare module '@babel/core' {
 
   declare export type ResolvedConfig = {
     options: BabelCoreOptions,
-    passes: Array<Array<PluginObj<mixed> | (() => PluginObj<mixed>)>>,
+    passes: Array<Array<PluginObj<unknown> | (() => PluginObj<unknown>)>>,
   };
 
   declare export function loadOptions(
-    options?: mixed,
+    options?: unknown,
     callback:
-      | ((error: Error, null) => mixed)
-      | ((null, config: ResolvedConfig | null) => mixed),
+      | ((error: Error, null) => unknown)
+      | ((null, config: ResolvedConfig | null) => unknown),
   ): void;
   declare export function loadOptionsSync(
-    options?: mixed,
+    options?: unknown,
   ): ResolvedConfig | null;
   declare export function loadOptionsAsync(
-    options?: mixed,
+    options?: unknown,
   ): Promise<ResolvedConfig | null>;
 
   // For now
@@ -1090,16 +1090,16 @@ declare module '@babel/core' {
   }
 
   declare export function loadPartialConfig(
-    options?: mixed,
+    options?: unknown,
     callback:
-      | ((error: Error, null) => mixed)
-      | ((null, config: PartialConfig | null) => mixed),
+      | ((error: Error, null) => unknown)
+      | ((null, config: PartialConfig | null) => unknown),
   ): void;
   declare export function loadPartialConfigSync(
-    options?: mixed,
+    options?: unknown,
   ): PartialConfig | null;
   declare export function loadPartialConfigAsync(
-    options?: mixed,
+    options?: unknown,
   ): Promise<PartialConfig | null>;
 }
 
@@ -1189,7 +1189,7 @@ declare module '@babel/generator' {
     jsecsOption?: {...},
 
     decoratorsBeforeExport?: boolean,
-    recordAndTupleSyntaxType?: mixed,
+    recordAndTupleSyntaxType?: unknown,
 
     /**
      * Enable generating source maps
@@ -1283,13 +1283,13 @@ declare module '@babel/template' {
     (tpl: string, opts: ?PublicOpts): (?PublicReplacements) => T,
 
     // Building from a template literal produces an AST builder function by default.
-    (tpl: Array<string>, ...args: Array<mixed>): (?PublicReplacements) => T,
+    (tpl: Array<string>, ...args: Array<unknown>): (?PublicReplacements) => T,
 
     // Allow users to explicitly create templates that produce ASTs, skipping
     // the need for an intermediate function.
     ast: {
       (tpl: string, opts: ?PublicOpts): T,
-      (tpl: Array<string>, ...args: Array<mixed>): T,
+      (tpl: Array<string>, ...args: Array<unknown>): T,
     },
   };
 
@@ -1321,14 +1321,17 @@ declare module '@babel/template' {
     // Building from a template literal produces an AST builder function by default.
     (
       tpl: Array<string>,
-      ...args: Array<mixed>
+      ...args: Array<unknown>
     ): (?PublicReplacements) => Statement | Array<Statement>,
 
     // Allow users to explicitly create templates that produce ASTs, skipping
     // the need for an intermediate function.
     ast: {
       (tpl: string, opts: ?PublicOpts): Statement | Array<Statement>,
-      (tpl: Array<string>, ...args: Array<mixed>): Statement | Array<Statement>,
+      (
+        tpl: Array<string>,
+        ...args: Array<unknown>
+      ): Statement | Array<Statement>,
     },
   };
 
