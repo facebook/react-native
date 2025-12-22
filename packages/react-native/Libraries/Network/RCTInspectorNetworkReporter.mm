@@ -29,10 +29,23 @@ Headers convertNSDictionaryToHeaders(const NSDictionary<NSString *, NSString *> 
 std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
 {
   const NSUInteger maxBodySize = 1024 * 1024; // 1MB
-  auto bodyLength = request.HTTPBody.length;
-  auto bytesToRead = std::min(bodyLength, maxBodySize);
+  NSData *bodyData = request.HTTPBody;
 
-  auto body = std::string((const char *)request.HTTPBody.bytes, bytesToRead);
+  if (bodyData == nil || bodyData.length == 0) {
+    return "";
+  }
+
+  auto bodyLength = bodyData.length;
+  auto bytesToRead = std::min(bodyLength, maxBodySize);
+  NSData *truncatedData = [bodyData subdataWithRange:NSMakeRange(0, bytesToRead)];
+
+  // Attempt UTF-8 decoding
+  NSString *bodyString = [[NSString alloc] initWithData:truncatedData encoding:NSUTF8StringEncoding];
+  if (bodyString == nil) {
+    return "[Preview unavailable]";
+  }
+
+  auto body = std::string([bodyString UTF8String]);
 
   if (bytesToRead < bodyLength) {
     body +=
