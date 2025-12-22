@@ -1007,26 +1007,26 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
         }
       }
 
-      for (auto& [tag, props] : updateViewPropsDirect_) {
-        auto familyIt = tagToShadowNodeFamily_.find(tag);
-        if (familyIt == tagToShadowNodeFamily_.end()) {
-          continue;
-        }
-
-        auto weakFamily = familyIt->second;
-        if (auto family = weakFamily.lock()) {
-          propsBuilder.storeDynamic(props);
-          mutations.batch.push_back(
-              AnimationMutation{
-                  .tag = tag,
-                  .family = family,
-                  .props = propsBuilder.get(),
-              });
-        }
-        containsChange = true;
-      }
       {
         std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
+        for (auto& [tag, props] : updateViewPropsDirect_) {
+          auto familyIt = tagToShadowNodeFamily_.find(tag);
+          if (familyIt == tagToShadowNodeFamily_.end()) {
+            continue;
+          }
+
+          auto weakFamily = familyIt->second;
+          if (auto family = weakFamily.lock()) {
+            propsBuilder.storeDynamic(props);
+            mutations.batch.push_back(
+                AnimationMutation{
+                    .tag = tag,
+                    .family = family,
+                    .props = propsBuilder.get(),
+                });
+          }
+          containsChange = true;
+        }
         for (auto& [tag, props] : updateViewProps_) {
           auto familyIt = tagToShadowNodeFamily_.find(tag);
           if (familyIt == tagToShadowNodeFamily_.end()) {
@@ -1036,12 +1036,12 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
           auto weakFamily = familyIt->second;
           if (auto family = weakFamily.lock()) {
             propsBuilder.storeDynamic(props);
-            mutations.hasLayoutUpdates = true;
             mutations.batch.push_back(
                 AnimationMutation{
                     .tag = tag,
                     .family = family,
                     .props = propsBuilder.get(),
+                    .hasLayoutUpdates = true,
                 });
           }
           containsChange = true;
@@ -1076,25 +1076,25 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
 
       isEventAnimationInProgress_ = false;
 
-      for (auto& [tag, props] : updateViewPropsDirect_) {
-        auto familyIt = tagToShadowNodeFamily_.find(tag);
-        if (familyIt == tagToShadowNodeFamily_.end()) {
-          continue;
-        }
-
-        auto weakFamily = familyIt->second;
-        if (auto family = weakFamily.lock()) {
-          propsBuilder.storeDynamic(props);
-          mutations.batch.push_back(
-              AnimationMutation{
-                  .tag = tag,
-                  .family = family,
-                  .props = propsBuilder.get(),
-              });
-        }
-      }
       {
         std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
+        for (auto& [tag, props] : updateViewPropsDirect_) {
+          auto familyIt = tagToShadowNodeFamily_.find(tag);
+          if (familyIt == tagToShadowNodeFamily_.end()) {
+            continue;
+          }
+
+          auto weakFamily = familyIt->second;
+          if (auto family = weakFamily.lock()) {
+            propsBuilder.storeDynamic(props);
+            mutations.batch.push_back(
+                AnimationMutation{
+                    .tag = tag,
+                    .family = family,
+                    .props = propsBuilder.get(),
+                });
+          }
+        }
         for (auto& [tag, props] : updateViewProps_) {
           auto familyIt = tagToShadowNodeFamily_.find(tag);
           if (familyIt == tagToShadowNodeFamily_.end()) {
@@ -1104,16 +1104,18 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
           auto weakFamily = familyIt->second;
           if (auto family = weakFamily.lock()) {
             propsBuilder.storeDynamic(props);
-            mutations.hasLayoutUpdates = true;
             mutations.batch.push_back(
                 AnimationMutation{
                     .tag = tag,
                     .family = family,
                     .props = propsBuilder.get(),
+                    .hasLayoutUpdates = true,
                 });
           }
         }
       }
+      updateViewProps_.clear();
+      updateViewPropsDirect_.clear();
     }
   } else {
     // There is no active animation. Stop the render callback.
