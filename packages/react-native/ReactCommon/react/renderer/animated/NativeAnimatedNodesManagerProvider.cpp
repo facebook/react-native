@@ -145,28 +145,30 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
     uiManager->setNativeAnimatedDelegate(nativeAnimatedDelegate_);
 
-    animatedMountingOverrideDelegate_ =
-        std::make_shared<AnimatedMountingOverrideDelegate>(
-            *nativeAnimatedNodesManager_, *scheduler);
+    if (!ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+      animatedMountingOverrideDelegate_ =
+          std::make_shared<AnimatedMountingOverrideDelegate>(
+              *nativeAnimatedNodesManager_, *scheduler);
 
-    // Register on existing surfaces
-    uiManager->getShadowTreeRegistry().enumerate(
-        [animatedMountingOverrideDelegate =
-             std::weak_ptr<const AnimatedMountingOverrideDelegate>(
-                 animatedMountingOverrideDelegate_)](
-            const ShadowTree& shadowTree, bool& /*stop*/) {
-          shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
-              animatedMountingOverrideDelegate);
-        });
-    // Register on surfaces started in the future
-    uiManager->setOnSurfaceStartCallback(
-        [animatedMountingOverrideDelegate =
-             std::weak_ptr<const AnimatedMountingOverrideDelegate>(
-                 animatedMountingOverrideDelegate_)](
-            const ShadowTree& shadowTree) {
-          shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
-              animatedMountingOverrideDelegate);
-        });
+      // Register on existing surfaces
+      uiManager->getShadowTreeRegistry().enumerate(
+          [animatedMountingOverrideDelegate =
+               std::weak_ptr<const AnimatedMountingOverrideDelegate>(
+                   animatedMountingOverrideDelegate_)](
+              const ShadowTree& shadowTree, bool& /*stop*/) {
+            shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
+                animatedMountingOverrideDelegate);
+          });
+      // Register on surfaces started in the future
+      uiManager->setOnSurfaceStartCallback(
+          [animatedMountingOverrideDelegate =
+               std::weak_ptr<const AnimatedMountingOverrideDelegate>(
+                   animatedMountingOverrideDelegate_)](
+              const ShadowTree& shadowTree) {
+            shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
+                animatedMountingOverrideDelegate);
+          });
+    }
   }
   return nativeAnimatedNodesManager_;
 }
