@@ -132,6 +132,10 @@ RCT_EXTERN NSURL *RCTDataURL(NSString *mimeType, NSData *data);
 // Gzip functionality - compression level in range 0 - 1 (-1 for default)
 RCT_EXTERN NSData *__nullable RCTGzipData(NSData *__nullable data, float level);
 
+// Gzip decompression - maxDecompressedSize of 0 means no limit, returns nil if
+// limit exceeded or decompression fails
+RCT_EXTERN NSData *__nullable RCTDecompressGzipData(NSData *__nullable data, NSUInteger maxDecompressedSize);
+
 // Returns the relative path within the main bundle for an absolute URL
 // (or nil, if the URL does not specify a path within the main bundle)
 RCT_EXTERN NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL);
