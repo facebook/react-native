@@ -10,6 +10,7 @@
 #import "RCTNetworkConversions.h"
 
 #import <React/RCTLog.h>
+#import <React/RCTUtils.h>
 #import <react/networking/NetworkReporter.h>
 
 using namespace facebook::react;
@@ -28,11 +29,20 @@ Headers convertNSDictionaryToHeaders(const NSDictionary<NSString *, NSString *> 
 
 std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
 {
-  const NSUInteger maxBodySize = 1024 * 1024; // 1MB
+  const NSUInteger maxBodySize = 512 * 1024; // 512KB
   NSData *bodyData = request.HTTPBody;
 
   if (bodyData == nil || bodyData.length == 0) {
     return "";
+  }
+
+  // Decompress if gzip-encoded (up to maxBodySize)
+  NSString *contentEncoding = [request valueForHTTPHeaderField:@"Content-Encoding"];
+  if ([contentEncoding isEqualToString:@"gzip"]) {
+    NSData *decompressedData = RCTDecompressGzipData(bodyData, maxBodySize);
+    if (decompressedData != nil) {
+      bodyData = decompressedData;
+    }
   }
 
   auto bodyLength = bodyData.length;

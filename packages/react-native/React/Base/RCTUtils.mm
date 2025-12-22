@@ -713,6 +713,8 @@ BOOL RCTIsGzippedData(NSData *__nullable data)
   return (data.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b);
 }
 
+static const NSUInteger RCTGZipChunkSize = 16384;
+
 NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
 {
   if (input.length == 0 || RCTIsGzippedData(input)) {
@@ -739,8 +741,6 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
   stream.total_out = 0;
   stream.avail_out = 0;
 
-  static const NSUInteger RCTGZipChunkSize = 16384;
-
   NSMutableData *output = nil;
   int compression = (level < 0.0f) ? Z_DEFAULT_COMPRESSION : (int)(roundf(level * 9));
   if (deflateInit2(&stream, compression, Z_DEFLATED, 31, 8, Z_DEFAULT_STRATEGY) == Z_OK) {
@@ -754,6 +754,63 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
       deflate(&stream, Z_FINISH);
     }
     deflateEnd(&stream);
+    output.length = stream.total_out;
+  }
+
+  dlclose(libz);
+
+  return output;
+}
+
+NSData *__nullable RCTDecompressGzipData(NSData *__nullable data, NSUInteger maxDecompressedSize)
+{
+  if (data.length == 0 || !RCTIsGzippedData(data)) {
+    return data;
+  }
+
+  void *libz = dlopen("/usr/lib/libz.dylib", RTLD_LAZY);
+
+  using InflateInit2_ = int (*)(z_streamp, int, const char *, int);
+  InflateInit2_ inflateInit2_ = (InflateInit2_)dlsym(libz, "inflateInit2_");
+
+  using Inflate = int (*)(z_streamp, int);
+  Inflate inflate = (Inflate)dlsym(libz, "inflate");
+
+  using InflateEnd = int (*)(z_streamp);
+  InflateEnd inflateEnd = (InflateEnd)dlsym(libz, "inflateEnd");
+
+  z_stream stream;
+  stream.zalloc = Z_NULL;
+  stream.zfree = Z_NULL;
+  stream.opaque = Z_NULL;
+  stream.avail_in = (uint)data.length;
+  stream.next_in = (Bytef *)data.bytes;
+  stream.total_out = 0;
+  stream.avail_out = 0;
+
+  NSMutableData *output = nil;
+  // Use 31 for windowBits to enable gzip decoding (15 + 16)
+  if (inflateInit2(&stream, 31) == Z_OK) {
+    output = [NSMutableData dataWithLength:RCTGZipChunkSize];
+    int status = Z_OK;
+    while (status == Z_OK) {
+      if (stream.total_out >= output.length) {
+        output.length += RCTGZipChunkSize;
+      }
+      if (maxDecompressedSize > 0 && stream.total_out >= maxDecompressedSize) {
+        inflateEnd(&stream);
+        dlclose(libz);
+        return nil;
+      }
+      stream.next_out = (uint8_t *)output.mutableBytes + stream.total_out;
+      stream.avail_out = (uInt)(output.length - stream.total_out);
+      status = inflate(&stream, Z_SYNC_FLUSH);
+    }
+    inflateEnd(&stream);
+    if (status != Z_STREAM_END) {
+      dlclose(libz);
+      return nil;
+    }
     output.length = stream.total_out;
   }
 
