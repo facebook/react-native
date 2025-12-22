@@ -29,7 +29,7 @@ export function render(): React.Node {
 /**
  * Showcase threshold of two overlapping elements
  */
-function roundRect(rect: mixed): ?{
+function roundRect(rect: unknown): ?{
   x: number,
   y: number,
   width: number,

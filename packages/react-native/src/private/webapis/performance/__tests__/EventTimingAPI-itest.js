@@ -23,7 +23,7 @@ function sleep(ms: number) {
   while (performance.now() < end) {}
 }
 
-function ensurePerformanceEventTiming(value: mixed): PerformanceEventTiming {
+function ensurePerformanceEventTiming(value: unknown): PerformanceEventTiming {
   if (!(value instanceof PerformanceEventTiming)) {
     throw new Error(
       `Expected instance of PerformanceEventTiming but got ${String(value)}`,

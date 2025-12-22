@@ -115,7 +115,7 @@ export default function processFilter(
   return result;
 }
 
-function _getFilterAmount(filterName: string, filterArgs: mixed): ?number {
+function _getFilterAmount(filterName: string, filterArgs: unknown): ?number {
   let filterArgAsNumber: number;
   let unit: string;
   if (typeof filterArgs === 'string') {

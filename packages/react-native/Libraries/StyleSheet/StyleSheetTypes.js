@@ -1104,22 +1104,20 @@ export type ____Styles_Internal = {
 // ____FlattenStyleProp_Helper should be considered internal.
 type FlattenDepthLimiter = [void, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 type ____FlattenStyleProp_Helper<
-  +TStyleProp: StyleProp<mixed>,
+  +TStyleProp: StyleProp<unknown>,
   Depth: $Values<FlattenDepthLimiter> = 9,
 > = Depth extends 0
   ? empty
   : TStyleProp extends null | void | false | ''
-    ? empty
-    : // When TStyleProp is an array, recurse with decremented Depth
-      TStyleProp extends $ReadOnlyArray<infer V>
+    ? empty // When TStyleProp is an array, recurse with decremented Depth
+    : TStyleProp extends $ReadOnlyArray<infer V>
       ? ____FlattenStyleProp_Helper<
           V,
           Depth extends number ? FlattenDepthLimiter[Depth] : 0,
         >
       : TStyleProp;
 
-export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
-  ____FlattenStyleProp_Helper<TStyleProp> extends empty
-    ? // $FlowFixMe[unclear-type]
-      any
+export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<unknown>> =
+  ____FlattenStyleProp_Helper<TStyleProp> extends empty // $FlowFixMe[unclear-type]
+    ? any
     : ____FlattenStyleProp_Helper<TStyleProp>;

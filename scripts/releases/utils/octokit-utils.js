@@ -53,6 +53,6 @@ export interface IOctokit {
       repo: string,
       asset_id: string,
       ...
-    }) => Promise<mixed>,
+    }) => Promise<unknown>,
   }>;
 }

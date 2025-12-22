@@ -35,7 +35,7 @@ type Props = $ReadOnly<{
   style?: ?ViewStyleProp,
   frame?: ?Object,
   selection?: ?number,
-  setSelection?: number => mixed,
+  setSelection?: number => unknown,
 }>;
 
 class ElementProperties extends React.Component<Props> {

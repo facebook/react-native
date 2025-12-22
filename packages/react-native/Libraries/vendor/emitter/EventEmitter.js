@@ -20,8 +20,8 @@ export interface IEventEmitter<
 > {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
-    context?: mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => unknown,
+    context?: unknown,
   ): EventSubscription;
 
   emit<TEvent: $Keys<TEventToArgsMap>>(
@@ -35,8 +35,8 @@ export interface IEventEmitter<
 }
 
 interface Registration<TArgs> {
-  +context: mixed;
-  +listener: (...args: TArgs) => mixed;
+  +context: unknown;
+  +listener: (...args: TArgs) => unknown;
   +remove: () => void;
 }
 
@@ -85,8 +85,8 @@ export default class EventEmitter<
    */
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
-    context: mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => unknown,
+    context: unknown,
   ): EventSubscription {
     if (typeof listener !== 'function') {
       throw new TypeError(

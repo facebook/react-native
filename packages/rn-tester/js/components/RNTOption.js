@@ -21,7 +21,7 @@ import {Pressable, StyleSheet, Text, View} from 'react-native';
 type Props = $ReadOnly<{
   testID?: ?string,
   label: string,
-  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => unknown,
   selected?: ?boolean,
   multiSelect?: ?boolean,
   disabled?: ?boolean,

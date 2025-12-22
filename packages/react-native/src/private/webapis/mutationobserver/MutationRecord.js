@@ -55,7 +55,7 @@ export default class MutationRecord {
     return null;
   }
 
-  get oldValue(): mixed | null {
+  get oldValue(): unknown | null {
     return null;
   }
 

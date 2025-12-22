@@ -1508,7 +1508,7 @@ class EnabledExample extends React.Component<
     isEnabled: false,
   };
   _subscription: EventSubscription;
-  componentDidMount(): null | Promise<mixed> {
+  componentDidMount(): null | Promise<unknown> {
     this._subscription = AccessibilityInfo.addEventListener(
       this.props.eventListener,
       this._handleToggled,

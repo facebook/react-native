@@ -83,29 +83,29 @@ interface Spec extends TurboModule {
   ) => RootTag;
   stopSurface: (surfaceId: RootTag) => void;
   enqueueNativeEvent: (
-    shadowNode: mixed /* ShadowNode */,
+    shadowNode: unknown /* ShadowNode */,
     type: string,
-    payload?: mixed,
+    payload?: unknown,
     category?: NativeEventCategory,
     isUnique?: boolean,
   ) => void;
   enqueueScrollEvent: (
-    shadowNode: mixed /* ShadowNode */,
+    shadowNode: unknown /* ShadowNode */,
     options: ScrollOptions,
   ) => void;
   enqueueModalSizeUpdate: (
-    shadowNode: mixed /* ShadowNode */,
+    shadowNode: unknown /* ShadowNode */,
     height: number,
     width: number,
   ) => void;
   takeMountingManagerLogs: (surfaceId: RootTag) => Array<string>;
   getDirectManipulationProps: (
-    shadowNode: mixed /* ShadowNode */,
+    shadowNode: unknown /* ShadowNode */,
   ) => $ReadOnly<{
-    [string]: mixed,
+    [string]: unknown,
   }>;
-  getFabricUpdateProps: (shadowNode: mixed /* ShadowNode */) => $ReadOnly<{
-    [string]: mixed,
+  getFabricUpdateProps: (shadowNode: unknown /* ShadowNode */) => $ReadOnly<{
+    [string]: unknown,
   }>;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
@@ -117,10 +117,10 @@ interface Spec extends TurboModule {
   ) => string;
   reportTestSuiteResultsJSON: (results: string) => void;
   createShadowNodeReferenceCounter(
-    shadowNode: mixed /* ShadowNode */,
+    shadowNode: unknown /* ShadowNode */,
   ): () => number;
   createShadowNodeRevisionGetter(
-    shadowNode: mixed /* ShadowNode */,
+    shadowNode: unknown /* ShadowNode */,
   ): () => ?number;
   saveJSMemoryHeapSnapshot: (filePath: string) => void;
   forceHighResTimeStamp: (timeStamp: ?number) => void;

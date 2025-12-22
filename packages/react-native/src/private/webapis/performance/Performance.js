@@ -240,7 +240,7 @@ export default class Performance {
     let resolvedMeasureName: string;
     let resolvedStartTime: number;
     let resolvedDuration: number;
-    let resolvedDetail: mixed;
+    let resolvedDetail: unknown;
 
     if (measureName === undefined) {
       throw new TypeError(

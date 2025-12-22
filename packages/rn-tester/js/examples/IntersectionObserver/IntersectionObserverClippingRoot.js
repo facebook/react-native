@@ -26,7 +26,7 @@ export function render(): React.Node {
   return <IntersectionObserverClippingRootExample />;
 }
 
-function roundRect(rect: mixed): ?{
+function roundRect(rect: unknown): ?{
   x: number,
   y: number,
   width: number,

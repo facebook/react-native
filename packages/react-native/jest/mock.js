@@ -16,7 +16,7 @@
  * If `factoryRef` is provided, it is expected to reference a module that
  * exports the same type signature as the module referenced by `moduleRef`.
  */
-export default function mock<TModuleRef: $Flow$ModuleRef<mixed>>(
+export default function mock<TModuleRef: $Flow$ModuleRef<unknown>>(
   moduleRef: TModuleRef,
   factoryRef?: NoInfer<TModuleRef>,
 ): void {
@@ -33,7 +33,7 @@ export default function mock<TModuleRef: $Flow$ModuleRef<mixed>>(
   }
 }
 
-function deref(ref: $Flow$ModuleRef<mixed>): string {
+function deref(ref: $Flow$ModuleRef<unknown>): string {
   // $FlowFixMe[incompatible-type]
   return (ref as string).substring(2);
 }

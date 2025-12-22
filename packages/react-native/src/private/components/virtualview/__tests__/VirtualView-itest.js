@@ -297,7 +297,7 @@ describe('memory management', () => {
  * Helper to reduce duplication of the mock event payload.
  */
 export function dispatchModeChangeEvent(
-  instance: mixed,
+  instance: unknown,
   mode: VirtualViewMode,
 ): void {
   const targetRect = {
@@ -373,7 +373,7 @@ function createWeakRefCallback<T: interface {} = interface {}>(): $ReadOnly<{
 /**
  * Gets the shadow node via `instance.__internalInstanceHandle.stateNode.node`.
  */
-function getNodeAsObjectFromPublicInstance(instance: mixed): interface {} {
+function getNodeAsObjectFromPublicInstance(instance: unknown): interface {} {
   const node = getNodeFromPublicInstance(
     ensureInstance(instance, ReactNativeElement),
   );

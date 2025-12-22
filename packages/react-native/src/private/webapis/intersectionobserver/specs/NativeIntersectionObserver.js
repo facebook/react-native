@@ -14,7 +14,7 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
 
 export type NativeIntersectionObserverEntry = {
   intersectionObserverId: number,
-  targetInstanceHandle: mixed,
+  targetInstanceHandle: unknown,
   targetRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
   rootRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
   // TODO(T209328432) - Remove optionality of intersectionRect when native changes are released
@@ -25,14 +25,14 @@ export type NativeIntersectionObserverEntry = {
 
 export type NativeIntersectionObserverObserveOptions = {
   intersectionObserverId: number,
-  rootShadowNode?: ?mixed,
-  targetShadowNode: mixed,
+  rootShadowNode?: ?unknown,
+  targetShadowNode: unknown,
   thresholds: $ReadOnlyArray<number>,
   rootThresholds?: ?$ReadOnlyArray<number>,
   rootMargin?: ?string,
 };
 
-export opaque type NativeIntersectionObserverToken = mixed;
+export opaque type NativeIntersectionObserverToken = unknown;
 
 export interface Spec extends TurboModule {
   +observeV2?: (

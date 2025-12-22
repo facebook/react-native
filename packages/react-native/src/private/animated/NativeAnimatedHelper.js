@@ -51,7 +51,7 @@ let nativeEventEmitter;
 const waitingForQueuedOperations = new Set<string>();
 let queueOperations = false;
 const queue: Array<() => void> = [];
-const singleOpQueue: Array<mixed> = [];
+const singleOpQueue: Array<unknown> = [];
 
 const isSingleOpBatching =
   Platform.OS === 'android' &&
@@ -103,7 +103,7 @@ function createNativeOperations(): NonNullable<typeof NativeAnimatedModule> {
     methodNames.push('connectAnimatedNodeToShadowNodeFamily');
   }
   const nativeOperations: {
-    [$Values<typeof methodNames>]: (...$ReadOnlyArray<mixed>) => void,
+    [$Values<typeof methodNames>]: (...$ReadOnlyArray<unknown>) => void,
   } = {};
   if (isSingleOpBatching) {
     for (let ii = 0, length = methodNames.length; ii < length; ii++) {
@@ -406,7 +406,7 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(
-  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig<mixed>,
+  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig<unknown>,
 ): boolean {
   if (config.useNativeDriver == null) {
     console.warn(

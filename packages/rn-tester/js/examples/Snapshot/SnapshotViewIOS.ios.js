@@ -30,7 +30,7 @@ type SnapshotReadyEvent = NativeSyntheticEvent<
 
 type Props = $ReadOnly<{
   ...ViewProps,
-  onSnapshotReady?: ?(event: SnapshotReadyEvent) => mixed,
+  onSnapshotReady?: ?(event: SnapshotReadyEvent) => unknown,
   testIdentifier?: ?string,
 }>;
 

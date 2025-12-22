@@ -21,7 +21,7 @@ declare export default class NodeList<+T> implements Iterable<T>, ArrayLike<T> {
   // $FlowFixMe[incompatible-variance]
   entries(): Iterator<[number, T]>;
   forEach<ThisType>(
-    callbackFn: (value: T, index: number, array: NodeList<T>) => mixed,
+    callbackFn: (value: T, index: number, array: NodeList<T>) => unknown,
     thisArg?: ThisType,
   ): void;
   keys(): Iterator<number>;

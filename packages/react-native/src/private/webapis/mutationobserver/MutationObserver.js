@@ -20,7 +20,7 @@ import * as MutationObserverManager from './internals/MutationObserverManager';
 export type MutationObserverCallback = (
   mutationRecords: $ReadOnlyArray<MutationRecord>,
   observer: MutationObserver,
-) => mixed;
+) => unknown;
 
 export interface MutationObserverInit {
   +subtree?: boolean;

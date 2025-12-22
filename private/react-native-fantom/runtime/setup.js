@@ -36,7 +36,7 @@ export type FailureDetail = {
   cause?: FailureDetail,
 };
 
-export opaque type CoverageMap = mixed;
+export opaque type CoverageMap = unknown;
 
 export type TestSuiteResult =
   | {
@@ -56,7 +56,7 @@ type Spec = {
   ...FocusState,
   title: string,
   parentContext: Context,
-  implementation: () => mixed,
+  implementation: () => unknown,
 };
 
 type Suite = Spec | Context;
@@ -89,7 +89,7 @@ const globalModifiers: Array<'focused' | 'skipped'> = [];
 
 const globalDescribe = (global.describe = (
   title: string,
-  implementation: () => mixed,
+  implementation: () => unknown,
 ) => {
   const parentContext = currentContext;
   const {focused, skipped} = getFocusState();
@@ -139,7 +139,7 @@ function getFocusState(): {focused: boolean, skipped: boolean} {
 const globalIt =
   (global.it =
   global.test =
-    (title: string, implementation: () => mixed) => {
+    (title: string, implementation: () => unknown) => {
       const {focused, skipped} = getFocusState();
       currentContext.children.push({
         title,
@@ -153,7 +153,7 @@ const globalIt =
 // $FlowExpectedError[prop-missing]
 global.fdescribe = global.describe.only = (
   title: string,
-  implementation: () => mixed,
+  implementation: () => unknown,
 ) => {
   globalModifiers.push('focused');
   globalDescribe(title, implementation);
@@ -165,7 +165,7 @@ global.it.only =
   global.fit =
   // $FlowExpectedError[prop-missing]
   global.test.only =
-    (title: string, implementation: () => mixed) => {
+    (title: string, implementation: () => unknown) => {
       globalModifiers.push('focused');
       globalIt(title, implementation);
       globalModifiers.pop();
@@ -174,7 +174,7 @@ global.it.only =
 // $FlowExpectedError[prop-missing]
 global.xdescribe = global.describe.skip = (
   title: string,
-  implementation: () => mixed,
+  implementation: () => unknown,
 ) => {
   globalModifiers.push('skipped');
   globalDescribe(title, implementation);
@@ -187,7 +187,7 @@ global.it.skip =
   // $FlowExpectedError[prop-missing]
   global.test.skip =
   global.xtest =
-    (title: string, implementation: () => mixed) => {
+    (title: string, implementation: () => unknown) => {
       globalModifiers.push('skipped');
       globalIt(title, implementation);
       globalModifiers.pop();
@@ -325,7 +325,7 @@ function runSpec(spec: Spec): TestCaseResult {
   }
 
   let status: 'passed' | 'failed' | 'pending';
-  let error: mixed;
+  let error: unknown;
 
   const start = Date.now();
   snapshotContext.setTargetTest(result.fullName);
@@ -336,7 +336,7 @@ function runSpec(spec: Spec): TestCaseResult {
     invokeHooks(spec.parentContext, 'afterEachHooks');
 
     status = 'passed';
-  } catch (e: mixed) {
+  } catch (e: unknown) {
     error = e;
     status = 'failed';
   }
