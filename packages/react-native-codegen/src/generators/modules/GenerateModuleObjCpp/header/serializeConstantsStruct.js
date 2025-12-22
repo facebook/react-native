@@ -19,7 +19,7 @@ const {wrapOptional: wrapCxxOptional} = require('../../../TypeUtils/Cxx');
 const {
   wrapOptional: wrapObjCOptional,
 } = require('../../../TypeUtils/Objective-C');
-const {capitalize} = require('../../../Utils');
+const {capitalize, toObjCString} = require('../../../Utils');
 const {getNamespacedStructName, getSafePropertyName} = require('../Utils');
 
 const StructTemplate = ({
@@ -295,7 +295,7 @@ function serializeConstantsStruct(
           varDecl += '.get()';
         }
 
-        const assignment = `d[@"${propName}"] = ` + objCValue;
+        const assignment = `d[${toObjCString(propName)}] = ` + objCValue;
         return `  ${varDecl};\n  ${assignment};`;
       })
       .join('\n'),

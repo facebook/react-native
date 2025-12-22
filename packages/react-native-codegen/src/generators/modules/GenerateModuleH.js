@@ -32,6 +32,7 @@ const {wrapOptional} = require('../TypeUtils/Cxx');
 const {
   getEnumName,
   parseValidUnionType,
+  toCppString,
   toPascalCase,
   toSafeCppString,
 } = require('../Utils');
@@ -176,13 +177,13 @@ const ModuleSpecClassDeclarationTemplate = ({
 template <typename T>
 class JSI_EXPORT ${hasteModuleName}CxxSpec : public TurboModule {
 public:
-  static constexpr std::string_view kModuleName = "${moduleName}";
+  static constexpr std::string_view kModuleName = ${toCppString(moduleName)};
 
 protected:
   ${hasteModuleName}CxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{${hasteModuleName}CxxSpec::kModuleName}, jsInvoker) {
 ${methods
   .map(({methodName, paramCount}) => {
-    return `    methodMap_["${methodName}"] = MethodMetadata {.argCount = ${paramCount}, .invoker = __${methodName}};`;
+    return `    methodMap_[${toCppString(methodName)}] = MethodMetadata {.argCount = ${paramCount}, .invoker = __${methodName}};`;
   })
   .join(
     '\n',
@@ -405,9 +406,9 @@ struct ${structName}Bridging {
 ${value.properties
   .map(v => {
     if (isDirectRecursiveMember(alias, v.typeAnnotation)) {
-      return `      value.hasProperty(rt, "${v.name}") ? std::make_unique<T>(bridging::fromJs<T>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)) : nullptr`;
+      return `      value.hasProperty(rt, ${toCppString(v.name)}) ? std::make_unique<T>(bridging::fromJs<T>(rt, value.getProperty(rt, ${toCppString(v.name)}), jsInvoker)) : nullptr`;
     } else {
-      return `      bridging::fromJs<decltype(types.${v.name})>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)`;
+      return `      bridging::fromJs<decltype(types.${v.name})>(rt, value.getProperty(rt, ${toCppString(v.name)}), jsInvoker)`;
     }
   })
   .join(',\n')}};
@@ -427,14 +428,14 @@ ${value.properties
   .map(v => {
     if (isDirectRecursiveMember(alias, v.typeAnnotation)) {
       return `    if (value.${v.name}) {
-        result.setProperty(rt, "${v.name}", bridging::toJs(rt, *value.${v.name}, jsInvoker));
+        result.setProperty(rt, ${toCppString(v.name)}, bridging::toJs(rt, *value.${v.name}, jsInvoker));
       }`;
     } else if (v.optional) {
       return `    if (value.${v.name}) {
-      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
+      result.setProperty(rt, ${toCppString(v.name)}, bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
     }`;
     } else {
-      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
+      return `    result.setProperty(rt, ${toCppString(v.name)}, bridging::toJs(rt, value.${v.name}, jsInvoker));`;
     }
   })
   .join('\n')}
@@ -495,7 +496,7 @@ struct Bridging<${enumName}> {
 
 function getMemberValueAppearance(member: NativeModuleEnumMember['value']) {
   if (member.type === 'StringLiteralTypeAnnotation') {
-    return `"${member.value}"`;
+    return toCppString(member.value);
   } else {
     return member.value;
   }
@@ -644,9 +645,9 @@ function translateEventEmitterToCpp(
   return {
     isVoidTypeAnnotation: isVoidTypeAnnotation,
     templateName: isVoidTypeAnnotation ? `/*${templateName}*/` : templateName,
-    registerEventEmitter: `    eventEmitterMap_["${
-      eventEmitter.name
-    }"] = std::make_shared<AsyncEventEmitter<${
+    registerEventEmitter: `    eventEmitterMap_[${toCppString(
+      eventEmitter.name,
+    )}] = std::make_shared<AsyncEventEmitter<${
       isVoidTypeAnnotation ? '' : 'jsi::Value'
     }>>();`,
     emitFunction: `
@@ -666,7 +667,7 @@ function translateEventEmitterToCpp(
   }
     static_cast<AsyncEventEmitter<${
       isVoidTypeAnnotation ? '' : 'jsi::Value'
-    }>&>(*eventEmitterMap_["${eventEmitter.name}"]).emit(${
+    }>&>(*eventEmitterMap_[${toCppString(eventEmitter.name)}]).emit(${
       isVoidTypeAnnotation
         ? ''
         : `[jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {

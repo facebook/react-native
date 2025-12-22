@@ -18,6 +18,8 @@ import type {
   SchemaType,
 } from '../../CodegenSchema';
 
+const {toObjCString} = require('../Utils');
+
 type FilesOutput = Map<string, string>;
 
 function getOrdinalNumber(num: number): string {
@@ -68,7 +70,7 @@ const CommandHandlerIfCaseConvertArgTemplate = ({
   `
   NSObject *arg${argNumber} = args[${argNumber}];
 #if RCT_DEBUG
-  if (!RCTValidateTypeOfViewCommandArgument(arg${argNumber}, ${expectedKind}, @"${expectedKindString}", @"${componentName}", commandName, @"${argNumberString}")) {
+  if (!RCTValidateTypeOfViewCommandArgument(arg${argNumber}, ${expectedKind}, ${toObjCString(expectedKindString)}, ${toObjCString(componentName)}, commandName, ${toObjCString(argNumberString)})) {
     return;
   }
 #endif
@@ -89,10 +91,10 @@ const CommandHandlerIfCaseTemplate = ({
   commandCall: string,
 }) =>
   `
-if ([commandName isEqualToString:@"${commandName}"]) {
+if ([commandName isEqualToString:${toObjCString(commandName)}]) {
 #if RCT_DEBUG
   if ([args count] != ${numArgs}) {
-    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"${componentName}", commandName, (int)[args count], ${numArgs});
+    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", ${toObjCString(componentName)}, commandName, (int)[args count], ${numArgs});
     return;
   }
 #endif
@@ -120,7 +122,7 @@ RCT_EXTERN inline void RCT${componentName}HandleCommand(
   ${ifCases}
 
 #if RCT_DEBUG
-  RCTLogError(@"%@ received command %@, which is not a supported command.", @"${componentName}", commandName);
+  RCTLogError(@"%@ received command %@, which is not a supported command.", ${toObjCString(componentName)}, commandName);
 #endif
 }
 `.trim();

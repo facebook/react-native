@@ -18,8 +18,7 @@ import type {
   SchemaType,
 } from '../../CodegenSchema';
 
-const {indent} = require('../Utils');
-const {parseValidUnionType} = require('../Utils');
+const {indent, parseValidUnionType, toCppString} = require('../Utils');
 const {IncludeTemplate, generateEventStructName} = require('./CppHelpers');
 
 // File path -> contents
@@ -74,7 +73,7 @@ const ComponentTemplate = ({
     : '';
   return `
 void ${className}EventEmitter::${eventName}(${structName} event) const {
-  dispatchEvent("${dispatchEventName}", [${capture}](jsi::Runtime &runtime) {
+  dispatchEvent(${toCppString(dispatchEventName)}, [${capture}](jsi::Runtime &runtime) {
     ${implementation}
   });
 }
@@ -92,7 +91,7 @@ const BasicComponentTemplate = ({
 }) =>
   `
 void ${className}EventEmitter::${eventName}() const {
-  dispatchEvent("${dispatchEventName}");
+  dispatchEvent(${toCppString(dispatchEventName)});
 }
 `.trim();
 
@@ -106,7 +105,7 @@ function generateSetter(
   const eventChain = usingEvent
     ? `event.${[...propertyParts, propertyName].join('.')}`
     : [...propertyParts, propertyName].join('.');
-  return `${variableName}.setProperty(runtime, "${propertyName}", ${valueMapper(
+  return `${variableName}.setProperty(runtime, ${toCppString(propertyName)}, ${valueMapper(
     eventChain,
   )});`;
 }
@@ -132,7 +131,7 @@ function generateObjectSetter(
     ),
     2,
   )}
-  ${variableName}.setProperty(runtime, "${propertyName}", ${propertyName});
+  ${variableName}.setProperty(runtime, ${toCppString(propertyName)}, ${propertyName});
 }
 `.trim();
 }
@@ -175,7 +174,7 @@ function generateArraySetter(
         usingEvent,
       )}
     }
-    ${variableName}.setProperty(runtime, "${propertyName}", ${propertyName});
+    ${variableName}.setProperty(runtime, ${toCppString(propertyName)}, ${propertyName});
   `;
 }
 
