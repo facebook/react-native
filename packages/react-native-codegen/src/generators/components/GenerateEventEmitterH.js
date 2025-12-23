@@ -109,6 +109,7 @@ const EnumTemplate = ({
 static char const *toString(const ${enumName} value) {
   switch (value) {
     ${toCases}
+    default: return "";
   }
 }
 `.trim();
