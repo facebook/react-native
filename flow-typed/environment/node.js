@@ -3484,6 +3484,20 @@ type zlib$brotliOptions = {
   ...
 };
 
+type zlib$zstdOptions = {
+  flush?: number,
+  finishFlush?: number,
+  chunkSize?: number,
+  params?: {
+    [number]: boolean | number,
+    ...
+  },
+  maxOutputLength?: number,
+  info?: boolean,
+  dictionary?: Buffer,
+  ...
+};
+
 type zlib$syncFn = (
   buffer: Buffer | $TypedArray | DataView | ArrayBuffer | string,
   options?: zlib$options,
@@ -3661,6 +3675,79 @@ declare module 'zlib' {
     BROTLI_DECODER_ERROR_ALLOC_RING_BUFFER_2: number,
     BROTLI_DECODER_ERROR_ALLOC_BLOCK_TYPE_TREES: number,
     BROTLI_DECODER_ERROR_UNREACHABL: number,
+
+    ZSTD_COMPRESS: number,
+    ZSTD_DECOMPRESS: number,
+
+    // Default compression level for zstd streams
+    ZSTD_CLEVEL_DEFAULT: number,
+
+    // Keys for zlib$zstdOptions['params']
+    ZSTD_c_compressionLevel: number,
+    ZSTD_c_windowLog: number,
+    ZSTD_c_hashLog: number,
+    ZSTD_c_chainLog: number,
+    ZSTD_c_searchLog: number,
+    ZSTD_c_minMatch: number,
+    ZSTD_c_targetLength: number,
+    ZSTD_c_strategy: number,
+    ZSTD_c_enableLongDistanceMatching: number,
+    ZSTD_c_ldmHashLog: number,
+    ZSTD_c_ldmMinMatch: number,
+    ZSTD_c_ldmBucketSizeLog: number,
+    ZSTD_c_ldmHashRateLog: number,
+    ZSTD_c_contentSizeFlag: number,
+    ZSTD_c_checksumFlag: number,
+    ZSTD_c_dictIDFlag: number,
+    ZSTD_c_nbWorkers: number,
+    ZSTD_c_jobSize: number,
+    ZSTD_c_overlapLog: number,
+
+    // Flush operations
+    ZSTD_e_continue: number,
+    ZSTD_e_flush: number,
+    ZSTD_e_end: number,
+
+    // Values for the ZSTD_c_strategy parameter
+    ZSTD_fast: number,
+    ZSTD_dfast: number,
+    ZSTD_greedy: number,
+    ZSTD_lazy: number,
+    ZSTD_lazy2: number,
+    ZSTD_btlazy2: number,
+    ZSTD_btopt: number,
+    ZSTD_btultra: number,
+    ZSTD_btultra2: number,
+
+    // Error codes
+    ZSTD_error_no_error: number,
+    ZSTD_error_GENERIC: number,
+    ZSTD_error_prefix_unknown: number,
+    ZSTD_error_version_unsupported: number,
+    ZSTD_error_frameParameter_unsupported: number,
+    ZSTD_error_frameParameter_windowTooLarge: number,
+    ZSTD_error_corruption_detected: number,
+    ZSTD_error_checksum_wrong: number,
+    ZSTD_error_literals_headerWrong: number,
+    ZSTD_error_dictionary_corrupted: number,
+    ZSTD_error_dictionary_wrong: number,
+    ZSTD_error_dictionaryCreation_failed: number,
+    ZSTD_error_parameter_unsupported: number,
+    ZSTD_error_parameter_combination_unsupported: number,
+    ZSTD_error_parameter_outOfBound: number,
+    ZSTD_error_tableLog_tooLarge: number,
+    ZSTD_error_maxSymbolValue_tooLarge: number,
+    ZSTD_error_maxSymbolValue_tooSmall: number,
+    ZSTD_error_stabilityCondition_notRespected: number,
+    ZSTD_error_stage_wrong: number,
+    ZSTD_error_init_missing: number,
+    ZSTD_error_memory_allocation: number,
+    ZSTD_error_workSpace_tooSmall: number,
+    ZSTD_error_dstSize_tooSmall: number,
+    ZSTD_error_srcSize_wrong: number,
+    ZSTD_error_dstBuffer_null: number,
+    ZSTD_error_noForwardProgress_destFull: number,
+    ZSTD_error_noForwardProgress_inputEmpty: number,
     ...
   };
   declare var codes: {
@@ -3680,6 +3767,8 @@ declare module 'zlib' {
   }
   declare class BrotliCompress extends Zlib {}
   declare class BrotliDecompress extends Zlib {}
+  declare class ZstdCompress extends Zlib {}
+  declare class ZstdDecompress extends Zlib {}
   declare class Deflate extends Zlib {}
   declare class Inflate extends Zlib {}
   declare class Gzip extends Zlib {}
@@ -3700,6 +3789,10 @@ declare module 'zlib' {
   declare function createGzip(options?: zlib$options): Gzip;
   declare function createGunzip(options?: zlib$options): Gunzip;
   declare function createUnzip(options?: zlib$options): Unzip;
+  declare function createZstdCompress(options?: zlib$zstdOptions): ZstdCompress;
+  declare function createZstdDecompress(
+    options?: zlib$zstdOptions,
+  ): ZstdDecompress;
   declare var brotliCompress: zlib$brotliAsyncFn;
   declare var brotliCompressSync: zlib$brotliSyncFn;
   declare var brotliDeompress: zlib$brotliAsyncFn;
