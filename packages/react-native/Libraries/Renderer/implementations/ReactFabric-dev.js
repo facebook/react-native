@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<6b3694149dd8856f0c741d3d94e05646>>
+ * @generated SignedSource<<0a9190c24f2d3b192c825b739cc40628>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -410,7 +410,7 @@ __DEV__ &&
       prevPrepareStackTrace = error.indexOf("\n");
       -1 !== prevPrepareStackTrace &&
         (error = error.slice(prevPrepareStackTrace + 1));
-      prevPrepareStackTrace = error.indexOf("react-stack-bottom-frame");
+      prevPrepareStackTrace = error.indexOf("react_stack_bottom_frame");
       -1 !== prevPrepareStackTrace &&
         (prevPrepareStackTrace = error.lastIndexOf(
           "\n",
@@ -8990,12 +8990,10 @@ __DEV__ &&
     function updateHostContainer(current, workInProgress) {
       if (doesRequireClone(current, workInProgress)) {
         current = workInProgress.stateNode;
-        var container = current.containerInfo,
-          newChildSet = createChildNodeSet();
+        var newChildSet = createChildNodeSet();
         appendAllChildrenToContainer(newChildSet, workInProgress, !1, !1);
         current.pendingChildren = newChildSet;
         workInProgress.flags |= 4;
-        completeRoot(container.containerTag, newChildSet);
       }
     }
     function scheduleRetryEffect(workInProgress, retryQueue) {
@@ -13805,7 +13803,9 @@ __DEV__ &&
         canonical: instance.canonical
       };
     }
-    function replaceContainerChildren() {}
+    function replaceContainerChildren(container, newChildren) {
+      completeRoot(container.containerTag, newChildren);
+    }
     function nativeOnUncaughtError(error, errorInfo) {
       !1 !==
         ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog({
@@ -15880,7 +15880,7 @@ __DEV__ &&
       }
     };
     var callComponent = {
-        "react-stack-bottom-frame": function (Component, props, secondArg) {
+        react_stack_bottom_frame: function (Component, props, secondArg) {
           var wasRendering = isRendering;
           isRendering = !0;
           try {
@@ -15891,9 +15891,9 @@ __DEV__ &&
         }
       },
       callComponentInDEV =
-        callComponent["react-stack-bottom-frame"].bind(callComponent),
+        callComponent.react_stack_bottom_frame.bind(callComponent),
       callRender = {
-        "react-stack-bottom-frame": function (instance) {
+        react_stack_bottom_frame: function (instance) {
           var wasRendering = isRendering;
           isRendering = !0;
           try {
@@ -15903,9 +15903,9 @@ __DEV__ &&
           }
         }
       },
-      callRenderInDEV = callRender["react-stack-bottom-frame"].bind(callRender),
+      callRenderInDEV = callRender.react_stack_bottom_frame.bind(callRender),
       callComponentDidMount = {
-        "react-stack-bottom-frame": function (finishedWork, instance) {
+        react_stack_bottom_frame: function (finishedWork, instance) {
           try {
             instance.componentDidMount();
           } catch (error) {
@@ -15913,11 +15913,12 @@ __DEV__ &&
           }
         }
       },
-      callComponentDidMountInDEV = callComponentDidMount[
-        "react-stack-bottom-frame"
-      ].bind(callComponentDidMount),
+      callComponentDidMountInDEV =
+        callComponentDidMount.react_stack_bottom_frame.bind(
+          callComponentDidMount
+        ),
       callComponentDidUpdate = {
-        "react-stack-bottom-frame": function (
+        react_stack_bottom_frame: function (
           finishedWork,
           instance,
           prevProps,
@@ -15931,22 +15932,24 @@ __DEV__ &&
           }
         }
       },
-      callComponentDidUpdateInDEV = callComponentDidUpdate[
-        "react-stack-bottom-frame"
-      ].bind(callComponentDidUpdate),
+      callComponentDidUpdateInDEV =
+        callComponentDidUpdate.react_stack_bottom_frame.bind(
+          callComponentDidUpdate
+        ),
       callComponentDidCatch = {
-        "react-stack-bottom-frame": function (instance, errorInfo) {
+        react_stack_bottom_frame: function (instance, errorInfo) {
           var stack = errorInfo.stack;
           instance.componentDidCatch(errorInfo.value, {
             componentStack: null !== stack ? stack : ""
           });
         }
       },
-      callComponentDidCatchInDEV = callComponentDidCatch[
-        "react-stack-bottom-frame"
-      ].bind(callComponentDidCatch),
+      callComponentDidCatchInDEV =
+        callComponentDidCatch.react_stack_bottom_frame.bind(
+          callComponentDidCatch
+        ),
       callComponentWillUnmount = {
-        "react-stack-bottom-frame": function (
+        react_stack_bottom_frame: function (
           current,
           nearestMountedAncestor,
           instance
@@ -15958,11 +15961,12 @@ __DEV__ &&
           }
         }
       },
-      callComponentWillUnmountInDEV = callComponentWillUnmount[
-        "react-stack-bottom-frame"
-      ].bind(callComponentWillUnmount),
+      callComponentWillUnmountInDEV =
+        callComponentWillUnmount.react_stack_bottom_frame.bind(
+          callComponentWillUnmount
+        ),
       callCreate = {
-        "react-stack-bottom-frame": function (effect) {
+        react_stack_bottom_frame: function (effect) {
           null != effect.resourceKind &&
             console.error(
               "Expected only SimpleEffects when enableUseEffectCRUDOverload is disabled, got %s",
@@ -15974,9 +15978,9 @@ __DEV__ &&
           return (effect.destroy = create);
         }
       },
-      callCreateInDEV = callCreate["react-stack-bottom-frame"].bind(callCreate),
+      callCreateInDEV = callCreate.react_stack_bottom_frame.bind(callCreate),
       callDestroy = {
-        "react-stack-bottom-frame": function (
+        react_stack_bottom_frame: function (
           current,
           nearestMountedAncestor,
           destroy
@@ -15988,16 +15992,15 @@ __DEV__ &&
           }
         }
       },
-      callDestroyInDEV =
-        callDestroy["react-stack-bottom-frame"].bind(callDestroy),
+      callDestroyInDEV = callDestroy.react_stack_bottom_frame.bind(callDestroy),
       callLazyInit = {
-        "react-stack-bottom-frame": function (lazy) {
+        react_stack_bottom_frame: function (lazy) {
           var init = lazy._init;
           return init(lazy._payload);
         }
       },
       callLazyInitInDEV =
-        callLazyInit["react-stack-bottom-frame"].bind(callLazyInit),
+        callLazyInit.react_stack_bottom_frame.bind(callLazyInit),
       thenableState = null,
       thenableIndexCounter = 0,
       currentDebugInfo = null,
@@ -16616,10 +16619,10 @@ __DEV__ &&
     (function () {
       var internals = {
         bundleType: 1,
-        version: "19.1.0",
+        version: "19.1.4",
         rendererPackageName: "react-native-renderer",
         currentDispatcherRef: ReactSharedInternals,
-        reconcilerVersion: "19.1.0"
+        reconcilerVersion: "19.1.4"
       };
       null !== extraDevToolsConfig &&
         (internals.rendererConfig = extraDevToolsConfig);

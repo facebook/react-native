@@ -24,7 +24,7 @@
     "@react-native/codegen": "0.81.5"
   },
   "peerDependencies": {
-    "@types/react": "^19.1.0",
+    "@types/react": "^19.1.4",
     "react": "*",
     "react-native": "*"
   },

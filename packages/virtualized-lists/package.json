@@ -48,10 +48,10 @@
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "react-test-renderer": "19.1.0"
+    "react-test-renderer": "19.1.4"
   },
   "peerDependencies": {
-    "@types/react": "^19.1.0",
+    "@types/react": "^19.1.4",
     "react": "*",
     "react-native": "*"
   },
