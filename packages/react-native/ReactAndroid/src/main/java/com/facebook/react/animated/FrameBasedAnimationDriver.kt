@@ -7,7 +7,11 @@
 
 package com.facebook.react.animated
 
+import android.content.Context
+import android.graphics.Color
 import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.ColorPropConverter
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
@@ -18,31 +22,68 @@ import com.facebook.react.common.build.ReactBuildConfig
  * that are pre-calculate on the JS side. For each animation frame JS provides a value from 0 to 1
  * that indicates a progress of the animation at that frame.
  */
-internal class FrameBasedAnimationDriver(config: ReadableMap) : AnimationDriver() {
+internal class FrameBasedAnimationDriver(
+    config: ReadableMap,
+    private val reactApplicationContext: ReactApplicationContext,
+) : AnimationDriver() {
   private var startFrameTimeNanos: Long = -1
   private var frames: DoubleArray = DoubleArray(0)
-  private var toValue = 0.0
+  private var toValue: Double = 0.0
   private var fromValue = 0.0
   private var iterations = 1
   private var currentLoop = 1
   private var logCount = 0
+
+  private val context: Context?
+    get() {
+      // There are cases where the activity may not exist (such as for VRShell panel apps). In this
+      // case we will search for a view associated with a PropsAnimatedNode to get the context.
+      return reactApplicationContext.currentActivity
+          ?: AnimatedNode.getContextHelper(requireNotNull(animatedValue))
+    }
 
   init {
     resetConfig(config)
   }
 
   override fun resetConfig(config: ReadableMap) {
-    val framesConfig = config.getArray("frames")
-    if (framesConfig != null) {
+    config.getArray("frames")?.let { framesConfig ->
       val numberOfFrames = framesConfig.size()
       if (frames.size != numberOfFrames) {
         frames = DoubleArray(numberOfFrames) { i -> framesConfig.getDouble(i) }
       }
     }
+
     toValue =
-        if (config.hasKey("toValue") && config.getType("toValue") == ReadableType.Number)
-            config.getDouble("toValue")
-        else 0.0
+        when {
+          !config.hasKey("toValue") -> 0.0
+          config.getType("toValue") == ReadableType.Number -> config.getDouble("toValue")
+          config.getType("toValue") == ReadableType.Map -> {
+            val toValueMap = config.getMap("toValue")
+            if (
+                toValueMap != null &&
+                    toValueMap.hasKey("nativeColor") &&
+                    toValueMap.hasKey("channel")
+            ) {
+              // Handle platform color with channel information
+              val nativeColorMap = toValueMap.getMap("nativeColor")
+              val channel = toValueMap.getString("channel")
+              val resolvedColor = context?.let { ColorPropConverter.getColor(nativeColorMap, it) }
+              when {
+                resolvedColor == null || channel == null -> 0.0
+                channel == "r" -> Color.red(resolvedColor).toDouble()
+                channel == "g" -> Color.green(resolvedColor).toDouble()
+                channel == "b" -> Color.blue(resolvedColor).toDouble()
+                channel == "a" -> Color.alpha(resolvedColor) / 255.0
+                else -> 0.0
+              }
+            } else {
+              0.0
+            }
+          }
+          else -> 0.0
+        }
+
     iterations =
         if (config.hasKey("iterations") && config.getType("iterations") == ReadableType.Number)
             config.getInt("iterations")
