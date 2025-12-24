@@ -32,6 +32,7 @@ async function unstable_spawnDebuggerShellWithArgs(
     mode = 'detached',
     flavor = process.env.RNDT_DEV === '1' ? 'dev' : 'prebuilt',
     prebuiltBinaryPath,
+    logger = console,
   }: $ReadOnly<{
     // In 'syncAndExit' mode, the current process will block until the spawned process exits, and then it will exit
     // with the same exit code as the spawned process.
@@ -40,6 +41,7 @@ async function unstable_spawnDebuggerShellWithArgs(
     mode?: 'syncThenExit' | 'detached',
     flavor?: DebuggerShellFlavor,
     prebuiltBinaryPath?: ?string,
+    logger?: typeof console,
   }> = {},
 ): Promise<void> {
   const [binaryPath, baseArgs] = getShellBinaryAndArgs(
@@ -69,7 +71,7 @@ async function unstable_spawnDebuggerShellWithArgs(
       child.on('close', (code: number, signal) => {
         debug('Debugger closed with code %s and signal %s', code, signal);
         if (code !== 0) {
-          console.error(
+          logger.error(
             'Debugger closed with code %s and signal %s',
             code,
             signal,
@@ -86,17 +88,17 @@ async function unstable_spawnDebuggerShellWithArgs(
         reject(error);
       });
       child.stdout.on('data', data =>
-        console.debug('[DebuggerShell stdout] ' + String(data)),
+        logger.info('[DebuggerShell stdout] ' + String(data)),
       );
       child.stderr.on('data', data =>
-        console.debug('[DebuggerShell stderr] ' + String(data)),
+        logger.info('[DebuggerShell stderr] ' + String(data)),
       );
       child.unref();
     } else if (mode === 'syncThenExit') {
       child.on('close', function (code, signal) {
         debug('Debugger closed with code %s and signal %s', code, signal);
         if (code === null) {
-          console.error(
+          logger.error(
             'Debugger closed with code %s and signal %s',
             code,
             signal,
