@@ -300,6 +300,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
     _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
+  
+    // InputAccessoryView component sets the inputAccessoryView when inputAccessoryViewID exists
+    if (_backedTextInputView.inputAccessoryViewID) {
+      if (_backedTextInputView.isFirstResponder) {
+        [_backedTextInputView reloadInputViews];
+      }
+    }
   }
 
   if (newTextInputProps.inputAccessoryViewButtonLabel != oldTextInputProps.inputAccessoryViewButtonLabel) {
@@ -639,9 +646,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   // InputAccessoryView component sets the inputAccessoryView when inputAccessoryViewID exists
   if (_backedTextInputView.inputAccessoryViewID) {
-    if (_backedTextInputView.isFirstResponder) {
-      [_backedTextInputView reloadInputViews];
-    }
     return;
   }
 
