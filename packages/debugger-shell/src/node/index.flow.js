@@ -14,7 +14,6 @@ import {
 } from './private/LaunchUtils';
 
 const {spawn} = require('cross-spawn');
-const debug = require('debug')('Metro:Debugger:DebuggerShell');
 const path = require('path');
 
 // The 'prebuilt' flavor will use the prebuilt shell binary (and the JavaScript embedded in it).
@@ -56,24 +55,17 @@ async function unstable_spawnDebuggerShellWithArgs(
       ...env
     } = process.env;
     const child = spawn(binaryPath, [...baseArgs, ...args], {
-      stdio: ['ignore', 'pipe', 'pipe'],
+      stdio: 'inherit',
       windowsHide: true,
       detached: mode === 'detached',
       env,
     });
     if (mode === 'detached') {
       child.on('spawn', () => {
-        debug('Debugger spawned in detached mode');
         resolve();
       });
-      child.on('close', (code: number, signal) => {
-        debug('Debugger closed with code %s and signal %s', code, signal);
+      child.on('close', (code: number) => {
         if (code !== 0) {
-          console.error(
-            'Debugger closed with code %s and signal %s',
-            code,
-            signal,
-          );
           reject(
             new Error(
               `Failed to open debugger shell: exited with code ${code}`,
@@ -81,26 +73,11 @@ async function unstable_spawnDebuggerShellWithArgs(
           );
         }
       });
-      child.on('error', error => {
-        debug('Debugger shell encountered error: %s', error);
-        reject(error);
-      });
-      child.stdout.on('data', data =>
-        console.debug('[DebuggerShell stdout] ' + String(data)),
-      );
-      child.stderr.on('data', data =>
-        console.debug('[DebuggerShell stderr] ' + String(data)),
-      );
       child.unref();
     } else if (mode === 'syncThenExit') {
       child.on('close', function (code, signal) {
-        debug('Debugger closed with code %s and signal %s', code, signal);
         if (code === null) {
-          console.error(
-            'Debugger closed with code %s and signal %s',
-            code,
-            signal,
-          );
+          console.error('Debugger shell exited with signal', signal);
           process.exit(1);
         }
         process.exit(code);
@@ -108,7 +85,6 @@ async function unstable_spawnDebuggerShellWithArgs(
 
       const handleTerminationSignal = function (signal: string) {
         process.on(signal, function signalHandler() {
-          debug('The Signal %s received. killing debugger', signal);
           if (!child.killed) {
             child.kill(signal);
           }
