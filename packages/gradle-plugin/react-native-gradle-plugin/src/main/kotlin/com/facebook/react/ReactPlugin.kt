@@ -80,7 +80,9 @@ class ReactPlugin : Plugin<Project> {
         configureRepositories(project)
       }
 
-      configureReactNativeNdk(project, extension)
+      if(!project.gradle.startParameter.taskNames.any { it.contains("clean") }) {
+        configureReactNativeNdk(project, extension)
+      }
       configureBuildConfigFieldsForApp(project, extension)
       configureDevServerLocation(project)
       configureBackwardCompatibilityReactMap(project)
