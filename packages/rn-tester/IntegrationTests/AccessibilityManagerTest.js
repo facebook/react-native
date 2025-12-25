@@ -56,4 +56,4 @@ function AccessibilityManagerTest(): React.Node {
   return <View />;
 }
 
-export default AccessibilityManagerTest;
+module.exports = AccessibilityManagerTest;

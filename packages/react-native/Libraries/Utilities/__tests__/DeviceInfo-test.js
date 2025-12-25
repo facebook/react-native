@@ -15,5 +15,6 @@ describe('DeviceInfo', () => {
 
   it('should give device info', () => {
     expect(DeviceInfo.getConstants()).toHaveProperty('Dimensions');
+    expect(DeviceInfo.getInfo()).toHaveProperty('Dimensions');
   });
 });

@@ -39,6 +39,13 @@ using namespace facebook::react;
     RCTHostDelegate,
     RCTJSRuntimeConfiguratorProtocol,
     RCTTurboModuleManagerDelegate>
+
+/// Adapter for SceneDelegate entrypoint's UISceneConnectionOptions that converts it to the AppDelegate-style
+/// NSDictionary for internal RN needs
+/// @param connectionOptions the scene's connection options
+/// @return an NSDictionary with proper UIApplicationLaunchOptions- keys set to values from connectionOptions
+- (NSDictionary *)convertConnectionOptionsToLaunchOptions:(UISceneConnectionOptions *)connectionOptions;
+
 @end
 
 @implementation RCTReactNativeFactory
@@ -93,6 +100,58 @@ using namespace facebook::react;
   [_delegate setRootView:rootView toRootViewController:rootViewController];
   window.rootViewController = rootViewController;
   [window makeKeyAndVisible];
+}
+
+#pragma mark - UIScene.ConnectionOptions
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                     connectionOptions:(UISceneConnectionOptions *_Nullable)connectionOptions
+{
+  [self startReactNativeWithModuleName:moduleName
+                              inWindow:window
+                     initialProperties:nil
+                         launchOptions:[self convertConnectionOptionsToLaunchOptions:connectionOptions]];
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                     initialProperties:(NSDictionary *_Nullable)initialProperties
+                     connectionOptions:(UISceneConnectionOptions *_Nullable)connectionOptions
+{
+  [self startReactNativeWithModuleName:moduleName
+                              inWindow:window
+                     initialProperties:initialProperties
+                         launchOptions:[self convertConnectionOptionsToLaunchOptions:connectionOptions]];
+}
+
+- (NSDictionary *)convertConnectionOptionsToLaunchOptions:(UISceneConnectionOptions *)connectionOptions
+{
+  NSMutableDictionary *launchOptions = [NSMutableDictionary dictionary];
+
+  // handle launch URL
+  if (connectionOptions.URLContexts.count > 0) {
+    UIOpenURLContext *urlContext = connectionOptions.URLContexts.allObjects.firstObject;
+
+    if (urlContext.URL) {
+      launchOptions[UIApplicationLaunchOptionsURLKey] = urlContext.URL;
+    }
+  }
+
+  // handle user activities
+  if (connectionOptions.userActivities.count > 0) {
+    NSUserActivity *activity = connectionOptions.userActivities.allObjects.firstObject;
+
+    if (activity) {
+      NSMutableDictionary *userActivityDict = [NSMutableDictionary dictionary];
+      userActivityDict[UIApplicationLaunchOptionsUserActivityTypeKey] = activity.activityType;
+      userActivityDict[@"UIApplicationLaunchOptionsUserActivityKey"] = activity;
+
+      launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey] = userActivityDict;
+    }
+  }
+
+  return launchOptions;
 }
 
 #pragma mark - RCTUIConfiguratorProtocol
@@ -231,6 +290,18 @@ using namespace facebook::react;
 {
   if ([_delegate respondsToSelector:@selector(hostDidStart:)]) {
     [_delegate hostDidStart:host];
+
+    // check if the application is running with multiple scenes capability enabled in scene manifest (Info.plist),
+    // which is unsupported by RN at the moment, and warn in such case
+    NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+    NSDictionary *sceneManifest = infoDict ? infoDict[@"UIApplicationSceneManifest"] : nil;
+    BOOL supportsMultipleScenes =
+        sceneManifest ? [sceneManifest[@"UIApplicationSupportsMultipleScenes"] boolValue] : false;
+
+    if (supportsMultipleScenes) {
+      RCTLogWarn(
+          @"RCTReactNativeFactory: (WARNING - UNSUPPORTED RN APP CONFIGURATION) Your application is running with the Info.plist UIApplicationSceneManifest.UIApplicationSupportsMultipleScenes key set to true, which is NOT supported by React Native at the moment. Allowing the user to run multiple windows of a RN application means allowing to run multiple instances of React Native and libraries in the same process, which may cause ALL SORTS OF PROBLEMS in implementations which use singletons or static storage lifetime variables.");
+    }
   }
 }
 

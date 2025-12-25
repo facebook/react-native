@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if RNTESTER_USE_APPDELEGATE
+
 #import <RCTDefaultReactNativeFactoryDelegate.h>
 #import <RCTReactNativeFactory.h>
 #import <UIKit/UIKit.h>
@@ -15,3 +17,13 @@
 @property (nonatomic, strong, nonnull) RCTReactNativeFactory *reactNativeFactory;
 
 @end
+
+#else
+
+#import <UIKit/UIKit.h>
+
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
+
+@end
+
+#endif
