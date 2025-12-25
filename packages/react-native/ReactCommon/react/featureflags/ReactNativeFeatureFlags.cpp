@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<08d50062a88a227aa8800e549b6dfe57>>
+ * @generated SignedSource<<a1fd11b8f74ba91dfc9ed24c61fb36e9>>
  */
 
 /**
@@ -116,6 +116,10 @@ bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
 
 bool ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid() {
   return getAccessor().enableExclusivePropsUpdateAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableFabricCommitBranching() {
+  return getAccessor().enableFabricCommitBranching();
 }
 
 bool ReactNativeFeatureFlags::enableFabricLogs() {
