@@ -224,10 +224,18 @@ void Scheduler::registerSurface(
     const SurfaceHandler& surfaceHandler) const noexcept {
   surfaceHandler.setContextContainer(getContextContainer());
   surfaceHandler.setUIManager(uiManager_.get());
+
+  if (ReactNativeFeatureFlags::enableFabricCommitBranching()) {
+    surfaceHandler.registerCommitHook(uiManager_.get());
+  }
 }
 
 void Scheduler::unregisterSurface(
     const SurfaceHandler& surfaceHandler) const noexcept {
+  if (ReactNativeFeatureFlags::enableFabricCommitBranching()) {
+    surfaceHandler.unregisterCommitHook(uiManager_.get());
+  }
+
   surfaceHandler.setUIManager(nullptr);
 }
 
@@ -353,6 +361,16 @@ void Scheduler::uiManagerShouldAddEventListener(
 void Scheduler::uiManagerShouldRemoveEventListener(
     const std::shared_ptr<const EventListener>& listener) {
   removeEventListener(listener);
+}
+
+void Scheduler::uiManagerDidFinishJSCommit(const ShadowTree& shadowTree) {
+  if (delegate_ != nullptr) {
+    SurfaceId surfaceId = shadowTree.getSurfaceId();
+    runtimeScheduler_->scheduleRenderingUpdate(
+        shadowTree.getSurfaceId(), [delegate = delegate_, surfaceId]() {
+          delegate->schedulerShouldMergeReactRevision(surfaceId);
+        });
+  }
 }
 
 void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {
