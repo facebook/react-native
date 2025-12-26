@@ -19,6 +19,9 @@ export interface Spec extends TurboModule {
   +openURL: (url: string) => Promise<void>;
   +openSettings: () => Promise<void>;
 
+  // iOS only
+  +openUniversalLink: (url: string) => Promise<boolean>;
+
   // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;

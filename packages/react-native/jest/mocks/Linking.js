@@ -23,6 +23,10 @@ const Linking = {
     $FlowFixMe,
   >,
   sendIntent: jest.fn() as JestMockFn<$FlowFixMe, $FlowFixMe>,
+  openUniversalLink: jest.fn(() => Promise.resolve(false)) as JestMockFn<
+    $FlowFixMe,
+    $FlowFixMe,
+  >,
 };
 
 export default Linking;
