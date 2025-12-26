@@ -20,7 +20,7 @@ export type AppearancePreferences = {
 
 export interface Spec extends TurboModule {
   +getColorScheme: () => ?ColorSchemeName;
-  +setColorScheme: (colorScheme: ColorSchemeName) => void;
+  +setColorScheme: (colorScheme: ?ColorSchemeName) => void;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;

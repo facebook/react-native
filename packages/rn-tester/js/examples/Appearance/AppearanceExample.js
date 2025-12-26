@@ -136,7 +136,7 @@ const ColorShowcase = (props: {themeName: string}) => (
 
 const ToggleNativeAppearance = () => {
   const [nativeColorScheme, setNativeColorScheme] =
-    useState<ColorSchemeName>('unspecified');
+    useState<?ColorSchemeName>(null);
   const colorScheme = useColorScheme();
 
   useEffect(() => {
@@ -157,7 +157,7 @@ const ToggleNativeAppearance = () => {
       />
       <Button
         title="Unset"
-        onPress={() => setNativeColorScheme('unspecified')}
+        onPress={() => setNativeColorScheme(null)}
       />
     </View>
   );
