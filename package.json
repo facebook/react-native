@@ -108,8 +108,8 @@
     "nullthrows": "^1.1.1",
     "prettier": "3.6.2",
     "prettier-plugin-hermes-parser": "0.32.0",
-    "react": "19.2.0",
-    "react-test-renderer": "19.2.0",
+    "react": "19.2.3",
+    "react-test-renderer": "19.2.3",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^2.0.0",
@@ -121,7 +121,7 @@
     "ws": "^7.5.10"
   },
   "resolutions": {
-    "react-is": "19.2.0",
+    "react-is": "19.2.3",
     "on-headers": "1.1.0",
     "compression": "1.8.1"
   }
