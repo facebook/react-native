@@ -26,7 +26,11 @@ class TurboModuleBinding final {
   /*
    * Installs TurboModuleBinding into JavaScript runtime.
    * Thread synchronization must be enforced externally.
+   *
+   * @deprecated Use the overload that takes
+   * TurboModuleProviderFunctionTypeWithRuntime instead.
    */
+  [[deprecated("Use the overload that takes TurboModuleProviderFunctionTypeWithRuntime instead")]]
   static void install(
       jsi::Runtime &runtime,
       TurboModuleProviderFunctionType &&moduleProvider,

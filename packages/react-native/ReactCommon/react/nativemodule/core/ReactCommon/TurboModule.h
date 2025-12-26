@@ -143,8 +143,11 @@ class JSI_EXPORT TurboModule : public jsi::HostObject {
 /**
  * An app/platform-specific provider function to get an instance of a module
  * given a name.
+ *
+ * @deprecated Use TurboModuleProviderFunctionTypeWithRuntime instead.
  */
-using TurboModuleProviderFunctionType = std::function<std::shared_ptr<TurboModule>(const std::string &name)>;
+using TurboModuleProviderFunctionType [[deprecated("Use TurboModuleProviderFunctionTypeWithRuntime instead")]] =
+    std::function<std::shared_ptr<TurboModule>(const std::string &name)>;
 using TurboModuleProviderFunctionTypeWithRuntime =
     std::function<std::shared_ptr<TurboModule>(jsi::Runtime &runtime, const std::string &name)>;
 
