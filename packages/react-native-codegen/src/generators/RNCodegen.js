@@ -257,6 +257,7 @@ module.exports = {
       useLocalIncludePaths,
       includeGetDebugPropsImplementation = false,
       libraryGenerators = LIBRARY_GENERATORS,
+      generateOptionalProperties = false,
     }: LibraryOptions,
     {generators, test}: LibraryConfig,
   ): boolean {
@@ -301,6 +302,7 @@ module.exports = {
           assumeNonnull,
           headerPrefix,
           includeGetDebugPropsImplementation,
+          generateOptionalProperties,
         ).forEach((contents: string, fileName: string) => {
           generatedFiles.push({
             name: fileName,
