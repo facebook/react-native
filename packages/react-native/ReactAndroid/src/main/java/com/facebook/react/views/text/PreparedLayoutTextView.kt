@@ -101,6 +101,20 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     overflow = Overflow.HIDDEN
   }
 
+  override fun draw(canvas: Canvas) {
+    val clipPath = BackgroundStyleApplicator.getClipPath(this)
+    if (clipPath != null) {
+      canvas.save()
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
+    }
+
+    super.draw(canvas)
+
+    if (clipPath != null) {
+      canvas.restore()
+    }
+  }
+
   override fun onDraw(canvas: Canvas) {
     if (overflow != Overflow.VISIBLE) {
       BackgroundStyleApplicator.clipToPaddingBox(this, canvas)

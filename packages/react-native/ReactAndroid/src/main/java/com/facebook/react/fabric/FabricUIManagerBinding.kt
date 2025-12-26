@@ -83,6 +83,10 @@ internal class FabricUIManagerBinding : HybridClassBase() {
 
   external fun reportMount(surfaceId: Int)
 
+  external fun getComputedMarginInsets(surfaceId: Int, viewTag: Int): FloatArray?
+  
+  external fun getComputedPaddingInsets(surfaceId: Int, viewTag: Int): FloatArray?
+
   fun register(
       runtimeExecutor: RuntimeExecutor,
       runtimeScheduler: RuntimeScheduler,

@@ -1334,6 +1334,16 @@ public class FabricUIManager
     return performanceCounters;
   }
 
+  @Nullable
+  public float[] getComputedMarginInsets(int surfaceId, int viewTag) {
+    return mBinding != null ? mBinding.getComputedMarginInsets(surfaceId, viewTag) : null;
+  }
+
+  @Nullable
+  public float[] getComputedPaddingInsets(int surfaceId, int viewTag) {
+    return mBinding != null ? mBinding.getComputedPaddingInsets(surfaceId, viewTag) : null;
+  }
+
   private class MountItemDispatchListener implements MountItemDispatcher.ItemDispatchListener {
     @UiThread
     @ThreadConfined(UI)
