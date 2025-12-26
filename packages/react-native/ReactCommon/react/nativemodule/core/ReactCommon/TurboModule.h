@@ -145,5 +145,7 @@ class JSI_EXPORT TurboModule : public jsi::HostObject {
  * given a name.
  */
 using TurboModuleProviderFunctionType = std::function<std::shared_ptr<TurboModule>(const std::string &name)>;
+using TurboModuleProviderFunctionTypeWithRuntime =
+    std::function<std::shared_ptr<TurboModule>(jsi::Runtime &runtime, const std::string &name)>;
 
 } // namespace facebook::react
