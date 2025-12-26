@@ -183,7 +183,9 @@ RCT_EXPORT_MODULE()
       } else {
         self->_window = [[UIWindow alloc] init];
       }
+#if !TARGET_OS_TV
       self->_window.windowLevel = UIWindowLevelStatusBar + 1;
+#endif
       self->_window.rootViewController = [UIViewController new];
       [self->_window.rootViewController.view addSubview:self->_container];
     }
