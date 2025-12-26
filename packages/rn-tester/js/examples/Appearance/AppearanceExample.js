@@ -155,10 +155,7 @@ const ToggleNativeAppearance = () => {
         title="Set to dark"
         onPress={() => setNativeColorScheme('dark')}
       />
-      <Button
-        title="Unset"
-        onPress={() => setNativeColorScheme(null)}
-      />
+      <Button title="Unset" onPress={() => setNativeColorScheme(null)} />
     </View>
   );
 };
