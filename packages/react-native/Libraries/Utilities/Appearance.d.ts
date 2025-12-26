@@ -9,7 +9,7 @@
 
 import {NativeEventSubscription} from '../EventEmitter/RCTNativeAppEventEmitter';
 
-type ColorSchemeName = 'light' | 'dark' | 'unspecified';
+type ColorSchemeName = 'light' | 'dark' | null;
 
 export namespace Appearance {
   type AppearancePreferences = {
