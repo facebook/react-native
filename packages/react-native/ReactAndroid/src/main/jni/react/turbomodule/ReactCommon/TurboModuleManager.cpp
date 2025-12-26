@@ -118,7 +118,8 @@ void TurboModuleManager::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", TurboModuleManager::initHybrid),
       makeNativeMethod(
-          "installJSIBindings", TurboModuleManager::installJSIBindings),
+          "dispatchJSBindingInstall",
+          TurboModuleManager::dispatchJSBindingInstall),
   });
 }
 
@@ -318,7 +319,16 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
   return nullptr;
 }
 
-void TurboModuleManager::installJSIBindings(
+void TurboModuleManager::installJSBindings(
+    jsi::Runtime& runtime,
+    jni::alias_ref<jhybridobject> javaPart) {
+  TurboModuleBinding::install(
+      runtime,
+      createTurboModuleProvider(javaPart),
+      createLegacyModuleProvider(javaPart));
+}
+
+void TurboModuleManager::dispatchJSBindingInstall(
     jni::alias_ref<jhybridobject> javaPart,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor) {
   auto cxxPart = javaPart->cthis();
