@@ -95,24 +95,20 @@ class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
 } // namespace
 
 TurboModuleManager::TurboModuleManager(
-    RuntimeExecutor runtimeExecutor,
     std::shared_ptr<CallInvoker> jsCallInvoker,
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
-    : runtimeExecutor_(std::move(runtimeExecutor)),
-      jsCallInvoker_(std::move(jsCallInvoker)),
+    : jsCallInvoker_(std::move(jsCallInvoker)),
       nativeMethodCallInvoker_(std::move(nativeMethodCallInvoker)),
       delegate_(jni::make_global(delegate)) {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<jhybridobject> /* unused */,
-    jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
         nativeMethodCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
   return makeCxxInstance(
-      runtimeExecutor->cthis()->get(),
       jsCallInvokerHolder->cthis()->getCallInvoker(),
       nativeMethodCallInvokerHolder->cthis()->getNativeMethodCallInvoker(),
       delegate);
@@ -323,13 +319,14 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
 }
 
 void TurboModuleManager::installJSIBindings(
-    jni::alias_ref<jhybridobject> javaPart) {
+    jni::alias_ref<jhybridobject> javaPart,
+    jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor) {
   auto cxxPart = javaPart->cthis();
   if (cxxPart == nullptr || !cxxPart->jsCallInvoker_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
 
-  cxxPart->runtimeExecutor_(
+  runtimeExecutor->cthis()->get()(
       [javaPart = jni::make_global(javaPart)](jsi::Runtime& runtime) {
         TurboModuleBinding::install(
             runtime,

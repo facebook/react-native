@@ -27,7 +27,6 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   static auto constexpr kJavaDescriptor = "Lcom/facebook/react/internal/turbomodule/core/TurboModuleManager;";
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject> /* unused */,
-      jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
       jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
       jni::alias_ref<NativeMethodCallInvokerHolder::javaobject> nativeMethodCallInvokerHolder,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
@@ -52,12 +51,13 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   ModuleCache legacyModuleCache_;
 
   explicit TurboModuleManager(
-      RuntimeExecutor runtimeExecutor,
       std::shared_ptr<CallInvoker> jsCallInvoker,
       std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 
-  static void installJSIBindings(jni::alias_ref<jhybridobject> javaPart);
+  static void installJSIBindings(
+      jni::alias_ref<jhybridobject> javaPart,
+      jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor);
 
   static TurboModuleProviderFunctionTypeWithRuntime createTurboModuleProvider(jni::alias_ref<jhybridobject> javaPart);
   std::shared_ptr<TurboModule>
