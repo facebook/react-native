@@ -2539,7 +2539,14 @@ declare class stream$Readable extends stream$Stream {
   static from(
     iterable: Iterable<any> | AsyncIterable<any>,
     options?: readableStreamOptions,
-  ): stream$Readable;
+  ): this;
+
+  static fromWeb(
+    readableStream: ReadableStream,
+    options?: readableStreamOptions,
+  ): this;
+
+  static toWeb(streamReadable: stream$Readable): ReadableStream;
 
   constructor(options?: readableStreamOptions): void;
   destroy(error?: Error): this;
@@ -2586,6 +2593,13 @@ type writableStreamOptions = {
   ...
 };
 declare class stream$Writable extends stream$Stream {
+  static fromWeb(
+    writableStream: WritableStream,
+    options?: writableStreamOptions,
+  ): this;
+
+  static toWeb(streamWritable: stream$Writable): WritableStream;
+
   constructor(options?: writableStreamOptions): void;
   cork(): void;
   destroy(error?: Error): this;
@@ -2627,10 +2641,6 @@ declare class stream$Writable extends stream$Stream {
   _final(callback: (error?: Error) => void): void;
 }
 
-//According to the NodeJS docs:
-//"Since JavaScript doesn't have multiple prototypal inheritance, this class
-//prototypally inherits from Readable, and then parasitically from Writable."
-//Source: <https://nodejs.org/api/stream.html#stream_class_stream_duplex_1
 type duplexStreamOptions = writableStreamOptions &
   readableStreamOptions & {
     allowHalfOpen?: boolean,
@@ -2641,6 +2651,28 @@ type duplexStreamOptions = writableStreamOptions &
     ...
   };
 declare class stream$Duplex extends stream$Readable mixins stream$Writable {
+  // This is an unusual class at runtime, per the docs it "prototypally extends from Readable,
+  // and then parasitically from Writable." Its static methods have incompatible signatures
+  // with Readable's, which Flow doesn't like.
+  // See https://nodejs.org/api/stream.html#stream_class_stream_duplex_1
+
+  // $FlowFixMe[incompatible-exact] See above
+  // $FlowFixMe[incompatible-type] See above
+  static fromWeb(
+    pair: $ReadOnly<{
+      readable: ReadableStream,
+      writable: WritableStream,
+    }>,
+    options?: duplexStreamOptions,
+  ): this;
+
+  // $FlowFixMe[incompatible-type] See above
+  static toWeb(streamDuplex: stream$Duplex): {
+    readable: ReadableStream,
+    writable: WritableStream,
+    ...
+  };
+
   constructor(options?: duplexStreamOptions): void;
 }
 type transformStreamOptions = duplexStreamOptions & {
