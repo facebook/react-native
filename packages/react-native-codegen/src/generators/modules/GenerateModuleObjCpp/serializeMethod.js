@@ -33,11 +33,16 @@ const ProtocolMethodTemplate = ({
   returnObjCType,
   methodName,
   params,
+  isOptional,
 }: $ReadOnly<{
   returnObjCType: string,
   methodName: string,
   params: string,
-}>) => `- (${returnObjCType})${methodName}${params};`;
+  isOptional: boolean,
+}>) =>
+  `${
+    isOptional ? '@optional\n' : '@required\n'
+  }- (${returnObjCType})${methodName}${params};`;
 
 export type StructParameterRecord = $ReadOnly<{
   paramIndex: number,
@@ -139,6 +144,7 @@ function serializeMethod(
     methodName,
     returnObjCType,
     params: objCParams,
+    isOptional: property.optional === true,
   });
 
   /**
@@ -522,6 +528,7 @@ function serializeConstantsProtocolMethods(
         methodName,
         returnObjCType,
         params: '',
+        isOptional: property.optional === true,
       });
 
       return {
