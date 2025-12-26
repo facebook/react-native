@@ -12,7 +12,7 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type ColorSchemeName = 'light' | 'dark' | 'unspecified';
+export type ColorSchemeName = 'light' | 'dark';
 
 export type AppearancePreferences = {
   colorScheme?: ?ColorSchemeName,
