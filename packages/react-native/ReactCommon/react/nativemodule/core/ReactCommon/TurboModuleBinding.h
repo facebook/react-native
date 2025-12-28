@@ -33,15 +33,21 @@ class TurboModuleBinding final {
       TurboModuleProviderFunctionType &&legacyModuleProvider = nullptr,
       std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection = nullptr);
 
-  TurboModuleBinding(
+  static void install(
       jsi::Runtime &runtime,
-      TurboModuleProviderFunctionType &&moduleProvider,
-      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
+      TurboModuleProviderFunctionTypeWithRuntime &&moduleProvider,
+      TurboModuleProviderFunctionTypeWithRuntime &&legacyModuleProvider = nullptr,
+      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection = nullptr);
 
   ~TurboModuleBinding();
 
  private:
   friend BridgelessNativeModuleProxy;
+
+  TurboModuleBinding(
+      jsi::Runtime &runtime,
+      TurboModuleProviderFunctionTypeWithRuntime &&moduleProvider,
+      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
 
   /**
    * A lookup function exposed to JS to get an instance of a TurboModule
@@ -50,7 +56,7 @@ class TurboModuleBinding final {
   jsi::Value getModule(jsi::Runtime &runtime, const std::string &moduleName) const;
 
   jsi::Runtime &runtime_;
-  TurboModuleProviderFunctionType moduleProvider_;
+  TurboModuleProviderFunctionTypeWithRuntime moduleProvider_;
   std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection_;
 };
 
