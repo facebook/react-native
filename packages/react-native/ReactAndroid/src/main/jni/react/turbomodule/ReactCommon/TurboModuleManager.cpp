@@ -125,10 +125,11 @@ void TurboModuleManager::registerNatives() {
   });
 }
 
-TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
-    jni::alias_ref<jhybridobject> javaPart,
-    jsi::Runtime* runtime) {
-  return [runtime, weakJavaPart = jni::make_weak(javaPart)](
+TurboModuleProviderFunctionTypeWithRuntime
+TurboModuleManager::createTurboModuleProvider(
+    jni::alias_ref<jhybridobject> javaPart) {
+  return [weakJavaPart = jni::make_weak(javaPart)](
+             jsi::Runtime& runtime,
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto javaPart = weakJavaPart.lockLocal();
     if (!javaPart) {
@@ -140,7 +141,7 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
       return nullptr;
     }
 
-    return cxxPart->getTurboModule(javaPart, name, *runtime);
+    return cxxPart->getTurboModule(javaPart, name, runtime);
   };
 }
 
@@ -223,9 +224,11 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
   return nullptr;
 }
 
-TurboModuleProviderFunctionType TurboModuleManager::createLegacyModuleProvider(
+TurboModuleProviderFunctionTypeWithRuntime
+TurboModuleManager::createLegacyModuleProvider(
     jni::alias_ref<jhybridobject> javaPart) {
   return [weakJavaPart = jni::make_weak(javaPart)](
+             jsi::Runtime& /*runtime*/,
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto javaPart = weakJavaPart.lockLocal();
     if (!javaPart) {
@@ -322,7 +325,7 @@ void TurboModuleManager::installJSIBindings(
                              shouldCreateLegacyModules](jsi::Runtime& runtime) {
     TurboModuleBinding::install(
         runtime,
-        createTurboModuleProvider(javaPart, &runtime),
+        createTurboModuleProvider(javaPart),
         shouldCreateLegacyModules ? createLegacyModuleProvider(javaPart)
                                   : nullptr);
   });
