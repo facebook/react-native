@@ -24,8 +24,8 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
  public:
   BridgelessNativeModuleProxy(
       jsi::Runtime& runtime,
-      TurboModuleProviderFunctionType&& moduleProvider,
-      TurboModuleProviderFunctionType&& legacyModuleProvider,
+      TurboModuleProviderFunctionTypeWithRuntime&& moduleProvider,
+      TurboModuleProviderFunctionTypeWithRuntime&& legacyModuleProvider,
       std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection)
       : turboBinding_(
             runtime,
@@ -89,7 +89,7 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
 
 TurboModuleBinding::TurboModuleBinding(
     jsi::Runtime& runtime,
-    TurboModuleProviderFunctionType&& moduleProvider,
+    TurboModuleProviderFunctionTypeWithRuntime&& moduleProvider,
     std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection)
     : runtime_(runtime),
       moduleProvider_(std::move(moduleProvider)),
@@ -99,6 +99,25 @@ void TurboModuleBinding::install(
     jsi::Runtime& runtime,
     TurboModuleProviderFunctionType&& moduleProvider,
     TurboModuleProviderFunctionType&& legacyModuleProvider,
+    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
+  install(
+      runtime,
+      [moduleProvider = std::move(moduleProvider)](
+          jsi::Runtime& runtime, const std::string& name) {
+        return moduleProvider(name);
+      },
+      legacyModuleProvider == nullptr
+          ? (TurboModuleProviderFunctionTypeWithRuntime) nullptr
+          : [legacyModuleProvider = std::move(legacyModuleProvider)](
+                jsi::Runtime& runtime,
+                const std::string& name) { return legacyModuleProvider(name); },
+      longLivedObjectCollection);
+}
+
+void TurboModuleBinding::install(
+    jsi::Runtime& runtime,
+    TurboModuleProviderFunctionTypeWithRuntime&& moduleProvider,
+    TurboModuleProviderFunctionTypeWithRuntime&& legacyModuleProvider,
     std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
   // TODO(T208105802): We can get this information from the native side!
   auto isBridgeless = runtime.global().hasProperty(runtime, "RN$Bridgeless");
@@ -154,7 +173,7 @@ jsi::Value TurboModuleBinding::getModule(
   std::shared_ptr<TurboModule> module;
   {
     TraceSection s("TurboModuleBinding::moduleProvider", "module", moduleName);
-    module = moduleProvider_(moduleName);
+    module = moduleProvider_(runtime, moduleName);
   }
   if (module) {
     TurboModuleWithJSIBindings::installJSIBindings(module, runtime);
