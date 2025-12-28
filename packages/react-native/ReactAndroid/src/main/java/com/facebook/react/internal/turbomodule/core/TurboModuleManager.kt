@@ -52,7 +52,6 @@ public class TurboModuleManager(
   @DoNotStrip
   private val mHybridData: HybridData =
       initHybrid(
-          runtimeExecutor,
           jsCallInvokerHolder as CallInvokerHolderImpl,
           nativeMethodCallInvokerHolder as NativeMethodCallInvokerHolderImpl,
           delegate,
@@ -60,7 +59,7 @@ public class TurboModuleManager(
 
   init {
 
-    installJSIBindings()
+    installJSIBindings(runtimeExecutor)
 
     eagerInitModuleNames = delegate?.getEagerInitModuleNames() ?: emptyList()
 
@@ -278,13 +277,12 @@ public class TurboModuleManager(
   }
 
   private external fun initHybrid(
-      runtimeExecutor: RuntimeExecutor,
       jsCallInvokerHolder: CallInvokerHolderImpl,
       nativeMethodCallInvoker: NativeMethodCallInvokerHolderImpl,
       tmmDelegate: TurboModuleManagerDelegate?,
   ): HybridData
 
-  private external fun installJSIBindings()
+  private external fun installJSIBindings(runtimeExecutor: RuntimeExecutor)
 
   override fun invalidate() {
     /*
