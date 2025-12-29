@@ -1234,16 +1234,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   }
 
   public override fun draw(canvas: Canvas) {
-    val clipPath = BackgroundStyleApplicator.getClipPath(this)
-    if (clipPath != null) {
-      canvas.save()
-      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
-    }
-
-    super.draw(canvas)
-
-    if (clipPath != null) {
-      canvas.restore()
+    BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas) {
+      super.draw(canvas)
     }
   }
 
