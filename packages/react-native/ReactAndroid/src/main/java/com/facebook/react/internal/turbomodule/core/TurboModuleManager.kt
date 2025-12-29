@@ -60,7 +60,7 @@ public class TurboModuleManager(
 
   init {
 
-    installJSIBindings(shouldEnableLegacyModuleInterop())
+    installJSIBindings()
 
     eagerInitModuleNames = delegate?.getEagerInitModuleNames() ?: emptyList()
 
@@ -72,7 +72,7 @@ public class TurboModuleManager(
             ModuleProvider { moduleName: String -> delegate.getModule(moduleName) as NativeModule? }
 
     legacyModuleProvider =
-        if (delegate == null || !shouldEnableLegacyModuleInterop()) nullProvider
+        if (delegate == null) nullProvider
         else
             ModuleProvider { moduleName: String ->
               val nativeModule = delegate.getLegacyModule(moduleName)
@@ -92,9 +92,6 @@ public class TurboModuleManager(
 
   private fun isLegacyModule(moduleName: String): Boolean =
       delegate?.unstable_isLegacyModuleRegistered(moduleName) == true
-
-  private fun shouldEnableLegacyModuleInterop(): Boolean =
-      delegate?.unstable_shouldEnableLegacyModuleInterop() == true
 
   // used from TurboModuleManager.cpp
   @Suppress("unused")
@@ -287,7 +284,7 @@ public class TurboModuleManager(
       tmmDelegate: TurboModuleManagerDelegate?,
   ): HybridData
 
-  private external fun installJSIBindings(shouldCreateLegacyModules: Boolean)
+  private external fun installJSIBindings()
 
   override fun invalidate() {
     /*
