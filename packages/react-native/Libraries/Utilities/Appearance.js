@@ -99,7 +99,7 @@ export function setColorScheme(colorScheme: ColorSchemeName): void {
   if (NativeAppearance != null) {
     NativeAppearance.setColorScheme(colorScheme);
     state.appearance = {
-      colorScheme,
+      colorScheme: NativeAppearance.getColorScheme(),
     };
   }
 }
