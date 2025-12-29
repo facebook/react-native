@@ -245,12 +245,6 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     setBackgroundRepeat(view, backgroundRepeat)
   }
 
-  @ReactProp(name = ViewProps.CLIP_PATH, customType = "ClipPath")
-  public override fun setClipPath(view: ReactViewGroup, clipPath: ReadableMap?) {
-    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
-      BackgroundStyleApplicator.setClipPath(view, clipPath)
-    }
-  }
 
   @ReactProp(name = "nextFocusDown", defaultInt = View.NO_ID)
   public open fun nextFocusDown(view: ReactViewGroup, viewId: Int) {
