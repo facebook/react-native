@@ -57,7 +57,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 
-  static void installJSIBindings(jni::alias_ref<jhybridobject> javaPart, bool shouldCreateLegacyModules);
+  static void installJSIBindings(jni::alias_ref<jhybridobject> javaPart);
 
   static TurboModuleProviderFunctionTypeWithRuntime createTurboModuleProvider(jni::alias_ref<jhybridobject> javaPart);
   std::shared_ptr<TurboModule>
