@@ -393,7 +393,14 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMe> {
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
           onChange={event =>
-            this.updateText('onChange text: ' + event.nativeEvent.text)
+            this.updateText(
+              'onChange text: ' +
+                event.nativeEvent.text +
+                ', selection: ' +
+                (event.nativeEvent.selection != null
+                  ? JSON.stringify(event.nativeEvent.selection)
+                  : 'undefined'),
+            )
           }
           onContentSizeChange={event =>
             this.updateText(
