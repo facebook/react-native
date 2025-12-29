@@ -593,7 +593,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
     override fun onInterceptHoverEvent(event: MotionEvent): Boolean {
       eventDispatcher?.let { jSPointerDispatcher?.handleMotionEvent(event, it, true) }
-      return super.onHoverEvent(event)
+      return super.onInterceptHoverEvent(event)
     }
 
     override fun onHoverEvent(event: MotionEvent): Boolean {
