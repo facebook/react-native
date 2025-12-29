@@ -500,9 +500,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTester/Pods-RNTester-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTester/Pods-RNTester-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -539,9 +543,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -556,9 +564,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -607,9 +619,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -646,9 +662,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTester/Pods-RNTester-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTester/Pods-RNTester-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -685,9 +705,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -774,7 +798,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = C4V9EZM2B6;
+				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"${PODS_ROOT}/Headers/Private/Yoga",
 					"$(inherited)",
@@ -798,7 +822,7 @@
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterHermesv1.localDevelopment;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTester.localDevelopment;
 				PRODUCT_NAME = RNTester;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -812,7 +836,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = C4V9EZM2B6;
+				DEVELOPMENT_TEAM = "";
 				EXCLUDED_ARCHS = "";
 				HEADER_SEARCH_PATHS = (
 					"${PODS_ROOT}/Headers/Private/Yoga",
@@ -836,7 +860,7 @@
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterHermesv1.localDevelopment;
+				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTester.localDevelopment;
 				PRODUCT_NAME = RNTester;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -919,10 +943,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DRCT_REMOVE_LEGACY_ARCH=1",
-				);
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -930,7 +951,6 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
-					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1016,10 +1036,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DRCT_REMOVE_LEGACY_ARCH=1",
-				);
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -1027,7 +1044,6 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
-					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",

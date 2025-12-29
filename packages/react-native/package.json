@@ -175,7 +175,7 @@
     "base64-js": "^1.5.1",
     "commander": "^12.0.0",
     "flow-enums-runtime": "^0.0.6",
-    "hermes-compiler": "0.15.0-commitly-202512121350-fd0e1d3ed",
+    "hermes-compiler": "0.0.0",
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.7.0",
     "memoize-one": "^5.0.0",
