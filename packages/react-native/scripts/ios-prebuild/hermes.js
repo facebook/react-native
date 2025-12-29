@@ -118,9 +118,9 @@ async function getLatestV1VersionFromNPM() /*: Promise<string> */ {
   }
 
   const json = await npmResponse.json();
-  const latestNightly = json.version;
-  hermesLog(`Using version ${latestNightly}`);
-  return latestNightly;
+  const latestV1 = json.version;
+  hermesLog(`Using version ${latestV1}`);
+  return latestV1;
 }
 
 async function getNightlyVersionFromNPM() /*: Promise<string> */ {
