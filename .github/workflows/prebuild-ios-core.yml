@@ -50,9 +50,9 @@ jobs:
         shell: bash
         run: |
           if [ "${{ inputs.use-hermes-nightly }}" == "true" ]; then
-            HERMES_VERSION="nightly"
+            HERMES_VERSION="latest-v1"
           else
-            HERMES_VERSION=$(sed -n 's/^HERMES_VERSION_NAME=//p' packages/react-native/sdks/hermes-engine/version.properties)
+            HERMES_VERSION=$(sed -n 's/^HERMES_V1_VERSION_NAME=//p' packages/react-native/sdks/hermes-engine/version.properties)
           fi
           echo "Using Hermes version: $HERMES_VERSION"
           echo "HERMES_VERSION=$HERMES_VERSION" >> $GITHUB_ENV
