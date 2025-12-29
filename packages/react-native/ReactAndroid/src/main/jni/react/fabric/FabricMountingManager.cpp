@@ -17,7 +17,6 @@
 #include <react/jni/ReadableNativeArray.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
-#include <react/renderer/components/view/BaseViewProps.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/conversions.h>
@@ -82,9 +81,8 @@ bool FabricMountingManager::isViewAllocated(SurfaceId surfaceId, Tag tag) {
 
 namespace {
 
-inline bool hasClipPath(const ShadowView& shadowView) {
-  auto props = std::dynamic_pointer_cast<const BaseViewProps>(shadowView.props);
-  return props && props->clipPath.has_value();
+inline bool needsComputedBoxModel(const ShadowView& shadowView) {
+  return shadowView.traits.check(ShadowNodeTraits::Trait::NeedsComputedBoxModel);
 }
 
 #ifdef REACT_NATIVE_DEBUG
@@ -736,14 +734,14 @@ void FabricMountingManager::executeMount(
             }
 
             // Store BoxModel data (margin and padding) only if layout
-            // information has changed and clipPath prop is present. This
-            // information is needed for proper calculation of the clipPath
+            // information has changed and NeedsComputedBoxModel trait is set.
+            // This information is needed for proper calculation of the clipPath
             // geometry box.
-            auto oldHasClipPath = hasClipPath(oldChildShadowView);
-            auto newHasClipPath = hasClipPath(newChildShadowView);
+            auto oldNeedsComputedBoxModel = needsComputedBoxModel(oldChildShadowView);
+            auto newNeedsComputedBoxModel = needsComputedBoxModel(newChildShadowView);
 
             if (computedBoxModelRegistry_) {
-              if (newHasClipPath &&
+              if (newNeedsComputedBoxModel &&
                   (oldChildShadowView.layoutMetrics.marginInsets !=
                        newChildShadowView.layoutMetrics.marginInsets ||
                    oldChildShadowView.layoutMetrics.paddingInsets !=
@@ -753,7 +751,7 @@ void FabricMountingManager::executeMount(
                     newChildShadowView.tag,
                     newChildShadowView.layoutMetrics.marginInsets,
                     newChildShadowView.layoutMetrics.paddingInsets);
-              } else if (oldHasClipPath && !newHasClipPath) {
+              } else if (oldNeedsComputedBoxModel && !newNeedsComputedBoxModel) {
                 computedBoxModelRegistry_->remove(
                     surfaceId, newChildShadowView.tag);
               }
@@ -846,7 +844,7 @@ void FabricMountingManager::executeMount(
             // information has changed and clipPath prop is present. This
             // information is needed for proper calculation of the clipPath
             // geometry box.
-            if (hasClipPath(newChildShadowView)) {
+            if (needsComputedBoxModel(newChildShadowView)) {
               if (computedBoxModelRegistry_) {
                 computedBoxModelRegistry_->store(
                     surfaceId,
