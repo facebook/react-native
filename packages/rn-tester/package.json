@@ -32,7 +32,7 @@
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "19.2.0",
+    "react": "19.2.3",
     "react-native": "*"
   },
   "codegenConfig": {
