@@ -59,13 +59,11 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
 
   static void installJSIBindings(jni::alias_ref<jhybridobject> javaPart, bool shouldCreateLegacyModules);
 
-  static TurboModuleProviderFunctionType createTurboModuleProvider(
-      jni::alias_ref<jhybridobject> javaPart,
-      jsi::Runtime *runtime);
+  static TurboModuleProviderFunctionTypeWithRuntime createTurboModuleProvider(jni::alias_ref<jhybridobject> javaPart);
   std::shared_ptr<TurboModule>
   getTurboModule(jni::alias_ref<jhybridobject> javaPart, const std::string &name, jsi::Runtime &runtime);
 
-  static TurboModuleProviderFunctionType createLegacyModuleProvider(jni::alias_ref<jhybridobject> javaPart);
+  static TurboModuleProviderFunctionTypeWithRuntime createLegacyModuleProvider(jni::alias_ref<jhybridobject> javaPart);
   std::shared_ptr<TurboModule> getLegacyModule(jni::alias_ref<jhybridobject> javaPart, const std::string &name);
 };
 
