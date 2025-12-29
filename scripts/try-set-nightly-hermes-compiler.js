@@ -17,9 +17,7 @@ function main() {
 
  if (hermesCompilerVersion === '0.0.0') {
    console.log(`Hermes compiler version not set. Updating to the latest nightly release.`);
-   // We are not publishing a nightly version of hermes-compiler for v1,
-   // so we need to manually set the version to the latest nightly release.
-   execSync('yarn workspace react-native add hermes-compiler@latest-v1 --exact', { stdio: 'inherit' });
+   execSync('yarn workspace react-native add hermes-compiler@nightly --exact', { stdio: 'inherit' });
  } else {
    console.log(`Hermes compiler version set to ${hermesCompilerVersion}. Not setting nightly hermes.`);
  }
