@@ -928,17 +928,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
       clipToPaddingBox(this, canvas)
     }
 
-    val clipPath = BackgroundStyleApplicator.getClipPath(this)
-    if (clipPath != null) {
-      canvas.save()
-      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
-    }
-
     super.dispatchDraw(canvas)
-
-    if (clipPath != null) {
-      canvas.restore()
-    }
   }
 
   override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
