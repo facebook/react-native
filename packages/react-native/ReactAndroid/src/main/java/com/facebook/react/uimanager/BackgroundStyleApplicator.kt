@@ -54,6 +54,8 @@ import com.facebook.react.uimanager.style.GeometryBoxUtil.getGeometryBoxBounds
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.uimanager.style.OutlineStyle
 import androidx.core.graphics.withSave
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.fabric.FabricUIManager
 
 /**
  * Utility object responsible for applying backgrounds, borders, and related visual effects to
@@ -494,8 +496,12 @@ public object BackgroundStyleApplicator {
 
     canvas.withSave {
       val composite = getCompositeBackgroundDrawable(view)
-      val computedMarginInsets = UIManagerHelper.getComputedMarginInsets(view)
-      val computedPaddingInsets = UIManagerHelper.getComputedPaddingInsets(view)
+      val uiManager =
+        UIManagerHelper.getUIManager(view.context as ReactContext, UIManagerType.FABRIC) as? FabricUIManager
+      val surfaceId = UIManagerHelper.getSurfaceId(view)
+      val viewId = view.id
+      val computedMarginInsets = uiManager?.getComputedMarginInsets(surfaceId, viewId)
+      val computedPaddingInsets = uiManager?.getComputedPaddingInsets(surfaceId, viewId)
       val computedBorderInsets =
         composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
       val bounds = getGeometryBoxBounds(

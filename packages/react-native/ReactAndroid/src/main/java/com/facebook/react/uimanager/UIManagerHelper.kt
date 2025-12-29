@@ -11,7 +11,6 @@ package com.facebook.react.uimanager
 
 import android.content.Context
 import android.content.ContextWrapper
-import android.graphics.RectF
 import android.view.View
 import android.widget.EditText
 import androidx.core.view.ViewCompat
@@ -247,36 +246,5 @@ public object UIManagerHelper {
     padding[PADDING_TOP_INDEX] = PixelUtil.toDIPFromPixel(editText.paddingTop.toFloat())
     padding[PADDING_BOTTOM_INDEX] = PixelUtil.toDIPFromPixel(editText.paddingBottom.toFloat())
     return padding
-  }
-
-  @JvmStatic
-  public fun getComputedMarginInsets(view: View): RectF? =
-    getComputedLayoutMetrics(view) { uiManager, surfaceId, viewTag ->
-      uiManager.getComputedMarginInsets(surfaceId, viewTag)
-    }
-
-  @JvmStatic
-  public fun getComputedPaddingInsets(view: View): RectF? =
-    getComputedLayoutMetrics(view) { uiManager, surfaceId, viewTag ->
-      uiManager.getComputedPaddingInsets(surfaceId, viewTag)
-    }
-
-  private inline fun getComputedLayoutMetrics(
-    view: View,
-    getter: (com.facebook.react.fabric.FabricUIManager, Int, Int) -> FloatArray?
-  ): RectF? {
-    val viewTag = view.id
-    if (viewTag == View.NO_ID || getUIManagerType(viewTag) != UIManagerType.FABRIC) {
-      return null
-    }
-
-    val context = view.context as? ThemedReactContext ?: return null
-    val surfaceId = getSurfaceId(context)
-    val uiManager = getUIManager(
-      context.reactApplicationContext,
-      UIManagerType.FABRIC
-    ) as? com.facebook.react.fabric.FabricUIManager ?: return null
-    val array = getter(uiManager, surfaceId, viewTag) ?: return null
-    return RectF(array[0], array[1], array[2], array[3])
   }
 }
