@@ -15,11 +15,17 @@ import * as React from 'react';
 import {StyleSheet, View} from 'react-native';
 
 function Playground() {
+  const hermesProps = HermesInternal.getRuntimeProperties()
   return (
     <View style={styles.container}>
       <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
+        Hermes Engine props: {Object.keys(hermesProps).length}
       </RNTesterText>
+      {Object.keys(hermesProps).map((key) => (
+        <RNTesterText key={key}>
+          {key}: {hermesProps[key]}
+        </RNTesterText>
+      ))}
     </View>
   );
 }

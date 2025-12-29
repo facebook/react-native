@@ -86,7 +86,7 @@ def hermes_commit_envvar_defined()
 end
 
 def hermes_v1_enabled()
-    return ENV['RCT_HERMES_V1_ENABLED'] == "1" || ENV['RCT_HERMES_V1_ENABLED'] == nil
+    return ENV['RCT_HERMES_V1_ENABLED'] != "0"
 end
 
 def force_build_from_tag(react_native_path)
