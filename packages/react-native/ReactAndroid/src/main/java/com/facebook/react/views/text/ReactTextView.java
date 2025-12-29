@@ -340,15 +340,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   @Override
   public void draw(Canvas canvas) {
-    ClipPath clipPath = (ClipPath) getTag(R.id.clip_path);
-    if (clipPath != null) {
-      canvas.save();
-      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas);
-    }
-    super.draw(canvas);
-    if (clipPath != null) {
-      canvas.restore();
-    }
+    BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas, () -> {
+      super.draw(canvas);
+      return null;
+    });
   }
 
   @Override

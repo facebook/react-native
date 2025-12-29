@@ -53,6 +53,7 @@ import com.facebook.react.uimanager.style.GeometryBoxUtil
 import com.facebook.react.uimanager.style.GeometryBoxUtil.getGeometryBoxBounds
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.uimanager.style.OutlineStyle
+import androidx.core.graphics.withSave
 
 /**
  * Utility object responsible for applying backgrounds, borders, and related visual effects to
@@ -481,56 +482,65 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  public fun getClipPath(view: View): ClipPath? = view.getTag(R.id.clip_path) as? ClipPath
+  private fun getClipPath(view: View): ClipPath? = view.getTag(R.id.clip_path) as? ClipPath
 
   @JvmStatic
-  public fun applyClipPathIfPresent(view: View, canvas: Canvas) {
-    val clipPath = getClipPath(view) ?: return
-    val composite = getCompositeBackgroundDrawable(view)
-    val computedMarginInsets = UIManagerHelper.getComputedMarginInsets(view)
-    val computedPaddingInsets = UIManagerHelper.getComputedPaddingInsets(view)
-    val computedBorderInsets =
-      composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
-    val bounds = getGeometryBoxBounds(
-      view,
-      clipPath.geometryBox,
-      computedMarginInsets,
-      computedPaddingInsets,
-      computedBorderInsets
-    )
-    val drawingRect = Rect()
-    view.getDrawingRect(drawingRect)
-    bounds.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
+  public fun applyClipPathIfPresent(view: View, canvas: Canvas, drawContent: (() -> Unit?)?) {
+    val clipPath = getClipPath(view)
+    if (clipPath == null) {
+      drawContent?.invoke()
+      return
+    }
 
-    val path: Path? = if (clipPath.shape != null) {
-      ClipPathUtils.createPathFromBasicShape(clipPath.shape, bounds)
-    } else if (clipPath.geometryBox != null) {
-      val borderRadius = composite?.borderRadius
-      if (borderRadius != null) {
-        val adjustedBorderRadius = GeometryBoxUtil.adjustBorderRadiusForGeometryBox(
-          view, clipPath.geometryBox, borderRadius.resolve(
-            composite.layoutDirection,
-            view.context,
-            PixelUtil.toDIPFromPixel(drawingRect.width().toFloat()),
-            PixelUtil.toDIPFromPixel(drawingRect.height().toFloat())
-          ), computedMarginInsets, computedPaddingInsets, computedBorderInsets
-        )
-        if (adjustedBorderRadius != null) {
-          ClipPathUtils.createRoundedRectPath(bounds, adjustedBorderRadius)
+    canvas.withSave {
+      val composite = getCompositeBackgroundDrawable(view)
+      val computedMarginInsets = UIManagerHelper.getComputedMarginInsets(view)
+      val computedPaddingInsets = UIManagerHelper.getComputedPaddingInsets(view)
+      val computedBorderInsets =
+        composite?.borderInsets?.resolve(composite.layoutDirection, view.context)
+      val bounds = getGeometryBoxBounds(
+        view,
+        clipPath.geometryBox,
+        computedMarginInsets,
+        computedPaddingInsets,
+        computedBorderInsets
+      )
+      val drawingRect = Rect()
+      view.getDrawingRect(drawingRect)
+      bounds.offset(drawingRect.left.toFloat(), drawingRect.top.toFloat())
+
+      val path: Path? = if (clipPath.shape != null) {
+        ClipPathUtils.createPathFromBasicShape(clipPath.shape, bounds)
+      } else if (clipPath.geometryBox != null) {
+        val borderRadius = composite?.borderRadius
+        if (borderRadius != null) {
+          val adjustedBorderRadius = GeometryBoxUtil.adjustBorderRadiusForGeometryBox(
+            view, clipPath.geometryBox, borderRadius.resolve(
+              composite.layoutDirection,
+              view.context,
+              PixelUtil.toDIPFromPixel(drawingRect.width().toFloat()),
+              PixelUtil.toDIPFromPixel(drawingRect.height().toFloat())
+            ), computedMarginInsets, computedPaddingInsets, computedBorderInsets
+          )
+          if (adjustedBorderRadius != null) {
+            ClipPathUtils.createRoundedRectPath(bounds, adjustedBorderRadius)
+          } else {
+            null
+          }
         } else {
           null
         }
       } else {
         null
       }
-    } else {
-      null
-    }
 
-    if (path != null) {
-      canvas.clipPath(path)
-    } else {
-      canvas.clipRect(bounds)
+      if (path != null) {
+        clipPath(path)
+      } else {
+        clipRect(bounds)
+      }
+
+      drawContent?.invoke()
     }
   }
 

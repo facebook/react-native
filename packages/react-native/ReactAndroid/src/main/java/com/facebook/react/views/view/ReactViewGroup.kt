@@ -914,12 +914,14 @@ public open class ReactViewGroup public constructor(context: Context?) :
           (height + -overflowInset.bottom).toFloat(),
           null,
       )
-      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
-      super.draw(canvas)
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas) {
+        super.draw(canvas)
+      }
       canvas.restore()
     } else {
-      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas)
-      super.draw(canvas)
+      BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas) {
+        super.draw(canvas)
+      }
     }
   }
 
