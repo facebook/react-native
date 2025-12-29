@@ -222,7 +222,7 @@ let reactHermes = RNTarget(
   excludedPaths: ["inspector-modern/chrome/tests"],
   dependencies: [.reactNativeDependencies, .reactCxxReact, .reactJsiExecutor, .reactJsInspector, .reactJsInspectorTracing, .reactPerfLogger, .hermesPrebuilt, .jsi],
   defines: [
-    CXXSetting.define("HERMES_ENABLE_DEBUGGER", to: "1", .when(configuration: BuildConfiguration.debug))
+    // CXXSetting.define("HERMES_ENABLE_DEBUGGER", to: "1", .when(configuration: BuildConfiguration.debug))
   ]
 )
 
@@ -390,7 +390,7 @@ let reactRuntime = RNTarget(
   excludedPaths: ["tests", "iostests", "platform"],
   dependencies: [.reactNativeDependencies, .jsi, .reactJsiExecutor, .reactCxxReact, .reactJsErrorHandler, .reactPerformanceTimeline, .reactUtils, .reactFeatureFlags, .reactJsInspector, .reactJsiTooling, .reactHermes, .reactRuntimeScheduler, .hermesPrebuilt],
   defines: [
-    CXXSetting.define("HERMES_ENABLE_DEBUGGER", to: "1", .when(configuration: BuildConfiguration.debug))
+    // CXXSetting.define("HERMES_ENABLE_DEBUGGER", to: "1", .when(configuration: BuildConfiguration.debug))
   ]
 )
 
@@ -924,6 +924,7 @@ extension Target {
         .define("NDEBUG", .when(configuration: .release)),
         .define("USE_HERMES", to: "1"),
         .define("RCT_REMOVE_LEGACY_ARCH", to: "1"),
+        .define("HERMES_V1_ENABLED", to: "1"),
       ] + defines + cxxCommonHeaderPaths
 
     return .target(
