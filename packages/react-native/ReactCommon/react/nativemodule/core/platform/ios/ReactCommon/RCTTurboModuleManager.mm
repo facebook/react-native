@@ -916,8 +916,8 @@ typedef struct {
    * aren't any strong references to it in ObjC. Hence, we give
    * __turboModuleProxy a strong reference to TurboModuleManager.
    */
-  auto turboModuleProvider = [self,
-                              runtime = &runtime](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+  auto turboModuleProvider =
+      [self](jsi::Runtime &runtime, const std::string &name) -> std::shared_ptr<react::TurboModule> {
     auto moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
@@ -931,7 +931,7 @@ typedef struct {
      * Additionally, if a TurboModule with the name `name` isn't found, then we
      * trigger an assertion failure.
      */
-    auto turboModule = [self provideTurboModule:moduleName runtime:runtime];
+    auto turboModule = [self provideTurboModule:moduleName runtime:&runtime];
 
     if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
       [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
@@ -946,7 +946,8 @@ typedef struct {
   };
 
   if (RCTTurboModuleInteropEnabled()) {
-    auto legacyModuleProvider = [self](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+    auto legacyModuleProvider =
+        [self](jsi::Runtime & /*runtime*/, const std::string &name) -> std::shared_ptr<react::TurboModule> {
       auto moduleName = name.c_str();
 
       TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
