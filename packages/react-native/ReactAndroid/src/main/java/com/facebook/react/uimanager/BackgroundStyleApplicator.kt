@@ -484,11 +484,8 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  private fun getClipPath(view: View): ClipPath? = view.getTag(R.id.clip_path) as? ClipPath
-
-  @JvmStatic
   public fun applyClipPathIfPresent(view: View, canvas: Canvas, drawContent: (() -> Unit?)?) {
-    val clipPath = getClipPath(view)
+    val clipPath = view.getTag(R.id.clip_path) as? ClipPath
     if (clipPath == null) {
       drawContent?.invoke()
       return
