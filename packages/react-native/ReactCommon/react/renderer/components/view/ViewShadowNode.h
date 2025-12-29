@@ -9,8 +9,11 @@
 
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/components/view/ViewState.h>
 
 namespace facebook::react {
+
+class ImageManager;
 
 // NOLINTNEXTLINE(modernize-avoid-c-arrays)
 extern const char ViewComponentName[];
@@ -30,14 +33,19 @@ class ViewShadowNodeProps final : public ViewProps {
 /*
  * `ShadowNode` for <View> component.
  */
-class ViewShadowNode final : public ConcreteViewShadowNode<ViewComponentName, ViewShadowNodeProps, ViewEventEmitter> {
+class ViewShadowNode final : public ConcreteViewShadowNode<ViewComponentName, ViewShadowNodeProps, ViewEventEmitter, ViewState> {
  public:
   ViewShadowNode(const ShadowNodeFragment &fragment, const ShadowNodeFamily::Shared &family, ShadowNodeTraits traits);
 
   ViewShadowNode(const ShadowNode &sourceShadowNode, const ShadowNodeFragment &fragment);
 
+  void setImageManager(const std::shared_ptr<ImageManager> &imageManager);
+
  private:
   void initialize() noexcept;
+  void updateStateIfNeeded();
+
+  std::shared_ptr<ImageManager> imageManager_;
 };
 
 } // namespace facebook::react
