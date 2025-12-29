@@ -69,7 +69,15 @@ Pod::Spec.new do |spec|
 
     spec.subspec 'Pre-built' do |ss|
       ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
-      ss.source_files = "destroot/include/hermes/**/*.h"
+      if ENV["RCT_HERMES_V1_ENABLED"] == "0"
+        ss.source_files = "destroot/include/hermes/**/*.h"
+      else
+        # Hermes v1 is shipping a jsi/hermes.h header which is imported by the hermes.h header
+        # and that file is not present in React Native's JSI
+        # (see https://github.com/facebook/react-native/tree/main/packages/react-native/ReactCommon/jsi/jsi/ where there is
+        # hermes-interface.h but not hermes.h)
+        ss.source_files = ["destroot/include/hermes/**/*.h", "destroot/include/jsi/hermes.h"]
+      end
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
       ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
