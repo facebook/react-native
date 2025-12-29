@@ -113,7 +113,7 @@ async function getLatestV1VersionFromNPM() /*: Promise<string> */ {
 
   if (!npmResponse.ok) {
     throw new Error(
-      `Couldn't get an answer from NPM: ${npmResponse.status} ${npmResponse.statusText}`,
+      `Couldn't get a response from NPM: ${npmResponse.status} ${npmResponse.statusText}`,
     );
   }
 
@@ -130,7 +130,7 @@ async function getNightlyVersionFromNPM() /*: Promise<string> */ {
 
   if (!npmResponse.ok) {
     throw new Error(
-      `Couldn't get an answer from NPM: ${npmResponse.status} ${npmResponse.statusText}`,
+      `Couldn't get a response from NPM: ${npmResponse.status} ${npmResponse.statusText}`,
     );
   }
 
