@@ -1050,6 +1050,8 @@ declare module 'fs' {
 
   declare class FSWatcher extends events$EventEmitter {
     close(): void;
+    ref(): this;
+    unref(): this;
   }
 
   declare class ReadStream extends stream$Readable {
@@ -1063,6 +1065,7 @@ declare module 'fs' {
 
   declare class Dirent {
     name: string | Buffer;
+    parentPath: string;
 
     isBlockDevice(): boolean;
     isCharacterDevice(): boolean;
@@ -1296,12 +1299,24 @@ declare module 'fs' {
   declare function mkdtempSync(prefix: string): string;
   declare function readdir(
     path: string,
-    options: string | {encoding?: string, withFileTypes?: false, ...},
+    options:
+      | string
+      | $ReadOnly<{
+          encoding?: string,
+          recursive?: boolean,
+          withFileTypes?: false,
+          ...
+        }>,
     callback: (err: ?ErrnoError, files: Array<string>) => void,
   ): void;
   declare function readdir(
     path: string,
-    options: {encoding?: string, withFileTypes: true, ...},
+    options: $ReadOnly<{
+      encoding?: string,
+      recursive?: boolean,
+      withFileTypes: true,
+      ...
+    }>,
     callback: (err: ?ErrnoError, files: Array<Dirent>) => void,
   ): void;
   declare function readdir(
@@ -1310,11 +1325,23 @@ declare module 'fs' {
   ): void;
   declare function readdirSync(
     path: string,
-    options?: string | {encoding?: string, withFileTypes?: false, ...},
+    options?:
+      | string
+      | $ReadOnly<{
+          encoding?: string,
+          recursive?: boolean,
+          withFileTypes?: false,
+        }>,
   ): Array<string>;
   declare function readdirSync(
     path: string,
-    options?: string | {encoding?: string, withFileTypes: true, ...},
+    options?:
+      | string
+      | $ReadOnly<{
+          encoding?: string,
+          recursive?: boolean,
+          withFileTypes: true,
+        }>,
   ): Array<Dirent>;
   declare function close(
     fd: number,
@@ -1332,6 +1359,29 @@ declare module 'fs' {
     flags: string | number,
     callback: (err: ?ErrnoError, fd: number) => void,
   ): void;
+  declare function openAsBlob(
+    path: string | Buffer | URL,
+    options?: $ReadOnly<{
+      type?: string, // Optional MIME type hint
+    }>,
+  ): Promise<Blob>;
+  declare function opendir(
+    path: string,
+    options?: $ReadOnly<{
+      encoding?: string,
+      bufferSize?: number,
+      recursive?: boolean,
+    }>,
+    callback: (err: ?ErrnoError, dir: Dir) => void,
+  ): void;
+  declare function opendirSync(
+    path: string,
+    options?: $ReadOnly<{
+      encoding?: string,
+      bufferSize?: number,
+      recursive?: boolean,
+    }>,
+  ): Dir;
   declare function openSync(
     path: string | Buffer,
     flags: string | number,
@@ -1550,7 +1600,15 @@ declare module 'fs' {
   ): void;
   declare function watchFile(
     filename: string,
-    options?: Object,
+    listener?: (curr: Stats, prev: Stats) => void,
+  ): void;
+  declare function watchFile(
+    filename: string,
+    options?: $ReadOnly<{
+      bigint?: boolean,
+      persistent?: boolean,
+      interval?: number,
+    }>,
     listener?: (curr: Stats, prev: Stats) => void,
   ): void;
   declare function unwatchFile(
@@ -1559,7 +1617,16 @@ declare module 'fs' {
   ): void;
   declare function watch(
     filename: string,
-    options?: Object,
+    listener?: (event: string, filename: string) => void,
+  ): FSWatcher;
+  declare function watch(
+    filename: string,
+    options?: $ReadOnly<{
+      persistent?: boolean,
+      recursive?: boolean,
+      encoding?: string,
+      signal?: AbortSignal,
+    }>,
     listener?: (event: string, filename: string) => void,
   ): FSWatcher;
   declare function exists(
@@ -1598,6 +1665,40 @@ declare module 'fs' {
     src: string,
     dest: string,
     flags?: number,
+  ): void;
+  declare function cp(
+    src: string | URL,
+    dest: string | URL,
+    options: $ReadOnly<{
+      dereference?: boolean,
+      errorOnExist?: boolean,
+      filter?: (src: string, dest: string) => boolean | Promise<boolean>,
+      force?: boolean,
+      mode?: number,
+      preserveTimestamps?: boolean,
+      recursive?: boolean,
+      verbatimSymlinks?: boolean,
+    }>,
+    callback: (err: ?Error) => void,
+  ): void;
+  declare function cp(
+    src: string | URL,
+    dest: string | URL,
+    callback: (err: ?Error) => void,
+  ): void;
+  declare function cpSync(
+    src: string | URL,
+    dest: string | URL,
+    options?: $ReadOnly<{
+      dereference?: boolean,
+      errorOnExist?: boolean,
+      filter?: (src: string, dest: string) => boolean,
+      force?: boolean,
+      mode?: number,
+      preserveTimestamps?: boolean,
+      recursive?: boolean,
+      verbatimSymlinks?: boolean,
+    }>,
   ): void;
 
   declare type GlobOptions<WithFileTypes: boolean> = $ReadOnly<{
@@ -1729,14 +1830,52 @@ declare module 'fs' {
     retryDelay?: number,
     ...
   };
+  declare class Dir {
+    +path: string;
+    close(): Promise<void>;
+    closeSync(): void;
+    read(): Promise<?Dirent>;
+    read(cb: (err?: Error, dirent: ?Dirent) => void): void;
+    readSync(): ?Dirent;
+    @@asyncIterator(): AsyncIterator<Dirent>;
+  }
+  type AppendOrWriteToFileHandle = (
+    data:
+      | string
+      | Buffer
+      | Uint8Array
+      | DataView
+      | AsyncIterable<mixed>
+      | Iterable<mixed>
+      | stream$Readable,
+    options: WriteOptions | string,
+  ) => Promise<void>;
   declare class FileHandle {
-    appendFile(
-      data: string | Buffer,
-      options: WriteOptions | string,
-    ): Promise<void>;
+    appendFile: AppendOrWriteToFileHandle;
     chmod(mode: number): Promise<void>;
     chown(uid: number, guid: number): Promise<void>;
     close(): Promise<void>;
+    createReadStream(
+      options?: $ReadOnly<{
+        encoding?: string,
+        autoClose?: boolean,
+        emitClose?: boolean,
+        start?: number,
+        end?: number,
+        highWaterMark?: number,
+        signal?: AbortSignal,
+      }>,
+    ): ReadStream;
+    createWriteStream(
+      options?: $ReadOnly<{
+        encoding?: string,
+        autoClose?: boolean,
+        emitClose?: boolean,
+        start?: number,
+        highWaterMark?: number,
+        flush?: boolean,
+      }>,
+    ): WriteStream;
     datasync(): Promise<void>;
     fd: number;
     read<T: Buffer | Uint8Array>(
@@ -1749,8 +1888,25 @@ declare module 'fs' {
       buffer: T,
       ...
     }>;
+    readableWebStream(
+      options?: $ReadOnly<{autoClose?: boolean}>,
+    ): ReadableStream;
     readFile(options: EncodingFlag): Promise<Buffer>;
     readFile(options: string): Promise<string>;
+    readLines(
+      options?: $ReadOnly<{
+        encoding?: string,
+        autoClose?: boolean,
+        emitClose?: boolean,
+        start?: number,
+        end?: number,
+        highWaterMark?: number,
+      }>,
+    ): readline$Interface;
+    readv<T: Array<Buffer> | Array<Uint8Array> | Array<DataView>>(
+      buffers: T,
+      position?: number | null,
+    ): Promise<{buffers: T, bytesRead: number}>;
     stat(): Promise<Stats>;
     sync(): Promise<void>;
     truncate(len?: number): Promise<void>;
@@ -1759,15 +1915,24 @@ declare module 'fs' {
       mtime: number | string | Date,
     ): Promise<void>;
     write(
-      buffer: Buffer | Uint8Array,
+      buffer: Buffer | Uint8Array | DataView,
       offset: number,
       length: number,
       position: number,
     ): Promise<void>;
-    writeFile(
-      data: string | Buffer | Uint8Array,
-      options: WriteOptions | string,
+    write(
+      buffer: Buffer | Uint8Array | DataView,
+      options?: $ReadOnly<{
+        offset?: number,
+        length?: number,
+        position?: number,
+      }>,
     ): Promise<void>;
+    writeFile: AppendOrWriteToFileHandle;
+    writev<T: Array<Buffer> | Array<Uint8Array> | Array<DataView>>(
+      buffers: T,
+      position?: number | null,
+    ): Promise<{buffers: T, bytesWritten: number}>;
   }
 
   declare type FSPromisePath = string | Buffer | URL;
@@ -1784,6 +1949,20 @@ declare module 'fs' {
       src: FSPromisePath,
       dest: FSPromisePath,
       flags?: number,
+    ): Promise<void>,
+    cp(
+      src: string | URL,
+      dest: string | URL,
+      options?: $ReadOnly<{
+        dereference?: boolean,
+        errorOnExist?: boolean,
+        filter?: (src: string, dest: string) => boolean | Promise<boolean>,
+        force?: boolean,
+        mode?: number,
+        preserveTimestamps?: boolean,
+        recursive?: boolean,
+        verbatimSymlinks?: boolean,
+      }>,
     ): Promise<void>,
     fchmod(filehandle: FileHandle, mode: number): Promise<void>,
     fchown(filehandle: FileHandle, uid: number, guid: number): Promise<void>,
@@ -1824,6 +2003,14 @@ declare module 'fs' {
       flags?: string | number,
       mode?: number,
     ): Promise<FileHandle>,
+    opendir(
+      path: string,
+      options?: $ReadOnly<{
+        encoding?: string,
+        bufferSize?: number,
+        recursive?: boolean,
+      }>,
+    ): Promise<Dir>,
     read<T: Buffer | Uint8Array>(
       filehandle: FileHandle,
       buffer: T,
@@ -1837,11 +2024,21 @@ declare module 'fs' {
     }>,
     readdir: ((
       path: FSPromisePath,
-      options: string | {encoding?: string, withFileTypes?: false, ...},
+      options:
+        | string
+        | $ReadOnly<{
+            encoding?: string,
+            recursive?: boolean,
+            withFileTypes?: false,
+          }>,
     ) => Promise<Array<string>>) &
       ((
         path: FSPromisePath,
-        options: {encoding?: string, withFileTypes: true, ...},
+        options: $ReadOnly<{
+          encoding?: string,
+          recursive?: boolean,
+          withFileTypes: true,
+        }>,
       ) => Promise<Array<Dirent>>) &
       ((path: FSPromisePath) => Promise<Array<string>>),
     readFile: ((
@@ -1884,6 +2081,17 @@ declare module 'fs' {
       atime: number | string | Date,
       mtime: number | string | Date,
     ): Promise<void>,
+    watch(
+      filename: FSPromisePath,
+      options?: $ReadOnly<{
+        persistent?: boolean,
+        recursive?: boolean,
+        encoding?: string,
+        signal?: AbortSignal,
+        maxQueue?: number,
+        overflow?: 'ignore' | 'throw',
+      }>,
+    ): AsyncIterator<{eventType: string, filename: ?string}>,
     write<T: Buffer | Uint8Array>(
       filehandle: FileHandle,
       buffer: T,
