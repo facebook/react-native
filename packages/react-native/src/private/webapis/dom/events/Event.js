@@ -184,48 +184,56 @@ export default class Event {
 
 // $FlowExpectedError[cannot-write]
 Object.defineProperty(Event, 'NONE', {
+  configurable: true,
   enumerable: true,
   value: 0,
 });
 
 // $FlowExpectedError[cannot-write]
 Object.defineProperty(Event.prototype, 'NONE', {
+  configurable: true,
   enumerable: true,
   value: 0,
 });
 
 // $FlowExpectedError[cannot-write]
 Object.defineProperty(Event, 'CAPTURING_PHASE', {
+  configurable: true,
   enumerable: true,
   value: 1,
 });
 
 // $FlowExpectedError[cannot-write]
 Object.defineProperty(Event.prototype, 'CAPTURING_PHASE', {
+  configurable: true,
   enumerable: true,
   value: 1,
 });
 
 // $FlowExpectedError[cannot-write]
 Object.defineProperty(Event, 'AT_TARGET', {
+  configurable: true,
   enumerable: true,
   value: 2,
 });
 
 // $FlowExpectedError[cannot-write]
 Object.defineProperty(Event.prototype, 'AT_TARGET', {
+  configurable: true,
   enumerable: true,
   value: 2,
 });
 
 // $FlowExpectedError[cannot-write]
 Object.defineProperty(Event, 'BUBBLING_PHASE', {
+  configurable: true,
   enumerable: true,
   value: 3,
 });
 
 // $FlowExpectedError[cannot-write]
 Object.defineProperty(Event.prototype, 'BUBBLING_PHASE', {
+  configurable: true,
   enumerable: true,
   value: 3,
 });
