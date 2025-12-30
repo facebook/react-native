@@ -552,7 +552,7 @@ public class SurfaceMountingManager {
       // ^ checkTransitionStatus = false means we don't check if the view is marked as in transition.
       // When a view is in transition we want to call removeViewAt immediately, so it gets marked for removal
       // and the onDetach listener will actually fire at some point.
-      // Only queue if there is already a queue (ie. remove (immediate), add (queued), remove (queued))
+      // Only queue if there is already a queue (ie. remove ("immediate"), add (queued), remove (queued))
       RemoveViewOperation operation =
           new RemoveViewOperation(tag, parentTag, index, parentView);
       mViewTransitionCoordinator.enqueueOperation(operation);
@@ -711,6 +711,7 @@ public class SurfaceMountingManager {
     if (isStopped()) {
       return;
     }
+    mViewTransitionCoordinator.notifyViewCreated(reactTag);
     // We treat this as a perf problem and not a logical error. View Preallocation or unexpected
     // changes to Differ or C++ Binding could cause some redundant Create instructions.
     // There are cases where preallocation happens and a node is recreated: if a node is

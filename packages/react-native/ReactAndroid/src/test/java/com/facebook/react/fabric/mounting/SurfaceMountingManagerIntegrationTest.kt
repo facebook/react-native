@@ -11,10 +11,13 @@ import android.app.Activity
 import android.os.Looper
 import android.view.ViewGroup
 import androidx.core.view.doOnDetach
+import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.touch.JSResponderHandler
 import com.facebook.react.uimanager.RootViewManager
@@ -72,6 +75,10 @@ class SurfaceMountingManagerIntegrationTest {
   @Before
   fun setup() {
     ReactNativeFeatureFlagsForTests.setUp()
+    ReactNativeFeatureFlags.override(object : ReactNativeFeatureFlagsDefaults() {
+      override fun enableFabricLogs() = true
+    })
+    FLog.setMinimumLoggingLevel(android.util.Log.DEBUG)
     reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
     reactContext.initializeWithInstance(createMockCatalystInstance())
     themedReactContext = ThemedReactContext(reactContext, reactContext, null, -1)
@@ -261,10 +268,10 @@ class SurfaceMountingManagerIntegrationTest {
     surfaceMountingManager.deleteView(child2Tag)
 
     // At this point:
-    // - parentQueues[300] = [Remove(child1), Remove(child2)]
+    // - childToParentOrder[100] = [-1337]
+    // - childToParentOrder[200] = [-1337]
     // - parentQueues[-1337] = [Delete(child1), Delete(child2)]
-    // - childToParentOrder[100] = [300, -1337]
-    // - childToParentOrder[200] = [300, -1337]
+    // remove operations are executed right away if there is no queue yet (to trigger ending of transition)!
 
     // Verify operations are queued
     assertThat(parentView.childCount).isEqualTo(0)
@@ -566,24 +573,6 @@ class SurfaceMountingManagerIntegrationTest {
     assertThat(coordinator.isEmpty()).isTrue()
   }
 
-  private fun createView(tag: Int): ViewGroup {
-    val viewType = "RCTView"
-    val props = Arguments.createMap()
-    val stateWrapper = null
-    val eventEmitter = null
-
-    surfaceMountingManager.createView(
-      viewType,
-      tag,
-      props,
-      stateWrapper,
-      eventEmitter,
-      true,
-    )
-
-    return surfaceMountingManager.getView(tag) as ViewGroup
-  }
-
   @Test
   fun testViewNotMarkedButWithParent_worksAsWell() {
     val parent1Id = 100
@@ -620,6 +609,171 @@ class SurfaceMountingManagerIntegrationTest {
     assertThat(parent2View.childCount).isEqualTo(1)
     assertThat(parent2View.getChildAt(0)).isEqualTo(childView)
   }
+
+  @Test
+  fun testTagReuse_queuedDeleteShouldNotAffectNewView() {
+    // Test case:
+    // 1. Create view hierarchy:
+    //                Window(10)
+    //    Unrelated(999) | Parent(20)
+    //                   Intermediate(16)
+    //                     Child(14)
+    //
+    // 2. Start transition on Unrelated(999)
+    // 3. While transition is ongoing, remove Intermediate(16) and reattach Child(14) directly to Parent(20)
+    // 4. Then, create a NEW Intermediate(16) and add Child(14) back under it
+    // 5. End transition on Unrelated(999), which drains its queued operations (including delete of old Intermediate(16))
+    // 6. Verify that the NEW Intermediate(16) still exists and Child(14) is correctly parented under it
+
+    val windowParent = 10
+    val parentTag20 = 20
+    val intermediateViewGroupTag16 = 16
+    val childTag14 = 14
+    val unrelatedTag = 999
+
+    val windowView = createView(windowParent)
+    activity.setContentView(windowView
+    )
+    val parentView = createView(parentTag20)
+    surfaceMountingManager.addViewAt(windowParent, parentTag20, 0)
+
+    val intermediateChildView1 = createView(intermediateViewGroupTag16)
+    surfaceMountingManager.addViewAt(parentTag20, intermediateViewGroupTag16, 0)
+    val childView = createView(childTag14)
+    surfaceMountingManager.addViewAt(intermediateViewGroupTag16, childTag14, 0)
+    val unrelatedView = createView(unrelatedTag)
+    surfaceMountingManager.addViewAt(windowParent, unrelatedTag, 1)
+
+    // Start a transition on "some other view"
+    windowView.startViewTransition(unrelatedView)
+    surfaceMountingManager.markViewInTransition(unrelatedTag, true)
+    val latch = CountDownLatch(1)
+    unrelatedView.doOnDetach {
+      latch.countDown()
+    }
+    // Important: queue a remove+delete for the unrelated view to populate the delete queue
+    surfaceMountingManager.removeViewAt(unrelatedTag, windowParent, 1)
+    surfaceMountingManager.deleteView(unrelatedTag)
+
+    // Now, while the transition is ongoing, remove the intermediate child and reattach the child directly to parent
+    surfaceMountingManager.removeViewAt(childTag14, intermediateViewGroupTag16, 0)
+    surfaceMountingManager.removeViewAt(intermediateViewGroupTag16, parentTag20, 0)
+    surfaceMountingManager.deleteView(intermediateViewGroupTag16)
+    surfaceMountingManager.addViewAt(parentTag20, childTag14, 0)
+
+    // Now, we create a new intermediate child with the same tag as before, to add the child back under it
+    surfaceMountingManager.removeViewAt(childTag14, parentTag20, 0)
+    val intermediateChildView2 = createView(intermediateViewGroupTag16)
+    surfaceMountingManager.addViewAt(parentTag20, intermediateViewGroupTag16, 0)
+    surfaceMountingManager.addViewAt(intermediateViewGroupTag16, childTag14, 0)
+
+    // Now end the transition on the unrelated view, which will drain its queued operations
+    windowView.endViewTransition(unrelatedView)
+    surfaceMountingManager.markViewInTransition(unrelatedTag, false)
+    assertThat(latch.await(1, java.util.concurrent.TimeUnit.SECONDS)).isTrue()
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+
+    // Assert that the newly created intermediate view still exists in SurfaceMountingManager and points to the correct instance
+    val view = surfaceMountingManager.getView(intermediateViewGroupTag16)
+    assertThat(view).isEqualTo(intermediateChildView2)
+
+    // Now remove the intermediate view again and make sure thats works too
+    surfaceMountingManager.removeViewAt(childTag14, intermediateViewGroupTag16, 0)
+    surfaceMountingManager.removeViewAt(intermediateViewGroupTag16, parentTag20, 0)
+    surfaceMountingManager.deleteView(intermediateViewGroupTag16)
+    assertThat(childView.parent).isNull()
+    surfaceMountingManager.addViewAt(parentTag20, childTag14, 0)
+    assertThat(childView.parent).isEqualTo(parentView)
+  }
+
+  @Test
+  fun testTagReuse_queuedDeleteCancelsWhenTagRecreates() {
+    // Test case:
+    // 1. Create view hierarchy:
+    //                Window(10)
+    //                   Parent(20)
+    //                   Intermediate(16)
+    //                     Child(14)
+    // 2. Start transition on Intermediate(16)
+    // 3. While transition is ongoing, remove Intermediate(16) and reattach Child(14) directly to Parent(20)
+    // 4. Then, create a NEW Intermediate(16) and add Child(14) back under it
+    // 5. End transition on Intermediate(16), which drains its queued operations (including delete of old Intermediate(16))
+    // 6. Verify that the NEW Intermediate(16) still exists and Child(14) is correctly parented under it
+
+    val windowParent = 10
+    val parentTag20 = 20
+    val intermediateViewGroupTag16 = 16
+    val childTag14 = 14
+
+    val windowView = createView(windowParent)
+    activity.setContentView(windowView
+    )
+    val parentView = createView(parentTag20)
+    surfaceMountingManager.addViewAt(windowParent, parentTag20, 0)
+
+    val intermediateChildView1 = createView(intermediateViewGroupTag16)
+    surfaceMountingManager.addViewAt(parentTag20, intermediateViewGroupTag16, 0)
+    val childView = createView(childTag14)
+    surfaceMountingManager.addViewAt(intermediateViewGroupTag16, childTag14, 0)
+
+    // Start a transition on 16
+    parentView.startViewTransition(intermediateChildView1)
+    surfaceMountingManager.markViewInTransition(intermediateViewGroupTag16, true)
+    val latch = CountDownLatch(1)
+    intermediateChildView1.doOnDetach {
+      latch.countDown()
+    }
+
+    // Remove intermediate group, add child directly to parent
+    surfaceMountingManager.removeViewAt(childTag14, intermediateViewGroupTag16, 0) // remove child from intermediate
+    surfaceMountingManager.removeViewAt(intermediateViewGroupTag16, parentTag20, 0)
+    surfaceMountingManager.deleteView(intermediateViewGroupTag16)
+    surfaceMountingManager.addViewAt(parentTag20, childTag14, 0)
+
+    // Now, we create a new intermediate child with the same tag as before, to add the child back under it
+    surfaceMountingManager.removeViewAt(childTag14, parentTag20, 0)
+    val intermediateChildView2 = createView(intermediateViewGroupTag16)
+    surfaceMountingManager.addViewAt(parentTag20, intermediateViewGroupTag16, 0)
+    surfaceMountingManager.addViewAt(intermediateViewGroupTag16, childTag14, 0)
+
+    parentView.endViewTransition(intermediateChildView1)
+    surfaceMountingManager.markViewInTransition(intermediateViewGroupTag16, false)
+    assertThat(latch.await(1, java.util.concurrent.TimeUnit.SECONDS)).isTrue()
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
+
+    // Assert that the newly created intermediate view still exists in SurfaceMountingManager and points to the correct instance
+    val view = surfaceMountingManager.getView(intermediateViewGroupTag16)
+    assertThat(view).isEqualTo(intermediateChildView2)
+    // Interesting observation: the surfaceMountingManager will reuse the old instance! This seems fine.
+    assertThat(view).isEqualTo(intermediateChildView1)
+
+    // Now remove the intermediate view again and make sure thats works too
+    surfaceMountingManager.removeViewAt(childTag14, intermediateViewGroupTag16, 0)
+    surfaceMountingManager.removeViewAt(intermediateViewGroupTag16, parentTag20, 0)
+    surfaceMountingManager.deleteView(intermediateViewGroupTag16)
+    assertThat(childView.parent).isNull()
+    surfaceMountingManager.addViewAt(parentTag20, childTag14, 0)
+    assertThat(childView.parent).isEqualTo(parentView)
+  }
+
+  private fun createView(tag: Int): ViewGroup {
+    val viewType = "RCTView"
+    val props = Arguments.createMap()
+    val stateWrapper = null
+    val eventEmitter = null
+
+    surfaceMountingManager.createView(
+      viewType,
+      tag,
+      props,
+      stateWrapper,
+      eventEmitter,
+      true,
+    )
+
+    return surfaceMountingManager.getView(tag) as ViewGroup
+  }
+
 
   private fun getCoordinator(): ViewTransitionCoordinator {
     val coordinatorField = SurfaceMountingManager::class.java.getDeclaredField("mViewTransitionCoordinator")

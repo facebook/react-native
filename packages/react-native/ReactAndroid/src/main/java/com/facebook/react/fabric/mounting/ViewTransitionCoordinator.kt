@@ -88,6 +88,35 @@ internal class ViewTransitionCoordinator {
     }
   }
 
+  fun notifyViewCreated(tag: Int) {
+    // Check for queued delete operations for that tag.
+    // If a create operation for a tag happens while we want to delete it, we can drop the delete.
+    val deleteQueue = parentQueues[DELETE_VIEW_PARENT_TAG] ?: return
+
+    val index = deleteQueue.indexOfFirst { it.childTag == tag }
+    if (index == -1) {
+      return
+    }
+
+    deleteQueue.removeAt(index)
+    if (deleteQueue.isEmpty()) {
+      parentQueues.remove(DELETE_VIEW_PARENT_TAG)
+    }
+
+    val orderList = childToParentOrder[tag]
+    orderList?.remove(DELETE_VIEW_PARENT_TAG)
+    if (orderList != null && orderList.isEmpty()) {
+      childToParentOrder.remove(tag)
+    }
+
+    if (ReactBuildConfig.DEBUG) {
+      FLog.d(
+        TAG,
+        "Dropping queued delete operation for tag $tag as the view was re-created"
+      )
+    }
+  }
+
   @JvmOverloads
   fun shouldEnqueueOperation(childTag: Int, parentTag: Int, checkTransitionStatus: Boolean = true): Boolean {
     if (childToParentOrder.containsKey(childTag)) {
@@ -95,8 +124,10 @@ internal class ViewTransitionCoordinator {
       return true
     }
 
-    // If parent has a queue, everything goes to the queue to maintain order
-    if (parentQueues.containsKey(parentTag)) {
+    // If parent has a queue, everything goes to the queue to maintain order.
+    // Exception is the delete queue, as that's global. We don't want to block deletes
+    // for views whose hierarchy isn't marked as transitioning.
+    if (parentQueues.containsKey(parentTag) && parentTag != DELETE_VIEW_PARENT_TAG) {
       return true
     }
 
