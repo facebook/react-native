@@ -101,7 +101,9 @@ RCT_EXTERN UIWindow *__nullable RCTKeyWindow(void);
 RCT_EXTERN UIViewController *__nullable RCTPresentedViewController(void);
 
 // Retrieve current window UIStatusBarManager
+#if !TARGET_OS_TV
 RCT_EXTERN UIStatusBarManager *__nullable RCTUIStatusBarManager(void) API_AVAILABLE(ios(13));
+#endif
 
 // Does this device support force touch (aka 3D Touch)?
 RCT_EXTERN BOOL RCTForceTouchAvailable(void);
