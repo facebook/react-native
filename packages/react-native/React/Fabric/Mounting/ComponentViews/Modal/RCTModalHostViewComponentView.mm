@@ -145,7 +145,15 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                      animated:(BOOL)animated
                    completion:(void (^)(void))completion
 {
-  [modalViewController dismissViewControllerAnimated:animated completion:completion];
+  // Dismiss from the presenting view controller to ensure the entire presentation chain is dismissed.
+  // Calling dismissViewControllerAnimated: on a view controller that has a presented view controller
+  // on top of it will only dismiss the topmost presented view controller, not the modal itself.
+  UIViewController *presentingVC = modalViewController.presentingViewController;
+  if (presentingVC) {
+    [presentingVC dismissViewControllerAnimated:animated completion:completion];
+  } else {
+    [modalViewController dismissViewControllerAnimated:animated completion:completion];
+  }
 }
 
 - (void)ensurePresentedOnlyIfNeeded
