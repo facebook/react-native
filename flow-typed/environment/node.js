@@ -814,7 +814,7 @@ declare module 'crypto' {
     callback: (err: ?Error, buffer: Buffer) => void,
   ): void;
   declare function randomUUID(
-    options?: $ReadOnly<{|disableEntropyCache?: boolean|}>,
+    options?: Readonly<{disableEntropyCache?: boolean}>,
   ): string;
   declare function timingSafeEqual(
     a: Buffer | $TypedArray | DataView,
@@ -1701,7 +1701,7 @@ declare module 'fs' {
     }>,
   ): void;
 
-  declare type GlobOptions<WithFileTypes: boolean> = $ReadOnly<{
+  declare type GlobOptions<WithFileTypes: boolean> = Readonly<{
     /**
      * Current working directory.
      * @default process.cwd()
@@ -2593,10 +2593,45 @@ declare module 'os' {
   declare var EOL: string;
 }
 
+type path$PlatformPath = {
+  normalize(path: string): string,
+  join(...parts: Array<string>): string,
+  resolve(...parts: Array<string>): string,
+  matchesGlob(path: string, pattern: string): boolean,
+  isAbsolute(path: string): boolean,
+  relative(from: string, to: string): string,
+  dirname(path: string): string,
+  basename(path: string, ext?: string): string,
+  extname(path: string): string,
+  sep: string,
+  delimiter: string,
+  parse(pathString: string): Readonly<{
+    root: string,
+    dir: string,
+    base: string,
+    ext: string,
+    name: string,
+  }>,
+  format(
+    pathObject: Readonly<{
+      root?: string,
+      dir?: string,
+      base?: string,
+      ext?: string,
+      name?: string,
+    }>,
+  ): string,
+  toNamespacedPath(path: string): string,
+  posix: path$PlatformPath,
+  win32: path$PlatformPath,
+  ...
+};
+
 declare module 'path' {
   declare function normalize(path: string): string;
   declare function join(...parts: Array<string>): string;
   declare function resolve(...parts: Array<string>): string;
+  declare function matchesGlob(path: string, pattern: string): boolean;
   declare function isAbsolute(path: string): boolean;
   declare function relative(from: string, to: string): string;
   declare function dirname(path: string): string;
@@ -2610,18 +2645,19 @@ declare module 'path' {
     base: string,
     ext: string,
     name: string,
-    ...
   };
-  declare function format(pathObject: {
-    root?: string,
-    dir?: string,
-    base?: string,
-    ext?: string,
-    name?: string,
-    ...
-  }): string;
-  declare var posix: any;
-  declare var win32: any;
+  declare function format(
+    pathObject: Readonly<{
+      root?: string,
+      dir?: string,
+      base?: string,
+      ext?: string,
+      name?: string,
+    }>,
+  ): string;
+  declare function toNamespacedPath(path: string): string;
+  declare var posix: path$PlatformPath;
+  declare var win32: path$PlatformPath;
 }
 
 declare module 'punycode' {
@@ -2867,7 +2903,7 @@ declare class stream$Duplex extends stream$Readable mixins stream$Writable {
   // $FlowFixMe[incompatible-exact] See above
   // $FlowFixMe[incompatible-type] See above
   static fromWeb(
-    pair: $ReadOnly<{
+    pair: Readonly<{
       readable: ReadableStream,
       writable: WritableStream,
     }>,
@@ -3379,30 +3415,30 @@ type util$InspectOptions = {
 };
 
 declare type util$ParseArgsOption =
-  | $ReadOnly<{|
+  | Readonly<{
       type: 'boolean',
       multiple?: false,
       short?: string,
       default?: boolean,
-    |}>
-  | $ReadOnly<{|
+    }>
+  | Readonly<{
       type: 'boolean',
       multiple: true,
       short?: string,
       default?: Array<boolean>,
-    |}>
-  | $ReadOnly<{|
+    }>
+  | Readonly<{
       type: 'string',
       multiple?: false,
       short?: string,
       default?: string,
-    |}>
-  | $ReadOnly<{|
+    }>
+  | Readonly<{
       type: 'string',
       multiple: true,
       short?: string,
       default?: Array<string>,
-    |}>;
+    }>;
 
 type util$ParseArgsOptionToValue<TOption> = TOption['type'] extends 'boolean'
   ? TOption['multiple'] extends true
@@ -3613,7 +3649,7 @@ declare module 'util' {
       | Modifiers
       | $ReadOnlyArray<ForegroundColors | BackgroundColors | Modifiers>,
     text: string,
-    options?: $ReadOnly<{
+    options?: Readonly<{
       stream?: ?stream$Stream,
       validateStream?: ?boolean,
     }>,
