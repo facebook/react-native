@@ -23,12 +23,19 @@ public object ColorPropConverter {
   private fun supportWideGamut(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
   private const val JSON_KEY = "resource_paths"
+  private const val JSON_KEY_NAME = "name"
+  private const val JSON_KEY_ALPHA = "alpha"
   private const val PREFIX_RESOURCE = "@"
   private const val PREFIX_ATTR = "?"
   private const val PACKAGE_DELIMITER = ":"
   private const val PATH_DELIMITER = "/"
   private const val ATTR = "attr"
   private const val ATTR_SEGMENT = "attr/"
+
+  private fun applyAlpha(color: Int, alpha: Double): Int {
+    val a = (alpha * 255).toInt().coerceIn(0, 255)
+    return (color and 0x00FFFFFF) or (a shl 24)
+  }
 
   private fun getColorInteger(value: Any?, context: Context): Int? {
     if (value == null) {
@@ -54,13 +61,30 @@ public object ColorPropConverter {
       val resourcePaths =
           value.getArray(JSON_KEY)
               ?: throw JSApplicationCausedNativeException(
-                  "ColorValue: The `$JSON_KEY` must be an array of color resource path strings."
+                  "ColorValue: The `$JSON_KEY` must be an array of color resource path strings or objects."
               )
 
       for (i in 0 until resourcePaths.size()) {
-        val result = resolveResourcePath(context, resourcePaths.getString(i))
+        val item = resourcePaths.getDynamic(i)
+        val resourcePath: String?
+        val alpha: Double?
+
+        when (item.type) {
+          ReadableType.String -> {
+            resourcePath = item.asString()
+            alpha = null
+          }
+          ReadableType.Map -> {
+            val map = item.asMap()
+            resourcePath = map.getString(JSON_KEY_NAME)
+            alpha = if (map.hasKey(JSON_KEY_ALPHA)) map.getDouble(JSON_KEY_ALPHA) else null
+          }
+          else -> continue
+        }
+
+        val result = resolveResourcePath(context, resourcePath)
         if (result != null) {
-          return result
+          return if (alpha != null) applyAlpha(result, alpha) else result
         }
       }
 
@@ -103,13 +127,31 @@ public object ColorPropConverter {
       val resourcePaths =
           value.getArray(JSON_KEY)
               ?: throw JSApplicationCausedNativeException(
-                  "ColorValue: The `$JSON_KEY` must be an array of color resource path strings."
+                  "ColorValue: The `$JSON_KEY` must be an array of color resource path strings or objects."
               )
 
       for (i in 0 until resourcePaths.size()) {
-        val result = resolveResourcePath(context, resourcePaths.getString(i))
+        val item = resourcePaths.getDynamic(i)
+        val resourcePath: String?
+        val alpha: Double?
+
+        when (item.type) {
+          ReadableType.String -> {
+            resourcePath = item.asString()
+            alpha = null
+          }
+          ReadableType.Map -> {
+            val map = item.asMap()
+            resourcePath = map.getString(JSON_KEY_NAME)
+            alpha = if (map.hasKey(JSON_KEY_ALPHA)) map.getDouble(JSON_KEY_ALPHA) else null
+          }
+          else -> continue
+        }
+
+        val result = resolveResourcePath(context, resourcePath)
         if (supportWideGamut() && result != null) {
-          return Color.valueOf(result)
+          val colorWithAlpha = if (alpha != null) applyAlpha(result, alpha) else result
+          return Color.valueOf(colorWithAlpha)
         }
       }
 
