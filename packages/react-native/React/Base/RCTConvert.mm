@@ -1024,6 +1024,14 @@ void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
           color = [color colorWithProminence:prominence];
         }
       }
+      // Apply contentHeadroom if specified (iOS 26+)
+      if (@available(iOS 26.0, *)) {
+        id headroomValue = [dictionary objectForKey:@"contentHeadroom"];
+        if (headroomValue != nil && [headroomValue isKindOfClass:[NSNumber class]]) {
+          CGFloat headroom = [headroomValue floatValue];
+          color = [color colorByApplyingContentHeadroom:headroom];
+        }
+      }
       return color;
     } else if ((value = [dictionary objectForKey:@"dynamic"])) {
       NSDictionary *appearances = value;
@@ -1073,6 +1081,14 @@ void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
               prominence = UIColorProminenceQuaternary;
             }
             color = [color colorWithProminence:prominence];
+          }
+        }
+        // Apply contentHeadroom if specified (iOS 26+)
+        if (@available(iOS 26.0, *)) {
+          id headroomValue = [dictionary objectForKey:@"contentHeadroom"];
+          if (headroomValue != nil && [headroomValue isKindOfClass:[NSNumber class]]) {
+            CGFloat headroom = [headroomValue floatValue];
+            color = [color colorByApplyingContentHeadroom:headroom];
           }
         }
         return color;

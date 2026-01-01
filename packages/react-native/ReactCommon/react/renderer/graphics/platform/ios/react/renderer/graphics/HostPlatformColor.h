@@ -31,9 +31,11 @@ struct Color {
   static Color createSemanticColor(
       std::vector<std::string> &semanticItems,
       float alpha = 1.0f,
-      const std::string &prominence = "");
+      const std::string &prominence = "",
+      float contentHeadroom = 0.0f);
   static Color fromUIColor(std::shared_ptr<void> uiColor);
   static Color applyProminence(Color color, const std::string &prominence);
+  static Color applyContentHeadroom(Color color, float headroom);
 
   std::shared_ptr<void> getUIColor() const
   {

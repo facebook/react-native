@@ -47,6 +47,13 @@ type PlatformColorIOSOptions = {
    * - quaternary: Minimal prominence
    */
   prominence?: ColorProminence | undefined;
+  /**
+   * The content headroom for HDR colors (iOS 26+).
+   * Specifies how bright the color should appear relative to SDR peak white.
+   * A value of 1.0 means standard SDR brightness, values greater than 1.0
+   * enable HDR brightness on supported displays.
+   */
+  contentHeadroom?: number | undefined;
 };
 
 /**
@@ -66,6 +73,9 @@ type PlatformColorIOSOptions = {
  *
  * // Using prominence (iOS 18+)
  * PlatformColorIOS('label', { prominence: 'secondary' })
+ *
+ * // Using contentHeadroom for HDR (iOS 26+)
+ * PlatformColorIOS('systemRed', { contentHeadroom: 1.5 })
  * ```
  */
 export function PlatformColorIOS(

@@ -238,7 +238,8 @@ std::size_t Color::getUIColorHash() const
 Color Color::createSemanticColor(
     std::vector<std::string> &semanticItems,
     float alpha,
-    const std::string &prominence)
+    const std::string &prominence,
+    float contentHeadroom)
 {
   UIColor *semanticColor = RCTPlatformColorFromSemanticItems(semanticItems);
   if (alpha < 1.0f) {
@@ -246,7 +247,10 @@ Color Color::createSemanticColor(
   }
   Color color = Color(wrapManagedObject(semanticColor));
   if (!prominence.empty()) {
-    return applyProminence(color, prominence);
+    color = applyProminence(color, prominence);
+  }
+  if (contentHeadroom > 0.0f) {
+    color = applyContentHeadroom(color, contentHeadroom);
   }
   return color;
 }
@@ -270,6 +274,18 @@ Color Color::applyProminence(Color color, const std::string &prominence)
         uiProminence = UIColorProminenceQuaternary;
       }
       uiColor = [uiColor colorWithProminence:uiProminence];
+      return Color(wrapManagedObject(uiColor));
+    }
+  }
+  return color;
+}
+
+Color Color::applyContentHeadroom(Color color, float headroom)
+{
+  if (@available(iOS 26.0, *)) {
+    UIColor *uiColor = (UIColor *)unwrapManagedObject(color.getUIColor());
+    if (uiColor != nil && headroom > 0.0f) {
+      uiColor = [uiColor colorByApplyingContentHeadroom:headroom];
       return Color(wrapManagedObject(uiColor));
     }
   }

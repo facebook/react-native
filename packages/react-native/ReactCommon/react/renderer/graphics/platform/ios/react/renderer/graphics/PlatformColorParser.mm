@@ -68,9 +68,15 @@ SharedColor parsePlatformColor(const ContextContainer &contextContainer, int32_t
       prominence = (std::string)items.at("prominence");
     }
 
+    // Extract contentHeadroom value if present
+    float contentHeadroom = 0.0f;
+    if (items.find("contentHeadroom") != items.end() && items.at("contentHeadroom").hasType<double>()) {
+      contentHeadroom = static_cast<float>((double)items.at("contentHeadroom"));
+    }
+
     if (items.find("semantic") != items.end() && items.at("semantic").hasType<std::vector<std::string>>()) {
       auto semanticItems = (std::vector<std::string>)items.at("semantic");
-      return SharedColor(Color::createSemanticColor(semanticItems, alpha, prominence));
+      return SharedColor(Color::createSemanticColor(semanticItems, alpha, prominence, contentHeadroom));
     } else if (
         items.find("dynamic") != items.end() &&
         items.at("dynamic").hasType<std::unordered_map<std::string, RawValue>>()) {
@@ -86,7 +92,11 @@ SharedColor parsePlatformColor(const ContextContainer &contextContainer, int32_t
       }
       // Apply prominence if specified
       if (!prominence.empty() && color) {
-        return SharedColor(Color::applyProminence(*color, prominence));
+        color = SharedColor(Color::applyProminence(*color, prominence));
+      }
+      // Apply contentHeadroom if specified
+      if (contentHeadroom > 0.0f && color) {
+        return SharedColor(Color::applyContentHeadroom(*color, contentHeadroom));
       }
       return color;
     }

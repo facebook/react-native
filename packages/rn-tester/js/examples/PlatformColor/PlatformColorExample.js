@@ -131,6 +131,19 @@ function PlatformColorsExample() {
           label: 'systemBlue/50',
           color: PlatformColorIOS('systemBlue', {alpha: 0.5}),
         },
+        // Content Headroom examples (iOS 26+, HDR colors)
+        {
+          label: 'systemRed HDR 1.5x',
+          color: PlatformColorIOS('systemRed', {contentHeadroom: 1.5}),
+        },
+        {
+          label: 'systemRed HDR 2x',
+          color: PlatformColorIOS('systemRed', {contentHeadroom: 2.0}),
+        },
+        {
+          label: 'systemGreen HDR',
+          color: PlatformColorIOS('systemGreen', {contentHeadroom: 1.5}),
+        },
         {label: 'systemBrown', color: PlatformColor('systemBrown')},
         {label: 'systemGreen', color: PlatformColor('systemGreen')},
         {label: 'systemIndigo', color: PlatformColor('systemIndigo')},

@@ -28,6 +28,7 @@ type LocalNativeColorValue = {
   },
   alpha?: number,
   prominence?: ColorProminence,
+  contentHeadroom?: number,
 };
 
 export const PlatformColor = (...names: Array<string>): NativeColorValue => {
@@ -38,6 +39,7 @@ export const PlatformColor = (...names: Array<string>): NativeColorValue => {
 export type PlatformColorIOSOptions = {
   alpha?: number,
   prominence?: ColorProminence,
+  contentHeadroom?: number,
 };
 
 export const PlatformColorIOS = (
@@ -51,6 +53,9 @@ export const PlatformColorIOS = (
   }
   if (options?.prominence != null) {
     result.prominence = options.prominence;
+  }
+  if (options?.contentHeadroom != null) {
+    result.contentHeadroom = options.contentHeadroom;
   }
   // $FlowExpectedError[incompatible-type] LocalNativeColorValue is the iOS LocalNativeColorValue type
   return (result: NativeColorValue);
@@ -107,6 +112,9 @@ const _normalizeColorObject = (
     if (color.prominence != null) {
       dynamicColor.prominence = color.prominence;
     }
+    if (color.contentHeadroom != null) {
+      dynamicColor.contentHeadroom = color.contentHeadroom;
+    }
     return dynamicColor;
   }
   return null;
@@ -141,6 +149,9 @@ const _processColorObject = (
     }
     if (color.prominence != null) {
       dynamicColor.prominence = color.prominence;
+    }
+    if (color.contentHeadroom != null) {
+      dynamicColor.contentHeadroom = color.contentHeadroom;
     }
     return dynamicColor;
   }
