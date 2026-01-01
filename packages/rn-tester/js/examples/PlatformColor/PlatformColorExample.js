@@ -21,6 +21,7 @@ import {
   PlatformColor,
   StyleSheet,
   View,
+  Text,
   useColorScheme,
 } from 'react-native';
 
@@ -195,24 +196,27 @@ function AlphaColorsExample() {
   const colors = [
     {label: 'systemBlue', color: PlatformColor('systemBlue')},
     {
-      label: 'systemBlue.alpha(0.75)',
-      color: PlatformColor('systemBlue').alpha(0.75),
+      label: '{name: systemBlue, alpha: 0.75}',
+      color: PlatformColor({name: 'systemBlue', alpha: 0.75}),
     },
     {
-      label: 'systemBlue.alpha(0.5)',
-      color: PlatformColor('systemBlue').alpha(0.5),
+      label: '{name: systemBlue, alpha: 0.5}',
+      color: PlatformColor({name: 'systemBlue', alpha: 0.5}),
     },
     {
-      label: 'systemBlue.alpha(0.25)',
-      color: PlatformColor('systemBlue').alpha(0.25),
+      label: '{name: systemBlue, alpha: 0.25}',
+      color: PlatformColor({name: 'systemBlue', alpha: 0.25}),
     },
     {label: 'systemRed', color: PlatformColor('systemRed')},
     {
-      label: 'systemRed.alpha(0.5)',
-      color: PlatformColor('systemRed').alpha(0.5),
+      label: '{name: systemRed, alpha: 0.5}',
+      color: PlatformColor({name: 'systemRed', alpha: 0.5}),
     },
     {label: 'label', color: PlatformColor('label')},
-    {label: 'label.alpha(0.5)', color: PlatformColor('label').alpha(0.5)},
+    {
+      label: '{name: label, alpha: 0.5}',
+      color: PlatformColor({name: 'label', alpha: 0.5}),
+    },
   ];
 
   return <ColorTable colors={colors} />;
@@ -230,29 +234,29 @@ function ProminenceColorsExample() {
   const colors = [
     {label: 'systemBlue', color: PlatformColor('systemBlue')},
     {
-      label: 'systemBlue.prominence(primary)',
-      color: PlatformColor('systemBlue').prominence('primary'),
+      label: '{name: systemBlue, prominence: primary}',
+      color: PlatformColor({name: 'systemBlue', prominence: 'primary'}),
     },
     {
-      label: 'systemBlue.prominence(secondary)',
-      color: PlatformColor('systemBlue').prominence('secondary'),
+      label: '{name: systemBlue, prominence: secondary}',
+      color: PlatformColor({name: 'systemBlue', prominence: 'secondary'}),
     },
     {
-      label: 'systemBlue.prominence(tertiary)',
-      color: PlatformColor('systemBlue').prominence('tertiary'),
+      label: '{name: systemBlue, prominence: tertiary}',
+      color: PlatformColor({name: 'systemBlue', prominence: 'tertiary'}),
     },
     {
-      label: 'systemBlue.prominence(quaternary)',
-      color: PlatformColor('systemBlue').prominence('quaternary'),
+      label: '{name: systemBlue, prominence: quaternary}',
+      color: PlatformColor({name: 'systemBlue', prominence: 'quaternary'}),
     },
     {label: 'label', color: PlatformColor('label')},
     {
-      label: 'label.prominence(secondary)',
-      color: PlatformColor('label').prominence('secondary'),
+      label: '{name: label, prominence: secondary}',
+      color: PlatformColor({name: 'label', prominence: 'secondary'}),
     },
     {
-      label: 'label.prominence(tertiary)',
-      color: PlatformColor('label').prominence('tertiary'),
+      label: '{name: label, prominence: tertiary}',
+      color: PlatformColor({name: 'label', prominence: 'tertiary'}),
     },
   ];
 
@@ -271,33 +275,33 @@ function ContentHeadroomColorsExample() {
   const colors = [
     {label: 'systemRed', color: PlatformColor('systemRed')},
     {
-      label: 'systemRed.contentHeadroom(1.5)',
-      color: PlatformColor('systemRed').contentHeadroom(1.5),
+      label: '{name: systemRed, contentHeadroom: 1.5}',
+      color: PlatformColor({name: 'systemRed', contentHeadroom: 1.5}),
     },
     {
-      label: 'systemRed.contentHeadroom(2.0)',
-      color: PlatformColor('systemRed').contentHeadroom(2.0),
+      label: '{name: systemRed, contentHeadroom: 2.0}',
+      color: PlatformColor({name: 'systemRed', contentHeadroom: 2.0}),
     },
     {label: 'systemGreen', color: PlatformColor('systemGreen')},
     {
-      label: 'systemGreen.contentHeadroom(1.5)',
-      color: PlatformColor('systemGreen').contentHeadroom(1.5),
+      label: '{name: systemGreen, contentHeadroom: 1.5}',
+      color: PlatformColor({name: 'systemGreen', contentHeadroom: 1.5}),
     },
     {label: 'systemBlue', color: PlatformColor('systemBlue')},
     {
-      label: 'systemBlue.contentHeadroom(1.5)',
-      color: PlatformColor('systemBlue').contentHeadroom(1.5),
+      label: '{name: systemBlue, contentHeadroom: 1.5}',
+      color: PlatformColor({name: 'systemBlue', contentHeadroom: 1.5}),
     },
   ];
 
   return <ColorTable colors={colors} />;
 }
 
-function ChainedModifiersExample() {
+function CombinedModifiersExample() {
   if (Platform.OS !== 'ios') {
     return (
       <RNTesterText style={styles.labelCell}>
-        Chained modifiers are iOS-specific
+        Combined modifiers are iOS-specific
       </RNTesterText>
     );
   }
@@ -305,20 +309,58 @@ function ChainedModifiersExample() {
   const colors = [
     {label: 'systemRed', color: PlatformColor('systemRed')},
     {
-      label: 'systemRed.alpha(0.5)',
-      color: PlatformColor('systemRed').alpha(0.5),
+      label: '{name: systemRed, alpha: 0.5}',
+      color: PlatformColor({name: 'systemRed', alpha: 0.5}),
     },
     {
-      label: 'systemRed.prominence(secondary)',
-      color: PlatformColor('systemRed').prominence('secondary'),
+      label: '{name: systemRed, prominence: secondary}',
+      color: PlatformColor({name: 'systemRed', prominence: 'secondary'}),
     },
     {
-      label: 'systemRed.alpha(0.8).prominence(secondary)',
-      color: PlatformColor('systemRed').alpha(0.8).prominence('secondary'),
+      label: '{name: systemRed, alpha: 0.8, prominence: secondary}',
+      color: PlatformColor({
+        name: 'systemRed',
+        alpha: 0.8,
+        prominence: 'secondary',
+      }),
     },
     {
-      label: 'systemBlue.alpha(0.5).prominence(tertiary)',
-      color: PlatformColor('systemBlue').alpha(0.5).prominence('tertiary'),
+      label: '{name: systemBlue, alpha: 0.5, prominence: tertiary}',
+      color: PlatformColor({
+        name: 'systemBlue',
+        alpha: 0.5,
+        prominence: 'tertiary',
+      }),
+    },
+  ];
+
+  return <ColorTable colors={colors} />;
+}
+
+function MixedTypesExample() {
+  if (Platform.OS !== 'ios') {
+    return (
+      <RNTesterText style={styles.labelCell}>
+        Mixed types with modifiers are iOS-specific
+      </RNTesterText>
+    );
+  }
+
+  const colors = [
+    {
+      label: "('systemMint', {name: 'systemRed', alpha: 0.5})",
+      color: PlatformColor('systemMint', {name: 'systemRed', alpha: 0.5}),
+    },
+    {
+      label: "({name: 'systemBlue', prominence: 'secondary'}, 'systemGreen')",
+      color: PlatformColor(
+        {name: 'systemBlue', prominence: 'secondary'},
+        'systemGreen',
+      ),
+    },
+    {
+      label: "('bogus', {name: 'systemRed', alpha: 0.7})",
+      color: PlatformColor('bogus', {name: 'systemRed', alpha: 0.7}),
     },
   ];
 
@@ -532,10 +574,17 @@ exports.examples = [
     },
   },
   {
-    title: 'Chained Modifiers (iOS)',
-    description: 'Combine multiple modifiers with chaining',
+    title: 'Combined Modifiers (iOS)',
+    description: 'Combine multiple modifiers in a single object',
     render(): React.MixedElement {
-      return <ChainedModifiersExample />;
+      return <CombinedModifiersExample />;
+    },
+  },
+  {
+    title: 'Mixed Types (iOS)',
+    description: 'Mix string and object color specs with different modifiers',
+    render(): React.MixedElement {
+      return <MixedTypesExample />;
     },
   },
   {

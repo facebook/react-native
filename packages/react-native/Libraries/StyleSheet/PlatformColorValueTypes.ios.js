@@ -17,85 +17,42 @@ export type ColorProminence =
   | 'tertiary'
   | 'quaternary';
 
+export type PlatformColorOptions = {
+  name: string,
+  alpha?: number,
+  prominence?: ColorProminence,
+  contentHeadroom?: number,
+};
+
+export type PlatformColorSpec = string | PlatformColorOptions;
+
 /** The actual type of the opaque NativeColorValue on iOS platform */
 type LocalNativeColorValue = {
-  semantic?: Array<string>,
+  semantic?: Array<PlatformColorOptions>,
   dynamic?: {
     light: ?(ColorValue | ProcessedColorValue),
     dark: ?(ColorValue | ProcessedColorValue),
     highContrastLight?: ?(ColorValue | ProcessedColorValue),
     highContrastDark?: ?(ColorValue | ProcessedColorValue),
   },
-  alpha?: number,
-  prominence?: ColorProminence,
-  contentHeadroom?: number,
 };
 
 /**
- * Creates a builder proxy that allows chaining methods while maintaining
- * the underlying color data object for native consumption.
+ * Normalizes a color spec (string or options object) to options object format.
  */
-function createPlatformColorBuilder(
-  data: LocalNativeColorValue,
-): NativeColorValue {
-  const handler = {
-    get(
-      target: LocalNativeColorValue,
-      prop: string,
-    ): mixed {
-      // For builder method properties, return the value if already set,
-      // otherwise return a builder function
-      if (prop === 'alpha') {
-        if ('alpha' in target) {
-          return target.alpha;
-        }
-        return (value: number): NativeColorValue => {
-          target.alpha = value;
-          return new Proxy(target, handler);
-        };
-      }
-      if (prop === 'prominence') {
-        if ('prominence' in target) {
-          return target.prominence;
-        }
-        return (value: ColorProminence): NativeColorValue => {
-          target.prominence = value;
-          return new Proxy(target, handler);
-        };
-      }
-      if (prop === 'contentHeadroom') {
-        if ('contentHeadroom' in target) {
-          return target.contentHeadroom;
-        }
-        return (value: number): NativeColorValue => {
-          target.contentHeadroom = value;
-          return new Proxy(target, handler);
-        };
-      }
-      // $FlowFixMe[incompatible-return]
-      return target[prop];
-    },
-    has(target: LocalNativeColorValue, prop: string): boolean {
-      return prop in target;
-    },
-    ownKeys(target: LocalNativeColorValue): Array<string> {
-      return Object.keys(target);
-    },
-    getOwnPropertyDescriptor(
-      target: LocalNativeColorValue,
-      prop: string,
-    ): ?{value: mixed, writable: boolean, enumerable: boolean, configurable: boolean} {
-      return Object.getOwnPropertyDescriptor(target, prop);
-    },
-  };
-
-  // $FlowExpectedError[incompatible-return] Proxy is compatible with NativeColorValue
-  return new Proxy(data, handler);
+function normalizeColorSpec(spec: PlatformColorSpec): PlatformColorOptions {
+  if (typeof spec === 'string') {
+    return {name: spec};
+  }
+  return spec;
 }
 
-export const PlatformColor = (...names: Array<string>): NativeColorValue => {
-  const data: LocalNativeColorValue = {semantic: names};
-  return createPlatformColorBuilder(data);
+export const PlatformColor = (
+  ...specs: Array<PlatformColorSpec>
+): NativeColorValue => {
+  const normalizedSpecs = specs.map(normalizeColorSpec);
+  // $FlowExpectedError[incompatible-return] LocalNativeColorValue is compatible with NativeColorValue
+  return {semantic: normalizedSpecs};
 };
 
 export type DynamicColorIOSTuplePrivate = {
@@ -108,7 +65,8 @@ export type DynamicColorIOSTuplePrivate = {
 export const DynamicColorIOSPrivate = (
   tuple: DynamicColorIOSTuplePrivate,
 ): ColorValue => {
-  const data: LocalNativeColorValue = {
+  // $FlowExpectedError[incompatible-return] LocalNativeColorValue is compatible with ColorValue
+  return {
     dynamic: {
       light: tuple.light,
       dark: tuple.dark,
@@ -116,8 +74,6 @@ export const DynamicColorIOSPrivate = (
       highContrastDark: tuple.highContrastDark,
     },
   };
-  // $FlowExpectedError[incompatible-return] Proxy is compatible with ColorValue
-  return createPlatformColorBuilder(data);
 };
 
 const _normalizeColorObject = (
@@ -143,15 +99,6 @@ const _normalizeColorObject = (
         highContrastDark: normalizeColor(dynamic.highContrastDark),
       },
     };
-    if (color.alpha != null) {
-      dynamicColor.alpha = color.alpha;
-    }
-    if (color.prominence != null) {
-      dynamicColor.prominence = color.prominence;
-    }
-    if (color.contentHeadroom != null) {
-      dynamicColor.contentHeadroom = color.contentHeadroom;
-    }
     return dynamicColor;
   }
   return null;
@@ -181,15 +128,6 @@ const _processColorObject = (
         highContrastDark: processColor(dynamic.highContrastDark),
       },
     };
-    if (color.alpha != null) {
-      dynamicColor.alpha = color.alpha;
-    }
-    if (color.prominence != null) {
-      dynamicColor.prominence = color.prominence;
-    }
-    if (color.contentHeadroom != null) {
-      dynamicColor.contentHeadroom = color.contentHeadroom;
-    }
     return dynamicColor;
   }
   return color;
