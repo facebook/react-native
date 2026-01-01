@@ -17,6 +17,10 @@ export type DynamicColorIOSTuple = {
   highContrastDark?: ColorValue,
 };
 
+export type PlatformColorIOSOptions = {
+  alpha?: number,
+};
+
 /**
  * Specify color to display depending on the current system appearance settings
  *
@@ -25,4 +29,18 @@ export type DynamicColorIOSTuple = {
  */
 export const DynamicColorIOS = (tuple: DynamicColorIOSTuple): ColorValue => {
   throw new Error('DynamicColorIOS is not available on this platform.');
+};
+
+/**
+ * Creates a platform color with the specified semantic color name(s) and optional opacity.
+ *
+ * @param color The semantic color name or an array of fallback color names
+ * @param options Options including alpha for opacity
+ * @platform ios
+ */
+export const PlatformColorIOS = (
+  color: string | Array<string>,
+  options?: PlatformColorIOSOptions,
+): ColorValue => {
+  throw new Error('PlatformColorIOS is not available on this platform.');
 };

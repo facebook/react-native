@@ -23,3 +23,31 @@ type DynamicColorIOSTuple = {
  * @platform ios
  */
 export function DynamicColorIOS(tuple: DynamicColorIOSTuple): OpaqueColorValue;
+
+type PlatformColorIOSOptions = {
+  /**
+   * The opacity to apply to the color (0.0 to 1.0)
+   */
+  alpha?: number | undefined;
+};
+
+/**
+ * Creates a platform color with the specified semantic color name(s) and optional opacity.
+ *
+ * @param color The semantic color name or an array of fallback color names
+ * @param options Options including alpha for opacity
+ * @platform ios
+ *
+ * @example
+ * ```ts
+ * // Using a single semantic color with 50% opacity
+ * PlatformColorIOS('label', { alpha: 0.5 })
+ *
+ * // Using fallback colors with opacity
+ * PlatformColorIOS(['systemBlue', 'blue'], { alpha: 0.8 })
+ * ```
+ */
+export function PlatformColorIOS(
+  color: string | string[],
+  options?: PlatformColorIOSOptions,
+): OpaqueColorValue;

@@ -235,9 +235,12 @@ std::size_t Color::getUIColorHash() const
   return uiColorHashValue_;
 }
 
-Color Color::createSemanticColor(std::vector<std::string> &semanticItems)
+Color Color::createSemanticColor(std::vector<std::string> &semanticItems, float alpha)
 {
-  auto semanticColor = RCTPlatformColorFromSemanticItems(semanticItems);
+  UIColor *semanticColor = RCTPlatformColorFromSemanticItems(semanticItems);
+  if (alpha < 1.0f) {
+    semanticColor = [semanticColor colorWithAlphaComponent:alpha];
+  }
   return Color(wrapManagedObject(semanticColor));
 }
 

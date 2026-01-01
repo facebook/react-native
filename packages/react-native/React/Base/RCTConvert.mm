@@ -966,39 +966,49 @@ void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
       RCTColorSpace colorSpace = [self RCTColorSpaceFromString:rawColorSpace];
       return [self UIColorWithRed:r green:g blue:b alpha:a andColorSpace:colorSpace];
     } else if ((value = [dictionary objectForKey:@"semantic"])) {
+      UIColor *color = nil;
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
-        UIColor *color = [UIColor colorNamed:semanticName];
-        if (color != nil) {
-          return color;
+        color = [UIColor colorNamed:semanticName];
+        if (color == nil) {
+          color = RCTColorFromSemanticColorName(semanticName);
         }
-        color = RCTColorFromSemanticColorName(semanticName);
         if (color == nil) {
           RCTLogConvertError(
               json,
               [@"a UIColor.  Expected one of the following values: " stringByAppendingString:RCTSemanticColorNames()]);
+          return nil;
         }
-        return color;
       } else if ([value isKindOfClass:[NSArray class]]) {
         for (id name in value) {
-          UIColor *color = [UIColor colorNamed:name];
+          color = [UIColor colorNamed:name];
           if (color != nil) {
-            return color;
+            break;
           }
           color = RCTColorFromSemanticColorName(name);
           if (color != nil) {
-            return color;
+            break;
           }
         }
+        if (color == nil) {
+          RCTLogConvertError(
+              json,
+              [@"a UIColor.  None of the names in the array were one of the following values: "
+                  stringByAppendingString:RCTSemanticColorNames()]);
+          return nil;
+        }
+      } else {
         RCTLogConvertError(
-            json,
-            [@"a UIColor.  None of the names in the array were one of the following values: "
-                stringByAppendingString:RCTSemanticColorNames()]);
+            json, @"a UIColor.  Expected either a single name or an array of names but got something else.");
         return nil;
       }
-      RCTLogConvertError(
-          json, @"a UIColor.  Expected either a single name or an array of names but got something else.");
-      return nil;
+      // Apply alpha if specified
+      id alphaValue = [dictionary objectForKey:@"alpha"];
+      if (alphaValue != nil && [alphaValue isKindOfClass:[NSNumber class]]) {
+        CGFloat alpha = [alphaValue floatValue];
+        color = [color colorWithAlphaComponent:alpha];
+      }
+      return color;
     } else if ((value = [dictionary objectForKey:@"dynamic"])) {
       NSDictionary *appearances = value;
       id light = [appearances objectForKey:@"light"];
@@ -1010,20 +1020,28 @@ void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
       id highContrastDark = [appearances objectForKey:@"highContrastDark"];
       UIColor *highContrastDarkColor = [RCTConvert UIColor:highContrastDark];
       if (lightColor != nil && darkColor != nil) {
+        // Check for alpha value at the dictionary root level
+        id alphaValue = [dictionary objectForKey:@"alpha"];
+        CGFloat alpha = (alphaValue != nil && [alphaValue isKindOfClass:[NSNumber class]]) ? [alphaValue floatValue] : 1.0;
         UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
+          UIColor *resolvedColor = nil;
           if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
             if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
-              return highContrastDarkColor;
+              resolvedColor = highContrastDarkColor;
             } else {
-              return darkColor;
+              resolvedColor = darkColor;
             }
           } else {
             if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
-              return highContrastLightColor;
+              resolvedColor = highContrastLightColor;
             } else {
-              return lightColor;
+              resolvedColor = lightColor;
             }
           }
+          if (alpha < 1.0) {
+            return [resolvedColor colorWithAlphaComponent:alpha];
+          }
+          return resolvedColor;
         }];
         return color;
 

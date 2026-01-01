@@ -20,11 +20,29 @@ type LocalNativeColorValue = {
     highContrastLight?: ?(ColorValue | ProcessedColorValue),
     highContrastDark?: ?(ColorValue | ProcessedColorValue),
   },
+  alpha?: number,
 };
 
 export const PlatformColor = (...names: Array<string>): NativeColorValue => {
   // $FlowExpectedError[incompatible-type] LocalNativeColorValue is the iOS LocalNativeColorValue type
   return ({semantic: names}: LocalNativeColorValue);
+};
+
+export type PlatformColorIOSOptions = {
+  alpha?: number,
+};
+
+export const PlatformColorIOS = (
+  color: string | Array<string>,
+  options?: PlatformColorIOSOptions,
+): NativeColorValue => {
+  const names = Array.isArray(color) ? color : [color];
+  const result: LocalNativeColorValue = {semantic: names};
+  if (options?.alpha != null) {
+    result.alpha = options.alpha;
+  }
+  // $FlowExpectedError[incompatible-type] LocalNativeColorValue is the iOS LocalNativeColorValue type
+  return (result: NativeColorValue);
 };
 
 export type DynamicColorIOSTuplePrivate = {
@@ -72,6 +90,9 @@ const _normalizeColorObject = (
         highContrastDark: normalizeColor(dynamic.highContrastDark),
       },
     };
+    if (color.alpha != null) {
+      dynamicColor.alpha = color.alpha;
+    }
     return dynamicColor;
   }
   return null;
@@ -101,6 +122,9 @@ const _processColorObject = (
         highContrastDark: processColor(dynamic.highContrastDark),
       },
     };
+    if (color.alpha != null) {
+      dynamicColor.alpha = color.alpha;
+    }
     return dynamicColor;
   }
   return color;
