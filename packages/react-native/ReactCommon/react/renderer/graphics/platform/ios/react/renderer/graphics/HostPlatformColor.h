@@ -29,6 +29,7 @@ struct Color {
   std::size_t getUIColorHash() const;
 
   static Color createSemanticColor(std::vector<std::string> &semanticItems, float alpha = 1.0f);
+  static Color fromUIColor(std::shared_ptr<void> uiColor);
 
   std::shared_ptr<void> getUIColor() const
   {

@@ -19,6 +19,7 @@ import {
   DynamicColorIOS,
   Platform,
   PlatformColor,
+  PlatformColorIOS,
   StyleSheet,
   View,
   useColorScheme,
@@ -35,6 +36,10 @@ function PlatformColorsExample() {
         // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
         // Label Colors
         {label: 'label', color: PlatformColor('label')},
+        {
+          label: 'label 50%',
+          color: PlatformColorIOS('systemMint', {alpha: 0.5}),
+        },
         {
           label: 'secondaryLabel',
           color: PlatformColor('secondaryLabel'),

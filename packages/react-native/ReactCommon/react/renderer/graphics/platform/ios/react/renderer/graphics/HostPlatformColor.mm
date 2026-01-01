@@ -244,6 +244,11 @@ Color Color::createSemanticColor(std::vector<std::string> &semanticItems, float 
   return Color(wrapManagedObject(semanticColor));
 }
 
+Color Color::fromUIColor(std::shared_ptr<void> uiColor)
+{
+  return Color(uiColor);
+}
+
 } // namespace facebook::react
 
 NS_ASSUME_NONNULL_END

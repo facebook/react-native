@@ -75,7 +75,7 @@ SharedColor parsePlatformColor(const ContextContainer &contextContainer, int32_t
         UIColor *uiColor = (UIColor *)unwrapManagedObject((*color).getUIColor());
         if (uiColor != nil) {
           uiColor = [uiColor colorWithAlphaComponent:alpha];
-          return SharedColor(Color(wrapManagedObject(uiColor)));
+          return SharedColor(Color::fromUIColor(wrapManagedObject(uiColor)));
         }
       }
       return color;
