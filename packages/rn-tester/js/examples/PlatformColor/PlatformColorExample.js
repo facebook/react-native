@@ -185,62 +185,39 @@ function PlatformColorsExample() {
 }
 
 function AlphaColorsExample() {
-  let colors: Array<{
-    color: ReturnType<typeof PlatformColor>,
-    label: string,
-  }> = [];
-
-  if (Platform.OS === 'ios') {
-    colors = [
-      {label: 'systemBlue', color: PlatformColor('systemBlue')},
-      {
-        label: '{name: systemBlue, alpha: 0.75}',
-        color: PlatformColor({name: 'systemBlue', alpha: 0.75}),
-      },
-      {
-        label: '{name: systemBlue, alpha: 0.5}',
-        color: PlatformColor({name: 'systemBlue', alpha: 0.5}),
-      },
-      {
-        label: '{name: systemBlue, alpha: 0.25}',
-        color: PlatformColor({name: 'systemBlue', alpha: 0.25}),
-      },
-      {label: 'systemRed', color: PlatformColor('systemRed')},
-      {
-        label: '{name: systemRed, alpha: 0.5}',
-        color: PlatformColor({name: 'systemRed', alpha: 0.5}),
-      },
-      {label: 'label', color: PlatformColor('label')},
-      {
-        label: '{name: label, alpha: 0.5}',
-        color: PlatformColor({name: 'label', alpha: 0.5}),
-      },
-    ];
-  } else if (Platform.OS === 'android') {
-    colors = [
-      {label: '?attr/colorPrimary', color: PlatformColor('?attr/colorPrimary')},
-      {
-        label: '{name: ?attr/colorPrimary, alpha: 0.75}',
-        color: PlatformColor({name: '?attr/colorPrimary', alpha: 0.75}),
-      },
-      {
-        label: '{name: ?attr/colorPrimary, alpha: 0.5}',
-        color: PlatformColor({name: '?attr/colorPrimary', alpha: 0.5}),
-      },
-      {
-        label: '{name: ?attr/colorPrimary, alpha: 0.25}',
-        color: PlatformColor({name: '?attr/colorPrimary', alpha: 0.25}),
-      },
-      {
-        label: '?attr/colorAccent',
-        color: PlatformColor('?attr/colorAccent'),
-      },
-      {
-        label: '{name: ?attr/colorAccent, alpha: 0.5}',
-        color: PlatformColor({name: '?attr/colorAccent', alpha: 0.5}),
-      },
-    ];
+  if (Platform.OS !== 'ios') {
+    return (
+      <RNTesterText style={styles.labelCell}>
+        Alpha modifier is iOS-specific (no-op on other platforms)
+      </RNTesterText>
+    );
   }
+
+  const colors = [
+    {label: 'systemBlue', color: PlatformColor('systemBlue')},
+    {
+      label: '{name: systemBlue, alpha: 0.75}',
+      color: PlatformColor({name: 'systemBlue', alpha: 0.75}),
+    },
+    {
+      label: '{name: systemBlue, alpha: 0.5}',
+      color: PlatformColor({name: 'systemBlue', alpha: 0.5}),
+    },
+    {
+      label: '{name: systemBlue, alpha: 0.25}',
+      color: PlatformColor({name: 'systemBlue', alpha: 0.25}),
+    },
+    {label: 'systemRed', color: PlatformColor('systemRed')},
+    {
+      label: '{name: systemRed, alpha: 0.5}',
+      color: PlatformColor({name: 'systemRed', alpha: 0.5}),
+    },
+    {label: 'label', color: PlatformColor('label')},
+    {
+      label: '{name: label, alpha: 0.5}',
+      color: PlatformColor({name: 'label', alpha: 0.5}),
+    },
+  ];
 
   return <ColorTable colors={colors} />;
 }
@@ -576,22 +553,22 @@ exports.examples = [
     },
   },
   {
-    title: 'Alpha Modifier',
-    description: 'Use alpha option to set the opacity of a platform color',
+    title: 'Alpha Modifier (iOS)',
+    description: 'Use .alpha() to set the opacity of a platform color',
     render(): React.MixedElement {
       return <AlphaColorsExample />;
     },
   },
   {
     title: 'Prominence Modifier (iOS 18+)',
-    description: 'Use prominence option to set the visual prominence level',
+    description: 'Use .prominence() to set the visual prominence level',
     render(): React.MixedElement {
       return <ProminenceColorsExample />;
     },
   },
   {
     title: 'Content Headroom (iOS 26+)',
-    description: 'Use contentHeadroom option for HDR color brightness',
+    description: 'Use .contentHeadroom() for HDR color brightness',
     render(): React.MixedElement {
       return <ContentHeadroomColorsExample />;
     },

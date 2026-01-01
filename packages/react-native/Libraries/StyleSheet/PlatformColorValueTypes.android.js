@@ -26,37 +26,28 @@ export type PlatformColorOptions = {
 
 export type PlatformColorSpec = string | PlatformColorOptions;
 
-type AndroidColorSpec = {
-  name: string,
-  alpha?: number,
-};
-
 /** The actual type of the opaque NativeColorValue on Android platform */
 type LocalNativeColorValue = {
-  resource_paths?: Array<AndroidColorSpec>,
+  resource_paths?: Array<string>,
 };
 
 /**
- * Normalizes a color spec (string or options object) to Android color spec format.
- * On Android, only name and alpha are supported - prominence/contentHeadroom are iOS-specific.
+ * Extracts color name from a spec (string or options object).
+ * On Android, only the name is used - modifiers like alpha/prominence are iOS-specific.
  */
-function normalizeColorSpec(spec: PlatformColorSpec): AndroidColorSpec {
+function getColorName(spec: PlatformColorSpec): string {
   if (typeof spec === 'string') {
-    return {name: spec};
+    return spec;
   }
-  const result: AndroidColorSpec = {name: spec.name};
-  if (spec.alpha != null) {
-    result.alpha = spec.alpha;
-  }
-  return result;
+  return spec.name;
 }
 
 export const PlatformColor = (
   ...specs: Array<PlatformColorSpec>
 ): NativeColorValue => {
-  const normalizedSpecs = specs.map(normalizeColorSpec);
+  const names = specs.map(getColorName);
   // $FlowExpectedError[incompatible-return] LocalNativeColorValue is compatible with NativeColorValue
-  return {resource_paths: normalizedSpecs};
+  return {resource_paths: names};
 };
 
 export const normalizeColorObject = (
