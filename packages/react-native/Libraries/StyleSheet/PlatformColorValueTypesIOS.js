@@ -17,8 +17,15 @@ export type DynamicColorIOSTuple = {
   highContrastDark?: ColorValue,
 };
 
+export type ColorProminence =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'quaternary';
+
 export type PlatformColorIOSOptions = {
   alpha?: number,
+  prominence?: ColorProminence,
 };
 
 /**

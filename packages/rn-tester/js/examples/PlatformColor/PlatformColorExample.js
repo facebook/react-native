@@ -38,7 +38,11 @@ function PlatformColorsExample() {
         {label: 'label', color: PlatformColor('label')},
         {
           label: 'label 50%',
-          color: PlatformColorIOS('systemMint', {alpha: 0.5}),
+          color: PlatformColorIOS('label', {alpha: 0.5}),
+        },
+        {
+          label: 'label secondary',
+          color: PlatformColorIOS('label', {prominence: 'secondary'}),
         },
         {
           label: 'secondaryLabel',
@@ -111,6 +115,22 @@ function PlatformColorsExample() {
         // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
         // Adaptable Colors
         {label: 'systemBlue', color: PlatformColor('systemBlue')},
+        {
+          label: 'systemBlue-2',
+          color: PlatformColorIOS('systemBlue', {prominence: 'secondary'}),
+        },
+        {
+          label: 'systemBlue-3',
+          color: PlatformColorIOS('systemBlue', {prominence: 'tertiary'}),
+        },
+        {
+          label: 'systemBlue-4',
+          color: PlatformColorIOS('systemBlue', {prominence: 'quaternary'}),
+        },
+        {
+          label: 'systemBlue/50',
+          color: PlatformColorIOS('systemBlue', {alpha: 0.5}),
+        },
         {label: 'systemBrown', color: PlatformColor('systemBrown')},
         {label: 'systemGreen', color: PlatformColor('systemGreen')},
         {label: 'systemIndigo', color: PlatformColor('systemIndigo')},

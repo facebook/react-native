@@ -62,9 +62,15 @@ SharedColor parsePlatformColor(const ContextContainer &contextContainer, int32_t
       alpha = static_cast<float>((double)items.at("alpha"));
     }
 
+    // Extract prominence value if present
+    std::string prominence;
+    if (items.find("prominence") != items.end() && items.at("prominence").hasType<std::string>()) {
+      prominence = (std::string)items.at("prominence");
+    }
+
     if (items.find("semantic") != items.end() && items.at("semantic").hasType<std::vector<std::string>>()) {
       auto semanticItems = (std::vector<std::string>)items.at("semantic");
-      return SharedColor(Color::createSemanticColor(semanticItems, alpha));
+      return SharedColor(Color::createSemanticColor(semanticItems, alpha, prominence));
     } else if (
         items.find("dynamic") != items.end() &&
         items.at("dynamic").hasType<std::unordered_map<std::string, RawValue>>()) {
@@ -75,8 +81,12 @@ SharedColor parsePlatformColor(const ContextContainer &contextContainer, int32_t
         UIColor *uiColor = (UIColor *)unwrapManagedObject((*color).getUIColor());
         if (uiColor != nil) {
           uiColor = [uiColor colorWithAlphaComponent:alpha];
-          return SharedColor(Color::fromUIColor(wrapManagedObject(uiColor)));
+          color = SharedColor(Color::fromUIColor(wrapManagedObject(uiColor)));
         }
+      }
+      // Apply prominence if specified
+      if (!prominence.empty() && color) {
+        return SharedColor(Color::applyProminence(*color, prominence));
       }
       return color;
     }

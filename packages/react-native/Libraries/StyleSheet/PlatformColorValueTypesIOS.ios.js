@@ -15,7 +15,10 @@ import {
   PlatformColorIOS as PlatformColorIOSInternal,
 } from './PlatformColorValueTypes.ios';
 
-export type {PlatformColorIOSOptions} from './PlatformColorValueTypes.ios';
+export type {
+  ColorProminence,
+  PlatformColorIOSOptions,
+} from './PlatformColorValueTypes.ios';
 
 export type DynamicColorIOSTuple = {
   light: ColorValue,

@@ -11,6 +11,12 @@
 import type {ProcessedColorValue} from './processColor';
 import type {ColorValue, NativeColorValue} from './StyleSheet';
 
+export type ColorProminence =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'quaternary';
+
 /** The actual type of the opaque NativeColorValue on iOS platform */
 type LocalNativeColorValue = {
   semantic?: Array<string>,
@@ -21,6 +27,7 @@ type LocalNativeColorValue = {
     highContrastDark?: ?(ColorValue | ProcessedColorValue),
   },
   alpha?: number,
+  prominence?: ColorProminence,
 };
 
 export const PlatformColor = (...names: Array<string>): NativeColorValue => {
@@ -30,6 +37,7 @@ export const PlatformColor = (...names: Array<string>): NativeColorValue => {
 
 export type PlatformColorIOSOptions = {
   alpha?: number,
+  prominence?: ColorProminence,
 };
 
 export const PlatformColorIOS = (
@@ -40,6 +48,9 @@ export const PlatformColorIOS = (
   const result: LocalNativeColorValue = {semantic: names};
   if (options?.alpha != null) {
     result.alpha = options.alpha;
+  }
+  if (options?.prominence != null) {
+    result.prominence = options.prominence;
   }
   // $FlowExpectedError[incompatible-type] LocalNativeColorValue is the iOS LocalNativeColorValue type
   return (result: NativeColorValue);
@@ -93,6 +104,9 @@ const _normalizeColorObject = (
     if (color.alpha != null) {
       dynamicColor.alpha = color.alpha;
     }
+    if (color.prominence != null) {
+      dynamicColor.prominence = color.prominence;
+    }
     return dynamicColor;
   }
   return null;
@@ -124,6 +138,9 @@ const _processColorObject = (
     };
     if (color.alpha != null) {
       dynamicColor.alpha = color.alpha;
+    }
+    if (color.prominence != null) {
+      dynamicColor.prominence = color.prominence;
     }
     return dynamicColor;
   }

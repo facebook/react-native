@@ -24,18 +24,36 @@ type DynamicColorIOSTuple = {
  */
 export function DynamicColorIOS(tuple: DynamicColorIOSTuple): OpaqueColorValue;
 
+/**
+ * Color prominence levels for iOS 18+.
+ * Controls the visual prominence of a color in the interface.
+ */
+export type ColorProminence =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'quaternary';
+
 type PlatformColorIOSOptions = {
   /**
    * The opacity to apply to the color (0.0 to 1.0)
    */
   alpha?: number | undefined;
+  /**
+   * The prominence level of the color (iOS 18+).
+   * - primary: Full prominence (default)
+   * - secondary: Reduced prominence
+   * - tertiary: Further reduced prominence
+   * - quaternary: Minimal prominence
+   */
+  prominence?: ColorProminence | undefined;
 };
 
 /**
- * Creates a platform color with the specified semantic color name(s) and optional opacity.
+ * Creates a platform color with the specified semantic color name(s) and optional modifiers.
  *
  * @param color The semantic color name or an array of fallback color names
- * @param options Options including alpha for opacity
+ * @param options Options including alpha for opacity and prominence for iOS 18+
  * @platform ios
  *
  * @example
@@ -45,6 +63,9 @@ type PlatformColorIOSOptions = {
  *
  * // Using fallback colors with opacity
  * PlatformColorIOS(['systemBlue', 'blue'], { alpha: 0.8 })
+ *
+ * // Using prominence (iOS 18+)
+ * PlatformColorIOS('label', { prominence: 'secondary' })
  * ```
  */
 export function PlatformColorIOS(

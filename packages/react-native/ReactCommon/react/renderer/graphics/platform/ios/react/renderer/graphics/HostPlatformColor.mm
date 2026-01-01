@@ -235,18 +235,45 @@ std::size_t Color::getUIColorHash() const
   return uiColorHashValue_;
 }
 
-Color Color::createSemanticColor(std::vector<std::string> &semanticItems, float alpha)
+Color Color::createSemanticColor(
+    std::vector<std::string> &semanticItems,
+    float alpha,
+    const std::string &prominence)
 {
   UIColor *semanticColor = RCTPlatformColorFromSemanticItems(semanticItems);
   if (alpha < 1.0f) {
     semanticColor = [semanticColor colorWithAlphaComponent:alpha];
   }
-  return Color(wrapManagedObject(semanticColor));
+  Color color = Color(wrapManagedObject(semanticColor));
+  if (!prominence.empty()) {
+    return applyProminence(color, prominence);
+  }
+  return color;
 }
 
 Color Color::fromUIColor(std::shared_ptr<void> uiColor)
 {
   return Color(uiColor);
+}
+
+Color Color::applyProminence(Color color, const std::string &prominence)
+{
+  if (@available(iOS 18.0, *)) {
+    UIColor *uiColor = (UIColor *)unwrapManagedObject(color.getUIColor());
+    if (uiColor != nil && !prominence.empty()) {
+      UIColorProminence uiProminence = UIColorProminencePrimary;
+      if (prominence == "secondary") {
+        uiProminence = UIColorProminenceSecondary;
+      } else if (prominence == "tertiary") {
+        uiProminence = UIColorProminenceTertiary;
+      } else if (prominence == "quaternary") {
+        uiProminence = UIColorProminenceQuaternary;
+      }
+      uiColor = [uiColor colorWithProminence:uiProminence];
+      return Color(wrapManagedObject(uiColor));
+    }
+  }
+  return color;
 }
 
 } // namespace facebook::react

@@ -1008,6 +1008,22 @@ void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
         CGFloat alpha = [alphaValue floatValue];
         color = [color colorWithAlphaComponent:alpha];
       }
+      // Apply prominence if specified (iOS 18+)
+      if (@available(iOS 18.0, *)) {
+        id prominenceValue = [dictionary objectForKey:@"prominence"];
+        if (prominenceValue != nil && [prominenceValue isKindOfClass:[NSString class]]) {
+          NSString *prominenceString = prominenceValue;
+          UIColorProminence prominence = UIColorProminencePrimary;
+          if ([prominenceString isEqualToString:@"secondary"]) {
+            prominence = UIColorProminenceSecondary;
+          } else if ([prominenceString isEqualToString:@"tertiary"]) {
+            prominence = UIColorProminenceTertiary;
+          } else if ([prominenceString isEqualToString:@"quaternary"]) {
+            prominence = UIColorProminenceQuaternary;
+          }
+          color = [color colorWithProminence:prominence];
+        }
+      }
       return color;
     } else if ((value = [dictionary objectForKey:@"dynamic"])) {
       NSDictionary *appearances = value;
@@ -1039,10 +1055,26 @@ void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
             }
           }
           if (alpha < 1.0) {
-            return [resolvedColor colorWithAlphaComponent:alpha];
+            resolvedColor = [resolvedColor colorWithAlphaComponent:alpha];
           }
           return resolvedColor;
         }];
+        // Apply prominence if specified (iOS 18+)
+        if (@available(iOS 18.0, *)) {
+          id prominenceValue = [dictionary objectForKey:@"prominence"];
+          if (prominenceValue != nil && [prominenceValue isKindOfClass:[NSString class]]) {
+            NSString *prominenceString = prominenceValue;
+            UIColorProminence prominence = UIColorProminencePrimary;
+            if ([prominenceString isEqualToString:@"secondary"]) {
+              prominence = UIColorProminenceSecondary;
+            } else if ([prominenceString isEqualToString:@"tertiary"]) {
+              prominence = UIColorProminenceTertiary;
+            } else if ([prominenceString isEqualToString:@"quaternary"]) {
+              prominence = UIColorProminenceQuaternary;
+            }
+            color = [color colorWithProminence:prominence];
+          }
+        }
         return color;
 
       } else {
