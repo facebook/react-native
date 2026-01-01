@@ -307,6 +307,16 @@ using namespace facebook::react;
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }
 
+- (void)schedulerShouldMergeReactRevision:(SurfaceId)surfaceId
+{
+  auto scheduler = [self scheduler];
+  RCTExecuteOnMainQueue(^{
+    RCTAssertMainQueue();
+    scheduler.uiManager->getShadowTreeRegistry().visit(
+        surfaceId, [](const ShadowTree &shadowTree) { shadowTree.mergeReactRevision(); });
+  });
+}
+
 - (void)schedulerDidDispatchCommand:(const ShadowView &)shadowView
                         commandName:(const std::string &)commandName
                                args:(const folly::dynamic &)args
