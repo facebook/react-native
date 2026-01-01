@@ -31,34 +31,71 @@ type LocalNativeColorValue = {
   contentHeadroom?: number,
 };
 
+/**
+ * Creates a builder proxy that allows chaining methods while maintaining
+ * the underlying color data object for native consumption.
+ */
+function createPlatformColorBuilder(
+  data: LocalNativeColorValue,
+): NativeColorValue {
+  const handler = {
+    get(
+      target: LocalNativeColorValue,
+      prop: string,
+    ): mixed {
+      // For builder method properties, return the value if already set,
+      // otherwise return a builder function
+      if (prop === 'alpha') {
+        if ('alpha' in target) {
+          return target.alpha;
+        }
+        return (value: number): NativeColorValue => {
+          target.alpha = value;
+          return new Proxy(target, handler);
+        };
+      }
+      if (prop === 'prominence') {
+        if ('prominence' in target) {
+          return target.prominence;
+        }
+        return (value: ColorProminence): NativeColorValue => {
+          target.prominence = value;
+          return new Proxy(target, handler);
+        };
+      }
+      if (prop === 'contentHeadroom') {
+        if ('contentHeadroom' in target) {
+          return target.contentHeadroom;
+        }
+        return (value: number): NativeColorValue => {
+          target.contentHeadroom = value;
+          return new Proxy(target, handler);
+        };
+      }
+      // $FlowFixMe[incompatible-return]
+      return target[prop];
+    },
+    has(target: LocalNativeColorValue, prop: string): boolean {
+      return prop in target;
+    },
+    ownKeys(target: LocalNativeColorValue): Array<string> {
+      return Object.keys(target);
+    },
+    getOwnPropertyDescriptor(
+      target: LocalNativeColorValue,
+      prop: string,
+    ): ?{value: mixed, writable: boolean, enumerable: boolean, configurable: boolean} {
+      return Object.getOwnPropertyDescriptor(target, prop);
+    },
+  };
+
+  // $FlowExpectedError[incompatible-return] Proxy is compatible with NativeColorValue
+  return new Proxy(data, handler);
+}
+
 export const PlatformColor = (...names: Array<string>): NativeColorValue => {
-  // $FlowExpectedError[incompatible-type] LocalNativeColorValue is the iOS LocalNativeColorValue type
-  return ({semantic: names}: LocalNativeColorValue);
-};
-
-export type PlatformColorIOSOptions = {
-  alpha?: number,
-  prominence?: ColorProminence,
-  contentHeadroom?: number,
-};
-
-export const PlatformColorIOS = (
-  color: string | Array<string>,
-  options?: PlatformColorIOSOptions,
-): NativeColorValue => {
-  const names = Array.isArray(color) ? color : [color];
-  const result: LocalNativeColorValue = {semantic: names};
-  if (options?.alpha != null) {
-    result.alpha = options.alpha;
-  }
-  if (options?.prominence != null) {
-    result.prominence = options.prominence;
-  }
-  if (options?.contentHeadroom != null) {
-    result.contentHeadroom = options.contentHeadroom;
-  }
-  // $FlowExpectedError[incompatible-type] LocalNativeColorValue is the iOS LocalNativeColorValue type
-  return (result: NativeColorValue);
+  const data: LocalNativeColorValue = {semantic: names};
+  return createPlatformColorBuilder(data);
 };
 
 export type DynamicColorIOSTuplePrivate = {
@@ -71,16 +108,16 @@ export type DynamicColorIOSTuplePrivate = {
 export const DynamicColorIOSPrivate = (
   tuple: DynamicColorIOSTuplePrivate,
 ): ColorValue => {
-  return ({
+  const data: LocalNativeColorValue = {
     dynamic: {
       light: tuple.light,
       dark: tuple.dark,
       highContrastLight: tuple.highContrastLight,
       highContrastDark: tuple.highContrastDark,
     },
-    /* $FlowExpectedError[incompatible-type]
-     * LocalNativeColorValue is the actual type of the opaque NativeColorValue on iOS platform */
-  }: LocalNativeColorValue);
+  };
+  // $FlowExpectedError[incompatible-return] Proxy is compatible with ColorValue
+  return createPlatformColorBuilder(data);
 };
 
 const _normalizeColorObject = (

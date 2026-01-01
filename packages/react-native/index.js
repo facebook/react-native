@@ -285,10 +285,6 @@ module.exports = {
     return require('./Libraries/StyleSheet/PlatformColorValueTypes')
       .PlatformColor;
   },
-  get PlatformColorIOS() {
-    return require('./Libraries/StyleSheet/PlatformColorValueTypes')
-      .PlatformColorIOS;
-  },
   get PushNotificationIOS() {
     warnOnce(
       'pushNotificationIOS-moved',

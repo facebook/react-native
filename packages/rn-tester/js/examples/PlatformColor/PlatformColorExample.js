@@ -19,7 +19,6 @@ import {
   DynamicColorIOS,
   Platform,
   PlatformColor,
-  PlatformColorIOS,
   StyleSheet,
   View,
   useColorScheme,
@@ -37,12 +36,12 @@ function PlatformColorsExample() {
         // Label Colors
         {label: 'label', color: PlatformColor('label')},
         {
-          label: 'label 50%',
-          color: PlatformColorIOS('label', {alpha: 0.5}),
+          label: 'label.alpha(0.5)',
+          color: PlatformColor('label').alpha(0.5),
         },
         {
-          label: 'label secondary',
-          color: PlatformColorIOS('label', {prominence: 'secondary'}),
+          label: 'label.prominence(secondary)',
+          color: PlatformColor('label').prominence('secondary'),
         },
         {
           label: 'secondaryLabel',
@@ -116,33 +115,38 @@ function PlatformColorsExample() {
         // Adaptable Colors
         {label: 'systemBlue', color: PlatformColor('systemBlue')},
         {
-          label: 'systemBlue-2',
-          color: PlatformColorIOS('systemBlue', {prominence: 'secondary'}),
+          label: 'systemBlue.prominence(secondary)',
+          color: PlatformColor('systemBlue').prominence('secondary'),
         },
         {
-          label: 'systemBlue-3',
-          color: PlatformColorIOS('systemBlue', {prominence: 'tertiary'}),
+          label: 'systemBlue.prominence(tertiary)',
+          color: PlatformColor('systemBlue').prominence('tertiary'),
         },
         {
-          label: 'systemBlue-4',
-          color: PlatformColorIOS('systemBlue', {prominence: 'quaternary'}),
+          label: 'systemBlue.prominence(quaternary)',
+          color: PlatformColor('systemBlue').prominence('quaternary'),
         },
         {
-          label: 'systemBlue/50',
-          color: PlatformColorIOS('systemBlue', {alpha: 0.5}),
+          label: 'systemBlue.alpha(0.5)',
+          color: PlatformColor('systemBlue').alpha(0.5),
+        },
+        // Chained modifiers example
+        {
+          label: 'systemRed.alpha(0.8).prominence(secondary)',
+          color: PlatformColor('systemRed').alpha(0.8).prominence('secondary'),
         },
         // Content Headroom examples (iOS 26+, HDR colors)
         {
-          label: 'systemRed HDR 1.5x',
-          color: PlatformColorIOS('systemRed', {contentHeadroom: 1.5}),
+          label: 'systemRed.contentHeadroom(1.5)',
+          color: PlatformColor('systemRed').contentHeadroom(1.5),
         },
         {
-          label: 'systemRed HDR 2x',
-          color: PlatformColorIOS('systemRed', {contentHeadroom: 2.0}),
+          label: 'systemRed.contentHeadroom(2.0)',
+          color: PlatformColor('systemRed').contentHeadroom(2.0),
         },
         {
-          label: 'systemGreen HDR',
-          color: PlatformColorIOS('systemGreen', {contentHeadroom: 1.5}),
+          label: 'systemGreen.contentHeadroom(1.5)',
+          color: PlatformColor('systemGreen').contentHeadroom(1.5),
         },
         {label: 'systemBrown', color: PlatformColor('systemBrown')},
         {label: 'systemGreen', color: PlatformColor('systemGreen')},
@@ -215,6 +219,11 @@ function PlatformColorsExample() {
         {
           label: '@color/catalyst_logbox_background',
           color: PlatformColor('@color/catalyst_logbox_background'),
+        },
+        // Cross-platform builder methods (no-op on Android)
+        {
+          label: '?attr/colorAccent.alpha(0.5)',
+          color: PlatformColor('?attr/colorAccent').alpha(0.5),
         },
       ];
     }
