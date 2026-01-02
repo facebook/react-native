@@ -50,6 +50,7 @@ enum class ShadowTreeCommitMode {
 enum class ShadowTreeCommitSource {
   Unknown,
   React,
+  ReactRevisionMerge,
 };
 
 struct ShadowTreeCommitOptions {
@@ -124,6 +125,12 @@ class ShadowTree final {
   ShadowTreeRevision getCurrentRevision() const;
 
   /*
+   * Returns a `ShadowTreeRevision` representing the momentary state of
+   * the `ShadowTree` in the JS thread.
+   */
+  std::optional<ShadowTreeRevision> getCurrentReactRevision() const;
+
+  /*
    * Commit an empty tree (a new `RootShadowNode` with no children).
    */
   void commitEmptyTree() const;
@@ -136,6 +143,12 @@ class ShadowTree final {
 
   std::shared_ptr<const MountingCoordinator> getMountingCoordinator() const;
 
+  /**
+   * Commits the current JS revision to the "main" branch of the ShadowTree.
+   * No-op if the JS revision doesn't exist.
+   */
+  void mergeReactRevision() const;
+
  private:
   constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
 
@@ -143,18 +156,21 @@ class ShadowTree final {
 
   void emitLayoutEvents(std::vector<const LayoutableShadowNode *> &affectedLayoutableNodes) const;
 
+  void scheduleReactRevisionMerge() const;
+
   const SurfaceId surfaceId_;
   const ShadowTreeDelegate &delegate_;
   mutable std::shared_mutex commitMutex_;
   mutable std::recursive_mutex commitMutexRecursive_;
   mutable CommitMode commitMode_{CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
+  mutable std::optional<ShadowTreeRevision> currentReactRevision_; // Only updated from JS thread.
   std::shared_ptr<const MountingCoordinator> mountingCoordinator_;
 
   using UniqueLock = std::variant<std::unique_lock<std::shared_mutex>, std::unique_lock<std::recursive_mutex>>;
   using SharedLock = std::variant<std::shared_lock<std::shared_mutex>, std::unique_lock<std::recursive_mutex>>;
 
-  inline UniqueLock uniqueCommitLock() const;
+  inline UniqueLock uniqueCommitLock(bool defer = false) const;
   inline SharedLock sharedCommitLock() const;
 };
 
