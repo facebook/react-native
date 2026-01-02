@@ -3551,8 +3551,16 @@ declare module 'url' {
   declare function resolve(from: string, to: string): string;
   declare function domainToASCII(domain: string): string;
   declare function domainToUnicode(domain: string): string;
-  declare function pathToFileURL(path: string): url$urlObject;
-  declare function fileURLToPath(path: url$urlObject | string): string;
+
+  declare function pathToFileURL(
+    path: string,
+    options?: Readonly<{windows?: boolean}>,
+  ): url$urlObject;
+
+  declare function fileURLToPath(
+    path: url$urlObject | string,
+    options?: Readonly<{windows?: boolean}>,
+  ): string;
   declare class URLSearchParams {
     @@iterator(): Iterator<[string, string]>;
 
@@ -3588,6 +3596,7 @@ declare module 'url' {
   }
   declare class URL {
     static canParse(url: string, base?: string): boolean;
+    static parse(input: string, base?: string): URL | null;
     static createObjectURL(blob: Blob): string;
     static createObjectURL(mediaSource: MediaSource): string;
     static revokeObjectURL(url: string): void;
@@ -3606,6 +3615,63 @@ declare module 'url' {
     username: string;
     toString(): string;
     toJSON(): string;
+  }
+
+  declare type url$URLPatternInit = {
+    protocol?: string,
+    username?: string,
+    password?: string,
+    hostname?: string,
+    port?: string,
+    pathname?: string,
+    search?: string,
+    hash?: string,
+    baseURL?: string,
+  };
+
+  declare type url$URLPatternComponentResult = {
+    input: string,
+    groups: {[key: string]: string | void},
+  };
+
+  declare type url$URLPatternResult = {
+    inputs: $ReadOnlyArray<string | url$URLPatternInit>,
+    protocol: url$URLPatternComponentResult,
+    username: url$URLPatternComponentResult,
+    password: url$URLPatternComponentResult,
+    hostname: url$URLPatternComponentResult,
+    port: url$URLPatternComponentResult,
+    pathname: url$URLPatternComponentResult,
+    search: url$URLPatternComponentResult,
+    hash: url$URLPatternComponentResult,
+  };
+
+  declare class URLPattern {
+    constructor(
+      input?: string | url$URLPatternInit,
+      options?: Readonly<{ignoreCase?: boolean}>,
+    ): void;
+    constructor(
+      input: string | url$URLPatternInit,
+      baseURL: string,
+      options?: Readonly<{ignoreCase?: boolean}>,
+    ): void;
+
+    +hasRegExpGroups: boolean;
+    +hash: string;
+    +hostname: string;
+    +password: string;
+    +pathname: string;
+    +port: string;
+    +protocol: string;
+    +search: string;
+    +username: string;
+
+    exec(
+      input?: string | url$URLPatternInit,
+      baseURL?: string,
+    ): url$URLPatternResult | null;
+    test(input?: string | url$URLPatternInit, baseURL?: string): boolean;
   }
 }
 
