@@ -603,6 +603,7 @@ declare class crypto$Hash extends stream$Duplex {
     data: string | Buffer,
     input_encoding?: 'utf8' | 'ascii' | 'latin1' | 'binary',
   ): crypto$Hash;
+  copy(options?: mixed): crypto$Hash;
 }
 
 declare class crypto$Hmac extends stream$Duplex {
@@ -660,6 +661,83 @@ type crypto$key =
       padding?: string,
       ...
     };
+
+declare class crypto$KeyObject {
+  +asymmetricKeyType?:
+    | 'rsa'
+    | 'rsa-pss'
+    | 'dsa'
+    | 'ec'
+    | 'ed25519'
+    | 'ed448'
+    | 'x25519'
+    | 'x448';
+  +asymmetricKeySize?: number;
+  +symmetricKeySize?: number;
+  +type: 'secret' | 'public' | 'private';
+
+  export(
+    options: Readonly<{
+      type: 'pkcs1' | 'spki' | 'pkcs8' | 'sec1',
+      format: 'pem',
+    }>,
+  ): string;
+  export(
+    options: Readonly<{
+      type: 'pkcs1' | 'spki' | 'pkcs8' | 'sec1',
+      format: 'der',
+    }>,
+  ): Buffer;
+  export(options: Readonly<{format: 'jwk'}>): mixed;
+  equals(otherKeyObject: crypto$KeyObject): boolean;
+}
+
+declare class crypto$X509Certificate {
+  constructor(buffer: string | Buffer | $TypedArray | DataView): void;
+
+  +ca: boolean;
+  +fingerprint: string;
+  +fingerprint256: string;
+  +fingerprint512: string;
+  +issuer: string;
+  +issuerCertificate?: crypto$X509Certificate;
+  +keyUsage: Array<string>;
+  +publicKey: crypto$KeyObject;
+  +raw: Buffer;
+  +serialNumber: string;
+  +subject: string;
+  +subjectAltName: string;
+  +validFrom: string;
+  +validTo: string;
+  +validFromDate: Date;
+  +validToDate: Date;
+
+  checkEmail(
+    email: string,
+    options?: Readonly<{subject?: 'always' | 'default' | 'never'}>,
+  ): string | void;
+  checkHost(
+    name: string,
+    options?: Readonly<{subject?: 'always' | 'default' | 'never'}>,
+  ): string | void;
+  checkIP(ip: string): string | void;
+  checkIssued(otherCert: crypto$X509Certificate): boolean;
+  checkPrivateKey(privateKey: crypto$KeyObject): boolean;
+  toJSON(): string;
+  toLegacyObject(): mixed;
+  toString(): string;
+  verify(publicKey: crypto$KeyObject): boolean;
+}
+
+declare class crypto$Certificate {
+  static exportChallenge(
+    spkac: string | Buffer | $TypedArray | DataView,
+  ): Buffer;
+  static exportPublicKey(
+    spkac: string | Buffer | $TypedArray | DataView,
+  ): Buffer;
+  static verifySpkac(spkac: Buffer | $TypedArray | DataView): boolean;
+}
 
 declare module 'crypto' {
   declare var DEFAULT_ENCODING: string;
@@ -820,6 +898,79 @@ declare module 'crypto' {
     a: Buffer | $TypedArray | DataView,
     b: Buffer | $TypedArray | DataView,
   ): boolean;
+  declare function hash(
+    algorithm: string,
+    data: string | Buffer | $TypedArray | DataView,
+  ): Buffer;
+  declare function hash(
+    algorithm: string,
+    data: string | Buffer | $TypedArray | DataView,
+    outputEncoding: buffer$Encoding,
+  ): string;
+  declare function createSecretKey(
+    key: Buffer | $TypedArray | DataView,
+  ): crypto$KeyObject;
+  declare function createSecretKey(
+    key: string,
+    encoding: buffer$Encoding,
+  ): crypto$KeyObject;
+  declare function createPublicKey(
+    key: string | Buffer | crypto$KeyObject | mixed,
+  ): crypto$KeyObject;
+  declare function createPrivateKey(
+    key: string | Buffer | mixed,
+  ): crypto$KeyObject;
+  declare function generateKeyPair(
+    type:
+      | 'rsa'
+      | 'rsa-pss'
+      | 'dsa'
+      | 'ec'
+      | 'ed25519'
+      | 'ed448'
+      | 'x25519'
+      | 'x448',
+    options: mixed,
+    callback: (
+      err: ?Error,
+      publicKey: crypto$KeyObject,
+      privateKey: crypto$KeyObject,
+    ) => void,
+  ): void;
+  declare function generateKeyPairSync(
+    type:
+      | 'rsa'
+      | 'rsa-pss'
+      | 'dsa'
+      | 'ec'
+      | 'ed25519'
+      | 'ed448'
+      | 'x25519'
+      | 'x448',
+    options: mixed,
+  ): {publicKey: crypto$KeyObject, privateKey: crypto$KeyObject, ...};
+  declare function generateKey(
+    type: 'hmac' | 'aes',
+    options: Readonly<{length: number}>,
+    callback: (err: ?Error, key: crypto$KeyObject) => void,
+  ): void;
+  declare function generateKeySync(
+    type: 'hmac' | 'aes',
+    options: Readonly<{length: number}>,
+  ): crypto$KeyObject;
+  declare function checkPrime(
+    candidate: Buffer | $TypedArray | DataView | bigint,
+    options?: Readonly<{checks?: number}>,
+    callback: (err: ?Error, result: boolean) => void,
+  ): void;
+  declare function checkPrimeSync(
+    candidate: Buffer | $TypedArray | DataView | bigint,
+    options?: Readonly<{checks?: number}>,
+  ): boolean;
+  declare class Certificate extends crypto$Certificate {}
+  declare class X509Certificate extends crypto$X509Certificate {}
+  declare class KeyObject extends crypto$KeyObject {}
+  declare var webcrypto: unknown;
 }
 
 type net$Socket$address = {
