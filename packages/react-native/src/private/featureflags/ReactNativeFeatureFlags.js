@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b37c02e334fb00f22ce27bb787104cc>>
+ * @generated SignedSource<<9ffc43524e0aa410a7f161dfe9f315a5>>
  * @flow strict
  * @noformat
  */
@@ -394,7 +394,7 @@ export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('e
 /**
  * Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.
  */
-export const enableNetworkEventReporting: Getter<boolean> = createNativeFlagGetter('enableNetworkEventReporting', false);
+export const enableNetworkEventReporting: Getter<boolean> = createNativeFlagGetter('enableNetworkEventReporting', true);
 /**
  * Enables caching text layout artifacts for later reuse
  */
@@ -470,7 +470,7 @@ export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fu
 /**
  * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
  */
-export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxNetworkInspectionEnabled', false);
+export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxNetworkInspectionEnabled', true);
 /**
  * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
  */
