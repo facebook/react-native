@@ -198,12 +198,27 @@ declare type Node$Buffer = typeof Buffer;
 declare module 'buffer' {
   declare var kMaxLength: number;
   declare var INSPECT_MAX_BYTES: number;
+
+  declare var constants: $ReadOnly<{
+    MAX_LENGTH: number,
+    MAX_STRING_LENGTH: number,
+  }>;
+
   declare function transcode(
     source: Node$Buffer,
     fromEnc: buffer$Encoding,
     toEnc: buffer$Encoding,
   ): Node$Buffer;
+
+  declare function isUtf8(input: Buffer | ArrayBuffer | $TypedArray): boolean;
+
+  declare function isAscii(input: Buffer | ArrayBuffer | $TypedArray): boolean;
+
+  declare function resolveObjectURL(id: string): Blob | void;
+
   declare var Buffer: Node$Buffer;
+  declare var Blob: typeof globalThis.Blob;
+  declare var File: typeof globalThis.File;
 }
 
 type child_process$execOpts = {
