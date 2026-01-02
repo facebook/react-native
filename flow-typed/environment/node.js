@@ -2682,9 +2682,7 @@ type os$CPU = {
     nice: number,
     sys: number,
     user: number,
-    ...
   },
-  ...
 };
 
 type os$NetIFAddr = {
@@ -2693,7 +2691,8 @@ type os$NetIFAddr = {
   internal: boolean,
   mac: string,
   netmask: string,
-  ...
+  scopeid?: number,
+  cidr: ?string,
 };
 
 type os$UserInfo$buffer = {
@@ -2702,7 +2701,6 @@ type os$UserInfo$buffer = {
   username: Buffer,
   homedir: Buffer,
   shell: ?Buffer,
-  ...
 };
 
 type os$UserInfo$string = {
@@ -2711,37 +2709,76 @@ type os$UserInfo$string = {
   username: string,
   homedir: string,
   shell: ?string,
-  ...
 };
 
 declare module 'os' {
-  declare function arch(): 'x64' | 'arm' | 'ia32';
+  declare function arch():
+    | 'arm'
+    | 'arm64'
+    | 'ia32'
+    | 'loong64'
+    | 'mips'
+    | 'mipsel'
+    | 'ppc64'
+    | 'riscv64'
+    | 's390x'
+    | 'x64';
   declare function availableParallelism(): number;
   declare function cpus(): Array<os$CPU>;
   declare function endianness(): 'BE' | 'LE';
   declare function freemem(): number;
+  declare function getPriority(pid?: number): number;
   declare function homedir(): string;
   declare function hostname(): string;
   declare function loadavg(): [number, number, number];
+  declare function machine(): string;
   declare function networkInterfaces(): {
     [ifName: string]: Array<os$NetIFAddr>,
-    ...
   };
-  declare function platform(): string;
+  declare function platform():
+    | 'aix'
+    | 'android'
+    | 'darwin'
+    | 'freebsd'
+    | 'haiku'
+    | 'linux'
+    | 'openbsd'
+    | 'sunos'
+    | 'win32'
+    | 'cygwin';
   declare function release(): string;
+  declare function setPriority(priority: number): void;
+  declare function setPriority(pid: number, priority: number): void;
   declare function tmpdir(): string;
   declare function totalmem(): number;
   declare function type(): string;
   declare function uptime(): number;
-  declare function userInfo(options: {
-    encoding: 'buffer',
-    ...
-  }): os$UserInfo$buffer;
-  declare function userInfo(options?: {
-    encoding: 'utf8',
-    ...
-  }): os$UserInfo$string;
+  declare function userInfo(
+    options: Readonly<{
+      encoding: 'buffer',
+    }>,
+  ): os$UserInfo$buffer;
+  declare function userInfo(
+    options?: Readonly<{
+      encoding: 'utf8',
+    }>,
+  ): os$UserInfo$string;
+  declare function version(): string;
   declare var EOL: string;
+  declare var devNull: string;
+  declare var constants: Readonly<{
+    signals: {[key: string]: number, ...},
+    errno: {[key: string]: number, ...},
+    priority: Readonly<{
+      PRIORITY_LOW: number,
+      PRIORITY_BELOW_NORMAL: number,
+      PRIORITY_NORMAL: number,
+      PRIORITY_ABOVE_NORMAL: number,
+      PRIORITY_HIGH: number,
+      PRIORITY_HIGHEST: number,
+    }>,
+    dlopen: {[key: string]: number, ...},
+  }>;
 }
 
 type path$PlatformPath = {
