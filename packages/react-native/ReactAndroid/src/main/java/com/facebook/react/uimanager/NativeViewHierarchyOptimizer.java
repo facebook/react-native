@@ -133,52 +133,6 @@ public class NativeViewHierarchyOptimizer {
   }
 
   /**
-   * Handles a manageChildren call. This may translate into multiple manageChildren calls for
-   * multiple other views.
-   *
-   * <p>NB: the assumption for calling this method is that all corresponding ReactShadowNodes have
-   * been updated **but tagsToDelete have NOT been deleted yet**. This is because we need to use the
-   * metadata from those nodes to figure out the correct commands to dispatch. This is unlike all
-   * other calls on this class where we assume all operations on the shadow hierarchy have already
-   * completed by the time a corresponding method here is called.
-   */
-  public void handleManageChildren(
-      ReactShadowNode nodeToManage,
-      int[] indicesToRemove,
-      int[] tagsToRemove,
-      ViewAtIndex[] viewsToAdd,
-      int[] tagsToDelete) {
-    if (!ENABLED) {
-      assertNodeSupportedWithoutOptimizer(nodeToManage);
-      mUIViewOperationQueue.enqueueManageChildren(
-          nodeToManage.getReactTag(), indicesToRemove, viewsToAdd, tagsToDelete);
-      return;
-    }
-
-    // We operate on tagsToRemove instead of indicesToRemove because by the time this method is
-    // called, these views have already been removed from the shadow hierarchy and the indices are
-    // no longer useful to operate on
-    for (int i = 0; i < tagsToRemove.length; i++) {
-      int tagToRemove = tagsToRemove[i];
-      boolean delete = false;
-      for (int j = 0; j < tagsToDelete.length; j++) {
-        if (tagsToDelete[j] == tagToRemove) {
-          delete = true;
-          break;
-        }
-      }
-      ReactShadowNode nodeToRemove = mShadowNodeRegistry.getNode(tagToRemove);
-      removeNodeFromParent(nodeToRemove, delete);
-    }
-
-    for (int i = 0; i < viewsToAdd.length; i++) {
-      ViewAtIndex toAdd = viewsToAdd[i];
-      ReactShadowNode nodeToAdd = mShadowNodeRegistry.getNode(toAdd.mTag);
-      addNodeToNode(nodeToManage, nodeToAdd, toAdd.mIndex);
-    }
-  }
-
-  /**
    * Handles a setChildren call. This is a simplification of handleManagerChildren that only adds
    * children in index order of the childrenTags array
    */
@@ -241,41 +195,15 @@ public class NativeViewHierarchyOptimizer {
     // Logic removed due to NativeKind removal
   }
 
-  /**
-   * For handling node removal from manageChildren. In the case of removing a node which isn't
-   * hosting its own children (e.g. layout-only or NativeKind.LEAF), we need to recursively remove
-   * all its children from their native parents.
-   */
-  private void removeNodeFromParent(ReactShadowNode nodeToRemove, boolean shouldDelete) {
-    // Recursive removal logic removed due to NativeKind removal
-
-    ReactShadowNode nativeNodeToRemoveFrom = nodeToRemove.getNativeParent();
-    if (nativeNodeToRemoveFrom != null) {
-      int index = nativeNodeToRemoveFrom.indexOfNativeChild(nodeToRemove);
-      nativeNodeToRemoveFrom.removeNativeChildAt(index);
-
-      mUIViewOperationQueue.enqueueManageChildren(
-          nativeNodeToRemoveFrom.getReactTag(),
-          new int[] {index},
-          null,
-          shouldDelete ? new int[] {nodeToRemove.getReactTag()} : null);
-    }
+  private void addNativeChild(ReactShadowNode parent, ReactShadowNode child, int index) {
+    parent.addNativeChildAt(child, index);
   }
+
+  private void removeNodeFromParent(ReactShadowNode nodeToRemove, boolean shouldDelete) {}
 
   private void addNonNativeChild(
       ReactShadowNode nativeParent, ReactShadowNode nonNativeChild, int index) {
     addGrandchildren(nativeParent, nonNativeChild, index);
-  }
-
-  private void addNativeChild(ReactShadowNode parent, ReactShadowNode child, int index) {
-    parent.addNativeChildAt(child, index);
-    mUIViewOperationQueue.enqueueManageChildren(
-        parent.getReactTag(),
-        null,
-        new ViewAtIndex[] {new ViewAtIndex(child.getReactTag(), index)},
-        null);
-
-    // addGrandchildren call removed due to NativeKind removal
   }
 
   private void addGrandchildren(ReactShadowNode nativeParent, ReactShadowNode child, int index) {

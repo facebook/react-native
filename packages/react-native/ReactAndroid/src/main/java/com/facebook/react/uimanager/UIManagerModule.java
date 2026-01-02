@@ -463,46 +463,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /**
-   * Interface for adding/removing/moving views within a parent view from JS.
-   *
-   * @param viewTag the view tag of the parent view
-   * @param moveFrom a list of indices in the parent view to move views from
-   * @param moveTo parallel to moveFrom, a list of indices in the parent view to move views to
-   * @param addChildTags a list of tags of views to add to the parent
-   * @param addAtIndices parallel to addChildTags, a list of indices to insert those children at
-   * @param removeFrom a list of indices of views to permanently remove. The memory for the
-   *     corresponding views and data structures should be reclaimed.
-   */
-  @ReactMethod
-  public void manageChildren(
-      int viewTag,
-      @Nullable ReadableArray moveFrom,
-      @Nullable ReadableArray moveTo,
-      @Nullable ReadableArray addChildTags,
-      @Nullable ReadableArray addAtIndices,
-      @Nullable ReadableArray removeFrom) {
-    if (DEBUG) {
-      String message =
-          "(UIManager.manageChildren) tag: "
-              + viewTag
-              + ", moveFrom: "
-              + moveFrom
-              + ", moveTo: "
-              + moveTo
-              + ", addTags: "
-              + addChildTags
-              + ", atIndices: "
-              + addAtIndices
-              + ", removeFrom: "
-              + removeFrom;
-      FLog.d(ReactConstants.TAG, message);
-      PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
-    }
-    mUIImplementation.manageChildren(
-        viewTag, moveFrom, moveTo, addChildTags, addAtIndices, removeFrom);
-  }
-
-  /**
    * Interface for fast tracking the initial adding of views. Children view tags are assumed to be
    * in order
    *

@@ -13,13 +13,11 @@ import android.view.View.MeasureSpec;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
@@ -32,7 +30,6 @@ import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -324,124 +321,6 @@ public class UIImplementation {
   }
 
   /**
-   * Invoked when there is a mutation in a node tree.
-   *
-   * @param tag react tag of the node we want to manage
-   * @param indicesToRemove ordered (asc) list of indices at which view should be removed
-   * @param viewsToAdd ordered (asc based on mIndex property) list of tag-index pairs that represent
-   *     a view which should be added at the specified index
-   * @param tagsToDelete list of tags corresponding to views that should be removed
-   */
-  public void manageChildren(
-      int viewTag,
-      @Nullable ReadableArray moveFrom,
-      @Nullable ReadableArray moveTo,
-      @Nullable ReadableArray addChildTags,
-      @Nullable ReadableArray addAtIndices,
-      @Nullable ReadableArray removeFrom) {
-    if (!mViewOperationsEnabled) {
-      return;
-    }
-
-    synchronized (uiImplementationThreadLock) {
-      ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
-
-      int numToMove = moveFrom == null ? 0 : moveFrom.size();
-      int numToAdd = addChildTags == null ? 0 : addChildTags.size();
-      int numToRemove = removeFrom == null ? 0 : removeFrom.size();
-
-      if (numToMove != 0 && (moveTo == null || numToMove != moveTo.size())) {
-        throw new IllegalViewOperationException("Size of moveFrom != size of moveTo!");
-      }
-
-      if (numToAdd != 0 && (addAtIndices == null || numToAdd != addAtIndices.size())) {
-        throw new IllegalViewOperationException("Size of addChildTags != size of addAtIndices!");
-      }
-
-      // We treat moves as an add and a delete
-      ViewAtIndex[] viewsToAdd = new ViewAtIndex[numToMove + numToAdd];
-      int[] indicesToRemove = new int[numToMove + numToRemove];
-      int[] tagsToRemove = new int[indicesToRemove.length];
-      int[] tagsToDelete = new int[numToRemove];
-
-      if (numToMove > 0) {
-        Assertions.assertNotNull(moveFrom);
-        Assertions.assertNotNull(moveTo);
-        for (int i = 0; i < numToMove; i++) {
-          int moveFromIndex = moveFrom.getInt(i);
-          int tagToMove = cssNodeToManage.getChildAt(moveFromIndex).getReactTag();
-          viewsToAdd[i] = new ViewAtIndex(tagToMove, moveTo.getInt(i));
-          indicesToRemove[i] = moveFromIndex;
-          tagsToRemove[i] = tagToMove;
-        }
-      }
-
-      if (numToAdd > 0) {
-        Assertions.assertNotNull(addChildTags);
-        Assertions.assertNotNull(addAtIndices);
-        for (int i = 0; i < numToAdd; i++) {
-          int viewTagToAdd = addChildTags.getInt(i);
-          int indexToAddAt = addAtIndices.getInt(i);
-          viewsToAdd[numToMove + i] = new ViewAtIndex(viewTagToAdd, indexToAddAt);
-        }
-      }
-
-      if (numToRemove > 0) {
-        Assertions.assertNotNull(removeFrom);
-        for (int i = 0; i < numToRemove; i++) {
-          int indexToRemove = removeFrom.getInt(i);
-          int tagToRemove = cssNodeToManage.getChildAt(indexToRemove).getReactTag();
-          indicesToRemove[numToMove + i] = indexToRemove;
-          tagsToRemove[numToMove + i] = tagToRemove;
-          tagsToDelete[i] = tagToRemove;
-        }
-      }
-
-      // NB: moveFrom and removeFrom are both relative to the starting state of the View's children.
-      // moveTo and addAt are both relative to the final state of the View's children.
-      //
-      // 1) Sort the views to add and indices to remove by index
-      // 2) Iterate the indices being removed from high to low and remove them. Going high to low
-      //    makes sure we remove the correct index when there are multiple to remove.
-      // 3) Iterate the views being added by index low to high and add them. Like the view removal,
-      //    iteration direction is important to preserve the correct index.
-
-      Arrays.sort(viewsToAdd, ViewAtIndex.COMPARATOR);
-      Arrays.sort(indicesToRemove);
-
-      // Apply changes to CSSNodeDEPRECATED hierarchy
-      int lastIndexRemoved = -1;
-      for (int i = indicesToRemove.length - 1; i >= 0; i--) {
-        int indexToRemove = indicesToRemove[i];
-        if (indexToRemove == lastIndexRemoved) {
-          throw new IllegalViewOperationException(
-              "Repeated indices in Removal list for view tag: " + viewTag);
-        }
-        cssNodeToManage.removeChildAt(indicesToRemove[i]); // Thread safety needed here
-
-        lastIndexRemoved = indicesToRemove[i];
-      }
-
-      for (int i = 0; i < viewsToAdd.length; i++) {
-        ViewAtIndex viewAtIndex = viewsToAdd[i];
-        ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(viewAtIndex.mTag);
-        if (cssNodeToAdd == null) {
-          throw new IllegalViewOperationException(
-              "Trying to add unknown view tag: " + viewAtIndex.mTag);
-        }
-        cssNodeToManage.addChildAt(cssNodeToAdd, viewAtIndex.mIndex);
-      }
-
-      mNativeViewHierarchyOptimizer.handleManageChildren(
-          cssNodeToManage, indicesToRemove, tagsToRemove, viewsToAdd, tagsToDelete);
-
-      for (int i = 0; i < tagsToDelete.length; i++) {
-        removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
-      }
-    }
-  }
-
-  /**
    * An optimized version of manageChildren that is used for initial setting of child views. The
    * children are assumed to be in index order
    *
@@ -467,41 +346,6 @@ public class UIImplementation {
 
       mNativeViewHierarchyOptimizer.handleSetChildren(cssNodeToManage, childrenTags);
     }
-  }
-
-  /**
-   * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
-   */
-  public void replaceExistingNonRootView(int oldTag, int newTag) {
-    if (mShadowNodeRegistry.isRootNode(oldTag) || mShadowNodeRegistry.isRootNode(newTag)) {
-      throw new IllegalViewOperationException("Trying to add or replace a root tag!");
-    }
-
-    ReactShadowNode oldNode = mShadowNodeRegistry.getNode(oldTag);
-    if (oldNode == null) {
-      throw new IllegalViewOperationException("Trying to replace unknown view tag: " + oldTag);
-    }
-
-    ReactShadowNode parent = oldNode.getParent();
-    if (parent == null) {
-      throw new IllegalViewOperationException("Node is not attached to a parent: " + oldTag);
-    }
-
-    int oldIndex = parent.indexOf(oldNode);
-    if (oldIndex < 0) {
-      throw new IllegalStateException("Didn't find child tag in parent");
-    }
-
-    WritableArray tagsToAdd = Arguments.createArray();
-    tagsToAdd.pushInt(newTag);
-
-    WritableArray addAtIndices = Arguments.createArray();
-    addAtIndices.pushInt(oldIndex);
-
-    WritableArray indicesToRemove = Arguments.createArray();
-    indicesToRemove.pushInt(oldIndex);
-
-    manageChildren(parent.getReactTag(), null, null, tagsToAdd, addAtIndices, indicesToRemove);
   }
 
   /**
