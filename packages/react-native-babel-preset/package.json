@@ -57,7 +57,7 @@
     "@react-native/babel-plugin-codegen": "0.84.0-main",
     "babel-plugin-syntax-hermes-parser": "0.32.0",
     "babel-plugin-transform-flow-enums": "^0.0.2",
-    "react-refresh": "^0.14.0"
+    "react-refresh": "^0.18.0"
   },
   "peerDependencies": {
     "@babel/core": "*"
