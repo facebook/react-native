@@ -3683,31 +3683,33 @@ declare module 'util' {
   declare function stripVTControlCharacters(str: string): string;
 
   declare function parseArgs<
-    TOptions: {+[string]: util$ParseArgsOption} = {||},
-  >(config: {|
+    TOptions: {+[string]: util$ParseArgsOption} = {},
+  >(config: {
     args?: Array<string>,
     options?: TOptions,
     strict?: boolean,
     allowPositionals?: boolean,
+    allowNegative?: boolean,
     tokens?: false,
-  |}): {|
+  }): {
     values: util$ParseArgsOptionsToValues<TOptions>,
     positionals: Array<string>,
-  |};
+  };
 
   declare function parseArgs<
-    TOptions: {[string]: util$ParseArgsOption} = {||},
-  >(config: {|
+    TOptions: {[string]: util$ParseArgsOption} = {},
+  >(config: {
     args?: Array<string>,
     options?: TOptions,
     strict?: boolean,
     allowPositionals?: boolean,
+    allowNegative?: boolean,
     tokens: true,
-  |}): {|
+  }): {
     values: util$ParseArgsOptionsToValues<TOptions>,
     positionals: Array<string>,
     tokens: Array<util$ParseArgsToken>,
-  |};
+  };
 
   declare class TextDecoder {
     constructor(
@@ -3733,6 +3735,46 @@ declare module 'util' {
     encoding: string;
   }
 
+  declare class MIMEType {
+    constructor(input: string): void;
+    type: string;
+    subtype: string;
+    +essence: string;
+    +params: MIMEParams;
+    toString(): string;
+  }
+
+  declare class MIMEParams {
+    delete(name: string): void;
+    get(name: string): ?string;
+    has(name: string): boolean;
+    set(name: string, value: string): void;
+    entries(): Iterator<[string, string]>;
+    keys(): Iterator<string>;
+    values(): Iterator<string>;
+  }
+
+  declare function parseEnv(content: string): {[key: string]: string, ...};
+
+  declare type util$DiffEntry = [operation: -1 | 0 | 1, value: string];
+  declare function diff(
+    actual: string | $ReadOnlyArray<string>,
+    expected: string | $ReadOnlyArray<string>,
+  ): Array<util$DiffEntry>;
+
+  declare function getSystemErrorMessage(err: number): string;
+
+  declare type util$CallSiteObject = {
+    functionName: string,
+    scriptName: string,
+    scriptId: string,
+    lineNumber: number,
+    columnNumber: number,
+  };
+  declare function getCallSites(
+    frameCountOrOptions?: number | Readonly<{frameCount?: number}>,
+  ): Array<util$CallSiteObject>;
+
   declare var types: {
     isAnyArrayBuffer: (value: unknown) => boolean,
     isArgumentsObject: (value: unknown) => boolean,
@@ -3745,6 +3787,7 @@ declare module 'util' {
     isDataView: (value: unknown) => boolean,
     isDate: (value: unknown) => boolean,
     isExternal: (value: unknown) => boolean,
+    isFloat16Array: (value: unknown) => boolean,
     isFloat32Array: (value: unknown) => boolean,
     isFloat64Array: (value: unknown) => boolean,
     isGeneratorFunction: (value: unknown) => boolean,
