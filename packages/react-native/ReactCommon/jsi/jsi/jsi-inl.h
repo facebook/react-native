@@ -360,6 +360,22 @@ inline Array Array::createWithElements(Runtime& runtime, Args&&... args) {
 }
 
 template <typename... Args>
+inline size_t Array::push(Runtime& runtime, Args&&... args) {
+  return push(runtime, {detail::toValue(runtime, std::forward<Args>(args))...});
+}
+
+inline size_t Array::push(
+    Runtime& runtime,
+    std::initializer_list<Value> elements) {
+  return push(runtime, elements.begin(), elements.size());
+}
+
+inline size_t
+Array::push(Runtime& runtime, const Value* elements, size_t count) {
+  return runtime.push(*this, elements, count);
+}
+
+template <typename... Args>
 inline std::vector<PropNameID> PropNameID::names(
     Runtime& runtime,
     Args&&... args) {
