@@ -55,14 +55,50 @@ SharedColor parsePlatformColor(const ContextContainer &contextContainer, int32_t
 {
   if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
     auto items = (std::unordered_map<std::string, RawValue>)value;
+
+    // Extract alpha value if present
+    float alpha = 1.0f;
+    if (items.find("alpha") != items.end() && items.at("alpha").hasType<double>()) {
+      alpha = static_cast<float>((double)items.at("alpha"));
+    }
+
+    // Extract prominence value if present
+    std::string prominence;
+    if (items.find("prominence") != items.end() && items.at("prominence").hasType<std::string>()) {
+      prominence = (std::string)items.at("prominence");
+    }
+
+    // Extract contentHeadroom value if present
+    float contentHeadroom = 0.0f;
+    if (items.find("contentHeadroom") != items.end() && items.at("contentHeadroom").hasType<double>()) {
+      contentHeadroom = static_cast<float>((double)items.at("contentHeadroom"));
+    }
+
     if (items.find("semantic") != items.end() && items.at("semantic").hasType<std::vector<std::string>>()) {
       auto semanticItems = (std::vector<std::string>)items.at("semantic");
-      return SharedColor(Color::createSemanticColor(semanticItems));
+      return SharedColor(Color::createSemanticColor(semanticItems, alpha, prominence, contentHeadroom));
     } else if (
         items.find("dynamic") != items.end() &&
         items.at("dynamic").hasType<std::unordered_map<std::string, RawValue>>()) {
       auto dynamicItems = (std::unordered_map<std::string, RawValue>)items.at("dynamic");
-      return RCTPlatformColorComponentsFromDynamicItems(contextContainer, surfaceId, dynamicItems);
+      auto color = RCTPlatformColorComponentsFromDynamicItems(contextContainer, surfaceId, dynamicItems);
+      if (alpha < 1.0f && color) {
+        // Apply alpha to the dynamic color
+        UIColor *uiColor = (UIColor *)unwrapManagedObject((*color).getUIColor());
+        if (uiColor != nil) {
+          uiColor = [uiColor colorWithAlphaComponent:alpha];
+          color = SharedColor(Color::fromUIColor(wrapManagedObject(uiColor)));
+        }
+      }
+      // Apply prominence if specified
+      if (!prominence.empty() && color) {
+        color = SharedColor(Color::applyProminence(*color, prominence));
+      }
+      // Apply contentHeadroom if specified
+      if (contentHeadroom > 0.0f && color) {
+        return SharedColor(Color::applyContentHeadroom(*color, contentHeadroom));
+      }
+      return color;
     }
   }
 

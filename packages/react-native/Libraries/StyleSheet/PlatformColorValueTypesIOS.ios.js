@@ -12,6 +12,12 @@ import type {ColorValue} from './StyleSheet';
 
 import {DynamicColorIOSPrivate} from './PlatformColorValueTypes.ios';
 
+export type {
+  ColorProminence,
+  PlatformColorOptions,
+  PlatformColorSpec,
+} from './PlatformColorValueTypes.ios';
+
 export type DynamicColorIOSTuple = {
   light: ColorValue,
   dark: ColorValue,

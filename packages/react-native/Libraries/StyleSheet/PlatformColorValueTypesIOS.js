@@ -17,6 +17,12 @@ export type DynamicColorIOSTuple = {
   highContrastDark?: ColorValue,
 };
 
+export type ColorProminence =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'quaternary';
+
 /**
  * Specify color to display depending on the current system appearance settings
  *

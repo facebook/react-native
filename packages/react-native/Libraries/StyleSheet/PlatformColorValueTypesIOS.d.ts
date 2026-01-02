@@ -23,3 +23,13 @@ type DynamicColorIOSTuple = {
  * @platform ios
  */
 export function DynamicColorIOS(tuple: DynamicColorIOSTuple): OpaqueColorValue;
+
+/**
+ * Color prominence levels for iOS 18+.
+ * Controls the visual prominence of a color in the interface.
+ */
+export type ColorProminence =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'quaternary';

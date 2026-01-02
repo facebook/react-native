@@ -11,15 +11,43 @@
 import type {ProcessedColorValue} from './processColor';
 import type {NativeColorValue} from './StyleSheet';
 
+export type ColorProminence =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'quaternary';
+
+export type PlatformColorOptions = {
+  name: string,
+  alpha?: number,
+  prominence?: ColorProminence,
+  contentHeadroom?: number,
+};
+
+export type PlatformColorSpec = string | PlatformColorOptions;
+
 /** The actual type of the opaque NativeColorValue on Android platform */
 type LocalNativeColorValue = {
   resource_paths?: Array<string>,
 };
 
-export const PlatformColor = (...names: Array<string>): NativeColorValue => {
-  /* $FlowExpectedError[incompatible-type]
-   * LocalNativeColorValue is the actual type of the opaque NativeColorValue on Android platform */
-  return ({resource_paths: names}: LocalNativeColorValue);
+/**
+ * Extracts color name from a spec (string or options object).
+ * On Android, only the name is used - modifiers like alpha/prominence are iOS-specific.
+ */
+function getColorName(spec: PlatformColorSpec): string {
+  if (typeof spec === 'string') {
+    return spec;
+  }
+  return spec.name;
+}
+
+export const PlatformColor = (
+  ...specs: Array<PlatformColorSpec>
+): NativeColorValue => {
+  const names = specs.map(getColorName);
+  // $FlowExpectedError[incompatible-return] LocalNativeColorValue is compatible with NativeColorValue
+  return {resource_paths: names};
 };
 
 export const normalizeColorObject = (

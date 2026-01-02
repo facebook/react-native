@@ -235,10 +235,61 @@ std::size_t Color::getUIColorHash() const
   return uiColorHashValue_;
 }
 
-Color Color::createSemanticColor(std::vector<std::string> &semanticItems)
+Color Color::createSemanticColor(
+    std::vector<std::string> &semanticItems,
+    float alpha,
+    const std::string &prominence,
+    float contentHeadroom)
 {
-  auto semanticColor = RCTPlatformColorFromSemanticItems(semanticItems);
-  return Color(wrapManagedObject(semanticColor));
+  UIColor *semanticColor = RCTPlatformColorFromSemanticItems(semanticItems);
+  if (alpha < 1.0f) {
+    semanticColor = [semanticColor colorWithAlphaComponent:alpha];
+  }
+  Color color = Color(wrapManagedObject(semanticColor));
+  if (!prominence.empty()) {
+    color = applyProminence(color, prominence);
+  }
+  if (contentHeadroom > 0.0f) {
+    color = applyContentHeadroom(color, contentHeadroom);
+  }
+  return color;
+}
+
+Color Color::fromUIColor(std::shared_ptr<void> uiColor)
+{
+  return Color(uiColor);
+}
+
+Color Color::applyProminence(Color color, const std::string &prominence)
+{
+  if (@available(iOS 18.0, *)) {
+    UIColor *uiColor = (UIColor *)unwrapManagedObject(color.getUIColor());
+    if (uiColor != nil && !prominence.empty()) {
+      UIColorProminence uiProminence = UIColorProminencePrimary;
+      if (prominence == "secondary") {
+        uiProminence = UIColorProminenceSecondary;
+      } else if (prominence == "tertiary") {
+        uiProminence = UIColorProminenceTertiary;
+      } else if (prominence == "quaternary") {
+        uiProminence = UIColorProminenceQuaternary;
+      }
+      uiColor = [uiColor colorWithProminence:uiProminence];
+      return Color(wrapManagedObject(uiColor));
+    }
+  }
+  return color;
+}
+
+Color Color::applyContentHeadroom(Color color, float headroom)
+{
+  if (@available(iOS 26.0, *)) {
+    UIColor *uiColor = (UIColor *)unwrapManagedObject(color.getUIColor());
+    if (uiColor != nil && headroom > 0.0f) {
+      uiColor = [uiColor colorByApplyingContentHeadroom:headroom];
+      return Color(wrapManagedObject(uiColor));
+    }
+  }
+  return color;
 }
 
 } // namespace facebook::react
