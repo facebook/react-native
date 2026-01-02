@@ -11,12 +11,20 @@
 
 const {unstable_spawnDebuggerShellWithArgs} = require('../../');
 
+// prevent console pollution from spawned shell
+const logger = {
+  ...console,
+  info: jest.fn(),
+  error: jest.fn(),
+};
+
 describe('debugger-shell Node package', () => {
   test('can spawn in detached+prebuilt mode without crashing', async () => {
     await expect(
       unstable_spawnDebuggerShellWithArgs(['--version'], {
         flavor: 'prebuilt',
         mode: 'detached',
+        logger,
       }),
     ).resolves.toBeUndefined();
   });
@@ -32,6 +40,7 @@ describe('debugger-shell Node package', () => {
         unstable_spawnDebuggerShellWithArgs(['--version'], {
           flavor: 'dev',
           mode: 'detached',
+          logger,
         }),
       ).resolves.toBeUndefined();
     });
