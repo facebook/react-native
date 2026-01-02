@@ -12,6 +12,7 @@
     <string name="menubar_description" gender="unknown">मेनु बार</string>
     <string name="menuitem_description" gender="unknown">मेनु वस्तु</string>
     <string name="progressbar_description" gender="unknown">प्रोगेस बार</string>
+    <string name="radiogroup_description" gender="unknown">रेडियो समूह</string>
     <string name="scrollbar_description" gender="unknown">स्क्रोल बार</string>
     <string name="spinbutton_description" gender="unknown">स्पिन बटन</string>
     <string name="rn_tab_description" gender="unknown">टयाब</string>
