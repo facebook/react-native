@@ -93,7 +93,7 @@ export function getColorScheme(): ?ColorSchemeName {
 /**
  * Updates the current color scheme to the supplied value.
  */
-export function setColorScheme(colorScheme: ColorSchemeName): void {
+export function setColorScheme(colorScheme: ?ColorSchemeName): void {
   const state = getState();
   const {NativeAppearance} = state;
   if (NativeAppearance != null) {
