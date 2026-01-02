@@ -66,7 +66,7 @@ export default class Event {
   [COMPOSED_PATH_KEY]: boolean = [];
 
   // $FlowExpectedError[unsupported-syntax]
-  [CURRENT_TARGET_KEY]: EventTarget | null = null;
+  [CURRENT_TARGET_KEY]: EventTarget<> | null = null;
 
   // $FlowExpectedError[unsupported-syntax]
   [EVENT_PHASE_KEY]: boolean = Event.NONE;
@@ -84,7 +84,7 @@ export default class Event {
   [STOP_PROPAGATION_FLAG_KEY]: boolean = false;
 
   // $FlowExpectedError[unsupported-syntax]
-  [TARGET_KEY]: EventTarget | null = null;
+  [TARGET_KEY]: EventTarget<> | null = null;
 
   constructor(type: string, options?: ?EventInit) {
     if (arguments.length < 1) {
@@ -123,7 +123,7 @@ export default class Event {
     return this._composed;
   }
 
-  get currentTarget(): EventTarget | null {
+  get currentTarget(): EventTarget<> | null {
     return getCurrentTarget(this);
   }
 
@@ -139,7 +139,7 @@ export default class Event {
     return getIsTrusted(this);
   }
 
-  get target(): EventTarget | null {
+  get target(): EventTarget<> | null {
     return getTarget(this);
   }
 
@@ -151,7 +151,7 @@ export default class Event {
     return this._type;
   }
 
-  composedPath(): $ReadOnlyArray<EventTarget> {
+  composedPath(): $ReadOnlyArray<EventTarget<>> {
     return getComposedPath(this).slice();
   }
 

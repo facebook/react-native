@@ -34,11 +34,13 @@ import {
   INTERNAL_DISPATCH_METHOD_KEY,
 } from './internals/EventTargetInternals';
 
-export type EventCallback = (event: Event) => void;
-export type EventHandler = interface {
-  handleEvent(event: Event): void,
+export type EventCallback<T: Event = Event> = (event: T) => void;
+export type EventHandler<T: Event = Event> = interface {
+  handleEvent(event: T): void,
 };
-export type EventListener = EventCallback | EventHandler;
+export type EventListener<T: Event = Event> =
+  | EventCallback<T>
+  | EventHandler<T>;
 
 export type EventListenerOptions = $ReadOnly<{
   capture?: boolean,
@@ -51,19 +53,32 @@ export type AddEventListenerOptions = $ReadOnly<{
   signal?: AbortSignal,
 }>;
 
+type GenericEventCallback<TEvent: Event> = (event: TEvent) => void;
+type GenericEventHandler<TEvent: Event> = interface {
+  handleEvent(event: TEvent): void,
+};
+export type GenericEventListener<TEvent: Event> =
+  | GenericEventCallback<TEvent>
+  | GenericEventHandler<TEvent>;
+
 type EventListenerRegistration = {
-  +callback: EventListener,
+  +callback: EventListener<>,
   +passive: boolean,
   +once: boolean,
   removed: boolean,
 };
 
-type ListenersMap = Map<string, Map<EventListener, EventListenerRegistration>>;
+type ListenersMap = Map<
+  string,
+  Map<EventListener<>, EventListenerRegistration>,
+>;
 
-export default class EventTarget {
-  addEventListener(
-    type: string,
-    callback: EventListener | null,
+export type GenericEventMap = $ReadOnly<{[string]: Event}>;
+
+export default class EventTarget<+EventMap: GenericEventMap = GenericEventMap> {
+  addEventListener<EventName: $Keys<EventMap>>(
+    type: EventName,
+    callback: GenericEventListener<EventMap[EventName]> | null,
     optionsOrUseCapture?: AddEventListenerOptions | boolean = {},
   ): void {
     if (arguments.length < 2) {
@@ -152,9 +167,9 @@ export default class EventTarget {
     }
   }
 
-  removeEventListener(
-    type: string,
-    callback: EventListener,
+  removeEventListener<EventName: $Keys<EventMap>>(
+    type: EventName,
+    callback: GenericEventListener<EventMap[EventName]> | null,
     optionsOrUseCapture?: EventListenerOptions | boolean = {},
   ): void {
     if (arguments.length < 2) {
@@ -189,7 +204,7 @@ export default class EventTarget {
     }
   }
 
-  dispatchEvent(event: Event): boolean {
+  dispatchEvent(event: $Values<EventMap>): boolean {
     if (!(event instanceof Event)) {
       throw new TypeError(
         "Failed to execute 'dispatchEvent' on 'EventTarget': parameter 1 is not of type 'Event'.",
@@ -232,7 +247,7 @@ export default class EventTarget {
 
 setPlatformObject(EventTarget);
 
-function validateCallback(callback: EventListener, methodName: string): void {
+function validateCallback(callback: EventListener<>, methodName: string): void {
   if (typeof callback !== 'function' && typeof callback !== 'object') {
     throw new TypeError(
       `Failed to execute '${methodName}' on 'EventTarget': parameter 2 is not of type 'Object'.`,
@@ -242,7 +257,7 @@ function validateCallback(callback: EventListener, methodName: string): void {
 
 function getDefaultPassiveValue(
   type: string,
-  eventTarget: EventTarget,
+  eventTarget: EventTarget<>,
 ): boolean {
   return false;
 }
@@ -255,7 +270,7 @@ function getDefaultPassiveValue(
  * Implements the "event dispatch" concept
  * (see https://dom.spec.whatwg.org/#concept-event-dispatch).
  */
-function dispatch(eventTarget: EventTarget, event: Event): void {
+function dispatch(eventTarget: EventTarget<>, event: Event): void {
   setEventDispatchFlag(event, true);
 
   const eventPath = getEventPath(eventTarget, event);
@@ -309,11 +324,11 @@ function dispatch(eventTarget: EventTarget, event: Event): void {
  * The return value is also set as `composedPath` for the event.
  */
 function getEventPath(
-  eventTarget: EventTarget,
+  eventTarget: EventTarget<>,
   event: Event,
-): $ReadOnlyArray<EventTarget> {
+): $ReadOnlyArray<EventTarget<>> {
   const path = [];
-  let target: EventTarget | null = eventTarget;
+  let target: EventTarget<> | null = eventTarget;
 
   while (target != null) {
     path.push(target);
@@ -329,7 +344,7 @@ function getEventPath(
  * (see https://dom.spec.whatwg.org/#concept-event-listener-invoke).
  */
 function invoke(
-  eventTarget: EventTarget,
+  eventTarget: EventTarget<>,
   event: Event,
   eventPhase: EventPhase,
 ) {
@@ -402,7 +417,7 @@ const CAPTURING_LISTENERS_KEY = Symbol('capturingListeners');
 const BUBBLING_LISTENERS_KEY = Symbol('bubblingListeners');
 
 function getListenersForPhase(
-  eventTarget: EventTarget,
+  eventTarget: EventTarget<>,
   isCapture: boolean,
 ): ?ListenersMap {
   return isCapture
@@ -413,7 +428,7 @@ function getListenersForPhase(
 }
 
 function setListenersMap(
-  eventTarget: EventTarget,
+  eventTarget: EventTarget<>,
   isCapture: boolean,
   listenersMap: ListenersMap,
 ): void {

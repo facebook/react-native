@@ -16,7 +16,7 @@ import {EVENT_TARGET_GET_THE_PARENT_KEY} from '../internals/EventTargetInternals
  */
 export default function createEventTargetHierarchyWithDepth(
   depth: number,
-): Array<EventTarget> {
+): Array<EventTarget<>> {
   if (depth < 1) {
     throw new Error('Depth must be greater or equal to 1');
   }

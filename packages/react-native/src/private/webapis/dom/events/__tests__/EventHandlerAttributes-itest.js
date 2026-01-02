@@ -21,12 +21,12 @@ import {
 } from 'react-native/src/private/webapis/dom/events/EventHandlerAttributes';
 import EventTarget from 'react-native/src/private/webapis/dom/events/EventTarget';
 
-class EventTargetSubclass extends EventTarget {
-  get oncustomevent(): EventCallback | null {
+class EventTargetSubclass extends EventTarget<{customEvent: Event}> {
+  get oncustomevent(): EventCallback<Event> | null {
     return getEventHandlerAttribute(this, 'customEvent');
   }
 
-  set oncustomevent(listener: ?EventCallback) {
+  set oncustomevent(listener: ?EventCallback<Event>) {
     setEventHandlerAttribute(this, 'customEvent', listener);
   }
 }
