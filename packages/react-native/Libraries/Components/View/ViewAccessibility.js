@@ -321,6 +321,18 @@ export type AccessibilityPropsIOS = $ReadOnly<{
   accessibilityElementsHidden?: ?boolean,
 
   /**
+   * When true, indicates that this view should act as an accessibility
+   * container, allowing nested interactive elements to be individually
+   * accessible. Use this when you have nested Pressables or other
+   * interactive components that need to be separately accessible.
+   *
+   * When enabled, VoiceOver will be able to navigate to its accessible children.
+   *
+   * @platform ios
+   */
+  accessibilityContainer?: ?boolean,
+
+  /**
    * Indicates to the accessibility services that the UI component is in
    * a specific language. The provided string should be formatted following
    * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
