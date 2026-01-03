@@ -378,8 +378,12 @@ class VirtualizedSectionList<
         }
       } else {
         const renderItem = info.section.renderItem || this.props.renderItem;
+        const displayIndex =
+          !!this.props.inverted && info.section.data.length
+            ? info.section.data.length - 1 - infoIndex
+            : infoIndex;
         const SeparatorComponent = this._getSeparatorComponent(
-          index,
+          displayIndex,
           info,
           listItemCount,
         );
@@ -388,7 +392,9 @@ class VirtualizedSectionList<
           <ItemWithSeparator
             SeparatorComponent={SeparatorComponent}
             LeadingSeparatorComponent={
-              infoIndex === 0 ? this.props.SectionSeparatorComponent : undefined
+              displayIndex === 0
+                ? this.props.SectionSeparatorComponent
+                : undefined
             }
             cellKey={info.key}
             index={infoIndex}
@@ -460,7 +466,7 @@ class VirtualizedSectionList<
     const {SectionSeparatorComponent} = this.props;
     const isLastItemInList = index === listItemCount - 1;
     const isLastItemInSection =
-      info.index === this.props.getItemCount(info.section.data) - 1;
+      index === this.props.getItemCount(info.section.data) - 1;
     if (SectionSeparatorComponent && isLastItemInSection) {
       return SectionSeparatorComponent;
     }
