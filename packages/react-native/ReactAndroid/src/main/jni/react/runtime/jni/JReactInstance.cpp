@@ -133,24 +133,11 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
       jReactHostInspectorTarget);
 }
 
-void JReactInstance::loadJSBundleFromAssets(
-    jni::alias_ref<JAssetManager::javaobject> assetManager,
-    const std::string& assetURL) {
-  const int kAssetsLength = 9; // strlen("assets://");
-  auto sourceURL = assetURL.substr(kAssetsLength);
-
-  auto manager = extractAssetManager(assetManager);
-  auto script = loadScriptFromAssets(manager, sourceURL);
-  instance_->loadScript(std::move(script), sourceURL);
-}
-
-void JReactInstance::loadJSBundleFromFile(
-    const std::string& fileName,
+void JReactInstance::loadJSBundle(
+    jni::alias_ref<BundleWrapper::javaobject> bundleWrapper,
     const std::string& sourceURL) {
-  std::unique_ptr<const JSBigFileString> script;
-  RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-      [&fileName, &script]() { script = JSBigFileString::fromPath(fileName); });
-  instance_->loadScript(std::move(script), sourceURL);
+  auto bundle = bundleWrapper->cthis()->getBundle();
+  instance_->loadScript(bundle, sourceURL);
 }
 
 /**
@@ -212,10 +199,7 @@ void JReactInstance::unregisterFromInspector() {
 void JReactInstance::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", JReactInstance::initHybrid),
-      makeNativeMethod(
-          "loadJSBundleFromAssets", JReactInstance::loadJSBundleFromAssets),
-      makeNativeMethod(
-          "loadJSBundleFromFile", JReactInstance::loadJSBundleFromFile),
+      makeNativeMethod("loadJSBundle", JReactInstance::loadJSBundle),
       makeNativeMethod(
           "getJSCallInvokerHolder", JReactInstance::getJSCallInvokerHolder),
       makeNativeMethod(

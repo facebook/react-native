@@ -50,10 +50,10 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   void initializeRuntime(JSRuntimeFlags options, BindingsInstallFunc bindingsInstallFunc) noexcept;
 
   void loadScript(
-      std::unique_ptr<const JSBigString> script,
-      const std::string &sourceURL,
-      std::function<void(jsi::Runtime &runtime)> &&beforeLoad = nullptr,
-      std::function<void(jsi::Runtime &runtime)> &&afterLoad = nullptr);
+      const std::shared_ptr<const JSBigString>& script,
+      const std::string& sourceURL,
+      std::function<void(jsi::Runtime& runtime)>&& beforeLoad = nullptr,
+      std::function<void(jsi::Runtime& runtime)>&& afterLoad = nullptr);
 
   void registerSegment(uint32_t segmentId, const std::string &segmentPath);
 
