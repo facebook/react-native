@@ -28,17 +28,18 @@ const FANTOM_TESTER_BUCK_TARGET =
   'fbsource//xplat/js/react-native-github/private/react-native-fantom/tester:tester';
 
 type TesterOptions = $ReadOnly<{
-  isOptimizedMode: boolean,
+  enableCoverage: boolean,
+  enableRelease: boolean,
   hermesVariant: HermesVariant,
 }>;
 
 function getFantomTesterPath({
-  isOptimizedMode,
   hermesVariant,
+  ...options
 }: TesterOptions): string {
   return path.join(
     NATIVE_BUILD_OUTPUT_PATH,
-    `fantom-tester-${(hermesVariant as string).toLowerCase()}-${isOptimizedMode ? 'opt' : 'dev'}`,
+    `fantom-tester-${(hermesVariant as string).toLowerCase()}-${options.enableRelease ? 'opt' : 'dev'}`,
   );
 }
 
@@ -51,15 +52,23 @@ export function build(options: TesterOptions): void {
   const tmpPath = destPath + '-' + Date.now();
 
   try {
-    const result = runBuck2Sync([
-      'build',
-      ...getBuckModesForPlatform(options.isOptimizedMode),
-      ...getBuckOptionsForHermes(options.hermesVariant),
-      ...getConfigForAnimationBackend(),
-      FANTOM_TESTER_BUCK_TARGET,
-      '--out',
-      tmpPath,
-    ]);
+    const result = runBuck2Sync(
+      [
+        'build',
+        ...getBuckModesForPlatform({
+          enableRelease: options.enableRelease,
+          enableCoverage: options.enableCoverage,
+        }),
+        ...getBuckOptionsForHermes(options.hermesVariant),
+        ...getConfigForAnimationBackend(),
+        FANTOM_TESTER_BUCK_TARGET,
+        '--out',
+        tmpPath,
+      ],
+      {
+        withFDB: false,
+      },
+    );
 
     if (result.status !== 0) {
       throw new Error(getDebugInfoFromCommandResult(result));
@@ -94,7 +103,10 @@ export function run(
     return runBuck2(
       [
         'run',
-        ...getBuckModesForPlatform(options.isOptimizedMode),
+        ...getBuckModesForPlatform({
+          enableRelease: options.enableRelease,
+          enableCoverage: options.enableCoverage,
+        }),
         ...getBuckOptionsForHermes(options.hermesVariant),
         ...getConfigForAnimationBackend(),
         FANTOM_TESTER_BUCK_TARGET,
