@@ -163,6 +163,8 @@ function checkExistingVersion(
         `Hermes artifacts already downloaded and up to date: ${artifactsPath}`,
       );
       return true;
+    } else {
+      hermesLog(`Version mismatch: ${versionFileContent.trim()} != ${resolvedVersion}`);
     }
   }
   // If the version file does not exist or the version does not match, delete the artifacts folder
