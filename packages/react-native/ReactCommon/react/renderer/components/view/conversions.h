@@ -164,6 +164,19 @@ inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node &yogaNode)
   layoutMetrics.layoutDirection = YGNodeLayoutGetDirection(&yogaNode) == YGDirectionRTL ? LayoutDirection::RightToLeft
                                                                                         : LayoutDirection::LeftToRight;
 
+  layoutMetrics.marginInsets = EdgeInsets{
+      floatFromYogaFloat(YGNodeLayoutGetMargin(&yogaNode, YGEdgeLeft)),
+      floatFromYogaFloat(YGNodeLayoutGetMargin(&yogaNode, YGEdgeTop)),
+      floatFromYogaFloat(YGNodeLayoutGetMargin(&yogaNode, YGEdgeRight)),
+      floatFromYogaFloat(YGNodeLayoutGetMargin(&yogaNode, YGEdgeBottom))
+  };
+  layoutMetrics.paddingInsets = EdgeInsets{
+      floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeLeft)),
+      floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeTop)),
+      floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeRight)),
+      floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))
+  };
+
   return layoutMetrics;
 }
 
