@@ -41,6 +41,18 @@ function toSafeCppString(input: string): string {
   return input.split('-').map(toPascalCase).join('');
 }
 
+function toCppString(s: string): string {
+  return JSON.stringify(s);
+}
+
+function toJavaString(s: string): string {
+  return JSON.stringify(s);
+}
+
+function toObjCString(s: string): string {
+  return '@' + JSON.stringify(s);
+}
+
 function getEnumName(moduleName: string, origEnumName: string): string {
   const uppercasedPropName = toSafeCppString(origEnumName);
   return `${moduleName}${uppercasedPropName}`;
@@ -104,6 +116,9 @@ module.exports = {
   capitalize,
   indent,
   parseValidUnionType,
+  toCppString,
+  toJavaString,
+  toObjCString,
   toPascalCase,
   toSafeCppString,
   getEnumName,

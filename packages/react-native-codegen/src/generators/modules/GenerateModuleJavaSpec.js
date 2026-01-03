@@ -24,7 +24,7 @@ import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
 const {wrapOptional} = require('../TypeUtils/Java');
-const {parseValidUnionType, toPascalCase} = require('../Utils');
+const {parseValidUnionType, toJavaString, toPascalCase} = require('../Utils');
 const {createAliasResolver, getModules} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
@@ -58,7 +58,7 @@ package ${packageName};
 ${imports}
 
 public abstract class ${className} extends ReactContextBaseJavaModule implements TurboModule {
-  public static final String NAME = "${jsName}";
+  public static final String NAME = ${toJavaString(jsName)};
 
   public ${className}(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -83,7 +83,7 @@ function EventEmitterTemplate(
       ? `${translateEventEmitterTypeToJavaType(eventEmitter, imports)} value`
       : ''
   }) {
-    mEventEmitterCallback.invoke("${eventEmitter.name}"${
+    mEventEmitterCallback.invoke(${toJavaString(eventEmitter.name)}${
       eventEmitter.typeAnnotation.typeAnnotation.type !== 'VoidTypeAnnotation'
         ? ', value'
         : ''

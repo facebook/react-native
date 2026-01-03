@@ -10,7 +10,7 @@
 
 import type {NativeModuleEventEmitterShape} from '../../../CodegenSchema';
 
-const {parseValidUnionType, toPascalCase} = require('../../Utils');
+const {parseValidUnionType, toCppString, toPascalCase} = require('../../Utils');
 
 function getEventEmitterTypeObjCType(
   eventEmitter: NativeModuleEventEmitterShape,
@@ -84,7 +84,7 @@ function EventEmitterImplementationTemplate(
       : ''
   }
 {
-  _eventEmitterCallback("${eventEmitter.name}", ${
+  _eventEmitterCallback(${toCppString(eventEmitter.name)}, ${
     eventEmitter.typeAnnotation.typeAnnotation.type !== 'VoidTypeAnnotation'
       ? eventEmitter.typeAnnotation.typeAnnotation.type !==
         'BooleanTypeAnnotation'
