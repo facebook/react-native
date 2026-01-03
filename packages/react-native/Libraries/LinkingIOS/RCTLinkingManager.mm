@@ -177,6 +177,20 @@ RCT_EXPORT_METHOD(openSettings : (RCTPromiseResolveBlock)resolve reject : (__unu
       }];
 }
 
+RCT_EXPORT_METHOD(openUniversalLink : (NSURL *)URL resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
+{
+  if (URL == nil) {
+    reject(RCTErrorUnspecified, @"Invalid URL passed to openUniversalLink", nil);
+    return;
+  }
+
+  [RCTSharedApplication() openURL:URL
+      options:@{UIApplicationOpenURLOptionUniversalLinksOnly : @YES}
+      completionHandler:^(BOOL success) {
+        resolve(@(success));
+      }];
+}
+
 RCT_EXPORT_METHOD(
     sendIntent : (NSString *)action extras : (NSArray *_Nullable)extras resolve : (RCTPromiseResolveBlock)
         resolve reject : (RCTPromiseRejectBlock)reject)

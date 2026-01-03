@@ -65,6 +65,40 @@ class OpenSettingsExample extends React.Component<$ReadOnly<{}>> {
   }
 }
 
+const OpenUniversalLinkButton = ({
+  url,
+}: $ReadOnly<{
+  url: string,
+}>) => {
+  const [isOpening, setIsOpening] = useState(false);
+
+  const handlePress = async () => {
+    setIsOpening(true);
+    try {
+      const opened = await Linking.openUniversalLink(url);
+      if (!opened) {
+        console.log(
+          `Could not open universal link: ${url}. The app may not be installed or the URL is not a valid universal link.`,
+        );
+      }
+    } catch (e) {
+      console.log(`Error opening universal link: ${e.message}`);
+    } finally {
+      setIsOpening(false);
+    }
+  };
+
+  return (
+    <TouchableOpacity onPress={handlePress}>
+      <View style={[styles.button, styles.buttonUniversalLink]}>
+        <RNTesterText style={styles.text}>
+          {isOpening ? `Opening ${url}...` : `Open Universal Link: ${url}`}
+        </RNTesterText>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 const SendIntentButton = ({
   action,
   extras,
@@ -143,6 +177,9 @@ const styles = StyleSheet.create({
   buttonIntent: {
     backgroundColor: '#009688',
   },
+  buttonUniversalLink: {
+    backgroundColor: '#FF5722',
+  },
   text: {
     color: 'white',
   },
@@ -168,6 +205,23 @@ exports.examples = [
     title: 'Open settings app',
     render(): React.MixedElement {
       return <OpenSettingsExample />;
+    },
+  },
+  {
+    title: 'Open Universal Link (iOS only)',
+    description:
+      'Opens a URL as a universal link. Returns true if the URL was opened by an app, false otherwise.',
+    render(): React.MixedElement {
+      return Platform.OS === 'ios' ? (
+        <View>
+          <OpenUniversalLinkButton url={'https://www.apple.com'} />
+          <OpenUniversalLinkButton
+            url={'https://maps.apple/p/BtG72tN4IzUEXM'}
+          />
+        </View>
+      ) : (
+        <RNTesterText>This feature is only available on iOS.</RNTesterText>
+      );
     },
   },
 ] as Array<RNTesterModuleExample>;

@@ -55,6 +55,13 @@ export interface LinkingImpl extends NativeEventEmitter {
     action: string,
     extras?: Array<{key: string; value: string | number | boolean}>,
   ): Promise<void>;
+
+  /**
+   * Open a URL as a universal link if possible.
+   * Returns a Promise that resolves to a boolean indicating whether the URL was opened.
+   * @platform ios
+   */
+  openUniversalLink(url: string): Promise<boolean>;
 }
 
 export const Linking: LinkingImpl;
