@@ -43,6 +43,7 @@ async function getLatestHermesNightlyVersion() /*: Promise<{
 
   return {
     compilerVersion,
+    compilerV1Version,
     // runtime version should match the compiler version
     runtimeVersion: compilerVersion,
     runtimeV1Version: compilerV1Version,
@@ -84,7 +85,7 @@ async function updateHermesRuntimeDependenciesVersions(
 async function updateHermesVersionsToNightly() {
   const hermesVersions = await getLatestHermesNightlyVersion();
   await updateHermesCompilerVersionInDependencies(
-    hermesVersions.compilerVersion,
+    hermesVersions.compilerV1Version,
   );
   await updateHermesRuntimeDependenciesVersions(
     hermesVersions.runtimeVersion,
