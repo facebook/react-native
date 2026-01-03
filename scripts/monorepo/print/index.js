@@ -8,7 +8,7 @@
  * @noflow
  */
 
-const {getPackages} = require('../../utils/monorepo');
+const {getPackages} = require('../../shared/monorepoUtils');
 const {exit} = require('shelljs');
 const yargs = require('yargs');
 
