@@ -17,16 +17,37 @@ import {StyleSheet, View} from 'react-native';
 function Playground() {
   return (
     <View style={styles.container}>
-      <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
-      </RNTesterText>
+      <View style={styles.parentView}>
+        <View style={styles.box1} />
+      </View>
+
+      <View style={styles.box2} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    flex: 1,
+    backgroundColor: "white",
+  },
+  parentView: {
+    flex: 1,
+    backgroundColor: "grey",
+  },
+  box1: {
+    width: 200,
+    height: 200,
+    backgroundColor: "blue",
+    zIndex: 1,
+  },
+  box2: {
+    position: "absolute",
+    left: 50,
+    top: 50,
+    width: 200,
+    height: 200,
+    backgroundColor: "red",
   },
 });
 
