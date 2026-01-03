@@ -18,6 +18,7 @@ import type {
   RadialGradientSize,
 } from './StyleSheetTypes';
 
+const resolveAssetSource = require('../Image/resolveAssetSource').default;
 const processColor = require('./processColor').default;
 
 // Linear Gradient
@@ -63,6 +64,11 @@ type RadialGradientBackgroundImage = {
   }>,
 };
 
+type URLBackgroundImage = {
+  type: 'url',
+  uri: string,
+};
+
 // null color indicate that the transition hint syntax is used. e.g. red, 20%, blue
 type ColorStopColor = ProcessedColorValue | null;
 // percentage or pixel value
@@ -70,7 +76,8 @@ type ColorStopPosition = number | string | null;
 
 type ParsedBackgroundImageValue =
   | LinearGradientBackgroundImage
-  | RadialGradientBackgroundImage;
+  | RadialGradientBackgroundImage
+  | URLBackgroundImage;
 
 export default function processBackgroundImage(
   backgroundImage: ?($ReadOnlyArray<BackgroundImageValue> | string),
@@ -84,6 +91,28 @@ export default function processBackgroundImage(
     result = parseBackgroundImageCSSString(backgroundImage.replace(/\n/g, ' '));
   } else if (Array.isArray(backgroundImage)) {
     for (const bgImage of backgroundImage) {
+      if (bgImage.type === 'url') {
+        let uri: ?string = null;
+        if (typeof bgImage.uri === 'string') {
+          uri = bgImage.uri;
+        } else if (typeof bgImage.uri === 'number') {
+          const source = resolveAssetSource(bgImage.uri);
+          if (source != null && source.uri != null) {
+            uri = source.uri;
+          }
+        }
+        if (uri != null) {
+          result = result.concat({
+            type: 'url',
+            uri,
+          });
+          continue;
+        } else {
+          // If the URI is invalid, return an empty array. Same as web.
+          return [];
+        }
+      }
+
       const processedColorStops = processColorStops(bgImage);
       if (processedColorStops == null) {
         // If a color stop is invalid, return an empty array and do not apply any gradient. Same as web.
@@ -250,13 +279,29 @@ function processColorStops(bgImage: BackgroundImageValue): $ReadOnlyArray<{
 function parseBackgroundImageCSSString(
   cssString: string,
 ): $ReadOnlyArray<ParsedBackgroundImageValue> {
-  const gradients = [];
+  const backgroundImages = [];
   const bgImageStrings = splitGradients(cssString);
 
   for (const bgImageString of bgImageStrings) {
+    const urlRegex = /^url\((.*)\)$/i;
+    const urlMatch = urlRegex.exec(bgImageString);
+    if (urlMatch) {
+      let uri = urlMatch[1].trim();
+      const first = uri[0];
+      if ((first === '"' || first === "'") && uri.endsWith(first)) {
+        uri = uri.slice(1, -1);
+      }
+      if (uri.length > 0) {
+        backgroundImages.push({
+          type: 'url',
+          uri,
+        });
+      }
+      continue;
+    }
+
     const bgImage = bgImageString.toLowerCase();
     const gradientRegex = /^(linear|radial)-gradient\(((?:\([^)]*\)|[^()])*)\)/;
-
     const match = gradientRegex.exec(bgImage);
     if (match) {
       const [, type, gradientContent] = match;
@@ -266,11 +311,11 @@ function parseBackgroundImageCSSString(
         : parseLinearGradientCSSString(gradientContent);
 
       if (gradient != null) {
-        gradients.push(gradient);
+        backgroundImages.push(gradient);
       }
     }
   }
-  return gradients;
+  return backgroundImages;
 }
 
 function parseRadialGradientCSSString(
