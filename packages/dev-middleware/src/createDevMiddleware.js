@@ -9,7 +9,6 @@
  */
 
 import type {CreateCustomMessageHandlerFn} from './inspector-proxy/CustomMessageHandler';
-import type {HasConnectedDevicesListener} from './inspector-proxy/InspectorProxy';
 import type {BrowserLauncher} from './types/BrowserLauncher';
 import type {EventReporter, ReportableEvent} from './types/EventReporter';
 import type {Experiments, ExperimentsConfig} from './types/Experiments';
@@ -74,8 +73,6 @@ type Options = $ReadOnly<{
 type DevMiddlewareAPI = $ReadOnly<{
   middleware: NextHandleFunction,
   websocketEndpoints: {[path: string]: ws$WebSocketServer},
-  unstable_hasConnectedDevices(): boolean,
-  unstable_addHasConnectedDevicesListener: HasConnectedDevicesListener,
 }>;
 
 export default function createDevMiddleware({
@@ -134,10 +131,6 @@ export default function createDevMiddleware({
   return {
     middleware,
     websocketEndpoints: inspectorProxy.createWebSocketListeners(),
-    unstable_hasConnectedDevices: () =>
-      inspectorProxy.unstable_hasConnectedDevices(),
-    unstable_addHasConnectedDevicesListener: cb =>
-      inspectorProxy.unstable_addHasConnectedDevicesListener(cb),
   };
 }
 
