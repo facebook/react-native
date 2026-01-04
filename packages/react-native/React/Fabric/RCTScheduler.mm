@@ -15,6 +15,10 @@
 #import <react/renderer/scheduler/SchedulerDelegate.h>
 #import <react/utils/RunLoopObserver.h>
 
+#include <atomic>
+#include <mutex>
+#include <unordered_map>
+
 #import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
 
@@ -78,8 +82,101 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     // This delegate method is not currently used on iOS.
   }
 
+  void schedulerMeasure(SurfaceId surfaceId, Tag tag, MeasureCallback callback) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    id<RCTSchedulerDelegate> delegate = scheduler.delegate;
+    if (delegate == nil) {
+      callback(std::nullopt);
+      return;
+    }
+
+    auto callbackId = nextMeasureCallbackId_.fetch_add(1);
+    {
+      std::lock_guard<std::mutex> lock(pendingMeasureMutex_);
+      pendingMeasureCallbacks_.emplace(callbackId, std::move(callback));
+    }
+
+    [delegate schedulerMeasure:surfaceId reactTag:tag inWindow:NO callbackId:callbackId];
+  }
+
+  void schedulerMeasureInWindow(SurfaceId surfaceId, Tag tag, MeasureInWindowCallback callback) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    id<RCTSchedulerDelegate> delegate = scheduler.delegate;
+    if (delegate == nil) {
+      callback(std::nullopt);
+      return;
+    }
+
+    auto callbackId = nextMeasureCallbackId_.fetch_add(1);
+    {
+      std::lock_guard<std::mutex> lock(pendingMeasureMutex_);
+      pendingMeasureInWindowCallbacks_.emplace(callbackId, std::move(callback));
+    }
+
+    [delegate schedulerMeasure:surfaceId reactTag:tag inWindow:YES callbackId:callbackId];
+  }
+
+  void onMeasureResult(int64_t callbackId, bool inWindow, bool success, double x, double y, double width, double height)
+  {
+    if (inWindow) {
+      MeasureInWindowCallback callback;
+      {
+        std::lock_guard<std::mutex> lock(pendingMeasureMutex_);
+        auto it = pendingMeasureInWindowCallbacks_.find(callbackId);
+        if (it == pendingMeasureInWindowCallbacks_.end()) {
+          return;
+        }
+        callback = std::move(it->second);
+        pendingMeasureInWindowCallbacks_.erase(it);
+      }
+
+      if (!success) {
+        callback(std::nullopt);
+        return;
+      }
+
+      MeasureInWindowResult result;
+      result.x = x;
+      result.y = y;
+      result.width = width;
+      result.height = height;
+      callback(result);
+      return;
+    }
+
+    MeasureCallback callback;
+    {
+      std::lock_guard<std::mutex> lock(pendingMeasureMutex_);
+      auto it = pendingMeasureCallbacks_.find(callbackId);
+      if (it == pendingMeasureCallbacks_.end()) {
+        return;
+      }
+      callback = std::move(it->second);
+      pendingMeasureCallbacks_.erase(it);
+    }
+
+    if (!success) {
+      callback(std::nullopt);
+      return;
+    }
+
+    MeasureResult result;
+    result.pageX = x;
+    result.pageY = y;
+    result.width = width;
+    result.height = height;
+    callback(result);
+  }
+
  private:
   void *scheduler_;
+
+  std::atomic<int64_t> nextMeasureCallbackId_{1};
+  std::mutex pendingMeasureMutex_;
+  std::unordered_map<int64_t, MeasureCallback> pendingMeasureCallbacks_;
+  std::unordered_map<int64_t, MeasureInWindowCallback> pendingMeasureInWindowCallbacks_;
 };
 
 class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, public RunLoopObserver::Delegate {
@@ -210,6 +307,19 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 - (const std::shared_ptr<facebook::react::UIManager>)uiManager
 {
   return _scheduler->getUIManager();
+}
+
+- (void)onMeasureResultWithCallbackId:(int64_t)callbackId
+                             inWindow:(BOOL)inWindow
+                              success:(BOOL)success
+                                    x:(double)x
+                                    y:(double)y
+                                width:(double)width
+                               height:(double)height
+{
+  if (_delegateProxy) {
+    _delegateProxy->onMeasureResult(callbackId, inWindow, success, x, y, width, height);
+  }
 }
 
 @end

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
@@ -112,6 +113,13 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
 
+  void schedulerMeasure(SurfaceId surfaceId, Tag tag, MeasureCallback callback) override;
+
+  void schedulerMeasureInWindow(
+      SurfaceId surfaceId,
+      Tag tag,
+      MeasureInWindowCallback callback) override;
+
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
@@ -125,6 +133,15 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   jintArray getRelativeAncestorList(jint rootTag, jint childTag);
 
   void uninstallFabricUIManager();
+
+  void onMeasureResult(
+      jlong callbackId,
+      jboolean inWindow,
+      jboolean success,
+      jint x,
+      jint y,
+      jint width,
+      jint height);
 
   // Private member variables
   std::shared_mutex installMutex_;
@@ -149,6 +166,11 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   // Track pending transactions, one per surfaceId
   std::mutex pendingTransactionsMutex_;
   std::vector<MountingTransaction> pendingTransactions_;
+
+  std::atomic<int64_t> nextMeasureCallbackId_{1};
+  std::mutex pendingMeasureMutex_;
+  std::unordered_map<int64_t, MeasureCallback> pendingMeasureCallbacks_;
+  std::unordered_map<int64_t, MeasureInWindowCallback> pendingMeasureInWindowCallbacks_;
 
   float pointScaleFactor_ = 1;
 

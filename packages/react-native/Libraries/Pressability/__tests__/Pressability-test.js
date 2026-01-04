@@ -880,5 +880,104 @@ describe('Pressability', () => {
         expect(config.onPressOut).toBeCalled();
       });
     });
+
+    describe('when measured responder region does not match touch target (e.g. stale during animation)', () => {
+      it('`onPress` is cancelled even if the finger does not move', () => {
+        // Measure reports a stale region at x=0..50, while touch events are at x=100.
+        getMock(UIManager.measure).mockImplementation((id, fn) => {
+          fn(
+            mockRegion.left,
+            mockRegion.top,
+            mockRegion.width,
+            mockRegion.height,
+            mockRegion.pageX,
+            mockRegion.pageY,
+          );
+        });
+
+        const {config, handlers} = createMockPressability({
+          delayPressIn: 0,
+        });
+
+        handlers.onStartShouldSetResponder();
+        handlers.onResponderGrant(
+          createMockPressEvent({
+            registrationName: 'onResponderGrant',
+            pageX: mockRegion.width * 2,
+            pageY: mockRegion.height / 2,
+          }),
+        );
+
+        expect(UIManager.measure).toBeCalled();
+
+        // Finger doesn't move; a MOVE event is still observed (e.g. due to jitter).
+        handlers.onResponderMove(
+          createMockPressEvent({
+            registrationName: 'onResponderMove',
+            pageX: mockRegion.width * 2,
+            pageY: mockRegion.height / 2,
+          }),
+        );
+        jest.runOnlyPendingTimers();
+
+        handlers.onResponderRelease(
+          createMockPressEvent({
+            registrationName: 'onResponderRelease',
+            pageX: mockRegion.width * 2,
+            pageY: mockRegion.height / 2,
+          }),
+        );
+
+        expect(config.onPress).not.toBeCalled();
+      });
+
+      it('`onPress` is called when measured region matches touch coordinates', () => {
+        // Measure reports a region that matches the touch coordinates.
+        getMock(UIManager.measure).mockImplementation((id, fn) => {
+          fn(
+            mockRegion.left,
+            mockRegion.top,
+            mockRegion.width,
+            mockRegion.height,
+            mockRegion.width * 2,
+            mockRegion.pageY,
+          );
+        });
+
+        const {config, handlers} = createMockPressability({
+          delayPressIn: 0,
+        });
+
+        handlers.onStartShouldSetResponder();
+        handlers.onResponderGrant(
+          createMockPressEvent({
+            registrationName: 'onResponderGrant',
+            pageX: mockRegion.width * 2 + 1,
+            pageY: mockRegion.height / 2,
+          }),
+        );
+
+        expect(UIManager.measure).toBeCalled();
+
+        handlers.onResponderMove(
+          createMockPressEvent({
+            registrationName: 'onResponderMove',
+            pageX: mockRegion.width * 2 + 1,
+            pageY: mockRegion.height / 2,
+          }),
+        );
+        jest.runOnlyPendingTimers();
+
+        handlers.onResponderRelease(
+          createMockPressEvent({
+            registrationName: 'onResponderRelease',
+            pageX: mockRegion.width * 2 + 1,
+            pageY: mockRegion.height / 2,
+          }),
+        );
+
+        expect(config.onPress).toBeCalled();
+      });
+    });
   });
 });
