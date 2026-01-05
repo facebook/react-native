@@ -6,10 +6,19 @@ import android.text.TextPaint
 import android.text.style.CharacterStyle
 import android.text.style.UpdateAppearance
 
+/**
+ * Span that applies a linear gradient to text.
+ *
+ * @param start The x-offset for the gradient start position
+ * @param colors Array of gradient colors
+ * @param angle Gradient angle in degrees (0 = horizontal)
+ * @param gradientWidth Width of the gradient pattern in pixels. Default is 100.
+ */
 public class LinearGradientSpan(
     private val start: Float,
     private val colors: IntArray,
     private val angle: Float = 0f,
+    private val gradientWidth: Float = Float.NaN,
 ) : CharacterStyle(), ReactSpan,
     UpdateAppearance {
     public override fun updateDrawState(tp: TextPaint) {
@@ -18,7 +27,7 @@ public class LinearGradientSpan(
         tp.setColor(colors[0])
 
         val radians = Math.toRadians(angle.toDouble())
-        val width = 100.0f
+        val width = if (gradientWidth.isNaN()) 100f else gradientWidth
         val height = tp.textSize
 
         val centerX = start + width / 2

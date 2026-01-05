@@ -230,6 +230,11 @@ export interface TextProps
   gradientAngle?: number | undefined;
 
   /**
+   * Width of the gradient pattern in pixels. Default is 100.
+   */
+  gradientWidth?: number | undefined;
+
+  /**
    * Width of the text stroke (outline). Creates an outer stroke effect.
    */
   textStrokeWidth?: number | undefined;

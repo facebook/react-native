@@ -69,6 +69,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_TEXT_STROKE_WIDTH = 31;
   public static final short TA_KEY_TEXT_STROKE_COLOR = 32;
   public static final short TA_KEY_GRADIENT_ANGLE = 33;
+  public static final short TA_KEY_GRADIENT_WIDTH = 34;
 
   public static final int UNSET = -1;
 
@@ -159,6 +160,7 @@ public class TextAttributeProps {
 
   protected @Nullable int[] mGradientColors = null;
   protected float mGradientAngle = Float.NaN;
+  protected float mGradientWidth = Float.NaN;
 
   private TextAttributeProps() {}
 
@@ -255,6 +257,9 @@ public class TextAttributeProps {
         case TA_KEY_GRADIENT_ANGLE:
           result.setGradientAngle((float) entry.getDoubleValue());
           break;
+        case TA_KEY_GRADIENT_WIDTH:
+          result.setGradientWidth((float) entry.getDoubleValue());
+          break;
         case TA_KEY_MAX_FONT_SIZE_MULTIPLIER:
           result.setMaxFontSizeMultiplier((float) entry.getDoubleValue());
           break;
@@ -303,6 +308,7 @@ public class TextAttributeProps {
     result.setRole(getStringProp(props, ViewProps.ROLE));
     result.setGradientColors(getArrayProp(props, "gradientColors"));
     result.setGradientAngle(getFloatProp(props, "gradientAngle", Float.NaN));
+    result.setGradientWidth(getFloatProp(props, "gradientWidth", Float.NaN));
     result.setTextStrokeWidth(getFloatProp(props, "textStrokeWidth", Float.NaN));
     if (props.hasKey("textStrokeColor")) {
       result.setTextStrokeColor(props.getInt("textStrokeColor", 0));
@@ -822,6 +828,14 @@ public class TextAttributeProps {
 
   private void setGradientAngle(float gradientAngle) {
     mGradientAngle = gradientAngle;
+  }
+
+  public float getGradientWidth() {
+    return mGradientWidth;
+  }
+
+  private void setGradientWidth(float gradientWidth) {
+    mGradientWidth = gradientWidth;
   }
 
   public static int getTextBreakStrategy(@Nullable String textBreakStrategy) {

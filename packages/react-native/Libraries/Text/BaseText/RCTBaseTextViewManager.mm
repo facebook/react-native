@@ -30,6 +30,7 @@ RCT_REMAP_SHADOW_PROPERTY(color, textAttributes.foregroundColor, UIColor)
 RCT_REMAP_SHADOW_PROPERTY(backgroundColor, textAttributes.backgroundColor, UIColor)
 RCT_REMAP_SHADOW_PROPERTY(gradientColors, textAttributes.gradientColors, NSArray)
 RCT_REMAP_SHADOW_PROPERTY(gradientAngle, textAttributes.gradientAngle, CGFloat)
+RCT_REMAP_SHADOW_PROPERTY(gradientWidth, textAttributes.gradientWidth, CGFloat)
 RCT_REMAP_SHADOW_PROPERTY(opacity, textAttributes.opacity, CGFloat)
 // Font
 RCT_REMAP_SHADOW_PROPERTY(fontFamily, textAttributes.fontFamily, NSString)
