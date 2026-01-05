@@ -189,4 +189,27 @@ class ViewTransitionCoordinatorTest {
         assertThat(coordinator.shouldEnqueueOperation(childTag, parentTag))
             .isFalse()
     }
+
+  @Test
+  fun testDeleteQueueShouldNotImpactUnrelatedViews() {
+    // when a remove+delete is queued for child A under parent P1,
+    // it should not affect a delete operation for child B under parent P2
+    val childATag = 100
+    val childBTag = 101
+
+
+    coordinator.markViewInTransition(
+        tag = childATag,
+        transitioning = true,
+        view = null,
+        onDetach = {}
+    )
+    val deleteOpA = DeleteViewOperation(
+        reactTag = childATag
+    )
+    coordinator.enqueueOperation(deleteOpA)
+
+    assertThat(coordinator.shouldEnqueueOperation(childBTag, DELETE_VIEW_PARENT_TAG, false))
+        .isFalse()
+  }
 }
