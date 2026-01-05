@@ -618,7 +618,7 @@ declare class crypto$Hash extends stream$Duplex {
     data: string | Buffer,
     input_encoding?: 'utf8' | 'ascii' | 'latin1' | 'binary',
   ): crypto$Hash;
-  copy(options?: mixed): crypto$Hash;
+  copy(options?: unknown): crypto$Hash;
 }
 
 declare class crypto$Hmac extends stream$Duplex {
@@ -703,7 +703,7 @@ declare class crypto$KeyObject {
       format: 'der',
     }>,
   ): Buffer;
-  export(options: Readonly<{format: 'jwk'}>): mixed;
+  export(options: Readonly<{format: 'jwk'}>): unknown;
   equals(otherKeyObject: crypto$KeyObject): boolean;
 }
 
@@ -739,7 +739,7 @@ declare class crypto$X509Certificate {
   checkIssued(otherCert: crypto$X509Certificate): boolean;
   checkPrivateKey(privateKey: crypto$KeyObject): boolean;
   toJSON(): string;
-  toLegacyObject(): mixed;
+  toLegacyObject(): unknown;
   toString(): string;
   verify(publicKey: crypto$KeyObject): boolean;
 }
@@ -930,10 +930,10 @@ declare module 'crypto' {
     encoding: buffer$Encoding,
   ): crypto$KeyObject;
   declare function createPublicKey(
-    key: string | Buffer | crypto$KeyObject | mixed,
+    key: string | Buffer | crypto$KeyObject | unknown,
   ): crypto$KeyObject;
   declare function createPrivateKey(
-    key: string | Buffer | mixed,
+    key: string | Buffer | unknown,
   ): crypto$KeyObject;
   declare function generateKeyPair(
     type:
@@ -945,7 +945,7 @@ declare module 'crypto' {
       | 'ed448'
       | 'x25519'
       | 'x448',
-    options: mixed,
+    options: unknown,
     callback: (
       err: ?Error,
       publicKey: crypto$KeyObject,
@@ -962,7 +962,7 @@ declare module 'crypto' {
       | 'ed448'
       | 'x25519'
       | 'x448',
-    options: mixed,
+    options: unknown,
   ): {publicKey: crypto$KeyObject, privateKey: crypto$KeyObject, ...};
   declare function generateKey(
     type: 'hmac' | 'aes',
@@ -2011,8 +2011,8 @@ declare module 'fs' {
       | Buffer
       | Uint8Array
       | DataView
-      | AsyncIterable<mixed>
-      | Iterable<mixed>
+      | AsyncIterable<unknown>
+      | Iterable<unknown>
       | stream$Readable,
     options: WriteOptions | string,
   ) => Promise<void>;
