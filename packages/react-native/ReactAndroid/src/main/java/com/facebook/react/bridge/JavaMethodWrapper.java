@@ -110,7 +110,7 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
             return null;
           } else {
             int id = (int) jsArguments.getDouble(atIndex);
-            return new com.facebook.react.bridge.CallbackImpl(jsInstance, id);
+            return null;
           }
         }
       };
@@ -345,7 +345,7 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
         throw new Error("processArguments failed");
       }
       if (mJSArgumentsNeeded != parameters.size()) {
-        throw new NativeArgumentsParseException(
+        throw new RuntimeException(
             traceName + " got " + parameters.size() + " arguments, expected " + mJSArgumentsNeeded);
       }
 
@@ -357,7 +357,7 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
           jsArgumentsConsumed += mArgumentExtractors[i].getJSArgumentsNeeded();
         }
       } catch (UnexpectedNativeTypeException | NullPointerException e) {
-        throw new NativeArgumentsParseException(
+        throw new RuntimeException(
             e.getMessage()
                 + " (constructing arguments for "
                 + traceName

@@ -31,9 +31,7 @@ public class NativeModuleRegistryBuilder(
     // cannot be modified
     val moduleHolders =
         @Suppress("DEPRECATION")
-        if (reactPackage is LazyReactPackage) {
-          reactPackage.getNativeModuleIterator(reactApplicationContext)
-        } else if (reactPackage is BaseReactPackage) {
+        if (reactPackage is BaseReactPackage) {
           reactPackage.getNativeModuleIterator(reactApplicationContext)
         } else {
           ReactPackageHelper.getNativeModuleIterator(reactPackage, reactApplicationContext)

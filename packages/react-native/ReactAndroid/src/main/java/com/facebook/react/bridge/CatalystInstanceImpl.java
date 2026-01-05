@@ -113,15 +113,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
-  private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
 
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
-      JSExceptionHandler jSExceptionHandler,
-      @Nullable ReactInstanceManagerInspectorTarget inspectorTarget) {
+      JSExceptionHandler jSExceptionHandler) {
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
 
@@ -137,7 +135,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSExceptionHandler = jSExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
-    mInspectorTarget = inspectorTarget;
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
@@ -149,8 +146,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mReactQueueConfiguration.getJSQueueThread(),
         mNativeModulesQueueThread,
         mNativeModuleRegistry.getJavaModules(this),
-        mNativeModuleRegistry.getCxxModules(),
-        mInspectorTarget);
+        mNativeModuleRegistry.getCxxModules());
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
@@ -218,8 +214,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       MessageQueueThread jsQueue,
       MessageQueueThread moduleQueue,
       Collection<JavaModuleWrapper> javaModules,
-      Collection<ModuleHolder> cxxModules,
-      @Nullable ReactInstanceManagerInspectorTarget inspectorTarget);
+      Collection<ModuleHolder> cxxModules);
 
   @Override
   public void setSourceURLs(String deviceURL, String remoteURL) {
@@ -348,12 +343,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     UiThreadUtil.assertOnUiThread();
     if (mDestroyed) {
       return;
-    }
-
-    if (mInspectorTarget != null) {
-      assertCondition(
-          mInspectorTarget.isValid(),
-          "ReactInstanceManager inspector target destroyed before instance was unregistered");
     }
     unregisterFromInspector();
 
@@ -653,7 +642,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable NativeModuleRegistry mRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable JSExceptionHandler mJSExceptionHandler;
-    private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
 
     public Builder setReactQueueConfigurationSpec(
         ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {
@@ -681,20 +669,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
-    public Builder setInspectorTarget(
-        @Nullable ReactInstanceManagerInspectorTarget inspectorTarget) {
-      mInspectorTarget = inspectorTarget;
-      return this;
-    }
-
     public CatalystInstanceImpl build() {
       return new CatalystInstanceImpl(
           Assertions.assertNotNull(mReactQueueConfigurationSpec),
           Assertions.assertNotNull(mJSExecutor),
           Assertions.assertNotNull(mRegistry),
           Assertions.assertNotNull(mJSBundleLoader),
-          Assertions.assertNotNull(mJSExceptionHandler),
-          mInspectorTarget);
+          Assertions.assertNotNull(mJSExceptionHandler));
     }
   }
 }

@@ -31,11 +31,6 @@ internal class ReactSafeAreaViewManager() :
 
   override fun getName(): String = REACT_CLASS
 
-  override fun createShadowNodeInstance(): LayoutShadowNode = ReactSafeAreaViewShadowNode()
-
-  public override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
-      ReactSafeAreaViewShadowNode::class.java
-
   public override fun updateState(
       view: ReactSafeAreaView,
       props: ReactStylesDiffMap,

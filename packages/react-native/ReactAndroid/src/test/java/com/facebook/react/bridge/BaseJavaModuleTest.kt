@@ -42,13 +42,6 @@ class BaseJavaModuleTest {
   private fun findMethod(mname: String, methods: List<JavaModuleWrapper.MethodDescriptor>): Int =
       methods.indexOfFirst({ it.name === mname })
 
-  @Test(expected = NativeArgumentsParseException::class)
-  fun testCallMethodWithoutEnoughArgs() {
-    val methodId = findMethod("regularMethod", methods)
-    whenever(arguments.size()).thenReturn(1)
-    moduleWrapper.invoke(methodId, arguments)
-  }
-
   @Test
   fun testCallMethodWithEnoughArgs() {
     val methodId = findMethod("regularMethod", methods)

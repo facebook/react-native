@@ -71,27 +71,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         continue;
       }
 
-      if (shouldSupportLegacyPackages() && reactPackage instanceof LazyReactPackage) {
-        // TODO(T145105887): Output warnings that LazyReactPackage was used
-        final LazyReactPackage lazyPkg = ((LazyReactPackage) reactPackage);
-        final List<ModuleSpec> moduleSpecs = lazyPkg.getNativeModules(reactApplicationContext);
-        final Map<String, Provider<? extends NativeModule>> moduleSpecProviderMap = new HashMap<>();
-        for (final ModuleSpec moduleSpec : moduleSpecs) {
-          moduleSpecProviderMap.put(moduleSpec.getName(), moduleSpec.getProvider());
-        }
-
-        final ModuleProvider moduleProvider =
-            moduleName -> {
-              Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(moduleName);
-              return provider != null ? provider.get() : null;
-            };
-
-        mModuleProviders.add(moduleProvider);
-        mPackageModuleInfos.put(
-            moduleProvider, lazyPkg.getReactModuleInfoProvider().getReactModuleInfos());
-        continue;
-      }
-
       if (shouldSupportLegacyPackages()) {
         // TODO(T145105887): Output warnings that ReactPackage was used
         final List<NativeModule> nativeModules =

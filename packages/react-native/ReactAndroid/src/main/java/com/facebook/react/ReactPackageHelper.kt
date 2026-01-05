@@ -28,7 +28,7 @@ internal object ReactPackageHelper {
   ): Iterable<ModuleHolder> {
     FLog.d(
         ReactConstants.TAG,
-        "${reactPackage.javaClass.simpleName} is not a LazyReactPackage, falling back to old version.")
+        "${reactPackage.javaClass.simpleName}, falling back to old version.")
     val nativeModules = reactPackage.createNativeModules(reactApplicationContext)
     return Iterable {
       object : Iterator<ModuleHolder> {

@@ -38,7 +38,6 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.ReactNoCrashBridgeNotAllowedSoftException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
@@ -698,14 +697,6 @@ public class ReactHostImpl implements ReactHost {
   /* package */
   @Nullable
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
-    if (nativeModuleInterface == UIManagerModule.class) {
-      ReactSoftExceptionLogger.logSoftExceptionVerbose(
-          TAG,
-          new ReactNoCrashBridgeNotAllowedSoftException(
-              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is"
-                  + " disabled"));
-    }
-
     final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getNativeModule(nativeModuleInterface);

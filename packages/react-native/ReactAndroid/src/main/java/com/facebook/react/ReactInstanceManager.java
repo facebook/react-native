@@ -64,8 +64,6 @@ import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactCxxErrorHandler;
-import com.facebook.react.bridge.ReactInstanceManagerInspectorTarget;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -184,7 +182,6 @@ public class ReactInstanceManager {
   private final Context mApplicationContext;
   private @Nullable @ThreadConfined(UI) DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private @Nullable Activity mCurrentActivity;
-  private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
   private final Collection<com.facebook.react.ReactInstanceEventListener>
       mReactInstanceEventListeners =
           Collections.synchronizedList(
@@ -293,17 +290,6 @@ public class ReactInstanceManager {
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
-      mPackages.add(
-          new CoreModulesPackage(
-              this,
-              new DefaultHardwareBackBtnHandler() {
-                @Override
-                public void invokeDefaultOnBackPressed() {
-                  ReactInstanceManager.this.invokeDefaultOnBackPressed();
-                }
-              },
-              lazyViewManagersEnabled,
-              minTimeLeftInFrameForNonBatchedOperationMs));
       if (mUseDeveloperSupport) {
         mPackages.add(new DebugCorePackage());
       }
@@ -423,11 +409,10 @@ public class ReactInstanceManager {
     } catch (NoSuchMethodException e) {
       FLog.e("ReactInstanceHolder", "Failed to set cxx error handler function", e);
     }
-    ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
   }
 
   private void unregisterCxxErrorHandlerFunc() {
-    ReactCxxErrorHandler.setHandleErrorFunc(null, null);
+    
   }
 
   static void initializeSoLoaderIfNecessary(Context applicationContext) {
@@ -830,15 +815,6 @@ public class ReactInstanceManager {
           mCurrentReactContext.destroy();
           mCurrentReactContext = null;
         }
-      }
-    }
-
-    // If the host has been invalidated, now that the current context/instance
-    // has been destroyed, we can safely destroy the host's inspector target.
-    if (mInstanceManagerInvalidated) {
-      if (mInspectorTarget != null) {
-        mInspectorTarget.close();
-        mInspectorTarget = null;
       }
     }
 
@@ -1473,8 +1449,7 @@ public class ReactInstanceManager {
             .setJSExecutor(jsExecutor)
             .setRegistry(nativeModuleRegistry)
             .setJSBundleLoader(jsBundleLoader)
-            .setJSExceptionHandler(exceptionHandler)
-            .setInspectorTarget(getOrCreateInspectorTarget());
+            .setJSExceptionHandler(exceptionHandler);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
@@ -1581,83 +1556,7 @@ public class ReactInstanceManager {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processPackage")
         .arg("className", reactPackage.getClass().getSimpleName())
         .flush();
-    if (reactPackage instanceof ReactPackageLogger) {
-      ((ReactPackageLogger) reactPackage).startProcessPackage();
-    }
     nativeModuleRegistryBuilder.processPackage(reactPackage);
-
-    if (reactPackage instanceof ReactPackageLogger) {
-      ((ReactPackageLogger) reactPackage).endProcessPackage();
-    }
     SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
-  }
-
-  private static class InspectorTargetDelegateImpl
-      implements ReactInstanceManagerInspectorTarget.TargetDelegate {
-    // This weak reference breaks the cycle between the C++ HostTarget and the
-    // Java ReactInstanceManager, preventing memory leaks in apps that create
-    // multiple ReactInstanceManagers over time.
-    private WeakReference<ReactInstanceManager> mReactInstanceManagerWeak;
-
-    public InspectorTargetDelegateImpl(ReactInstanceManager inspectorTarget) {
-      mReactInstanceManagerWeak = new WeakReference<ReactInstanceManager>(inspectorTarget);
-    }
-
-    @Override
-    public Map<String, String> getMetadata() {
-      ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
-
-      return AndroidInfoHelpers.getInspectorHostMetadata(
-          reactInstanceManager != null ? reactInstanceManager.mApplicationContext : null);
-    }
-
-    @Override
-    public void onReload() {
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
-            if (reactInstanceManager != null) {
-              reactInstanceManager.mDevSupportManager.handleReloadJS();
-            }
-          });
-    }
-
-    @Override
-    public void onSetPausedInDebuggerMessage(@Nullable String message) {
-      ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
-      if (reactInstanceManager == null) {
-        return;
-      }
-      if (message == null) {
-        reactInstanceManager.mDevSupportManager.hidePausedInDebuggerOverlay();
-      } else {
-        reactInstanceManager.mDevSupportManager.showPausedInDebuggerOverlay(
-            message,
-            new PausedInDebuggerOverlayCommandListener() {
-              @Override
-              public void onResume() {
-                UiThreadUtil.assertOnUiThread();
-                if (reactInstanceManager.mInspectorTarget != null) {
-                  reactInstanceManager.mInspectorTarget.sendDebuggerResumeCommand();
-                }
-              }
-            });
-      }
-    }
-
-    @Override
-    public void loadNetworkResource(String url, InspectorNetworkRequestListener listener) {
-      InspectorNetworkHelper.loadNetworkResource(url, listener);
-    }
-  }
-
-  private @Nullable ReactInstanceManagerInspectorTarget getOrCreateInspectorTarget() {
-    if (mInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
-
-      mInspectorTarget =
-          new ReactInstanceManagerInspectorTarget(new InspectorTargetDelegateImpl(this));
-    }
-
-    return mInspectorTarget;
   }
 }

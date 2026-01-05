@@ -56,12 +56,6 @@ import java.util.Arrays;
 @ReactPropertyHolder
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
-  private static final YogaConfig sYogaConfig;
-
-  static {
-    sYogaConfig = ReactYogaConfigProvider.get();
-  }
-
   private int mReactTag;
   private @Nullable String mViewClassName;
   private int mRootTag;
@@ -91,8 +85,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   public ReactShadowNodeImpl() {
     mDefaultPadding = new Spacing(0f);
     if (!isVirtual()) {
-      YogaNode node = YogaNodePool.get().acquire();
-      mYogaNode = node == null ? YogaNodeFactory.create(sYogaConfig) : node;
+      YogaNode node = null;
+      mYogaNode = node;
       mYogaNode.setData(this);
       Arrays.fill(mPadding, YogaConstants.UNDEFINED);
     } else {
@@ -296,16 +290,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   private void updateNativeChildrenCountInParent(int delta) {
-    if (getNativeKind() != NativeKind.PARENT) {
-      ReactShadowNodeImpl parent = getParent();
-      while (parent != null) {
-        parent.mTotalNativeChildren += delta;
-        if (parent.getNativeKind() == NativeKind.PARENT) {
-          break;
-        }
-        parent = parent.getParent();
-      }
-    }
+    
   }
 
   /**
@@ -504,9 +489,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    */
   @Override
   public final void addNativeChildAt(ReactShadowNodeImpl child, int nativeIndex) {
-    Assertions.assertCondition(getNativeKind() == NativeKind.PARENT);
-    Assertions.assertCondition(child.getNativeKind() != NativeKind.NONE);
-
     if (mNativeChildren == null) {
       mNativeChildren = new ArrayList<>(4);
     }
@@ -567,13 +549,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public NativeKind getNativeKind() {
-    return isVirtual() || isLayoutOnly()
-        ? NativeKind.NONE
-        : hoistNativeChildren() ? NativeKind.LEAF : NativeKind.PARENT;
-  }
-
-  @Override
   public final int getTotalNativeChildren() {
     return mTotalNativeChildren;
   }
@@ -597,10 +572,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   private int getTotalNativeNodeContributionToParent() {
-    NativeKind kind = getNativeKind();
-    return kind == NativeKind.NONE
-        ? mTotalNativeChildren
-        : kind == NativeKind.LEAF ? 1 + mTotalNativeChildren : 1; // kind == NativeKind.PARENT
+    return -1;
   }
 
   @Override
@@ -1086,7 +1058,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   public void dispose() {
     if (mYogaNode != null) {
       mYogaNode.reset();
-      YogaNodePool.get().release(mYogaNode);
     }
   }
 

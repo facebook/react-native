@@ -23,7 +23,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
-import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -721,10 +720,6 @@ public class UIImplementation {
       // and it will be refactored when fabric supports JS Responder.
       return;
     }
-
-    while (node.getNativeKind() == NativeKind.NONE) {
-      node = node.getParent();
-    }
     mOperationsQueue.enqueueSetJSResponder(node.getReactTag(), reactTag, blockNativeResponder);
   }
 
@@ -772,13 +767,6 @@ public class UIImplementation {
   public void onCatalystInstanceDestroyed() {
     mViewOperationsEnabled = false;
     mViewManagers.invalidate();
-  }
-
-  // NOTE: When converted to Kotlin this method should be `internal` due to
-  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
-  public void setViewHierarchyUpdateDebugListener(
-      @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
-    mOperationsQueue.setViewHierarchyUpdateDebugListener(listener);
   }
 
   protected final void removeShadowNode(ReactShadowNode nodeToRemove) {

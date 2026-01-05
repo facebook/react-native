@@ -39,8 +39,6 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
   private var choreographer: Choreographer? = null
   private val uiManagerModule: UIManagerModule? =
       reactContext.getNativeModule(UIManagerModule::class.java)
-  private val didJSUpdateUiDuringFrameDetector: DidJSUpdateUiDuringFrameDetector =
-      DidJSUpdateUiDuringFrameDetector()
   private var firstFrameTime: Long = -1
   private var lastFrameTime: Long = -1
   private var numFrameCallbacks = 0
@@ -57,9 +55,6 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
     }
     val lastFrameStartTime = lastFrameTime
     lastFrameTime = l
-    if (didJSUpdateUiDuringFrameDetector.getDidJSHitFrameAndCleanup(lastFrameStartTime, l)) {
-      numFrameCallbacksWithBatchDispatches++
-    }
     numFrameCallbacks++
     val expectedNumFrames = expectedNumFrames
     val framesDropped = expectedNumFrames - expectedNumFramesPrev - 1
@@ -88,10 +83,7 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
     // T172641976: re-think if we need to implement addBridgeIdleDebugListener and
     // removeBridgeIdleDebugListener for Bridgeless
     @Suppress("DEPRECATION")
-    if (!reactContext.isBridgeless) {
-      reactContext.catalystInstance.addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
-    }
-    uiManagerModule?.setViewHierarchyUpdateDebugListener(didJSUpdateUiDuringFrameDetector)
+    // uiManagerModule?.setViewHierarchyUpdateDebugListener(didJSUpdateUiDuringFrameDetector)
     this.targetFps = targetFps
     UiThreadUtil.runOnUiThread {
       choreographer = Choreographer.getInstance()
@@ -107,10 +99,7 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
 
   public fun stop() {
     @Suppress("DEPRECATION")
-    if (!reactContext.isBridgeless) {
-      reactContext.catalystInstance.removeBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
-    }
-    uiManagerModule?.setViewHierarchyUpdateDebugListener(null)
+    // uiManagerModule?.setViewHierarchyUpdateDebugListener(null)
     UiThreadUtil.runOnUiThread {
       choreographer = Choreographer.getInstance()
       choreographer?.removeFrameCallback(this)

@@ -17,11 +17,9 @@
 #include "InspectorNetworkRequestListener.h"
 #include "JCallback.h"
 #include "JDynamicNative.h"
-#include "JInspector.h"
 #include "JReactMarker.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ProxyExecutor.h"
-#include "ReactInstanceManagerInspectorTarget.h"
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
 
@@ -93,8 +91,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     WritableNativeMap::registerNatives();
     JDynamicNative::registerNatives();
     JReactMarker::registerNatives();
-    JInspector::registerNatives();
-    ReactInstanceManagerInspectorTarget::registerNatives();
     InspectorNetworkRequestListener::registerNatives();
   });
 }

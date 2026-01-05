@@ -19,7 +19,6 @@
 #include "JSLoader.h"
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
-#include "ReactInstanceManagerInspectorTarget.h"
 
 namespace facebook::react {
 
@@ -60,9 +59,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
           jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
           javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-          cxxModules,
-      jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject>
-          inspectorTarget);
+          cxxModules);
 
   void extendNativeModules(
       jni::alias_ref<jni::JCollection<

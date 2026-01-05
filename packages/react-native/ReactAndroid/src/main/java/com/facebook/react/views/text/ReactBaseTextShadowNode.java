@@ -104,11 +104,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     for (int i = 0, length = textShadowNode.getChildCount(); i < length; i++) {
       ReactShadowNode child = textShadowNode.getChildAt(i);
 
-      if (child instanceof ReactRawTextShadowNode) {
-        sb.append(
-            TextTransform.apply(
-                ((ReactRawTextShadowNode) child).getText(), textAttributes.getTextTransform()));
-      } else if (child instanceof ReactBaseTextShadowNode) {
+      if (child instanceof ReactBaseTextShadowNode) {
         buildSpannedFromShadowNode(
             (ReactBaseTextShadowNode) child,
             sb,

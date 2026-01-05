@@ -54,9 +54,7 @@ import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
 import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
-import com.facebook.react.views.text.ReactRawTextManager
 import com.facebook.react.views.text.ReactTextViewManager
-import com.facebook.react.views.text.ReactVirtualTextViewManager
 import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager
 import com.facebook.react.views.textinput.ReactTextInputManager
 import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
@@ -143,11 +141,9 @@ constructor(private val config: MainPackageConfig? = null) :
           FrescoBasedReactTextInlineImageViewManager(),
           ReactImageManager(),
           ReactModalHostManager(),
-          ReactRawTextManager(),
           ReactTextInputManager(),
           ReactTextViewManager(),
           ReactViewManager(),
-          ReactVirtualTextViewManager(),
           ReactUnimplementedViewManager())
 
   /**
@@ -177,13 +173,10 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactImageManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactImageManager() },
           ReactModalHostManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactModalHostManager() },
-          ReactRawTextManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactRawTextManager() },
           ReactTextInputManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactTextInputManager() },
           ReactTextViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactTextViewManager() },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
-          ReactVirtualTextViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactVirtualTextViewManager() },
           ReactUnimplementedViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() })
 

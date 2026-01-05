@@ -28,8 +28,6 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.touch.JSResponderHandler;
-import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
-import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaDirection;
@@ -75,7 +73,6 @@ public class NativeViewHierarchyManager {
   private final ViewManagerRegistry mViewManagers;
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final RootViewManager mRootViewManager;
-  private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
   private final RectF mBoundingBox = new RectF();
 
   private volatile boolean mLayoutAnimationEnabled;
@@ -177,8 +174,6 @@ public class NativeViewHierarchyManager {
     try {
       View viewToUpdate = resolveView(tag);
 
-      viewToUpdate.setLayoutDirection(LayoutDirectionUtil.toAndroidFromYoga(layoutDirection));
-
       // Even though we have exact dimensions, we still call measure because some platform views
       // (e.g.
       // Switch) assume that method will always be called before onLayout and onDraw. They use it to
@@ -256,11 +251,7 @@ public class NativeViewHierarchyManager {
   }
 
   private void updateLayout(View viewToUpdate, int x, int y, int width, int height) {
-    if (mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayout(viewToUpdate)) {
-      mLayoutAnimator.applyLayoutUpdate(viewToUpdate, x, y, width, height);
-    } else {
-      viewToUpdate.layout(x, y, x + width, y + height);
-    }
+    viewToUpdate.layout(x, y, x + width, y + height);
   }
 
   public synchronized void createView(
@@ -458,14 +449,7 @@ public class NativeViewHierarchyManager {
 
         View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
 
-        if (mLayoutAnimationEnabled
-            && mLayoutAnimator.shouldAnimateLayout(viewToRemove)
-            && arrayContains(tagsToDelete, viewToRemove.getId())) {
-          // The view will be removed and dropped by the 'delete' layout animation
-          // instead, so do nothing
-        } else {
-          viewManager.removeViewAt(viewToManage, indexToRemove);
-        }
+        viewManager.removeViewAt(viewToManage, indexToRemove);
 
         lastIndexToRemove = indexToRemove;
       }
@@ -482,29 +466,6 @@ public class NativeViewHierarchyManager {
                   + "\n detail: "
                   + constructManageChildrenErrorMessage(
                       viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
-        }
-
-        if (mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
-          pendingDeletionTags.add(tagToDelete);
-          mLayoutAnimator.deleteView(
-              viewToDestroy,
-              new LayoutAnimationListener() {
-                @Override
-                public void onAnimationEnd() {
-                  // This should be called only on the UI thread, because
-                  // onAnimationEnd is called (indirectly) by Android View Animation.
-                  UiThreadUtil.assertOnUiThread();
-
-                  viewManager.removeView(viewToManage, viewToDestroy);
-                  dropView(viewToDestroy);
-                  pendingDeletionTags.remove(viewToDestroy.getId());
-                  if (pendingDeletionTags.isEmpty()) {
-                    mPendingDeletionsForTag.remove(tag);
-                  }
-                }
-              });
-        } else {
-          dropView(viewToDestroy);
         }
       }
     }
@@ -696,14 +657,14 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View v = mTagsToViews.get(tag);
     if (v == null) {
-      throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
+      throw new RuntimeException("No native view for " + tag + " currently exists");
     }
 
     View rootView = (View) RootViewUtil.getRootView(v);
     // It is possible that the RootView can't be found because this view is no longer on the screen
     // and has been removed by clipping
     if (rootView == null) {
-      throw new NoSuchNativeViewException("Native view " + tag + " is no longer on screen");
+      throw new RuntimeException("Native view " + tag + " is no longer on screen");
     }
     computeBoundingBox(rootView, outputBuffer);
     int rootX = outputBuffer[0];
@@ -763,7 +724,7 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     View v = mTagsToViews.get(tag);
     if (v == null) {
-      throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
+      throw new RuntimeException("No native view for " + tag + " currently exists");
     }
 
     v.getLocationOnScreen(outputBuffer);
@@ -820,12 +781,9 @@ public class NativeViewHierarchyManager {
 
   synchronized void configureLayoutAnimation(
       final ReadableMap config, final Callback onAnimationComplete) {
-    mLayoutAnimator.initializeFromConfig(config, onAnimationComplete);
   }
 
-  synchronized void clearLayoutAnimation() {
-    mLayoutAnimator.reset();
-  }
+  synchronized void clearLayoutAnimation() {}
 
   @Deprecated
   public synchronized void dispatchCommand(

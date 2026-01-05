@@ -1,0 +1,6 @@
+packages/react-native/ReactAndroid/src/main/jni/react/jni/JReactCxxErrorHandler.cpp
+packages/react-native/ReactAndroid/src/main/jni/react/jni/JReactCxxErrorHandler.h
+packages/react-native/ReactAndroid/src/main/jni/react/jni/ReactInstanceManagerInspectorTarget.cpp
+packages/react-native/ReactAndroid/src/main/jni/react/jni/ReactInstanceManagerInspectorTarget.h
+packages/react-native/ReactAndroid/src/main/jni/react/jni/JInspector.cpp
+packages/react-native/ReactAndroid/src/main/jni/react/jni/JInspector.h

@@ -41,7 +41,6 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
-import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -104,7 +103,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final ViewManagerRegistry mViewManagerRegistry;
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
-  private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
   private final CopyOnWriteArrayList<UIManagerListener> mUIManagerListeners =
       new CopyOnWriteArrayList<>();
 
@@ -203,7 +201,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
     reactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
-    YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }
 
@@ -669,9 +666,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchCompleteUI")
         .arg("BatchId", batchId)
         .flush();
-    for (UIManagerModuleListener listener : mListeners) {
-      listener.willDispatchViewUpdates(this);
-    }
     for (UIManagerListener listener : mUIManagerListeners) {
       listener.willDispatchViewUpdates(this);
     }
@@ -686,14 +680,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
-
-  // NOTE: When converted to Kotlin this method should be `internal` due to
-  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
-  public void setViewHierarchyUpdateDebugListener(
-      @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
-    mUIImplementation.setViewHierarchyUpdateDebugListener(listener);
-  }
-
   @Override
   public EventDispatcher getEventDispatcher() {
     return mEventDispatcher;
@@ -737,16 +723,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   public void prependUIBlock(UIBlock block) {
     mUIImplementation.prependUIBlock(block);
-  }
-
-  @Deprecated
-  public void addUIManagerListener(UIManagerModuleListener listener) {
-    mListeners.add(listener);
-  }
-
-  @Deprecated
-  public void removeUIManagerListener(UIManagerModuleListener listener) {
-    mListeners.remove(listener);
   }
 
   public void addUIManagerEventListener(UIManagerListener listener) {
@@ -814,7 +790,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     @Override
     public void onTrimMemory(int level) {
       if (level >= TRIM_MEMORY_MODERATE) {
-        YogaNodePool.get().clear();
       }
     }
 
