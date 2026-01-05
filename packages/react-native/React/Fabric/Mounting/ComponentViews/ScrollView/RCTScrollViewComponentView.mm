@@ -58,6 +58,7 @@ static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(const S
   }
 }
 
+API_AVAILABLE(ios(26.0))
 static UIScrollEdgeEffectStyle *RCTUIScrollEdgeEffectStyleFromProps(ScrollViewEdgeEffectStyle style)
 {
   switch (style) {
@@ -68,20 +69,6 @@ static UIScrollEdgeEffectStyle *RCTUIScrollEdgeEffectStyleFromProps(ScrollViewEd
     case ScrollViewEdgeEffectStyle::Hard:
       return UIScrollEdgeEffectStyle.hardStyle;
   }
-}
-
-static UIScrollEdgeEffect *RCTUIScrollEdgeEffectFromProps(const std::optional<ScrollViewEdgeEffect> &edgeEffect)
-{
-  if (!edgeEffect.has_value()) {
-    return nil;
-  }
-  
-  UIScrollEdgeEffect *uiEdgeEffect = [[UIScrollEdgeEffect alloc] init];
-  if (edgeEffect->style.has_value()) {
-    uiEdgeEffect.style = RCTUIScrollEdgeEffectStyleFromProps(edgeEffect->style.value());
-  }
-  uiEdgeEffect.hidden = edgeEffect->hidden;
-  return uiEdgeEffect;
 }
 
 // Once Fabric implements proper NativeAnimationDriver, this should be removed.
@@ -473,16 +460,36 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
   if (@available(iOS 26.0, *)) {
     if (oldScrollViewProps.topEdgeEffect != newScrollViewProps.topEdgeEffect) {
-      _scrollView.topEdgeEffect = RCTUIScrollEdgeEffectFromProps(newScrollViewProps.topEdgeEffect);
+      if (newScrollViewProps.topEdgeEffect.has_value()) {
+        if (newScrollViewProps.topEdgeEffect->style.has_value()) {
+          _scrollView.topEdgeEffect.style = RCTUIScrollEdgeEffectStyleFromProps(newScrollViewProps.topEdgeEffect->style.value());
+        }
+        _scrollView.topEdgeEffect.hidden = newScrollViewProps.topEdgeEffect->hidden;
+      }
     }
     if (oldScrollViewProps.bottomEdgeEffect != newScrollViewProps.bottomEdgeEffect) {
-      _scrollView.bottomEdgeEffect = RCTUIScrollEdgeEffectFromProps(newScrollViewProps.bottomEdgeEffect);
+      if (newScrollViewProps.bottomEdgeEffect.has_value()) {
+        if (newScrollViewProps.bottomEdgeEffect->style.has_value()) {
+          _scrollView.bottomEdgeEffect.style = RCTUIScrollEdgeEffectStyleFromProps(newScrollViewProps.bottomEdgeEffect->style.value());
+        }
+        _scrollView.bottomEdgeEffect.hidden = newScrollViewProps.bottomEdgeEffect->hidden;
+      }
     }
     if (oldScrollViewProps.leftEdgeEffect != newScrollViewProps.leftEdgeEffect) {
-      _scrollView.leftEdgeEffect = RCTUIScrollEdgeEffectFromProps(newScrollViewProps.leftEdgeEffect);
+      if (newScrollViewProps.leftEdgeEffect.has_value()) {
+        if (newScrollViewProps.leftEdgeEffect->style.has_value()) {
+          _scrollView.leftEdgeEffect.style = RCTUIScrollEdgeEffectStyleFromProps(newScrollViewProps.leftEdgeEffect->style.value());
+        }
+        _scrollView.leftEdgeEffect.hidden = newScrollViewProps.leftEdgeEffect->hidden;
+      }
     }
     if (oldScrollViewProps.rightEdgeEffect != newScrollViewProps.rightEdgeEffect) {
-      _scrollView.rightEdgeEffect = RCTUIScrollEdgeEffectFromProps(newScrollViewProps.rightEdgeEffect);
+      if (newScrollViewProps.rightEdgeEffect.has_value()) {
+        if (newScrollViewProps.rightEdgeEffect->style.has_value()) {
+          _scrollView.rightEdgeEffect.style = RCTUIScrollEdgeEffectStyleFromProps(newScrollViewProps.rightEdgeEffect->style.value());
+        }
+        _scrollView.rightEdgeEffect.hidden = newScrollViewProps.rightEdgeEffect->hidden;
+      }
     }
   }
 
