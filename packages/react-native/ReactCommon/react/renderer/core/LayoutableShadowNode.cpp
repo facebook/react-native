@@ -31,7 +31,10 @@ LayoutableShadowNode::LayoutableShadowNode(
     : ShadowNode(sourceShadowNode, fragment),
       layoutMetrics_(
           static_cast<const LayoutableShadowNode&>(sourceShadowNode)
-              .layoutMetrics_) {}
+              .layoutMetrics_),
+      originFromRoot_(
+          static_cast<const LayoutableShadowNode&>(sourceShadowNode)
+              .originFromRoot_) {}
 
 LayoutMetrics LayoutableShadowNode::computeLayoutMetricsFromRoot(
     const ShadowNodeFamily& descendantNodeFamily,
@@ -197,8 +200,32 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   return layoutMetrics;
 }
 
+Point LayoutableShadowNode::computeOriginFromRoot(
+    Point parentOriginFromRoot,
+    const Rect& frame,
+    const Transform& transform,
+    Point contentOriginOffset) {
+  if (parentOriginFromRoot == EmptyOriginFromRoot) {
+    return EmptyOriginFromRoot;
+  }
+
+  Point resultOrigin = frame.origin;
+
+  if (transform != Transform::Identity()) {
+    resultOrigin = transform.applyWithCenter(frame, frame.getCenter()).origin;
+  }
+
+  resultOrigin += parentOriginFromRoot + contentOriginOffset;
+
+  return resultOrigin;
+}
+
 LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
   return layoutMetrics_;
+}
+
+Point LayoutableShadowNode::getOriginFromRoot() const {
+  return originFromRoot_;
 }
 
 void LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
@@ -209,6 +236,16 @@ void LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
   }
 
   layoutMetrics_ = layoutMetrics;
+}
+
+void LayoutableShadowNode::setOriginFromRoot(Point originFromRoot) {
+  ensureUnsealed();
+
+  if (originFromRoot_ == originFromRoot) {
+    return;
+  }
+
+  originFromRoot_ = originFromRoot;
 }
 
 Transform LayoutableShadowNode::getTransform() const {
