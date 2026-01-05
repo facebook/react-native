@@ -74,7 +74,7 @@ test('moving box by 100 points', () => {
   Fantom.unstable_produceFramesForDuration(500);
 
   // Animation is completed now. C++ Animated will commit the final position to the shadow tree.
-  // TODO(T232605345): this shouldn't be neccessary once we fix Android's race condition.
+  // TODO(T232605345): this shouldn't be necessary once we fix Android's race condition.
   Fantom.runWorkLoop();
   expect(viewElement.getBoundingClientRect().x).toBe(100);
 });
@@ -251,7 +251,7 @@ test('animated opacity', () => {
     0,
   );
 
-  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  // TODO: this shouldn't be necessary since animation should be stopped after duration
   Fantom.runTask(() => {
     _opacityAnimation?.stop();
   });
@@ -559,7 +559,7 @@ test('animate layout props', () => {
 
   Fantom.unstable_produceFramesForDuration(10);
 
-  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  // TODO: this shouldn't be necessary since animation should be stopped after duration
   Fantom.runTask(() => {
     _heightAnimation?.stop();
   });
