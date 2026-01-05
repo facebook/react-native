@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7fe8e1af0448cfb6857591608f2082ef>>
+ * @generated SignedSource<<9406085adbc0685b473c868a27085cf8>>
  */
 
 /**
@@ -497,12 +497,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useFabricInterop(): Boolean = accessor.useFabricInterop()
-
-  /**
-   * Use a native implementation of TransformHelper
-   */
-  @JvmStatic
-  public fun useNativeTransformHelperAndroid(): Boolean = accessor.useNativeTransformHelperAndroid()
 
   /**
    * When enabled, the native view configs are used in bridgeless mode.

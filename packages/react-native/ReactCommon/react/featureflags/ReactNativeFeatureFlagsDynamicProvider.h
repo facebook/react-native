@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1e88daf1a0711185db31a300b4fbf564>>
+ * @generated SignedSource<<a4f191da59898458d1f02248cfa509d6>>
  */
 
 /**
@@ -745,15 +745,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useFabricInterop();
-  }
-
-  bool useNativeTransformHelperAndroid() override {
-    auto value = values_["useNativeTransformHelperAndroid"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useNativeTransformHelperAndroid();
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
