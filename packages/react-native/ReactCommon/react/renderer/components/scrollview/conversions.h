@@ -189,6 +189,26 @@ inline std::string toString(const ScrollViewEdgeEffectStyle &value)
   }
 }
 
+inline std::string toString(const ScrollViewEdgeEffect &value)
+{
+  std::string result = "{style: ";
+  if (value.style.has_value()) {
+    result += toString(value.style.value());
+  } else {
+    result += "null";
+  }
+  result += ", hidden: " + std::string(value.hidden ? "true" : "false") + "}";
+  return result;
+}
+
+inline std::string toString(const std::optional<ScrollViewEdgeEffect> &value)
+{
+  if (!value) {
+    return "null";
+  }
+  return toString(value.value());
+}
+
 inline std::string toString(const ContentInsetAdjustmentBehavior &value)
 {
   switch (value) {
