@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5ad716b4ded11ac4131aa52b378615d9>>
+ * @generated SignedSource<<cdfb645936921b8f271ec8c4666e3650>>
  */
 
 /**
@@ -340,10 +340,6 @@ bool ReactNativeFeatureFlags::useFabricInterop() {
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
   return getAccessor().useNativeViewConfigsInBridgelessMode();
-}
-
-bool ReactNativeFeatureFlags::useShadowNodeStateOnClone() {
-  return getAccessor().useShadowNodeStateOnClone();
 }
 
 bool ReactNativeFeatureFlags::useSharedAnimatedBackend() {

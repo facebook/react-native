@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<02b24e5c75fb8d34646670771ac3b2ed>>
+ * @generated SignedSource<<1516e91c55245c41d16130165baca1c4>>
  * @flow strict
  * @noformat
  */
@@ -130,7 +130,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
-  useShadowNodeStateOnClone: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
@@ -540,10 +539,6 @@ export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabr
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
-/**
- * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
- */
-export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', true);
 /**
  * Use shared animation backend in C++ Animated
  */

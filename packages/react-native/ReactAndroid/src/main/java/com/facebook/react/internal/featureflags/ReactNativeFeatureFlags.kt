@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6f0aac1f6451f4dcd6290116c925f7c4>>
+ * @generated SignedSource<<6849ba71125e565fb9041e9208079178>>
  */
 
 /**
@@ -503,12 +503,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
-
-  /**
-   * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
-   */
-  @JvmStatic
-  public fun useShadowNodeStateOnClone(): Boolean = accessor.useShadowNodeStateOnClone()
 
   /**
    * Use shared animation backend in C++ Animated

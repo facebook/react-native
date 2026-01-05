@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2f22164639286343590c3ec3ec5ab176>>
+ * @generated SignedSource<<21b239c9f44524c386d353d875eebe9e>>
  */
 
 /**
@@ -754,15 +754,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useNativeViewConfigsInBridgelessMode();
-  }
-
-  bool useShadowNodeStateOnClone() override {
-    auto value = values_["useShadowNodeStateOnClone"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useShadowNodeStateOnClone();
   }
 
   bool useSharedAnimatedBackend() override {

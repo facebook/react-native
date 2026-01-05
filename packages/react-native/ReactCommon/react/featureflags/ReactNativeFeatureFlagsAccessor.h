@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<beb6c31ead63642735b7d7a8fdb74371>>
+ * @generated SignedSource<<f6769b2d0261b3909dfd49f316a3b600>>
  */
 
 /**
@@ -111,7 +111,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
   bool useNativeViewConfigsInBridgelessMode();
-  bool useShadowNodeStateOnClone();
   bool useSharedAnimatedBackend();
   bool useTraitHiddenOnAndroid();
   bool useTurboModuleInterop();
@@ -130,7 +129,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 87> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 86> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -211,7 +210,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
-  std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
