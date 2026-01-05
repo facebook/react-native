@@ -55,7 +55,8 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 
-  static void installJSIBindings(
+  static void installJSBindings(jsi::Runtime &runtime, jni::alias_ref<jhybridobject> javaPart);
+  static void dispatchJSBindingInstall(
       jni::alias_ref<jhybridobject> javaPart,
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor);
 

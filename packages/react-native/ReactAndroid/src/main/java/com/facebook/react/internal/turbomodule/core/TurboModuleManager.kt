@@ -59,7 +59,7 @@ public class TurboModuleManager(
 
   init {
 
-    installJSIBindings(runtimeExecutor)
+    dispatchJSBindingInstall(runtimeExecutor)
 
     eagerInitModuleNames = delegate?.getEagerInitModuleNames() ?: emptyList()
 
@@ -282,7 +282,7 @@ public class TurboModuleManager(
       tmmDelegate: TurboModuleManagerDelegate?,
   ): HybridData
 
-  private external fun installJSIBindings(runtimeExecutor: RuntimeExecutor)
+  private external fun dispatchJSBindingInstall(runtimeExecutor: RuntimeExecutor)
 
   override fun invalidate() {
     /*
