@@ -114,6 +114,23 @@ class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
     }
   }
 
+  /**
+   * Open a URL as a universal link if possible.
+   * Returns a Promise that resolves to a boolean indicating whether the URL was opened.
+   *
+   * @platform ios
+   *
+   * See https://reactnative.dev/docs/linking#openuniversallink
+   */
+  openUniversalLink(url: string): Promise<boolean> {
+    this._validateURL(url);
+    if (Platform.OS === 'ios') {
+      return nullthrows(NativeLinkingManager).openUniversalLink(url);
+    } else {
+      return new Promise((resolve, reject) => reject(new Error('Unsupported')));
+    }
+  }
+
   _validateURL(url: string): void {
     invariant(
       typeof url === 'string',
