@@ -233,7 +233,10 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
   // initial revision never contains any commits so mounting it here is
   // incorrect
   if (commitMode == CommitMode::Normal && revision.number != INITIAL_REVISION) {
-    mount(revision, true);
+    mount(
+        revision,
+        /*mountSynchronously*/ true,
+        /*source */ CommitSource::Unknown);
   }
 }
 
@@ -370,7 +373,10 @@ CommitStatus ShadowTree::tryCommit(
   emitLayoutEvents(affectedLayoutableNodes);
 
   if (commitMode == CommitMode::Normal) {
-    mount(std::move(newRevision), commitOptions.mountSynchronously);
+    mount(
+        std::move(newRevision),
+        commitOptions.mountSynchronously,
+        commitOptions.source);
   }
 
   return CommitStatus::Succeeded;
@@ -381,11 +387,13 @@ ShadowTreeRevision ShadowTree::getCurrentRevision() const {
   return currentRevision_;
 }
 
-void ShadowTree::mount(ShadowTreeRevision revision, bool mountSynchronously)
-    const {
+void ShadowTree::mount(
+    ShadowTreeRevision revision,
+    bool mountSynchronously,
+    ShadowTreeCommitSource source) const {
   mountingCoordinator_->push(std::move(revision));
   delegate_.shadowTreeDidFinishTransaction(
-      mountingCoordinator_, mountSynchronously);
+      mountingCoordinator_, mountSynchronously, source);
 }
 
 void ShadowTree::commitEmptyTree() const {
@@ -423,7 +431,10 @@ void ShadowTree::emitLayoutEvents(
 }
 
 void ShadowTree::notifyDelegatesOfUpdates() const {
-  delegate_.shadowTreeDidFinishTransaction(mountingCoordinator_, true);
+  delegate_.shadowTreeDidFinishTransaction(
+      mountingCoordinator_,
+      /*mountSynchronously*/ true,
+      /*source */ CommitSource::Unknown);
 }
 
 inline ShadowTree::UniqueLock ShadowTree::uniqueCommitLock() const {

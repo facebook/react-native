@@ -127,7 +127,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   void shadowTreeDidFinishTransaction(
       std::shared_ptr<const MountingCoordinator> mountingCoordinator,
-      bool mountSynchronously) const override;
+      bool mountSynchronously,
+      ShadowTreeCommitSource source) const override;
 
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree &shadowTree,
