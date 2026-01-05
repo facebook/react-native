@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db4650fb28b7c07c73eb75775a7e7811>>
+ * @generated SignedSource<<02b24e5c75fb8d34646670771ac3b2ed>>
  * @flow strict
  * @noformat
  */
@@ -130,7 +130,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
-  useRawPropsJsiValue: Getter<boolean>,
   useShadowNodeStateOnClone: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
@@ -541,10 +540,6 @@ export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabr
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
-/**
- * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
- */
-export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useRawPropsJsiValue', true);
 /**
  * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<560b5619790e0d17e76bc3d600ca10d1>>
+ * @generated SignedSource<<b6de6e36e3387fcc8538936cbd546c16>>
  */
 
 /**
@@ -193,8 +193,6 @@ class NativeReactNativeFeatureFlags
   bool useFabricInterop(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
-
-  bool useRawPropsJsiValue(jsi::Runtime& runtime);
 
   bool useShadowNodeStateOnClone(jsi::Runtime& runtime);
 
