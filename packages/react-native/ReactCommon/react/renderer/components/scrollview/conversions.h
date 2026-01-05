@@ -93,6 +93,37 @@ fromRawValue(const PropsParserContext &context, const RawValue &value, ContentIn
   abort();
 }
 
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, ScrollViewEdgeEffectStyle &result)
+{
+  auto string = (std::string)value;
+  if (string == "automatic") {
+    result = ScrollViewEdgeEffectStyle::Automatic;
+    return;
+  }
+  if (string == "soft") {
+    result = ScrollViewEdgeEffectStyle::Soft;
+    return;
+  }
+  if (string == "hard") {
+    result = ScrollViewEdgeEffectStyle::Hard;
+    return;
+  }
+  abort();
+}
+
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, ScrollViewEdgeEffect &result)
+{
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+  auto iterator = map.find("style");
+  if (iterator != map.end()) {
+    fromRawValue(context, iterator->second, result.style.emplace());
+  }
+  iterator = map.find("hidden");
+  if (iterator != map.end()) {
+    fromRawValue(context, iterator->second, result.hidden);
+  }
+}
+
 inline void
 fromRawValue(const PropsParserContext &context, const RawValue &value, ScrollViewMaintainVisibleContentPosition &result)
 {
@@ -143,6 +174,18 @@ inline std::string toString(const ScrollViewKeyboardDismissMode &value)
       return "on-drag";
     case ScrollViewKeyboardDismissMode::Interactive:
       return "interactive";
+  }
+}
+
+inline std::string toString(const ScrollViewEdgeEffectStyle &value)
+{
+  switch (value) {
+    case ScrollViewEdgeEffectStyle::Automatic:
+      return "automatic";
+    case ScrollViewEdgeEffectStyle::Soft:
+      return "soft";
+    case ScrollViewEdgeEffectStyle::Hard:
+      return "hard";
   }
 }
 
