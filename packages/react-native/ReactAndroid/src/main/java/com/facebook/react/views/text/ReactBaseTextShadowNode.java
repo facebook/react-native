@@ -13,7 +13,9 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.LeadingMarginSpan;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -48,7 +50,7 @@ import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.SetSpanOperation;
-import com.facebook.react.views.text.internal.span.DiscordShadowStyleSpan;
+import com.facebook.react.views.text.internal.span.ShadowStyleSpan;
 import com.facebook.react.views.text.internal.span.StrokeStyleSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
@@ -226,31 +228,29 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (textShadowNode.mIsLineThroughTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
       }
+      ShadowStyleSpan shadowSpan = null;
       if ((textShadowNode.mTextShadowOffsetDx != 0
               || textShadowNode.mTextShadowOffsetDy != 0
               || textShadowNode.mTextShadowRadius != 0)
           && Color.alpha(textShadowNode.mTextShadowColor) != 0) {
-        ops.add(
-            new SetSpanOperation(
-                start,
-                end,
-                new DiscordShadowStyleSpan(
-                    textShadowNode.mTextShadowOffsetDx,
-                    textShadowNode.mTextShadowOffsetDy,
-                    textShadowNode.mTextShadowRadius,
-                    textShadowNode.mTextShadowColor)));
+        shadowSpan = new ShadowStyleSpan(
+            textShadowNode.mTextShadowOffsetDx,
+            textShadowNode.mTextShadowOffsetDy,
+            textShadowNode.mTextShadowRadius,
+            textShadowNode.mTextShadowColor);
+        ops.add(new SetSpanOperation(start, end, shadowSpan));
       }
+
+      StrokeStyleSpan strokeSpan = null;
       if (!Float.isNaN(textShadowNode.mTextStrokeWidth)
           && textShadowNode.mTextStrokeWidth > 0
           && textShadowNode.mIsTextStrokeColorSet) {
-        ops.add(
-            new SetSpanOperation(
-                start,
-                end,
-                new StrokeStyleSpan(
-                    textShadowNode.mTextStrokeWidth,
-                    textShadowNode.mTextStrokeColor)));
+        strokeSpan = new StrokeStyleSpan(
+            textShadowNode.mTextStrokeWidth,
+            textShadowNode.mTextStrokeColor);
+        ops.add(new SetSpanOperation(start, end, strokeSpan));
       }
+
       float effectiveLineHeight = textAttributes.getEffectiveLineHeight();
       if (!Float.isNaN(effectiveLineHeight)
           && (parentTextAttributes == null
@@ -334,6 +334,20 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
     textShadowNode.mTextAttributes.setHeightOfTallestInlineViewOrImage(
         heightOfTallestInlineViewOrImage);
+
+    // Add leading margin for stroke/shadow that extends beyond text bounds
+    StrokeStyleSpan strokeSpan = StrokeStyleSpan.getStrokeSpan(sb);
+    ShadowStyleSpan shadowSpan = ShadowStyleSpan.getShadowSpan(sb);
+    float strokeOffset = strokeSpan != null ? strokeSpan.getLeftOffset() : 0f;
+    float shadowOffset = shadowSpan != null ? shadowSpan.getLeftOffset() : 0f;
+    int leadingMargin = (int) Math.max(strokeOffset, shadowOffset);
+    if (leadingMargin > 0) {
+      sb.setSpan(
+          new LeadingMarginSpan.Standard(leadingMargin),
+          0,
+          sb.length(),
+          Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+    }
 
     if (mReactTextViewManagerCallback != null) {
       mReactTextViewManagerCallback.onPostProcessSpannable(sb);

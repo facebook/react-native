@@ -9,12 +9,14 @@ package com.facebook.react.views.text;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -52,8 +54,8 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
-import com.facebook.react.views.text.internal.span.DiscordShadowStyleSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
+import com.facebook.react.views.text.internal.span.StrokeStyleSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.yoga.YogaMeasureMode;
@@ -361,19 +363,19 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         setText(spanned);
       }
 
-      // Get shadow adjustment from custom span if configured
-      DiscordShadowStyleSpan.ShadowAdjustment shadowAdj =
-          DiscordShadowStyleSpan.getShadowAdjustment(spanned);
-
-      canvas.save();
-      canvas.translate(shadowAdj.getLeftOffset(), 0);
-
-      if (mOverflow != Overflow.VISIBLE && !shadowAdj.getHasShadow()) {
+      if (mOverflow != Overflow.VISIBLE) {
+        canvas.save();
         BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
       }
 
-      super.onDraw(canvas);
-      canvas.restore();
+      StrokeStyleSpan strokeSpan = StrokeStyleSpan.getStrokeSpan((Spanned) getText());
+      if (strokeSpan == null || !strokeSpan.draw(getPaint(), () -> super.onDraw(canvas))) {
+        super.onDraw(canvas);
+      }
+
+      if (mOverflow != Overflow.VISIBLE) {
+        canvas.restore();
+      }
     }
   }
 
@@ -800,4 +802,5 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     invalidate();
   }
+
 }

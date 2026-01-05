@@ -27,8 +27,8 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
-import com.facebook.react.views.text.internal.span.DiscordShadowStyleSpan
 import com.facebook.react.views.text.internal.span.ReactTagSpan
+import com.facebook.react.views.text.internal.span.StrokeStyleSpan
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
@@ -102,18 +102,14 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   override fun onDraw(canvas: Canvas) {
     val layout = preparedLayout?.layout
 
-    // Get shadow adjustment from custom span if configured
-    val spanned = layout?.text as? Spanned
-    val shadowAdj = DiscordShadowStyleSpan.getShadowAdjustment(spanned)
-
-    if (overflow != Overflow.VISIBLE && !shadowAdj.hasShadow) {
+    if (overflow != Overflow.VISIBLE) {
       BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
     }
 
     super.onDraw(canvas)
 
     canvas.translate(
-        paddingLeft.toFloat() + shadowAdj.leftOffset,
+        paddingLeft.toFloat(),
         paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f))
 
     if (layout != null) {
@@ -122,10 +118,17 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
             selectionColor ?: DefaultStyleValuesUtil.getDefaultTextColorHighlight(context))
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        Api34Utils.draw(layout, canvas, selection?.path, selectionPaint)
-      } else {
-        layout.draw(canvas, selection?.path, selectionPaint, 0)
+      val drawLayout = Runnable {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+          Api34Utils.draw(layout, canvas, selection?.path, selectionPaint)
+        } else {
+          layout.draw(canvas, selection?.path, selectionPaint, 0)
+        }
+      }
+
+      val strokeSpan = StrokeStyleSpan.getStrokeSpan(layout.text as? Spanned)
+      if (strokeSpan == null || !strokeSpan.draw(layout.paint, drawLayout)) {
+        drawLayout.run()
       }
     }
   }
