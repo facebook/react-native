@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1bcf3e91c74400c90689e350fab7b4ce>>
+ * @generated SignedSource<<208a567d5c7d4b7b49c7196f4d42c28f>>
  */
 
 /**
@@ -110,7 +110,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool updateRuntimeShadowNodeReferencesOnCommit();
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
-  bool useNativeEqualsInNativeReadableArrayAndroid();
   bool useNativeTransformHelperAndroid();
   bool useNativeViewConfigsInBridgelessMode();
   bool useRawPropsJsiValue();
@@ -133,7 +132,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 90> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 89> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -213,7 +212,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
-  std::atomic<std::optional<bool>> useNativeEqualsInNativeReadableArrayAndroid_;
   std::atomic<std::optional<bool>> useNativeTransformHelperAndroid_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useRawPropsJsiValue_;
