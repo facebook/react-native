@@ -21,6 +21,7 @@ import android.text.StaticLayout
 import android.text.TextDirectionHeuristics
 import android.text.TextPaint
 import android.text.TextUtils
+import android.text.style.LeadingMarginSpan
 import android.util.LayoutDirection
 import android.view.Gravity
 import android.view.View
@@ -47,10 +48,10 @@ import com.facebook.react.views.text.internal.span.ReactOpacitySpan
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
 import com.facebook.react.views.text.internal.span.ReactTagSpan
 import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan
-import com.facebook.react.views.text.internal.span.DiscordShadowStyleSpan
+import com.facebook.react.views.text.internal.span.ShadowStyleSpan
+import com.facebook.react.views.text.internal.span.StrokeStyleSpan
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan
 import com.facebook.react.views.text.internal.span.SetSpanOperation
-import com.facebook.react.views.text.internal.span.StrokeStyleSpan
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan
 import com.facebook.yoga.YogaMeasureMode
 import com.facebook.yoga.YogaMeasureOutput
@@ -307,7 +308,7 @@ internal object TextLayoutManager {
               SetSpanOperation(
                   start,
                   end,
-                  DiscordShadowStyleSpan(
+                  ShadowStyleSpan(
                       textAttributes.mTextShadowOffsetDx,
                       textAttributes.mTextShadowOffsetDy,
                       textAttributes.mTextShadowRadius,
@@ -316,14 +317,15 @@ internal object TextLayoutManager {
         if (!textAttributes.textStrokeWidth.isNaN() &&
             textAttributes.textStrokeWidth > 0 &&
             textAttributes.isTextStrokeColorSet) {
-          val strokeWidth = PixelUtil.toPixelFromDIP(textAttributes.textStrokeWidth.toDouble()).toFloat()
-          val strokeColor = textAttributes.textStrokeColor
           ops.add(
               SetSpanOperation(
                   start,
                   end,
-                  StrokeStyleSpan(strokeWidth, strokeColor)))
+                  StrokeStyleSpan(
+                      textAttributes.textStrokeWidth,
+                      textAttributes.textStrokeColor)))
         }
+
         if (!textAttributes.effectiveLineHeight.isNaN()) {
           ops.add(
               SetSpanOperation(
@@ -472,7 +474,7 @@ internal object TextLayoutManager {
             fragment.props.textShadowRadius != 0f) &&
             Color.alpha(fragment.props.textShadowColor) != 0) {
           spannable.setSpan(
-              DiscordShadowStyleSpan(
+              ShadowStyleSpan(
                   fragment.props.textShadowOffsetDx,
                   fragment.props.textShadowOffsetDy,
                   fragment.props.textShadowRadius,
@@ -485,9 +487,10 @@ internal object TextLayoutManager {
         if (!fragment.props.textStrokeWidth.isNaN() &&
             fragment.props.textStrokeWidth > 0 &&
             fragment.props.isTextStrokeColorSet) {
-          val strokeWidth = PixelUtil.toPixelFromDIP(fragment.props.textStrokeWidth.toDouble()).toFloat()
           spannable.setSpan(
-              StrokeStyleSpan(strokeWidth, fragment.props.textStrokeColor),
+              StrokeStyleSpan(
+                  fragment.props.textStrokeWidth,
+                  fragment.props.textStrokeColor),
               start,
               end,
               spanFlags)
@@ -504,7 +507,23 @@ internal object TextLayoutManager {
       start = end
     }
 
+    addLeadingMarginForTextEffects(spannable)
     return spannable
+  }
+
+  private fun addLeadingMarginForTextEffects(spannable: Spannable) {
+    val strokeSpan = StrokeStyleSpan.getStrokeSpan(spannable)
+    val shadowSpan = ShadowStyleSpan.getShadowSpan(spannable)
+    val strokeOffset = strokeSpan?.getLeftOffset() ?: 0f
+    val shadowOffset = shadowSpan?.getLeftOffset() ?: 0f
+    val leadingMargin = max(strokeOffset, shadowOffset).toInt()
+    if (leadingMargin > 0) {
+      spannable.setSpan(
+          LeadingMarginSpan.Standard(leadingMargin),
+          0,
+          spannable.length,
+          Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+    }
   }
 
   fun getOrCreateSpannableForText(
@@ -557,6 +576,7 @@ internal object TextLayoutManager {
         op.execute(sb, priorityIndex)
       }
 
+      addLeadingMarginForTextEffects(sb)
       reactTextViewManagerCallback?.onPostProcessSpannable(sb)
       return sb
     }

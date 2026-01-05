@@ -7,8 +7,10 @@
 
 package com.facebook.react.views.text.internal.span
 
+import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.CharacterStyle
+import kotlin.math.max
 
 internal class ShadowStyleSpan(
     private val dx: Float,
@@ -18,5 +20,16 @@ internal class ShadowStyleSpan(
 ) : CharacterStyle(), ReactSpan {
   override fun updateDrawState(textPaint: TextPaint) {
     textPaint.setShadowLayer(radius, dx, dy, color)
+  }
+
+  public fun getLeftOffset(): Float = max(0f, radius - dx)
+
+  public companion object {
+    @JvmStatic
+    public fun getShadowSpan(spanned: Spanned?): ShadowStyleSpan? {
+      if (spanned == null) return null
+      val spans = spanned.getSpans(0, spanned.length, ShadowStyleSpan::class.java)
+      return spans.firstOrNull()
+    }
   }
 }
