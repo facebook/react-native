@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<04b0480c4675c067c183280370dd861a>>
+ * @generated SignedSource<<3b0c2dec02a603afec82993302ecb6ff>>
  */
 
 /**
@@ -102,7 +102,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
-  private var useNativeTransformHelperAndroidCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
   private var useShadowNodeStateOnCloneCache: Boolean? = null
@@ -890,16 +889,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useFabricInterop()
       accessedFeatureFlags.add("useFabricInterop")
       useFabricInteropCache = cached
-    }
-    return cached
-  }
-
-  override fun useNativeTransformHelperAndroid(): Boolean {
-    var cached = useNativeTransformHelperAndroidCache
-    if (cached == null) {
-      cached = currentProvider.useNativeTransformHelperAndroid()
-      accessedFeatureFlags.add("useNativeTransformHelperAndroid")
-      useNativeTransformHelperAndroidCache = cached
     }
     return cached
   }
