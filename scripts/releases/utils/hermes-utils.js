@@ -27,6 +27,7 @@ const MAVEN_VERSIONS_FILE_PATH = path.join(
 
 async function getLatestHermesNightlyVersion() /*: Promise<{
   compilerVersion: string,
+  compilerV1Version: string,
   runtimeVersion: string,
   runtimeV1Version: string,
 }> */ {
