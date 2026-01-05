@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9ffc43524e0aa410a7f161dfe9f315a5>>
+ * @generated SignedSource<<1516e91c55245c41d16130165baca1c4>>
  * @flow strict
  * @noformat
  */
@@ -129,11 +129,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
-  useNativeEqualsInNativeReadableArrayAndroid: Getter<boolean>,
-  useNativeTransformHelperAndroid: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
-  useRawPropsJsiValue: Getter<boolean>,
-  useShadowNodeStateOnClone: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
@@ -540,25 +536,9 @@ export const useAlwaysAvailableJSErrorHandling: Getter<boolean> = createNativeFl
  */
 export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabricInterop', true);
 /**
- * Use a native implementation of equals in NativeReadableArray.
- */
-export const useNativeEqualsInNativeReadableArrayAndroid: Getter<boolean> = createNativeFlagGetter('useNativeEqualsInNativeReadableArrayAndroid', true);
-/**
- * Use a native implementation of TransformHelper
- */
-export const useNativeTransformHelperAndroid: Getter<boolean> = createNativeFlagGetter('useNativeTransformHelperAndroid', true);
-/**
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
-/**
- * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
- */
-export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useRawPropsJsiValue', true);
-/**
- * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
- */
-export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', true);
 /**
  * Use shared animation backend in C++ Animated
  */

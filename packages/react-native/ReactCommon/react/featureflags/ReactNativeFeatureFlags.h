@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f6913d92515fd817a167ef2a505c777>>
+ * @generated SignedSource<<92f53f7e45cab45feb6eb428be0916d2>>
  */
 
 /**
@@ -430,29 +430,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useFabricInterop();
 
   /**
-   * Use a native implementation of equals in NativeReadableArray.
-   */
-  RN_EXPORT static bool useNativeEqualsInNativeReadableArrayAndroid();
-
-  /**
-   * Use a native implementation of TransformHelper
-   */
-  RN_EXPORT static bool useNativeTransformHelperAndroid();
-
-  /**
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
-
-  /**
-   * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
-   */
-  RN_EXPORT static bool useRawPropsJsiValue();
-
-  /**
-   * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
-   */
-  RN_EXPORT static bool useShadowNodeStateOnClone();
 
   /**
    * Use shared animation backend in C++ Animated

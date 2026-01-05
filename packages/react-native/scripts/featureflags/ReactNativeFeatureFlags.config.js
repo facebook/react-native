@@ -878,27 +878,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    useNativeEqualsInNativeReadableArrayAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-07-15',
-        description:
-          'Use a native implementation of equals in NativeReadableArray.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'stable',
-    },
-    useNativeTransformHelperAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-07-15',
-        description: 'Use a native implementation of TransformHelper',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'stable',
-    },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
       metadata: {
@@ -909,27 +888,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'canary',
-    },
-    useRawPropsJsiValue: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    useShadowNodeStateOnClone: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-04-16',
-        description:
-          'Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'stable',
     },
     useSharedAnimatedBackend: {
       defaultValue: false,

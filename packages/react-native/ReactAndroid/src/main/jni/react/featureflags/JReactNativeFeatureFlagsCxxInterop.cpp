@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b9af351de972ddff807bd25f98f3ff42>>
+ * @generated SignedSource<<da9fef16b891887d9418052bd013633c>>
  */
 
 /**
@@ -507,33 +507,9 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool useNativeEqualsInNativeReadableArrayAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeEqualsInNativeReadableArrayAndroid");
-    return method(javaProvider_);
-  }
-
-  bool useNativeTransformHelperAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeTransformHelperAndroid");
-    return method(javaProvider_);
-  }
-
   bool useNativeViewConfigsInBridgelessMode() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeViewConfigsInBridgelessMode");
-    return method(javaProvider_);
-  }
-
-  bool useRawPropsJsiValue() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRawPropsJsiValue");
-    return method(javaProvider_);
-  }
-
-  bool useShadowNodeStateOnClone() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useShadowNodeStateOnClone");
     return method(javaProvider_);
   }
 
@@ -973,29 +949,9 @@ bool JReactNativeFeatureFlagsCxxInterop::useFabricInterop(
   return ReactNativeFeatureFlags::useFabricInterop();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useNativeEqualsInNativeReadableArrayAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useNativeEqualsInNativeReadableArrayAndroid();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useNativeTransformHelperAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useNativeTransformHelperAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useRawPropsJsiValue();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useShadowNodeStateOnClone();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useSharedAnimatedBackend(
@@ -1299,20 +1255,8 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "useFabricInterop",
         JReactNativeFeatureFlagsCxxInterop::useFabricInterop),
       makeNativeMethod(
-        "useNativeEqualsInNativeReadableArrayAndroid",
-        JReactNativeFeatureFlagsCxxInterop::useNativeEqualsInNativeReadableArrayAndroid),
-      makeNativeMethod(
-        "useNativeTransformHelperAndroid",
-        JReactNativeFeatureFlagsCxxInterop::useNativeTransformHelperAndroid),
-      makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
-      makeNativeMethod(
-        "useRawPropsJsiValue",
-        JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue),
-      makeNativeMethod(
-        "useShadowNodeStateOnClone",
-        JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone),
       makeNativeMethod(
         "useSharedAnimatedBackend",
         JReactNativeFeatureFlagsCxxInterop::useSharedAnimatedBackend),

@@ -27,11 +27,9 @@ class RawPropsParser final {
   /*
    * Default constructor.
    * To be used by `ConcreteComponentDescriptor` only.
-   * If `useRawPropsJsiValue` is `true`, the parser will use `jsi::Value`
-   * directly for RawValues instead of converting them to `folly::dynamic`.
    */
-  RawPropsParser(bool useRawPropsJsiValue = ReactNativeFeatureFlags::useRawPropsJsiValue())
-      : useRawPropsJsiValue_(useRawPropsJsiValue) {};
+  RawPropsParser() {};
+  [[deprecated]] RawPropsParser(bool /* ignored */) {};
 
   /*
    * To be used by `ConcreteComponentDescriptor` only.

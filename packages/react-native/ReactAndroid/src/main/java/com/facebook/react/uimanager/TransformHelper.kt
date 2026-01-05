@@ -13,7 +13,6 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 
 public object TransformHelper {
 
@@ -73,12 +72,7 @@ public object TransformHelper {
       transformOrigin: ReadableArray?,
       allowPercentageResolution: Boolean,
   ) {
-    if (
-        allowPercentageResolution &&
-            ReactNativeFeatureFlags.useNativeTransformHelperAndroid() &&
-            transforms is NativeArray &&
-            transformOrigin is NativeArray?
-    ) {
+    if (allowPercentageResolution && transforms is NativeArray && transformOrigin is NativeArray?) {
       nativeProcessTransform(transforms, result, viewWidth, viewHeight, transformOrigin)
       return
     }
