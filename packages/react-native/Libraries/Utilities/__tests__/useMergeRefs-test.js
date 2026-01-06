@@ -37,7 +37,7 @@ class Screen {
 }
 
 function TestComponent(
-  props: $ReadOnly<{children: () => React.MixedElement}>,
+  props: Readonly<{children: () => React.MixedElement}>,
 ): React.Node {
   return props.children();
 }

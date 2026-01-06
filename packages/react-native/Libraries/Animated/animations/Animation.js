@@ -24,7 +24,7 @@ export type EndResult = {
 };
 export type EndCallback = (result: EndResult) => void;
 
-export type AnimationConfig = $ReadOnly<{
+export type AnimationConfig = Readonly<{
   isInteraction?: boolean,
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
@@ -98,7 +98,7 @@ export default class Animation {
     this.__active = false;
   }
 
-  __getNativeAnimationConfig(): $ReadOnly<{
+  __getNativeAnimationConfig(): Readonly<{
     platformConfig: ?PlatformConfig,
     ...
   }> {

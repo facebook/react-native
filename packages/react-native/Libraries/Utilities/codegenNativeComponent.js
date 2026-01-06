@@ -16,7 +16,7 @@ import requireNativeComponent from '../../Libraries/ReactNative/requireNativeCom
 import UIManager from '../ReactNative/UIManager';
 
 // TODO: import from CodegenSchema once workspaces are enabled
-type NativeComponentOptions = $ReadOnly<{
+type NativeComponentOptions = Readonly<{
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,

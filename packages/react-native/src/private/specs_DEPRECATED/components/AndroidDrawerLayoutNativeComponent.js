@@ -22,15 +22,15 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type DrawerStateEvent = $ReadOnly<{
+type DrawerStateEvent = Readonly<{
   drawerState: Int32,
 }>;
 
-type DrawerSlideEvent = $ReadOnly<{
+type DrawerSlideEvent = Readonly<{
   offset: Float,
 }>;
 
-type AndroidDrawerLayoutNativeProps = $ReadOnly<{
+type AndroidDrawerLayoutNativeProps = Readonly<{
   ...ViewProps,
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.

@@ -12,7 +12,7 @@ import type {IEventEmitter} from '../vendor/emitter/EventEmitter';
 
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
-export type RawEventEmitterEvent = $ReadOnly<{
+export type RawEventEmitterEvent = Readonly<{
   eventName: string,
   // We expect, but do not/cannot require, that nativeEvent is an object
   // with the properties: key, elementType (string), type (string), tag (numeric),

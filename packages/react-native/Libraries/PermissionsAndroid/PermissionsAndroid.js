@@ -31,7 +31,7 @@ const PERMISSION_REQUEST_RESULT = Object.freeze({
   NEVER_ASK_AGAIN: 'never_ask_again',
 });
 
-type PermissionsType = $ReadOnly<{
+type PermissionsType = Readonly<{
   READ_CALENDAR: 'android.permission.READ_CALENDAR',
   WRITE_CALENDAR: 'android.permission.WRITE_CALENDAR',
   CAMERA: 'android.permission.CAMERA',
@@ -134,7 +134,7 @@ const PERMISSIONS = Object.freeze({
  */
 class PermissionsAndroidImpl {
   PERMISSIONS: PermissionsType = PERMISSIONS;
-  RESULTS: $ReadOnly<{
+  RESULTS: Readonly<{
     DENIED: 'denied',
     GRANTED: 'granted',
     NEVER_ASK_AGAIN: 'never_ask_again',

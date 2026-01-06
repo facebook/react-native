@@ -21,18 +21,18 @@ import {createDebuggerMock} from './InspectorDebuggerUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
 import until from 'wait-for-expect';
 
-export type CdpMessageFromTarget = $ReadOnly<{
+export type CdpMessageFromTarget = Readonly<{
   method: string,
   id?: number,
   params?: JSONSerializable,
 }>;
 
-export type CdpResponseFromTarget = $ReadOnly<{
+export type CdpResponseFromTarget = Readonly<{
   id: number,
   result: JSONSerializable,
 }>;
 
-export type CdpMessageToTarget = $ReadOnly<{
+export type CdpMessageToTarget = Readonly<{
   method: string,
   id: number,
   params?: JSONSerializable,
@@ -108,7 +108,7 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
 }
 
 export async function createAndConnectTarget(
-  serverRef: $ReadOnly<{
+  serverRef: Readonly<{
     serverBaseUrl: string,
     serverBaseWsUrl: string,
     ...
@@ -119,7 +119,7 @@ export async function createAndConnectTarget(
     debuggerHostHeader = null,
     deviceId = null,
     deviceHostHeader = null,
-  }: $ReadOnly<{
+  }: Readonly<{
     debuggerHostHeader?: ?string,
     deviceId?: ?string,
     deviceHostHeader?: ?string,

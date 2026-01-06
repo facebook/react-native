@@ -47,8 +47,8 @@ declare var console: {
   // Printing
   table(
     tabularData:
-      | $ReadOnly<{[key: string]: unknown, ...}>
-      | $ReadOnlyArray<$ReadOnly<{[key: string]: unknown, ...}>>
+      | Readonly<{[key: string]: unknown, ...}>
+      | $ReadOnlyArray<Readonly<{[key: string]: unknown, ...}>>
       | $ReadOnlyArray<$ReadOnlyArray<unknown>>,
   ): void,
   dir(...data: $ReadOnlyArray<unknown>): void,

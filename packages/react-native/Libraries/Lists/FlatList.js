@@ -38,7 +38,7 @@ type RequiredFlatListProps<ItemT> = {
    * An array (or array-like list) of items to render. Other data types can be
    * used by targeting VirtualizedList directly.
    */
-  data: ?$ReadOnly<$ArrayLike<ItemT>>,
+  data: ?Readonly<$ArrayLike<ItemT>>,
 };
 type OptionalFlatListProps<ItemT> = {
   /**
@@ -93,7 +93,7 @@ type OptionalFlatListProps<ItemT> = {
    * specify `ItemSeparatorComponent`.
    */
   getItemLayout?: (
-    data: ?$ReadOnly<$ArrayLike<ItemT>>,
+    data: ?Readonly<$ArrayLike<ItemT>>,
     index: number,
   ) => {
     length: number,

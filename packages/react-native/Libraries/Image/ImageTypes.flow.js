@@ -23,7 +23,7 @@ export type ImageSize = {
 
 export type ImageResolvedAssetSource = ResolvedAssetSource;
 
-type ImageComponentStaticsIOS = $ReadOnly<{
+type ImageComponentStaticsIOS = Readonly<{
   getSize(uri: string): Promise<ImageSize>,
   getSize(
     uri: string,
@@ -60,7 +60,7 @@ type ImageComponentStaticsIOS = $ReadOnly<{
   resolveAssetSource(source: ImageSource): ?ImageResolvedAssetSource,
 }>;
 
-type ImageComponentStaticsAndroid = $ReadOnly<{
+type ImageComponentStaticsAndroid = Readonly<{
   ...ImageComponentStaticsIOS,
   abortPrefetch(requestId: number): void,
 }>;

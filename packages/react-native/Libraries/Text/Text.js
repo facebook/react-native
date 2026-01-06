@@ -667,7 +667,7 @@ const TextImpl: component(
 
 TextImpl.displayName = 'Text';
 
-type TextPressabilityProps = $ReadOnly<{
+type TextPressabilityProps = Readonly<{
   onLongPress?: ?(event: GestureResponderEvent) => unknown,
   onPress?: ?(event: GestureResponderEvent) => unknown,
   onPressIn?: ?(event: GestureResponderEvent) => unknown,
@@ -801,7 +801,7 @@ function useTextPressability({
   );
 }
 
-type NativePressableTextProps = $ReadOnly<{
+type NativePressableTextProps = Readonly<{
   textProps: NativeTextProps,
   textPressabilityProps: TextPressabilityProps,
 }>;

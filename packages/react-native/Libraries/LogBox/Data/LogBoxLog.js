@@ -55,7 +55,7 @@ function convertStackToComponentStack(stack: Stack): ComponentStack {
   return componentStack;
 }
 
-export type LogBoxLogData = $ReadOnly<{
+export type LogBoxLogData = Readonly<{
   level: LogLevel,
   type?: ?string,
   message: Message,
@@ -83,23 +83,23 @@ class LogBoxLog {
   isComponentError: boolean;
   extraData: unknown | void;
   symbolicated:
-    | $ReadOnly<{error: null, stack: null, status: 'NONE'}>
-    | $ReadOnly<{error: null, stack: null, status: 'PENDING'}>
-    | $ReadOnly<{error: null, stack: Stack, status: 'COMPLETE'}>
-    | $ReadOnly<{error: Error, stack: null, status: 'FAILED'}> = {
+    | Readonly<{error: null, stack: null, status: 'NONE'}>
+    | Readonly<{error: null, stack: null, status: 'PENDING'}>
+    | Readonly<{error: null, stack: Stack, status: 'COMPLETE'}>
+    | Readonly<{error: Error, stack: null, status: 'FAILED'}> = {
     error: null,
     stack: null,
     status: 'NONE',
   };
   symbolicatedComponentStack:
-    | $ReadOnly<{error: null, componentStack: null, status: 'NONE'}>
-    | $ReadOnly<{error: null, componentStack: null, status: 'PENDING'}>
-    | $ReadOnly<{
+    | Readonly<{error: null, componentStack: null, status: 'NONE'}>
+    | Readonly<{error: null, componentStack: null, status: 'PENDING'}>
+    | Readonly<{
         error: null,
         componentStack: ComponentStack,
         status: 'COMPLETE',
       }>
-    | $ReadOnly<{error: Error, componentStack: null, status: 'FAILED'}> = {
+    | Readonly<{error: Error, componentStack: null, status: 'FAILED'}> = {
     error: null,
     componentStack: null,
     status: 'NONE',

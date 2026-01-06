@@ -14,7 +14,7 @@ import Text from '../../Text/Text';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   heading: string,
   children: React.Node,
   action?: ?React.Node,

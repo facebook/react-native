@@ -45,9 +45,9 @@ type UnsafeNativeEventObject = Object;
  * can theoretically listen to `RCTDeviceEventEmitter` (although discouraged).
  */
 export default class NativeEventEmitter<
-  TEventToArgsMap: $ReadOnly<
+  TEventToArgsMap: Readonly<
     Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>>,
+  > = Readonly<Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   _nativeModule: ?NativeModule;

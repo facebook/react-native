@@ -107,7 +107,7 @@ export type ExtendedExceptionData = ExceptionData & {
   ...
 };
 export type Category = string;
-export type CodeFrame = $ReadOnly<{
+export type CodeFrame = Readonly<{
   content: string,
   location: ?{
     row: number,
@@ -121,10 +121,10 @@ export type CodeFrame = $ReadOnly<{
   // it is not integrated into the LogBox UI.
   collapse?: boolean,
 }>;
-export type Message = $ReadOnly<{
+export type Message = Readonly<{
   content: string,
   substitutions: $ReadOnlyArray<
-    $ReadOnly<{
+    Readonly<{
       length: number,
       offset: number,
     }>,
@@ -136,7 +136,7 @@ export type ComponentStackType = 'legacy' | 'stack';
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
-export function parseInterpolation(args: $ReadOnlyArray<unknown>): $ReadOnly<{
+export function parseInterpolation(args: $ReadOnlyArray<unknown>): Readonly<{
   category: Category,
   message: Message,
 }> {

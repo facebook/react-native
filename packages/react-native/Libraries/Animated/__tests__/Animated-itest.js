@@ -581,7 +581,7 @@ test('AnimatedValue.interpolate', () => {
   let _interpolatedValueX;
   const viewRef = createRef<HostInstance>();
 
-  function MyApp({outputRangeX}: $ReadOnly<{outputRangeX: number}>) {
+  function MyApp({outputRangeX}: Readonly<{outputRangeX: number}>) {
     const valueX = useAnimatedValue(0.5, {useNativeDriver: true});
     _valueX = valueX;
     const offset = outputRangeX - 1;

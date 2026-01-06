@@ -17,7 +17,7 @@ import {createViewConfig} from '../NativeComponent/ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
 
-export type NativeTextProps = $ReadOnly<{
+export type NativeTextProps = Readonly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,

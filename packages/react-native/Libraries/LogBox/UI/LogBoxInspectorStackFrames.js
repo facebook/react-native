@@ -24,7 +24,7 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 import {useState} from 'react';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   log: LogBoxLog,
   onRetry: () => void,
 }>;
@@ -139,7 +139,7 @@ function StackFrameList(props: {
 }
 
 function StackFrameFooter(
-  props: $ReadOnly<{message: string, onPress: () => void}>,
+  props: Readonly<{message: string, onPress: () => void}>,
 ) {
   return (
     <View style={stackStyles.collapseContainer}>

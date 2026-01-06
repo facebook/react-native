@@ -25,14 +25,14 @@ import type {
 
 import * as React from 'react';
 
-export type PressRetentionOffset = $ReadOnly<{
+export type PressRetentionOffset = Readonly<{
   top: number,
   left: number,
   bottom: number,
   right: number,
 }>;
 
-type TextPointerEventProps = $ReadOnly<{
+type TextPointerEventProps = Readonly<{
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
   onPointerMove?: (event: PointerEvent) => void,
@@ -121,7 +121,7 @@ export type TextPropsAndroid = {
   minimumFontScale?: ?number,
 };
 
-type TextBaseProps = $ReadOnly<{
+type TextBaseProps = Readonly<{
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => unknown,
 
   /**
@@ -268,7 +268,7 @@ type TextBaseProps = $ReadOnly<{
 /**
  * @see https://reactnative.dev/docs/text#reference
  */
-export type TextProps = $ReadOnly<{
+export type TextProps = Readonly<{
   ...TextPointerEventProps,
   ...TextPropsIOS,
   ...TextPropsAndroid,

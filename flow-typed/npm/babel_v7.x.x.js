@@ -10,7 +10,7 @@
 
 'use strict';
 
-type _BabelSourceMap = $ReadOnly<{
+type _BabelSourceMap = Readonly<{
   file?: string,
   mappings: string,
   names: Array<string>,
@@ -28,9 +28,9 @@ type _BabelSourceMapSegment = {
   ...
 };
 
-export type BabelSourceLocation = $ReadOnly<{
-  start: $ReadOnly<{line: number, column: number}>,
-  end: $ReadOnly<{line: number, column: number}>,
+export type BabelSourceLocation = Readonly<{
+  start: Readonly<{line: number, column: number}>,
+  end: Readonly<{line: number, column: number}>,
 }>;
 
 declare module '@babel/parser' {
@@ -330,7 +330,7 @@ declare module '@babel/core' {
 
     constructor(
       options: BabelCoreOptions,
-      input: $ReadOnly<{ast: BabelNode, code: string, inputMap: any}>,
+      input: Readonly<{ast: BabelNode, code: string, inputMap: any}>,
     ): File;
 
     getMetadata(): void;
@@ -1079,7 +1079,7 @@ declare module '@babel/core' {
   declare type ValidatedOptions = BabelCoreOptions;
 
   declare class PartialConfig {
-    +options: $ReadOnly<ValidatedOptions>;
+    +options: Readonly<ValidatedOptions>;
     +babelrc: string | void;
     +babelignore: string | void;
     +config: string | void;

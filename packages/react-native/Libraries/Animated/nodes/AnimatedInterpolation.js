@@ -34,7 +34,7 @@ export type InterpolationConfigSupportedOutputType =
 
 export type InterpolationConfigType<
   OutputT: InterpolationConfigSupportedOutputType,
-> = $ReadOnly<{
+> = Readonly<{
   ...AnimatedNodeConfig,
   inputRange: $ReadOnlyArray<number>,
   outputRange: $ReadOnlyArray<OutputT>,

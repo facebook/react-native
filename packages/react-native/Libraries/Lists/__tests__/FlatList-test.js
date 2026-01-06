@@ -36,7 +36,7 @@ describe('FlatList', () => {
     expect(component).toMatchSnapshot();
   });
   it('renders simple list using ListItemComponent', async () => {
-    function ListItemComponent({item}: $ReadOnly<{item: {key: string}}>) {
+    function ListItemComponent({item}: Readonly<{item: {key: string}}>) {
       return <item value={item.key} />;
     }
     const component = await create(
@@ -48,7 +48,7 @@ describe('FlatList', () => {
     expect(component).toMatchSnapshot();
   });
   it('renders simple list using ListItemComponent (multiple columns)', async () => {
-    function ListItemComponent({item}: $ReadOnly<{item: {key: string}}>) {
+    function ListItemComponent({item}: Readonly<{item: {key: string}}>) {
       return <item value={item.key} />;
     }
     const component = await create(
@@ -137,7 +137,7 @@ describe('FlatList', () => {
     jest.resetModules();
     jest.unmock('../../Components/ScrollView/ScrollView');
 
-    function ListItemComponent({item}: $ReadOnly<{item: {key: string}}>) {
+    function ListItemComponent({item}: Readonly<{item: {key: string}}>) {
       return <item value={item.key} />;
     }
     const listRef = createRef<React.ElementRef<typeof FlatList>>();

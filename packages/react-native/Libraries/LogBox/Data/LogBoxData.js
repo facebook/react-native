@@ -26,7 +26,7 @@ import {parseLogBoxException} from './parseLogBoxLog';
 import * as React from 'react';
 
 export type LogBoxLogs = Set<LogBoxLog>;
-export type LogData = $ReadOnly<{
+export type LogData = Readonly<{
   level: LogLevel,
   message: Message,
   category: Category,
@@ -36,7 +36,7 @@ export type LogData = $ReadOnly<{
 }>;
 
 export type Observer = (
-  $ReadOnly<{
+  Readonly<{
     logs: LogBoxLogs,
     isDisabled: boolean,
     selectedLogIndex: number,
@@ -45,7 +45,7 @@ export type Observer = (
 
 export type IgnorePattern = string | RegExp;
 
-export type Subscription = $ReadOnly<{
+export type Subscription = Readonly<{
   unsubscribe: () => void,
 }>;
 
@@ -61,7 +61,7 @@ export type WarningInfo = {
 
 export type WarningFilter = (format: string) => WarningInfo;
 
-type AppInfo = $ReadOnly<{
+type AppInfo = Readonly<{
   appVersion: string,
   engine: string,
   onPress?: ?() => void,
@@ -427,8 +427,8 @@ function observeNext(observer: Observer): Subscription {
   };
 }
 
-type LogBoxStateSubscriptionProps = $ReadOnly<{}>;
-type LogBoxStateSubscriptionState = $ReadOnly<{
+type LogBoxStateSubscriptionProps = Readonly<{}>;
+type LogBoxStateSubscriptionState = Readonly<{
   logs: LogBoxLogs,
   isDisabled: boolean,
   hasError: boolean,
@@ -436,7 +436,7 @@ type LogBoxStateSubscriptionState = $ReadOnly<{
 }>;
 
 type SubscribedComponent = React.ComponentType<
-  $ReadOnly<{
+  Readonly<{
     logs: $ReadOnlyArray<LogBoxLog>,
     isDisabled: boolean,
     selectedLogIndex: number,

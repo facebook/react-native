@@ -55,7 +55,7 @@ export type StatusBarAnimation = $Keys<{
   ...
 }>;
 
-export type StatusBarPropsAndroid = $ReadOnly<{
+export type StatusBarPropsAndroid = Readonly<{
   /**
    * The background color of the status bar.
    *
@@ -76,7 +76,7 @@ export type StatusBarPropsAndroid = $ReadOnly<{
   translucent?: ?boolean,
 }>;
 
-export type StatusBarPropsIOS = $ReadOnly<{
+export type StatusBarPropsIOS = Readonly<{
   /**
    * If the network activity indicator should be visible.
    *
@@ -92,7 +92,7 @@ export type StatusBarPropsIOS = $ReadOnly<{
   showHideTransition?: ?('fade' | 'slide' | 'none'),
 }>;
 
-type StatusBarBaseProps = $ReadOnly<{
+type StatusBarBaseProps = Readonly<{
   /**
    * If the status bar is hidden.
    */
@@ -108,7 +108,7 @@ type StatusBarBaseProps = $ReadOnly<{
   barStyle?: ?('default' | 'light-content' | 'dark-content'),
 }>;
 
-export type StatusBarProps = $ReadOnly<{
+export type StatusBarProps = Readonly<{
   ...StatusBarPropsAndroid,
   ...StatusBarPropsIOS,
   ...StatusBarBaseProps,

@@ -12,7 +12,7 @@ import type {TerminalReporter} from 'metro';
 
 import {styleText} from 'util';
 
-type PageDescription = $ReadOnly<{
+type PageDescription = Readonly<{
   id: string,
   title: string,
   description: string,

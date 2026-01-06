@@ -68,7 +68,7 @@ type DebuggerConnection = {
 
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
 
-export type DeviceOptions = $ReadOnly<{
+export type DeviceOptions = Readonly<{
   id: string,
   name: string,
   app: string,
@@ -302,7 +302,7 @@ export default class Device {
     {
       debuggerRelativeBaseUrl,
       userAgent,
-    }: $ReadOnly<{
+    }: Readonly<{
       debuggerRelativeBaseUrl: URL,
       userAgent: string | null,
     }>,

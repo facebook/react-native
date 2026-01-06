@@ -19,7 +19,7 @@ import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-type TouchableBounceProps = $ReadOnly<{
+type TouchableBounceProps = Readonly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
 
   onPressAnimationComplete?: ?() => void,
@@ -31,7 +31,7 @@ type TouchableBounceProps = $ReadOnly<{
   hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
 }>;
 
-type TouchableBounceState = $ReadOnly<{
+type TouchableBounceState = Readonly<{
   pressability: Pressability,
   scale: Animated.Value,
 }>;
@@ -226,10 +226,10 @@ export default (function TouchableBounceWrapper({
   ...props
 }: {
   ref: React.RefSetter<unknown>,
-  ...$ReadOnly<Omit<TouchableBounceProps, 'hostRef'>>,
+  ...Readonly<Omit<TouchableBounceProps, 'hostRef'>>,
 }) {
   return <TouchableBounce {...props} hostRef={hostRef} />;
 } as component(
   ref?: React.RefSetter<unknown>,
-  ...props: $ReadOnly<Omit<TouchableBounceProps, 'hostRef'>>
+  ...props: Readonly<Omit<TouchableBounceProps, 'hostRef'>>
 ));

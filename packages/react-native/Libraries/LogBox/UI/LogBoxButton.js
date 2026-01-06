@@ -19,9 +19,9 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 import {useState} from 'react';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   id?: string,
-  backgroundColor: $ReadOnly<{
+  backgroundColor: Readonly<{
     default: string,
     pressed: string,
   }>,

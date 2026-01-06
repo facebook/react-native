@@ -188,7 +188,7 @@ export default {
    * An identity function for creating style sheets.
    */
   // $FlowFixMe[unsupported-variance-annotation]
-  create<+S: ____Styles_Internal>(obj: S): $ReadOnly<S> {
+  create<+S: ____Styles_Internal>(obj: S): Readonly<S> {
     // TODO: This should return S as the return type. But first,
     // we need to codemod all the callsites that are typing this
     // return value as a number (even though it was opaque).

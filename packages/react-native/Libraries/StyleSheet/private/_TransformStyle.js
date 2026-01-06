@@ -29,7 +29,7 @@ type MaximumOneOf<T: {...}> = $Values<{
   }>,
 }>;
 
-export type ____TransformStyle_Internal = $ReadOnly<{
+export type ____TransformStyle_Internal = Readonly<{
   /**
    * `transform` accepts an array of transformation objects. Each object specifies
    * the property that will be transformed as the key, and the value to use in the
@@ -48,7 +48,7 @@ export type ____TransformStyle_Internal = $ReadOnly<{
    */
   transform?:
     | $ReadOnlyArray<
-        $ReadOnly<
+        Readonly<
           MaximumOneOf<
             MergeUnion<
               | {+perspective: number | AnimatedNode}

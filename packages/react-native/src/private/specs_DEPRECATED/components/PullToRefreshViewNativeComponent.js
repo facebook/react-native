@@ -21,7 +21,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type PullToRefreshNativeProps = $ReadOnly<{
+type PullToRefreshNativeProps = Readonly<{
   ...ViewProps,
 
   /**
