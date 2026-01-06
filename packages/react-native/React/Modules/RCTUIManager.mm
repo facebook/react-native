@@ -1248,7 +1248,7 @@ RCT_EXPORT_METHOD(
             [[RCTComposedViewRegistry alloc] initWithUIManager:strongSelf andRegistry:strongSelf->_viewRegistry];
         block(strongSelf, composedViewRegistry);
       }
-    } @catch (NSException *exception) {
+    } @catch (NSException *__unused exception) {
       RCTLogError(@"Exception thrown while executing UI block: %@", exception);
     }
   };
