@@ -41,7 +41,7 @@ const DISPLAY_STATUS_MAPPING: {[PlatformTestResultStatus]: string} = {
   SKIPPED: 'Skipped',
 };
 
-type FilterModalProps = $ReadOnly<{
+type FilterModalProps = Readonly<{
   filterText: string,
   setFilterText: (newFilterText: string) => void,
   filterFail: boolean,
@@ -176,7 +176,7 @@ function renderTableRow({item}: ListRenderItemInfo<PlatformTestResult>) {
   return <TableRow testResult={item} />;
 }
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   numPending: number,
   reset: () => void,
   results: $ReadOnlyArray<PlatformTestResult>,

@@ -1502,7 +1502,7 @@ class VirtualizedList extends StateSafePureComponent<
   }
 
   _selectLength(
-    metrics: $ReadOnly<{
+    metrics: Readonly<{
       height: number,
       width: number,
       ...
@@ -1513,7 +1513,7 @@ class VirtualizedList extends StateSafePureComponent<
       : metrics.width;
   }
 
-  _selectOffset({x, y}: $ReadOnly<{x: number, y: number, ...}>): number {
+  _selectOffset({x, y}: Readonly<{x: number, y: number, ...}>): number {
     return this._orientation().horizontal ? x : y;
   }
 

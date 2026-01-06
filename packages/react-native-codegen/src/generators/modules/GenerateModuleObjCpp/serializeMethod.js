@@ -33,13 +33,13 @@ const ProtocolMethodTemplate = ({
   returnObjCType,
   methodName,
   params,
-}: $ReadOnly<{
+}: Readonly<{
   returnObjCType: string,
   methodName: string,
   params: string,
 }>) => `- (${returnObjCType})${methodName}${params};`;
 
-export type StructParameterRecord = $ReadOnly<{
+export type StructParameterRecord = Readonly<{
   paramIndex: number,
   structName: string,
 }>;
@@ -53,7 +53,7 @@ type ReturnJSType =
   | 'NumberKind'
   | 'StringKind';
 
-export type MethodSerializationOutput = $ReadOnly<{
+export type MethodSerializationOutput = Readonly<{
   methodName: string,
   protocolMethod: string,
   selector: string,
@@ -186,7 +186,7 @@ function getParamObjCType(
   structName: string,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnly<{objCType: string, isStruct: boolean}> {
+): Readonly<{objCType: string, isStruct: boolean}> {
   const {name: paramName, typeAnnotation: nullableTypeAnnotation} = param;
   const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
   const isRequired = !param.optional && !nullable;

@@ -12,7 +12,7 @@ import type {ViewProps} from 'react-native';
 
 import {useMemo} from 'react';
 
-type EventRecorderOptions = $ReadOnly<{
+type EventRecorderOptions = Readonly<{
   mergeEventTypes: Array<string>,
   relevantEvents: Array<string>,
 }>;
@@ -104,7 +104,7 @@ export default class RNTesterPlatformTestEventRecorder {
   createRecorderTestEventHandlers(
     targetNames: $ReadOnlyArray<string>,
     callback?: (event: Object, eventType: string, targetName: string) => void,
-  ): $ReadOnly<{[targetName: string]: ViewProps}> {
+  ): Readonly<{[targetName: string]: ViewProps}> {
     const result: {[targetName: string]: ViewProps} = {};
     for (const targetName of targetNames) {
       const recordedEventHandler =
@@ -173,7 +173,7 @@ export function useRecorderTestEventHandlers(
   eventRecorder: RNTesterPlatformTestEventRecorder,
   targetNames: $ReadOnlyArray<string>,
   callback?: (event: Object, eventType: string, targetName: string) => void,
-): $ReadOnly<{[targetName: string]: ViewProps}> {
+): Readonly<{[targetName: string]: ViewProps}> {
   return useMemo(
     () => eventRecorder.createRecorderTestEventHandlers(targetNames, callback),
     [eventRecorder, targetNames, callback],

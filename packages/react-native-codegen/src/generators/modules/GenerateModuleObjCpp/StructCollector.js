@@ -44,13 +44,13 @@ const {
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 
-export type RegularStruct = $ReadOnly<{
+export type RegularStruct = Readonly<{
   context: 'REGULAR',
   name: string,
   properties: $ReadOnlyArray<StructProperty>,
 }>;
 
-export type ConstantsStruct = $ReadOnly<{
+export type ConstantsStruct = Readonly<{
   context: 'CONSTANTS',
   name: string,
   properties: $ReadOnlyArray<StructProperty>,
@@ -58,7 +58,7 @@ export type ConstantsStruct = $ReadOnly<{
 
 export type Struct = RegularStruct | ConstantsStruct;
 
-export type StructProperty = $ReadOnly<{
+export type StructProperty = Readonly<{
   name: string,
   optional: boolean,
   typeAnnotation: Nullable<StructTypeAnnotation>,
@@ -200,7 +200,7 @@ class StructCollector {
   ): void {
     // $FlowFixMe[missing-type-arg]
     const properties = objectTypeAnnotation.properties.map<
-      $ReadOnly<{
+      Readonly<{
         name: string,
         optional: boolean,
         typeAnnotation: Nullable<StructTypeAnnotation>,

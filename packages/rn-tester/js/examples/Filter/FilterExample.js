@@ -20,7 +20,7 @@ import {Animated, Button, Image, StyleSheet, Text, View} from 'react-native';
 const alphaHotdog = require('../../assets/alpha-hotdog.png');
 const hotdog = require('../../assets/hotdog.jpg');
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   style?: ViewStyleProp,
   testID?: string,
   imageSource?: number,

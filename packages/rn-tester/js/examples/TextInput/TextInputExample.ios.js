@@ -124,12 +124,12 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
 }
 
 class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
-  $ReadOnly<{
+  Readonly<{
     keyboardType: KeyboardTypeOptions,
   }>,
   {text: string},
 > {
-  constructor(props: void | $ReadOnly<{keyboardType: KeyboardTypeOptions}>) {
+  constructor(props: void | Readonly<{keyboardType: KeyboardTypeOptions}>) {
     // $FlowFixMe[incompatible-type]
     super(props);
     this.state = {text: ''};

@@ -48,7 +48,7 @@ const postTransforms = (
   ),
 ];
 
-type BuildApiSnapshotOptions = $ReadOnly<{
+type BuildApiSnapshotOptions = Readonly<{
   validate: boolean,
   debugVersionAnnotations: boolean,
 }>;

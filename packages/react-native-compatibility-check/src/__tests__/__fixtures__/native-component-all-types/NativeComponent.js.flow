@@ -27,7 +27,7 @@ import type {
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{
+type NativeProps = Readonly<{
   ...ViewProps,
   bool: boolean,
   string: string,
@@ -49,12 +49,12 @@ type NativeProps = $ReadOnly<{
   stringUnion?: WithDefault<'foo' | 'bar', 'bar'>,
   intUnion?: WithDefault<1 | 2, 1>,
 
-  nestedObject: $ReadOnly<{
+  nestedObject: Readonly<{
     string: string,
     color: ColorValue,
   }>,
 
-  nestedObjectChanged: $ReadOnly<{
+  nestedObjectChanged: Readonly<{
     string: boolean,
     color: ColorValue,
   }>,
@@ -66,14 +66,14 @@ type NativeProps = $ReadOnly<{
   >,
 
   arrayNestedObject: $ReadOnlyArray<
-    $ReadOnly<{
+    Readonly<{
       string: string,
       color: ColorValue,
     }>,
   >,
 
   arrayNestedObjectChange: $ReadOnlyArray<
-    $ReadOnly<{
+    Readonly<{
       string: boolean,
       color: ColorValue,
     }>,

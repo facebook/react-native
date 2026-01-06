@@ -101,10 +101,10 @@ interface Spec extends TurboModule {
   takeMountingManagerLogs: (surfaceId: RootTag) => Array<string>;
   getDirectManipulationProps: (
     shadowNode: unknown /* ShadowNode */,
-  ) => $ReadOnly<{
+  ) => Readonly<{
     [string]: unknown,
   }>;
-  getFabricUpdateProps: (shadowNode: unknown /* ShadowNode */) => $ReadOnly<{
+  getFabricUpdateProps: (shadowNode: unknown /* ShadowNode */) => Readonly<{
     [string]: unknown,
   }>;
   flushMessageQueue: () => void;

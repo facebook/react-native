@@ -82,11 +82,11 @@ export type GenerateFunction = (
   includeGetDebugPropsImplementation?: boolean,
 ) => FilesOutput;
 
-export type LibraryGeneratorsFunctions = $ReadOnly<{
+export type LibraryGeneratorsFunctions = Readonly<{
   [string]: Array<GenerateFunction>,
 }>;
 
-export type LibraryOptions = $ReadOnly<{
+export type LibraryOptions = Readonly<{
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
@@ -97,7 +97,7 @@ export type LibraryOptions = $ReadOnly<{
   libraryGenerators?: LibraryGeneratorsFunctions,
 }>;
 
-export type SchemasOptions = $ReadOnly<{
+export type SchemasOptions = Readonly<{
   schemas: {[string]: SchemaType},
   outputDirectory: string,
   supportedApplePlatforms?: {[string]: {[string]: boolean}},
@@ -118,12 +118,12 @@ export type LibraryGenerators =
 
 export type SchemasGenerators = 'providerIOS';
 
-export type LibraryConfig = $ReadOnly<{
+export type LibraryConfig = Readonly<{
   generators: Array<LibraryGenerators>,
   test?: boolean,
 }>;
 
-export type SchemasConfig = $ReadOnly<{
+export type SchemasConfig = Readonly<{
   generators: Array<SchemasGenerators>,
   test?: boolean,
 }>;

@@ -87,7 +87,7 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMe> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{}>;
+type AdjustingFontSizeProps = Readonly<{}>;
 
 type AdjustingFontSizeState = {
   dynamicText: string,

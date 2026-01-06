@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 export default function PointerEventCaptureMouse(
   props: Props,
 ): React.MixedElement {

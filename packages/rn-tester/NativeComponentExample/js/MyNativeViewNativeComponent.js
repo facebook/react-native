@@ -13,7 +13,7 @@ import type {CodegenTypes, HostComponent, ViewProps} from 'react-native';
 import * as React from 'react';
 import {codegenNativeCommands, codegenNativeComponent} from 'react-native';
 
-type Event = $ReadOnly<{
+type Event = Readonly<{
   values: $ReadOnlyArray<CodegenTypes.Int32>,
   boolValues: $ReadOnlyArray<boolean>,
   floats: $ReadOnlyArray<CodegenTypes.Float>,
@@ -24,11 +24,11 @@ type Event = $ReadOnly<{
   multiArrays: $ReadOnlyArray<$ReadOnlyArray<CodegenTypes.Int32>>,
 }>;
 
-type LegacyStyleEvent = $ReadOnly<{
+type LegacyStyleEvent = Readonly<{
   string: string,
 }>;
 
-type NativeProps = $ReadOnly<{
+type NativeProps = Readonly<{
   ...ViewProps,
   opacity?: CodegenTypes.Float,
   values: $ReadOnlyArray<CodegenTypes.Int32>,

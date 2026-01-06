@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 export default function PointerEventClickTouchHierarchyPointerEvents(
   props: Props,
 ): React.MixedElement {

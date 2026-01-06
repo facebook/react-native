@@ -25,7 +25,7 @@ type ColorChangedEvent = {
   },
 };
 
-type NativeProps = $ReadOnly<{
+type NativeProps = Readonly<{
   ...ViewProps,
   opacity?: number,
   color?: string,

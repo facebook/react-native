@@ -26,7 +26,7 @@ const StructTemplate = ({
   hasteModuleName,
   structName,
   builderInputProps,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   structName: string,
   builderInputProps: string,
@@ -65,7 +65,7 @@ const MethodTemplate = ({
   hasteModuleName,
   structName,
   properties,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   structName: string,
   properties: string,

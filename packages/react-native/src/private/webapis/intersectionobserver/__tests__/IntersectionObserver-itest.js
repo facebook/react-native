@@ -2978,7 +2978,7 @@ describe('IntersectionObserver', () => {
         };
       };
 
-      function Observe({children}: $ReadOnly<{children?: React.Node}>) {
+      function Observe({children}: Readonly<{children?: React.Node}>) {
         return <View ref={observeRef}>{children}</View>;
       }
 

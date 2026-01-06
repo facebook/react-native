@@ -485,7 +485,7 @@ class TokenizedTextExample extends React.Component<$FlowFixMe, $FlowFixMe> {
 }
 
 type SelectionExampleState = {
-  selection: $ReadOnly<{
+  selection: Readonly<{
     start: number,
     end: number,
   }>,

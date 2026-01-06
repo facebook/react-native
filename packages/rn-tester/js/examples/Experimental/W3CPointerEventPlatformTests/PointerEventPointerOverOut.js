@@ -206,7 +206,7 @@ function PointerEventPointerOverOutTestCase(
   );
 }
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 export default function PointerEventPointerOverOut(
   props: Props,
 ): React.MixedElement {
