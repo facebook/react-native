@@ -39,12 +39,21 @@ function isFirstParty(fileName) {
   );
 }
 
+// Called by Babel whenever caller information changes between transform calls
+// for a given config. If the return value changes, Babel re-evaluates
+// getPreset, which is otherwise cached based on `options`. This must be pure,
+// and should be cheap.
+function getTransformProfile(caller) {
+  return caller?.unstable_transformProfile ?? 'default';
+}
+
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
-const getPreset = (src, options) => {
+const getPreset = (src, options, babel) => {
   const transformProfile =
-    (options && options.unstable_transformProfile) || 'default';
+    options?.unstable_transformProfile ?? babel?.caller(getTransformProfile);
+
   const isHermesStable = transformProfile === 'hermes-stable';
   const isHermesCanary = transformProfile === 'hermes-canary';
   const isHermes = isHermesStable || isHermesCanary;
@@ -252,14 +261,14 @@ const getPreset = (src, options) => {
   };
 };
 
-module.exports = options => {
+module.exports = (options, babel) => {
   if (options.withDevTools == null) {
     const env = process.env.BABEL_ENV || process.env.NODE_ENV;
     if (!env || env === 'development') {
-      return getPreset(null, {...options, dev: true});
+      return getPreset(null, {...options, dev: true}, babel);
     }
   }
-  return getPreset(null, options);
+  return getPreset(null, options, babel);
 };
 
 module.exports.getPreset = getPreset;
