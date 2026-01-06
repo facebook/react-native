@@ -20,10 +20,6 @@ const EXCLUDED_FIRST_PARTY_PATHS = [
   /[/\\]private[/\\]react-native-fantom[/\\]/,
 ];
 
-// customTransformOptions may be strings from URL params, or booleans passed
-// programatically. For strings, handle them as Metro does when parsing URLs.
-const TRUE_VALS = new Set([true, 'true', '1']);
-
 function isTypeScriptSource(fileName) {
   return !!fileName && fileName.endsWith('.ts');
 }
@@ -54,25 +50,28 @@ const getPreset = (src, options, babel) => {
   const transformProfile =
     options?.unstable_transformProfile ?? babel?.caller(getTransformProfile);
 
-  const isHermesStable = transformProfile === 'hermes-stable';
-  const isHermesCanary = transformProfile === 'hermes-canary';
-  const isHermes = isHermesStable || isHermesCanary;
+  // Hermes V1 (aka Static Hermes) uses more optimised profiles.
+  // There is currently no difference between stable and canary, but canary
+  // may in future be used to test features in pre-prod Hermes versions.
+  const isHermesV1 =
+    transformProfile === 'hermes-stable' ||
+    transformProfile === 'hermes-canary';
 
   // We enable regenerator in dev builds for the time being because
-  // Static Hermes doesn't yet fully support debugging native generators.
+  // Hermes V1 doesn't yet fully support debugging native generators.
   // (e.g. - it's not possible to inspect local variables when paused in a
   // generator).
   //
   // Use native generators in release mode because it has already yielded perf
-  // wins. The next release of Static Hermes will close this gap, so this won't
+  // wins. The next release of Hermes will close this gap, so this won't
   // be permanent.
-  const enableRegenerator = isHermes && options.dev;
+  const enableRegenerator = isHermesV1 && options.dev;
+
+  // Preserve class syntax and related if we're using Hermes V1.
+  const preserveClasses = isHermesV1;
 
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
-  const preserveClasses = TRUE_VALS.has(
-    options?.customTransformOptions?.unstable_preserveClasses,
-  );
 
   const extraPlugins = [];
   const firstPartyPlugins = [];
