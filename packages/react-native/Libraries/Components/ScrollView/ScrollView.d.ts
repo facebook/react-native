@@ -531,8 +531,8 @@ export interface ScrollViewPropsIOS {
    * @platform ios
    */
   topEdgeEffect?: {
-    style?: 'automatic' | 'soft' | 'hard';
-    hidden?: boolean;
+    style?: 'automatic' | 'soft' | 'hard' | undefined;
+    hidden?: boolean | undefined;
   } | undefined;
 
   /**
@@ -540,8 +540,8 @@ export interface ScrollViewPropsIOS {
    * @platform ios
    */
   bottomEdgeEffect?: {
-    style?: 'automatic' | 'soft' | 'hard';
-    hidden?: boolean;
+    style?: 'automatic' | 'soft' | 'hard' | undefined;
+    hidden?: boolean | undefined;
   } | undefined;
 
   /**
@@ -549,8 +549,8 @@ export interface ScrollViewPropsIOS {
    * @platform ios
    */
   leftEdgeEffect?: {
-    style?: 'automatic' | 'soft' | 'hard';
-    hidden?: boolean;
+    style?: 'automatic' | 'soft' | 'hard' | undefined;
+    hidden?: boolean | undefined;
   } | undefined;
 
   /**
@@ -558,8 +558,8 @@ export interface ScrollViewPropsIOS {
    * @platform ios
    */
   rightEdgeEffect?: {
-    style?: 'automatic' | 'soft' | 'hard';
-    hidden?: boolean;
+    style?: 'automatic' | 'soft' | 'hard' | undefined;
+    hidden?: boolean | undefined;
   } | undefined;
 
   /**
