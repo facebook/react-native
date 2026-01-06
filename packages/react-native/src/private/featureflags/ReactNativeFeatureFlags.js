@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<02b24e5c75fb8d34646670771ac3b2ed>>
+ * @generated SignedSource<<43e6a2dddd5965011ba166098f90e33f>>
  * @flow strict
  * @noformat
  */
@@ -106,7 +106,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableVirtualViewDebugFeatures: Getter<boolean>,
   enableVirtualViewRenderState: Getter<boolean>,
   enableVirtualViewWindowFocusDetection: Getter<boolean>,
-  enableWebPerformanceAPIsByDefault: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixTextClippingAndroid15useBoundsForWidth: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
@@ -444,10 +443,6 @@ export const enableVirtualViewRenderState: Getter<boolean> = createNativeFlagGet
  * Enables window focus detection for prioritizing VirtualView events.
  */
 export const enableVirtualViewWindowFocusDetection: Getter<boolean> = createNativeFlagGetter('enableVirtualViewWindowFocusDetection', false);
-/**
- * Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.
- */
-export const enableWebPerformanceAPIsByDefault: Getter<boolean> = createNativeFlagGetter('enableWebPerformanceAPIsByDefault', true);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */

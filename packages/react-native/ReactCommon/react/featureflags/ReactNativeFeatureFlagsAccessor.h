@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<beb6c31ead63642735b7d7a8fdb74371>>
+ * @generated SignedSource<<52f05ab59b596ddf941b48fd4193e6cc>>
  */
 
 /**
@@ -87,7 +87,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableVirtualViewDebugFeatures();
   bool enableVirtualViewRenderState();
   bool enableVirtualViewWindowFocusDetection();
-  bool enableWebPerformanceAPIsByDefault();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixTextClippingAndroid15useBoundsForWidth();
   bool fuseboxAssertSingleHostState();
@@ -130,7 +129,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 87> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 86> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -187,7 +186,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
   std::atomic<std::optional<bool>> enableVirtualViewRenderState_;
   std::atomic<std::optional<bool>> enableVirtualViewWindowFocusDetection_;
-  std::atomic<std::optional<bool>> enableWebPerformanceAPIsByDefault_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixTextClippingAndroid15useBoundsForWidth_;
   std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;

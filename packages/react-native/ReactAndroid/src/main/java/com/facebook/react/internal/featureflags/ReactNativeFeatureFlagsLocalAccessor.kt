@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b0bafa4cc3d34fd622da17aac4bad2de>>
+ * @generated SignedSource<<503f34acc5cf8a0755cef1ca8b72e7e5>>
  */
 
 /**
@@ -79,7 +79,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var enableVirtualViewRenderStateCache: Boolean? = null
   private var enableVirtualViewWindowFocusDetectionCache: Boolean? = null
-  private var enableWebPerformanceAPIsByDefaultCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
@@ -658,16 +657,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableVirtualViewWindowFocusDetection()
       accessedFeatureFlags.add("enableVirtualViewWindowFocusDetection")
       enableVirtualViewWindowFocusDetectionCache = cached
-    }
-    return cached
-  }
-
-  override fun enableWebPerformanceAPIsByDefault(): Boolean {
-    var cached = enableWebPerformanceAPIsByDefaultCache
-    if (cached == null) {
-      cached = currentProvider.enableWebPerformanceAPIsByDefault()
-      accessedFeatureFlags.add("enableWebPerformanceAPIsByDefault")
-      enableWebPerformanceAPIsByDefaultCache = cached
     }
     return cached
   }

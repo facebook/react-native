@@ -39,10 +39,8 @@ namespace facebook::react {
     return std::make_shared<NativeDOM>(jsInvoker);
   }
 
-  if (ReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault()) {
-    if (name == NativePerformance::kModuleName) {
-      return std::make_shared<NativePerformance>(jsInvoker);
-    }
+  if (name == NativePerformance::kModuleName) {
+    return std::make_shared<NativePerformance>(jsInvoker);
   }
 
   if (ReactNativeFeatureFlags::enableIntersectionObserverByDefault()) {
