@@ -1059,6 +1059,7 @@ constexpr static MapBuffer::Key TA_KEY_GRADIENT_COLORS = 30;
 constexpr static MapBuffer::Key TA_KEY_TEXT_STROKE_WIDTH = 31;
 constexpr static MapBuffer::Key TA_KEY_TEXT_STROKE_COLOR = 32;
 constexpr static MapBuffer::Key TA_KEY_GRADIENT_ANGLE = 33;
+constexpr static MapBuffer::Key TA_KEY_GRADIENT_WIDTH = 34;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
