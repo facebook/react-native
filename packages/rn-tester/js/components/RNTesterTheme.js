@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {ColorValue, ImageSource} from 'react-native';
+import type {ColorValue} from 'react-native';
 
 import * as React from 'react';
 import {createContext} from 'react';
@@ -16,6 +16,8 @@ import {use} from 'react';
 import {Appearance} from 'react-native';
 
 export type RNTesterTheme = $ReadOnly<{
+  BrandColor: ColorValue,
+
   LabelColor: ColorValue,
   SecondaryLabelColor: ColorValue,
   TertiaryLabelColor: ColorValue,
@@ -44,19 +46,12 @@ export type RNTesterTheme = $ReadOnly<{
   ToolbarColor: ColorValue,
   BackgroundColor: ColorValue,
   BorderColor: ColorValue,
-
-  NavBarLabelActiveColor: ColorValue,
-  NavBarLabelInactiveColor: ColorValue,
-  NavBarComponentsActiveIcon: ImageSource,
-  NavBarComponentsInactiveIcon: ImageSource,
-  NavBarAPIsActiveIcon: ImageSource,
-  NavBarAPIsInactiveIcon: ImageSource,
-  NavBarPlaygroundActiveIcon: ImageSource,
-  NavBarPlaygroundInactiveIcon: ImageSource,
   ...
 }>;
 
 export const RNTesterLightTheme = {
+  BrandColor: '#087ea4ff',
+
   LabelColor: '#000000ff',
   SecondaryLabelColor: '#3c3c4399',
   TertiaryLabelColor: '#3c3c434c',
@@ -86,18 +81,11 @@ export const RNTesterLightTheme = {
   ToolbarColor: '#e9eaedff',
   BackgroundColor: '#f3f8ffff',
   BorderColor: '#005dffff',
-
-  NavBarLabelActiveColor: '#5e5f62ff',
-  NavBarLabelInactiveColor: '#b1b4baff',
-  NavBarComponentsActiveIcon: require('./../assets/bottom-nav-components-icon-dark.png'),
-  NavBarComponentsInactiveIcon: require('./../assets/bottom-nav-components-icon-light.png'),
-  NavBarAPIsActiveIcon: require('./../assets/bottom-nav-apis-icon-dark.png'),
-  NavBarAPIsInactiveIcon: require('./../assets/bottom-nav-apis-icon-light.png'),
-  NavBarPlaygroundActiveIcon: require('./../assets/bottom-nav-playgrounds-icon-dark.png'),
-  NavBarPlaygroundInactiveIcon: require('./../assets/bottom-nav-playgrounds-icon-light.png'),
 };
 
 export const RNTesterDarkTheme = {
+  BrandColor: '#58c4dcff',
+
   LabelColor: '#ffffffff',
   SecondaryLabelColor: '#ebebf599',
   TertiaryLabelColor: '#ebebf54c',
@@ -127,15 +115,6 @@ export const RNTesterDarkTheme = {
   ToolbarColor: '#3c3c43ff',
   BackgroundColor: '#0c0700ff',
   BorderColor: '#005dffff',
-
-  NavBarLabelActiveColor: '#b1b4baff',
-  NavBarLabelInactiveColor: '#5e5f62ff',
-  NavBarComponentsActiveIcon: require('./../assets/bottom-nav-components-icon-light.png'),
-  NavBarComponentsInactiveIcon: require('./../assets/bottom-nav-components-icon-dark.png'),
-  NavBarAPIsActiveIcon: require('./../assets/bottom-nav-apis-icon-light.png'),
-  NavBarAPIsInactiveIcon: require('./../assets/bottom-nav-apis-icon-dark.png'),
-  NavBarPlaygroundActiveIcon: require('./../assets/bottom-nav-playgrounds-icon-light.png'),
-  NavBarPlaygroundInactiveIcon: require('./../assets/bottom-nav-playgrounds-icon-dark.png'),
 };
 
 export const themes = {light: RNTesterLightTheme, dark: RNTesterDarkTheme};
