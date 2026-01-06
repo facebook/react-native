@@ -325,7 +325,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
           [cgColors addObject:cgColors[0]];
           CAGradientLayer *gradient = [CAGradientLayer layer];
           // Use gradientWidth if specified, otherwise default to 100
-          CGFloat patternWidth = (!isnan(_gradientWidth) && _gradientWidth > 0) ? _gradientWidth : 100;
+          // CGFloat patternWidth = (!isnan(_gradientWidth) && _gradientWidth > 0) ? _gradientWidth : 100;
+          CGFloat patternWidth = 20;
           CGFloat height = _lineHeight * self.effectiveFontSizeMultiplier;
           gradient.frame = CGRectMake(0, 0, patternWidth, height);
           gradient.colors = cgColors;
