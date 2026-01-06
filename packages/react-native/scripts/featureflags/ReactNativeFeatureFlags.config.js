@@ -1011,16 +1011,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableVirtualViewExperimental: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-08-29',
-        description: 'Enables the experimental version of `VirtualView`.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
       metadata: {

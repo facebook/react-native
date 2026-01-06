@@ -11,13 +11,12 @@
 import type {ViewStyleProp} from '../../../../Libraries/StyleSheet/StyleSheet';
 import type {NativeSyntheticEvent} from '../../../../Libraries/Types/CoreEventTypes';
 import type {HostInstance} from '../../types/HostInstance';
-import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
+import type {NativeModeChangeEvent} from './VirtualViewExperimentalNativeComponent';
 
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
 import * as ReactNativeFeatureFlags from '../../featureflags/ReactNativeFeatureFlags';
 import {useVirtualViewLogging} from './logger/VirtualViewLogger';
-import VirtualViewExperimentalNativeComponent from './VirtualViewExperimentalNativeComponent';
-import VirtualViewClassicNativeComponent from './VirtualViewNativeComponent';
+import VirtualViewNativeComponent from './VirtualViewExperimentalNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 // $FlowFixMe[missing-export]
@@ -50,11 +49,6 @@ export type ModeChangeEvent = $ReadOnly<{
   mode: VirtualViewMode,
   target: HostInstance,
 }>;
-
-const VirtualViewNativeComponent: typeof VirtualViewClassicNativeComponent =
-  ReactNativeFeatureFlags.enableVirtualViewExperimental()
-    ? VirtualViewExperimentalNativeComponent
-    : VirtualViewClassicNativeComponent;
 
 type VirtualViewComponent = component(
   children?: React.Node,

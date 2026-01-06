@@ -11,7 +11,7 @@
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {Rect} from '../VirtualView';
-import type {NativeModeChangeEvent} from '../VirtualViewNativeComponent';
+import type {NativeModeChangeEvent} from '../VirtualViewExperimentalNativeComponent';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import isUnreachable from '../../../__tests__/utilities/isUnreachable';
@@ -43,16 +43,16 @@ describe('mode changes', () => {
 
     expect(_logs.states).toHaveLength(1);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView>
+      <rn-virtualViewExperimental>
         <rn-paragraph>Child</rn-paragraph>
-      </rn-virtualView>,
+      </rn-virtualViewExperimental>,
     );
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
 
     expect(_logs.states).toHaveLength(2);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView />,
+      <rn-virtualViewExperimental />,
     );
   });
 
@@ -72,16 +72,16 @@ describe('mode changes', () => {
 
     expect(_logs.states).toHaveLength(2);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView />,
+      <rn-virtualViewExperimental />,
     );
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Visible);
 
     expect(_logs.states).toHaveLength(3);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView>
+      <rn-virtualViewExperimental>
         <rn-paragraph>Child</rn-paragraph>
-      </rn-virtualView>,
+      </rn-virtualViewExperimental>,
     );
   });
 
@@ -101,9 +101,9 @@ describe('mode changes', () => {
 
     expect(_logs.states).toHaveLength(1);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView>
+      <rn-virtualViewExperimental>
         <rn-paragraph>Child</rn-paragraph>
-      </rn-virtualView>,
+      </rn-virtualViewExperimental>,
     );
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Visible);
@@ -111,9 +111,9 @@ describe('mode changes', () => {
     // Expects `VirtualView` does not undergo a state update.
     expect(_logs.states).toHaveLength(1);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
-      <rn-virtualView>
+      <rn-virtualViewExperimental>
         <rn-paragraph>Child</rn-paragraph>
-      </rn-virtualView>,
+      </rn-virtualViewExperimental>,
     );
   });
 });
@@ -128,7 +128,7 @@ describe('styles', () => {
 
     expect(
       root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
-    ).toEqual(<rn-virtualView />);
+    ).toEqual(<rn-virtualViewExperimental />);
   });
 
   test('does not set styles when prerendered', () => {
@@ -143,7 +143,7 @@ describe('styles', () => {
 
     expect(
       root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
-    ).toEqual(<rn-virtualView />);
+    ).toEqual(<rn-virtualViewExperimental />);
   });
 
   test('sets styles when hidden', () => {
@@ -158,7 +158,12 @@ describe('styles', () => {
 
     expect(
       root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
-    ).toEqual(<rn-virtualView minHeight="100.000000" minWidth="100.000000" />);
+    ).toEqual(
+      <rn-virtualViewExperimental
+        minHeight="100.000000"
+        minWidth="100.000000"
+      />,
+    );
   });
 });
 
