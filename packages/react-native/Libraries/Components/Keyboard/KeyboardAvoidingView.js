@@ -26,6 +26,11 @@ import Keyboard from './Keyboard';
 import * as React from 'react';
 import {createRef} from 'react';
 
+// Android workaround: When the keyboard is dismissed, Android sometimes reports
+// small non-zero height values instead of 0. This threshold treats any height
+// less than this value as 0 to ensure proper layout collapse.
+const ANDROID_KEYBOARD_HIDE_THRESHOLD = 50;
+
 export type KeyboardAvoidingViewProps = $ReadOnly<{
   ...ViewProps,
 
@@ -164,7 +169,14 @@ class KeyboardAvoidingView extends React.Component<
       return;
     }
 
-    this._setBottom(height);
+    // Android workaround: When the keyboard is dismissed, Android sometimes
+    // reports small non-zero height values instead of 0. This causes unwanted
+    // bottom padding to remain visible. We treat any height less than the
+    // threshold as 0 to ensure proper layout collapse.
+    const adjustedHeight =
+      Platform.OS === 'android' && height < ANDROID_KEYBOARD_HIDE_THRESHOLD ? 0 : height;
+
+    this._setBottom(adjustedHeight);
 
     const enabled = this.props.enabled ?? true;
     if (enabled && duration && easing) {
