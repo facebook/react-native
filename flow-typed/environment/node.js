@@ -2863,6 +2863,202 @@ declare module 'path' {
   declare var win32: path$PlatformPath;
 }
 
+declare module 'perf_hooks' {
+  declare export type EntryType =
+    | 'function'
+    | 'gc'
+    | 'http'
+    | 'http2'
+    | 'mark'
+    | 'measure'
+    | 'navigation'
+    | 'node'
+    | 'resource';
+
+  declare export interface Histogram {
+    +count: number;
+    +countBigInt: bigint;
+    +exceeds: number;
+    +exceedsBigInt: bigint;
+    +max: number;
+    +maxBigInt: bigint;
+    +mean: number;
+    +min: number;
+    +minBigInt: bigint;
+    +stddev: number;
+    +percentiles: Map<number, number>;
+    +percentilesBigInt: Map<number, bigint>;
+    percentile(percentile: number): number;
+    percentileBigInt(percentile: number): bigint;
+    reset(): void;
+  }
+
+  declare export interface IntervalHistogram extends Histogram {
+    enable(): boolean;
+    disable(): boolean;
+  }
+
+  declare export interface RecordableHistogram extends Histogram {
+    record(val: number | bigint): void;
+    recordDelta(): void;
+  }
+
+  declare export class PerformanceEntry {
+    +duration: number;
+    +entryType: EntryType;
+    +name: string;
+    +startTime: number;
+    +detail?: mixed;
+    toJSON(): mixed;
+  }
+
+  declare export class PerformanceMark<T = mixed> extends PerformanceEntry {
+    +entryType: 'mark';
+    +duration: 0;
+    +detail?: T;
+  }
+
+  declare export class PerformanceMeasure<T = mixed> extends PerformanceEntry {
+    +entryType: 'measure';
+    +detail?: T;
+  }
+
+  declare export class PerformanceNodeEntry extends PerformanceEntry {
+    +entryType: 'node';
+  }
+
+  declare export class PerformanceNodeTiming extends PerformanceEntry {
+    +entryType: 'node';
+    +bootstrapComplete: number;
+    +environment: number;
+    +idleTime: number;
+    +loopExit: number;
+    +loopStart: number;
+    +nodeStart: number;
+    +v8Start: number;
+  }
+
+  declare export class PerformanceResourceTiming extends PerformanceEntry {
+    +entryType: 'resource';
+    +connectEnd: number;
+    +connectStart: number;
+    +decodedBodySize: number;
+    +domainLookupEnd: number;
+    +domainLookupStart: number;
+    +encodedBodySize: number;
+    +fetchStart: number;
+    +redirectEnd: number;
+    +redirectStart: number;
+    +requestStart: number;
+    +responseEnd: number;
+    +secureConnectionStart: number;
+    +transferSize: number;
+    +workerStart: number;
+  }
+
+  declare export class PerformanceObserverEntryList {
+    getEntries(): Array<PerformanceEntry>;
+    getEntriesByName(name: string, type?: EntryType): Array<PerformanceEntry>;
+    getEntriesByType(type: EntryType): Array<PerformanceEntry>;
+  }
+
+  declare export type PerformanceObserverCallback = (
+    list: PerformanceObserverEntryList,
+    observer: PerformanceObserver,
+  ) => void;
+
+  declare export class PerformanceObserver {
+    static supportedEntryTypes: $ReadOnlyArray<EntryType>;
+    constructor(callback: PerformanceObserverCallback): this;
+    observe(
+      options: Readonly<{
+        entryTypes?: $ReadOnlyArray<EntryType>,
+        type?: EntryType,
+        buffered?: boolean,
+      }>,
+    ): void;
+    disconnect(): void;
+    takeRecords(): Array<PerformanceEntry>;
+  }
+
+  declare export type EventLoopUtilization = {
+    +utilization: number,
+    +idle: number,
+    +active: number,
+  };
+
+  declare export type PerformanceMarkOptions<T = mixed> = Readonly<{
+    detail?: T,
+    startTime?: number,
+  }>;
+
+  declare export type PerformanceMeasureOptions<T = mixed> = Readonly<{
+    detail?: T,
+    duration?: number,
+    end?: number | string,
+    start?: number | string,
+  }>;
+
+  declare class Performance {
+    clearMarks(name?: string): void;
+    clearMeasures(name?: string): void;
+    clearResourceTimings(name?: string): void;
+    eventLoopUtilization(
+      elu1?: EventLoopUtilization,
+      elu2?: EventLoopUtilization,
+    ): EventLoopUtilization;
+    getEntries(): Array<PerformanceEntry>;
+    getEntriesByName(name: string, type?: EntryType): Array<PerformanceEntry>;
+    getEntriesByType(type: EntryType): Array<PerformanceEntry>;
+    mark<T>(
+      name: string,
+      options?: PerformanceMarkOptions<T>,
+    ): PerformanceMark<T>;
+    measure<T>(
+      name: string,
+      startMarkOrOptions?: string | PerformanceMeasureOptions<T>,
+      endMark?: string,
+    ): PerformanceMeasure<T>;
+    +nodeTiming: PerformanceNodeTiming;
+    now(): number;
+    setResourceTimingBufferSize(maxSize: number): void;
+    +timeOrigin: number;
+    timerify<TArgs: Iterable<mixed>, TReturn>(
+      fn: (...TArgs) => TReturn,
+      options?: Readonly<{histogram?: RecordableHistogram}>,
+    ): (...TArgs) => TReturn;
+    toJSON(): mixed;
+  }
+
+  declare export var performance: Performance;
+
+  declare export var constants: Readonly<{
+    NODE_PERFORMANCE_GC_MAJOR: number,
+    NODE_PERFORMANCE_GC_MINOR: number,
+    NODE_PERFORMANCE_GC_INCREMENTAL: number,
+    NODE_PERFORMANCE_GC_WEAKCB: number,
+    NODE_PERFORMANCE_GC_FLAGS_NO: number,
+    NODE_PERFORMANCE_GC_FLAGS_CONSTRUCT_RETAINED: number,
+    NODE_PERFORMANCE_GC_FLAGS_FORCED: number,
+    NODE_PERFORMANCE_GC_FLAGS_SYNCHRONOUS_PHANTOM_PROCESSING: number,
+    NODE_PERFORMANCE_GC_FLAGS_ALL_AVAILABLE_GARBAGE: number,
+    NODE_PERFORMANCE_GC_FLAGS_ALL_EXTERNAL_MEMORY: number,
+    NODE_PERFORMANCE_GC_FLAGS_SCHEDULE_IDLE: number,
+  }>;
+
+  declare export function monitorEventLoopDelay(
+    options?: Readonly<{resolution?: number}>,
+  ): IntervalHistogram;
+
+  declare export function createHistogram(
+    options?: Readonly<{
+      lowest?: number | bigint,
+      highest?: number | bigint,
+      figures?: number,
+    }>,
+  ): RecordableHistogram;
+}
+
 declare module 'punycode' {
   declare function decode(string: string): string;
   declare function encode(string: string): string;
@@ -4847,6 +5043,10 @@ declare module 'node:fs/promises' {
 
 declare module 'node:path' {
   declare module.exports: $Exports<'path'>;
+}
+
+declare module 'node:perf_hooks' {
+  declare module.exports: $Exports<'perf_hooks'>;
 }
 
 declare module 'process' {
