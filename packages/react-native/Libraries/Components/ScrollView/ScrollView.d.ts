@@ -530,37 +530,45 @@ export interface ScrollViewPropsIOS {
    * The style of the top edge effect. Available on iOS 26.0 and later.
    * @platform ios
    */
-  topEdgeEffect?: {
-    style?: 'automatic' | 'soft' | 'hard' | undefined;
-    hidden?: boolean | undefined;
-  } | undefined;
+  topEdgeEffect?:
+    | {
+        style?: 'automatic' | 'soft' | 'hard' | undefined;
+        hidden?: boolean | undefined;
+      }
+    | undefined;
 
   /**
    * The style of the bottom edge effect. Available on iOS 26.0 and later.
    * @platform ios
    */
-  bottomEdgeEffect?: {
-    style?: 'automatic' | 'soft' | 'hard' | undefined;
-    hidden?: boolean | undefined;
-  } | undefined;
+  bottomEdgeEffect?:
+    | {
+        style?: 'automatic' | 'soft' | 'hard' | undefined;
+        hidden?: boolean | undefined;
+      }
+    | undefined;
 
   /**
    * The style of the left edge effect. Available on iOS 26.0 and later.
    * @platform ios
    */
-  leftEdgeEffect?: {
-    style?: 'automatic' | 'soft' | 'hard' | undefined;
-    hidden?: boolean | undefined;
-  } | undefined;
+  leftEdgeEffect?:
+    | {
+        style?: 'automatic' | 'soft' | 'hard' | undefined;
+        hidden?: boolean | undefined;
+      }
+    | undefined;
 
   /**
    * The style of the right edge effect. Available on iOS 26.0 and later.
    * @platform ios
    */
-  rightEdgeEffect?: {
-    style?: 'automatic' | 'soft' | 'hard' | undefined;
-    hidden?: boolean | undefined;
-  } | undefined;
+  rightEdgeEffect?:
+    | {
+        style?: 'automatic' | 'soft' | 'hard' | undefined;
+        hidden?: boolean | undefined;
+      }
+    | undefined;
 
   /**
    * The current scale of the scroll view content. The default value is 1.0.
