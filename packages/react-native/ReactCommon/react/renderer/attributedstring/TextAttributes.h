@@ -36,7 +36,7 @@ class TextAttributes : public DebugStringConvertible {
    */
   static TextAttributes defaultTextAttributes();
 
-#pragma mark - Fields
+#pragma mark - Fields 
 
   // Color
   SharedColor foregroundColor{};
@@ -44,6 +44,7 @@ class TextAttributes : public DebugStringConvertible {
   Float opacity{std::numeric_limits<Float>::quiet_NaN()};
   std::optional<std::vector<SharedColor>> gradientColors{};
   Float gradientAngle{std::numeric_limits<Float>::quiet_NaN()};
+  Float gradientWidth{std::numeric_limits<Float>::quiet_NaN()};
 
   // Font
   std::string fontFamily{""};
@@ -143,6 +144,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textStrokeWidth,
         textAttributes.textStrokeColor,
         textAttributes.gradientAngle,
+        textAttributes.gradientWidth,
         textAttributes.isHighlighted,
         textAttributes.isPressable,
         textAttributes.layoutDirection,

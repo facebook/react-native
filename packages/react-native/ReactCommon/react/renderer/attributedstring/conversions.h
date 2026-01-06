@@ -1142,6 +1142,9 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   if (!std::isnan(textAttributes.gradientAngle)) {
     builder.putDouble(TA_KEY_GRADIENT_ANGLE, textAttributes.gradientAngle);
   }
+  if (!std::isnan(textAttributes.gradientWidth)) {
+    builder.putDouble(TA_KEY_GRADIENT_WIDTH, textAttributes.gradientWidth);
+  }
   if (!std::isnan(textAttributes.opacity)) {
     builder.putDouble(TA_KEY_OPACITY, textAttributes.opacity);
   }
