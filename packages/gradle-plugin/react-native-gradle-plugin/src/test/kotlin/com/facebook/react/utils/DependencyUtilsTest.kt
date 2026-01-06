@@ -290,6 +290,8 @@ class DependencyUtilsTest {
     assertThat(forcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
         .isTrue()
     assertThat(forcedModules.any { it.toString() == "com.facebook.hermes:hermes-android:4.5.6" })
+        .isFalse()
+    assertThat(forcedModules.any { it.toString() == "com.facebook.hermes:hermes-android:7.8.9" })
         .isTrue()
   }
 
@@ -325,10 +327,14 @@ class DependencyUtilsTest {
     assertThat(appForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
         .isTrue()
     assertThat(appForcedModules.any { it.toString() == "com.facebook.hermes:hermes-android:4.5.6" })
+        .isFalse()
+    assertThat(appForcedModules.any { it.toString() == "com.facebook.hermes:hermes-android:7.8.9" })
         .isTrue()
     assertThat(libForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
         .isTrue()
     assertThat(libForcedModules.any { it.toString() == "com.facebook.hermes:hermes-android:4.5.6" })
+        .isFalse()
+    assertThat(libForcedModules.any { it.toString() == "com.facebook.hermes:hermes-android:7.8.9" })
         .isTrue()
   }
 
@@ -384,11 +390,19 @@ class DependencyUtilsTest {
     assertThat(
             appForcedModules.any { it.toString() == "io.github.test.hermes:hermes-android:4.5.6" }
         )
+        .isFalse()
+    assertThat(
+            appForcedModules.any { it.toString() == "io.github.test.hermes:hermes-android:7.8.9" }
+        )
         .isTrue()
     assertThat(libForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" })
         .isTrue()
     assertThat(
             libForcedModules.any { it.toString() == "io.github.test.hermes:hermes-android:4.5.6" }
+        )
+        .isFalse()
+    assertThat(
+            libForcedModules.any { it.toString() == "io.github.test.hermes:hermes-android:7.8.9" }
         )
         .isTrue()
   }
@@ -430,7 +444,7 @@ class DependencyUtilsTest {
   }
 
   @Test
-  fun getDependencySubstitutions_withDefaultGroup_substitutesCorrectly_withClassicHermes() {
+  fun getDependencySubstitutions_withDefaultGroup_substitutesCorrectly_withHermesV1() {
     val dependencySubstitutions =
         getDependencySubstitutions(DependencyUtils.Coordinates("0.42.0", "0.42.0", "0.43.0"))
 
@@ -442,7 +456,7 @@ class DependencyUtilsTest {
         )
         .isEqualTo(dependencySubstitutions[0].third)
     assertThat("com.facebook.react:hermes-engine").isEqualTo(dependencySubstitutions[1].first)
-    assertThat("com.facebook.hermes:hermes-android:0.42.0")
+    assertThat("com.facebook.hermes:hermes-android:0.43.0")
         .isEqualTo(dependencySubstitutions[1].second)
     assertThat(
             "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."
@@ -451,7 +465,7 @@ class DependencyUtilsTest {
   }
 
   @Test
-  fun getDependencySubstitutions_withDefaultGroup_substitutesCorrectly_withHermesV1() {
+  fun getDependencySubstitutions_withDefaultGroupAndFallback_substitutesCorrectly_withClassicHermes() {
     val dependencySubstitutions =
         getDependencySubstitutions(
             DependencyUtils.Coordinates("0.42.0", "0.42.0", "0.43.0"),
@@ -475,7 +489,7 @@ class DependencyUtilsTest {
   }
 
   @Test
-  fun getDependencySubstitutions_withCustomGroup_substitutesCorrectly_withClassicHermes() {
+  fun getDependencySubstitutions_withCustomGroup_substitutesCorrectly_withHermesV1() {
     val dependencySubstitutions =
         getDependencySubstitutions(
             DependencyUtils.Coordinates(
@@ -494,14 +508,14 @@ class DependencyUtilsTest {
         )
         .isEqualTo(dependencySubstitutions[0].third)
     assertThat("com.facebook.react:hermes-engine").isEqualTo(dependencySubstitutions[1].first)
-    assertThat("io.github.test.hermes:hermes-android:0.42.0")
+    assertThat("io.github.test.hermes:hermes-android:0.43.0")
         .isEqualTo(dependencySubstitutions[1].second)
     assertThat(
             "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."
         )
         .isEqualTo(dependencySubstitutions[1].third)
     assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[2].first)
-    assertThat("io.github.test.hermes:hermes-android:0.42.0")
+    assertThat("io.github.test.hermes:hermes-android:0.43.0")
         .isEqualTo(dependencySubstitutions[2].second)
     assertThat("The hermes-android artifact was moved to com.facebook.hermes publishing group.")
         .isEqualTo(dependencySubstitutions[2].third)
@@ -510,14 +524,14 @@ class DependencyUtilsTest {
     assertThat("The react-android dependency was modified to use the correct Maven group.")
         .isEqualTo(dependencySubstitutions[3].third)
     assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[4].first)
-    assertThat("io.github.test.hermes:hermes-android:0.42.0")
+    assertThat("io.github.test.hermes:hermes-android:0.43.0")
         .isEqualTo(dependencySubstitutions[4].second)
     assertThat("The hermes-android dependency was modified to use the correct Maven group.")
         .isEqualTo(dependencySubstitutions[4].third)
   }
 
   @Test
-  fun getDependencySubstitutions_withCustomGroup_substitutesCorrectly_withHermesV1() {
+  fun getDependencySubstitutions_withCustomGroupAndFallbackToClassicHermes_substitutesCorrectly_withClassicHermes() {
     val dependencySubstitutions =
         getDependencySubstitutions(
             DependencyUtils.Coordinates(
@@ -527,7 +541,7 @@ class DependencyUtilsTest {
                 "io.github.test",
                 "io.github.test.hermes",
             ),
-            hermesV1Enabled = true,
+            hermesV1Enabled = false,
         )
 
     assertThat("com.facebook.react:react-native").isEqualTo(dependencySubstitutions[0].first)
@@ -537,14 +551,14 @@ class DependencyUtilsTest {
         )
         .isEqualTo(dependencySubstitutions[0].third)
     assertThat("com.facebook.react:hermes-engine").isEqualTo(dependencySubstitutions[1].first)
-    assertThat("io.github.test.hermes:hermes-android:0.43.0")
+    assertThat("io.github.test.hermes:hermes-android:0.42.0")
         .isEqualTo(dependencySubstitutions[1].second)
     assertThat(
             "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."
         )
         .isEqualTo(dependencySubstitutions[1].third)
     assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[2].first)
-    assertThat("io.github.test.hermes:hermes-android:0.43.0")
+    assertThat("io.github.test.hermes:hermes-android:0.42.0")
         .isEqualTo(dependencySubstitutions[2].second)
     assertThat("The hermes-android artifact was moved to com.facebook.hermes publishing group.")
         .isEqualTo(dependencySubstitutions[2].third)
@@ -553,7 +567,7 @@ class DependencyUtilsTest {
     assertThat("The react-android dependency was modified to use the correct Maven group.")
         .isEqualTo(dependencySubstitutions[3].third)
     assertThat("com.facebook.react:hermes-android").isEqualTo(dependencySubstitutions[4].first)
-    assertThat("io.github.test.hermes:hermes-android:0.43.0")
+    assertThat("io.github.test.hermes:hermes-android:0.42.0")
         .isEqualTo(dependencySubstitutions[4].second)
     assertThat("The hermes-android dependency was modified to use the correct Maven group.")
         .isEqualTo(dependencySubstitutions[4].third)
