@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
@@ -27,11 +26,9 @@ class RawPropsParser final {
   /*
    * Default constructor.
    * To be used by `ConcreteComponentDescriptor` only.
-   * If `useRawPropsJsiValue` is `true`, the parser will use `jsi::Value`
-   * directly for RawValues instead of converting them to `folly::dynamic`.
    */
-  RawPropsParser(bool useRawPropsJsiValue = ReactNativeFeatureFlags::useRawPropsJsiValue())
-      : useRawPropsJsiValue_(useRawPropsJsiValue) {};
+  RawPropsParser() = default;
+  [[deprecated]] explicit RawPropsParser(bool /* ignored */) : RawPropsParser() {}
 
   /*
    * To be used by `ConcreteComponentDescriptor` only.
@@ -59,7 +56,6 @@ class RawPropsParser final {
   template <class ShadowNodeT>
   friend class ConcreteComponentDescriptor;
   friend class RawProps;
-  bool useRawPropsJsiValue_{false};
 
   /*
    * To be used by `RawProps` only.

@@ -14,6 +14,8 @@
 #else
 #import <QuartzCore/CADisplayLink.h>
 #endif
+
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/animated/AnimatedModule.h>
 #import <react/renderer/animated/NativeAnimatedNodesManagerProvider.h>
 

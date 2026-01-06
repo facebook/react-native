@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9406085adbc0685b473c868a27085cf8>>
+ * @generated SignedSource<<6f0aac1f6451f4dcd6290116c925f7c4>>
  */
 
 /**
@@ -503,12 +503,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
-
-  /**
-   * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
-   */
-  @JvmStatic
-  public fun useRawPropsJsiValue(): Boolean = accessor.useRawPropsJsiValue()
 
   /**
    * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.

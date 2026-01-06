@@ -889,16 +889,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
-    useRawPropsJsiValue: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     useShadowNodeStateOnClone: {
       defaultValue: true,
       metadata: {
