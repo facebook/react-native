@@ -58,6 +58,7 @@ static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(const S
   }
 }
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
 API_AVAILABLE(ios(26.0))
 static UIScrollEdgeEffectStyle *RCTUIScrollEdgeEffectStyleFromProps(ScrollViewEdgeEffectStyle style)
 {
@@ -70,6 +71,7 @@ static UIScrollEdgeEffectStyle *RCTUIScrollEdgeEffectStyleFromProps(ScrollViewEd
       return UIScrollEdgeEffectStyle.hardStyle;
   }
 }
+#endif
 
 // Once Fabric implements proper NativeAnimationDriver, this should be removed.
 // This is just a workaround to allow animations based on onScroll event.
@@ -458,6 +460,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     scrollView.keyboardDismissMode = RCTUIKeyboardDismissModeFromProps(newScrollViewProps);
   }
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
   if (@available(iOS 26.0, *)) {
     if (oldScrollViewProps.topEdgeEffect != newScrollViewProps.topEdgeEffect) {
       if (newScrollViewProps.topEdgeEffect.has_value()) {
@@ -492,6 +495,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       }
     }
   }
+#endif
 
   [super updateProps:props oldProps:oldProps];
 }
