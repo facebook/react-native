@@ -89,7 +89,7 @@ async function setVersion(
     ...Object.values(packages),
   ];
 
-  // Update all workspace packages
+  // Update dependency versions in workspace packages
   await Promise.all(
     packagesToUpdate.map(pkg => updatePackageJson(pkg, newPackageVersions)),
   );
