@@ -165,8 +165,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   searchRow: {
-    paddingHorizontal: 20,
-    paddingVertical: 6,
+    padding: 6,
     alignItems: 'center',
   },
   searchTextInput: {
@@ -176,7 +175,7 @@ const styles = StyleSheet.create({
     height: 35,
     flex: 1,
     alignSelf: 'center',
-    paddingLeft: 35,
+    paddingLeft: 32,
   },
   textInputStyle: {
     flexDirection: 'row',

@@ -58,13 +58,11 @@ type BackButton = ({onBack: () => void}) => React.Node;
 
 const RNTesterApp = ({
   testList,
-  customBackButton,
 }: {
   testList?: {
     components?: Array<RNTesterModuleInfo>,
     apis?: Array<RNTesterModuleInfo>,
   },
-  customBackButton?: BackButton,
 }): React.Node => {
   const [state, dispatch] = useReducer(
     RNTesterNavigationReducer,
@@ -260,11 +258,12 @@ const RNTesterApp = ({
         ? 'Components'
         : 'APIs';
 
-  const BackButtonComponent: ?BackButton = customBackButton
-    ? customBackButton
-    : Platform.OS === 'ios'
+  const BackButtonComponent: ?BackButton =
+    Platform.OS === 'ios'
       ? ({onBack}) => (
-          <Button title="Back" onPress={onBack} color={theme.LinkColor} />
+          <View style={styles.backButtonIOS}>
+            <Button title="Back" onPress={onBack} color={theme.LinkColor} />
+          </View>
         )
       : null;
 
@@ -334,5 +333,9 @@ const styles = StyleSheet.create({
   },
   hidden: {
     display: 'none',
+  },
+  backButtonIOS: {
+    position: 'absolute',
+    left: 8,
   },
 });

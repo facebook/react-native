@@ -26,7 +26,9 @@ function Playground() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 16,
+    alignItems: 'center',
   },
 });
 
