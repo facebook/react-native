@@ -15,6 +15,7 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTHost.h>
 #import <objc/runtime.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/featureflags/ReactNativeFeatureFlagsOverridesOSSCanary.h>
 #import <react/featureflags/ReactNativeFeatureFlagsOverridesOSSExperimental.h>
 #import <react/featureflags/ReactNativeFeatureFlagsOverridesOSSStable.h>

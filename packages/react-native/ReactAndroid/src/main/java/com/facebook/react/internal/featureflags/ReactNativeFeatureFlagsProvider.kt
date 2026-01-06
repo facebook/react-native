@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<995c1c3035757935dc7a4c4d6778e43e>>
+ * @generated SignedSource<<26c5b5fc23fdce860c39d37c6edfeb4d>>
  */
 
 /**
@@ -180,8 +180,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useFabricInterop(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
-
-  @DoNotStrip public fun useRawPropsJsiValue(): Boolean
 
   @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
 
