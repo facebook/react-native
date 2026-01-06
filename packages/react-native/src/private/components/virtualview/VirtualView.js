@@ -37,14 +37,14 @@ export enum VirtualViewRenderState {
   None = 2,
 }
 
-export type Rect = $ReadOnly<{
+export type Rect = Readonly<{
   x: number,
   y: number,
   width: number,
   height: number,
 }>;
 
-export type ModeChangeEvent = $ReadOnly<{
+export type ModeChangeEvent = Readonly<{
   ...Omit<NativeModeChangeEvent, 'mode'>,
   renderState: VirtualViewRenderState,
   mode: VirtualViewMode,

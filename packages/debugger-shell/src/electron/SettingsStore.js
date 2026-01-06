@@ -14,7 +14,7 @@ const {app} = require('electron') as any;
 const fs = require('fs');
 const path = require('path');
 
-type Options = $ReadOnly<{
+type Options = Readonly<{
   name?: string,
   defaults?: Object,
 }>;

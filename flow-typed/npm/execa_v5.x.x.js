@@ -91,25 +91,25 @@ declare module 'execa' {
     (
       file: string,
       args?: $ReadOnlyArray<string>,
-      options?: $ReadOnly<Options>,
+      options?: Readonly<Options>,
     ): ExecaPromise;
-    (file: string, options?: $ReadOnly<Options>): ExecaPromise;
+    (file: string, options?: Readonly<Options>): ExecaPromise;
 
-    command(command: string, options?: $ReadOnly<Options>): ExecaPromise;
-    commandSync(command: string, options?: $ReadOnly<Options>): ExecaPromise;
+    command(command: string, options?: Readonly<Options>): ExecaPromise;
+    commandSync(command: string, options?: Readonly<Options>): ExecaPromise;
 
     node(
       path: string,
       args?: $ReadOnlyArray<string>,
-      options?: $ReadOnly<Options>,
+      options?: Readonly<Options>,
     ): void;
 
     sync(
       file: string,
       args?: $ReadOnlyArray<string>,
-      options?: $ReadOnly<SyncOptions>,
+      options?: Readonly<SyncOptions>,
     ): SyncResult;
-    sync(file: string, options?: $ReadOnly<SyncOptions>): SyncResult;
+    sync(file: string, options?: Readonly<SyncOptions>): SyncResult;
   }
 
   declare module.exports: Execa;

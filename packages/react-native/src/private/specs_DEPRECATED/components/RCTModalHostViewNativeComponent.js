@@ -18,11 +18,11 @@ import type {HostComponent} from '../../types/HostComponent';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type OrientationChangeEvent = $ReadOnly<{
+type OrientationChangeEvent = Readonly<{
   orientation: 'portrait' | 'landscape',
 }>;
 
-type RCTModalHostViewNativeProps = $ReadOnly<{
+type RCTModalHostViewNativeProps = Readonly<{
   ...ViewProps,
 
   /**

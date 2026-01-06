@@ -24,7 +24,7 @@ import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHe
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-export type AnimatedValueConfig = $ReadOnly<{
+export type AnimatedValueConfig = Readonly<{
   ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;

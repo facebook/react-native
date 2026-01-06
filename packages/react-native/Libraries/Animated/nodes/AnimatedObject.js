@@ -23,7 +23,7 @@ export function isPlainObject(
   value: unknown,
   /* $FlowFixMe[incompatible-type-guard] - Flow does not know that the prototype
      and ReactElement checks preserve the type refinement of `value`. */
-): value is $ReadOnly<{[string]: unknown}> {
+): value is Readonly<{[string]: unknown}> {
   const proto =
     value !== null && typeof value === 'object'
       ? Object.getPrototypeOf(value)

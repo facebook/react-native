@@ -25,7 +25,7 @@ type CreateServerOptions = {
 };
 type ConnectApp = ReturnType<typeof connect>;
 
-export function withServerForEachTest(options: CreateServerOptions): $ReadOnly<{
+export function withServerForEachTest(options: CreateServerOptions): Readonly<{
   serverBaseUrl: string,
   serverBaseWsUrl: string,
   app: ConnectApp,

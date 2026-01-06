@@ -22,12 +22,12 @@ import * as React from 'react';
 export type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
 
 export type DrawerSlideEvent = NativeSyntheticEvent<
-  $ReadOnly<{
+  Readonly<{
     offset: number,
   }>,
 >;
 
-export type DrawerLayoutAndroidProps = $ReadOnly<{
+export type DrawerLayoutAndroidProps = Readonly<{
   ...ViewProps,
 
   /**

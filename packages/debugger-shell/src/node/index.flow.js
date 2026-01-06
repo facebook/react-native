@@ -31,7 +31,7 @@ async function unstable_spawnDebuggerShellWithArgs(
     mode = 'detached',
     flavor = process.env.RNDT_DEV === '1' ? 'dev' : 'prebuilt',
     prebuiltBinaryPath,
-  }: $ReadOnly<{
+  }: Readonly<{
     // In 'syncAndExit' mode, the current process will block until the spawned process exits, and then it will exit
     // with the same exit code as the spawned process.
     // In 'detached' mode, the spawned process will be detached from the current process and the current process will
@@ -97,7 +97,7 @@ async function unstable_spawnDebuggerShellWithArgs(
   });
 }
 
-export type DebuggerShellPreparationResult = $ReadOnly<{
+export type DebuggerShellPreparationResult = Readonly<{
   code:
     | 'success'
     | 'not_implemented'

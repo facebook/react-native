@@ -26,7 +26,7 @@ import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIg
 import codegenNativeCommands from '../Utilities/codegenNativeCommands';
 import Platform from '../Utilities/Platform';
 
-type ImageHostComponentProps = $ReadOnly<{
+type ImageHostComponentProps = Readonly<{
   ...ImageProps,
   ...ViewProps,
 
@@ -37,9 +37,7 @@ type ImageHostComponentProps = $ReadOnly<{
 
   // Android native props
   shouldNotifyLoadEvents?: boolean,
-  src?:
-    | ?ResolvedAssetSource
-    | ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
+  src?: ?ResolvedAssetSource | ?$ReadOnlyArray<?Readonly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
   defaultSource?: ?ImageSource | ?string,
   loadingIndicatorSrc?: ?string,

@@ -30,7 +30,7 @@ const mapWithSeparator =
 const BoxInspector = require('./BoxInspector').default;
 const StyleInspector = require('./StyleInspector').default;
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   hierarchy: ?InspectorData['hierarchy'],
   style?: ?ViewStyleProp,
   frame?: ?Object,

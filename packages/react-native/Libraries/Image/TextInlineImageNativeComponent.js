@@ -18,10 +18,10 @@ import type {ImageResizeMode} from './ImageResizeMode';
 
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 
-type RCTTextInlineImageNativeProps = $ReadOnly<{
+type RCTTextInlineImageNativeProps = Readonly<{
   ...ViewProps,
   resizeMode?: ?ImageResizeMode,
-  src?: ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
+  src?: ?$ReadOnlyArray<?Readonly<{uri?: ?string, ...}>>,
   tintColor?: ?ColorValue,
   headers?: ?{[string]: string},
 }>;

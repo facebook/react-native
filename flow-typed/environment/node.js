@@ -199,7 +199,7 @@ declare module 'buffer' {
   declare var kMaxLength: number;
   declare var INSPECT_MAX_BYTES: number;
 
-  declare var constants: $ReadOnly<{
+  declare var constants: Readonly<{
     MAX_LENGTH: number,
     MAX_STRING_LENGTH: number,
   }>;
@@ -1467,7 +1467,7 @@ declare module 'fs' {
     path: string,
     options:
       | string
-      | $ReadOnly<{
+      | Readonly<{
           encoding?: string,
           recursive?: boolean,
           withFileTypes?: false,
@@ -1477,7 +1477,7 @@ declare module 'fs' {
   ): void;
   declare function readdir(
     path: string,
-    options: $ReadOnly<{
+    options: Readonly<{
       encoding?: string,
       recursive?: boolean,
       withFileTypes: true,
@@ -1493,7 +1493,7 @@ declare module 'fs' {
     path: string,
     options?:
       | string
-      | $ReadOnly<{
+      | Readonly<{
           encoding?: string,
           recursive?: boolean,
           withFileTypes?: false,
@@ -1503,7 +1503,7 @@ declare module 'fs' {
     path: string,
     options?:
       | string
-      | $ReadOnly<{
+      | Readonly<{
           encoding?: string,
           recursive?: boolean,
           withFileTypes: true,
@@ -1527,13 +1527,13 @@ declare module 'fs' {
   ): void;
   declare function openAsBlob(
     path: string | Buffer | URL,
-    options?: $ReadOnly<{
+    options?: Readonly<{
       type?: string, // Optional MIME type hint
     }>,
   ): Promise<Blob>;
   declare function opendir(
     path: string,
-    options?: $ReadOnly<{
+    options?: Readonly<{
       encoding?: string,
       bufferSize?: number,
       recursive?: boolean,
@@ -1542,7 +1542,7 @@ declare module 'fs' {
   ): void;
   declare function opendirSync(
     path: string,
-    options?: $ReadOnly<{
+    options?: Readonly<{
       encoding?: string,
       bufferSize?: number,
       recursive?: boolean,
@@ -1770,7 +1770,7 @@ declare module 'fs' {
   ): void;
   declare function watchFile(
     filename: string,
-    options?: $ReadOnly<{
+    options?: Readonly<{
       bigint?: boolean,
       persistent?: boolean,
       interval?: number,
@@ -1787,7 +1787,7 @@ declare module 'fs' {
   ): FSWatcher;
   declare function watch(
     filename: string,
-    options?: $ReadOnly<{
+    options?: Readonly<{
       persistent?: boolean,
       recursive?: boolean,
       encoding?: string,
@@ -1835,7 +1835,7 @@ declare module 'fs' {
   declare function cp(
     src: string | URL,
     dest: string | URL,
-    options: $ReadOnly<{
+    options: Readonly<{
       dereference?: boolean,
       errorOnExist?: boolean,
       filter?: (src: string, dest: string) => boolean | Promise<boolean>,
@@ -1855,7 +1855,7 @@ declare module 'fs' {
   declare function cpSync(
     src: string | URL,
     dest: string | URL,
-    options?: $ReadOnly<{
+    options?: Readonly<{
       dereference?: boolean,
       errorOnExist?: boolean,
       filter?: (src: string, dest: string) => boolean,
@@ -2022,7 +2022,7 @@ declare module 'fs' {
     chown(uid: number, guid: number): Promise<void>;
     close(): Promise<void>;
     createReadStream(
-      options?: $ReadOnly<{
+      options?: Readonly<{
         encoding?: string,
         autoClose?: boolean,
         emitClose?: boolean,
@@ -2033,7 +2033,7 @@ declare module 'fs' {
       }>,
     ): ReadStream;
     createWriteStream(
-      options?: $ReadOnly<{
+      options?: Readonly<{
         encoding?: string,
         autoClose?: boolean,
         emitClose?: boolean,
@@ -2055,12 +2055,12 @@ declare module 'fs' {
       ...
     }>;
     readableWebStream(
-      options?: $ReadOnly<{autoClose?: boolean}>,
+      options?: Readonly<{autoClose?: boolean}>,
     ): ReadableStream;
     readFile(options: EncodingFlag): Promise<Buffer>;
     readFile(options: string): Promise<string>;
     readLines(
-      options?: $ReadOnly<{
+      options?: Readonly<{
         encoding?: string,
         autoClose?: boolean,
         emitClose?: boolean,
@@ -2088,7 +2088,7 @@ declare module 'fs' {
     ): Promise<void>;
     write(
       buffer: Buffer | Uint8Array | DataView,
-      options?: $ReadOnly<{
+      options?: Readonly<{
         offset?: number,
         length?: number,
         position?: number,
@@ -2119,7 +2119,7 @@ declare module 'fs' {
     cp(
       src: string | URL,
       dest: string | URL,
-      options?: $ReadOnly<{
+      options?: Readonly<{
         dereference?: boolean,
         errorOnExist?: boolean,
         filter?: (src: string, dest: string) => boolean | Promise<boolean>,
@@ -2171,7 +2171,7 @@ declare module 'fs' {
     ): Promise<FileHandle>,
     opendir(
       path: string,
-      options?: $ReadOnly<{
+      options?: Readonly<{
         encoding?: string,
         bufferSize?: number,
         recursive?: boolean,
@@ -2192,7 +2192,7 @@ declare module 'fs' {
       path: FSPromisePath,
       options:
         | string
-        | $ReadOnly<{
+        | Readonly<{
             encoding?: string,
             recursive?: boolean,
             withFileTypes?: false,
@@ -2200,7 +2200,7 @@ declare module 'fs' {
     ) => Promise<Array<string>>) &
       ((
         path: FSPromisePath,
-        options: $ReadOnly<{
+        options: Readonly<{
           encoding?: string,
           recursive?: boolean,
           withFileTypes: true,
@@ -2249,7 +2249,7 @@ declare module 'fs' {
     ): Promise<void>,
     watch(
       filename: FSPromisePath,
-      options?: $ReadOnly<{
+      options?: Readonly<{
         persistent?: boolean,
         recursive?: boolean,
         encoding?: string,

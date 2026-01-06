@@ -120,7 +120,7 @@ export type {
   TextInputSubmitEditingEvent,
 };
 
-type TextInputStateType = $ReadOnly<{
+type TextInputStateType = Readonly<{
   /**
    * @deprecated Use currentlyFocusedInput
    * Returns the ID of the currently focused text field, if one exists
@@ -965,7 +965,7 @@ TextInput.State = {
   focusTextInput: TextInputState.focusTextInput,
 };
 
-export type TextInputComponentStatics = $ReadOnly<{
+export type TextInputComponentStatics = Readonly<{
   State: TextInputStateType,
 }>;
 

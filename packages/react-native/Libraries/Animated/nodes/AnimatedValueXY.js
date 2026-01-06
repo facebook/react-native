@@ -17,7 +17,7 @@ import AnimatedValue from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';
 import invariant from 'invariant';
 
-export type AnimatedValueXYConfig = $ReadOnly<{
+export type AnimatedValueXYConfig = Readonly<{
   ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;

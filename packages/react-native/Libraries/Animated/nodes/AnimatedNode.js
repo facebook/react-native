@@ -15,7 +15,7 @@ import invariant from 'invariant';
 
 type ValueListenerCallback = (state: {value: number, ...}) => unknown;
 
-export type AnimatedNodeConfig = $ReadOnly<{
+export type AnimatedNodeConfig = Readonly<{
   debugID?: string,
   unstable_disableBatchingForNativeCreate?: boolean,
 }>;
@@ -34,7 +34,7 @@ export default class AnimatedNode {
   _platformConfig: ?PlatformConfig = undefined;
 
   constructor(
-    config?: ?$ReadOnly<{
+    config?: ?Readonly<{
       ...AnimatedNodeConfig,
       ...
     }>,

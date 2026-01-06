@@ -170,7 +170,7 @@ const createMockMouseEvent = (registrationName: string) => {
 const createMockPressEvent = (
   nameOrOverrides:
     | string
-    | $ReadOnly<{
+    | Readonly<{
         registrationName: string,
         pageX: number,
         pageY: number,

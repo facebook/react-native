@@ -16,7 +16,7 @@ export interface EventSubscription {
 }
 
 export interface IEventEmitter<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: Readonly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
@@ -41,7 +41,7 @@ interface Registration<TArgs> {
 }
 
 type Registry<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: Readonly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > = {
   [K in keyof TEventToArgsMap]: Set<Registration<TEventToArgsMap[K]>>,
 };
@@ -67,9 +67,9 @@ type Registry<
  *
  */
 export default class EventEmitter<
-  TEventToArgsMap: $ReadOnly<
+  TEventToArgsMap: Readonly<
     Record<string, $ReadOnlyArray<UnsafeEventObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  > = Readonly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   #registry: Registry<TEventToArgsMap>;
@@ -157,7 +157,7 @@ export default class EventEmitter<
 }
 
 function allocate<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: Readonly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
   TEvent: $Keys<TEventToArgsMap>,
   TEventArgs: TEventToArgsMap[TEvent],
 >(

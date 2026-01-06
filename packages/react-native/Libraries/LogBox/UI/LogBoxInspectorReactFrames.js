@@ -21,7 +21,7 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 import {useState} from 'react';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   log: LogBoxLog,
 }>;
 
