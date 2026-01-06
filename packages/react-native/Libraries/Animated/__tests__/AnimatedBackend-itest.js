@@ -65,7 +65,7 @@ test('animated opacity', () => {
     0,
   );
 
-  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  // TODO: this shouldn't be necessary since animation should be stopped after duration
   Fantom.runTask(() => {
     _opacityAnimation?.stop();
   });
@@ -132,7 +132,7 @@ test('animate layout props', () => {
 
   Fantom.unstable_produceFramesForDuration(100);
 
-  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  // TODO: this shouldn't be necessary since animation should be stopped after duration
   Fantom.runTask(() => {
     _heightAnimation?.stop();
   });
@@ -199,7 +199,7 @@ test('animate layout props and rerender', () => {
 
   Fantom.unstable_produceFramesForDuration(500);
 
-  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  // TODO: this shouldn't be necessary since animation should be stopped after duration
   Fantom.runTask(() => {
     _heightAnimation?.stop();
   });
@@ -290,7 +290,7 @@ test('animate non-layout props and rerender', () => {
 
   Fantom.unstable_produceFramesForDuration(500);
 
-  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  // TODO: this shouldn't be necessary since animation should be stopped after duration
   Fantom.runTask(() => {
     _opacityAnimation?.stop();
   });
@@ -394,7 +394,7 @@ test('animate layout props and rerender in many components', () => {
     _setWidth(200);
   });
 
-  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  // TODO: this shouldn't be necessary since animation should be stopped after duration
   Fantom.runTask(() => {
     _heightAnimation?.stop();
   });
@@ -469,7 +469,7 @@ test('animate width, height and opacity at once', () => {
 
   Fantom.unstable_produceFramesForDuration(100);
 
-  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  // TODO: this shouldn't be necessary since animation should be stopped after duration
   Fantom.runTask(() => {
     _parallelAnimation?.stop();
   });

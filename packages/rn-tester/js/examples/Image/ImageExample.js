@@ -936,7 +936,7 @@ exports.examples = [
   {
     title: 'Multiple Image Source using the `srcSet` prop.',
     description:
-      ('A list of comma seperated uris along with scale are provided in `srcSet`.' +
+      ('A list of comma separated uris along with scale are provided in `srcSet`.' +
         'An appropriate value will be used based on the scale of the device.': string),
     render: function (): React.Node {
       return (

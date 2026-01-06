@@ -7,9 +7,10 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<232209f5a157745637191195f25907c7>>
+ * @generated SignedSource<<7e40a1e09e8b18f5fde8d400a830ed9a>>
  *
- * This file was sync'd from the facebook/react repository.
+ * This file is no longer sync'd from the facebook/react repository.
+ * The version compatibility check is removed. Use at your own risk.
  */
 
 "use strict";

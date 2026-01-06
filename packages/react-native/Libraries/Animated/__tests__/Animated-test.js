@@ -701,7 +701,7 @@ describe('Animated', () => {
       expect(cb).toBeCalledWith({finished: true});
     });
 
-    it('parellelizes well', () => {
+    it('parallelizes well', () => {
       const anim1 = {start: jest.fn()};
       const anim2 = {start: jest.fn()};
       const cb = jest.fn();
