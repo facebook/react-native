@@ -3702,6 +3702,75 @@ type url$urlObject = {
   ...
 };
 
+declare module 'timers' {
+  declare export class Timeout {
+    close(): this;
+    hasRef(): boolean;
+    ref(): this;
+    refresh(): this;
+    unref(): this;
+    [key: $SymbolToPrimitive]: () => number;
+    // [key: $SymbolDispose]: () => void;
+  }
+
+  declare export class Immediate {
+    hasRef(): boolean;
+    ref(): this;
+    unref(): this;
+    // [key: $SymbolDispose]: () => void;
+  }
+
+  declare export function setTimeout<TArgs: Iterable<mixed>>(
+    callback: (...args: TArgs) => mixed,
+    delay?: number,
+    ...args: TArgs
+  ): Timeout;
+
+  declare export function setInterval<TArgs: Iterable<mixed>>(
+    callback: (...args: TArgs) => mixed,
+    delay?: number,
+    ...args: TArgs
+  ): Timeout;
+
+  declare export function setImmediate<TArgs: Iterable<mixed>>(
+    callback: (...args: TArgs) => mixed,
+    ...args: TArgs
+  ): Immediate;
+
+  declare export function clearTimeout(timeout?: Timeout | number): void;
+  declare export function clearInterval(timeout?: Timeout | number): void;
+  declare export function clearImmediate(immediate?: Immediate | number): void;
+}
+
+declare module 'timers/promises' {
+  declare export type TimerOptions = Readonly<{
+    ref?: boolean,
+    signal?: AbortSignal,
+  }>;
+
+  declare export function setTimeout<T>(
+    delay?: number,
+    value?: T,
+    options?: TimerOptions,
+  ): Promise<T>;
+
+  declare export function setImmediate<T>(
+    value?: T,
+    options?: TimerOptions,
+  ): Promise<T>;
+
+  declare export function setInterval<T = void>(
+    delay?: number,
+    value?: T,
+    options?: TimerOptions,
+  ): AsyncIterator<T>;
+
+  declare export var scheduler: Readonly<{
+    wait(delay: number, options?: TimerOptions): Promise<void>,
+    yield(): Promise<void>,
+  }>;
+}
+
 declare module 'url' {
   declare type Url = {|
     protocol: string | null,
@@ -5055,6 +5124,14 @@ declare module 'process' {
 
 declare module 'node:process' {
   declare module.exports: $Exports<'process'>;
+}
+
+declare module 'node:timers' {
+  declare module.exports: $Exports<'timers'>;
+}
+
+declare module 'node:timers/promises' {
+  declare module.exports: $Exports<'timers/promises'>;
 }
 
 declare module 'node:util' {
