@@ -21,7 +21,7 @@ import {
 
 function LayoutConformanceExample({
   testID,
-}: $ReadOnly<{testID: ?string}>): React.Node {
+}: Readonly<{testID: ?string}>): React.Node {
   return (
     <View style={{flexDirection: 'row', gap: 10}} testID={testID}>
       <View>

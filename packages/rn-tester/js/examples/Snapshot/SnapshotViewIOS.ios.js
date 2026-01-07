@@ -25,10 +25,10 @@ const RCTSnapshot = UIManager.hasViewManagerConfig('RCTSnapshot')
   : View;
 
 type SnapshotReadyEvent = NativeSyntheticEvent<
-  $ReadOnly<{testIdentifier: string, ...}>,
+  Readonly<{testIdentifier: string, ...}>,
 >;
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   ...ViewProps,
   onSnapshotReady?: ?(event: SnapshotReadyEvent) => unknown,
   testIdentifier?: ?string,

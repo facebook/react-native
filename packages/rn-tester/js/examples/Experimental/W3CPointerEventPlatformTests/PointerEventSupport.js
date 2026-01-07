@@ -243,7 +243,7 @@ export function mkEvent(id: string, eventName: EventName): EventOccurrence {
   };
 }
 
-export type EventTrackerProps = $ReadOnly<{
+export type EventTrackerProps = Readonly<{
   eventsRef?: {current: Array<EventOccurrence>},
   onAnyEvent?: (EventOccurrence, PointerEvent) => void,
   eventsToTrack: Array<EventName>,

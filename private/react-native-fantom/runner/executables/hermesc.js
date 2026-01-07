@@ -23,7 +23,7 @@ import {
 import fs from 'fs';
 import path from 'path';
 
-type TesterOptions = $ReadOnly<{
+type TesterOptions = Readonly<{
   isOptimizedMode: boolean,
   hermesVariant: HermesVariant,
 }>;

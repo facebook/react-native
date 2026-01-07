@@ -23,7 +23,7 @@ type DefaultVirtualizedSectionT = {
 };
 
 export type SectionData<SectionItemT, SectionT = DefaultVirtualizedSectionT> =
-  | ($ReadOnly<SectionBase<SectionItemT, SectionT>> & SectionT)
+  | (Readonly<SectionBase<SectionItemT, SectionT>> & SectionT)
   | (SectionBase<SectionItemT, SectionT> & SectionT)
   | SectionT;
 
@@ -478,7 +478,7 @@ class VirtualizedSectionList<
   };
 }
 
-type ItemWithSeparatorCommonProps<ItemT> = $ReadOnly<{
+type ItemWithSeparatorCommonProps<ItemT> = Readonly<{
   leadingItem: ?ItemT,
   leadingSection: ?Object,
   section: Object,
@@ -486,7 +486,7 @@ type ItemWithSeparatorCommonProps<ItemT> = $ReadOnly<{
   trailingSection: ?Object,
 }>;
 
-type ItemWithSeparatorProps<ItemT> = $ReadOnly<{
+type ItemWithSeparatorProps<ItemT> = Readonly<{
   ...ItemWithSeparatorCommonProps<ItemT>,
   LeadingSeparatorComponent: ?(React.ComponentType<any> | React.MixedElement),
   SeparatorComponent: ?(React.ComponentType<any> | React.MixedElement),

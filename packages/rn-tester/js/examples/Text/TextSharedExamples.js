@@ -80,7 +80,7 @@ function EmptyTextExample(): React.Node {
 function TextAndLayoutLinesJSON({
   testID,
   ellipsizeMode,
-}: $ReadOnly<{
+}: Readonly<{
   testID: string,
   ellipsizeMode: 'head' | 'tail' | 'middle' | 'clip',
 }>): React.Node {

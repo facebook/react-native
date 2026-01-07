@@ -247,7 +247,7 @@ export interface RefinedSpec {
    */
   +getBorderWidth: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<
+  ) => Readonly<
     [
       /* topWidth: */ number,
       /* rightWidth: */ number,
@@ -270,7 +270,7 @@ export interface RefinedSpec {
   +getBoundingClientRect: (
     nativeElementReference: NativeElementReference,
     includeTransform: boolean,
-  ) => $ReadOnly<
+  ) => Readonly<
     [
       /* x: */ number,
       /* y: */ number,
@@ -293,7 +293,7 @@ export interface RefinedSpec {
    */
   +getInnerSize: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<[/* width: */ number, /* height: */ number]>;
+  ) => Readonly<[/* width: */ number, /* height: */ number]>;
 
   /**
    * This is a method to access scroll information for a shadow node, to
@@ -308,7 +308,7 @@ export interface RefinedSpec {
    */
   +getScrollPosition: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>;
+  ) => Readonly<[/* scrollLeft: */ number, /* scrollTop: */ number]>;
 
   /**
    *
@@ -324,7 +324,7 @@ export interface RefinedSpec {
    */
   +getScrollSize: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>;
+  ) => Readonly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>;
 
   /**
    * This is a method to access the normalized tag name of a shadow node, to
@@ -377,7 +377,7 @@ export interface RefinedSpec {
    */
   +getOffset: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<
+  ) => Readonly<
     [
       /* offsetParent: */ ?InstanceHandle,
       /* top: */ number,

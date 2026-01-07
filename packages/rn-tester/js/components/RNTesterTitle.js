@@ -12,7 +12,7 @@ import {RNTesterThemeContext} from './RNTesterTheme';
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   title: string,
 }>;
 

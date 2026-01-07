@@ -40,39 +40,39 @@ export type PojoTypeAliasAnnotation = {
 };
 
 export type PojoTypeAnnotation =
-  | $ReadOnly<{
+  | Readonly<{
       type: 'BooleanTypeAnnotation',
       default: boolean | null,
     }>
-  | $ReadOnly<{
+  | Readonly<{
       type: 'StringTypeAnnotation',
       default: string | null,
     }>
-  | $ReadOnly<{
+  | Readonly<{
       type: 'DoubleTypeAnnotation',
       default: number,
     }>
-  | $ReadOnly<{
+  | Readonly<{
       type: 'FloatTypeAnnotation',
       default: number | null,
     }>
-  | $ReadOnly<{
+  | Readonly<{
       type: 'Int32TypeAnnotation',
       default: number,
     }>
-  | $ReadOnly<{
+  | Readonly<{
       type: 'StringEnumTypeAnnotation',
       default: string,
       options: $ReadOnlyArray<string>,
     }>
-  | $ReadOnly<{
+  | Readonly<{
       type: 'Int32EnumTypeAnnotation',
       default: number,
       options: $ReadOnlyArray<number>,
     }>
   | ReservedPropTypeAnnotation
   | PojoTypeAliasAnnotation
-  | $ReadOnly<{
+  | Readonly<{
       type: 'ArrayTypeAnnotation',
       elementType:
         | BooleanTypeAnnotation
@@ -81,14 +81,14 @@ export type PojoTypeAnnotation =
         | FloatTypeAnnotation
         | Int32TypeAnnotation
         | MixedTypeAnnotation
-        | $ReadOnly<{
+        | Readonly<{
             type: 'StringEnumTypeAnnotation',
             default: string,
             options: $ReadOnlyArray<string>,
           }>
         | PojoTypeAliasAnnotation
         | ReservedPropTypeAnnotation
-        | $ReadOnly<{
+        | Readonly<{
             type: 'ArrayTypeAnnotation',
             elementType: PojoTypeAliasAnnotation,
           }>,

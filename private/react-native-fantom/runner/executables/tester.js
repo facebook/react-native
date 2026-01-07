@@ -27,7 +27,7 @@ import path from 'path';
 const FANTOM_TESTER_BUCK_TARGET =
   'fbsource//xplat/js/react-native-github/private/react-native-fantom/tester:tester';
 
-type TesterOptions = $ReadOnly<{
+type TesterOptions = Readonly<{
   isOptimizedMode: boolean,
   hermesVariant: HermesVariant,
 }>;

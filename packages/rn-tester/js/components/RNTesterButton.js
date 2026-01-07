@@ -15,7 +15,7 @@ import type {GestureResponderEvent} from 'react-native';
 import React from 'react';
 import {Pressable, StyleSheet, Text} from 'react-native';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   testID?: string,
   textTestID?: string,
   children?: React.Node,

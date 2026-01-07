@@ -8,7 +8,7 @@
  * @format
  */
 
-export type FantomRuntimeConstants = $ReadOnly<{
+export type FantomRuntimeConstants = Readonly<{
   isOSS: boolean,
   isRunningFromCI: boolean,
   forceTestModeForBenchmarks: boolean,

@@ -43,7 +43,7 @@
 import type EventTarget from './EventTarget';
 import type {EventCallback} from './EventTarget';
 
-type EventHandler = $ReadOnly<{
+type EventHandler = Readonly<{
   handleEvent: EventCallback,
 }>;
 type EventHandlerAttributeMap = Map<string, EventHandler | null>;

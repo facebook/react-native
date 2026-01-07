@@ -28,7 +28,7 @@ function buildCommandSchema(
   property: EventTypeAST,
   types: TypeDeclarationMap,
   parser: Parser,
-): $ReadOnly<{
+): Readonly<{
   name: string,
   optional: boolean,
   typeAnnotation: {

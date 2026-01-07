@@ -13,15 +13,15 @@
 const React = require('react');
 const {StyleSheet, Text, View} = require('react-native');
 
-type ExampleBoxComponentProps = $ReadOnly<{
+type ExampleBoxComponentProps = Readonly<{
   onLog: (msg: string) => void,
 }>;
 
-type ExampleBoxProps = $ReadOnly<{
+type ExampleBoxProps = Readonly<{
   Component: React.ComponentType<ExampleBoxComponentProps>,
 }>;
 
-type ExampleBoxState = $ReadOnly<{
+type ExampleBoxState = Readonly<{
   log: string[],
 }>;
 
@@ -278,7 +278,7 @@ class BoxOnlyStyleExample extends React.Component<$FlowFixMe> {
   }
 }
 
-type OverflowExampleProps = $ReadOnly<{
+type OverflowExampleProps = Readonly<{
   overflow: 'hidden' | 'visible',
   onLog: (msg: string) => void,
 }>;

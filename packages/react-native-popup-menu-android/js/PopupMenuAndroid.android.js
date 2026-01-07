@@ -20,12 +20,12 @@ import * as React from 'react';
 import {useCallback, useImperativeHandle, useRef} from 'react';
 
 type PopupMenuSelectionEvent = NativeSyntheticEvent<
-  $ReadOnly<{
+  Readonly<{
     item: number,
   }>,
 >;
 
-type PopupMenuDismissEvent = NativeSyntheticEvent<$ReadOnly<{}>>;
+type PopupMenuDismissEvent = NativeSyntheticEvent<Readonly<{}>>;
 
 export type PopupMenuAndroidInstance = {
   +show: () => void,

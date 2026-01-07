@@ -8,7 +8,7 @@
  * @format
  */
 
-export type RNTesterModuleExample = $ReadOnly<{
+export type RNTesterModuleExample = Readonly<{
   name?: string,
   title: string,
   platform?: 'ios' | 'android',
@@ -19,7 +19,7 @@ export type RNTesterModuleExample = $ReadOnly<{
   render: component(),
 }>;
 
-export type RNTesterModule = $ReadOnly<{
+export type RNTesterModule = Readonly<{
   title: string,
   testTitle?: ?string,
   description: string,
@@ -33,7 +33,7 @@ export type RNTesterModule = $ReadOnly<{
   showIndividualExamples?: boolean,
 }>;
 
-export type RNTesterModuleInfo = $ReadOnly<{
+export type RNTesterModuleInfo = Readonly<{
   key: string,
   module: RNTesterModule,
   category?: string,
@@ -47,7 +47,7 @@ export type SectionData<T> = {
   data: Array<T>,
 };
 
-export type ExamplesList = $ReadOnly<{
+export type ExamplesList = Readonly<{
   components: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
   apis: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
 }>;

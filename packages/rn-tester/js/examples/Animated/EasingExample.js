@@ -25,7 +25,7 @@ import {
   View,
 } from 'react-native';
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 
 type EasingListItem = {
   title: string,

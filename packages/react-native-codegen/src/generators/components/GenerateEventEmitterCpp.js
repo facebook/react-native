@@ -25,7 +25,7 @@ const {IncludeTemplate, generateEventStructName} = require('./CppHelpers');
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
-type ComponentCollection = $ReadOnly<{
+type ComponentCollection = Readonly<{
   [component: string]: ComponentShape,
   ...
 }>;
