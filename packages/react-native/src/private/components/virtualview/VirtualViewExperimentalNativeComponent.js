@@ -68,6 +68,12 @@ type VirtualViewExperimentalNativeProps = Readonly<{
   initialHidden?: boolean,
 
   /**
+   * This was needed to get VirtualViewManagerDelegate to set this property.
+   * TODO: Investigate why spread ViewProps doesn't call setter
+   */
+  removeClippedSubviews?: boolean,
+
+  /**
    * Render state of children.
    *
    * - `0`: Reserved to represent unknown future values.
@@ -80,17 +86,12 @@ type VirtualViewExperimentalNativeProps = Readonly<{
   renderState: Int32,
 
   /**
-   * This was needed to get VirtualViewManagerDelegate to set this property.
-   * TODO: Investigate why spread ViewProps doesn't call setter
-   */
-  removeClippedSubviews?: boolean,
-
-  /**
    * See `NativeModeChangeEvent`.
    */
   onModeChange?: ?DirectEventHandler<NativeModeChangeEvent>,
 }>;
 
+// TODO: Rename to eliminate "Experimental" suffix in the name.
 export default codegenNativeComponent<VirtualViewExperimentalNativeProps>(
   'VirtualViewExperimental',
   {
