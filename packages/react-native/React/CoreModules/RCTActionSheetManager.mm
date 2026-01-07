@@ -20,6 +20,28 @@
 
 using namespace facebook::react;
 
+// With popover action sheet, cancel button disappears with style = UIAlertActionStyleCancel
+// Reverting to default style when:
+//  - building with SDK 26+ AND running on iOS 26+ AND UIDesignRequiresCompatibility is disabled
+//  - running on iPad
+static inline UIAlertActionStyle RCTActionStyleForCancelButton(void)
+{
+  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    return UIAlertActionStyleDefault;
+  }
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
+  if (@available(iOS 26, *)) {
+    if ([[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIDesignRequiresCompatibility"] boolValue]) {
+      return UIAlertActionStyleCancel;
+    }
+    
+    return UIAlertActionStyleDefault;
+  }
+#endif
+  return UIAlertActionStyleCancel;
+}
+
 @interface RCTActionSheetManager () <NativeActionSheetManagerSpec>
 
 @property (nonatomic, strong) NSMutableArray<UIAlertController *> *alertControllers;
@@ -154,17 +176,8 @@ RCT_EXPORT_METHOD(
       if ([destructiveButtonIndices containsObject:@(index)]) {
         style = UIAlertActionStyleDestructive;
       } else if (index == cancelButtonIndex) {
-        style = UIAlertActionStyleCancel;
+        style = RCTActionStyleForCancelButton();
         isCancelButtonIndex = true;
-// With Liquid Glass Action Sheet, cancel button disappears with style = UIAlertActionStyleCancel
-// Reverting to default style when: building with SDK 26+ AND running on iOS 26+ AND UIDesignRequiresCompatibility is disabled
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
-        if (@available(iOS 26, *)) {
-          if (![[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIDesignRequiresCompatibility"] boolValue]) {
-            style = UIAlertActionStyleDefault;
-          }
-        }
-#endif
       }
 
       NSInteger localIndex = index;
