@@ -24,6 +24,10 @@ const AccessibilityInfo = {
     $FlowFixMe,
     $FlowFixMe,
   >,
+  isDifferentiateWithoutColorEnabled: jest.fn(() => Promise.resolve(false)) as JestMockFn<
+    $FlowFixMe,
+    $FlowFixMe,
+  >,
   isGrayscaleEnabled: jest.fn(() => Promise.resolve(false)) as JestMockFn<
     $FlowFixMe,
     $FlowFixMe,

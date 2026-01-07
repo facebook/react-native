@@ -1473,6 +1473,9 @@ class AccessibilityTest extends React.Component {
 AccessibilityInfo.isBoldTextEnabled().then(isEnabled =>
   console.log(`AccessibilityInfo.isBoldTextEnabled => ${isEnabled}`),
 );
+AccessibilityInfo.isDifferentiateWithoutColorEnabled().then(isEnabled =>
+  console.log(`AccessibilityInfo.isDifferentiateWithoutColorEnabled => ${isEnabled}`),
+);
 AccessibilityInfo.isGrayscaleEnabled().then(isEnabled =>
   console.log(`AccessibilityInfo.isGrayscaleEnabled => ${isEnabled}`),
 );
@@ -1503,6 +1506,9 @@ AccessibilityInfo.addEventListener(
 );
 AccessibilityInfo.addEventListener('boldTextChanged', isEnabled =>
   console.log(`AccessibilityInfo.isBoldTextEnabled => ${isEnabled}`),
+);
+AccessibilityInfo.addEventListener('differentiateWithoutColorChanged', isEnabled =>
+  console.log(`AccessibilityInfo.isDifferentiateWithoutColorEnabled => ${isEnabled}`),
 );
 AccessibilityInfo.addEventListener('grayscaleChanged', isEnabled =>
   console.log(`AccessibilityInfo.isGrayscaleEnabled => ${isEnabled}`),
