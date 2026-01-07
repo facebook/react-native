@@ -132,6 +132,11 @@ void AnimationBackend::stop(bool isAsync) {
   callbacks.clear();
 }
 
+void AnimationBackend::trigger() {
+  onAnimationFrame(
+      std::chrono::steady_clock::now().time_since_epoch().count() / 1000);
+}
+
 void AnimationBackend::commitUpdates(
     SurfaceId surfaceId,
     SurfaceUpdates& surfaceUpdates) {

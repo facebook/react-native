@@ -20,6 +20,7 @@ class UIManagerAnimationBackend {
   // TODO: T240293839 Move over start() function and mutation types
   virtual void stop(bool isAsync) = 0;
   virtual void clearRegistry(SurfaceId surfaceId) = 0;
+  virtual void trigger() = 0;
 };
 
 } // namespace facebook::react
