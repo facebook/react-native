@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bedfbd46022e1f5f29c7f6331ef99688>>
+ * @generated SignedSource<<49089fe126ce14edaf58fbf8a942330f>>
  */
 
 /**
@@ -72,12 +72,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool disableMountItemReorderingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableMountItemReorderingAndroid");
-    return method(javaProvider_);
-  }
-
-  bool disableOldAndroidAttachmentMetricsWorkarounds() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableOldAndroidAttachmentMetricsWorkarounds");
     return method(javaProvider_);
   }
 
@@ -589,11 +583,6 @@ bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::disableOldAndroidAttachmentMetricsWorkarounds(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::disableOldAndroidAttachmentMetricsWorkarounds();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::disableSubviewClippingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableSubviewClippingAndroid();
@@ -1038,9 +1027,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
-      makeNativeMethod(
-        "disableOldAndroidAttachmentMetricsWorkarounds",
-        JReactNativeFeatureFlagsCxxInterop::disableOldAndroidAttachmentMetricsWorkarounds),
       makeNativeMethod(
         "disableSubviewClippingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableSubviewClippingAndroid),

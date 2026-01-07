@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dfdba04bf07b35c5f49c1ac20b13a33a>>
+ * @generated SignedSource<<06dbf870e1f4fe12a401c8688e6474e3>>
  */
 
 /**
@@ -46,9 +46,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool disableMountItemReorderingAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool disableOldAndroidAttachmentMetricsWorkarounds(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool disableSubviewClippingAndroid(
