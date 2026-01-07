@@ -121,6 +121,11 @@ class NativeAnimatedNodesManager {
   void setAnimatedNodeOffset(Tag tag, double offset);
 
 #ifdef RN_USE_ANIMATION_BACKEND
+  void insertMutations(
+      std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> &updates,
+      AnimationMutations &mutations,
+      AnimatedPropsBuilder &propsBuilder,
+      bool hasLayoutUpdates = false);
   AnimationMutations pullAnimationMutations();
 #endif
 
@@ -263,7 +268,7 @@ class NativeAnimatedNodesManager {
   std::unordered_map<Tag, folly::dynamic> updateViewPropsDirect_{};
   std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> updateViewPropsForBackend_{};
   std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>> updateViewPropsDirectForBackend_{};
-
+  std::unordered_set<Tag> shouldRequestAsyncFlush_{};
   /*
    * Sometimes a view is not longer connected to a PropsAnimatedNode, but
    * NativeAnimated has previously changed the view's props via direct
