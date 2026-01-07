@@ -21,7 +21,7 @@ constexpr const char VirtualViewExperimentalComponentName[] = "VirtualViewExperi
 class VirtualViewExperimentalShadowNode final : public ConcreteViewShadowNode<
                                                     VirtualViewExperimentalComponentName,
                                                     VirtualViewExperimentalProps,
-                                                    VirtualViewEventEmitter> {
+                                                    VirtualViewExperimentalEventEmitter> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
