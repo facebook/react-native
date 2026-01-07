@@ -97,7 +97,7 @@ declare module '@babel/traverse' {
     /** Traverse node with current scope and path. */
     traverse<S>(
       node: BabelNode | Array<BabelNode>,
-      opts: $ReadOnly<TraverseOptions<S>>,
+      opts: Readonly<TraverseOptions<S>>,
       state: S,
     ): void;
 
@@ -303,7 +303,7 @@ declare module '@babel/traverse' {
     shouldStop: boolean;
     removed: boolean;
     state: unknown;
-    +opts: $ReadOnly<TraverseOptions<unknown>> | null;
+    +opts: Readonly<TraverseOptions<unknown>> | null;
     skipKeys: null | {[key: string]: boolean};
     parentPath: ?NodePath<>;
     context: TraversalContext;
@@ -346,7 +346,7 @@ declare module '@babel/traverse' {
     ): TError;
 
     traverse<TState>(
-      visitor: $ReadOnly<TraverseOptions<TState>>,
+      visitor: Readonly<TraverseOptions<TState>>,
       state: TState,
     ): void;
 
@@ -1444,7 +1444,7 @@ declare module '@babel/traverse' {
     | VisitNodeFunction<TNode, TState>
     | VisitNodeObject<TNode, TState>;
 
-  declare export type Visitor<TState = void> = $ReadOnly<{
+  declare export type Visitor<TState = void> = Readonly<{
     enter?: VisitNodeFunction<BabelNode, TState>,
     exit?: VisitNodeFunction<BabelNode, TState>,
 
@@ -1872,7 +1872,7 @@ declare module '@babel/traverse' {
     explode<TState>(visitor: Visitor<TState>): Visitor<TState>,
     verify<TState>(visitor: Visitor<TState>): void,
     merge(
-      visitors: Array<$ReadOnly<Visitor<any>>>,
+      visitors: Array<Readonly<Visitor<any>>>,
       states: Array<any>,
       wrapper?: ?Function,
     ): Array<Visitor<any>>,
@@ -1891,7 +1891,7 @@ declare module '@babel/traverse' {
   declare export type Traverse = {
     <TState>(
       parent?: BabelNode | Array<BabelNode>,
-      opts?: $ReadOnly<TraverseOptions<TState>>,
+      opts?: Readonly<TraverseOptions<TState>>,
       scope?: ?Scope,
       state: TState,
       parentPath?: ?NodePath<BabelNode>,
@@ -1909,7 +1909,7 @@ declare module '@babel/traverse' {
 
     node<TState>(
       node: BabelNode,
-      opts: $ReadOnly<TraverseOptions<TState>>,
+      opts: Readonly<TraverseOptions<TState>>,
       scope: Scope,
       state: TState,
       parentPath: NodePath<>,

@@ -59,7 +59,7 @@ const ModalEventEmitter =
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-type OrientationChangeEvent = $ReadOnly<{
+type OrientationChangeEvent = Readonly<{
   orientation: 'portrait' | 'landscape',
 }>;
 
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type ModalRefProps = $ReadOnly<{
+type ModalRefProps = Readonly<{
   ref?: React.RefSetter<PublicModalInstance>,
 }>;
 

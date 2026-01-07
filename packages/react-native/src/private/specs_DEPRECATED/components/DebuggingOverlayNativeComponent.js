@@ -16,7 +16,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type DebuggingOverlayNativeProps = $ReadOnly<{
+type DebuggingOverlayNativeProps = Readonly<{
   ...ViewProps,
 }>;
 export type DebuggingOverlayNativeComponentType =

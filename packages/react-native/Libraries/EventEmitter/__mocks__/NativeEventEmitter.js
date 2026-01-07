@@ -19,7 +19,7 @@ import RCTDeviceEventEmitter from '../RCTDeviceEventEmitter';
  * Mock `NativeEventEmitter` to ignore Native Modules.
  */
 export default class NativeEventEmitter<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<unknown>>>,
+  TEventToArgsMap: Readonly<Record<string, $ReadOnlyArray<unknown>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   addListener<TEvent: $Keys<TEventToArgsMap>>(

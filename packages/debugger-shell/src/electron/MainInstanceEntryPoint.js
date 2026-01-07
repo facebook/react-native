@@ -19,7 +19,7 @@ const {BrowserWindow, Menu, app, shell, ipcMain} = require('electron') as any;
 const appSettings = new SettingsStore();
 const windowMetadata = new WeakMap<
   typeof BrowserWindow,
-  $ReadOnly<{
+  Readonly<{
     windowKey: string,
   }>,
 >();

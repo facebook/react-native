@@ -10,7 +10,7 @@
 
 const {dispatchCommand} = require('../ReactNative/RendererProxy');
 
-type NativeCommandsOptions<T = string> = $ReadOnly<{
+type NativeCommandsOptions<T = string> = Readonly<{
   supportedCommands: $ReadOnlyArray<T>,
 }>;
 

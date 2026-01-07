@@ -41,7 +41,7 @@ const {useState} = React;
 type PanelPosition = 'top' | 'bottom';
 
 export type InspectedElementFrame = TouchedViewDataAtPoint['frame'];
-export type InspectedElement = $ReadOnly<{
+export type InspectedElement = Readonly<{
   frame: InspectedElementFrame,
   style?: ViewStyleProp,
 }>;

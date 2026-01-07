@@ -19,7 +19,7 @@ import AnimatedObject from './AnimatedObject';
 import AnimatedTransform from './AnimatedTransform';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-export type AnimatedStyleAllowlist = $ReadOnly<{[string]: true}>;
+export type AnimatedStyleAllowlist = Readonly<{[string]: true}>;
 
 type FlatStyle = {[string]: unknown};
 type FlatStyleForWeb<TStyle: FlatStyle> = [unknown, TStyle];
@@ -253,6 +253,6 @@ export default class AnimatedStyle extends AnimatedWithChildren {
 // this shim when they do.
 // $FlowFixMe[method-unbinding]
 const _hasOwnProp = Object.prototype.hasOwnProperty;
-const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
+const hasOwn: (obj: Readonly<{...}>, prop: string) => boolean =
   // $FlowFixMe[method-unbinding]
   Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));

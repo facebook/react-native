@@ -13,7 +13,7 @@ import type {____Styles_Internal} from './StyleSheetTypes';
 import composeStyles from '../../src/private/styles/composeStyles';
 import flattenStyle from './flattenStyle';
 
-type AbsoluteFillStyle = $ReadOnly<{
+type AbsoluteFillStyle = Readonly<{
   position: 'absolute',
   left: 0,
   right: 0,
@@ -102,4 +102,4 @@ declare export const setStyleAttributePreprocessor: (
 // $FlowFixMe[unsupported-variance-annotation]
 declare export const create: <+S: ____Styles_Internal>(
   obj: S & ____Styles_Internal,
-) => $ReadOnly<S>;
+) => Readonly<S>;

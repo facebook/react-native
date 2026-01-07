@@ -36,7 +36,7 @@ export type TouchableWithoutFeedbackPropsAndroid = {
   touchSoundDisabled?: ?boolean,
 };
 
-export type TouchableWithoutFeedbackProps = $ReadOnly<
+export type TouchableWithoutFeedbackProps = Readonly<
   {
     children?: ?React.Node,
     /**

@@ -8,7 +8,7 @@
  * @format
  */
 
-export type Experiments = $ReadOnly<{
+export type Experiments = Readonly<{
   /**
    * Enables the handling of GET requests in the /open-debugger endpoint,
    * in addition to POST requests. GET requests respond by redirecting to

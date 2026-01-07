@@ -27,7 +27,7 @@ import PressabilityPerformanceEventEmitter from './PressabilityPerformanceEventE
 import {type PressabilityTouchSignal as TouchSignal} from './PressabilityTypes.js';
 import invariant from 'invariant';
 
-export type PressabilityConfig = $ReadOnly<{
+export type PressabilityConfig = Readonly<{
   /**
    * Whether a press gesture can be interrupted by a parent gesture such as a
    * scroll event. Defaults to true.
@@ -137,7 +137,7 @@ export type PressabilityConfig = $ReadOnly<{
   blockNativeResponder?: ?boolean,
 }>;
 
-export type EventHandlers = $ReadOnly<{
+export type EventHandlers = Readonly<{
   onBlur: (event: BlurEvent) => void,
   onClick: (event: GestureResponderEvent) => void,
   onFocus: (event: FocusEvent) => void,
@@ -378,13 +378,13 @@ export default class Pressability {
   _pressDelayTimeout: ?TimeoutID = null;
   _pressOutDelayTimeout: ?TimeoutID = null;
   _responderID: ?number | HostInstance = null;
-  _responderRegion: ?$ReadOnly<{
+  _responderRegion: ?Readonly<{
     bottom: number,
     left: number,
     right: number,
     top: number,
   }> = null;
-  _touchActivatePosition: ?$ReadOnly<{
+  _touchActivatePosition: ?Readonly<{
     pageX: number,
     pageY: number,
   }>;
@@ -830,7 +830,7 @@ export default class Pressability {
 
   _isTouchWithinResponderRegion(
     touch: GestureResponderEvent['nativeEvent'],
-    responderRegion: $ReadOnly<{
+    responderRegion: Readonly<{
       bottom: number,
       left: number,
       right: number,

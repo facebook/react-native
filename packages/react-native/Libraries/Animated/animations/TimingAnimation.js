@@ -18,12 +18,12 @@ import type {AnimationConfig, EndCallback} from './Animation';
 import AnimatedColor from '../nodes/AnimatedColor';
 import Animation from './Animation';
 
-export type TimingAnimationConfig = $ReadOnly<{
+export type TimingAnimationConfig = Readonly<{
   ...AnimationConfig,
   toValue:
     | number
     | AnimatedValue
-    | $ReadOnly<{
+    | Readonly<{
         x: number,
         y: number,
         ...
@@ -38,7 +38,7 @@ export type TimingAnimationConfig = $ReadOnly<{
   ...
 }>;
 
-export type TimingAnimationConfigSingle = $ReadOnly<{
+export type TimingAnimationConfigSingle = Readonly<{
   ...AnimationConfig,
   toValue: number,
   easing?: (value: number) => number,
@@ -80,7 +80,7 @@ export default class TimingAnimation extends Animation {
     this._platformConfig = config.platformConfig;
   }
 
-  __getNativeAnimationConfig(): $ReadOnly<{
+  __getNativeAnimationConfig(): Readonly<{
     type: 'frames',
     frames: $ReadOnlyArray<number>,
     toValue: number,

@@ -61,7 +61,7 @@ type NonAnimatedProps =
   | 'testID'
   | 'disabled'
   | 'accessibilityLabel';
-type PassThroughProps = $ReadOnly<{
+type PassThroughProps = Readonly<{
   passthroughAnimatedPropExplicitValues?: ViewProps | null,
 }>;
 
@@ -99,7 +99,7 @@ export default function createAnimatedComponent<
 >(
   Component: TInstance,
 ): AnimatedComponentType<
-  $ReadOnly<React.ElementConfig<TInstance>>,
+  Readonly<React.ElementConfig<TInstance>>,
   React.ElementRef<TInstance>,
 > {
   return unstable_createAnimatedComponentWithAllowlist(Component, null);

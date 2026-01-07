@@ -27,7 +27,7 @@ import url from 'url';
 const LEGACY_SYNTHETIC_PAGE_TITLE =
   'React Native Experimental (Improved Chrome Reloads)';
 
-type Options = $ReadOnly<{
+type Options = Readonly<{
   serverBaseUrl: string,
   logger?: Logger,
   browserLauncher: BrowserLauncher,

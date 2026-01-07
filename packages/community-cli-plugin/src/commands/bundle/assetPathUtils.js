@@ -8,7 +8,7 @@
  * @format
  */
 
-export type PackagerAsset = $ReadOnly<{
+export type PackagerAsset = Readonly<{
   httpServerLocation: string,
   name: string,
   type: string,

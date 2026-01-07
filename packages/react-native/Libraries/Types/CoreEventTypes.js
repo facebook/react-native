@@ -10,12 +10,12 @@
 
 import type {HostInstance} from '../../src/private/types/HostInstance';
 
-export type NativeSyntheticEvent<+T> = $ReadOnly<{
+export type NativeSyntheticEvent<+T> = Readonly<{
   bubbles: ?boolean,
   cancelable: ?boolean,
   currentTarget: number | HostInstance,
   defaultPrevented: ?boolean,
-  dispatchConfig: $ReadOnly<{
+  dispatchConfig: Readonly<{
     registrationName: string,
   }>,
   eventPhase: ?number,
@@ -31,14 +31,14 @@ export type NativeSyntheticEvent<+T> = $ReadOnly<{
   type: ?string,
 }>;
 
-export type ResponderSyntheticEvent<T> = $ReadOnly<{
+export type ResponderSyntheticEvent<T> = Readonly<{
   ...NativeSyntheticEvent<T>,
-  touchHistory: $ReadOnly<{
+  touchHistory: Readonly<{
     indexOfSingleActiveTouch: number,
     mostRecentTimeStamp: number,
     numberActiveTouches: number,
     touchBank: $ReadOnlyArray<
-      $ReadOnly<{
+      Readonly<{
         touchActive: boolean,
         startPageX: number,
         startPageY: number,
@@ -54,14 +54,14 @@ export type ResponderSyntheticEvent<T> = $ReadOnly<{
   }>,
 }>;
 
-export type LayoutRectangle = $ReadOnly<{
+export type LayoutRectangle = Readonly<{
   x: number,
   y: number,
   width: number,
   height: number,
 }>;
 
-export type TextLayoutLine = $ReadOnly<{
+export type TextLayoutLine = Readonly<{
   ...LayoutRectangle,
   ascender: number,
   capHeight: number,
@@ -71,12 +71,12 @@ export type TextLayoutLine = $ReadOnly<{
 }>;
 
 export type LayoutChangeEvent = NativeSyntheticEvent<
-  $ReadOnly<{
+  Readonly<{
     layout: LayoutRectangle,
   }>,
 >;
 
-type TextLayoutEventData = $ReadOnly<{
+type TextLayoutEventData = Readonly<{
   lines: Array<TextLayoutLine>,
 }>;
 
@@ -220,7 +220,7 @@ export interface NativePointerEvent extends NativeMouseEvent {
 
 export type PointerEvent = NativeSyntheticEvent<NativePointerEvent>;
 
-export type NativeTouchEvent = $ReadOnly<{
+export type NativeTouchEvent = Readonly<{
   /**
    * Array of all touch events that have changed since the last event
    */
@@ -266,29 +266,29 @@ export type NativeTouchEvent = $ReadOnly<{
 
 export type GestureResponderEvent = ResponderSyntheticEvent<NativeTouchEvent>;
 
-export type NativeScrollRectangle = $ReadOnly<{
+export type NativeScrollRectangle = Readonly<{
   bottom: number,
   left: number,
   right: number,
   top: number,
 }>;
 
-export type NativeScrollPoint = $ReadOnly<{
+export type NativeScrollPoint = Readonly<{
   y: number,
   x: number,
 }>;
 
-export type NativeScrollVelocity = $ReadOnly<{
+export type NativeScrollVelocity = Readonly<{
   y: number,
   x: number,
 }>;
 
-export type NativeScrollSize = $ReadOnly<{
+export type NativeScrollSize = Readonly<{
   height: number,
   width: number,
 }>;
 
-export type NativeScrollEvent = $ReadOnly<{
+export type NativeScrollEvent = Readonly<{
   contentInset: NativeScrollRectangle,
   contentOffset: NativeScrollPoint,
   contentSize: NativeScrollSize,
@@ -304,7 +304,7 @@ export type NativeScrollEvent = $ReadOnly<{
 
 export type ScrollEvent = NativeSyntheticEvent<NativeScrollEvent>;
 
-export type TargetedEvent = $ReadOnly<{
+export type TargetedEvent = Readonly<{
   target: number,
   ...
 }>;
@@ -314,7 +314,7 @@ export type BlurEvent = NativeSyntheticEvent<TargetedEvent>;
 export type FocusEvent = NativeSyntheticEvent<TargetedEvent>;
 
 export type MouseEvent = NativeSyntheticEvent<
-  $ReadOnly<{
+  Readonly<{
     clientX: number,
     clientY: number,
     pageX: number,
@@ -323,7 +323,7 @@ export type MouseEvent = NativeSyntheticEvent<
   }>,
 >;
 
-export type KeyEvent = $ReadOnly<{
+export type KeyEvent = Readonly<{
   /**
    * The actual key that was pressed. For example, F would be "f" or "F" depending on the shift key.
    * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key

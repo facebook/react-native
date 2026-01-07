@@ -24,7 +24,7 @@ import AnimatedObject from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';
 import invariant from 'invariant';
 
-export type AnimatedPropsAllowlist = $ReadOnly<{
+export type AnimatedPropsAllowlist = Readonly<{
   style?: ?AnimatedStyleAllowlist,
   [key: string]: true | AnimatedStyleAllowlist,
 }>;
@@ -358,6 +358,6 @@ export default class AnimatedProps extends AnimatedNode {
 // this shim when they do.
 // $FlowFixMe[method-unbinding]
 const _hasOwnProp = Object.prototype.hasOwnProperty;
-const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
+const hasOwn: (obj: Readonly<{...}>, prop: string) => boolean =
   // $FlowFixMe[method-unbinding]
   Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));

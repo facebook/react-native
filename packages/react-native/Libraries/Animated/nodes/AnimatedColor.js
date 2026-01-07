@@ -22,7 +22,7 @@ import {processColorObject} from '../../StyleSheet/PlatformColorValueTypes';
 import AnimatedValue, {flushValue} from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-export type AnimatedColorConfig = $ReadOnly<{
+export type AnimatedColorConfig = Readonly<{
   ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
@@ -112,7 +112,7 @@ function isRgbaAnimatedValue(value: any): boolean {
 
 export function getRgbaValueAndNativeColor(
   value: RgbaValue | ColorValue,
-): $ReadOnly<{
+): Readonly<{
   rgbaValue: RgbaValue,
   nativeColor?: NativeColorValue,
 }> {

@@ -18,7 +18,7 @@ type LoggerFn = (...message: $ReadOnlyArray<string>) => void;
  */
 export default function createDevMiddlewareLogger(
   reporter: TerminalReporter,
-): $ReadOnly<{
+): Readonly<{
   info: LoggerFn,
   error: LoggerFn,
   warn: LoggerFn,

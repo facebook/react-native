@@ -18,7 +18,7 @@ jest.mock('../LogBoxSymbolication', () => {
   return {__esModule: true, symbolicate: jest.fn(), deleteStack: jest.fn()};
 });
 
-type CodeCodeFrame = $ReadOnly<{
+type CodeCodeFrame = Readonly<{
   content: string,
   location: ?{
     row: number,

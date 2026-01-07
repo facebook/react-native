@@ -355,7 +355,7 @@ export function dispatchModeChangeEvent(
 /**
  * Helper to create a callback ref that records instances using WeakRefs.
  */
-function createWeakRefCallback<T: interface {} = interface {}>(): $ReadOnly<{
+function createWeakRefCallback<T: interface {} = interface {}>(): Readonly<{
   weakRefs: $ReadOnlyArray<WeakRef<T>>,
   callbackRef: React.RefSetter<T>,
 }> {
