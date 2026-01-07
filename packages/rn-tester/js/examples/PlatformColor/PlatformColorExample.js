@@ -21,7 +21,6 @@ import {
   PlatformColor,
   StyleSheet,
   View,
-  Text,
   useColorScheme,
 } from 'react-native';
 
