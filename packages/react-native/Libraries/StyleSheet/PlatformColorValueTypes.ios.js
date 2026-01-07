@@ -11,9 +11,24 @@
 import type {ProcessedColorValue} from './processColor';
 import type {ColorValue, NativeColorValue} from './StyleSheet';
 
+export type ColorProminence =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'quaternary';
+
+export type PlatformColorOptions = {
+  name: string,
+  alpha?: number,
+  prominence?: ColorProminence,
+  contentHeadroom?: number,
+};
+
+export type PlatformColorSpec = string | PlatformColorOptions;
+
 /** The actual type of the opaque NativeColorValue on iOS platform */
 type LocalNativeColorValue = {
-  semantic?: Array<string>,
+  semantic?: Array<PlatformColorOptions>,
   dynamic?: {
     light: ?(ColorValue | ProcessedColorValue),
     dark: ?(ColorValue | ProcessedColorValue),
@@ -22,9 +37,22 @@ type LocalNativeColorValue = {
   },
 };
 
-export const PlatformColor = (...names: Array<string>): NativeColorValue => {
-  // $FlowExpectedError[incompatible-type] LocalNativeColorValue is the iOS LocalNativeColorValue type
-  return ({semantic: names}: LocalNativeColorValue);
+/**
+ * Normalizes a color spec (string or options object) to options object format.
+ */
+function normalizeColorSpec(spec: PlatformColorSpec): PlatformColorOptions {
+  if (typeof spec === 'string') {
+    return {name: spec};
+  }
+  return spec;
+}
+
+export const PlatformColor = (
+  ...specs: Array<PlatformColorSpec>
+): NativeColorValue => {
+  const normalizedSpecs = specs.map(normalizeColorSpec);
+  // $FlowExpectedError[incompatible-return] LocalNativeColorValue is compatible with NativeColorValue
+  return {semantic: normalizedSpecs};
 };
 
 export type DynamicColorIOSTuplePrivate = {
@@ -37,16 +65,15 @@ export type DynamicColorIOSTuplePrivate = {
 export const DynamicColorIOSPrivate = (
   tuple: DynamicColorIOSTuplePrivate,
 ): ColorValue => {
-  return ({
+  // $FlowExpectedError[incompatible-return] LocalNativeColorValue is compatible with ColorValue
+  return {
     dynamic: {
       light: tuple.light,
       dark: tuple.dark,
       highContrastLight: tuple.highContrastLight,
       highContrastDark: tuple.highContrastDark,
     },
-    /* $FlowExpectedError[incompatible-type]
-     * LocalNativeColorValue is the actual type of the opaque NativeColorValue on iOS platform */
-  }: LocalNativeColorValue);
+  };
 };
 
 const _normalizeColorObject = (

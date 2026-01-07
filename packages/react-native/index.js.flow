@@ -267,7 +267,10 @@ export type {
 } from './Libraries/Utilities/Dimensions';
 export {default as Dimensions} from './Libraries/Utilities/Dimensions';
 
-export type {DynamicColorIOSTuple} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
+export type {
+  ColorProminence,
+  DynamicColorIOSTuple,
+} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
 export {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
 
 export type {EasingFunction} from './Libraries/Animated/Easing';

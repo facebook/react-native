@@ -24,166 +24,14 @@ import {
   useColorScheme,
 } from 'react-native';
 
-function PlatformColorsExample() {
-  function createTable() {
-    let colors: Array<{
-      color: ReturnType<typeof PlatformColor>,
-      label: string,
-    }> = [];
-    if (Platform.OS === 'ios') {
-      colors = [
-        // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
-        // Label Colors
-        {label: 'label', color: PlatformColor('label')},
-        {
-          label: 'secondaryLabel',
-          color: PlatformColor('secondaryLabel'),
-        },
-        {
-          label: 'tertiaryLabel',
-          color: PlatformColor('tertiaryLabel'),
-        },
-        {
-          label: 'quaternaryLabel',
-          color: PlatformColor('quaternaryLabel'),
-        },
-        // Fill Colors
-        {label: 'systemFill', color: PlatformColor('systemFill')},
-        {
-          label: 'secondarySystemFill',
-          color: PlatformColor('secondarySystemFill'),
-        },
-        {
-          label: 'tertiarySystemFill',
-          color: PlatformColor('tertiarySystemFill'),
-        },
-        {
-          label: 'quaternarySystemFill',
-          color: PlatformColor('quaternarySystemFill'),
-        },
-        // Text Colors
-        {
-          label: 'placeholderText',
-          color: PlatformColor('placeholderText'),
-        },
-        // Standard Content Background Colors
-        {
-          label: 'systemBackground',
-          color: PlatformColor('systemBackground'),
-        },
-        {
-          label: 'secondarySystemBackground',
-          color: PlatformColor('secondarySystemBackground'),
-        },
-        {
-          label: 'tertiarySystemBackground',
-          color: PlatformColor('tertiarySystemBackground'),
-        },
-        // Grouped Content Background Colors
-        {
-          label: 'systemGroupedBackground',
-          color: PlatformColor('systemGroupedBackground'),
-        },
-        {
-          label: 'secondarySystemGroupedBackground',
-          color: PlatformColor('secondarySystemGroupedBackground'),
-        },
-        {
-          label: 'tertiarySystemGroupedBackground',
-          color: PlatformColor('tertiarySystemGroupedBackground'),
-        },
-        // Separator Colors
-        {label: 'separator', color: PlatformColor('separator')},
-        {
-          label: 'opaqueSeparator',
-          color: PlatformColor('opaqueSeparator'),
-        },
-        // Link Color
-        {label: 'link', color: PlatformColor('link')},
-        // Nonadaptable Colors
-        {label: 'darkText', color: PlatformColor('darkText')},
-        {label: 'lightText', color: PlatformColor('lightText')},
-        // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
-        // Adaptable Colors
-        {label: 'systemBlue', color: PlatformColor('systemBlue')},
-        {label: 'systemBrown', color: PlatformColor('systemBrown')},
-        {label: 'systemGreen', color: PlatformColor('systemGreen')},
-        {label: 'systemIndigo', color: PlatformColor('systemIndigo')},
-        {label: 'systemOrange', color: PlatformColor('systemOrange')},
-        {label: 'systemPink', color: PlatformColor('systemPink')},
-        {label: 'systemPurple', color: PlatformColor('systemPurple')},
-        {label: 'systemRed', color: PlatformColor('systemRed')},
-        {label: 'systemTeal', color: PlatformColor('systemTeal')},
-        {label: 'systemYellow', color: PlatformColor('systemYellow')},
-        // Adaptable Gray Colors
-        {label: 'systemGray', color: PlatformColor('systemGray')},
-        {label: 'systemGray2', color: PlatformColor('systemGray2')},
-        {label: 'systemGray3', color: PlatformColor('systemGray3')},
-        {label: 'systemGray4', color: PlatformColor('systemGray4')},
-        {label: 'systemGray5', color: PlatformColor('systemGray5')},
-        {label: 'systemGray6', color: PlatformColor('systemGray6')},
-        // Transparent Color
-        {label: 'clear', color: PlatformColor('clear')},
-        {label: 'customColor', color: PlatformColor('customColor')},
-      ];
-    } else if (Platform.OS === 'android') {
-      colors = [
-        {label: '?attr/colorAccent', color: PlatformColor('?attr/colorAccent')},
-        {
-          label: '?attr/colorBackgroundFloating',
-          color: PlatformColor('?attr/colorBackgroundFloating'),
-        },
-        {
-          label: '?attr/colorButtonNormal',
-          color: PlatformColor('?attr/colorButtonNormal'),
-        },
-        {
-          label: '?attr/colorControlActivated',
-          color: PlatformColor('?attr/colorControlActivated'),
-        },
-        {
-          label: '?attr/colorControlHighlight',
-          color: PlatformColor('?attr/colorControlHighlight'),
-        },
-        {
-          label: '?attr/colorControlNormal',
-          color: PlatformColor('?attr/colorControlNormal'),
-        },
-        {
-          label: '?android:colorError',
-          color: PlatformColor('?android:colorError'),
-        },
-        {
-          label: '?android:attr/colorError',
-          color: PlatformColor('?android:attr/colorError'),
-        },
-        {
-          label: '?attr/colorPrimary',
-          color: PlatformColor('?attr/colorPrimary'),
-        },
-        {label: '?colorPrimaryDark', color: PlatformColor('?colorPrimaryDark')},
-        {
-          label: '@android:color/holo_purple',
-          color: PlatformColor('@android:color/holo_purple'),
-        },
-        {
-          label: '@android:color/holo_green_light',
-          color: PlatformColor('@android:color/holo_green_light'),
-        },
-        {
-          label: '@color/catalyst_redbox_background',
-          color: PlatformColor('@color/catalyst_redbox_background'),
-        },
-        {
-          label: '@color/catalyst_logbox_background',
-          color: PlatformColor('@color/catalyst_logbox_background'),
-        },
-      ];
-    }
-
-    let table = [];
-    for (let color of colors) {
-      table.push(
+function ColorTable({
+  colors,
+}: {
+  colors: Array<{color: ReturnType<typeof PlatformColor>, label: string}>,
+}) {
+  return (
+    <View style={styles.column}>
+      {colors.map(color => (
         <View style={styles.row} key={color.label}>
           <RNTesterText style={styles.labelCell}>{color.label}</RNTesterText>
           <View
@@ -192,13 +40,330 @@ function PlatformColorsExample() {
               backgroundColor: color.color,
             }}
           />
-        </View>,
-      );
-    }
-    return table;
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function PlatformColorsExample() {
+  let colors: Array<{
+    color: ReturnType<typeof PlatformColor>,
+    label: string,
+  }> = [];
+
+  if (Platform.OS === 'ios') {
+    colors = [
+      // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
+      // Label Colors
+      {label: 'label', color: PlatformColor('label')},
+      {label: 'secondaryLabel', color: PlatformColor('secondaryLabel')},
+      {label: 'tertiaryLabel', color: PlatformColor('tertiaryLabel')},
+      {label: 'quaternaryLabel', color: PlatformColor('quaternaryLabel')},
+      // Fill Colors
+      {label: 'systemFill', color: PlatformColor('systemFill')},
+      {
+        label: 'secondarySystemFill',
+        color: PlatformColor('secondarySystemFill'),
+      },
+      {label: 'tertiarySystemFill', color: PlatformColor('tertiarySystemFill')},
+      {
+        label: 'quaternarySystemFill',
+        color: PlatformColor('quaternarySystemFill'),
+      },
+      // Text Colors
+      {label: 'placeholderText', color: PlatformColor('placeholderText')},
+      // Standard Content Background Colors
+      {label: 'systemBackground', color: PlatformColor('systemBackground')},
+      {
+        label: 'secondarySystemBackground',
+        color: PlatformColor('secondarySystemBackground'),
+      },
+      {
+        label: 'tertiarySystemBackground',
+        color: PlatformColor('tertiarySystemBackground'),
+      },
+      // Grouped Content Background Colors
+      {
+        label: 'systemGroupedBackground',
+        color: PlatformColor('systemGroupedBackground'),
+      },
+      {
+        label: 'secondarySystemGroupedBackground',
+        color: PlatformColor('secondarySystemGroupedBackground'),
+      },
+      {
+        label: 'tertiarySystemGroupedBackground',
+        color: PlatformColor('tertiarySystemGroupedBackground'),
+      },
+      // Separator Colors
+      {label: 'separator', color: PlatformColor('separator')},
+      {label: 'opaqueSeparator', color: PlatformColor('opaqueSeparator')},
+      // Link Color
+      {label: 'link', color: PlatformColor('link')},
+      // Nonadaptable Colors
+      {label: 'darkText', color: PlatformColor('darkText')},
+      {label: 'lightText', color: PlatformColor('lightText')},
+      // https://developer.apple.com/documentation/uikit/uicolor/standard_colors
+      // Adaptable Colors
+      {label: 'systemBlue', color: PlatformColor('systemBlue')},
+      {label: 'systemBrown', color: PlatformColor('systemBrown')},
+      {label: 'systemGreen', color: PlatformColor('systemGreen')},
+      {label: 'systemIndigo', color: PlatformColor('systemIndigo')},
+      {label: 'systemMint', color: PlatformColor('systemMint')},
+      {label: 'systemOrange', color: PlatformColor('systemOrange')},
+      {label: 'systemPink', color: PlatformColor('systemPink')},
+      {label: 'systemPurple', color: PlatformColor('systemPurple')},
+      {label: 'systemRed', color: PlatformColor('systemRed')},
+      {label: 'systemTeal', color: PlatformColor('systemTeal')},
+      {label: 'systemYellow', color: PlatformColor('systemYellow')},
+      // Adaptable Gray Colors
+      {label: 'systemGray', color: PlatformColor('systemGray')},
+      {label: 'systemGray2', color: PlatformColor('systemGray2')},
+      {label: 'systemGray3', color: PlatformColor('systemGray3')},
+      {label: 'systemGray4', color: PlatformColor('systemGray4')},
+      {label: 'systemGray5', color: PlatformColor('systemGray5')},
+      {label: 'systemGray6', color: PlatformColor('systemGray6')},
+      // Transparent Color
+      {label: 'clear', color: PlatformColor('clear')},
+      {label: 'customColor', color: PlatformColor('customColor')},
+    ];
+  } else if (Platform.OS === 'android') {
+    colors = [
+      {label: '?attr/colorAccent', color: PlatformColor('?attr/colorAccent')},
+      {
+        label: '?attr/colorBackgroundFloating',
+        color: PlatformColor('?attr/colorBackgroundFloating'),
+      },
+      {
+        label: '?attr/colorButtonNormal',
+        color: PlatformColor('?attr/colorButtonNormal'),
+      },
+      {
+        label: '?attr/colorControlActivated',
+        color: PlatformColor('?attr/colorControlActivated'),
+      },
+      {
+        label: '?attr/colorControlHighlight',
+        color: PlatformColor('?attr/colorControlHighlight'),
+      },
+      {
+        label: '?attr/colorControlNormal',
+        color: PlatformColor('?attr/colorControlNormal'),
+      },
+      {
+        label: '?android:colorError',
+        color: PlatformColor('?android:colorError'),
+      },
+      {
+        label: '?android:attr/colorError',
+        color: PlatformColor('?android:attr/colorError'),
+      },
+      {label: '?attr/colorPrimary', color: PlatformColor('?attr/colorPrimary')},
+      {label: '?colorPrimaryDark', color: PlatformColor('?colorPrimaryDark')},
+      {
+        label: '@android:color/holo_purple',
+        color: PlatformColor('@android:color/holo_purple'),
+      },
+      {
+        label: '@android:color/holo_green_light',
+        color: PlatformColor('@android:color/holo_green_light'),
+      },
+      {
+        label: '@color/catalyst_redbox_background',
+        color: PlatformColor('@color/catalyst_redbox_background'),
+      },
+      {
+        label: '@color/catalyst_logbox_background',
+        color: PlatformColor('@color/catalyst_logbox_background'),
+      },
+    ];
   }
 
-  return <View style={styles.column}>{createTable()}</View>;
+  return <ColorTable colors={colors} />;
+}
+
+function AlphaColorsExample() {
+  if (Platform.OS !== 'ios') {
+    return (
+      <RNTesterText style={styles.labelCell}>
+        Alpha modifier is iOS-specific (no-op on other platforms)
+      </RNTesterText>
+    );
+  }
+
+  const colors = [
+    {label: 'systemBlue', color: PlatformColor('systemBlue')},
+    {
+      label: '{name: systemBlue, alpha: 0.75}',
+      color: PlatformColor({name: 'systemBlue', alpha: 0.75}),
+    },
+    {
+      label: '{name: systemBlue, alpha: 0.5}',
+      color: PlatformColor({name: 'systemBlue', alpha: 0.5}),
+    },
+    {
+      label: '{name: systemBlue, alpha: 0.25}',
+      color: PlatformColor({name: 'systemBlue', alpha: 0.25}),
+    },
+    {label: 'systemRed', color: PlatformColor('systemRed')},
+    {
+      label: '{name: systemRed, alpha: 0.5}',
+      color: PlatformColor({name: 'systemRed', alpha: 0.5}),
+    },
+    {label: 'label', color: PlatformColor('label')},
+    {
+      label: '{name: label, alpha: 0.5}',
+      color: PlatformColor({name: 'label', alpha: 0.5}),
+    },
+  ];
+
+  return <ColorTable colors={colors} />;
+}
+
+function ProminenceColorsExample() {
+  if (Platform.OS !== 'ios') {
+    return (
+      <RNTesterText style={styles.labelCell}>
+        Prominence modifier is iOS 18+ specific
+      </RNTesterText>
+    );
+  }
+
+  const colors = [
+    {label: 'systemBlue', color: PlatformColor('systemBlue')},
+    {
+      label: '{name: systemBlue, prominence: primary}',
+      color: PlatformColor({name: 'systemBlue', prominence: 'primary'}),
+    },
+    {
+      label: '{name: systemBlue, prominence: secondary}',
+      color: PlatformColor({name: 'systemBlue', prominence: 'secondary'}),
+    },
+    {
+      label: '{name: systemBlue, prominence: tertiary}',
+      color: PlatformColor({name: 'systemBlue', prominence: 'tertiary'}),
+    },
+    {
+      label: '{name: systemBlue, prominence: quaternary}',
+      color: PlatformColor({name: 'systemBlue', prominence: 'quaternary'}),
+    },
+    {label: 'label', color: PlatformColor('label')},
+    {
+      label: '{name: label, prominence: secondary}',
+      color: PlatformColor({name: 'label', prominence: 'secondary'}),
+    },
+    {
+      label: '{name: label, prominence: tertiary}',
+      color: PlatformColor({name: 'label', prominence: 'tertiary'}),
+    },
+  ];
+
+  return <ColorTable colors={colors} />;
+}
+
+function ContentHeadroomColorsExample() {
+  if (Platform.OS !== 'ios') {
+    return (
+      <RNTesterText style={styles.labelCell}>
+        Content Headroom modifier is iOS 26+ specific (HDR colors)
+      </RNTesterText>
+    );
+  }
+
+  const colors = [
+    {label: 'systemRed', color: PlatformColor('systemRed')},
+    {
+      label: '{name: systemRed, contentHeadroom: 1.5}',
+      color: PlatformColor({name: 'systemRed', contentHeadroom: 1.5}),
+    },
+    {
+      label: '{name: systemRed, contentHeadroom: 2.0}',
+      color: PlatformColor({name: 'systemRed', contentHeadroom: 2.0}),
+    },
+    {label: 'systemGreen', color: PlatformColor('systemGreen')},
+    {
+      label: '{name: systemGreen, contentHeadroom: 1.5}',
+      color: PlatformColor({name: 'systemGreen', contentHeadroom: 1.5}),
+    },
+    {label: 'systemBlue', color: PlatformColor('systemBlue')},
+    {
+      label: '{name: systemBlue, contentHeadroom: 1.5}',
+      color: PlatformColor({name: 'systemBlue', contentHeadroom: 1.5}),
+    },
+  ];
+
+  return <ColorTable colors={colors} />;
+}
+
+function CombinedModifiersExample() {
+  if (Platform.OS !== 'ios') {
+    return (
+      <RNTesterText style={styles.labelCell}>
+        Combined modifiers are iOS-specific
+      </RNTesterText>
+    );
+  }
+
+  const colors = [
+    {label: 'systemRed', color: PlatformColor('systemRed')},
+    {
+      label: '{name: systemRed, alpha: 0.5}',
+      color: PlatformColor({name: 'systemRed', alpha: 0.5}),
+    },
+    {
+      label: '{name: systemRed, prominence: secondary}',
+      color: PlatformColor({name: 'systemRed', prominence: 'secondary'}),
+    },
+    {
+      label: '{name: systemRed, alpha: 0.8, prominence: secondary}',
+      color: PlatformColor({
+        name: 'systemRed',
+        alpha: 0.8,
+        prominence: 'secondary',
+      }),
+    },
+    {
+      label: '{name: systemBlue, alpha: 0.5, prominence: tertiary}',
+      color: PlatformColor({
+        name: 'systemBlue',
+        alpha: 0.5,
+        prominence: 'tertiary',
+      }),
+    },
+  ];
+
+  return <ColorTable colors={colors} />;
+}
+
+function MixedTypesExample() {
+  if (Platform.OS !== 'ios') {
+    return (
+      <RNTesterText style={styles.labelCell}>
+        Mixed types with modifiers are iOS-specific
+      </RNTesterText>
+    );
+  }
+
+  const colors = [
+    {
+      label: "('systemMint', {name: 'systemRed', alpha: 0.5})",
+      color: PlatformColor('systemMint', {name: 'systemRed', alpha: 0.5}),
+    },
+    {
+      label: "({name: 'systemBlue', prominence: 'secondary'}, 'systemGreen')",
+      color: PlatformColor(
+        {name: 'systemBlue', prominence: 'secondary'},
+        'systemGreen',
+      ),
+    },
+    {
+      label: "('bogus', {name: 'systemRed', alpha: 0.7})",
+      color: PlatformColor('bogus', {name: 'systemRed', alpha: 0.7}),
+    },
+  ];
+
+  return <ColorTable colors={colors} />;
 }
 
 function FallbackColorsExample() {
@@ -384,6 +549,41 @@ exports.examples = [
     title: 'Platform Colors',
     render(): React.MixedElement {
       return <PlatformColorsExample />;
+    },
+  },
+  {
+    title: 'Alpha Modifier (iOS)',
+    description: 'Use .alpha() to set the opacity of a platform color',
+    render(): React.MixedElement {
+      return <AlphaColorsExample />;
+    },
+  },
+  {
+    title: 'Prominence Modifier (iOS 18+)',
+    description: 'Use .prominence() to set the visual prominence level',
+    render(): React.MixedElement {
+      return <ProminenceColorsExample />;
+    },
+  },
+  {
+    title: 'Content Headroom (iOS 26+)',
+    description: 'Use .contentHeadroom() for HDR color brightness',
+    render(): React.MixedElement {
+      return <ContentHeadroomColorsExample />;
+    },
+  },
+  {
+    title: 'Combined Modifiers (iOS)',
+    description: 'Combine multiple modifiers in a single object',
+    render(): React.MixedElement {
+      return <CombinedModifiersExample />;
+    },
+  },
+  {
+    title: 'Mixed Types (iOS)',
+    description: 'Mix string and object color specs with different modifiers',
+    render(): React.MixedElement {
+      return <MixedTypesExample />;
     },
   },
   {
