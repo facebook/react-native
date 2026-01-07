@@ -56,6 +56,13 @@ enum PropName {
   POSITION_TYPE,
   Z_INDEX,
   DIRECTION,
+  BORDER_CURVES,
+  BORDER_STYLES,
+  POINTER_EVENTS,
+  ISOLATION,
+  CURSOR,
+  BOX_SHADOW,
+  MIX_BLEND_MODE
 };
 
 struct AnimatedPropBase {
@@ -373,6 +380,34 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case DIRECTION:
       viewProps.yogaStyle.setDirection(get<yoga::Direction>(animatedProp));
+      break;
+
+    case BORDER_CURVES:
+      viewProps.borderCurves = get<CascadedBorderCurves>(animatedProp);
+      break;
+
+    case BORDER_STYLES:
+      viewProps.borderStyles = get<CascadedBorderStyles>(animatedProp);
+      break;
+
+    case POINTER_EVENTS:
+      viewProps.pointerEvents = get<PointerEventsMode>(animatedProp);
+      break;
+
+    case ISOLATION:
+      viewProps.isolation = get<Isolation>(animatedProp);
+      break;
+
+    case CURSOR:
+      viewProps.cursor = get<Cursor>(animatedProp);
+      break;
+
+    case BOX_SHADOW:
+      viewProps.boxShadow = get<std::vector<BoxShadow>>(animatedProp);
+      break;
+
+    case MIX_BLEND_MODE:
+      viewProps.mixBlendMode = get<BlendMode>(animatedProp);
       break;
 
     default:
