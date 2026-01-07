@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ee723a105e7d14a01f92469bad94888>>
+ * @generated SignedSource<<3ee5c6b643fa4065a8168ebbb19d4efc>>
  */
 
 /**
@@ -65,12 +65,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
-
-  /**
-   * Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics
-   */
-  @JvmStatic
-  public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean = accessor.disableOldAndroidAttachmentMetricsWorkarounds()
 
   /**
    * Force disable subview clipping for ReactViewGroup on Android

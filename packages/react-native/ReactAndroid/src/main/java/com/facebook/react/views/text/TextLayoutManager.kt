@@ -1307,63 +1307,22 @@ internal object TextLayoutManager {
     } else {
       val placeholderWidth = placeholder.width.toFloat()
       val placeholderHeight = placeholder.height.toFloat()
+
       // Calculate if the direction of the placeholder character is Right-To-Left.
       val isRtlChar = layout.isRtlCharAt(start)
       val isRtlParagraph = layout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT
-      var placeholderLeftPosition: Float
-      // There's a bug on Samsung devices where calling getPrimaryHorizontal on
-      // the last offset in the layout will result in an endless loop. Work around
-      // this bug by avoiding getPrimaryHorizontal in that case.
-      if (
-          !ReactNativeFeatureFlags.disableOldAndroidAttachmentMetricsWorkarounds() &&
-              start == text.length - 1
-      ) {
-        val endsWithNewLine = text.length > 0 && text[layout.getLineEnd(line) - 1] == '\n'
-        val lineWidth = if (endsWithNewLine) layout.getLineMax(line) else layout.getLineWidth(line)
-        placeholderLeftPosition =
-            if (
-                isRtlParagraph // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
-            // incorrect
-            // values when the paragraph is RTL and `setSingleLine(true)`.
-            )
-                ( // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
-                // incorrect
-                // values when the paragraph is RTL and `setSingleLine(true)`.
-                calculatedWidth - lineWidth)
-            else (layout.getLineRight(line) - placeholderWidth)
-      } else {
-        // The direction of the paragraph may not be exactly the direction the string is
-        // heading
-        // in at the
-        // position of the placeholder. So, if the direction of the character is the same
-        // as the
-        // paragraph
-        // use primary, secondary otherwise.
-        val characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar
-        placeholderLeftPosition =
-            if (characterAndParagraphDirectionMatch) layout.getPrimaryHorizontal(start)
-            else layout.getSecondaryHorizontal(start)
-        if (
-            !ReactNativeFeatureFlags.disableOldAndroidAttachmentMetricsWorkarounds() &&
-                isRtlParagraph &&
-                !isRtlChar
-        ) {
-          // Adjust `placeholderLeftPosition` to work around an Android bug.
-          // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
-          // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
-          // `getLineRight` return incorrect values. Their return values seem to be off
-          // by the same number of pixels so subtracting these values cancels out the
-          // error.
-          //
-          // The result is equivalent to bugless versions of
-          // `getPrimaryHorizontal`/`getSecondaryHorizontal`.
-          placeholderLeftPosition =
-              calculatedWidth - (layout.getLineRight(line) - placeholderLeftPosition)
-        }
-        if (isRtlChar) {
-          placeholderLeftPosition -= placeholderWidth
-        }
+
+      // The direction of the paragraph may not be exactly the direction the string is heading in at
+      // the position of the placeholder. So, if the direction of the character is the same as the
+      // paragraph use primary, secondary otherwise.
+      val characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar
+      var placeholderLeftPosition =
+          if (characterAndParagraphDirectionMatch) layout.getPrimaryHorizontal(start)
+          else layout.getSecondaryHorizontal(start)
+      if (isRtlChar) {
+        placeholderLeftPosition -= placeholderWidth
       }
+
       // Vertically align the inline view to the baseline of the line of text.
       val placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight
 

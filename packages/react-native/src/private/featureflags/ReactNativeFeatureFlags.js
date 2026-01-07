@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b0e0bebf50d1a5b3d1c53447074786fd>>
+ * @generated SignedSource<<bbbc361282cedbdfda9e28115c8a14b0>>
  * @flow strict
  * @noformat
  */
@@ -55,7 +55,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   disableEarlyViewCommandExecution: Getter<boolean>,
   disableImageViewPreallocationAndroid: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
-  disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean>,
   disableSubviewClippingAndroid: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
   disableViewPreallocationAndroid: Getter<boolean>,
@@ -235,10 +234,6 @@ export const disableImageViewPreallocationAndroid: Getter<boolean> = createNativ
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
-/**
- * Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics
- */
-export const disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean> = createNativeFlagGetter('disableOldAndroidAttachmentMetricsWorkarounds', true);
 /**
  * Force disable subview clipping for ReactViewGroup on Android
  */

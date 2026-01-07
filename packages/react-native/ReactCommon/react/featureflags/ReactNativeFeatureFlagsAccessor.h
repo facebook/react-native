@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52f05ab59b596ddf941b48fd4193e6cc>>
+ * @generated SignedSource<<ac0394cb4daccb0d86d56ebf6e7452ad>>
  */
 
 /**
@@ -38,7 +38,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool disableEarlyViewCommandExecution();
   bool disableImageViewPreallocationAndroid();
   bool disableMountItemReorderingAndroid();
-  bool disableOldAndroidAttachmentMetricsWorkarounds();
   bool disableSubviewClippingAndroid();
   bool disableTextLayoutManagerCacheAndroid();
   bool disableViewPreallocationAndroid();
@@ -129,7 +128,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 86> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 85> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -137,7 +136,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> disableEarlyViewCommandExecution_;
   std::atomic<std::optional<bool>> disableImageViewPreallocationAndroid_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
-  std::atomic<std::optional<bool>> disableOldAndroidAttachmentMetricsWorkarounds_;
   std::atomic<std::optional<bool>> disableSubviewClippingAndroid_;
   std::atomic<std::optional<bool>> disableTextLayoutManagerCacheAndroid_;
   std::atomic<std::optional<bool>> disableViewPreallocationAndroid_;
