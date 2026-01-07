@@ -89,9 +89,6 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
     }
   | {
-      type: 'fusebox_console_notice',
-    }
-  | {
       type: 'no_debug_pages_for_device',
       ...DebuggerSessionIDs,
     }
