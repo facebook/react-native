@@ -13,10 +13,12 @@ import type {NativeSyntheticEvent} from '../../../../Libraries/Types/CoreEventTy
 import type {HostInstance} from '../../types/HostInstance';
 import type {NativeModeChangeEvent} from './VirtualViewExperimentalNativeComponent';
 
+import UIManager from '../../../../Libraries/ReactNative/UIManager';
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
 import * as ReactNativeFeatureFlags from '../../featureflags/ReactNativeFeatureFlags';
 import {useVirtualViewLogging} from './logger/VirtualViewLogger';
-import VirtualViewNativeComponent from './VirtualViewExperimentalNativeComponent';
+import VirtualViewExperimentalNativeComponent from './VirtualViewExperimentalNativeComponent';
+import VirtualViewProperNativeComponent from './VirtualViewNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 // $FlowFixMe[missing-export]
@@ -49,6 +51,15 @@ export type ModeChangeEvent = Readonly<{
   mode: VirtualViewMode,
   target: HostInstance,
 }>;
+
+// If `VirtualView` exists and `VirtualViewExperimental` does not, that means
+// the new version was renamed to `VirtualView`. Eventually, this can be deleted
+// with a single remaining import of `VirtualViewNativeComponent`.
+const VirtualViewNativeComponent: typeof VirtualViewExperimentalNativeComponent =
+  UIManager.hasViewManagerConfig('VirtualView') &&
+  !UIManager.hasViewManagerConfig('VirtualViewExperimental')
+    ? VirtualViewProperNativeComponent
+    : VirtualViewExperimentalNativeComponent;
 
 type VirtualViewComponent = component(
   children?: React.Node,
