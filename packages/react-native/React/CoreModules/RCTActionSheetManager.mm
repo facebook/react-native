@@ -156,6 +156,15 @@ RCT_EXPORT_METHOD(
       } else if (index == cancelButtonIndex) {
         style = UIAlertActionStyleCancel;
         isCancelButtonIndex = true;
+// With Liquid Glass Action Sheet, cancel button disappears with style = UIAlertActionStyleCancel
+// Reverting to default style when: building with SDK 26+ AND running on iOS 26+ AND UIDesignRequiresCompatibility is disabled
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000
+        if (@available(iOS 26, *)) {
+          if (![[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIDesignRequiresCompatibility"] boolValue]) {
+            style = UIAlertActionStyleDefault;
+          }
+        }
+#endif
       }
 
       NSInteger localIndex = index;
