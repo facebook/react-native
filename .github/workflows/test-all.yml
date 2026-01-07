@@ -217,6 +217,11 @@ jobs:
   test_e2e_android_templateapp:
     runs-on: 4-core-ubuntu
     needs: build_npm_package
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        TERM: "dumb"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
     strategy:
       fail-fast: false
       matrix:
@@ -323,6 +328,11 @@ jobs:
   test_e2e_android_rntester:
     runs-on: 4-core-ubuntu
     needs: [build_android]
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        TERM: "dumb"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
     strategy:
       fail-fast: false
       matrix:
