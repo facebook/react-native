@@ -54,8 +54,6 @@ export const WS_CLOSE_REASON = {
 // more details.
 const FILE_PREFIX = 'file://';
 
-let fuseboxConsoleNoticeLogged = false;
-
 type DebuggerConnection = {
   // Debugger web socket connection
   socket: WS,
@@ -542,7 +540,6 @@ export default class Device {
       // created instead of manually checking this on every getPages result.
       for (const page of this.#pages.values()) {
         if (this.#pageHasCapability(page, 'nativePageReloads')) {
-          this.#logFuseboxConsoleNotice();
           continue;
         }
 
@@ -1091,15 +1088,5 @@ export default class Device {
 
   dangerouslyGetSocket(): WS {
     return this.#deviceSocket;
-  }
-
-  // TODO(T214991636): Remove notice
-  #logFuseboxConsoleNotice() {
-    if (fuseboxConsoleNoticeLogged) {
-      return;
-    }
-
-    this.#deviceEventReporter?.logFuseboxConsoleNotice();
-    fuseboxConsoleNoticeLogged = true;
   }
 }
