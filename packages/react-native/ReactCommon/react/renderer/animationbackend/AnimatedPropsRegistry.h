@@ -256,6 +256,34 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case DIRECTION:
       viewProps.yogaStyle.setDirection(snapshot.props.yogaStyle.direction());
       break;
+
+    case BORDER_CURVES:
+      viewProps.borderCurves = snapshot.props.borderCurves;
+      break;
+
+    case BORDER_STYLES:
+      viewProps.borderStyles = snapshot.props.borderStyles;
+      break;
+
+    case POINTER_EVENTS:
+      viewProps.pointerEvents = snapshot.props.pointerEvents;
+      break;
+
+    case ISOLATION:
+      viewProps.isolation = snapshot.props.isolation;
+      break;
+
+    case CURSOR:
+      viewProps.cursor = snapshot.props.cursor;
+      break;
+
+    case BOX_SHADOW:
+      viewProps.boxShadow = snapshot.props.boxShadow;
+      break;
+
+    case MIX_BLEND_MODE:
+      viewProps.mixBlendMode = snapshot.props.mixBlendMode;
+      break;
   }
 }
 
