@@ -177,7 +177,7 @@ static BOOL sIsAccessibilityUsed = NO;
 
   // NOTE: Make sure to keep these props in sync with dispatchSyncModeChange below where we have to explicitly copy
   // all props.
-  VirtualViewEventEmitter::OnModeChange event = {
+  VirtualViewExperimentalEventEmitter::OnModeChange event = {
       .mode = (int)newMode,
       .targetRect =
           {.x = targetRect.origin.x,
@@ -260,23 +260,23 @@ static BOOL sIsAccessibilityUsed = NO;
   return nil;
 }
 
-- (void)_dispatchAsyncModeChange:(VirtualViewEventEmitter::OnModeChange &)event
+- (void)_dispatchAsyncModeChange:(VirtualViewExperimentalEventEmitter::OnModeChange &)event
 {
   if (!_eventEmitter) {
     return;
   }
 
-  auto &emitter = static_cast<const VirtualViewEventEmitter &>(*_eventEmitter);
+  auto &emitter = static_cast<const VirtualViewExperimentalEventEmitter &>(*_eventEmitter);
   emitter.onModeChange(event);
 }
 
-- (void)_dispatchSyncModeChange:(VirtualViewEventEmitter::OnModeChange &)event
+- (void)_dispatchSyncModeChange:(VirtualViewExperimentalEventEmitter::OnModeChange &)event
 {
   if (!_eventEmitter) {
     return;
   }
 
-  auto &emitter = static_cast<const VirtualViewEventEmitter &>(*_eventEmitter);
+  auto &emitter = static_cast<const VirtualViewExperimentalEventEmitter &>(*_eventEmitter);
 
   // TODO: Move this into a custom event emitter. We had to duplicate the codegen code here from onModeChange in order
   // to dispatch synchronously and discrete.

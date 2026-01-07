@@ -5240,17 +5240,6 @@ public abstract interface class com/facebook/react/viewmanagers/VirtualViewExper
 	public abstract fun setRenderState (Landroid/view/View;I)V
 }
 
-public class com/facebook/react/viewmanagers/VirtualViewManagerDelegate : com/facebook/react/uimanager/BaseViewManagerDelegate {
-	public fun <init> (Lcom/facebook/react/uimanager/BaseViewManager;)V
-	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
-}
-
-public abstract interface class com/facebook/react/viewmanagers/VirtualViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
-	public abstract fun setInitialHidden (Landroid/view/View;Z)V
-	public abstract fun setRemoveClippedSubviews (Landroid/view/View;Z)V
-	public abstract fun setRenderState (Landroid/view/View;I)V
-}
-
 public final class com/facebook/react/views/drawer/ReactDrawerLayout : androidx/drawerlayout/widget/DrawerLayout {
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
@@ -6700,41 +6689,6 @@ public final class com/facebook/react/views/virtual/VirtualViewMode : java/lang/
 	public final fun getValue ()I
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/virtual/VirtualViewMode;
 	public static fun values ()[Lcom/facebook/react/views/virtual/VirtualViewMode;
-}
-
-public final class com/facebook/react/views/virtual/view/ReactVirtualView : com/facebook/react/views/view/ReactViewGroup, android/view/View$OnLayoutChangeListener, com/facebook/react/views/scroll/ReactScrollViewHelper$LayoutChangeListener, com/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener {
-	public fun <init> (Landroid/content/Context;)V
-	public fun onLayout (Landroid/view/ViewGroup;)V
-	public fun onLayoutChange (Landroid/view/View;IIIIIIII)V
-	public fun onLayoutChange (Landroid/view/ViewGroup;)V
-	public fun onScroll (Landroid/view/ViewGroup;Lcom/facebook/react/views/scroll/ScrollEventType;FF)V
-	public synthetic fun recycleView$xplat_js_react_native_github_packages_react_native_ReactAndroid_src_main_java_com_facebook_react_views_view_viewAndroid ()V
-	public fun updateClippingRect (Ljava/util/Set;)V
-}
-
-public final class com/facebook/react/views/virtual/view/ReactVirtualViewManager : com/facebook/react/views/view/ReactClippingViewManager, com/facebook/react/viewmanagers/VirtualViewManagerInterface {
-	public static final field Companion Lcom/facebook/react/views/virtual/view/ReactVirtualViewManager$Companion;
-	public static final field REACT_CLASS Ljava/lang/String;
-	public fun <init> ()V
-	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
-	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	public fun getName ()Ljava/lang/String;
-	public synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
-	public synthetic fun setInitialHidden (Landroid/view/View;Z)V
-	public fun setInitialHidden (Lcom/facebook/react/views/virtual/view/ReactVirtualView;Z)V
-	public synthetic fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
-	public fun setNativeId (Lcom/facebook/react/views/virtual/view/ReactVirtualView;Ljava/lang/String;)V
-	public synthetic fun setRemoveClippedSubviews (Landroid/view/View;Z)V
-	public synthetic fun setRenderState (Landroid/view/View;I)V
-	public fun setRenderState (Lcom/facebook/react/views/virtual/view/ReactVirtualView;I)V
-}
-
-public final class com/facebook/react/views/virtual/view/ReactVirtualViewManager$Companion {
-}
-
-public final class com/facebook/react/views/virtual/view/VirtualViewEventEmitter : com/facebook/react/views/virtual/VirtualViewModeChangeEmitter {
-	public fun <init> (IILcom/facebook/react/uimanager/events/EventDispatcher;)V
-	public fun emitModeChange (Lcom/facebook/react/views/virtual/VirtualViewMode;Landroid/graphics/Rect;Landroid/graphics/Rect;Z)V
 }
 
 public final class com/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimental : com/facebook/react/views/view/ReactViewGroup, android/view/View$OnLayoutChangeListener, com/facebook/react/views/scroll/VirtualView {
