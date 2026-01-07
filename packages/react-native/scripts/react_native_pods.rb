@@ -92,6 +92,11 @@ def use_react_native! (
   # excluding the legacy arch unless the user turns this flag off explicitly.
   ENV['RCT_REMOVE_LEGACY_ARCH'] = ENV['RCT_REMOVE_LEGACY_ARCH'] == '0' ? '0' : '1'
 
+  # Enable Hermes V1 by default.
+  # Users can still turn it off and use legacy hermes by setting the RCT_HERMES_V1_ENABLED
+  # environment variable to '0'.
+  ENV['RCT_HERMES_V1_ENABLED']= ENV['RCT_HERMES_V1_ENABLED'] == '0' ? '0' : '1'
+
   ReactNativePodsUtils.check_minimum_required_xcode()
 
   # Current target definition is provided by Cocoapods and it refers to the target

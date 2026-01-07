@@ -29,6 +29,8 @@ internal object ProjectUtils {
 
   const val HERMES_FALLBACK = true
 
+  const val HERMES_V1_ENABLED_FALLBACK = true
+
   internal fun Project.isNewArchEnabled(): Boolean = true
 
   internal val Project.isHermesEnabled: Boolean
@@ -73,14 +75,20 @@ internal object ProjectUtils {
 
   internal val Project.isHermesV1Enabled: Boolean
     get() =
-        (project.hasProperty(HERMES_V1_ENABLED) &&
-            project.property(HERMES_V1_ENABLED).toString().toBoolean()) ||
-            (project.hasProperty(SCOPED_HERMES_V1_ENABLED) &&
-                project.property(SCOPED_HERMES_V1_ENABLED).toString().toBoolean()) ||
-            (project.extraProperties.has(HERMES_V1_ENABLED) &&
-                project.extraProperties.get(HERMES_V1_ENABLED).toString().toBoolean()) ||
-            (project.extraProperties.has(SCOPED_HERMES_V1_ENABLED) &&
-                project.extraProperties.get(SCOPED_HERMES_V1_ENABLED).toString().toBoolean())
+        if (
+            project.hasProperty(HERMES_V1_ENABLED) || project.hasProperty(SCOPED_HERMES_V1_ENABLED)
+        ) {
+          (project.hasProperty(HERMES_V1_ENABLED) &&
+              project.property(HERMES_V1_ENABLED).toString().toBoolean()) ||
+              (project.hasProperty(SCOPED_HERMES_V1_ENABLED) &&
+                  project.property(SCOPED_HERMES_V1_ENABLED).toString().toBoolean()) ||
+              (project.extraProperties.has(HERMES_V1_ENABLED) &&
+                  project.extraProperties.get(HERMES_V1_ENABLED).toString().toBoolean()) ||
+              (project.extraProperties.has(SCOPED_HERMES_V1_ENABLED) &&
+                  project.extraProperties.get(SCOPED_HERMES_V1_ENABLED).toString().toBoolean())
+        } else {
+          HERMES_V1_ENABLED_FALLBACK
+        }
 
   internal fun Project.needsCodegenFromPackageJson(rootProperty: DirectoryProperty): Boolean {
     val parsedPackageJson = readPackageJsonFile(this, rootProperty)

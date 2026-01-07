@@ -113,7 +113,7 @@ internal object DependencyUtils {
   fun configureDependencies(
       project: Project,
       coordinates: Coordinates,
-      hermesV1Enabled: Boolean = false,
+      hermesV1Enabled: Boolean = true,
   ) {
     if (
         coordinates.versionString.isBlank() ||
@@ -149,7 +149,7 @@ internal object DependencyUtils {
 
   internal fun getDependencySubstitutions(
       coordinates: Coordinates,
-      hermesV1Enabled: Boolean = false,
+      hermesV1Enabled: Boolean = true,
   ): List<Triple<String, String, String>> {
     val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
     val hermesVersion =
