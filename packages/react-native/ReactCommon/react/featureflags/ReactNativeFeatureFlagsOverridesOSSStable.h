@@ -29,9 +29,5 @@ class ReactNativeFeatureFlagsOverridesOSSStable : public ReactNativeFeatureFlags
   {
     return true;
   }
-  bool useShadowNodeStateOnClone() override
-  {
-    return true;
-  }
 };
 } // namespace facebook::react

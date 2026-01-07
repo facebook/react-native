@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8ef70ad521c29619f0d602bd7cd93f5e>>
+ * @generated SignedSource<<a4c431c51c9d81df9ab61c3d9b0e71ba>>
  */
 
 /**
@@ -375,12 +375,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool enableWebPerformanceAPIsByDefault() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableWebPerformanceAPIsByDefault");
-    return method(javaProvider_);
-  }
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMappingOfEventPrioritiesBetweenFabricAndReact");
@@ -513,27 +507,9 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool useNativeEqualsInNativeReadableArrayAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeEqualsInNativeReadableArrayAndroid");
-    return method(javaProvider_);
-  }
-
-  bool useNativeTransformHelperAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeTransformHelperAndroid");
-    return method(javaProvider_);
-  }
-
   bool useNativeViewConfigsInBridgelessMode() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeViewConfigsInBridgelessMode");
-    return method(javaProvider_);
-  }
-
-  bool useRawPropsJsiValue() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRawPropsJsiValue");
     return method(javaProvider_);
   }
 
@@ -869,11 +845,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection(
   return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableWebPerformanceAPIsByDefault(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -984,24 +955,9 @@ bool JReactNativeFeatureFlagsCxxInterop::useFabricInterop(
   return ReactNativeFeatureFlags::useFabricInterop();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useNativeEqualsInNativeReadableArrayAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useNativeEqualsInNativeReadableArrayAndroid();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useNativeTransformHelperAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useNativeTransformHelperAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useRawPropsJsiValue();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone(
@@ -1244,9 +1200,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableVirtualViewWindowFocusDetection",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection),
       makeNativeMethod(
-        "enableWebPerformanceAPIsByDefault",
-        JReactNativeFeatureFlagsCxxInterop::enableWebPerformanceAPIsByDefault),
-      makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
       makeNativeMethod(
@@ -1313,17 +1266,8 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "useFabricInterop",
         JReactNativeFeatureFlagsCxxInterop::useFabricInterop),
       makeNativeMethod(
-        "useNativeEqualsInNativeReadableArrayAndroid",
-        JReactNativeFeatureFlagsCxxInterop::useNativeEqualsInNativeReadableArrayAndroid),
-      makeNativeMethod(
-        "useNativeTransformHelperAndroid",
-        JReactNativeFeatureFlagsCxxInterop::useNativeTransformHelperAndroid),
-      makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
-      makeNativeMethod(
-        "useRawPropsJsiValue",
-        JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue),
       makeNativeMethod(
         "useShadowNodeStateOnClone",
         JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone),

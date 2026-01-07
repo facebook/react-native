@@ -19,17 +19,17 @@ export function createStringifySafeWithLimits(limits: {
   maxStringLimit?: number,
   maxArrayLimit?: number,
   maxObjectKeysLimit?: number,
-}): mixed => string {
+}): unknown => string {
   const {
     maxDepth = Number.POSITIVE_INFINITY,
     maxStringLimit = Number.POSITIVE_INFINITY,
     maxArrayLimit = Number.POSITIVE_INFINITY,
     maxObjectKeysLimit = Number.POSITIVE_INFINITY,
   } = limits;
-  const stack: Array<mixed> = [];
+  const stack: Array<unknown> = [];
   /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
    * Flow's LTI update could not be added via codemod */
-  function replacer(key: string, value: mixed): mixed {
+  function replacer(key: string, value: unknown): unknown {
     while (stack.length && this !== stack[0]) {
       stack.shift();
     }
@@ -45,7 +45,7 @@ export function createStringifySafeWithLimits(limits: {
       return value;
     }
 
-    let retval: mixed = value;
+    let retval: unknown = value;
     if (Array.isArray(value)) {
       if (stack.length >= maxDepth) {
         retval = `[ ... array with ${value.length} values ... ]`;
@@ -64,7 +64,7 @@ export function createStringifySafeWithLimits(limits: {
         retval = `{ ... object with ${keys.length} keys ... }`;
       } else if (keys.length > maxObjectKeysLimit) {
         // Return a sample of the keys.
-        retval = ({}: {[string]: mixed});
+        retval = ({}: {[string]: unknown});
         for (let k of keys.slice(0, maxObjectKeysLimit)) {
           retval[k] = value[k];
         }
@@ -76,7 +76,7 @@ export function createStringifySafeWithLimits(limits: {
     return retval;
   }
 
-  return function stringifySafe(arg: mixed): string {
+  return function stringifySafe(arg: unknown): string {
     if (arg === undefined) {
       return 'undefined';
     } else if (arg === null) {
@@ -111,7 +111,7 @@ export function createStringifySafeWithLimits(limits: {
   };
 }
 
-const stringifySafe: mixed => string = createStringifySafeWithLimits({
+const stringifySafe: unknown => string = createStringifySafeWithLimits({
   maxDepth: 10,
   maxStringLimit: 100,
   maxArrayLimit: 50,

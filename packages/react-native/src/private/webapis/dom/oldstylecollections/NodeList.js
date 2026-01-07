@@ -22,7 +22,7 @@ import {setPlatformObject} from '../../webidl/PlatformObjects';
 // IMPORTANT: The Flow type definition for this module is defined in `NodeList.js.flow`
 // because Flow only supports indexers in classes in declaration files.
 
-const REUSABLE_PROPERTY_DESCRIPTOR: {...PropertyDescriptor<mixed>, ...} = {
+const REUSABLE_PROPERTY_DESCRIPTOR: {...PropertyDescriptor<unknown>, ...} = {
   value: {},
   writable: false,
 };
@@ -66,7 +66,7 @@ export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
   }
 
   forEach<ThisType>(
-    callbackFn: (value: T, index: number, array: NodeList<T>) => mixed,
+    callbackFn: (value: T, index: number, array: NodeList<T>) => unknown,
     thisArg?: ThisType,
   ): void {
     // assigning to the interface allows us to access the indexer property in a

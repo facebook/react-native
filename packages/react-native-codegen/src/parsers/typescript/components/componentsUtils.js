@@ -335,7 +335,7 @@ function getTypeAnnotationForArray<T>(
         type: 'FloatTypeAnnotation',
       };
     default:
-      (type: mixed);
+      (type: unknown);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
   }
 }

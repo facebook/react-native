@@ -22,7 +22,7 @@ export type ResolvedAssetSource = {
 type AssetDestPathResolver = 'android' | 'generic';
 
 // From @react-native/assets-registry
-type PackagerAsset = $ReadOnly<{
+type PackagerAsset = Readonly<{
   __packager_asset: boolean,
   fileSystemLocation: string,
   httpServerLocation: string,

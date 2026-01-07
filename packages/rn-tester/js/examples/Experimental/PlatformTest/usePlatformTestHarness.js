@@ -32,8 +32,8 @@ function constructAsyncTestHook(
   addTestResult: (newResult: PlatformTestResult) => void,
   updateAsyncTestStatuses: (
     (
-      $ReadOnly<{[string]: AsyncTestStatus}>,
-    ) => $ReadOnly<{[string]: AsyncTestStatus}>,
+      Readonly<{[string]: AsyncTestStatus}>,
+    ) => Readonly<{[string]: AsyncTestStatus}>,
   ) => void,
   runTestCase: (
     testCase: PlatformTestCase,
@@ -131,7 +131,7 @@ function constructAsyncTestHook(
   };
 }
 
-export type PlatformTestHarnessHookResult = $ReadOnly<{
+export type PlatformTestHarnessHookResult = Readonly<{
   testKey: number,
   harness: PlatformTestHarness,
   numPending: number,
@@ -180,7 +180,7 @@ export default function usePlatformTestHarness(): PlatformTestHarnessHookResult 
   const [testElementKey, setTestElementKey] = useState<number>(0);
 
   const [asyncTestStatuses, updateAsyncTestStatuses] = useState<
-    $ReadOnly<{[string]: AsyncTestStatus}>,
+    Readonly<{[string]: AsyncTestStatus}>,
   >({});
 
   const reset = useCallback(() => {

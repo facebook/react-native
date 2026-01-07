@@ -77,7 +77,7 @@ const {
 } = require('./utils');
 const invariant = require('invariant');
 
-export type CommandOptions = $ReadOnly<{
+export type CommandOptions = Readonly<{
   supportedCommands: $ReadOnlyArray<string>,
 }>;
 

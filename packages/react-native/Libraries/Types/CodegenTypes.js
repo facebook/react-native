@@ -31,7 +31,7 @@ export type Float = number;
 export type Int32 = number;
 /* $FlowFixMe[unclear-type] Object is forbidden in strict mode */
 export type UnsafeObject = Object;
-export type UnsafeMixed = mixed;
+export type UnsafeMixed = unknown;
 
 type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;
 // Default handling, ignore the unused value

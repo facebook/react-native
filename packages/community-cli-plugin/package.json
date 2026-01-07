@@ -18,9 +18,18 @@
     ".": "./src/index.js",
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "files": [
     "dist"
   ],
+  "scripts": {
+    "prepack": "node ../../scripts/build/prepack.js"
+  },
   "dependencies": {
     "@react-native/dev-middleware": "0.84.0-main",
     "debug": "^4.4.0",
@@ -46,6 +55,6 @@
     }
   },
   "engines": {
-    "node": ">= 20.19.4"
+    "node": ">= 22.11.0"
   }
 }

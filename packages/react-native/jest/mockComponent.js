@@ -11,7 +11,7 @@
 import * as React from 'react';
 import {createElement} from 'react';
 
-type Modulish<T> = T | $ReadOnly<{default: T}>;
+type Modulish<T> = T | Readonly<{default: T}>;
 type ModuleDefault<T> = T['default'];
 
 type TComponentType = React.ComponentType<{...}>;
@@ -27,9 +27,8 @@ export default function mockComponent<
   moduleName: string,
   instanceMethods: ?interface {},
   isESModule: TIsESModule,
-): TIsESModule extends true
-  ? // $FlowFixMe[incompatible-use]
-    ModuleDefault<TComponentModule & typeof instanceMethods>
+): TIsESModule extends true // $FlowFixMe[incompatible-use]
+  ? ModuleDefault<TComponentModule & typeof instanceMethods>
   : TComponentModule & typeof instanceMethods {
   const RealComponent: TComponentType = isESModule
     ? // $FlowFixMe[prop-missing]
@@ -39,7 +38,7 @@ export default function mockComponent<
 
   const SuperClass: typeof React.Component<{...}> =
     typeof RealComponent === 'function' &&
-    RealComponent.prototype.constructor instanceof React.Component
+    RealComponent.prototype?.constructor instanceof React.Component
       ? RealComponent
       : React.Component;
 

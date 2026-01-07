@@ -105,9 +105,9 @@ const addPoolingTo = function <T>(
   pooler: Pooler,
 ): Class<T> & {
   getPooled(
-    ...args: $ReadOnlyArray<mixed>
+    ...args: $ReadOnlyArray<unknown>
   ): /* arguments of the constructor */ T,
-  release(instance: mixed): void,
+  release(instance: unknown): void,
   ...
 } {
   // Casting as any so that flow ignores the actual implementation and trusts

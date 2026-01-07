@@ -19,6 +19,7 @@
 #include <ReactCommon/JavaInteropTurboModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/CxxModuleWrapperBase.h>
 
 namespace facebook::react {
@@ -94,24 +95,20 @@ class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
 } // namespace
 
 TurboModuleManager::TurboModuleManager(
-    RuntimeExecutor runtimeExecutor,
     std::shared_ptr<CallInvoker> jsCallInvoker,
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
-    : runtimeExecutor_(std::move(runtimeExecutor)),
-      jsCallInvoker_(std::move(jsCallInvoker)),
+    : jsCallInvoker_(std::move(jsCallInvoker)),
       nativeMethodCallInvoker_(std::move(nativeMethodCallInvoker)),
       delegate_(jni::make_global(delegate)) {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<jhybridobject> /* unused */,
-    jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
         nativeMethodCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
   return makeCxxInstance(
-      runtimeExecutor->cthis()->get(),
       jsCallInvokerHolder->cthis()->getCallInvoker(),
       nativeMethodCallInvokerHolder->cthis()->getNativeMethodCallInvoker(),
       delegate);
@@ -121,14 +118,16 @@ void TurboModuleManager::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", TurboModuleManager::initHybrid),
       makeNativeMethod(
-          "installJSIBindings", TurboModuleManager::installJSIBindings),
+          "dispatchJSBindingInstall",
+          TurboModuleManager::dispatchJSBindingInstall),
   });
 }
 
-TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
-    jni::alias_ref<jhybridobject> javaPart,
-    jsi::Runtime* runtime) {
-  return [runtime, weakJavaPart = jni::make_weak(javaPart)](
+TurboModuleProviderFunctionTypeWithRuntime
+TurboModuleManager::createTurboModuleProvider(
+    jni::alias_ref<jhybridobject> javaPart) {
+  return [weakJavaPart = jni::make_weak(javaPart)](
+             jsi::Runtime& runtime,
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto javaPart = weakJavaPart.lockLocal();
     if (!javaPart) {
@@ -140,7 +139,7 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
       return nullptr;
     }
 
-    return cxxPart->getTurboModule(javaPart, name, *runtime);
+    return cxxPart->getTurboModule(javaPart, name, runtime);
   };
 }
 
@@ -223,9 +222,19 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
   return nullptr;
 }
 
-TurboModuleProviderFunctionType TurboModuleManager::createLegacyModuleProvider(
+TurboModuleProviderFunctionTypeWithRuntime
+TurboModuleManager::createLegacyModuleProvider(
     jni::alias_ref<jhybridobject> javaPart) {
+  bool shouldCreateLegacyModules =
+      ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
+      ReactNativeFeatureFlags::useTurboModuleInterop();
+
+  if (!shouldCreateLegacyModules) {
+    return nullptr;
+  }
+
   return [weakJavaPart = jni::make_weak(javaPart)](
+             jsi::Runtime& /*runtime*/,
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto javaPart = weakJavaPart.lockLocal();
     if (!javaPart) {
@@ -310,22 +319,27 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
   return nullptr;
 }
 
-void TurboModuleManager::installJSIBindings(
+void TurboModuleManager::installJSBindings(
+    jsi::Runtime& runtime,
+    jni::alias_ref<jhybridobject> javaPart) {
+  TurboModuleBinding::install(
+      runtime,
+      createTurboModuleProvider(javaPart),
+      createLegacyModuleProvider(javaPart));
+}
+
+void TurboModuleManager::dispatchJSBindingInstall(
     jni::alias_ref<jhybridobject> javaPart,
-    bool shouldCreateLegacyModules) {
+    jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor) {
   auto cxxPart = javaPart->cthis();
   if (cxxPart == nullptr || !cxxPart->jsCallInvoker_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
 
-  cxxPart->runtimeExecutor_([javaPart = jni::make_global(javaPart),
-                             shouldCreateLegacyModules](jsi::Runtime& runtime) {
-    TurboModuleBinding::install(
-        runtime,
-        createTurboModuleProvider(javaPart, &runtime),
-        shouldCreateLegacyModules ? createLegacyModuleProvider(javaPart)
-                                  : nullptr);
-  });
+  runtimeExecutor->cthis()->get()(
+      [javaPart = jni::make_global(javaPart)](jsi::Runtime& runtime) {
+        installJSBindings(runtime, javaPart);
+      });
 }
 
 } // namespace facebook::react

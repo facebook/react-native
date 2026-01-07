@@ -19,7 +19,7 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   onPress?: ?(event: GestureResponderEvent) => void,
   status: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING',
 }>;

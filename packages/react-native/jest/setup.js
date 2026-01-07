@@ -51,7 +51,7 @@ Object.defineProperties(global, {
   regeneratorRuntime: {
     configurable: true,
     enumerable: true,
-    value: jest.requireActual<mixed>('regenerator-runtime/runtime'),
+    value: jest.requireActual<unknown>('regenerator-runtime/runtime'),
     writable: true,
   },
   requestAnimationFrame: {

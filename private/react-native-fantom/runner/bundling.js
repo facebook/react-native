@@ -18,7 +18,7 @@ type BundleOptions = {
   customTransformOptions: ?{
     collectCoverage: boolean,
   },
-  out: $NonMaybeType<RunBuildOptions['out']>,
+  out: NonNullable<RunBuildOptions['out']>,
   testPath: string,
 };
 

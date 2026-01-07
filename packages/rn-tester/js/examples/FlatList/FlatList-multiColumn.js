@@ -42,7 +42,7 @@ function MultiColumnExample(): React.Node {
   const _onChangeFilterText = (_filterText: string) => {
     setFilterText(_filterText);
   };
-  const _onChangeNumColumns = (_numColumns: mixed) => {
+  const _onChangeNumColumns = (_numColumns: unknown) => {
     setNumColumns(Number(_numColumns));
   };
 

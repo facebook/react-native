@@ -37,17 +37,17 @@ import {PerformanceMark, PerformanceMeasure} from './UserTiming';
 import nullthrows from 'nullthrows';
 
 export type PerformanceMeasureOptions =
-  | $ReadOnly<{
+  | Readonly<{
       detail?: DetailType,
       start?: DOMHighResTimeStamp | string,
       duration?: DOMHighResTimeStamp,
     }>
-  | $ReadOnly<{
+  | Readonly<{
       detail?: DetailType,
       start?: DOMHighResTimeStamp | string,
       end?: DOMHighResTimeStamp | string,
     }>
-  | $ReadOnly<{
+  | Readonly<{
       detail?: DetailType,
       duration?: DOMHighResTimeStamp | string,
       end?: DOMHighResTimeStamp | string,
@@ -240,7 +240,7 @@ export default class Performance {
     let resolvedMeasureName: string;
     let resolvedStartTime: number;
     let resolvedDuration: number;
-    let resolvedDetail: mixed;
+    let resolvedDetail: unknown;
 
     if (measureName === undefined) {
       throw new TypeError(

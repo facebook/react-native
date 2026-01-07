@@ -17,8 +17,19 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "exports": {
+      ".": {
+        "node": "./dist/node/index.js",
+        "electron": "./dist/electron/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
-    "dev": "electron src/electron"
+    "dev": "electron src/electron",
+    "prepack": "node ../../scripts/build/prepack.js"
   },
   "repository": {
     "type": "git",
@@ -27,7 +38,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">= 20.19.4"
+    "node": ">= 22.11.0"
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",

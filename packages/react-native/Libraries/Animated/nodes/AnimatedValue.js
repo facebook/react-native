@@ -24,7 +24,7 @@ import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHe
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-export type AnimatedValueConfig = $ReadOnly<{
+export type AnimatedValueConfig = Readonly<{
   ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
@@ -134,7 +134,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  addListener(callback: (value: any) => mixed): string {
+  addListener(callback: (value: any) => unknown): string {
     const id = super.addListener(callback);
     this._listenerCount++;
     if (this.__isNative) {

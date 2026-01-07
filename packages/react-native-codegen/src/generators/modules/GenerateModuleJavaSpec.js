@@ -30,7 +30,7 @@ const {createAliasResolver, getModules} = require('./Utils');
 type FilesOutput = Map<string, string>;
 
 function FileTemplate(
-  config: $ReadOnly<{
+  config: Readonly<{
     packageName: string,
     className: string,
     jsName: string,
@@ -92,7 +92,7 @@ function EventEmitterTemplate(
 }
 
 function MethodTemplate(
-  config: $ReadOnly<{
+  config: Readonly<{
     abstract: boolean,
     methodBody: ?string,
     methodJavaAnnotation: string,

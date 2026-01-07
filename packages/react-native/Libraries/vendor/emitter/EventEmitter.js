@@ -16,12 +16,12 @@ export interface EventSubscription {
 }
 
 export interface IEventEmitter<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: Readonly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
-    context?: mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => unknown,
+    context?: unknown,
   ): EventSubscription;
 
   emit<TEvent: $Keys<TEventToArgsMap>>(
@@ -35,13 +35,13 @@ export interface IEventEmitter<
 }
 
 interface Registration<TArgs> {
-  +context: mixed;
-  +listener: (...args: TArgs) => mixed;
+  +context: unknown;
+  +listener: (...args: TArgs) => unknown;
   +remove: () => void;
 }
 
 type Registry<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: Readonly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > = {
   [K in keyof TEventToArgsMap]: Set<Registration<TEventToArgsMap[K]>>,
 };
@@ -67,9 +67,9 @@ type Registry<
  *
  */
 export default class EventEmitter<
-  TEventToArgsMap: $ReadOnly<
+  TEventToArgsMap: Readonly<
     Record<string, $ReadOnlyArray<UnsafeEventObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  > = Readonly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   #registry: Registry<TEventToArgsMap>;
@@ -85,8 +85,8 @@ export default class EventEmitter<
    */
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
-    context: mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => unknown,
+    context: unknown,
   ): EventSubscription {
     if (typeof listener !== 'function') {
       throw new TypeError(
@@ -157,7 +157,7 @@ export default class EventEmitter<
 }
 
 function allocate<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: Readonly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
   TEvent: $Keys<TEventToArgsMap>,
   TEventArgs: TEventToArgsMap[TEvent],
 >(

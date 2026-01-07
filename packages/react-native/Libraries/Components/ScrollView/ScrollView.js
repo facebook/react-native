@@ -174,7 +174,7 @@ export interface PublicScrollViewInstance
 
 type InnerViewInstance = React.ElementRef<typeof View>;
 
-export type ScrollViewPropsIOS = $ReadOnly<{
+export type ScrollViewPropsIOS = Readonly<{
   /**
    * Controls whether iOS should automatically adjust the content inset
    * for scroll views that are placed behind a navigation bar or
@@ -330,7 +330,7 @@ export type ScrollViewPropsIOS = $ReadOnly<{
   ),
 }>;
 
-export type ScrollViewPropsAndroid = $ReadOnly<{
+export type ScrollViewPropsAndroid = Readonly<{
   /**
    * Enables nested scrolling for Android API level 21+.
    * Nested scrolling is supported by default on iOS
@@ -391,11 +391,11 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
 }>;
 
 type StickyHeaderComponentType = component(
-  ref?: React.RefSetter<$ReadOnly<interface {setNextHeaderY: number => void}>>,
+  ref?: React.RefSetter<Readonly<interface {setNextHeaderY: number => void}>>,
   ...ScrollViewStickyHeaderProps
 );
 
-type ScrollViewBaseProps = $ReadOnly<{
+type ScrollViewBaseProps = Readonly<{
   /**
    * These styles will be applied to the scroll view content container which
    * wraps all of the child views. Example:
@@ -514,7 +514,7 @@ type ScrollViewBaseProps = $ReadOnly<{
    * whether content is "visible" or not.
    *
    */
-  maintainVisibleContentPosition?: ?$ReadOnly<{
+  maintainVisibleContentPosition?: ?Readonly<{
     minIndexForVisible: number,
     autoscrollToTopThreshold?: ?number,
   }>,
@@ -673,7 +673,7 @@ type ScrollViewBaseProps = $ReadOnly<{
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 }>;
 
-export type ScrollViewProps = $ReadOnly<{
+export type ScrollViewProps = Readonly<{
   ...Omit<ViewProps, 'experimental_accessibilityOrder'>,
   ...ScrollViewPropsIOS,
   ...ScrollViewPropsAndroid,
@@ -686,7 +686,7 @@ type ScrollViewState = {
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
-export type ScrollViewComponentStatics = $ReadOnly<{
+export type ScrollViewComponentStatics = Readonly<{
   Context: typeof ScrollViewContext,
 }>;
 

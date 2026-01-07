@@ -39,13 +39,9 @@ const InspectorPanel = require('./InspectorPanel').default;
 const {useState} = React;
 
 type PanelPosition = 'top' | 'bottom';
-type SelectedTab =
-  | 'elements-inspector'
-  | 'network-profiling'
-  | 'performance-profiling';
 
 export type InspectedElementFrame = TouchedViewDataAtPoint['frame'];
-export type InspectedElement = $ReadOnly<{
+export type InspectedElement = Readonly<{
   frame: InspectedElementFrame,
   style?: ViewStyleProp,
 }>;
@@ -62,8 +58,7 @@ function Inspector({
   onRequestRerenderApp,
   reactDevToolsAgent,
 }: Props): React.Node {
-  const [selectedTab, setSelectedTab] =
-    useState<?SelectedTab>('elements-inspector');
+  const [inspecting, setInspecting] = useState<boolean>(true);
 
   const [panelPosition, setPanelPosition] = useState<PanelPosition>('bottom');
   const [inspectedElement, setInspectedElement] =
@@ -137,18 +132,8 @@ function Inspector({
     );
   };
 
-  const setInspecting = (enabled: boolean) => {
-    setSelectedTab(enabled ? 'elements-inspector' : null);
-    setInspectedElement(null);
-  };
-
-  const setPerfing = (enabled: boolean) => {
-    setSelectedTab(enabled ? 'performance-profiling' : null);
-    setInspectedElement(null);
-  };
-
-  const setNetworking = (enabled: boolean) => {
-    setSelectedTab(enabled ? 'network-profiling' : null);
+  const handleSetInspecting = (enabled: boolean) => {
+    setInspecting(enabled);
     setInspectedElement(null);
   };
 
@@ -164,7 +149,7 @@ function Inspector({
 
   return (
     <View style={styles.container} pointerEvents="box-none">
-      {selectedTab === 'elements-inspector' && (
+      {inspecting && (
         <InspectorOverlay
           inspected={inspectedElement}
           onTouchPoint={onTouchPoint}
@@ -174,18 +159,14 @@ function Inspector({
       <SafeAreaView style={[styles.panelContainer, panelContainerStyle]}>
         <InspectorPanel
           devtoolsIsOpen={!!reactDevToolsAgent}
-          inspecting={selectedTab === 'elements-inspector'}
-          perfing={selectedTab === 'performance-profiling'}
-          setPerfing={setPerfing}
-          setInspecting={setInspecting}
+          inspecting={inspecting}
+          setInspecting={handleSetInspecting}
           inspected={inspectedElement}
           hierarchy={elementsHierarchy}
           selection={selectionIndex}
           setSelection={setSelection}
           touchTargeting={PressabilityDebug.isEnabled()}
           setTouchTargeting={setTouchTargeting}
-          networking={selectedTab === 'network-profiling'}
-          setNetworking={setNetworking}
         />
       </SafeAreaView>
     </View>

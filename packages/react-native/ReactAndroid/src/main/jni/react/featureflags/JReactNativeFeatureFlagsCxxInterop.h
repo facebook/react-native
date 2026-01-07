@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28b3b4ccddcb1f0c60ed4b3d454502dc>>
+ * @generated SignedSource<<49b0f04cf7095f6e203253614f5c38d2>>
  */
 
 /**
@@ -198,9 +198,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableVirtualViewWindowFocusDetection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableWebPerformanceAPIsByDefault(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -267,16 +264,7 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool useFabricInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool useNativeEqualsInNativeReadableArrayAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool useNativeTransformHelperAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool useNativeViewConfigsInBridgelessMode(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool useRawPropsJsiValue(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useShadowNodeStateOnClone(

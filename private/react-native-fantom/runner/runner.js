@@ -207,7 +207,7 @@ module.exports = async function runTest(
   environment: {...},
   runtime: {...},
   testPath: string,
-): mixed {
+): unknown {
   let coverageMap: CoverageMap | void;
   const snapshotResolver = await buildSnapshotResolver(config);
   const snapshotPath = snapshotResolver.resolveSnapshotPath(testPath);

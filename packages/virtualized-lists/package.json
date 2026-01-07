@@ -17,7 +17,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">= 20.19.4"
+    "node": ">= 22.11.0"
   },
   "exports": {
     ".": {
@@ -48,7 +48,7 @@
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "react-test-renderer": "19.2.0"
+    "react-test-renderer": "19.2.3"
   },
   "peerDependencies": {
     "@types/react": "^19.2.0",

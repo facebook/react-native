@@ -9,9 +9,9 @@
 
 #if RCT_DEV || RCT_REMOTE_PROFILE
 
+#import <React/RCTAssert.h>
 #import <React/RCTInspector.h>
 #import <React/RCTInspectorPackagerConnection.h>
-#import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <SocketRocket/SRWebSocket.h>
 #import <jsinspector-modern/InspectorPackagerConnection.h>
@@ -22,7 +22,11 @@ using namespace facebook::react::jsinspector_modern;
 namespace {
 NSString *NSStringFromUTF8StringView(std::string_view view)
 {
-  return [[NSString alloc] initWithBytes:(const char *)view.data() length:view.size() encoding:NSUTF8StringEncoding];
+  NSString *result = [[NSString alloc] initWithBytes:(const char *)view.data()
+                                              length:view.size()
+                                            encoding:NSUTF8StringEncoding];
+  RCTAssert(result != nil, @"string_view contains invalid UTF-8 bytes");
+  return result;
 }
 } // namespace
 @interface RCTCxxInspectorWebSocketAdapter () <SRWebSocketDelegate> {

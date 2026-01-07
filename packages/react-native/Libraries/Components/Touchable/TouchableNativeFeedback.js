@@ -69,7 +69,7 @@ type TouchableNativeFeedbackTVProps = {
   nextFocusUp?: ?number,
 };
 
-export type TouchableNativeFeedbackProps = $ReadOnly<{
+export type TouchableNativeFeedbackProps = Readonly<{
   ...TouchableWithoutFeedbackProps,
   ...TouchableNativeFeedbackTVProps,
   /**
@@ -87,14 +87,14 @@ export type TouchableNativeFeedbackProps = $ReadOnly<{
    *         type is available on Android API level 21+
    */
   background?: ?(
-    | $ReadOnly<{
+    | Readonly<{
         type: 'ThemeAttrAndroid',
         attribute:
           | 'selectableItemBackground'
           | 'selectableItemBackgroundBorderless',
         rippleRadius: ?number,
       }>
-    | $ReadOnly<{
+    | Readonly<{
         type: 'RippleAndroid',
         color: ?number,
         borderless: boolean,
@@ -114,7 +114,7 @@ export type TouchableNativeFeedbackProps = $ReadOnly<{
   useForeground?: ?boolean,
 }>;
 
-type TouchableNativeFeedbackState = $ReadOnly<{
+type TouchableNativeFeedbackState = Readonly<{
   pressability: Pressability,
 }>;
 
@@ -138,7 +138,7 @@ class TouchableNativeFeedback extends React.Component<
    *
    * @param rippleRadius The radius of ripple effect
    */
-  static SelectableBackground: (rippleRadius?: ?number) => $ReadOnly<{
+  static SelectableBackground: (rippleRadius?: ?number) => Readonly<{
     attribute: 'selectableItemBackground',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
@@ -155,7 +155,7 @@ class TouchableNativeFeedback extends React.Component<
    *
    * @param rippleRadius The radius of ripple effect
    */
-  static SelectableBackgroundBorderless: (rippleRadius?: ?number) => $ReadOnly<{
+  static SelectableBackgroundBorderless: (rippleRadius?: ?number) => Readonly<{
     attribute: 'selectableItemBackgroundBorderless',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
@@ -180,7 +180,7 @@ class TouchableNativeFeedback extends React.Component<
     color: string,
     borderless: boolean,
     rippleRadius?: ?number,
-  ) => $ReadOnly<{
+  ) => Readonly<{
     borderless: boolean,
     color: ?number,
     rippleRadius: ?number,
@@ -390,7 +390,7 @@ class TouchableNativeFeedback extends React.Component<
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 
-  componentDidMount(): mixed {
+  componentDidMount(): unknown {
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 

@@ -42,7 +42,7 @@ export type RawPerformanceEntry = {
   decodedBodySize?: number,
 };
 
-export opaque type OpaqueNativeObserverHandle = mixed;
+export opaque type OpaqueNativeObserverHandle = unknown;
 
 export type NativeBatchedObserverCallback = () => void;
 export type NativePerformanceMarkResult = number;
@@ -59,12 +59,12 @@ export interface Spec extends TurboModule {
   +now: () => number;
   +timeOrigin?: () => number;
 
-  +reportMark: (name: string, startTime: number, entry: mixed) => void;
+  +reportMark: (name: string, startTime: number, entry: unknown) => void;
   +reportMeasure: (
     name: string,
     startTime: number,
     duration: number,
-    entry: mixed,
+    entry: unknown,
   ) => void;
   +getMarkTime: (name: string) => ?number;
   +clearMarks: (entryName?: string) => void;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<035a2ae9eaff7279651d7745dfae79c6>>
+ * @generated SignedSource<<d252a7f784f5229d735c1bbbe937bd4f>>
  * @flow strict
  * @noformat
  */
@@ -31,10 +31,8 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
-  configurePressabilityDuringInsertion: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   disableMaintainVisibleContentPosition: Getter<boolean>,
-  enableVirtualViewExperimental: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   reduceDefaultPropsInImage: Getter<boolean>,
@@ -107,7 +105,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableVirtualViewDebugFeatures: Getter<boolean>,
   enableVirtualViewRenderState: Getter<boolean>,
   enableVirtualViewWindowFocusDetection: Getter<boolean>,
-  enableWebPerformanceAPIsByDefault: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixTextClippingAndroid15useBoundsForWidth: Getter<boolean>,
   fuseboxAssertSingleHostState: Getter<boolean>,
@@ -130,10 +127,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
-  useNativeEqualsInNativeReadableArrayAndroid: Getter<boolean>,
-  useNativeTransformHelperAndroid: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
-  useRawPropsJsiValue: Getter<boolean>,
   useShadowNodeStateOnClone: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
@@ -160,11 +154,6 @@ export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScrip
 export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
 
 /**
- * Configure Pressability during insertion and no longer unmount when hidden.
- */
-export const configurePressabilityDuringInsertion: Getter<boolean> = createJavaScriptFlagGetter('configurePressabilityDuringInsertion', false);
-
-/**
  * Use the deferred cell render update mechanism for focus change in FlatList.
  */
 export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaScriptFlagGetter('deferFlatListFocusChangeRenderUpdate', false);
@@ -173,11 +162,6 @@ export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaS
  * Disable prop maintainVisibleContentPosition in ScrollView
  */
 export const disableMaintainVisibleContentPosition: Getter<boolean> = createJavaScriptFlagGetter('disableMaintainVisibleContentPosition', false);
-
-/**
- * Enables the experimental version of `VirtualView`.
- */
-export const enableVirtualViewExperimental: Getter<boolean> = createJavaScriptFlagGetter('enableVirtualViewExperimental', false);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
@@ -399,7 +383,7 @@ export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('e
 /**
  * Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.
  */
-export const enableNetworkEventReporting: Getter<boolean> = createNativeFlagGetter('enableNetworkEventReporting', false);
+export const enableNetworkEventReporting: Getter<boolean> = createNativeFlagGetter('enableNetworkEventReporting', true);
 /**
  * Enables caching text layout artifacts for later reuse
  */
@@ -453,10 +437,6 @@ export const enableVirtualViewRenderState: Getter<boolean> = createNativeFlagGet
  */
 export const enableVirtualViewWindowFocusDetection: Getter<boolean> = createNativeFlagGetter('enableVirtualViewWindowFocusDetection', false);
 /**
- * Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.
- */
-export const enableWebPerformanceAPIsByDefault: Getter<boolean> = createNativeFlagGetter('enableWebPerformanceAPIsByDefault', true);
-/**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
@@ -475,7 +455,7 @@ export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fu
 /**
  * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
  */
-export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxNetworkInspectionEnabled', false);
+export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxNetworkInspectionEnabled', true);
 /**
  * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
  */
@@ -545,25 +525,13 @@ export const useAlwaysAvailableJSErrorHandling: Getter<boolean> = createNativeFl
  */
 export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabricInterop', true);
 /**
- * Use a native implementation of equals in NativeReadableArray.
- */
-export const useNativeEqualsInNativeReadableArrayAndroid: Getter<boolean> = createNativeFlagGetter('useNativeEqualsInNativeReadableArrayAndroid', true);
-/**
- * Use a native implementation of TransformHelper
- */
-export const useNativeTransformHelperAndroid: Getter<boolean> = createNativeFlagGetter('useNativeTransformHelperAndroid', true);
-/**
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
 /**
- * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
- */
-export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useRawPropsJsiValue', true);
-/**
  * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
  */
-export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', false);
+export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', true);
 /**
  * Use shared animation backend in C++ Animated
  */

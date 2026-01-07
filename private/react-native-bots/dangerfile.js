@@ -30,23 +30,24 @@ const isFromPhabricator = body_contains('differential revision:');
 // Provides advice if a summary section is missing, or body is too short
 const includesSummary = body_contains('## summary', 'summary:');
 
-const snapshot_output = JSON.parse(
+const diffJsApiChangesOutput = JSON.parse(
   fs.readFileSync(
-    path.join(
-      process.env.RUNNER_TEMP,
-      'diff-js-api-breaking-changes/output.json',
-    ),
+    path.join(process.env.RUNNER_TEMP, 'diff-js-api-changes/output.json'),
     'utf8',
   ),
 );
-if (snapshot_output && snapshot_output.result !== 'NON_BREAKING') {
-  const title = ':exclamation: JavaScript API change detected';
-  const idea =
-    'This PR commits an update to ReactNativeApi.d.ts, indicating a change to React Native&#39;s public JavaScript API. ' +
-    'Please include a clear changelog message. ' +
-    'This change will be subject to extra review.\n\n' +
-    `This change was flagged as: <code>${snapshot_output.result}</code>`;
-  warn(`${title} - <i>${idea}</i>`);
+if (diffJsApiChangesOutput != null) {
+  const detail = `
+<strong>JavaScript API change detected</strong>
+
+This PR commits an update to <code>ReactNativeApi.d.ts</code>, indicating a change to React Native's public JavaScript API.
+
+- Please include a <strong>clear changelog message</strong>.
+- This change will be subject to additional review.
+
+This change was flagged as: <strong><code>${diffJsApiChangesOutput.result}</code></strong>
+  `;
+  warn(detail.trim());
 }
 
 const hasNoUsefulBody =

@@ -25,7 +25,7 @@ import * as React from 'react';
 /**
  * @see TextInputProps.onChange
  */
-type TextInputChangeEventData = $ReadOnly<{
+type TextInputChangeEventData = Readonly<{
   eventCount: number,
   target: number,
   text: string,
@@ -35,10 +35,10 @@ export type TextInputChangeEvent =
   NativeSyntheticEvent<TextInputChangeEventData>;
 
 export type TextInputEvent = NativeSyntheticEvent<
-  $ReadOnly<{
+  Readonly<{
     eventCount: number,
     previousText: string,
-    range: $ReadOnly<{
+    range: Readonly<{
       start: number,
       end: number,
     }>,
@@ -47,9 +47,9 @@ export type TextInputEvent = NativeSyntheticEvent<
   }>,
 >;
 
-type TextInputContentSizeChangeEventData = $ReadOnly<{
+type TextInputContentSizeChangeEventData = Readonly<{
   target: number,
-  contentSize: $ReadOnly<{
+  contentSize: Readonly<{
     width: number,
     height: number,
   }>,
@@ -73,17 +73,17 @@ export type TextInputBlurEvent = BlurEvent;
  */
 export type TextInputFocusEvent = FocusEvent;
 
-type TargetEvent = $ReadOnly<{
+type TargetEvent = Readonly<{
   target: number,
   ...
 }>;
 
-export type Selection = $ReadOnly<{
+export type Selection = Readonly<{
   start: number,
   end: number,
 }>;
 
-type TextInputSelectionChangeEventData = $ReadOnly<{
+type TextInputSelectionChangeEventData = Readonly<{
   ...TargetEvent,
   selection: Selection,
   ...
@@ -95,7 +95,7 @@ type TextInputSelectionChangeEventData = $ReadOnly<{
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
 
-type TextInputKeyPressEventData = $ReadOnly<{
+type TextInputKeyPressEventData = Readonly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -109,7 +109,7 @@ type TextInputKeyPressEventData = $ReadOnly<{
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
 
-type TextInputEndEditingEventData = $ReadOnly<{
+type TextInputEndEditingEventData = Readonly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
@@ -122,7 +122,7 @@ type TextInputEndEditingEventData = $ReadOnly<{
 export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
 
-type TextInputSubmitEditingEventData = $ReadOnly<{
+type TextInputSubmitEditingEventData = Readonly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
@@ -266,7 +266,7 @@ export type EnterKeyHintTypeOptions =
 
 type PasswordRules = string;
 
-export type TextInputIOSProps = $ReadOnly<{
+export type TextInputIOSProps = Readonly<{
   /**
    * If true, the keyboard shortcuts (undo/redo and copy buttons) are disabled. The default value is false.
    * @platform ios
@@ -403,7 +403,7 @@ export type TextInputIOSProps = $ReadOnly<{
   smartInsertDelete?: ?boolean,
 }>;
 
-export type TextInputAndroidProps = $ReadOnly<{
+export type TextInputAndroidProps = Readonly<{
   /**
    * When provided it will set the color of the cursor (or "caret") in the component.
    * Unlike the behavior of `selectionColor` the cursor color will be set independently
@@ -512,7 +512,7 @@ export type TextInputAndroidProps = $ReadOnly<{
   underlineColorAndroid?: ?ColorValue,
 }>;
 
-type TextInputBaseProps = $ReadOnly<{
+type TextInputBaseProps = Readonly<{
   /**
    * When provided, the text input will only accept drag and drop events for the specified
    * types. If null or not provided, the text input will accept all types of drag and drop events.
@@ -809,18 +809,18 @@ type TextInputBaseProps = $ReadOnly<{
   /**
    * Callback that is called when the text input is blurred.
    */
-  onBlur?: ?(e: TextInputBlurEvent) => mixed,
+  onBlur?: ?(e: TextInputBlurEvent) => unknown,
 
   /**
    * Callback that is called when the text input's text changes.
    */
-  onChange?: ?(e: TextInputChangeEvent) => mixed,
+  onChange?: ?(e: TextInputChangeEvent) => unknown,
 
   /**
    * Callback that is called when the text input's text changes.
    * Changed text is passed as an argument to the callback handler.
    */
-  onChangeText?: ?(text: string) => mixed,
+  onChangeText?: ?(text: string) => unknown,
 
   /**
    * Callback that is called when the text input's content size changes.
@@ -829,17 +829,17 @@ type TextInputBaseProps = $ReadOnly<{
    *
    * Only called for multiline text inputs.
    */
-  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
+  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => unknown,
 
   /**
    * Callback that is called when text input ends.
    */
-  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => unknown,
 
   /**
    * Callback that is called when the text input is focused.
    */
-  onFocus?: ?(e: TextInputFocusEvent) => mixed,
+  onFocus?: ?(e: TextInputFocusEvent) => unknown,
 
   /**
    * Callback that is called when a key is pressed.
@@ -848,42 +848,42 @@ type TextInputBaseProps = $ReadOnly<{
    * the typed-in character otherwise including `' '` for space.
    * Fires before `onChange` callbacks.
    */
-  onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
+  onKeyPress?: ?(e: TextInputKeyPressEvent) => unknown,
 
   /**
    * Called when a single tap gesture is detected.
    */
-  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Called when a touch is engaged.
    */
-  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Called when a touch is released.
    */
-  onPressOut?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Callback that is called when the text input selection is changed.
    * This will be called with
    * `{ nativeEvent: { selection: { start, end } } }`.
    */
-  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
+  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => unknown,
 
   /**
    * Callback that is called when the text input's submit button is pressed.
    * Invalid if `multiline={true}` is specified.
    */
-  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => unknown,
 
   /**
    * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
    * May also contain other properties from ScrollEvent but on Android contentSize
    * is not provided for performance reasons.
    */
-  onScroll?: ?(e: ScrollEvent) => mixed,
+  onScroll?: ?(e: ScrollEvent) => unknown,
 
   /**
    * The string that will be rendered before text input has been entered.
@@ -946,7 +946,7 @@ type TextInputBaseProps = $ReadOnly<{
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
    */
-  selection?: ?$ReadOnly<{
+  selection?: ?Readonly<{
     start: number,
     end?: ?number,
   }>,
@@ -1031,7 +1031,7 @@ type TextInputBaseProps = $ReadOnly<{
   textAlign?: ?('left' | 'center' | 'right'),
 }>;
 
-export type TextInputProps = $ReadOnly<{
+export type TextInputProps = Readonly<{
   ...Omit<ViewProps, 'style' | 'experimental_accessibilityOrder'>,
   ...TextInputIOSProps,
   ...TextInputAndroidProps,
@@ -1167,8 +1167,8 @@ type InternalTextInput = component(
   ...TextInputProps
 );
 
-export type TextInputComponentStatics = $ReadOnly<{
-  State: $ReadOnly<{
+export type TextInputComponentStatics = Readonly<{
+  State: Readonly<{
     currentlyFocusedInput: () => ?HostInstance,
     currentlyFocusedField: () => ?number,
     focusTextInput: (textField: ?HostInstance) => void,

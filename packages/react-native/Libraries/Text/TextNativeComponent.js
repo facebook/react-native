@@ -17,11 +17,11 @@ import {createViewConfig} from '../NativeComponent/ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
 
-export type NativeTextProps = $ReadOnly<{
+export type NativeTextProps = Readonly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
-  onClick?: ?(event: GestureResponderEvent) => mixed,
+  onClick?: ?(event: GestureResponderEvent) => unknown,
   // This is only needed for platforms that optimize text hit testing, e.g.,
   // react-native-windows. It can be used to only hit test virtual text spans
   // that have pressable events attached to them.

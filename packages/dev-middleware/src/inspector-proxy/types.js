@@ -12,7 +12,7 @@
  * A capability flag disables a specific feature/hack in the InspectorProxy
  * layer by indicating that the target supports one or more modern CDP features.
  */
-export type TargetCapabilityFlags = $ReadOnly<{
+export type TargetCapabilityFlags = Readonly<{
   /**
    * The target supports a stable page representation across reloads.
    *
@@ -43,7 +43,7 @@ export type TargetCapabilityFlags = $ReadOnly<{
 // each new instance of VM and can appear when user reloads React Native
 // application.
 
-export type PageFromDevice = $ReadOnly<{
+export type PageFromDevice = Readonly<{
   id: string,
   title: string,
   /** Sent from modern targets only */
@@ -54,15 +54,15 @@ export type PageFromDevice = $ReadOnly<{
   capabilities?: TargetCapabilityFlags,
 }>;
 
-export type Page = $ReadOnly<{
+export type Page = Readonly<{
   ...PageFromDevice,
-  capabilities: $NonMaybeType<PageFromDevice['capabilities']>,
+  capabilities: NonNullable<PageFromDevice['capabilities']>,
 }>;
 
 // Chrome Debugger Protocol message/event passed between device and debugger.
-export type WrappedEvent = $ReadOnly<{
+export type WrappedEvent = Readonly<{
   event: 'wrappedEvent',
-  payload: $ReadOnly<{
+  payload: Readonly<{
     pageId: string,
     wrappedEvent: string,
   }>,
@@ -70,16 +70,16 @@ export type WrappedEvent = $ReadOnly<{
 
 // Request sent from Inspector Proxy to Device when new debugger is connected
 // to particular page.
-export type ConnectRequest = $ReadOnly<{
+export type ConnectRequest = Readonly<{
   event: 'connect',
-  payload: $ReadOnly<{pageId: string}>,
+  payload: Readonly<{pageId: string}>,
 }>;
 
 // Request sent from Inspector Proxy to Device to notify that debugger is
 // disconnected.
-export type DisconnectRequest = $ReadOnly<{
+export type DisconnectRequest = Readonly<{
   event: 'disconnect',
-  payload: $ReadOnly<{pageId: string}>,
+  payload: Readonly<{pageId: string}>,
 }>;
 
 // Request sent from Inspector Proxy to Device to get a list of pages.
@@ -105,7 +105,7 @@ export type MessageToDevice =
   | DisconnectRequest;
 
 // Page description object that is sent in response to /json HTTP request from debugger.
-export type PageDescription = $ReadOnly<{
+export type PageDescription = Readonly<{
   id: string,
   title: string,
   appId: string,
@@ -121,7 +121,7 @@ export type PageDescription = $ReadOnly<{
   vm?: string,
 
   // React Native specific metadata
-  reactNative: $ReadOnly<{
+  reactNative: Readonly<{
     logicalDeviceId: string,
     capabilities: Page['capabilities'],
   }>,
@@ -131,7 +131,7 @@ export type JsonPagesListResponse = Array<PageDescription>;
 
 // Response to /json/version HTTP request from the debugger specifying browser type and
 // Chrome protocol version.
-export type JsonVersionResponse = $ReadOnly<{
+export type JsonVersionResponse = Readonly<{
   Browser: string,
   'Protocol-Version': string,
 }>;

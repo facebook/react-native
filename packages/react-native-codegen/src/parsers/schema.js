@@ -20,7 +20,7 @@ import type {
   SchemaType,
 } from '../CodegenSchema.js';
 
-export type ComponentSchemaBuilderConfig = $ReadOnly<{
+export type ComponentSchemaBuilderConfig = Readonly<{
   filename: string,
   componentName: string,
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fa5e195c95517ae5bef7455e1b8dd166>>
+ * @generated SignedSource<<6d507922d4d1246e1ecaa78302686aa2>>
  */
 
 /**
@@ -80,7 +80,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var enableVirtualViewRenderStateCache: Boolean? = null
   private var enableVirtualViewWindowFocusDetectionCache: Boolean? = null
-  private var enableWebPerformanceAPIsByDefaultCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
@@ -103,10 +102,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
-  private var useNativeEqualsInNativeReadableArrayAndroidCache: Boolean? = null
-  private var useNativeTransformHelperAndroidCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
-  private var useRawPropsJsiValueCache: Boolean? = null
   private var useShadowNodeStateOnCloneCache: Boolean? = null
   private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTraitHiddenOnAndroidCache: Boolean? = null
@@ -676,16 +672,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun enableWebPerformanceAPIsByDefault(): Boolean {
-    var cached = enableWebPerformanceAPIsByDefaultCache
-    if (cached == null) {
-      cached = currentProvider.enableWebPerformanceAPIsByDefault()
-      accessedFeatureFlags.add("enableWebPerformanceAPIsByDefault")
-      enableWebPerformanceAPIsByDefaultCache = cached
-    }
-    return cached
-  }
-
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean {
     var cached = fixMappingOfEventPrioritiesBetweenFabricAndReactCache
     if (cached == null) {
@@ -906,42 +892,12 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean {
-    var cached = useNativeEqualsInNativeReadableArrayAndroidCache
-    if (cached == null) {
-      cached = currentProvider.useNativeEqualsInNativeReadableArrayAndroid()
-      accessedFeatureFlags.add("useNativeEqualsInNativeReadableArrayAndroid")
-      useNativeEqualsInNativeReadableArrayAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun useNativeTransformHelperAndroid(): Boolean {
-    var cached = useNativeTransformHelperAndroidCache
-    if (cached == null) {
-      cached = currentProvider.useNativeTransformHelperAndroid()
-      accessedFeatureFlags.add("useNativeTransformHelperAndroid")
-      useNativeTransformHelperAndroidCache = cached
-    }
-    return cached
-  }
-
   override fun useNativeViewConfigsInBridgelessMode(): Boolean {
     var cached = useNativeViewConfigsInBridgelessModeCache
     if (cached == null) {
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
-    }
-    return cached
-  }
-
-  override fun useRawPropsJsiValue(): Boolean {
-    var cached = useRawPropsJsiValueCache
-    if (cached == null) {
-      cached = currentProvider.useRawPropsJsiValue()
-      accessedFeatureFlags.add("useRawPropsJsiValue")
-      useRawPropsJsiValueCache = cached
     }
     return cached
   }

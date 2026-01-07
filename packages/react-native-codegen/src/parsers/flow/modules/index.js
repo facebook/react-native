@@ -100,7 +100,8 @@ function translateTypeAnnotation(
           );
         }
         case 'Array':
-        case '$ReadOnlyArray': {
+        case '$ReadOnlyArray':
+        case 'ReadonlyArray': {
           return emitArrayType(
             hasteModuleName,
             typeAnnotation,
@@ -113,7 +114,8 @@ function translateTypeAnnotation(
             translateTypeAnnotation,
           );
         }
-        case '$ReadOnly': {
+        case '$ReadOnly':
+        case 'Readonly': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
             hasteModuleName,
             typeAnnotation,

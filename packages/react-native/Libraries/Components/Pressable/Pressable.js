@@ -29,11 +29,11 @@ import {memo, useMemo, useRef, useState} from 'react';
 
 export type {PressableAndroidRippleConfig};
 
-export type PressableStateCallbackType = $ReadOnly<{
+export type PressableStateCallbackType = Readonly<{
   pressed: boolean,
 }>;
 
-type PressableBaseProps = $ReadOnly<{
+type PressableBaseProps = Readonly<{
   /**
    * Whether a press gesture can be interrupted by a parent gesture such as a
    * scroll event. Defaults to true.
@@ -80,41 +80,41 @@ type PressableBaseProps = $ReadOnly<{
   /**
    * Called when this view's layout changes.
    */
-  onLayout?: ?(event: LayoutChangeEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => unknown,
 
   /**
    * Called when the hover is activated to provide visual feedback.
    */
-  onHoverIn?: ?(event: MouseEvent) => mixed,
+  onHoverIn?: ?(event: MouseEvent) => unknown,
 
   /**
    * Called when the hover is deactivated to undo visual feedback.
    */
-  onHoverOut?: ?(event: MouseEvent) => mixed,
+  onHoverOut?: ?(event: MouseEvent) => unknown,
 
   /**
    * Called when a long-tap gesture is detected.
    */
-  onLongPress?: ?(event: GestureResponderEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Called when a single tap gesture is detected.
    */
-  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Called when a touch is engaged before `onPress`.
    */
-  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => unknown,
   /**
    * Called when the press location moves.
    */
-  onPressMove?: ?(event: GestureResponderEvent) => mixed,
+  onPressMove?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Called when a touch is released before `onPress`.
    */
-  onPressOut?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => unknown,
 
   /**
    * Whether to prevent any other native components from becoming responder
@@ -156,7 +156,7 @@ type PressableBaseProps = $ReadOnly<{
   unstable_pressDelay?: ?number,
 }>;
 
-export type PressableProps = $ReadOnly<{
+export type PressableProps = Readonly<{
   // Pressability may override `onMouseEnter` and `onMouseLeave` to
   // implement `onHoverIn` and `onHoverOut` in a platform-agnostic way.
   // Hover events should be used instead of mouse events.

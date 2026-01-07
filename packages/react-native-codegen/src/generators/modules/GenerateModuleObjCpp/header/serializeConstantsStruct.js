@@ -26,7 +26,7 @@ const StructTemplate = ({
   hasteModuleName,
   structName,
   builderInputProps,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   structName: string,
   builderInputProps: string,
@@ -35,6 +35,9 @@ const StructTemplate = ({
     struct ${structName} {
 
       struct Builder {
+        // Backwards compat for RCTTypedModuleConstants
+        using ResultT = ${structName};
+
         struct Input {
           ${builderInputProps}
         };
@@ -62,7 +65,7 @@ const MethodTemplate = ({
   hasteModuleName,
   structName,
   properties,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   structName: string,
   properties: string,

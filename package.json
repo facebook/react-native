@@ -23,8 +23,8 @@
     "lint-kotlin": "./gradlew ktfmtFormat",
     "lint-markdown": "markdownlint-cli2 2>&1",
     "lint": "eslint --max-warnings 0 .",
+    "preinstall": "node ./scripts/try-set-nightly-hermes-compiler.js",
     "prettier": "prettier --write \"./**/*.{js,md,yml,ts,tsx}\"",
-    "print-packages": "node ./scripts/monorepo/print",
     "shellcheck": "./.github/workflow-scripts/analyze_scripts.sh",
     "start": "yarn --cwd packages/rn-tester start",
     "set-version": "node ./scripts/releases/set-version.js",
@@ -86,7 +86,7 @@
     "eslint-plugin-relay": "^1.8.3",
     "fb-dotslash": "0.5.8",
     "flow-api-translator": "0.32.0",
-    "flow-bin": "^0.294.0",
+    "flow-bin": "^0.295.0",
     "hermes-eslint": "0.32.0",
     "hermes-transform": "0.32.0",
     "ini": "^5.0.0",
@@ -107,8 +107,8 @@
     "nullthrows": "^1.1.1",
     "prettier": "3.6.2",
     "prettier-plugin-hermes-parser": "0.32.0",
-    "react": "19.2.0",
-    "react-test-renderer": "19.2.0",
+    "react": "19.2.3",
+    "react-test-renderer": "19.2.3",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^2.0.0",
@@ -120,7 +120,7 @@
     "ws": "^7.5.10"
   },
   "resolutions": {
-    "react-is": "19.2.0",
+    "react-is": "19.2.3",
     "on-headers": "1.1.0",
     "compression": "1.8.1"
   }

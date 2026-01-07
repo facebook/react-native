@@ -28,7 +28,7 @@ declare const IntersectionObserver: Class<IntersectionObserverType>;
 
 setUpIntersectionObserver();
 
-function ensureReactNativeElement(value: mixed): ReactNativeElement {
+function ensureReactNativeElement(value: unknown): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
 }
 
@@ -2978,7 +2978,7 @@ describe('IntersectionObserver', () => {
         };
       };
 
-      function Observe({children}: $ReadOnly<{children?: React.Node}>) {
+      function Observe({children}: Readonly<{children?: React.Node}>) {
         return <View ref={observeRef}>{children}</View>;
       }
 

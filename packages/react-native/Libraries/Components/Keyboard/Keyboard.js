@@ -25,7 +25,7 @@ export type KeyboardEventEasing =
   | 'linear'
   | 'keyboard';
 
-export type KeyboardMetrics = $ReadOnly<{
+export type KeyboardMetrics = Readonly<{
   screenX: number,
   screenY: number,
   width: number,
@@ -40,13 +40,13 @@ type BaseKeyboardEvent = {
   endCoordinates: KeyboardMetrics,
 };
 
-export type AndroidKeyboardEvent = $ReadOnly<{
+export type AndroidKeyboardEvent = Readonly<{
   ...BaseKeyboardEvent,
   duration: 0,
   easing: 'keyboard',
 }>;
 
-export type IOSKeyboardEvent = $ReadOnly<{
+export type IOSKeyboardEvent = Readonly<{
   ...BaseKeyboardEvent,
   startCoordinates: KeyboardMetrics,
   isEventFromThisApp: boolean,
@@ -148,8 +148,8 @@ class KeyboardImpl {
    */
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
-    listener: (...KeyboardEventDefinitions[K]) => mixed,
-    context?: mixed,
+    listener: (...KeyboardEventDefinitions[K]) => unknown,
+    context?: unknown,
   ): EventSubscription {
     return this._emitter.addListener(eventType, listener);
   }

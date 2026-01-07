@@ -20,7 +20,7 @@ function testPropPropagatedToMountingLayer<TValue>({
   value,
   defaultValue,
   renderChildrenForValue,
-}: $ReadOnly<{
+}: Readonly<{
   propName: string,
   value: TValue,
   defaultValue: TValue,
@@ -29,7 +29,7 @@ function testPropPropagatedToMountingLayer<TValue>({
   describe(propName, () => {
     it('is propagated to the mounting layer', () => {
       const root = Fantom.createRoot();
-      const props: FlatListProps<$ReadOnly<{}>> = {
+      const props: FlatListProps<Readonly<{}>> = {
         // $FlowFixMe[incompatible-type]
         [propName]: value,
       };
@@ -53,7 +53,7 @@ function testPropPropagatedToMountingLayer<TValue>({
 
     it(`default value is ${JSON.stringify(defaultValue) ?? 'null'}`, () => {
       const root = Fantom.createRoot();
-      const props: FlatListProps<$ReadOnly<{}>> = {
+      const props: FlatListProps<Readonly<{}>> = {
         // $FlowFixMe[incompatible-type]
         [propName]: defaultValue,
       };

@@ -21,7 +21,7 @@ import * as React from 'react';
 
 const Platform = require('../../Utilities/Platform').default;
 
-export type RefreshControlPropsIOS = $ReadOnly<{
+export type RefreshControlPropsIOS = Readonly<{
   /**
    * The color of the refresh indicator.
    */
@@ -36,7 +36,7 @@ export type RefreshControlPropsIOS = $ReadOnly<{
   title?: ?string,
 }>;
 
-export type RefreshControlPropsAndroid = $ReadOnly<{
+export type RefreshControlPropsAndroid = Readonly<{
   /**
    * Whether the pull to refresh functionality is enabled.
    */
@@ -55,7 +55,7 @@ export type RefreshControlPropsAndroid = $ReadOnly<{
   size?: ?('default' | 'large'),
 }>;
 
-type RefreshControlBaseProps = $ReadOnly<{
+type RefreshControlBaseProps = Readonly<{
   /**
    * Called when the view starts refreshing.
    */
@@ -72,7 +72,7 @@ type RefreshControlBaseProps = $ReadOnly<{
   progressViewOffset?: ?number,
 }>;
 
-export type RefreshControlProps = $ReadOnly<{
+export type RefreshControlProps = Readonly<{
   ...ViewProps,
   ...RefreshControlPropsIOS,
   ...RefreshControlPropsAndroid,

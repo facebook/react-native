@@ -198,12 +198,27 @@ declare type Node$Buffer = typeof Buffer;
 declare module 'buffer' {
   declare var kMaxLength: number;
   declare var INSPECT_MAX_BYTES: number;
+
+  declare var constants: Readonly<{
+    MAX_LENGTH: number,
+    MAX_STRING_LENGTH: number,
+  }>;
+
   declare function transcode(
     source: Node$Buffer,
     fromEnc: buffer$Encoding,
     toEnc: buffer$Encoding,
   ): Node$Buffer;
+
+  declare function isUtf8(input: Buffer | ArrayBuffer | $TypedArray): boolean;
+
+  declare function isAscii(input: Buffer | ArrayBuffer | $TypedArray): boolean;
+
+  declare function resolveObjectURL(id: string): Blob | void;
+
   declare var Buffer: Node$Buffer;
+  declare var Blob: typeof globalThis.Blob;
+  declare var File: typeof globalThis.File;
 }
 
 type child_process$execOpts = {
@@ -603,6 +618,7 @@ declare class crypto$Hash extends stream$Duplex {
     data: string | Buffer,
     input_encoding?: 'utf8' | 'ascii' | 'latin1' | 'binary',
   ): crypto$Hash;
+  copy(options?: mixed): crypto$Hash;
 }
 
 declare class crypto$Hmac extends stream$Duplex {
@@ -660,6 +676,83 @@ type crypto$key =
       padding?: string,
       ...
     };
+
+declare class crypto$KeyObject {
+  +asymmetricKeyType?:
+    | 'rsa'
+    | 'rsa-pss'
+    | 'dsa'
+    | 'ec'
+    | 'ed25519'
+    | 'ed448'
+    | 'x25519'
+    | 'x448';
+  +asymmetricKeySize?: number;
+  +symmetricKeySize?: number;
+  +type: 'secret' | 'public' | 'private';
+
+  export(
+    options: Readonly<{
+      type: 'pkcs1' | 'spki' | 'pkcs8' | 'sec1',
+      format: 'pem',
+    }>,
+  ): string;
+  export(
+    options: Readonly<{
+      type: 'pkcs1' | 'spki' | 'pkcs8' | 'sec1',
+      format: 'der',
+    }>,
+  ): Buffer;
+  export(options: Readonly<{format: 'jwk'}>): mixed;
+  equals(otherKeyObject: crypto$KeyObject): boolean;
+}
+
+declare class crypto$X509Certificate {
+  constructor(buffer: string | Buffer | $TypedArray | DataView): void;
+
+  +ca: boolean;
+  +fingerprint: string;
+  +fingerprint256: string;
+  +fingerprint512: string;
+  +issuer: string;
+  +issuerCertificate?: crypto$X509Certificate;
+  +keyUsage: Array<string>;
+  +publicKey: crypto$KeyObject;
+  +raw: Buffer;
+  +serialNumber: string;
+  +subject: string;
+  +subjectAltName: string;
+  +validFrom: string;
+  +validTo: string;
+  +validFromDate: Date;
+  +validToDate: Date;
+
+  checkEmail(
+    email: string,
+    options?: Readonly<{subject?: 'always' | 'default' | 'never'}>,
+  ): string | void;
+  checkHost(
+    name: string,
+    options?: Readonly<{subject?: 'always' | 'default' | 'never'}>,
+  ): string | void;
+  checkIP(ip: string): string | void;
+  checkIssued(otherCert: crypto$X509Certificate): boolean;
+  checkPrivateKey(privateKey: crypto$KeyObject): boolean;
+  toJSON(): string;
+  toLegacyObject(): mixed;
+  toString(): string;
+  verify(publicKey: crypto$KeyObject): boolean;
+}
+
+declare class crypto$Certificate {
+  static exportChallenge(
+    spkac: string | Buffer | $TypedArray | DataView,
+  ): Buffer;
+  static exportPublicKey(
+    spkac: string | Buffer | $TypedArray | DataView,
+  ): Buffer;
+  static verifySpkac(spkac: Buffer | $TypedArray | DataView): boolean;
+}
 
 declare module 'crypto' {
   declare var DEFAULT_ENCODING: string;
@@ -814,12 +907,85 @@ declare module 'crypto' {
     callback: (err: ?Error, buffer: Buffer) => void,
   ): void;
   declare function randomUUID(
-    options?: $ReadOnly<{|disableEntropyCache?: boolean|}>,
+    options?: Readonly<{disableEntropyCache?: boolean}>,
   ): string;
   declare function timingSafeEqual(
     a: Buffer | $TypedArray | DataView,
     b: Buffer | $TypedArray | DataView,
   ): boolean;
+  declare function hash(
+    algorithm: string,
+    data: string | Buffer | $TypedArray | DataView,
+  ): Buffer;
+  declare function hash(
+    algorithm: string,
+    data: string | Buffer | $TypedArray | DataView,
+    outputEncoding: buffer$Encoding,
+  ): string;
+  declare function createSecretKey(
+    key: Buffer | $TypedArray | DataView,
+  ): crypto$KeyObject;
+  declare function createSecretKey(
+    key: string,
+    encoding: buffer$Encoding,
+  ): crypto$KeyObject;
+  declare function createPublicKey(
+    key: string | Buffer | crypto$KeyObject | mixed,
+  ): crypto$KeyObject;
+  declare function createPrivateKey(
+    key: string | Buffer | mixed,
+  ): crypto$KeyObject;
+  declare function generateKeyPair(
+    type:
+      | 'rsa'
+      | 'rsa-pss'
+      | 'dsa'
+      | 'ec'
+      | 'ed25519'
+      | 'ed448'
+      | 'x25519'
+      | 'x448',
+    options: mixed,
+    callback: (
+      err: ?Error,
+      publicKey: crypto$KeyObject,
+      privateKey: crypto$KeyObject,
+    ) => void,
+  ): void;
+  declare function generateKeyPairSync(
+    type:
+      | 'rsa'
+      | 'rsa-pss'
+      | 'dsa'
+      | 'ec'
+      | 'ed25519'
+      | 'ed448'
+      | 'x25519'
+      | 'x448',
+    options: mixed,
+  ): {publicKey: crypto$KeyObject, privateKey: crypto$KeyObject, ...};
+  declare function generateKey(
+    type: 'hmac' | 'aes',
+    options: Readonly<{length: number}>,
+    callback: (err: ?Error, key: crypto$KeyObject) => void,
+  ): void;
+  declare function generateKeySync(
+    type: 'hmac' | 'aes',
+    options: Readonly<{length: number}>,
+  ): crypto$KeyObject;
+  declare function checkPrime(
+    candidate: Buffer | $TypedArray | DataView | bigint,
+    options?: Readonly<{checks?: number}>,
+    callback: (err: ?Error, result: boolean) => void,
+  ): void;
+  declare function checkPrimeSync(
+    candidate: Buffer | $TypedArray | DataView | bigint,
+    options?: Readonly<{checks?: number}>,
+  ): boolean;
+  declare class Certificate extends crypto$Certificate {}
+  declare class X509Certificate extends crypto$X509Certificate {}
+  declare class KeyObject extends crypto$KeyObject {}
+  declare var webcrypto: unknown;
 }
 
 type net$Socket$address = {
@@ -847,7 +1013,7 @@ declare class dgram$Socket extends events$EventEmitter {
     msg: Buffer,
     port: number,
     address: string,
-    callback?: (err: ?Error, bytes: any) => mixed,
+    callback?: (err: ?Error, bytes: any) => unknown,
   ): void;
   send(
     msg: Buffer,
@@ -855,7 +1021,7 @@ declare class dgram$Socket extends events$EventEmitter {
     length: number,
     port: number,
     address: string,
-    callback?: (err: ?Error, bytes: any) => mixed,
+    callback?: (err: ?Error, bytes: any) => unknown,
   ): void;
   setBroadcast(flag: boolean): void;
   setMulticastLoopback(flag: boolean): void;
@@ -1050,6 +1216,8 @@ declare module 'fs' {
 
   declare class FSWatcher extends events$EventEmitter {
     close(): void;
+    ref(): this;
+    unref(): this;
   }
 
   declare class ReadStream extends stream$Readable {
@@ -1063,6 +1231,7 @@ declare module 'fs' {
 
   declare class Dirent {
     name: string | Buffer;
+    parentPath: string;
 
     isBlockDevice(): boolean;
     isCharacterDevice(): boolean;
@@ -1296,12 +1465,24 @@ declare module 'fs' {
   declare function mkdtempSync(prefix: string): string;
   declare function readdir(
     path: string,
-    options: string | {encoding?: string, withFileTypes?: false, ...},
+    options:
+      | string
+      | Readonly<{
+          encoding?: string,
+          recursive?: boolean,
+          withFileTypes?: false,
+          ...
+        }>,
     callback: (err: ?ErrnoError, files: Array<string>) => void,
   ): void;
   declare function readdir(
     path: string,
-    options: {encoding?: string, withFileTypes: true, ...},
+    options: Readonly<{
+      encoding?: string,
+      recursive?: boolean,
+      withFileTypes: true,
+      ...
+    }>,
     callback: (err: ?ErrnoError, files: Array<Dirent>) => void,
   ): void;
   declare function readdir(
@@ -1310,11 +1491,23 @@ declare module 'fs' {
   ): void;
   declare function readdirSync(
     path: string,
-    options?: string | {encoding?: string, withFileTypes?: false, ...},
+    options?:
+      | string
+      | Readonly<{
+          encoding?: string,
+          recursive?: boolean,
+          withFileTypes?: false,
+        }>,
   ): Array<string>;
   declare function readdirSync(
     path: string,
-    options?: string | {encoding?: string, withFileTypes: true, ...},
+    options?:
+      | string
+      | Readonly<{
+          encoding?: string,
+          recursive?: boolean,
+          withFileTypes: true,
+        }>,
   ): Array<Dirent>;
   declare function close(
     fd: number,
@@ -1332,6 +1525,29 @@ declare module 'fs' {
     flags: string | number,
     callback: (err: ?ErrnoError, fd: number) => void,
   ): void;
+  declare function openAsBlob(
+    path: string | Buffer | URL,
+    options?: Readonly<{
+      type?: string, // Optional MIME type hint
+    }>,
+  ): Promise<Blob>;
+  declare function opendir(
+    path: string,
+    options?: Readonly<{
+      encoding?: string,
+      bufferSize?: number,
+      recursive?: boolean,
+    }>,
+    callback: (err: ?ErrnoError, dir: Dir) => void,
+  ): void;
+  declare function opendirSync(
+    path: string,
+    options?: Readonly<{
+      encoding?: string,
+      bufferSize?: number,
+      recursive?: boolean,
+    }>,
+  ): Dir;
   declare function openSync(
     path: string | Buffer,
     flags: string | number,
@@ -1550,7 +1766,15 @@ declare module 'fs' {
   ): void;
   declare function watchFile(
     filename: string,
-    options?: Object,
+    listener?: (curr: Stats, prev: Stats) => void,
+  ): void;
+  declare function watchFile(
+    filename: string,
+    options?: Readonly<{
+      bigint?: boolean,
+      persistent?: boolean,
+      interval?: number,
+    }>,
     listener?: (curr: Stats, prev: Stats) => void,
   ): void;
   declare function unwatchFile(
@@ -1559,7 +1783,16 @@ declare module 'fs' {
   ): void;
   declare function watch(
     filename: string,
-    options?: Object,
+    listener?: (event: string, filename: string) => void,
+  ): FSWatcher;
+  declare function watch(
+    filename: string,
+    options?: Readonly<{
+      persistent?: boolean,
+      recursive?: boolean,
+      encoding?: string,
+      signal?: AbortSignal,
+    }>,
     listener?: (event: string, filename: string) => void,
   ): FSWatcher;
   declare function exists(
@@ -1599,8 +1832,42 @@ declare module 'fs' {
     dest: string,
     flags?: number,
   ): void;
+  declare function cp(
+    src: string | URL,
+    dest: string | URL,
+    options: Readonly<{
+      dereference?: boolean,
+      errorOnExist?: boolean,
+      filter?: (src: string, dest: string) => boolean | Promise<boolean>,
+      force?: boolean,
+      mode?: number,
+      preserveTimestamps?: boolean,
+      recursive?: boolean,
+      verbatimSymlinks?: boolean,
+    }>,
+    callback: (err: ?Error) => void,
+  ): void;
+  declare function cp(
+    src: string | URL,
+    dest: string | URL,
+    callback: (err: ?Error) => void,
+  ): void;
+  declare function cpSync(
+    src: string | URL,
+    dest: string | URL,
+    options?: Readonly<{
+      dereference?: boolean,
+      errorOnExist?: boolean,
+      filter?: (src: string, dest: string) => boolean,
+      force?: boolean,
+      mode?: number,
+      preserveTimestamps?: boolean,
+      recursive?: boolean,
+      verbatimSymlinks?: boolean,
+    }>,
+  ): void;
 
-  declare type GlobOptions<WithFileTypes: boolean> = $ReadOnly<{
+  declare type GlobOptions<WithFileTypes: boolean> = Readonly<{
     /**
      * Current working directory.
      * @default process.cwd()
@@ -1729,14 +1996,52 @@ declare module 'fs' {
     retryDelay?: number,
     ...
   };
+  declare class Dir {
+    +path: string;
+    close(): Promise<void>;
+    closeSync(): void;
+    read(): Promise<?Dirent>;
+    read(cb: (err?: Error, dirent: ?Dirent) => void): void;
+    readSync(): ?Dirent;
+    @@asyncIterator(): AsyncIterator<Dirent>;
+  }
+  type AppendOrWriteToFileHandle = (
+    data:
+      | string
+      | Buffer
+      | Uint8Array
+      | DataView
+      | AsyncIterable<mixed>
+      | Iterable<mixed>
+      | stream$Readable,
+    options: WriteOptions | string,
+  ) => Promise<void>;
   declare class FileHandle {
-    appendFile(
-      data: string | Buffer,
-      options: WriteOptions | string,
-    ): Promise<void>;
+    appendFile: AppendOrWriteToFileHandle;
     chmod(mode: number): Promise<void>;
     chown(uid: number, guid: number): Promise<void>;
     close(): Promise<void>;
+    createReadStream(
+      options?: Readonly<{
+        encoding?: string,
+        autoClose?: boolean,
+        emitClose?: boolean,
+        start?: number,
+        end?: number,
+        highWaterMark?: number,
+        signal?: AbortSignal,
+      }>,
+    ): ReadStream;
+    createWriteStream(
+      options?: Readonly<{
+        encoding?: string,
+        autoClose?: boolean,
+        emitClose?: boolean,
+        start?: number,
+        highWaterMark?: number,
+        flush?: boolean,
+      }>,
+    ): WriteStream;
     datasync(): Promise<void>;
     fd: number;
     read<T: Buffer | Uint8Array>(
@@ -1749,8 +2054,25 @@ declare module 'fs' {
       buffer: T,
       ...
     }>;
+    readableWebStream(
+      options?: Readonly<{autoClose?: boolean}>,
+    ): ReadableStream;
     readFile(options: EncodingFlag): Promise<Buffer>;
     readFile(options: string): Promise<string>;
+    readLines(
+      options?: Readonly<{
+        encoding?: string,
+        autoClose?: boolean,
+        emitClose?: boolean,
+        start?: number,
+        end?: number,
+        highWaterMark?: number,
+      }>,
+    ): readline$Interface;
+    readv<T: Array<Buffer> | Array<Uint8Array> | Array<DataView>>(
+      buffers: T,
+      position?: number | null,
+    ): Promise<{buffers: T, bytesRead: number}>;
     stat(): Promise<Stats>;
     sync(): Promise<void>;
     truncate(len?: number): Promise<void>;
@@ -1759,15 +2081,24 @@ declare module 'fs' {
       mtime: number | string | Date,
     ): Promise<void>;
     write(
-      buffer: Buffer | Uint8Array,
+      buffer: Buffer | Uint8Array | DataView,
       offset: number,
       length: number,
       position: number,
     ): Promise<void>;
-    writeFile(
-      data: string | Buffer | Uint8Array,
-      options: WriteOptions | string,
+    write(
+      buffer: Buffer | Uint8Array | DataView,
+      options?: Readonly<{
+        offset?: number,
+        length?: number,
+        position?: number,
+      }>,
     ): Promise<void>;
+    writeFile: AppendOrWriteToFileHandle;
+    writev<T: Array<Buffer> | Array<Uint8Array> | Array<DataView>>(
+      buffers: T,
+      position?: number | null,
+    ): Promise<{buffers: T, bytesWritten: number}>;
   }
 
   declare type FSPromisePath = string | Buffer | URL;
@@ -1784,6 +2115,20 @@ declare module 'fs' {
       src: FSPromisePath,
       dest: FSPromisePath,
       flags?: number,
+    ): Promise<void>,
+    cp(
+      src: string | URL,
+      dest: string | URL,
+      options?: Readonly<{
+        dereference?: boolean,
+        errorOnExist?: boolean,
+        filter?: (src: string, dest: string) => boolean | Promise<boolean>,
+        force?: boolean,
+        mode?: number,
+        preserveTimestamps?: boolean,
+        recursive?: boolean,
+        verbatimSymlinks?: boolean,
+      }>,
     ): Promise<void>,
     fchmod(filehandle: FileHandle, mode: number): Promise<void>,
     fchown(filehandle: FileHandle, uid: number, guid: number): Promise<void>,
@@ -1824,6 +2169,14 @@ declare module 'fs' {
       flags?: string | number,
       mode?: number,
     ): Promise<FileHandle>,
+    opendir(
+      path: string,
+      options?: Readonly<{
+        encoding?: string,
+        bufferSize?: number,
+        recursive?: boolean,
+      }>,
+    ): Promise<Dir>,
     read<T: Buffer | Uint8Array>(
       filehandle: FileHandle,
       buffer: T,
@@ -1837,11 +2190,21 @@ declare module 'fs' {
     }>,
     readdir: ((
       path: FSPromisePath,
-      options: string | {encoding?: string, withFileTypes?: false, ...},
+      options:
+        | string
+        | Readonly<{
+            encoding?: string,
+            recursive?: boolean,
+            withFileTypes?: false,
+          }>,
     ) => Promise<Array<string>>) &
       ((
         path: FSPromisePath,
-        options: {encoding?: string, withFileTypes: true, ...},
+        options: Readonly<{
+          encoding?: string,
+          recursive?: boolean,
+          withFileTypes: true,
+        }>,
       ) => Promise<Array<Dirent>>) &
       ((path: FSPromisePath) => Promise<Array<string>>),
     readFile: ((
@@ -1884,6 +2247,17 @@ declare module 'fs' {
       atime: number | string | Date,
       mtime: number | string | Date,
     ): Promise<void>,
+    watch(
+      filename: FSPromisePath,
+      options?: Readonly<{
+        persistent?: boolean,
+        recursive?: boolean,
+        encoding?: string,
+        signal?: AbortSignal,
+        maxQueue?: number,
+        overflow?: 'ignore' | 'throw',
+      }>,
+    ): AsyncIterator<{eventType: string, filename: ?string}>,
     write<T: Buffer | Uint8Array>(
       filehandle: FileHandle,
       buffer: T,
@@ -2021,7 +2395,7 @@ declare class http$Server extends net$Server {
     callback?: Function,
   ): this;
   listening: boolean;
-  close(callback?: (error: ?Error) => mixed): this;
+  close(callback?: (error: ?Error) => unknown): this;
   closeAllConnections(): void;
   closeIdleConnections(): void;
   maxHeadersCount: number;
@@ -2057,7 +2431,7 @@ declare class https$Server extends tls$Server {
     },
     callback?: Function,
   ): this;
-  close(callback?: (error: ?Error) => mixed): this;
+  close(callback?: (error: ?Error) => unknown): this;
   closeAllConnections(): void;
   closeIdleConnections(): void;
   keepAliveTimeout: number;
@@ -2070,7 +2444,7 @@ type requestOptions = {|
   auth?: string,
   defaultPort?: number,
   family?: number,
-  headers?: {[key: string]: mixed, ...},
+  headers?: {[key: string]: unknown, ...},
   host?: string,
   hostname?: string,
   localAddress?: string,
@@ -2208,14 +2582,14 @@ declare class net$Socket extends stream$Duplex {
   bufferSize: number;
   bytesRead: number;
   bytesWritten: number;
-  connect(path: string, connectListener?: () => mixed): net$Socket;
+  connect(path: string, connectListener?: () => unknown): net$Socket;
   connect(
     port: number,
     host?: string,
-    connectListener?: () => mixed,
+    connectListener?: () => unknown,
   ): net$Socket;
-  connect(port: number, connectListener?: () => mixed): net$Socket;
-  connect(options: Object, connectListener?: () => mixed): net$Socket;
+  connect(port: number, connectListener?: () => unknown): net$Socket;
+  connect(options: Object, connectListener?: () => unknown): net$Socket;
   destroyed: boolean;
   end(
     chunkOrEncodingOrCallback?:
@@ -2275,7 +2649,7 @@ type net$connectOptions = {
     domain: string,
     options?: ?number | ?Object,
     callback?: (err: ?Error, address: string, family: number) => void,
-  ) => mixed,
+  ) => unknown,
   path?: string,
   ...
 };
@@ -2323,9 +2697,7 @@ type os$CPU = {
     nice: number,
     sys: number,
     user: number,
-    ...
   },
-  ...
 };
 
 type os$NetIFAddr = {
@@ -2334,7 +2706,8 @@ type os$NetIFAddr = {
   internal: boolean,
   mac: string,
   netmask: string,
-  ...
+  scopeid?: number,
+  cidr: ?string,
 };
 
 type os$UserInfo$buffer = {
@@ -2343,7 +2716,6 @@ type os$UserInfo$buffer = {
   username: Buffer,
   homedir: Buffer,
   shell: ?Buffer,
-  ...
 };
 
 type os$UserInfo$string = {
@@ -2352,43 +2724,117 @@ type os$UserInfo$string = {
   username: string,
   homedir: string,
   shell: ?string,
-  ...
 };
 
 declare module 'os' {
-  declare function arch(): 'x64' | 'arm' | 'ia32';
+  declare function arch():
+    | 'arm'
+    | 'arm64'
+    | 'ia32'
+    | 'loong64'
+    | 'mips'
+    | 'mipsel'
+    | 'ppc64'
+    | 'riscv64'
+    | 's390x'
+    | 'x64';
   declare function availableParallelism(): number;
   declare function cpus(): Array<os$CPU>;
   declare function endianness(): 'BE' | 'LE';
   declare function freemem(): number;
+  declare function getPriority(pid?: number): number;
   declare function homedir(): string;
   declare function hostname(): string;
   declare function loadavg(): [number, number, number];
+  declare function machine(): string;
   declare function networkInterfaces(): {
     [ifName: string]: Array<os$NetIFAddr>,
-    ...
   };
-  declare function platform(): string;
+  declare function platform():
+    | 'aix'
+    | 'android'
+    | 'darwin'
+    | 'freebsd'
+    | 'haiku'
+    | 'linux'
+    | 'openbsd'
+    | 'sunos'
+    | 'win32'
+    | 'cygwin';
   declare function release(): string;
+  declare function setPriority(priority: number): void;
+  declare function setPriority(pid: number, priority: number): void;
   declare function tmpdir(): string;
   declare function totalmem(): number;
   declare function type(): string;
   declare function uptime(): number;
-  declare function userInfo(options: {
-    encoding: 'buffer',
-    ...
-  }): os$UserInfo$buffer;
-  declare function userInfo(options?: {
-    encoding: 'utf8',
-    ...
-  }): os$UserInfo$string;
+  declare function userInfo(
+    options: Readonly<{
+      encoding: 'buffer',
+    }>,
+  ): os$UserInfo$buffer;
+  declare function userInfo(
+    options?: Readonly<{
+      encoding: 'utf8',
+    }>,
+  ): os$UserInfo$string;
+  declare function version(): string;
   declare var EOL: string;
+  declare var devNull: string;
+  declare var constants: Readonly<{
+    signals: {[key: string]: number, ...},
+    errno: {[key: string]: number, ...},
+    priority: Readonly<{
+      PRIORITY_LOW: number,
+      PRIORITY_BELOW_NORMAL: number,
+      PRIORITY_NORMAL: number,
+      PRIORITY_ABOVE_NORMAL: number,
+      PRIORITY_HIGH: number,
+      PRIORITY_HIGHEST: number,
+    }>,
+    dlopen: {[key: string]: number, ...},
+  }>;
 }
+
+type path$PlatformPath = {
+  normalize(path: string): string,
+  join(...parts: Array<string>): string,
+  resolve(...parts: Array<string>): string,
+  matchesGlob(path: string, pattern: string): boolean,
+  isAbsolute(path: string): boolean,
+  relative(from: string, to: string): string,
+  dirname(path: string): string,
+  basename(path: string, ext?: string): string,
+  extname(path: string): string,
+  sep: string,
+  delimiter: string,
+  parse(pathString: string): Readonly<{
+    root: string,
+    dir: string,
+    base: string,
+    ext: string,
+    name: string,
+  }>,
+  format(
+    pathObject: Readonly<{
+      root?: string,
+      dir?: string,
+      base?: string,
+      ext?: string,
+      name?: string,
+    }>,
+  ): string,
+  toNamespacedPath(path: string): string,
+  posix: path$PlatformPath,
+  win32: path$PlatformPath,
+  ...
+};
 
 declare module 'path' {
   declare function normalize(path: string): string;
   declare function join(...parts: Array<string>): string;
   declare function resolve(...parts: Array<string>): string;
+  declare function matchesGlob(path: string, pattern: string): boolean;
   declare function isAbsolute(path: string): boolean;
   declare function relative(from: string, to: string): string;
   declare function dirname(path: string): string;
@@ -2402,18 +2848,215 @@ declare module 'path' {
     base: string,
     ext: string,
     name: string,
-    ...
   };
-  declare function format(pathObject: {
-    root?: string,
-    dir?: string,
-    base?: string,
-    ext?: string,
-    name?: string,
-    ...
-  }): string;
-  declare var posix: any;
-  declare var win32: any;
+  declare function format(
+    pathObject: Readonly<{
+      root?: string,
+      dir?: string,
+      base?: string,
+      ext?: string,
+      name?: string,
+    }>,
+  ): string;
+  declare function toNamespacedPath(path: string): string;
+  declare var posix: path$PlatformPath;
+  declare var win32: path$PlatformPath;
+}
+
+declare module 'perf_hooks' {
+  declare export type EntryType =
+    | 'function'
+    | 'gc'
+    | 'http'
+    | 'http2'
+    | 'mark'
+    | 'measure'
+    | 'navigation'
+    | 'node'
+    | 'resource';
+
+  declare export interface Histogram {
+    +count: number;
+    +countBigInt: bigint;
+    +exceeds: number;
+    +exceedsBigInt: bigint;
+    +max: number;
+    +maxBigInt: bigint;
+    +mean: number;
+    +min: number;
+    +minBigInt: bigint;
+    +stddev: number;
+    +percentiles: Map<number, number>;
+    +percentilesBigInt: Map<number, bigint>;
+    percentile(percentile: number): number;
+    percentileBigInt(percentile: number): bigint;
+    reset(): void;
+  }
+
+  declare export interface IntervalHistogram extends Histogram {
+    enable(): boolean;
+    disable(): boolean;
+  }
+
+  declare export interface RecordableHistogram extends Histogram {
+    record(val: number | bigint): void;
+    recordDelta(): void;
+  }
+
+  declare export class PerformanceEntry {
+    +duration: number;
+    +entryType: EntryType;
+    +name: string;
+    +startTime: number;
+    +detail?: mixed;
+    toJSON(): mixed;
+  }
+
+  declare export class PerformanceMark<T = mixed> extends PerformanceEntry {
+    +entryType: 'mark';
+    +duration: 0;
+    +detail?: T;
+  }
+
+  declare export class PerformanceMeasure<T = mixed> extends PerformanceEntry {
+    +entryType: 'measure';
+    +detail?: T;
+  }
+
+  declare export class PerformanceNodeEntry extends PerformanceEntry {
+    +entryType: 'node';
+  }
+
+  declare export class PerformanceNodeTiming extends PerformanceEntry {
+    +entryType: 'node';
+    +bootstrapComplete: number;
+    +environment: number;
+    +idleTime: number;
+    +loopExit: number;
+    +loopStart: number;
+    +nodeStart: number;
+    +v8Start: number;
+  }
+
+  declare export class PerformanceResourceTiming extends PerformanceEntry {
+    +entryType: 'resource';
+    +connectEnd: number;
+    +connectStart: number;
+    +decodedBodySize: number;
+    +domainLookupEnd: number;
+    +domainLookupStart: number;
+    +encodedBodySize: number;
+    +fetchStart: number;
+    +redirectEnd: number;
+    +redirectStart: number;
+    +requestStart: number;
+    +responseEnd: number;
+    +secureConnectionStart: number;
+    +transferSize: number;
+    +workerStart: number;
+  }
+
+  declare export class PerformanceObserverEntryList {
+    getEntries(): Array<PerformanceEntry>;
+    getEntriesByName(name: string, type?: EntryType): Array<PerformanceEntry>;
+    getEntriesByType(type: EntryType): Array<PerformanceEntry>;
+  }
+
+  declare export type PerformanceObserverCallback = (
+    list: PerformanceObserverEntryList,
+    observer: PerformanceObserver,
+  ) => void;
+
+  declare export class PerformanceObserver {
+    static supportedEntryTypes: $ReadOnlyArray<EntryType>;
+    constructor(callback: PerformanceObserverCallback): this;
+    observe(
+      options: Readonly<{
+        entryTypes?: $ReadOnlyArray<EntryType>,
+        type?: EntryType,
+        buffered?: boolean,
+      }>,
+    ): void;
+    disconnect(): void;
+    takeRecords(): Array<PerformanceEntry>;
+  }
+
+  declare export type EventLoopUtilization = {
+    +utilization: number,
+    +idle: number,
+    +active: number,
+  };
+
+  declare export type PerformanceMarkOptions<T = mixed> = Readonly<{
+    detail?: T,
+    startTime?: number,
+  }>;
+
+  declare export type PerformanceMeasureOptions<T = mixed> = Readonly<{
+    detail?: T,
+    duration?: number,
+    end?: number | string,
+    start?: number | string,
+  }>;
+
+  declare class Performance {
+    clearMarks(name?: string): void;
+    clearMeasures(name?: string): void;
+    clearResourceTimings(name?: string): void;
+    eventLoopUtilization(
+      elu1?: EventLoopUtilization,
+      elu2?: EventLoopUtilization,
+    ): EventLoopUtilization;
+    getEntries(): Array<PerformanceEntry>;
+    getEntriesByName(name: string, type?: EntryType): Array<PerformanceEntry>;
+    getEntriesByType(type: EntryType): Array<PerformanceEntry>;
+    mark<T>(
+      name: string,
+      options?: PerformanceMarkOptions<T>,
+    ): PerformanceMark<T>;
+    measure<T>(
+      name: string,
+      startMarkOrOptions?: string | PerformanceMeasureOptions<T>,
+      endMark?: string,
+    ): PerformanceMeasure<T>;
+    +nodeTiming: PerformanceNodeTiming;
+    now(): number;
+    setResourceTimingBufferSize(maxSize: number): void;
+    +timeOrigin: number;
+    timerify<TArgs: Iterable<mixed>, TReturn>(
+      fn: (...TArgs) => TReturn,
+      options?: Readonly<{histogram?: RecordableHistogram}>,
+    ): (...TArgs) => TReturn;
+    toJSON(): mixed;
+  }
+
+  declare export var performance: Performance;
+
+  declare export var constants: Readonly<{
+    NODE_PERFORMANCE_GC_MAJOR: number,
+    NODE_PERFORMANCE_GC_MINOR: number,
+    NODE_PERFORMANCE_GC_INCREMENTAL: number,
+    NODE_PERFORMANCE_GC_WEAKCB: number,
+    NODE_PERFORMANCE_GC_FLAGS_NO: number,
+    NODE_PERFORMANCE_GC_FLAGS_CONSTRUCT_RETAINED: number,
+    NODE_PERFORMANCE_GC_FLAGS_FORCED: number,
+    NODE_PERFORMANCE_GC_FLAGS_SYNCHRONOUS_PHANTOM_PROCESSING: number,
+    NODE_PERFORMANCE_GC_FLAGS_ALL_AVAILABLE_GARBAGE: number,
+    NODE_PERFORMANCE_GC_FLAGS_ALL_EXTERNAL_MEMORY: number,
+    NODE_PERFORMANCE_GC_FLAGS_SCHEDULE_IDLE: number,
+  }>;
+
+  declare export function monitorEventLoopDelay(
+    options?: Readonly<{resolution?: number}>,
+  ): IntervalHistogram;
+
+  declare export function createHistogram(
+    options?: Readonly<{
+      lowest?: number | bigint,
+      highest?: number | bigint,
+      figures?: number,
+    }>,
+  ): RecordableHistogram;
 }
 
 declare module 'punycode' {
@@ -2539,7 +3182,14 @@ declare class stream$Readable extends stream$Stream {
   static from(
     iterable: Iterable<any> | AsyncIterable<any>,
     options?: readableStreamOptions,
-  ): stream$Readable;
+  ): this;
+
+  static fromWeb(
+    readableStream: ReadableStream,
+    options?: readableStreamOptions,
+  ): this;
+
+  static toWeb(streamReadable: stream$Readable): ReadableStream;
 
   constructor(options?: readableStreamOptions): void;
   destroy(error?: Error): this;
@@ -2586,6 +3236,13 @@ type writableStreamOptions = {
   ...
 };
 declare class stream$Writable extends stream$Stream {
+  static fromWeb(
+    writableStream: WritableStream,
+    options?: writableStreamOptions,
+  ): this;
+
+  static toWeb(streamWritable: stream$Writable): WritableStream;
+
   constructor(options?: writableStreamOptions): void;
   cork(): void;
   destroy(error?: Error): this;
@@ -2627,10 +3284,6 @@ declare class stream$Writable extends stream$Stream {
   _final(callback: (error?: Error) => void): void;
 }
 
-//According to the NodeJS docs:
-//"Since JavaScript doesn't have multiple prototypal inheritance, this class
-//prototypally inherits from Readable, and then parasitically from Writable."
-//Source: <https://nodejs.org/api/stream.html#stream_class_stream_duplex_1
 type duplexStreamOptions = writableStreamOptions &
   readableStreamOptions & {
     allowHalfOpen?: boolean,
@@ -2641,6 +3294,28 @@ type duplexStreamOptions = writableStreamOptions &
     ...
   };
 declare class stream$Duplex extends stream$Readable mixins stream$Writable {
+  // This is an unusual class at runtime, per the docs it "prototypally extends from Readable,
+  // and then parasitically from Writable." Its static methods have incompatible signatures
+  // with Readable's, which Flow doesn't like.
+  // See https://nodejs.org/api/stream.html#stream_class_stream_duplex_1
+
+  // $FlowFixMe[incompatible-exact] See above
+  // $FlowFixMe[incompatible-type] See above
+  static fromWeb(
+    pair: Readonly<{
+      readable: ReadableStream,
+      writable: WritableStream,
+    }>,
+    options?: duplexStreamOptions,
+  ): this;
+
+  // $FlowFixMe[incompatible-type] See above
+  static toWeb(streamDuplex: stream$Duplex): {
+    readable: ReadableStream,
+    writable: WritableStream,
+    ...
+  };
+
   constructor(options?: duplexStreamOptions): void;
 }
 type transformStreamOptions = duplexStreamOptions & {
@@ -2893,7 +3568,7 @@ type tls$connectOptions = {
     domain: string,
     options?: ?number | ?Object,
     callback?: (err: ?Error, address: string, family: number) => void,
-  ) => mixed,
+  ) => unknown,
   requestOCSP?: boolean,
   ...
 };
@@ -3072,8 +3747,16 @@ declare module 'url' {
   declare function resolve(from: string, to: string): string;
   declare function domainToASCII(domain: string): string;
   declare function domainToUnicode(domain: string): string;
-  declare function pathToFileURL(path: string): url$urlObject;
-  declare function fileURLToPath(path: url$urlObject | string): string;
+
+  declare function pathToFileURL(
+    path: string,
+    options?: Readonly<{windows?: boolean}>,
+  ): url$urlObject;
+
+  declare function fileURLToPath(
+    path: url$urlObject | string,
+    options?: Readonly<{windows?: boolean}>,
+  ): string;
   declare class URLSearchParams {
     @@iterator(): Iterator<[string, string]>;
 
@@ -3095,7 +3778,7 @@ declare module 'url' {
         value: string,
         name: string,
         searchParams: URLSearchParams,
-      ) => mixed,
+      ) => unknown,
       thisArg?: This,
     ): void;
     get(name: string): string | null;
@@ -3109,6 +3792,7 @@ declare module 'url' {
   }
   declare class URL {
     static canParse(url: string, base?: string): boolean;
+    static parse(input: string, base?: string): URL | null;
     static createObjectURL(blob: Blob): string;
     static createObjectURL(mediaSource: MediaSource): string;
     static revokeObjectURL(url: string): void;
@@ -3128,6 +3812,63 @@ declare module 'url' {
     toString(): string;
     toJSON(): string;
   }
+
+  declare type url$URLPatternInit = {
+    protocol?: string,
+    username?: string,
+    password?: string,
+    hostname?: string,
+    port?: string,
+    pathname?: string,
+    search?: string,
+    hash?: string,
+    baseURL?: string,
+  };
+
+  declare type url$URLPatternComponentResult = {
+    input: string,
+    groups: {[key: string]: string | void},
+  };
+
+  declare type url$URLPatternResult = {
+    inputs: $ReadOnlyArray<string | url$URLPatternInit>,
+    protocol: url$URLPatternComponentResult,
+    username: url$URLPatternComponentResult,
+    password: url$URLPatternComponentResult,
+    hostname: url$URLPatternComponentResult,
+    port: url$URLPatternComponentResult,
+    pathname: url$URLPatternComponentResult,
+    search: url$URLPatternComponentResult,
+    hash: url$URLPatternComponentResult,
+  };
+
+  declare class URLPattern {
+    constructor(
+      input?: string | url$URLPatternInit,
+      options?: Readonly<{ignoreCase?: boolean}>,
+    ): void;
+    constructor(
+      input: string | url$URLPatternInit,
+      baseURL: string,
+      options?: Readonly<{ignoreCase?: boolean}>,
+    ): void;
+
+    +hasRegExpGroups: boolean;
+    +hash: string;
+    +hostname: string;
+    +password: string;
+    +pathname: string;
+    +port: string;
+    +protocol: string;
+    +search: string;
+    +username: string;
+
+    exec(
+      input?: string | url$URLPatternInit,
+      baseURL?: string,
+    ): url$URLPatternResult | null;
+    test(input?: string | url$URLPatternInit, baseURL?: string): boolean;
+  }
 }
 
 type util$InspectOptions = {
@@ -3139,30 +3880,30 @@ type util$InspectOptions = {
 };
 
 declare type util$ParseArgsOption =
-  | $ReadOnly<{|
+  | Readonly<{
       type: 'boolean',
       multiple?: false,
       short?: string,
       default?: boolean,
-    |}>
-  | $ReadOnly<{|
+    }>
+  | Readonly<{
       type: 'boolean',
       multiple: true,
       short?: string,
       default?: Array<boolean>,
-    |}>
-  | $ReadOnly<{|
+    }>
+  | Readonly<{
       type: 'string',
       multiple?: false,
       short?: string,
       default?: string,
-    |}>
-  | $ReadOnly<{|
+    }>
+  | Readonly<{
       type: 'string',
       multiple: true,
       short?: string,
       default?: Array<string>,
-    |}>;
+    }>;
 
 type util$ParseArgsOptionToValue<TOption> = TOption['type'] extends 'boolean'
   ? TOption['multiple'] extends true
@@ -3219,31 +3960,33 @@ declare module 'util' {
   declare function stripVTControlCharacters(str: string): string;
 
   declare function parseArgs<
-    TOptions: {+[string]: util$ParseArgsOption} = {||},
-  >(config: {|
+    TOptions: {+[string]: util$ParseArgsOption} = {},
+  >(config: {
     args?: Array<string>,
     options?: TOptions,
     strict?: boolean,
     allowPositionals?: boolean,
+    allowNegative?: boolean,
     tokens?: false,
-  |}): {|
+  }): {
     values: util$ParseArgsOptionsToValues<TOptions>,
     positionals: Array<string>,
-  |};
+  };
 
   declare function parseArgs<
-    TOptions: {[string]: util$ParseArgsOption} = {||},
-  >(config: {|
+    TOptions: {[string]: util$ParseArgsOption} = {},
+  >(config: {
     args?: Array<string>,
     options?: TOptions,
     strict?: boolean,
     allowPositionals?: boolean,
+    allowNegative?: boolean,
     tokens: true,
-  |}): {|
+  }): {
     values: util$ParseArgsOptionsToValues<TOptions>,
     positionals: Array<string>,
     tokens: Array<util$ParseArgsToken>,
-  |};
+  };
 
   declare class TextDecoder {
     constructor(
@@ -3269,46 +4012,87 @@ declare module 'util' {
     encoding: string;
   }
 
+  declare class MIMEType {
+    constructor(input: string): void;
+    type: string;
+    subtype: string;
+    +essence: string;
+    +params: MIMEParams;
+    toString(): string;
+  }
+
+  declare class MIMEParams {
+    delete(name: string): void;
+    get(name: string): ?string;
+    has(name: string): boolean;
+    set(name: string, value: string): void;
+    entries(): Iterator<[string, string]>;
+    keys(): Iterator<string>;
+    values(): Iterator<string>;
+  }
+
+  declare function parseEnv(content: string): {[key: string]: string, ...};
+
+  declare type util$DiffEntry = [operation: -1 | 0 | 1, value: string];
+  declare function diff(
+    actual: string | $ReadOnlyArray<string>,
+    expected: string | $ReadOnlyArray<string>,
+  ): Array<util$DiffEntry>;
+
+  declare function getSystemErrorMessage(err: number): string;
+
+  declare type util$CallSiteObject = {
+    functionName: string,
+    scriptName: string,
+    scriptId: string,
+    lineNumber: number,
+    columnNumber: number,
+  };
+  declare function getCallSites(
+    frameCountOrOptions?: number | Readonly<{frameCount?: number}>,
+  ): Array<util$CallSiteObject>;
+
   declare var types: {
-    isAnyArrayBuffer: (value: mixed) => boolean,
-    isArgumentsObject: (value: mixed) => boolean,
-    isArrayBuffer: (value: mixed) => boolean,
-    isAsyncFunction: (value: mixed) => boolean,
-    isBigInt64Array: (value: mixed) => boolean,
-    isBigUint64Array: (value: mixed) => boolean,
-    isBooleanObject: (value: mixed) => boolean,
-    isBoxedPrimitive: (value: mixed) => boolean,
-    isDataView: (value: mixed) => boolean,
-    isDate: (value: mixed) => boolean,
-    isExternal: (value: mixed) => boolean,
-    isFloat32Array: (value: mixed) => boolean,
-    isFloat64Array: (value: mixed) => boolean,
-    isGeneratorFunction: (value: mixed) => boolean,
-    isGeneratorObject: (value: mixed) => boolean,
-    isInt8Array: (value: mixed) => boolean,
-    isInt16Array: (value: mixed) => boolean,
-    isInt32Array: (value: mixed) => boolean,
-    isMap: (value: mixed) => boolean,
-    isMapIterator: (value: mixed) => boolean,
-    isModuleNamespaceObject: (value: mixed) => boolean,
-    isNativeError: (value: mixed) => boolean,
-    isNumberObject: (value: mixed) => boolean,
-    isPromise: (value: mixed) => boolean,
-    isProxy: (value: mixed) => boolean,
-    isRegExp: (value: mixed) => boolean,
-    isSet: (value: mixed) => boolean,
-    isSetIterator: (value: mixed) => boolean,
-    isSharedArrayBuffer: (value: mixed) => boolean,
-    isStringObject: (value: mixed) => boolean,
-    isSymbolObject: (value: mixed) => boolean,
-    isTypedArray: (value: mixed) => boolean,
-    isUint8Array: (value: mixed) => boolean,
-    isUint8ClampedArray: (value: mixed) => boolean,
-    isUint16Array: (value: mixed) => boolean,
-    isUint32Array: (value: mixed) => boolean,
-    isWeakMap: (value: mixed) => boolean,
-    isWeakSet: (value: mixed) => boolean,
-    isWebAssemblyCompiledModule: (value: mixed) => boolean,
+    isAnyArrayBuffer: (value: unknown) => boolean,
+    isArgumentsObject: (value: unknown) => boolean,
+    isArrayBuffer: (value: unknown) => boolean,
+    isAsyncFunction: (value: unknown) => boolean,
+    isBigInt64Array: (value: unknown) => boolean,
+    isBigUint64Array: (value: unknown) => boolean,
+    isBooleanObject: (value: unknown) => boolean,
+    isBoxedPrimitive: (value: unknown) => boolean,
+    isDataView: (value: unknown) => boolean,
+    isDate: (value: unknown) => boolean,
+    isExternal: (value: unknown) => boolean,
+    isFloat16Array: (value: unknown) => boolean,
+    isFloat32Array: (value: unknown) => boolean,
+    isFloat64Array: (value: unknown) => boolean,
+    isGeneratorFunction: (value: unknown) => boolean,
+    isGeneratorObject: (value: unknown) => boolean,
+    isInt8Array: (value: unknown) => boolean,
+    isInt16Array: (value: unknown) => boolean,
+    isInt32Array: (value: unknown) => boolean,
+    isMap: (value: unknown) => boolean,
+    isMapIterator: (value: unknown) => boolean,
+    isModuleNamespaceObject: (value: unknown) => boolean,
+    isNativeError: (value: unknown) => boolean,
+    isNumberObject: (value: unknown) => boolean,
+    isPromise: (value: unknown) => boolean,
+    isProxy: (value: unknown) => boolean,
+    isRegExp: (value: unknown) => boolean,
+    isSet: (value: unknown) => boolean,
+    isSetIterator: (value: unknown) => boolean,
+    isSharedArrayBuffer: (value: unknown) => boolean,
+    isStringObject: (value: unknown) => boolean,
+    isSymbolObject: (value: unknown) => boolean,
+    isTypedArray: (value: unknown) => boolean,
+    isUint8Array: (value: unknown) => boolean,
+    isUint8ClampedArray: (value: unknown) => boolean,
+    isUint16Array: (value: unknown) => boolean,
+    isUint32Array: (value: unknown) => boolean,
+    isWeakMap: (value: unknown) => boolean,
+    isWeakSet: (value: unknown) => boolean,
+    isWebAssemblyCompiledModule: (value: unknown) => boolean,
     ...
   };
 
@@ -3373,7 +4157,7 @@ declare module 'util' {
       | Modifiers
       | $ReadOnlyArray<ForegroundColors | BackgroundColors | Modifiers>,
     text: string,
-    options?: $ReadOnly<{
+    options?: Readonly<{
       stream?: ?stream$Stream,
       validateStream?: ?boolean,
     }>,
@@ -3481,6 +4265,20 @@ type zlib$brotliOptions = {
     ...
   },
   maxOutputLength?: number,
+  ...
+};
+
+type zlib$zstdOptions = {
+  flush?: number,
+  finishFlush?: number,
+  chunkSize?: number,
+  params?: {
+    [number]: boolean | number,
+    ...
+  },
+  maxOutputLength?: number,
+  info?: boolean,
+  dictionary?: Buffer,
   ...
 };
 
@@ -3661,6 +4459,79 @@ declare module 'zlib' {
     BROTLI_DECODER_ERROR_ALLOC_RING_BUFFER_2: number,
     BROTLI_DECODER_ERROR_ALLOC_BLOCK_TYPE_TREES: number,
     BROTLI_DECODER_ERROR_UNREACHABL: number,
+
+    ZSTD_COMPRESS: number,
+    ZSTD_DECOMPRESS: number,
+
+    // Default compression level for zstd streams
+    ZSTD_CLEVEL_DEFAULT: number,
+
+    // Keys for zlib$zstdOptions['params']
+    ZSTD_c_compressionLevel: number,
+    ZSTD_c_windowLog: number,
+    ZSTD_c_hashLog: number,
+    ZSTD_c_chainLog: number,
+    ZSTD_c_searchLog: number,
+    ZSTD_c_minMatch: number,
+    ZSTD_c_targetLength: number,
+    ZSTD_c_strategy: number,
+    ZSTD_c_enableLongDistanceMatching: number,
+    ZSTD_c_ldmHashLog: number,
+    ZSTD_c_ldmMinMatch: number,
+    ZSTD_c_ldmBucketSizeLog: number,
+    ZSTD_c_ldmHashRateLog: number,
+    ZSTD_c_contentSizeFlag: number,
+    ZSTD_c_checksumFlag: number,
+    ZSTD_c_dictIDFlag: number,
+    ZSTD_c_nbWorkers: number,
+    ZSTD_c_jobSize: number,
+    ZSTD_c_overlapLog: number,
+
+    // Flush operations
+    ZSTD_e_continue: number,
+    ZSTD_e_flush: number,
+    ZSTD_e_end: number,
+
+    // Values for the ZSTD_c_strategy parameter
+    ZSTD_fast: number,
+    ZSTD_dfast: number,
+    ZSTD_greedy: number,
+    ZSTD_lazy: number,
+    ZSTD_lazy2: number,
+    ZSTD_btlazy2: number,
+    ZSTD_btopt: number,
+    ZSTD_btultra: number,
+    ZSTD_btultra2: number,
+
+    // Error codes
+    ZSTD_error_no_error: number,
+    ZSTD_error_GENERIC: number,
+    ZSTD_error_prefix_unknown: number,
+    ZSTD_error_version_unsupported: number,
+    ZSTD_error_frameParameter_unsupported: number,
+    ZSTD_error_frameParameter_windowTooLarge: number,
+    ZSTD_error_corruption_detected: number,
+    ZSTD_error_checksum_wrong: number,
+    ZSTD_error_literals_headerWrong: number,
+    ZSTD_error_dictionary_corrupted: number,
+    ZSTD_error_dictionary_wrong: number,
+    ZSTD_error_dictionaryCreation_failed: number,
+    ZSTD_error_parameter_unsupported: number,
+    ZSTD_error_parameter_combination_unsupported: number,
+    ZSTD_error_parameter_outOfBound: number,
+    ZSTD_error_tableLog_tooLarge: number,
+    ZSTD_error_maxSymbolValue_tooLarge: number,
+    ZSTD_error_maxSymbolValue_tooSmall: number,
+    ZSTD_error_stabilityCondition_notRespected: number,
+    ZSTD_error_stage_wrong: number,
+    ZSTD_error_init_missing: number,
+    ZSTD_error_memory_allocation: number,
+    ZSTD_error_workSpace_tooSmall: number,
+    ZSTD_error_dstSize_tooSmall: number,
+    ZSTD_error_srcSize_wrong: number,
+    ZSTD_error_dstBuffer_null: number,
+    ZSTD_error_noForwardProgress_destFull: number,
+    ZSTD_error_noForwardProgress_inputEmpty: number,
     ...
   };
   declare var codes: {
@@ -3680,6 +4551,8 @@ declare module 'zlib' {
   }
   declare class BrotliCompress extends Zlib {}
   declare class BrotliDecompress extends Zlib {}
+  declare class ZstdCompress extends Zlib {}
+  declare class ZstdDecompress extends Zlib {}
   declare class Deflate extends Zlib {}
   declare class Inflate extends Zlib {}
   declare class Gzip extends Zlib {}
@@ -3700,6 +4573,10 @@ declare module 'zlib' {
   declare function createGzip(options?: zlib$options): Gzip;
   declare function createGunzip(options?: zlib$options): Gunzip;
   declare function createUnzip(options?: zlib$options): Unzip;
+  declare function createZstdCompress(options?: zlib$zstdOptions): ZstdCompress;
+  declare function createZstdDecompress(
+    options?: zlib$zstdOptions,
+  ): ZstdDecompress;
   declare var brotliCompress: zlib$brotliAsyncFn;
   declare var brotliCompressSync: zlib$brotliSyncFn;
   declare var brotliDeompress: zlib$brotliAsyncFn;
@@ -4047,18 +4924,18 @@ declare class Process extends events$EventEmitter {
   emitWarning(warning: string | Error): void;
   emitWarning(
     warning: string,
-    typeOrCtor: string | ((...empty) => mixed),
+    typeOrCtor: string | ((...empty) => unknown),
   ): void;
   emitWarning(
     warning: string,
     type: string,
-    codeOrCtor: string | ((...empty) => mixed),
+    codeOrCtor: string | ((...empty) => unknown),
   ): void;
   emitWarning(
     warning: string,
     type: string,
     code: string,
-    ctor?: (...empty) => mixed,
+    ctor?: (...empty) => unknown,
   ): void;
   execArgv: Array<string>;
   execPath: string;
@@ -4088,7 +4965,7 @@ declare class Process extends events$EventEmitter {
     },
     rss: () => number,
   };
-  nextTick: <T>(cb: (...T) => mixed, ...T) => void;
+  nextTick: <T>(cb: (...T) => unknown, ...T) => void;
   pid: number;
   platform: string;
   release: {
@@ -4129,7 +5006,7 @@ declare var __filename: string;
 declare var __dirname: string;
 
 declare function setImmediate(
-  callback: (...args: Array<any>) => mixed,
+  callback: (...args: Array<any>) => unknown,
   ...args: Array<any>
 ): Object;
 declare function clearImmediate(immediateObject: any): Object;
@@ -4166,6 +5043,10 @@ declare module 'node:fs/promises' {
 
 declare module 'node:path' {
   declare module.exports: $Exports<'path'>;
+}
+
+declare module 'node:perf_hooks' {
+  declare module.exports: $Exports<'perf_hooks'>;
 }
 
 declare module 'process' {

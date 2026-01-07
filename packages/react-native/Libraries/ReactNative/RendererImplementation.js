@@ -114,7 +114,7 @@ let cachedPaperDispatchCommand;
 export function dispatchCommand(
   handle: HostInstance,
   command: string,
-  args: Array<mixed>,
+  args: Array<unknown>,
 ): void {
   if (global.RN$Bridgeless === true) {
     // Note: this function has the same implementation in the legacy and new renderer.

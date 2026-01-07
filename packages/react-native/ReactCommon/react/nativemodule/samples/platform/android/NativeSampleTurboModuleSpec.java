@@ -9,6 +9,7 @@
 
 package com.facebook.fbreact.specs;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -52,13 +53,14 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
     mEventEmitterCallback.invoke("onChange", value);
   }
 
-  protected void emitOnSubmit(ReadableArray value) {
+  protected final void emitOnSubmit(ReadableArray value) {
     mEventEmitterCallback.invoke("onSubmit", value);
   }
 
   protected abstract Map<String, Object> getTypedExportedConstants();
 
   @Override
+  @DoNotStrip
   public final @Nullable Map<String, Object> getConstants() {
     Map<String, Object> constants = getTypedExportedConstants();
     if (ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD) {
@@ -70,78 +72,97 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
       undeclaredConstants.removeAll(optionalFlowConstants);
       if (!undeclaredConstants.isEmpty()) {
         throw new IllegalStateException(
-            "Native Module Flow doesn't declare constants: " + undeclaredConstants);
+            String.format("Native Module Flow doesn't declare constants: %s", undeclaredConstants));
       }
       undeclaredConstants = obligatoryFlowConstants;
       undeclaredConstants.removeAll(constants.keySet());
       if (!undeclaredConstants.isEmpty()) {
         throw new IllegalStateException(
-            "Native Module doesn't fill in constants: " + undeclaredConstants);
+            String.format("Native Module doesn't fill in constants: %s", undeclaredConstants));
       }
     }
     return constants;
   }
 
   @ReactMethod
+  @DoNotStrip
   public abstract void voidFunc();
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract boolean getBool(boolean arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public double getEnum(double arg) {
     return 0;
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract double getNumber(double arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract String getString(String arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract WritableArray getArray(ReadableArray arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract WritableMap getObject(ReadableMap arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract WritableMap getUnsafeObject(ReadableMap arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract double getRootTag(double arg);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public abstract WritableMap getValue(double x, String y, ReadableMap z);
 
   @ReactMethod
+  @DoNotStrip
   public abstract void getValueWithCallback(Callback callback);
 
   @ReactMethod
+  @DoNotStrip
   public abstract void getValueWithPromise(boolean error, Promise promise);
 
   @ReactMethod
+  @DoNotStrip
   public void voidFuncThrows() {}
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public WritableMap getObjectThrows(ReadableMap arg) {
     return null;
   }
 
   @ReactMethod
+  @DoNotStrip
   public void promiseThrows(Promise promise) {}
 
   @ReactMethod
+  @DoNotStrip
   public void voidFuncAssert() {}
 
   @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
   public WritableMap getObjectAssert(ReadableMap arg) {
     return null;
   }
 
   @ReactMethod
+  @DoNotStrip
   public void promiseAssert(Promise promise) {}
 
   @ReactMethod
+  @DoNotStrip
   public void getImageUrl(Promise promise) {}
 }

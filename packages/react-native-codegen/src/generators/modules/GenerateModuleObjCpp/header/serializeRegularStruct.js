@@ -26,7 +26,7 @@ const StructTemplate = ({
   hasteModuleName,
   structName,
   structProperties,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   structName: string,
   structProperties: string,
@@ -53,7 +53,7 @@ const MethodTemplate = ({
   structName,
   propertyName,
   safePropertyName,
-}: $ReadOnly<{
+}: Readonly<{
   returnType: string,
   returnValue: string,
   hasteModuleName: string,

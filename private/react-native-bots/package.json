@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">= 20.19.4"
+    "node": ">= 22.11.0"
   },
   "devDependencies": {
     "@rnx-kit/rn-changelog-generator": "^0.4.0",

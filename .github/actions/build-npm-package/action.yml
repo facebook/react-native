@@ -18,13 +18,13 @@ runs:
       shell: bash
       run: git config --global --add safe.directory '*'
     - name: Download ReactNativeDependencies
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         pattern: ReactNativeDependencies*
         path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
         merge-multiple: true
     - name: Download ReactCore artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         pattern: ReactCore*
         path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
@@ -65,7 +65,7 @@ runs:
         fi
         node ./scripts/releases-ci/publish-npm.js -t ${{ inputs.release-type }}
     - name: Upload npm logs
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v6
       with:
         name: npm-logs
         path: ~/.npm/_logs
@@ -80,7 +80,7 @@ runs:
 
         echo "$FILENAME" > build/react-native-package-version
     - name: Upload release package
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v6
       if: ${{ inputs.release-type == 'dry-run' }}
       with:
         name: react-native-package

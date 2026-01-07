@@ -497,7 +497,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableNetworkEventReporting: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         description:
           'Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.',
@@ -647,16 +647,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableWebPerformanceAPIsByDefault: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'stable',
-    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -700,7 +690,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     fuseboxNetworkInspectionEnabled: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-01-31',
         description:
@@ -888,27 +878,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    useNativeEqualsInNativeReadableArrayAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-07-15',
-        description:
-          'Use a native implementation of equals in NativeReadableArray.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'stable',
-    },
-    useNativeTransformHelperAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-07-15',
-        description: 'Use a native implementation of TransformHelper',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'stable',
-    },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
       metadata: {
@@ -920,18 +889,8 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
-    useRawPropsJsiValue: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     useShadowNodeStateOnClone: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-04-16',
         description:
@@ -939,7 +898,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'stable',
     },
     useSharedAnimatedBackend: {
       defaultValue: false,
@@ -1040,17 +999,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    configurePressabilityDuringInsertion: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-10-27',
-        description:
-          'Configure Pressability during insertion and no longer unmount when hidden.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     deferFlatListFocusChangeRenderUpdate: {
       defaultValue: false,
       metadata: {
@@ -1069,16 +1017,6 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Disable prop maintainVisibleContentPosition in ScrollView',
         expectedReleaseValue: false,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableVirtualViewExperimental: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-08-29',
-        description: 'Enables the experimental version of `VirtualView`.',
-        expectedReleaseValue: true,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',

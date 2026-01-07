@@ -19,15 +19,24 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">= 20.19.4"
+    "node": ">= 22.11.0"
   },
   "exports": {
     ".": "./src/index.js",
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "files": [
     "dist"
   ],
+  "scripts": {
+    "prepack": "node ../../scripts/build/prepack.js"
+  },
   "dependencies": {
     "@react-native/codegen": "0.84.0-main"
   },

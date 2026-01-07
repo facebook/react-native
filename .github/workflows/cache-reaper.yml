@@ -13,7 +13,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
       - name: Trim the cache

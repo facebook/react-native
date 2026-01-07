@@ -33,13 +33,13 @@ import * as React from 'react';
 export type ViewLayout = LayoutRectangle;
 export type ViewLayoutEvent = LayoutChangeEvent;
 
-type DirectEventProps = $ReadOnly<{
+type DirectEventProps = Readonly<{
   /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs an accessibility custom action.
    *
    */
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => unknown,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -47,7 +47,7 @@ type DirectEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onaccessibilitytap
    */
-  onAccessibilityTap?: ?() => mixed,
+  onAccessibilityTap?: ?() => unknown,
 
   /**
    * Invoked on mount and layout changes with:
@@ -60,7 +60,7 @@ type DirectEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onlayout
    */
-  onLayout?: ?(event: LayoutChangeEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => unknown,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
@@ -68,7 +68,7 @@ type DirectEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onmagictap
    */
-  onMagicTap?: ?() => mixed,
+  onMagicTap?: ?() => unknown,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
@@ -76,16 +76,16 @@ type DirectEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onaccessibilityescape
    */
-  onAccessibilityEscape?: ?() => mixed,
+  onAccessibilityEscape?: ?() => unknown,
 }>;
 
-type MouseEventProps = $ReadOnly<{
+type MouseEventProps = Readonly<{
   onMouseEnter?: ?(event: MouseEvent) => void,
   onMouseLeave?: ?(event: MouseEvent) => void,
 }>;
 
 // Experimental/Work in Progress Pointer Event Callbacks (not yet ready for use)
-type PointerEventProps = $ReadOnly<{
+type PointerEventProps = Readonly<{
   onClick?: ?(event: PointerEvent) => void,
   onClickCapture?: ?(event: PointerEvent) => void,
   onPointerEnter?: ?(event: PointerEvent) => void,
@@ -110,21 +110,21 @@ type PointerEventProps = $ReadOnly<{
   onLostPointerCaptureCapture?: ?(e: PointerEvent) => void,
 }>;
 
-type FocusEventProps = $ReadOnly<{
+type FocusEventProps = Readonly<{
   onBlur?: ?(event: BlurEvent) => void,
   onBlurCapture?: ?(event: BlurEvent) => void,
   onFocus?: ?(event: FocusEvent) => void,
   onFocusCapture?: ?(event: FocusEvent) => void,
 }>;
 
-type KeyEventProps = $ReadOnly<{
+type KeyEventProps = Readonly<{
   onKeyDown?: ?(event: KeyDownEvent) => void,
   onKeyDownCapture?: ?(event: KeyDownEvent) => void,
   onKeyUp?: ?(event: KeyUpEvent) => void,
   onKeyUpCapture?: ?(event: KeyUpEvent) => void,
 }>;
 
-type TouchEventProps = $ReadOnly<{
+type TouchEventProps = Readonly<{
   onTouchCancel?: ?(e: GestureResponderEvent) => void,
   onTouchCancelCapture?: ?(e: GestureResponderEvent) => void,
   onTouchEnd?: ?(e: GestureResponderEvent) => void,
@@ -140,7 +140,7 @@ type TouchEventProps = $ReadOnly<{
  * `TouchableHighlight` or `TouchableOpacity`. Check out `Touchable.js`,
  * `ScrollResponder.js` and `ResponderEventPlugin.js` for more discussion.
  */
-export type GestureResponderHandlers = $ReadOnly<{
+export type GestureResponderHandlers = Readonly<{
   /**
    * Does this view want to "claim" touch responsiveness? This is called for
    * every touch move on the `View` when it is not the responder.
@@ -257,12 +257,12 @@ export type GestureResponderHandlers = $ReadOnly<{
   onStartShouldSetResponderCapture?: ?(e: GestureResponderEvent) => boolean,
 }>;
 
-type AndroidDrawableThemeAttr = $ReadOnly<{
+type AndroidDrawableThemeAttr = Readonly<{
   type: 'ThemeAttrAndroid',
   attribute: string,
 }>;
 
-type AndroidDrawableRipple = $ReadOnly<{
+type AndroidDrawableRipple = Readonly<{
   type: 'RippleAndroid',
   color?: ?number,
   borderless?: ?boolean,
@@ -271,7 +271,7 @@ type AndroidDrawableRipple = $ReadOnly<{
 
 type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
 
-export type ViewPropsAndroid = $ReadOnly<{
+export type ViewPropsAndroid = Readonly<{
   nativeBackgroundAndroid?: ?AndroidDrawable,
   nativeForegroundAndroid?: ?AndroidDrawable,
 
@@ -353,10 +353,10 @@ export type ViewPropsAndroid = $ReadOnly<{
    *
    * @platform android
    */
-  onClick?: ?(event: GestureResponderEvent) => mixed,
+  onClick?: ?(event: GestureResponderEvent) => unknown,
 }>;
 
-export type TVViewPropsIOS = $ReadOnly<{
+export type TVViewPropsIOS = Readonly<{
   /**
    * *(Apple TV only)* When set to true, this view will be focusable
    * and navigable using the Apple TV remote.
@@ -401,7 +401,7 @@ export type TVViewPropsIOS = $ReadOnly<{
   tvParallaxMagnification?: number,
 }>;
 
-export type ViewPropsIOS = $ReadOnly<{
+export type ViewPropsIOS = Readonly<{
   /**
    * Whether this `View` should be rendered as a bitmap before compositing.
    *
@@ -412,7 +412,7 @@ export type ViewPropsIOS = $ReadOnly<{
   shouldRasterizeIOS?: ?boolean,
 }>;
 
-type ViewBaseProps = $ReadOnly<{
+type ViewBaseProps = Readonly<{
   children?: React.Node,
   style?: ?ViewStyleProp,
 
@@ -508,7 +508,7 @@ type ViewBaseProps = $ReadOnly<{
   experimental_accessibilityOrder?: ?Array<string>,
 }>;
 
-export type ViewProps = $ReadOnly<{
+export type ViewProps = Readonly<{
   ...DirectEventProps,
   ...GestureResponderHandlers,
   ...MouseEventProps,

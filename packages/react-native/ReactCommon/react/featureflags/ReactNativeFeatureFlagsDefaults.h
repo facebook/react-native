@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<17faeaeedd01045bb9b8d51ca67871e5>>
+ * @generated SignedSource<<84b59ee9ec2a6906b7d1adda55dc3dcb>>
  */
 
 /**
@@ -196,7 +196,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableNetworkEventReporting() override {
-    return false;
+    return true;
   }
 
   bool enablePreparedTextLayout() override {
@@ -251,10 +251,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableWebPerformanceAPIsByDefault() override {
-    return true;
-  }
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
   }
@@ -272,7 +268,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fuseboxNetworkInspectionEnabled() override {
-    return false;
+    return true;
   }
 
   bool hideOffscreenVirtualViewsOnIOS() override {
@@ -343,24 +339,12 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool useNativeEqualsInNativeReadableArrayAndroid() override {
-    return true;
-  }
-
-  bool useNativeTransformHelperAndroid() override {
-    return true;
-  }
-
   bool useNativeViewConfigsInBridgelessMode() override {
     return false;
   }
 
-  bool useRawPropsJsiValue() override {
-    return true;
-  }
-
   bool useShadowNodeStateOnClone() override {
-    return false;
+    return true;
   }
 
   bool useSharedAnimatedBackend() override {

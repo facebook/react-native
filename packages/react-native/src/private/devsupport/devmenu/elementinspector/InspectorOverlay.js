@@ -20,7 +20,7 @@ const StyleSheet =
   require('../../../../../Libraries/StyleSheet/StyleSheet').default;
 const ElementBox = require('./ElementBox').default;
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   inspected?: ?InspectedElement,
   onTouchPoint: (locationX: number, locationY: number) => void,
 }>;

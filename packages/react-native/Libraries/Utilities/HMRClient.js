@@ -26,7 +26,7 @@ let hmrUnavailableReason: string | null = null;
 let hmrOrigin: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
-let pendingLogs: Array<[LogLevel, $ReadOnlyArray<mixed>]> = [];
+let pendingLogs: Array<[LogLevel, $ReadOnlyArray<unknown>]> = [];
 
 type LogLevel =
   | 'trace'
@@ -43,7 +43,7 @@ export type HMRClientNativeInterface = {
   enable(): void,
   disable(): void,
   registerBundle(requestUrl: string): void,
-  log(level: LogLevel, data: $ReadOnlyArray<mixed>): void,
+  log(level: LogLevel, data: $ReadOnlyArray<unknown>): void,
   setup(
     platform: string,
     bundleEntry: string,
@@ -113,7 +113,7 @@ const HMRClient: HMRClientNativeInterface = {
     registerBundleEntryPoints(hmrClient);
   },
 
-  log(level: LogLevel, data: $ReadOnlyArray<mixed>) {
+  log(level: LogLevel, data: $ReadOnlyArray<unknown>) {
     if (!hmrClient) {
       // Catch a reasonable number of early logs
       // in case hmrClient gets initialized later.

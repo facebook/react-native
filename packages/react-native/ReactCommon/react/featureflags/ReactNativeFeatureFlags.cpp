@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5207dc194cff67921939bc63478aea08>>
+ * @generated SignedSource<<a033a26e6b1fe19994a304e248a1fcc2>>
  */
 
 /**
@@ -250,10 +250,6 @@ bool ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection() {
   return getAccessor().enableVirtualViewWindowFocusDetection();
 }
 
-bool ReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault() {
-  return getAccessor().enableWebPerformanceAPIsByDefault();
-}
-
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
@@ -342,20 +338,8 @@ bool ReactNativeFeatureFlags::useFabricInterop() {
   return getAccessor().useFabricInterop();
 }
 
-bool ReactNativeFeatureFlags::useNativeEqualsInNativeReadableArrayAndroid() {
-  return getAccessor().useNativeEqualsInNativeReadableArrayAndroid();
-}
-
-bool ReactNativeFeatureFlags::useNativeTransformHelperAndroid() {
-  return getAccessor().useNativeTransformHelperAndroid();
-}
-
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
   return getAccessor().useNativeViewConfigsInBridgelessMode();
-}
-
-bool ReactNativeFeatureFlags::useRawPropsJsiValue() {
-  return getAccessor().useRawPropsJsiValue();
 }
 
 bool ReactNativeFeatureFlags::useShadowNodeStateOnClone() {

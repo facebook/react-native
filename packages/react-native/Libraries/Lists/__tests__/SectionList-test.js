@@ -99,7 +99,7 @@ describe('SectionList', () => {
   });
 });
 
-function propStr(props: $ReadOnly<{[string]: $FlowFixMe}>) {
+function propStr(props: Readonly<{[string]: $FlowFixMe}>) {
   return Object.keys(props)
     .map(k => {
       const propObj = props[k] || {};

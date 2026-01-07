@@ -162,7 +162,7 @@ function convertRawJsonToJSX(
 
 function createJSXElementForTestComparison(
   type: string,
-  props: mixed,
+  props: unknown,
   key?: ?string,
 ): React.Node {
   const Tag = type;

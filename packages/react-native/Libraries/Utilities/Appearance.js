@@ -35,7 +35,7 @@ let lazyState: ?{
 /**
  * Ensures that all state and listeners are lazily initialized correctly.
  */
-function getState(): $NonMaybeType<typeof lazyState> {
+function getState(): NonNullable<typeof lazyState> {
   if (lazyState != null) {
     return lazyState;
   }
@@ -50,7 +50,7 @@ function getState(): $NonMaybeType<typeof lazyState> {
       eventEmitter,
     };
   } else {
-    const state: $NonMaybeType<typeof lazyState> = {
+    const state: NonNullable<typeof lazyState> = {
       NativeAppearance,
       appearance: null,
       eventEmitter,

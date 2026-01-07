@@ -18,7 +18,7 @@ import type {HostComponent} from '../../types/HostComponent';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type AndroidProgressBarNativeProps = $ReadOnly<{
+type AndroidProgressBarNativeProps = Readonly<{
   ...ViewProps,
 
   //Props

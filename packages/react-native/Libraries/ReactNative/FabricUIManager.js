@@ -71,7 +71,7 @@ export interface Spec {
   +dispatchCommand: (
     node: Node,
     commandName: string,
-    args: Array<mixed>,
+    args: Array<unknown>,
   ) => void;
   +findNodeAtPoint: (
     node: Node,

@@ -14,6 +14,7 @@ const t = require('@babel/types');
 
 const Result = {
   BREAKING: 'BREAKING',
+  POTENTIALLY_BREAKING: 'POTENTIALLY_BREAKING',
   POTENTIALLY_NON_BREAKING: 'POTENTIALLY_NON_BREAKING',
   NON_BREAKING: 'NON_BREAKING',
 } as const;
@@ -62,7 +63,7 @@ function analyzeSpecHashPairs(
       const newHash = newSpecHashMapping[name];
       if (hash !== newHash) {
         // The hash has changed which means that the statement has changed
-        output.result = Result.BREAKING;
+        output.result = Result.POTENTIALLY_BREAKING;
         output.changedApis.push(name);
       }
       delete newSpecHashMapping[name];

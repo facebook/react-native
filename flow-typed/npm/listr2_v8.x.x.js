@@ -8,7 +8,7 @@
 declare module 'listr2' {
   declare export type TaskResult<
     ContextT = {__proto__: null},
-    ReturnT = mixed,
+    ReturnT = unknown,
   > =
     | ReturnT
     | Promise<ReturnT>
@@ -35,7 +35,7 @@ declare module 'listr2' {
 
   declare export type TaskSpec<
     ContextT = {__proto__: null},
-    ReturnT = mixed,
+    ReturnT = unknown,
   > = {
     title: string,
     task: TaskFn<ContextT, ReturnT>,

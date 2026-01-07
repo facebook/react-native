@@ -145,7 +145,7 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMe> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{}>;
+type AdjustingFontSizeProps = Readonly<{}>;
 
 type AdjustingFontSizeState = {
   dynamicText: string,
@@ -269,7 +269,7 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
-class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
+class TextBaseLineLayoutExample extends React.Component<{}, unknown> {
   render(): React.Node {
     const texts = [];
     for (let i = 9; i >= 0; i--) {
@@ -393,7 +393,7 @@ class TextRenderInfoExample extends React.Component<
   {
     fontSize: number,
     numberOfTextBlocks: number,
-    textMetrics: $ReadOnly<{
+    textMetrics: Readonly<{
       ascender: number,
       capHeight: number,
       descender: number,
@@ -409,7 +409,7 @@ class TextRenderInfoExample extends React.Component<
   state: {
     fontSize: number,
     numberOfTextBlocks: number,
-    textMetrics: $ReadOnly<{
+    textMetrics: Readonly<{
       ascender: number,
       capHeight: number,
       descender: number,
@@ -506,7 +506,7 @@ class TextRenderInfoExample extends React.Component<
 class TextWithCapBaseBox extends React.Component<
   {children: string, style?: any},
   {
-    textMetrics: $ReadOnly<{
+    textMetrics: Readonly<{
       ascender: number,
       capHeight: number,
       descender: number,
@@ -520,7 +520,7 @@ class TextWithCapBaseBox extends React.Component<
   },
 > {
   state: {
-    textMetrics: $ReadOnly<{
+    textMetrics: Readonly<{
       ascender: number,
       capHeight: number,
       descender: number,

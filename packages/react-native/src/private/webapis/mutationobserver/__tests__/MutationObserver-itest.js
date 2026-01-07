@@ -29,14 +29,14 @@ declare const MutationRecord: Class<MutationRecordType>;
 
 setUpMutationObserver();
 
-function ensureReactNativeElement(value: mixed): ReactNativeElement {
+function ensureReactNativeElement(value: unknown): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
 }
 
 function ensureMutationRecordArray(
-  value: mixed,
+  value: unknown,
 ): $ReadOnlyArray<MutationRecord> {
-  return ensureInstance(value, Array).map((element: mixed) =>
+  return ensureInstance(value, Array).map((element: unknown) =>
     ensureInstance(element, MutationRecord),
   );
 }
@@ -239,7 +239,7 @@ describe('MutationObserver', () => {
       const node = ensureReactNativeElement(nodeRef.current);
 
       const observerCallbackCallArgs = [];
-      const observerCallback = (...args: $ReadOnlyArray<mixed>) => {
+      const observerCallback = (...args: $ReadOnlyArray<unknown>) => {
         observerCallbackCallArgs.push(args);
       };
       const observer = new MutationObserver(observerCallback);

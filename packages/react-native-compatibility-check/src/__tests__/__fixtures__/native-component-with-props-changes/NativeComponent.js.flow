@@ -17,7 +17,7 @@ import type {
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-export type Props = $ReadOnly<{
+export type Props = Readonly<{
   ...ViewProps,
   text: Int32,
   backgroundColor?: WithDefault<string, 'transparent'>,

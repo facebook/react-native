@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bcc01b9b2c819da4b40445efd89a4250>>
+ * @generated SignedSource<<c8aecb06e11a392bf75d49584e07acdf>>
  */
 
 /**
@@ -320,11 +320,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableVirtualViewWindowFocusDetection();
 
   /**
-   * Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.
-   */
-  RN_EXPORT static bool enableWebPerformanceAPIsByDefault();
-
-  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -435,24 +430,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useFabricInterop();
 
   /**
-   * Use a native implementation of equals in NativeReadableArray.
-   */
-  RN_EXPORT static bool useNativeEqualsInNativeReadableArrayAndroid();
-
-  /**
-   * Use a native implementation of TransformHelper
-   */
-  RN_EXPORT static bool useNativeTransformHelperAndroid();
-
-  /**
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
-
-  /**
-   * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
-   */
-  RN_EXPORT static bool useRawPropsJsiValue();
 
   /**
    * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.

@@ -495,7 +495,7 @@ describe('TypeScript Module Parser', () => {
               propName: string,
               propType: string,
             ): [
-              $ReadOnly<{
+              Readonly<{
                 name: string,
                 optional: boolean,
                 typeAnnotation: NativeModuleBaseTypeAnnotation,
@@ -1029,7 +1029,7 @@ describe('TypeScript Module Parser', () => {
                 propName: string,
                 propType: string,
               ): [
-                $ReadOnly<{
+                Readonly<{
                   name: string,
                   optional: boolean,
                   typeAnnotation: NativeModuleBaseTypeAnnotation,

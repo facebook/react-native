@@ -31,7 +31,7 @@ const nullthrows = require('nullthrows');
 type FilesOutput = Map<string, string>;
 type StructsMap = Map<string, string>;
 
-type ComponentCollection = $ReadOnly<{
+type ComponentCollection = Readonly<{
   [component: string]: ComponentShape,
   ...
 }>;
@@ -109,6 +109,7 @@ const EnumTemplate = ({
 static char const *toString(const ${enumName} value) {
   switch (value) {
     ${toCases}
+    default: return "";
   }
 }
 `.trim();

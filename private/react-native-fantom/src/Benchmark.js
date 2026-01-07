@@ -22,7 +22,7 @@ import {
 
 type SyncFn = () => FnReturnedObject | void;
 
-export type SuiteOptions = $ReadOnly<{
+export type SuiteOptions = Readonly<{
   minIterations?: number,
   minTestExecutionTimeMs?: number,
   warmup?: boolean,
@@ -51,12 +51,12 @@ export type BenchmarkResult = {
   timings: $ReadOnlyArray<TestTaskTiming>,
 };
 
-type InternalTestOptions = $ReadOnly<{
+type InternalTestOptions = Readonly<{
   ...FnOptions,
   only?: boolean,
 }>;
 
-type SuiteResults = Array<$ReadOnly<TaskResult>>;
+type SuiteResults = Array<Readonly<TaskResult>>;
 
 type TestWithArgName<TestArgType> = string | ((testArg: TestArgType) => string);
 

@@ -21,7 +21,7 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-export type TouchableOpacityTVProps = $ReadOnly<{
+export type TouchableOpacityTVProps = Readonly<{
   /**
    * *(Apple TV only)* TV preferred focus (see documentation for the View component).
    *
@@ -66,7 +66,7 @@ export type TouchableOpacityTVProps = $ReadOnly<{
   nextFocusUp?: ?number,
 }>;
 
-type TouchableOpacityBaseProps = $ReadOnly<{
+type TouchableOpacityBaseProps = Readonly<{
   /**
    * Determines what the opacity of the wrapped view should be when touch is active.
    * Defaults to 0.2
@@ -77,13 +77,13 @@ type TouchableOpacityBaseProps = $ReadOnly<{
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 }>;
 
-export type TouchableOpacityProps = $ReadOnly<{
+export type TouchableOpacityProps = Readonly<{
   ...TouchableWithoutFeedbackProps,
   ...TouchableOpacityTVProps,
   ...TouchableOpacityBaseProps,
 }>;
 
-type TouchableOpacityState = $ReadOnly<{
+type TouchableOpacityState = Readonly<{
   anim: Animated.Value,
   pressability: Pressability,
 }>;

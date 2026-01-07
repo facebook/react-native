@@ -12,7 +12,7 @@ import type {BabelCoreOptions} from '@babel/core';
 
 const {ModuleResolutionKind} = require('typescript');
 
-export type BuildOptions = $ReadOnly<{
+export type BuildOptions = Readonly<{
   // The target runtime to compile for.
   target: 'node',
 
@@ -23,9 +23,9 @@ export type BuildOptions = $ReadOnly<{
   emitTypeScriptDefs?: boolean,
 }>;
 
-export type BuildConfig = $ReadOnly<{
+export type BuildConfig = Readonly<{
   // The packages to include for build and their build options.
-  packages: $ReadOnly<{[packageName: string]: BuildOptions}>,
+  packages: Readonly<{[packageName: string]: BuildOptions}>,
 }>;
 
 /**

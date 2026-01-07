@@ -32,31 +32,31 @@ declare interface ConsoleTask {
 // $FlowExpectedError[libdef-override] Flow core definitions are incomplete.
 declare var console: {
   // Logging
-  log(...data: $ReadOnlyArray<mixed>): void,
-  trace(...data: $ReadOnlyArray<mixed>): void,
-  debug(...data: $ReadOnlyArray<mixed>): void,
-  info(...data: $ReadOnlyArray<mixed>): void,
-  warn(...data: $ReadOnlyArray<mixed>): void,
-  error(...data: $ReadOnlyArray<mixed>): void,
+  log(...data: $ReadOnlyArray<unknown>): void,
+  trace(...data: $ReadOnlyArray<unknown>): void,
+  debug(...data: $ReadOnlyArray<unknown>): void,
+  info(...data: $ReadOnlyArray<unknown>): void,
+  warn(...data: $ReadOnlyArray<unknown>): void,
+  error(...data: $ReadOnlyArray<unknown>): void,
 
   // Grouping
-  group(...data: $ReadOnlyArray<mixed>): void,
-  groupCollapsed(...data: $ReadOnlyArray<mixed>): void,
+  group(...data: $ReadOnlyArray<unknown>): void,
+  groupCollapsed(...data: $ReadOnlyArray<unknown>): void,
   groupEnd(): void,
 
   // Printing
   table(
     tabularData:
-      | $ReadOnly<{[key: string]: mixed, ...}>
-      | $ReadOnlyArray<$ReadOnly<{[key: string]: mixed, ...}>>
-      | $ReadOnlyArray<$ReadOnlyArray<mixed>>,
+      | Readonly<{[key: string]: unknown, ...}>
+      | $ReadOnlyArray<Readonly<{[key: string]: unknown, ...}>>
+      | $ReadOnlyArray<$ReadOnlyArray<unknown>>,
   ): void,
-  dir(...data: $ReadOnlyArray<mixed>): void,
-  dirxml(...data: $ReadOnlyArray<mixed>): void,
+  dir(...data: $ReadOnlyArray<unknown>): void,
+  dirxml(...data: $ReadOnlyArray<unknown>): void,
   clear(): void,
 
   // Utilities
-  assert(condition: mixed, ...data: $ReadOnlyArray<mixed>): void,
+  assert(condition: unknown, ...data: $ReadOnlyArray<unknown>): void,
 
   // Profiling
   profile(name?: string): void,
@@ -76,7 +76,7 @@ declare var console: {
     trackName?: string,
     trackGroup?: string,
     color?: DevToolsColor,
-    detail?: {[string]: mixed},
+    detail?: {[string]: unknown},
   ): void,
 
   // Stack tagging
@@ -114,12 +114,12 @@ declare class PerformanceEntry {
 // https://w3c.github.io/user-timing/#performancemark
 declare class PerformanceMark extends PerformanceEntry {
   constructor(name: string, markOptions?: PerformanceMarkOptions): void;
-  +detail: mixed;
+  +detail: unknown;
 }
 
 // https://w3c.github.io/user-timing/#performancemeasure
 declare class PerformanceMeasure extends PerformanceEntry {
-  +detail: mixed;
+  +detail: unknown;
 }
 
 // https://w3c.github.io/server-timing/#the-performanceservertiming-interface
@@ -177,12 +177,12 @@ declare class PerformanceLongTaskTiming extends PerformanceEntry {
 
 // https://www.w3.org/TR/user-timing/#extensions-performance-interface
 declare type PerformanceMarkOptions = {
-  detail?: mixed,
+  detail?: unknown,
   startTime?: number,
 };
 
 declare type PerformanceMeasureOptions = {
-  detail?: mixed,
+  detail?: unknown,
   duration?: number,
   end?: number | string,
   start?: number | string,
@@ -249,7 +249,7 @@ declare class PerformanceObserver {
     callback: (
       entries: PerformanceObserverEntryList,
       observer: PerformanceObserver,
-    ) => mixed,
+    ) => unknown,
   ): void;
 
   disconnect(): void;
@@ -345,10 +345,10 @@ declare class WebSocket extends EventTarget {
   CONNECTING: 0;
   constructor(url: string, protocols?: string | Array<string>): void;
   extensions: string;
-  onclose: (ev: CloseEvent) => mixed;
-  onerror: (ev: $FlowFixMe) => mixed;
-  onmessage: (ev: MessageEvent) => mixed;
-  onopen: (ev: $FlowFixMe) => mixed;
+  onclose: (ev: CloseEvent) => unknown;
+  onerror: (ev: $FlowFixMe) => unknown;
+  onmessage: (ev: MessageEvent) => unknown;
+  onopen: (ev: $FlowFixMe) => unknown;
   static OPEN: 1;
   OPEN: 1;
   protocol: string;
@@ -378,7 +378,7 @@ declare class XMLHttpRequest extends EventTarget {
   onloadend: ProgressEventHandler;
   onloadstart: ProgressEventHandler;
   onprogress: ProgressEventHandler;
-  onreadystatechange: (ev: $FlowFixMe) => mixed;
+  onreadystatechange: (ev: $FlowFixMe) => unknown;
   ontimeout: ProgressEventHandler;
   open(
     method: string,
@@ -441,7 +441,7 @@ declare class Headers {
       value: string,
       name: string,
       headers: Headers,
-    ) => mixed,
+    ) => unknown,
     thisArg: This,
   ): void;
   get(name: string): null | string;
@@ -471,7 +471,7 @@ declare class URLSearchParams {
       value: string,
       name: string,
       params: URLSearchParams,
-    ) => mixed,
+    ) => unknown,
     thisArg: This,
   ): void;
   get(name: string): null | string;
@@ -611,7 +611,7 @@ declare class AbortController {
 declare class AbortSignal extends EventTarget {
   abort(reason?: $FlowFixMe): AbortSignal;
   +aborted: boolean;
-  onabort: (event: Event) => mixed;
+  onabort: (event: Event) => unknown;
   +reason: $FlowFixMe;
   throwIfAborted(): void;
   timeout(time: number): AbortSignal;

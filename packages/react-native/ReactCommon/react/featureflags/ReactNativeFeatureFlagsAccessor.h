@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1d07100c77ccacf1ea60ffdfd35a0e09>>
+ * @generated SignedSource<<d876bc2256891d6548f191298e0d5d32>>
  */
 
 /**
@@ -88,7 +88,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableVirtualViewDebugFeatures();
   bool enableVirtualViewRenderState();
   bool enableVirtualViewWindowFocusDetection();
-  bool enableWebPerformanceAPIsByDefault();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixTextClippingAndroid15useBoundsForWidth();
   bool fuseboxAssertSingleHostState();
@@ -111,10 +110,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool updateRuntimeShadowNodeReferencesOnCommit();
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
-  bool useNativeEqualsInNativeReadableArrayAndroid();
-  bool useNativeTransformHelperAndroid();
   bool useNativeViewConfigsInBridgelessMode();
-  bool useRawPropsJsiValue();
   bool useShadowNodeStateOnClone();
   bool useSharedAnimatedBackend();
   bool useTraitHiddenOnAndroid();
@@ -134,7 +130,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 91> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 87> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -192,7 +188,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
   std::atomic<std::optional<bool>> enableVirtualViewRenderState_;
   std::atomic<std::optional<bool>> enableVirtualViewWindowFocusDetection_;
-  std::atomic<std::optional<bool>> enableWebPerformanceAPIsByDefault_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixTextClippingAndroid15useBoundsForWidth_;
   std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;
@@ -215,10 +210,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
-  std::atomic<std::optional<bool>> useNativeEqualsInNativeReadableArrayAndroid_;
-  std::atomic<std::optional<bool>> useNativeTransformHelperAndroid_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
-  std::atomic<std::optional<bool>> useRawPropsJsiValue_;
   std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;

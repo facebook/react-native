@@ -30,14 +30,14 @@ const osTempDir = require('temp-dir');
 const {globSync} = require('tinyglobby');
 const {styleText} = require('util');
 
-const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
+const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<unknown>> = [
   require('./transforms/typescript/renameDefaultExportedIdentifiers'),
   require('./transforms/typescript/stripUnstableApis'),
 ];
 
 const postTransforms = (
   options: BuildApiSnapshotOptions,
-): $ReadOnlyArray<PluginObj<mixed>> => [
+): $ReadOnlyArray<PluginObj<unknown>> => [
   require('./transforms/typescript/simplifyTypes'),
   require('./transforms/typescript/sortProperties'),
   require('./transforms/typescript/sortUnions'),
@@ -48,7 +48,7 @@ const postTransforms = (
   ),
 ];
 
-type BuildApiSnapshotOptions = $ReadOnly<{
+type BuildApiSnapshotOptions = Readonly<{
   validate: boolean,
   debugVersionAnnotations: boolean,
 }>;

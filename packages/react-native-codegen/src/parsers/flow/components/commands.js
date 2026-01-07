@@ -28,7 +28,7 @@ function buildCommandSchema(
   property: EventTypeAST,
   types: TypeDeclarationMap,
   parser: Parser,
-): $ReadOnly<{
+): Readonly<{
   name: string,
   optional: boolean,
   typeAnnotation: {
@@ -105,11 +105,12 @@ function buildCommandSchema(
         break;
       case 'Array':
       case '$ReadOnlyArray':
+      case 'ReadonlyArray':
         /* $FlowFixMe[invalid-compare] Error discovered during Constant
          * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
         if (!paramValue.type === 'GenericTypeAnnotation') {
           throw new Error(
-            'Array and $ReadOnlyArray are GenericTypeAnnotation for array',
+            'Array, $ReadOnlyArray and ReadonlyArray are GenericTypeAnnotation for array',
           );
         }
         returnType = {
@@ -130,7 +131,7 @@ function buildCommandSchema(
         };
         break;
       default:
-        (type: mixed);
+        (type: unknown);
         throw new Error(
           `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
         );
@@ -159,7 +160,7 @@ function buildCommandSchema(
 type Allowed = ComponentCommandArrayTypeAnnotation['elementType'];
 
 function getCommandArrayElementTypeType(
-  inputType: mixed,
+  inputType: unknown,
   parser: Parser,
 ): Allowed {
   // TODO: T172453752 support more complex type annotation for array element

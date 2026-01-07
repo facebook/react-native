@@ -27,7 +27,7 @@ const ModuleTemplate = ({
   moduleName,
   eventEmitters,
   methodSerializationOutputs,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   structs: $ReadOnlyArray<Struct>,
   moduleName: string,
@@ -96,7 +96,7 @@ namespace facebook::react {
 const RCTCxxConvertCategoryTemplate = ({
   hasteModuleName,
   structName,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   structName: string,
 }>) => `@implementation RCTCxxConvert (${hasteModuleName}_${structName})
@@ -111,7 +111,7 @@ const InlineHostFunctionTemplate = ({
   methodName,
   returnJSType,
   selector,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   methodName: string,
   returnJSType: string,
@@ -126,7 +126,7 @@ const MethodMapEntryTemplate = ({
   methodName,
   structParamRecords,
   argCount,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   methodName: string,
   structParamRecords: $ReadOnlyArray<StructParameterRecord>,

@@ -923,6 +923,8 @@ extension Target {
         .define("DEBUG", .when(configuration: .debug)),
         .define("NDEBUG", .when(configuration: .release)),
         .define("USE_HERMES", to: "1"),
+        .define("RCT_REMOVE_LEGACY_ARCH", to: "1"),
+        .define("HERMES_V1_ENABLED", to: "1"),
       ] + defines + cxxCommonHeaderPaths
 
     return .target(

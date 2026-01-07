@@ -19,19 +19,19 @@ import AnimatedObject from './AnimatedObject';
 import AnimatedTransform from './AnimatedTransform';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-export type AnimatedStyleAllowlist = $ReadOnly<{[string]: true}>;
+export type AnimatedStyleAllowlist = Readonly<{[string]: true}>;
 
-type FlatStyle = {[string]: mixed};
-type FlatStyleForWeb<TStyle: FlatStyle> = [mixed, TStyle];
+type FlatStyle = {[string]: unknown};
+type FlatStyleForWeb<TStyle: FlatStyle> = [unknown, TStyle];
 
 function createAnimatedStyle(
   flatStyle: FlatStyle,
   allowlist: ?AnimatedStyleAllowlist,
   keepUnanimatedValues: boolean,
-): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
+): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: unknown}] {
   const nodeKeys: Array<string> = [];
   const nodes: Array<AnimatedNode> = [];
-  const style: {[string]: mixed} = {};
+  const style: {[string]: unknown} = {};
 
   const keys = Object.keys(flatStyle);
   for (let ii = 0, length = keys.length; ii < length; ii++) {
@@ -82,10 +82,10 @@ function createAnimatedStyle(
 }
 
 export default class AnimatedStyle extends AnimatedWithChildren {
-  _originalStyleForWeb: ?mixed;
+  _originalStyleForWeb: ?unknown;
   _nodeKeys: $ReadOnlyArray<string>;
   _nodes: $ReadOnlyArray<AnimatedNode>;
-  _style: {[string]: mixed};
+  _style: {[string]: unknown};
 
   /**
    * Creates an `AnimatedStyle` if `value` contains `AnimatedNode` instances.
@@ -94,7 +94,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   static from(
     flatStyle: ?FlatStyle,
     allowlist: ?AnimatedStyleAllowlist,
-    originalStyleForWeb: ?mixed,
+    originalStyleForWeb: ?unknown,
   ): ?AnimatedStyle {
     if (flatStyle == null) {
       return null;
@@ -115,8 +115,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   constructor(
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
-    style: {[string]: mixed},
-    originalStyleForWeb: ?mixed,
+    style: {[string]: unknown},
+    originalStyleForWeb: ?unknown,
     config?: ?AnimatedNodeConfig,
   ) {
     super(config);
@@ -134,7 +134,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __getValue(): FlatStyleForWeb<FlatStyle> | FlatStyle {
-    const style: {[string]: mixed} = {};
+    const style: {[string]: unknown} = {};
 
     const keys = Object.keys(this._style);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
@@ -164,7 +164,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
    * Mutates the supplied `style` object such that animated nodes are replaced
    * with rasterized values.
    */
-  __replaceAnimatedNodeWithValues(style: {[string]: mixed}): void {
+  __replaceAnimatedNodeWithValues(style: {[string]: unknown}): void {
     const keys = Object.keys(style);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
@@ -185,7 +185,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __getAnimatedValue(): Object {
-    const style: {[string]: mixed} = {};
+    const style: {[string]: unknown} = {};
 
     const nodeKeys = this._nodeKeys;
     const nodes = this._nodes;
@@ -253,6 +253,6 @@ export default class AnimatedStyle extends AnimatedWithChildren {
 // this shim when they do.
 // $FlowFixMe[method-unbinding]
 const _hasOwnProp = Object.prototype.hasOwnProperty;
-const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
+const hasOwn: (obj: Readonly<{...}>, prop: string) => boolean =
   // $FlowFixMe[method-unbinding]
   Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));

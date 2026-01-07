@@ -16,10 +16,17 @@ runs:
       uses: ./.github/actions/setup-node
     - name: Install node dependencies
       uses: ./.github/actions/yarn-install
+    - name: Read current RNVersion
+      shell: bash
+      id: read-rn-version
+      run: |
+        echo "rn-version=$(jq -r '.version' packages/react-native/package.json)" >> $GITHUB_OUTPUT
     - name: Set React Native Version
       # We don't want to set the version for stable branches, because this has been
       # already set from the 'create release' commits on the release branch.
-      if: ${{ !endsWith(github.ref_name, '-stable') }}
+      # For testing RC.0, though, the version has not been set yet. In that case, we are on Stable branch and
+      # it is the only case when the version is still 1000.0.0
+      if: ${{ !endsWith(github.ref_name, '-stable') || endsWith(github.ref_name, '-stable') && steps.read-rn-version.outputs.rn-version == '1000.0.0' }}
       shell: bash
       run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}
     - name: Setup gradle
@@ -28,7 +35,7 @@ runs:
         cache-read-only: "false"
         cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
     - name: Restore Android ccache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: /github/home/.cache/ccache
         key: v2-ccache-android-${{ github.job }}-${{ github.ref }}-${{ hashFiles('packages/react-native/ReactAndroid/**/*.cpp', 'packages/react-native/ReactAndroid/**/*.h', 'packages/react-native/ReactCommon/**/*.cpp', 'packages/react-native/ReactAndroid/**/CMakeLists.txt', 'packages/react-native/ReactCommon/**/CMakeLists.txt') }}
@@ -45,19 +52,22 @@ runs:
         if [[ "${{ inputs.release-type }}" == "dry-run" ]]; then
           # dry-run: we only build ARM64 to save time/resources. For release/nightlies the default is to build all archs.
           export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a,x86" # x86 is required for E2E testing
+          export HERMES_PREBUILT_FLAG="ORG_GRADLE_PROJECT_react.internal.useHermesNightly=true"
           TASKS="publishAllToMavenTempLocal build"
         elif [[ "${{ inputs.release-type }}" == "nightly" ]]; then
           # nightly: we set isSnapshot to true so artifacts are sent to the right repository on Maven Central.
           export ORG_GRADLE_PROJECT_isSnapshot="true"
+          export HERMES_PREBUILT_FLAG="ORG_GRADLE_PROJECT_react.internal.useHermesNightly=true"
           TASKS="publishAllToMavenTempLocal publishAndroidToSonatype build"
         else
           # release: we want to build all archs (default)
+          export HERMES_PREBUILT_FLAG="ORG_GRADLE_PROJECT_react.internal.useHermesStable=true"
           TASKS="publishAllToMavenTempLocal publishAndroidToSonatype build"
         fi
-        ./gradlew $TASKS -PenableWarningsAsErrors=true
+        env "$HERMES_PREBUILT_FLAG" ./gradlew $TASKS -PenableWarningsAsErrors=true
     - name: Save Android ccache
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }}
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: /github/home/.cache/ccache
         key: v2-ccache-android-${{ github.job }}-${{ github.ref }}-${{ hashFiles('packages/react-native/ReactAndroid/**/*.cpp', 'packages/react-native/ReactAndroid/**/*.h', 'packages/react-native/ReactCommon/**/*.cpp', 'packages/react-native/ReactAndroid/**/CMakeLists.txt', 'packages/react-native/ReactCommon/**/CMakeLists.txt') }}
@@ -65,13 +75,13 @@ runs:
       shell: bash
       run: ccache -s -v
     - name: Upload Maven Artifacts
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v6
       with:
         name: maven-local
         path: /tmp/maven-local
     - name: Upload test results
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v6
       with:
         name: build-android-results
         compression-level: 1
@@ -81,14 +91,14 @@ runs:
           packages/react-native/ReactAndroid/build/reports
     - name: Upload RNTester APK - hermes-debug
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v6
       with:
         name: rntester-debug
         path: packages/rn-tester/android/app/build/outputs/apk/debug/
         compression-level: 0
     - name: Upload RNTester APK - hermes-release
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v6
       with:
         name: rntester-release
         path: packages/rn-tester/android/app/build/outputs/apk/release/

@@ -21,12 +21,12 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type AndroidSwitchChangeEvent = $ReadOnly<{
+type AndroidSwitchChangeEvent = Readonly<{
   value: boolean,
   target: Int32,
 }>;
 
-type AndroidSwitchNativeProps = $ReadOnly<{
+type AndroidSwitchNativeProps = Readonly<{
   ...ViewProps,
 
   // Props

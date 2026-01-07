@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<667a574178cd3cf3ad5484ac5fbd8c70>>
+ * @generated SignedSource<<fe8649f95942077d4a3e839de63de5b1>>
  */
 
 /**
@@ -140,8 +140,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableVirtualViewWindowFocusDetection(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableWebPerformanceAPIsByDefault(): Boolean
-
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fixTextClippingAndroid15useBoundsForWidth(): Boolean
@@ -186,13 +184,7 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useNativeTransformHelperAndroid(): Boolean
-
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useRawPropsJsiValue(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useShadowNodeStateOnClone(): Boolean
 

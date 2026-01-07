@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e2f575f33c064d137d5bad7568a76fc1>>
+ * @generated SignedSource<<73dc811f44d9e6ca61c321807fb3632c>>
  */
 
 /**
@@ -148,8 +148,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableVirtualViewWindowFocusDetection(jsi::Runtime& runtime);
 
-  bool enableWebPerformanceAPIsByDefault(jsi::Runtime& runtime);
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
   bool fixTextClippingAndroid15useBoundsForWidth(jsi::Runtime& runtime);
@@ -194,13 +192,7 @@ class NativeReactNativeFeatureFlags
 
   bool useFabricInterop(jsi::Runtime& runtime);
 
-  bool useNativeEqualsInNativeReadableArrayAndroid(jsi::Runtime& runtime);
-
-  bool useNativeTransformHelperAndroid(jsi::Runtime& runtime);
-
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
-
-  bool useRawPropsJsiValue(jsi::Runtime& runtime);
 
   bool useShadowNodeStateOnClone(jsi::Runtime& runtime);
 

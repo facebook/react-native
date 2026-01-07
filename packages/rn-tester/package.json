@@ -10,7 +10,7 @@
     "directory": "packages/rn-tester"
   },
   "engines": {
-    "node": ">= 20.19.4"
+    "node": ">= 22.11.0"
   },
   "scripts": {
     "start": "react-native start",
@@ -32,7 +32,7 @@
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "19.2.0",
+    "react": "19.2.3",
     "react-native": "*"
   },
   "codegenConfig": {

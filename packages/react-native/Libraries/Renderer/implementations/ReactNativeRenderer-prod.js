@@ -7,9 +7,10 @@
  * @noflow
  * @nolint
  * @preventMunge
+ * @generated SignedSource<<7e40a1e09e8b18f5fde8d400a830ed9a>>
  *
  * This file is no longer sync'd from the facebook/react repository.
- * The version compatability check is removed. Use at your own risk.
+ * The version compatibility check is removed. Use at your own risk.
  */
 
 "use strict";
@@ -10918,6 +10919,13 @@ function updateContainer(element, container, parentComponent, callback) {
     entangleTransitions(element, parentComponent, lane));
   return lane;
 }
+var isomorphicReactPackageVersion = React.version;
+if ("19.2.3" !== isomorphicReactPackageVersion)
+  throw Error(
+    'Incompatible React versions: The "react" and "react-native-renderer" packages must have the exact same version. Instead got:\n  - react:                  ' +
+      (isomorphicReactPackageVersion +
+        "\n  - react-native-renderer:  19.2.3\nLearn more: https://react.dev/warnings/version-mismatch")
+  );
 if (
   "function" !==
   typeof ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog
@@ -10966,10 +10974,10 @@ batchedUpdatesImpl = function (fn, a) {
 var roots = new Map(),
   internals$jscomp$inline_1296 = {
     bundleType: 0,
-    version: "19.2.0",
+    version: "19.2.3",
     rendererPackageName: "react-native-renderer",
     currentDispatcherRef: ReactSharedInternals,
-    reconcilerVersion: "19.2.0"
+    reconcilerVersion: "19.2.3"
   };
 null !== extraDevToolsConfig &&
   (internals$jscomp$inline_1296.rendererConfig = extraDevToolsConfig);
