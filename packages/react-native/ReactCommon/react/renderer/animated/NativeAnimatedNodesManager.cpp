@@ -244,8 +244,7 @@ void NativeAnimatedNodesManager::connectAnimatedNodeToShadowNodeFamily(
   react_native_assert(propsNodeTag);
   auto node = getAnimatedNode<PropsAnimatedNode>(propsNodeTag);
   if (node != nullptr && family != nullptr) {
-    std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
-    tagToShadowNodeFamily_[family->getTag()] = family;
+    node->connectToShadowNodeFamily(family);
   } else {
     LOG(WARNING)
         << "Cannot ConnectAnimatedNodeToShadowNodeFamily, animated node has to be props type";
@@ -261,13 +260,12 @@ void NativeAnimatedNodesManager::disconnectAnimatedNodeFromView(
   auto node = getAnimatedNode<PropsAnimatedNode>(propsNodeTag);
   if (node != nullptr) {
     node->disconnectFromView(viewTag);
+    if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+      node->disconnectFromShadowNodeFamily();
+    }
     {
       std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
       connectedAnimatedNodes_.erase(viewTag);
-    }
-    {
-      std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
-      tagToShadowNodeFamily_.erase(viewTag);
     }
     updatedNodeTags_.insert(node->tag());
 
@@ -907,13 +905,14 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     Tag viewTag,
     const folly::dynamic& props,
     bool layoutStyleUpdated,
-    bool forceFabricCommit) noexcept {
+    bool forceFabricCommit,
+    ShadowNodeFamily::Weak shadowNodeFamily) noexcept {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    if (layoutStyleUpdated) {
-      mergeObjects(updateViewProps_[viewTag], props);
-    } else {
-      mergeObjects(updateViewPropsDirect_[viewTag], props);
-    }
+    auto& current = layoutStyleUpdated
+        ? updateViewPropsForBackend_[viewTag]
+        : updateViewPropsDirectForBackend_[viewTag];
+    current.first = std::move(shadowNodeFamily);
+    mergeObjects(current.second, props);
     return;
   }
 
@@ -1007,49 +1006,39 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
         }
       }
 
-      {
-        std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
-        for (auto& [tag, props] : updateViewPropsDirect_) {
-          auto familyIt = tagToShadowNodeFamily_.find(tag);
-          if (familyIt == tagToShadowNodeFamily_.end()) {
-            continue;
-          }
+      for (auto& [tag, update] : updateViewPropsDirectForBackend_) {
+        auto weakFamily = update.first;
 
-          auto weakFamily = familyIt->second;
-          if (auto family = weakFamily.lock()) {
-            propsBuilder.storeDynamic(props);
-            mutations.batch.push_back(
-                AnimationMutation{
-                    .tag = tag,
-                    .family = family,
-                    .props = propsBuilder.get(),
-                });
-          }
-          containsChange = true;
+        if (auto family = weakFamily.lock()) {
+          propsBuilder.storeDynamic(update.second);
+          mutations.batch.push_back(
+              AnimationMutation{
+                  .tag = tag,
+                  .family = family,
+                  .props = propsBuilder.get(),
+              });
         }
-        for (auto& [tag, props] : updateViewProps_) {
-          auto familyIt = tagToShadowNodeFamily_.find(tag);
-          if (familyIt == tagToShadowNodeFamily_.end()) {
-            continue;
-          }
-
-          auto weakFamily = familyIt->second;
-          if (auto family = weakFamily.lock()) {
-            propsBuilder.storeDynamic(props);
-            mutations.batch.push_back(
-                AnimationMutation{
-                    .tag = tag,
-                    .family = family,
-                    .props = propsBuilder.get(),
-                    .hasLayoutUpdates = true,
-                });
-          }
-          containsChange = true;
-        }
+        containsChange = true;
       }
+      for (auto& [tag, update] : updateViewPropsForBackend_) {
+        auto weakFamily = update.first;
+
+        if (auto family = weakFamily.lock()) {
+          propsBuilder.storeDynamic(update.second);
+          mutations.batch.push_back(
+              AnimationMutation{
+                  .tag = tag,
+                  .family = family,
+                  .props = propsBuilder.get(),
+                  .hasLayoutUpdates = true,
+              });
+        }
+        containsChange = true;
+      }
+
       if (containsChange) {
-        updateViewPropsDirect_.clear();
-        updateViewProps_.clear();
+        updateViewPropsDirectForBackend_.clear();
+        updateViewPropsForBackend_.clear();
       }
     }
 
@@ -1076,46 +1065,36 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
 
       isEventAnimationInProgress_ = false;
 
-      {
-        std::lock_guard<std::mutex> lock(tagToShadowNodeFamilyMutex_);
-        for (auto& [tag, props] : updateViewPropsDirect_) {
-          auto familyIt = tagToShadowNodeFamily_.find(tag);
-          if (familyIt == tagToShadowNodeFamily_.end()) {
-            continue;
-          }
+      for (auto& [tag, update] : updateViewPropsDirectForBackend_) {
+        auto weakFamily = update.first;
 
-          auto weakFamily = familyIt->second;
-          if (auto family = weakFamily.lock()) {
-            propsBuilder.storeDynamic(props);
-            mutations.batch.push_back(
-                AnimationMutation{
-                    .tag = tag,
-                    .family = family,
-                    .props = propsBuilder.get(),
-                });
-          }
-        }
-        for (auto& [tag, props] : updateViewProps_) {
-          auto familyIt = tagToShadowNodeFamily_.find(tag);
-          if (familyIt == tagToShadowNodeFamily_.end()) {
-            continue;
-          }
-
-          auto weakFamily = familyIt->second;
-          if (auto family = weakFamily.lock()) {
-            propsBuilder.storeDynamic(props);
-            mutations.batch.push_back(
-                AnimationMutation{
-                    .tag = tag,
-                    .family = family,
-                    .props = propsBuilder.get(),
-                    .hasLayoutUpdates = true,
-                });
-          }
+        if (auto family = weakFamily.lock()) {
+          propsBuilder.storeDynamic(update.second);
+          mutations.batch.push_back(
+              AnimationMutation{
+                  .tag = tag,
+                  .family = family,
+                  .props = propsBuilder.get(),
+              });
         }
       }
-      updateViewProps_.clear();
-      updateViewPropsDirect_.clear();
+      for (auto& [tag, update] : updateViewPropsForBackend_) {
+        auto weakFamily = update.first;
+
+        if (auto family = weakFamily.lock()) {
+          propsBuilder.storeDynamic(update.second);
+          mutations.batch.push_back(
+              AnimationMutation{
+                  .tag = tag,
+                  .family = family,
+                  .props = propsBuilder.get(),
+                  .hasLayoutUpdates = true,
+              });
+        }
+      }
+
+      updateViewPropsForBackend_.clear();
+      updateViewPropsDirectForBackend_.clear();
     }
   } else {
     // There is no active animation. Stop the render callback.
