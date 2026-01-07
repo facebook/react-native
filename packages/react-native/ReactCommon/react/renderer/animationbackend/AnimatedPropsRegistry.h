@@ -240,6 +240,22 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
       viewProps.yogaStyle.setMinDimension(
           yoga::Dimension::Width, snapshot.props.yogaStyle.minDimension(yoga::Dimension::Width));
       break;
+
+    case STYLE_OVERFLOW:
+      viewProps.yogaStyle.setOverflow(snapshot.props.yogaStyle.overflow());
+      break;
+
+    case POSITION_TYPE:
+      viewProps.yogaStyle.setPositionType(snapshot.props.yogaStyle.positionType());
+      break;
+
+    case Z_INDEX:
+      viewProps.zIndex = snapshot.props.zIndex;
+      break;
+
+    case DIRECTION:
+      viewProps.yogaStyle.setDirection(snapshot.props.yogaStyle.direction());
+      break;
   }
 }
 
