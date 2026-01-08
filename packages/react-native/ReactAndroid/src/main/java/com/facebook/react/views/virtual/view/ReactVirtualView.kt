@@ -155,27 +155,21 @@ public class ReactVirtualView(context: Context) :
 
     when (newMode) {
       VirtualViewMode.Visible -> {
-        if (renderState == VirtualViewRenderState.Unknown) {
-          // Feature flag is disabled, so use the former logic.
+        // If the previous mode was hidden, emit a mode change even if `renderState` is rendered,
+        // because the hidden mode change is still pending and will eventually be committed. Only
+        // skip emitting a mode change if the previous mode was prerender and the result of that
+        // event has already been committed.
+        if (
+            oldMode == null ||
+                oldMode == VirtualViewMode.Hidden ||
+                renderState != VirtualViewRenderState.Rendered
+        ) {
           modeChangeEmitter?.emitModeChange(
               VirtualViewMode.Visible,
               containerRelativeRect,
               thresholdRect,
               synchronous = true,
           )
-        } else {
-          // If the previous mode was prerender and the result of dispatching that event was
-          // committed, we do not need to dispatch an event for visible.
-          val wasPrerenderCommitted =
-              oldMode == VirtualViewMode.Prerender && renderState == VirtualViewRenderState.Rendered
-          if (!wasPrerenderCommitted) {
-            modeChangeEmitter?.emitModeChange(
-                VirtualViewMode.Visible,
-                containerRelativeRect,
-                thresholdRect,
-                synchronous = true,
-            )
-          }
         }
       }
       VirtualViewMode.Prerender -> {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c687a5245aaad6e1faef62500ed05b72>>
+ * @generated SignedSource<<938d098abe72c4e65078380234d8f818>>
  */
 
 /**
@@ -302,11 +302,6 @@ bool NativeReactNativeFeatureFlags::enableVirtualViewContainerStateExperimental(
 bool NativeReactNativeFeatureFlags::enableVirtualViewDebugFeatures(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
-}
-
-bool NativeReactNativeFeatureFlags::enableVirtualViewRenderState(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableVirtualViewRenderState();
 }
 
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
