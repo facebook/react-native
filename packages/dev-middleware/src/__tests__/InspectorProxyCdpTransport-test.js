@@ -384,5 +384,41 @@ describe.each(['HTTP', 'HTTPS'])(
         debugger2?.close();
       }
     });
+
+    test('debugger connection with invalid origin is rejected', async () => {
+      const device1 = await createDeviceMock(
+        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+        autoCleanup.signal,
+      );
+      try {
+        device1.getPages.mockImplementation(() => [
+          {
+            app: 'bar-app',
+            id: 'page1',
+            title: 'bar-title',
+            vm: 'bar-vm',
+          },
+        ]);
+
+        let pageList: JsonPagesListResponse = [];
+        await until(async () => {
+          pageList = (await fetchJson(
+            `${serverRef.serverBaseUrl}/json`,
+            // $FlowFixMe[unclear-type]
+          ): any);
+          expect(pageList).toHaveLength(1);
+        });
+        const [{webSocketDebuggerUrl}] = pageList;
+        expect(webSocketDebuggerUrl).toBeDefined();
+
+        await expect(
+          createDebuggerMock(webSocketDebuggerUrl, autoCleanup.signal, {
+            Origin: 'null',
+          }),
+        ).rejects.toThrow('Unexpected server response: 401');
+      } finally {
+        device1.close();
+      }
+    });
   },
 );

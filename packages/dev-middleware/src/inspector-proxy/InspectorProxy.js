@@ -32,6 +32,11 @@ import WS from 'ws';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
+const WS_DEBUGGER_ALLOWED_ORIGINS = new Set([
+  'http://localhost:8081',
+  'http://127.0.0.1:8081',
+]);
+
 const WS_DEVICE_URL = '/inspector/device';
 const WS_DEBUGGER_URL = '/inspector/debug';
 const PAGES_LIST_JSON_URL = '/json';
@@ -484,7 +489,17 @@ export default class InspectorProxy implements InspectorProxyQueries {
       // Don't crash on exceptionally large messages - assume the debugger is
       // well-behaved and the device is prepared to handle large messages.
       maxPayload: 0,
+      // Verify the client is from an allowed origin.
+      // $FlowFixMe[incompatible-type] - `ws` definition is incomplete.
+      verifyClient: (
+        info: Readonly<{
+          origin: string,
+          secure: boolean,
+          req: http$IncomingMessage<>,
+        }>,
+      ) => WS_DEBUGGER_ALLOWED_ORIGINS.has(info.origin),
     });
+
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
       const wssTimestamp = Date.now();
