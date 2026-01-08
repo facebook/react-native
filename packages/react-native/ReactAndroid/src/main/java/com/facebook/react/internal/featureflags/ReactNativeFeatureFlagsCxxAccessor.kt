@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c88c86f3085fa7c319b0c0a60102057>>
+ * @generated SignedSource<<6188f6b73c835b514bd13de3b7a3f55c>>
  */
 
 /**
@@ -73,7 +73,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableVirtualViewContainerStateExperimentalCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var enableVirtualViewRenderStateCache: Boolean? = null
-  private var enableVirtualViewWindowFocusDetectionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixTextClippingAndroid15useBoundsForWidthCache: Boolean? = null
   private var fuseboxAssertSingleHostStateCache: Boolean? = null
@@ -579,15 +578,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewRenderState()
       enableVirtualViewRenderStateCache = cached
-    }
-    return cached
-  }
-
-  override fun enableVirtualViewWindowFocusDetection(): Boolean {
-    var cached = enableVirtualViewWindowFocusDetectionCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewWindowFocusDetection()
-      enableVirtualViewWindowFocusDetectionCache = cached
     }
     return cached
   }
