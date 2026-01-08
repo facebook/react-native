@@ -11,7 +11,7 @@
 import type {ViewStyleProp} from '../../../../Libraries/StyleSheet/StyleSheet';
 import type {NativeSyntheticEvent} from '../../../../Libraries/Types/CoreEventTypes';
 import type {HostInstance} from '../../types/HostInstance';
-import type {NativeModeChangeEvent} from './VirtualViewExperimentalNativeComponent';
+import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
 
 import UIManager from '../../../../Libraries/ReactNative/UIManager';
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';

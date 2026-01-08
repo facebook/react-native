@@ -37,7 +37,6 @@ let CallInvokerPath = "ReactCommon/callinvoker" // header only target
 let ReactFBReactNativeSpecPath = "React/FBReactNativeSpec" // generated
 let FBLazyVectorPath = "Libraries/FBLazyVector" // header only
 let virtualViewPath = "ReactCommon/react/renderer/components/virtualview" // header only
-let virtualViewExperimentalPath = "ReactCommon/react/renderer/components/virtualviewexperimental" // header only
 
 // MARK: Prebuilt Dependencies declaration
 let reactNativeDependencies = BinaryTarget(
@@ -454,7 +453,6 @@ let reactFabric = RNTarget(
     "components/textinput/platform/ios/",
     "components/unimplementedview",
     "components/virtualview",
-    "components/virtualviewexperimental",
     "components/root/tests",
   ],
   dependencies: [.reactNativeDependencies, .reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics, .yoga],
@@ -541,7 +539,7 @@ let reactFabricUnimplementedView = RNTarget(
 let reactRCTFabric = RNTarget(
   name: .reactRCTFabric,
   path: "React/Fabric",
-  searchPaths: [virtualViewPath, virtualViewExperimentalPath],
+  searchPaths: [virtualViewPath],
   dependencies: [.reactNativeDependencies, .reactCore, .reactRCTImage, .yoga, .reactRCTText, .jsi, .reactFabricInputAccessory, .reactFabricModal, .reactFabricSafeAreaView, .reactFabricSwitch, .reactFabricText, .reactFabricTextInput, .reactFabricUnimplementedView, .reactFabricTextLayoutManager, .reactGraphics, .reactImageManager, .reactDebug, .reactUtils, .reactPerformanceTimeline, .reactRendererDebug, .reactRendererConsistency, .reactRuntimeScheduler, .reactRCTAnimation, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactFabric, .reactFabricImage, .rctSwiftUIWrapper]
 )
 
