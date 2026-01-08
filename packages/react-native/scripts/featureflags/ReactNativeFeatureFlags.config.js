@@ -604,17 +604,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableVirtualViewRenderState: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-06-25',
-        description:
-          'Enables reading render state when dispatching VirtualView events.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {

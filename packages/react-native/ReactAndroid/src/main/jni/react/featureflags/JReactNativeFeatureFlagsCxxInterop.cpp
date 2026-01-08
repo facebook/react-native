@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f88a6aeb9289fd48d083cfccfc609d79>>
+ * @generated SignedSource<<9841e9badfe84669fde89f35467d4c13>>
  */
 
 /**
@@ -348,12 +348,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableVirtualViewDebugFeatures() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewDebugFeatures");
-    return method(javaProvider_);
-  }
-
-  bool enableVirtualViewRenderState() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewRenderState");
     return method(javaProvider_);
   }
 
@@ -807,11 +801,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures(
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewRenderState(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableVirtualViewRenderState();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -1154,9 +1143,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableVirtualViewDebugFeatures",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures),
-      makeNativeMethod(
-        "enableVirtualViewRenderState",
-        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewRenderState),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),

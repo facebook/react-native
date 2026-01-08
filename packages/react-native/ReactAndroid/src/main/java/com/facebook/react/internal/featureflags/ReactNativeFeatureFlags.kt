@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<91ad23aa529522a802b8d03198d7ccb9>>
+ * @generated SignedSource<<e12e5425f1a51acfd0f244e5d4f46a3e>>
  */
 
 /**
@@ -341,12 +341,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableVirtualViewDebugFeatures(): Boolean = accessor.enableVirtualViewDebugFeatures()
-
-  /**
-   * Enables reading render state when dispatching VirtualView events.
-   */
-  @JvmStatic
-  public fun enableVirtualViewRenderState(): Boolean = accessor.enableVirtualViewRenderState()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

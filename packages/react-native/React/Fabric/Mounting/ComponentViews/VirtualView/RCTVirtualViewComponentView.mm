@@ -70,19 +70,16 @@ using namespace facebook::react;
     }
   }
 
-  // If disabled, `_renderState` will always be `RCTVirtualViewRenderStateUnknown`.
-  if (ReactNativeFeatureFlags::enableVirtualViewRenderState()) {
-    switch (newViewProps.renderState) {
-      case 1:
-        _renderState = RCTVirtualViewRenderStateRendered;
-        break;
-      case 2:
-        _renderState = RCTVirtualViewRenderStateNone;
-        break;
-      default:
-        _renderState = RCTVirtualViewRenderStateUnknown;
-        break;
-    }
+  switch (newViewProps.renderState) {
+    case 1:
+      _renderState = RCTVirtualViewRenderStateRendered;
+      break;
+    case 2:
+      _renderState = RCTVirtualViewRenderStateNone;
+      break;
+    default:
+      _renderState = RCTVirtualViewRenderStateUnknown;
+      break;
   }
 
   const auto &newBaseViewProps = static_cast<const ViewProps &>(*props);
@@ -196,17 +193,13 @@ static BOOL sIsAccessibilityUsed = NO;
 
   switch (newMode) {
     case RCTVirtualViewModeVisible:
-      if (_renderState == RCTVirtualViewRenderStateUnknown) {
-        // Feature flag is disabled, so use the former logic.
+      // If the previous mode was hidden, emit a mode change even if `renderState` is rendered,
+      // because the hidden mode change is still pending and will eventually be committed. Only
+      // skip emitting a mode change if the previous mode was prerender and the result of that
+      // event has already been committed.
+      if (!oldMode.has_value() || oldMode == RCTVirtualViewModeHidden ||
+          _renderState != RCTVirtualViewRenderStateRendered) {
         [self _dispatchSyncModeChange:event];
-      } else {
-        // If the previous mode was prerender and the result of dispatching that event was committed, we do not need
-        // to dispatch an event for visible.
-        const auto wasPrerenderCommitted = oldMode.has_value() && oldMode == RCTVirtualViewModePrerender &&
-            _renderState == RCTVirtualViewRenderStateRendered;
-        if (!wasPrerenderCommitted) {
-          [self _dispatchSyncModeChange:event];
-        }
       }
       break;
     case RCTVirtualViewModePrerender:

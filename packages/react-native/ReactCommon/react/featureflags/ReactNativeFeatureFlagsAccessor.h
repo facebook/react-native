@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb6a2c318007b816305c81b046864f1f>>
+ * @generated SignedSource<<275c3f7a627c07f470c9ac1949d9fbcc>>
  */
 
 /**
@@ -84,7 +84,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableViewRecyclingForView();
   bool enableVirtualViewContainerStateExperimental();
   bool enableVirtualViewDebugFeatures();
-  bool enableVirtualViewRenderState();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixTextClippingAndroid15useBoundsForWidth();
   bool fuseboxAssertSingleHostState();
@@ -127,7 +126,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 84> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 83> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -181,7 +180,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
   std::atomic<std::optional<bool>> enableVirtualViewContainerStateExperimental_;
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
-  std::atomic<std::optional<bool>> enableVirtualViewRenderState_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixTextClippingAndroid15useBoundsForWidth_;
   std::atomic<std::optional<bool>> fuseboxAssertSingleHostState_;
