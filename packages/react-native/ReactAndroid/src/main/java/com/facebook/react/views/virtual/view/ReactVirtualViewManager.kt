@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.virtual.viewexperimental
+package com.facebook.react.views.virtual.view
 
 import android.graphics.Rect
 import androidx.annotation.VisibleForTesting
@@ -16,37 +16,36 @@ import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.events.EventDispatcher
-import com.facebook.react.viewmanagers.VirtualViewExperimentalManagerDelegate
-import com.facebook.react.viewmanagers.VirtualViewExperimentalManagerInterface
+import com.facebook.react.viewmanagers.VirtualViewManagerDelegate
+import com.facebook.react.viewmanagers.VirtualViewManagerInterface
 import com.facebook.react.views.view.ReactClippingViewManager
 import com.facebook.react.views.virtual.VirtualViewMode
 import com.facebook.react.views.virtual.VirtualViewModeChangeEmitter
 import com.facebook.react.views.virtual.VirtualViewModeChangeEvent
 import com.facebook.react.views.virtual.VirtualViewRenderState
 
-@ReactModule(name = ReactVirtualViewExperimentalManager.REACT_CLASS)
-public class ReactVirtualViewExperimentalManager :
-    ReactClippingViewManager<ReactVirtualViewExperimental>(),
-    VirtualViewExperimentalManagerInterface<ReactVirtualViewExperimental> {
+@ReactModule(name = ReactVirtualViewManager.REACT_CLASS)
+public class ReactVirtualViewManager :
+    ReactClippingViewManager<ReactVirtualView>(), VirtualViewManagerInterface<ReactVirtualView> {
 
-  private val _delegate = VirtualViewExperimentalManagerDelegate(this)
+  private val _delegate = VirtualViewManagerDelegate(this)
 
-  override fun getDelegate(): ViewManagerDelegate<ReactVirtualViewExperimental> = _delegate
+  override fun getDelegate(): ViewManagerDelegate<ReactVirtualView> = _delegate
 
   override fun getName(): String = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext): ReactVirtualViewExperimental =
-      ReactVirtualViewExperimental(reactContext)
+  override fun createViewInstance(reactContext: ThemedReactContext): ReactVirtualView =
+      ReactVirtualView(reactContext)
 
   @ReactProp(name = "initialHidden")
-  override fun setInitialHidden(view: ReactVirtualViewExperimental, value: Boolean) {
+  override fun setInitialHidden(view: ReactVirtualView, value: Boolean) {
     if (view.mode == null) {
       view.mode = if (value) VirtualViewMode.Hidden else VirtualViewMode.Visible
     }
   }
 
   @ReactProp(name = "renderState")
-  override fun setRenderState(view: ReactVirtualViewExperimental, value: Int) {
+  override fun setRenderState(view: ReactVirtualView, value: Int) {
     // If disabled, `renderState` will always be `VirtualViewRenderState.Unknown`.
     if (ReactNativeFeatureFlags.enableVirtualViewRenderState()) {
       view.renderState =
@@ -58,13 +57,13 @@ public class ReactVirtualViewExperimentalManager :
     }
   }
 
-  override fun setNativeId(view: ReactVirtualViewExperimental, nativeId: String?) {
+  override fun setNativeId(view: ReactVirtualView, nativeId: String?) {
     super.setNativeId(view, nativeId)
   }
 
   override fun addEventEmitters(
       reactContext: ThemedReactContext,
-      view: ReactVirtualViewExperimental,
+      view: ReactVirtualView,
   ) {
     val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id) ?: return
     view.modeChangeEmitter =
@@ -73,14 +72,14 @@ public class ReactVirtualViewExperimentalManager :
 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
-      view: ReactVirtualViewExperimental,
-  ): ReactVirtualViewExperimental? {
+      view: ReactVirtualView,
+  ): ReactVirtualView? {
     view.recycleView()
     return super.prepareToRecycleView(reactContext, view)
   }
 
   public companion object {
-    public const val REACT_CLASS: String = "VirtualViewExperimental"
+    public const val REACT_CLASS: String = "VirtualView"
   }
 }
 

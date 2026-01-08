@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.virtual.viewexperimental
+package com.facebook.react.views.virtual.view
 
 import android.content.Context
 import android.graphics.Rect
@@ -25,7 +25,7 @@ import com.facebook.react.views.virtual.VirtualViewMode
 import com.facebook.react.views.virtual.VirtualViewModeChangeEmitter
 import com.facebook.react.views.virtual.VirtualViewRenderState
 
-public class ReactVirtualViewExperimental(context: Context) :
+public class ReactVirtualView(context: Context) :
     ReactViewGroup(context), VirtualView, View.OnLayoutChangeListener {
 
   internal var mode: VirtualViewMode? = null
@@ -300,6 +300,6 @@ public class ReactVirtualViewExperimental(context: Context) :
   }
 }
 
-private const val DEBUG_TAG: String = "ReactVirtualViewExperimental"
+private const val DEBUG_TAG: String = "ReactVirtualView"
 private val IS_DEBUG_BUILD =
     ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD || ReactBuildConfig.ENABLE_PERFETTO

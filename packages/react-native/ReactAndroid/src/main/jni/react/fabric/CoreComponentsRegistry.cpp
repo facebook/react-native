@@ -24,7 +24,7 @@
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/LayoutConformanceComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
-#include <react/renderer/components/virtualviewexperimental/VirtualViewExperimentalComponentDescriptor.h>
+#include <react/renderer/components/virtualview/VirtualViewComponentDescriptor.h>
 
 namespace facebook::react::CoreComponentsRegistry {
 
@@ -81,8 +81,7 @@ void addCoreComponents(
       concreteComponentDescriptorProvider<
           LayoutConformanceComponentDescriptor>());
   providerRegistry->add(
-      concreteComponentDescriptorProvider<
-          VirtualViewExperimentalComponentDescriptor>());
+      concreteComponentDescriptorProvider<VirtualViewComponentDescriptor>());
 }
 
 } // namespace facebook::react::CoreComponentsRegistry

@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTVirtualViewExperimentalComponentView : RCTViewComponentView <RCTVirtualViewProtocol>
+@interface RCTVirtualViewComponentView : RCTViewComponentView <RCTVirtualViewProtocol>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

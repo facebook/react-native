@@ -149,12 +149,6 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/virtualview"
     end
 
-     ss.subspec "virtualviewexperimental" do |sss|
-      sss.source_files         = "react/renderer/components/virtualviewexperimental/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/virtualviewexperimental/tests"
-      sss.header_dir           = "react/renderer/components/virtualviewexperimental"
-    end
-
     # Legacy header paths for backwards compat
     ss.subspec "rncore" do |sss|
       sss.source_files         = podspec_sources("react/renderer/components/rncore/**/*.h", "react/renderer/components/rncore/**/*.h")
