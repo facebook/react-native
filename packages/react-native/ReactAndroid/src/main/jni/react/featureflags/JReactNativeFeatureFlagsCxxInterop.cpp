@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9841e9badfe84669fde89f35467d4c13>>
+ * @generated SignedSource<<4e42a02fba11d92d390e1e60de492214>>
  */
 
 /**
@@ -525,12 +525,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  double virtualViewHysteresisRatio() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("virtualViewHysteresisRatio");
-    return method(javaProvider_);
-  }
-
   double virtualViewPrerenderRatio() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("virtualViewPrerenderRatio");
@@ -946,11 +940,6 @@ double JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio(
   return ReactNativeFeatureFlags::viewCullingOutsetRatio();
 }
 
-double JReactNativeFeatureFlagsCxxInterop::virtualViewHysteresisRatio(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::virtualViewHysteresisRatio();
-}
-
 double JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::virtualViewPrerenderRatio();
@@ -1230,9 +1219,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "viewCullingOutsetRatio",
         JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio),
-      makeNativeMethod(
-        "virtualViewHysteresisRatio",
-        JReactNativeFeatureFlagsCxxInterop::virtualViewHysteresisRatio),
       makeNativeMethod(
         "virtualViewPrerenderRatio",
         JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio),
