@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a3ae8da86413406f0fde5bff362718f3>>
+ * @generated SignedSource<<159c2185b5aabf5bc0bb0a32fcd0473d>>
  */
 
 /**
@@ -233,10 +233,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableVirtualViewDebugFeatures() override {
     return false;
-  }
-
-  bool enableVirtualViewRenderState() override {
-    return true;
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {

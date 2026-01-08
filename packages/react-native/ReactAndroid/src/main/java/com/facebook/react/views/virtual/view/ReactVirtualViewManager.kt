@@ -9,7 +9,6 @@ package com.facebook.react.views.virtual.view
 
 import android.graphics.Rect
 import androidx.annotation.VisibleForTesting
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -46,15 +45,12 @@ public class ReactVirtualViewManager :
 
   @ReactProp(name = "renderState")
   override fun setRenderState(view: ReactVirtualView, value: Int) {
-    // If disabled, `renderState` will always be `VirtualViewRenderState.Unknown`.
-    if (ReactNativeFeatureFlags.enableVirtualViewRenderState()) {
-      view.renderState =
-          when (value) {
-            1 -> VirtualViewRenderState.Rendered
-            2 -> VirtualViewRenderState.None
-            else -> VirtualViewRenderState.Unknown
-          }
-    }
+    view.renderState =
+        when (value) {
+          1 -> VirtualViewRenderState.Rendered
+          2 -> VirtualViewRenderState.None
+          else -> VirtualViewRenderState.Unknown
+        }
   }
 
   override fun setNativeId(view: ReactVirtualView, nativeId: String?) {
