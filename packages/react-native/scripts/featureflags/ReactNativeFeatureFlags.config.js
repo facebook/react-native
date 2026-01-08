@@ -1063,16 +1063,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    virtualViewActivityBehavior: {
-      defaultValue: 'no-activity',
-      metadata: {
-        dateAdded: '2025-08-27',
-        description: 'Changes whether and how `VirtualView` uses `Activity`.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
   },
 };
 
