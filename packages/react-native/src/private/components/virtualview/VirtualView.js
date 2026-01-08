@@ -15,14 +15,12 @@ import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
 
 import UIManager from '../../../../Libraries/ReactNative/UIManager';
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
-import * as ReactNativeFeatureFlags from '../../featureflags/ReactNativeFeatureFlags';
 import {useVirtualViewLogging} from './logger/VirtualViewLogger';
 import VirtualViewExperimentalNativeComponent from './VirtualViewExperimentalNativeComponent';
 import VirtualViewProperNativeComponent from './VirtualViewNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-// $FlowFixMe[missing-export]
-import {startTransition, unstable_Activity as Activity, useState} from 'react';
+import {startTransition, useState} from 'react';
 
 // @see VirtualViewNativeComponent
 export enum VirtualViewMode {
@@ -155,17 +153,7 @@ function createVirtualView(initialState: State): VirtualViewComponent {
             : style
         }
         onModeChange={handleModeChange}>
-        {
-          match (ReactNativeFeatureFlags.virtualViewActivityBehavior()) {
-            'activity-without-mode' =>
-              <Activity>{isHidden ? null : children}</Activity>,
-            'activity-with-hidden-mode' =>
-              <Activity mode={isHidden ? 'hidden' : 'visible'}>
-                {children}
-              </Activity>,
-            'no-activity' | _ => isHidden ? null : children,
-          }
-        }
+        {isHidden ? null : children}
       </VirtualViewNativeComponent>
     );
   }
