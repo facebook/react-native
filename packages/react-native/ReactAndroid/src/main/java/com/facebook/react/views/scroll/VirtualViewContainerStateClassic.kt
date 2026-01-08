@@ -51,15 +51,7 @@ internal class VirtualViewContainerStateClassic(scrollView: ViewGroup) :
       when {
         rectsOverlap(rect, visibleRect) -> {
           thresholdRect = visibleRect
-          if (onWindowFocusChangeListener != null) {
-            if (scrollView.hasWindowFocus()) {
-              mode = VirtualViewMode.Visible
-            } else {
-              mode = VirtualViewMode.Prerender
-            }
-          } else {
-            mode = VirtualViewMode.Visible
-          }
+          mode = VirtualViewMode.Visible
         }
         rectsOverlap(rect, prerenderRect) -> {
           mode = VirtualViewMode.Prerender

@@ -9,7 +9,6 @@ package com.facebook.react.views.scroll
 
 import android.graphics.Rect
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import com.facebook.common.logging.FLog
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -54,15 +53,6 @@ internal abstract class VirtualViewContainerState {
   protected val visibleRect: Rect = Rect()
   protected val prerenderRect: Rect = Rect()
   protected val hysteresisRect: Rect = Rect()
-  protected val onWindowFocusChangeListener =
-      if (ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()) {
-        ViewTreeObserver.OnWindowFocusChangeListener {
-          debugLog("onWindowFocusChanged")
-          updateModes()
-        }
-      } else {
-        null
-      }
   protected val scrollView: ViewGroup
 
   companion object {
@@ -78,15 +68,6 @@ internal abstract class VirtualViewContainerState {
 
   constructor(scrollView: ViewGroup) {
     this.scrollView = scrollView
-    if (onWindowFocusChangeListener != null) {
-      scrollView.viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
-    }
-  }
-
-  fun cleanup() {
-    if (onWindowFocusChangeListener != null) {
-      scrollView.viewTreeObserver.removeOnWindowFocusChangeListener(onWindowFocusChangeListener)
-    }
   }
 
   open fun onChange(virtualView: VirtualView) {

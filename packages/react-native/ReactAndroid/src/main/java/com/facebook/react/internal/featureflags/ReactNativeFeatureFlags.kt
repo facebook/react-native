@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ee5c6b643fa4065a8168ebbb19d4efc>>
+ * @generated SignedSource<<91ad23aa529522a802b8d03198d7ccb9>>
  */
 
 /**
@@ -347,12 +347,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableVirtualViewRenderState(): Boolean = accessor.enableVirtualViewRenderState()
-
-  /**
-   * Enables window focus detection for prioritizing VirtualView events.
-   */
-  @JvmStatic
-  public fun enableVirtualViewWindowFocusDetection(): Boolean = accessor.enableVirtualViewWindowFocusDetection()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

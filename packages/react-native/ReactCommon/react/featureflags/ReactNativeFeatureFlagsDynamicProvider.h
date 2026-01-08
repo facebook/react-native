@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<99f5af3846cb1d9a19e9b76ed5cc6435>>
+ * @generated SignedSource<<69f66d45b89b38d134a6295b344d6c01>>
  */
 
 /**
@@ -520,15 +520,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableVirtualViewRenderState();
-  }
-
-  bool enableVirtualViewWindowFocusDetection() override {
-    auto value = values_["enableVirtualViewWindowFocusDetection"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableVirtualViewWindowFocusDetection();
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
