@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTVirtualViewExperimentalComponentView.h"
+#import "RCTVirtualViewComponentView.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
@@ -20,8 +20,8 @@
 #import <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 #import <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
 #import <react/renderer/components/FBReactNativeSpec/Props.h>
-#import <react/renderer/components/virtualviewexperimental/VirtualViewExperimentalComponentDescriptor.h>
-#import <react/renderer/components/virtualviewexperimental/VirtualViewExperimentalShadowNode.h>
+#import <react/renderer/components/virtualview/VirtualViewComponentDescriptor.h>
+#import <react/renderer/components/virtualview/VirtualViewShadowNode.h>
 
 #import "RCTFabricComponentsPlugins.h"
 #import "RCTVirtualViewMode.h"
@@ -30,13 +30,13 @@
 using namespace facebook;
 using namespace facebook::react;
 
-@interface RCTVirtualViewExperimentalComponentView () {
+@interface RCTVirtualViewComponentView () {
   NSString *_virtualViewID;
 }
 
 @end
 
-@implementation RCTVirtualViewExperimentalComponentView {
+@implementation RCTVirtualViewComponentView {
   id<RCTVirtualViewContainerProtocol> _parentVirtualViewContainer;
   std::optional<RCTVirtualViewMode> _mode;
   RCTVirtualViewRenderState _renderState;
@@ -50,7 +50,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame]) != nil) {
-    _props = VirtualViewExperimentalShadowNode::defaultSharedProps();
+    _props = VirtualViewShadowNode::defaultSharedProps();
     _renderState = RCTVirtualViewRenderStateUnknown;
     _virtualViewID = [[NSUUID UUID] UUIDString];
     _didLayout = NO;
@@ -61,7 +61,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &newViewProps = static_cast<const VirtualViewExperimentalProps &>(*props);
+  const auto &newViewProps = static_cast<const VirtualViewProps &>(*props);
 
   if (!_mode.has_value()) {
     _mode = newViewProps.initialHidden ? RCTVirtualViewModeHidden : RCTVirtualViewModeVisible;
@@ -177,7 +177,7 @@ static BOOL sIsAccessibilityUsed = NO;
 
   // NOTE: Make sure to keep these props in sync with dispatchSyncModeChange below where we have to explicitly copy
   // all props.
-  VirtualViewExperimentalEventEmitter::OnModeChange event = {
+  VirtualViewEventEmitter::OnModeChange event = {
       .mode = (int)newMode,
       .targetRect =
           {.x = targetRect.origin.x,
@@ -260,23 +260,23 @@ static BOOL sIsAccessibilityUsed = NO;
   return nil;
 }
 
-- (void)_dispatchAsyncModeChange:(VirtualViewExperimentalEventEmitter::OnModeChange &)event
+- (void)_dispatchAsyncModeChange:(VirtualViewEventEmitter::OnModeChange &)event
 {
   if (!_eventEmitter) {
     return;
   }
 
-  auto &emitter = static_cast<const VirtualViewExperimentalEventEmitter &>(*_eventEmitter);
+  auto &emitter = static_cast<const VirtualViewEventEmitter &>(*_eventEmitter);
   emitter.onModeChange(event);
 }
 
-- (void)_dispatchSyncModeChange:(VirtualViewExperimentalEventEmitter::OnModeChange &)event
+- (void)_dispatchSyncModeChange:(VirtualViewEventEmitter::OnModeChange &)event
 {
   if (!_eventEmitter) {
     return;
   }
 
-  auto &emitter = static_cast<const VirtualViewExperimentalEventEmitter &>(*_eventEmitter);
+  auto &emitter = static_cast<const VirtualViewEventEmitter &>(*_eventEmitter);
 
   // TODO: Move this into a custom event emitter. We had to duplicate the codegen code here from onModeChange in order
   // to dispatch synchronously and discrete.
@@ -310,12 +310,12 @@ static BOOL sIsAccessibilityUsed = NO;
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return concreteComponentDescriptorProvider<VirtualViewExperimentalComponentDescriptor>();
+  return concreteComponentDescriptorProvider<VirtualViewComponentDescriptor>();
 }
 
 @end
 
-Class<RCTComponentViewProtocol> VirtualViewExperimentalCls(void)
+Class<RCTComponentViewProtocol> VirtualViewCls(void)
 {
-  return RCTVirtualViewExperimentalComponentView.class;
+  return RCTVirtualViewComponentView.class;
 }

@@ -13,15 +13,13 @@
 
 namespace facebook::react {
 
-constexpr const char VirtualViewExperimentalComponentName[] = "VirtualViewExperimental";
+constexpr const char VirtualViewComponentName[] = "VirtualView";
 
 /*
- * `ShadowNode` for <VirtualViewExperimental> component.
+ * `ShadowNode` for <VirtualView> component.
  */
-class VirtualViewExperimentalShadowNode final : public ConcreteViewShadowNode<
-                                                    VirtualViewExperimentalComponentName,
-                                                    VirtualViewExperimentalProps,
-                                                    VirtualViewExperimentalEventEmitter> {
+class VirtualViewShadowNode final
+    : public ConcreteViewShadowNode<VirtualViewComponentName, VirtualViewProps, VirtualViewEventEmitter> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 

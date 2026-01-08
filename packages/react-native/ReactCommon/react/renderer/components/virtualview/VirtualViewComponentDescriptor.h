@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/renderer/components/virtualviewexperimental/VirtualViewExperimentalShadowNode.h>
+#include <react/renderer/components/virtualview/VirtualViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook::react {
@@ -15,5 +15,5 @@ namespace facebook::react {
 /*
  * Descriptor for <VirtualView2> component.
  */
-using VirtualViewExperimentalComponentDescriptor = ConcreteComponentDescriptor<VirtualViewExperimentalShadowNode>;
+using VirtualViewComponentDescriptor = ConcreteComponentDescriptor<VirtualViewShadowNode>;
 } // namespace facebook::react

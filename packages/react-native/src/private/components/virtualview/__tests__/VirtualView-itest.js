@@ -11,7 +11,7 @@
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {Rect} from '../VirtualView';
-import type {NativeModeChangeEvent} from '../VirtualViewExperimentalNativeComponent';
+import type {NativeModeChangeEvent} from '../VirtualViewNativeComponent';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import isUnreachable from '../../../__tests__/utilities/isUnreachable';

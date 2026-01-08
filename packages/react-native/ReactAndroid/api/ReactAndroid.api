@@ -6702,7 +6702,7 @@ public final class com/facebook/react/views/virtual/VirtualViewMode : java/lang/
 	public static fun values ()[Lcom/facebook/react/views/virtual/VirtualViewMode;
 }
 
-public final class com/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimental : com/facebook/react/views/view/ReactViewGroup, android/view/View$OnLayoutChangeListener, com/facebook/react/views/scroll/VirtualView {
+public final class com/facebook/react/views/virtual/view/ReactVirtualView : com/facebook/react/views/view/ReactViewGroup, android/view/View$OnLayoutChangeListener, com/facebook/react/views/scroll/VirtualView {
 	public fun <init> (Landroid/content/Context;)V
 	public fun getContainerRelativeRect ()Landroid/graphics/Rect;
 	public fun getVirtualViewID ()Ljava/lang/String;
@@ -6712,8 +6712,8 @@ public final class com/facebook/react/views/virtual/viewexperimental/ReactVirtua
 	public fun updateClippingRect (Ljava/util/Set;)V
 }
 
-public final class com/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimentalManager : com/facebook/react/views/view/ReactClippingViewManager, com/facebook/react/viewmanagers/VirtualViewExperimentalManagerInterface {
-	public static final field Companion Lcom/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimentalManager$Companion;
+public final class com/facebook/react/views/virtual/view/ReactVirtualViewManager : com/facebook/react/views/view/ReactClippingViewManager, com/facebook/react/viewmanagers/VirtualViewManagerInterface {
+	public static final field Companion Lcom/facebook/react/views/virtual/view/ReactVirtualViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
 	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
@@ -6721,18 +6721,18 @@ public final class com/facebook/react/views/virtual/viewexperimental/ReactVirtua
 	public fun getName ()Ljava/lang/String;
 	public synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
 	public synthetic fun setInitialHidden (Landroid/view/View;Z)V
-	public fun setInitialHidden (Lcom/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimental;Z)V
+	public fun setInitialHidden (Lcom/facebook/react/views/virtual/view/ReactVirtualView;Z)V
 	public synthetic fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
-	public fun setNativeId (Lcom/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimental;Ljava/lang/String;)V
+	public fun setNativeId (Lcom/facebook/react/views/virtual/view/ReactVirtualView;Ljava/lang/String;)V
 	public synthetic fun setRemoveClippedSubviews (Landroid/view/View;Z)V
 	public synthetic fun setRenderState (Landroid/view/View;I)V
-	public fun setRenderState (Lcom/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimental;I)V
+	public fun setRenderState (Lcom/facebook/react/views/virtual/view/ReactVirtualView;I)V
 }
 
-public final class com/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimentalManager$Companion {
+public final class com/facebook/react/views/virtual/view/ReactVirtualViewManager$Companion {
 }
 
-public final class com/facebook/react/views/virtual/viewexperimental/VirtualViewEventEmitter : com/facebook/react/views/virtual/VirtualViewModeChangeEmitter {
+public final class com/facebook/react/views/virtual/view/VirtualViewEventEmitter : com/facebook/react/views/virtual/VirtualViewModeChangeEmitter {
 	public fun <init> (IILcom/facebook/react/uimanager/events/EventDispatcher;)V
 	public fun emitModeChange (Lcom/facebook/react/views/virtual/VirtualViewMode;Landroid/graphics/Rect;Landroid/graphics/Rect;Z)V
 }
