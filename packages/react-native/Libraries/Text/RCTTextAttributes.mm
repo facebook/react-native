@@ -51,6 +51,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _gradientColors = textAttributes->_gradientColors ?: _gradientColors;
   _gradientAngle = !isnan(textAttributes->_gradientAngle) ? textAttributes->_gradientAngle : _gradientAngle;
   _gradientWidth = !isnan(textAttributes->_gradientWidth) ? textAttributes->_gradientWidth : _gradientWidth;
+  _gradientMode = textAttributes->_gradientMode ?: _gradientMode;
   _opacity =
       !isnan(textAttributes->_opacity) ? (isnan(_opacity) ? 1.0 : _opacity) * textAttributes->_opacity : _opacity;
 
@@ -322,7 +323,11 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
       }
 
       if([cgColors count] > 0) {
-          [cgColors addObject:cgColors[0]];
+          // Only duplicate first color at end for mirror mode (default)
+          BOOL isClampMode = [_gradientMode isEqualToString:@"clamp"];
+          if (!isClampMode) {
+              [cgColors addObject:cgColors[0]];
+          }
           CAGradientLayer *gradient = [CAGradientLayer layer];
           // Use gradientWidth if specified, otherwise default to 100
           CGFloat patternWidth = (!isnan(_gradientWidth) && _gradientWidth > 0) ? _gradientWidth : 100;
@@ -424,7 +429,8 @@ static NSString *capitalizeText(NSString *text)
 
   return RCTTextAttributesCompareObjects(_foregroundColor) && RCTTextAttributesCompareObjects(_backgroundColor) &&
       RCTTextAttributesCompareObjects(_gradientColors) && RCTTextAttributesCompareFloats(_gradientAngle) &&
-      RCTTextAttributesCompareFloats(_gradientWidth) && RCTTextAttributesCompareFloats(_opacity) &&
+      RCTTextAttributesCompareFloats(_gradientWidth) && RCTTextAttributesCompareStrings(_gradientMode) &&
+      RCTTextAttributesCompareFloats(_opacity) &&
       // Font
       RCTTextAttributesCompareObjects(_fontFamily) && RCTTextAttributesCompareFloats(_fontSize) &&
       RCTTextAttributesCompareFloats(_fontSizeMultiplier) && RCTTextAttributesCompareFloats(_maxFontSizeMultiplier) &&
