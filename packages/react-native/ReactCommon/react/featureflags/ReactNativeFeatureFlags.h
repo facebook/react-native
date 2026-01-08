@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<67d07e991ed29af6fbab27d8af527e0e>>
+ * @generated SignedSource<<66174931b6a02a4f5033789a46dcc11d>>
  */
 
 /**
@@ -303,11 +303,6 @@ class ReactNativeFeatureFlags {
    * Enables reading render state when dispatching VirtualView events.
    */
   RN_EXPORT static bool enableVirtualViewRenderState();
-
-  /**
-   * Enables window focus detection for prioritizing VirtualView events.
-   */
-  RN_EXPORT static bool enableVirtualViewWindowFocusDetection();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
