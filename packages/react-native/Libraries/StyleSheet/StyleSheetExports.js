@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -13,16 +13,10 @@
 import type {____Styles_Internal} from './StyleSheetTypes';
 
 import composeStyles from '../../src/private/styles/composeStyles';
+import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import flatten from './flattenStyle';
 
-const ReactNativeStyleAttributes =
-  require('../Components/View/ReactNativeStyleAttributes').default;
-const PixelRatio = require('../Utilities/PixelRatio').default;
-
-let hairlineWidth: number = PixelRatio.roundToNearestPixel(0.4);
-if (hairlineWidth === 0) {
-  hairlineWidth = 1 / PixelRatio.get();
-}
+let _hairlineWidth: ?number;
 
 const absoluteFill = {
   position: 'absolute',
@@ -95,7 +89,18 @@ export default {
    *
    * A line with hairline width may not be visible if your simulator is downscaled.
    */
-  hairlineWidth,
+  // $FlowFixMe[unsafe-getters-setters] - Lazily import dependencies.
+  get hairlineWidth(): number {
+    if (_hairlineWidth == null) {
+      const PixelRatio = require('../Utilities/PixelRatio').default;
+
+      _hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+      if (_hairlineWidth === 0) {
+        _hairlineWidth = 1 / PixelRatio.get();
+      }
+    }
+    return _hairlineWidth;
+  },
 
   /**
    * A very common pattern is to create overlays with position absolute and zero positioning,
