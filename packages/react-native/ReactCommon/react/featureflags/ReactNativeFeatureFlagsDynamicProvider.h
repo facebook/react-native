@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4664498d96f4b4e3e85d96e81c981f83>>
+ * @generated SignedSource<<a93a0133f27eddcea803f0a879d23018>>
  */
 
 /**
@@ -772,15 +772,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::viewCullingOutsetRatio();
-  }
-
-  double virtualViewHysteresisRatio() override {
-    auto value = values_["virtualViewHysteresisRatio"];
-    if (!value.isNull()) {
-      return value.getDouble();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::virtualViewHysteresisRatio();
   }
 
   double virtualViewPrerenderRatio() override {

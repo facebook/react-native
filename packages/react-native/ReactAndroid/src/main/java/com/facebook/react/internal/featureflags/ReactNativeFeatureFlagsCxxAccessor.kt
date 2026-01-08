@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fe103b59da0f78a6e834ca92603531fb>>
+ * @generated SignedSource<<907fd6d60faaeb4c28ffd3b40928347e>>
  */
 
 /**
@@ -101,7 +101,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
-  private var virtualViewHysteresisRatioCache: Double? = null
   private var virtualViewPrerenderRatioCache: Double? = null
 
   override fun commonTestFlag(): Boolean {
@@ -829,15 +828,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.viewCullingOutsetRatio()
       viewCullingOutsetRatioCache = cached
-    }
-    return cached
-  }
-
-  override fun virtualViewHysteresisRatio(): Double {
-    var cached = virtualViewHysteresisRatioCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.virtualViewHysteresisRatio()
-      virtualViewHysteresisRatioCache = cached
     }
     return cached
   }

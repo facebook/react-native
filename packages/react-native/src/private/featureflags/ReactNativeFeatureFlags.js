@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fcf8bc19a86d7c5ffc3b36c01348df26>>
+ * @generated SignedSource<<ec42c40fee769dd30d97942a76b9c8f4>>
  * @flow strict
  * @noformat
  */
@@ -129,7 +129,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
-  virtualViewHysteresisRatio: Getter<number>,
   virtualViewPrerenderRatio: Getter<number>,
 }>;
 
@@ -526,10 +525,6 @@ export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurbo
  * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
  */
 export const viewCullingOutsetRatio: Getter<number> = createNativeFlagGetter('viewCullingOutsetRatio', 0);
-/**
- * Sets a hysteresis window for transition between prerender and hidden modes.
- */
-export const virtualViewHysteresisRatio: Getter<number> = createNativeFlagGetter('virtualViewHysteresisRatio', 0);
 /**
  * Initial prerender ratio for VirtualView.
  */

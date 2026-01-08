@@ -33,20 +33,12 @@ internal class VirtualViewContainerStateClassic(scrollView: ViewGroup) :
         (-prerenderRect.height() * prerenderRatio).toInt(),
     )
 
-    if (hysteresisRatio > 0.0) {
-      hysteresisRect.set(prerenderRect)
-      hysteresisRect.inset(
-          (-visibleRect.width() * hysteresisRatio).toInt(),
-          (-visibleRect.height() * hysteresisRatio).toInt(),
-      )
-    }
-
     val virtualViewsIt =
         if (virtualView != null) listOf(virtualView) else virtualViews.toMutableSet()
     virtualViewsIt.forEach { vv ->
       val rect = vv.containerRelativeRect
 
-      var mode: VirtualViewMode? = VirtualViewMode.Hidden
+      var mode: VirtualViewMode = VirtualViewMode.Hidden
       var thresholdRect = emptyRect
       when {
         rectsOverlap(rect, visibleRect) -> {
@@ -57,20 +49,13 @@ internal class VirtualViewContainerStateClassic(scrollView: ViewGroup) :
           mode = VirtualViewMode.Prerender
           thresholdRect = prerenderRect
         }
-        (hysteresisRatio > 0.0 && rectsOverlap(rect, hysteresisRect)) -> {
-          mode = null
-        }
       }
 
-      if (mode != null) {
-        vv.onModeChange(mode, thresholdRect)
-        debugLog(
-            "updateModes",
-            {
-              "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect"
-            },
-        )
-      }
+      vv.onModeChange(mode, thresholdRect)
+      debugLog(
+          "updateModes",
+          { "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect" },
+      )
     }
   }
 }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<159c2185b5aabf5bc0bb0a32fcd0473d>>
+ * @generated SignedSource<<850823d53427909b153b30321da66e34>>
  */
 
 /**
@@ -348,10 +348,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   double viewCullingOutsetRatio() override {
-    return 0.0;
-  }
-
-  double virtualViewHysteresisRatio() override {
     return 0.0;
   }
 

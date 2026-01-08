@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<532504ff7b4a7f4c45649fc59ecade3a>>
+ * @generated SignedSource<<26eb9af61fedaacaadc23a8698ff6117>>
  */
 
 /**
@@ -184,8 +184,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useTurboModules(): Boolean = false
 
   override fun viewCullingOutsetRatio(): Double = 0.0
-
-  override fun virtualViewHysteresisRatio(): Double = 0.0
 
   override fun virtualViewPrerenderRatio(): Double = 5.0
 }

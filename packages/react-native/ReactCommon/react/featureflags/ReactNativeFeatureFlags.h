@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e48f5e20876690cc1b8d74f78b721650>>
+ * @generated SignedSource<<6c608c49510a61153dd2c5c3e659930d>>
  */
 
 /**
@@ -443,11 +443,6 @@ class ReactNativeFeatureFlags {
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
    */
   RN_EXPORT static double viewCullingOutsetRatio();
-
-  /**
-   * Sets a hysteresis window for transition between prerender and hidden modes.
-   */
-  RN_EXPORT static double virtualViewHysteresisRatio();
 
   /**
    * Initial prerender ratio for VirtualView.
