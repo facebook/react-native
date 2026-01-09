@@ -20,6 +20,14 @@ static LayoutMetrics layoutMetricsFromShadowNode(const ShadowNode& shadowNode) {
       : EmptyLayoutMetrics;
 }
 
+static Point originFromRootFromShadowNode(const ShadowNode& shadowNode) {
+  auto layoutableShadowNode =
+      dynamic_cast<const LayoutableShadowNode*>(&shadowNode);
+  return layoutableShadowNode != nullptr
+      ? layoutableShadowNode->getOriginFromRoot()
+      : EmptyOriginFromRoot;
+}
+
 ShadowView::ShadowView(const ShadowNode& shadowNode)
     : componentName(shadowNode.getComponentName()),
       componentHandle(shadowNode.getComponentHandle()),
@@ -29,6 +37,7 @@ ShadowView::ShadowView(const ShadowNode& shadowNode)
       props(shadowNode.getProps()),
       eventEmitter(shadowNode.getEventEmitter()),
       layoutMetrics(layoutMetricsFromShadowNode(shadowNode)),
+      originFromRoot(originFromRootFromShadowNode(shadowNode)),
       state(shadowNode.getState()) {}
 
 bool ShadowView::operator==(const ShadowView& rhs) const {
@@ -39,6 +48,7 @@ bool ShadowView::operator==(const ShadowView& rhs) const {
              this->props,
              this->eventEmitter,
              this->layoutMetrics,
+             this->originFromRoot,
              this->state) ==
       std::tie(
              rhs.surfaceId,
@@ -47,6 +57,7 @@ bool ShadowView::operator==(const ShadowView& rhs) const {
              rhs.props,
              rhs.eventEmitter,
              rhs.layoutMetrics,
+             rhs.originFromRoot,
              rhs.state);
 }
 
