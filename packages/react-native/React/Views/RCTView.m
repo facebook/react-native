@@ -856,7 +856,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     CGSize size = image.size;
     UIEdgeInsets insets = image.capInsets;
     CGRectMake(
-        insets.left / size.width, insets.top / size.height, (CGFloat)1.0 / size.width, (CGFloat)1.0 / size.height);
+        insets.left / size.width, insets.top / size.height, 0, 0);
   });
 
   layer.contents = (id)image.CGImage;
