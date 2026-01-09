@@ -586,6 +586,7 @@ class JSI_EXPORT Runtime : public ICast {
   virtual Value getValueAtIndex(const Array&, size_t i) = 0;
   virtual void
   setValueAtIndexImpl(const Array&, size_t i, const Value& value) = 0;
+  virtual size_t push(const Array&, const Value*, size_t);
 
   virtual Function createFunctionFromHostFunction(
       const PropNameID& name,
@@ -1306,8 +1307,18 @@ class JSI_EXPORT Array : public Object {
   template <typename T>
   void setValueAtIndex(Runtime& runtime, size_t i, T&& value) const;
 
-  /// There is no current API for changing the size of an array once
-  /// created.  We'll probably need that eventually.
+  /// Appends provides values to the end of the Array in the order they appear.
+  /// Returns the new length of the array.
+  template <typename... Args>
+  size_t push(Runtime& runtime, Args&&... args);
+
+  /// Appends everything in \p elements to the end of the Array in the order
+  /// they appear. Returns the new length of the array.
+  size_t push(Runtime& runtime, std::initializer_list<Value> elements);
+
+  /// Appends \p count elements at \p elements to the end of the Array in the
+  /// order they appear.
+  size_t push(Runtime& runtime, const Value* elements, size_t count);
 
   /// Creates a new Array instance from provided values
   template <typename... Args>
