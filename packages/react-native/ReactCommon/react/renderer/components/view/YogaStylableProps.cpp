@@ -13,6 +13,7 @@
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include <yoga/Yoga.h>
+#include <yoga/enums/BoxSizing.h>
 #include <yoga/style/StyleLength.h>
 
 #include "conversions.h"
@@ -410,6 +411,10 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
               "aspectRatio",
               yogaStyle.aspectRatio(),
               defaultYogaStyle.aspectRatio()),
+          debugStringConvertibleItem(
+              "boxSizing",
+              yoga::toString(yogaStyle.boxSizing()),
+              yoga::toString(defaultYogaStyle.boxSizing())),
       };
 }
 #endif
