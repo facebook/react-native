@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3369c6073006f4dddb297f86f413363f>>
+ * @generated SignedSource<<212a64efdf912e89b8330b292a8bccb5>>
  */
 
 /**
@@ -420,12 +420,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool shouldPressibilityUseW3CPointerEventsForHover() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldPressibilityUseW3CPointerEventsForHover");
-    return method(javaProvider_);
-  }
-
-  bool shouldResetClickableWhenRecyclingView() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldResetClickableWhenRecyclingView");
     return method(javaProvider_);
   }
 
@@ -849,11 +843,6 @@ bool JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsFo
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::shouldResetClickableWhenRecyclingView(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::shouldResetClickableWhenRecyclingView();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::shouldResetOnClickListenerWhenRecyclingView(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::shouldResetOnClickListenerWhenRecyclingView();
@@ -1157,9 +1146,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "shouldPressibilityUseW3CPointerEventsForHover",
         JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsForHover),
-      makeNativeMethod(
-        "shouldResetClickableWhenRecyclingView",
-        JReactNativeFeatureFlagsCxxInterop::shouldResetClickableWhenRecyclingView),
       makeNativeMethod(
         "shouldResetOnClickListenerWhenRecyclingView",
         JReactNativeFeatureFlagsCxxInterop::shouldResetOnClickListenerWhenRecyclingView),

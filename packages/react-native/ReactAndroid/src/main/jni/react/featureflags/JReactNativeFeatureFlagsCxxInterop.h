@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<818d29b2da08e64cec4d20e4b541b7cc>>
+ * @generated SignedSource<<010228a95e878a109f1aa3d13a0c7606>>
  */
 
 /**
@@ -220,9 +220,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool shouldPressibilityUseW3CPointerEventsForHover(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool shouldResetClickableWhenRecyclingView(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool shouldResetOnClickListenerWhenRecyclingView(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d380339fa9dc97085e92c4c5a9c8a1d4>>
+ * @generated SignedSource<<b53ea82f948562fd0c5ee057665ce51a>>
  * @flow strict
  * @noformat
  */
@@ -89,7 +89,6 @@ export interface Spec extends TurboModule {
   +preparedTextCacheSize?: () => number;
   +preventShadowTreeCommitExhaustion?: () => boolean;
   +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
-  +shouldResetClickableWhenRecyclingView?: () => boolean;
   +shouldResetOnClickListenerWhenRecyclingView?: () => boolean;
   +shouldSetEnabledBasedOnAccessibilityState?: () => boolean;
   +shouldTriggerResponderTransferOnScrollAndroid?: () => boolean;

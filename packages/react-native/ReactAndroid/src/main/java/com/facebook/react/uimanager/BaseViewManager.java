@@ -154,9 +154,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (ReactNativeFeatureFlags.shouldResetOnClickListenerWhenRecyclingView()) {
       view.setOnClickListener(null);
     }
-    if (ReactNativeFeatureFlags.shouldResetClickableWhenRecyclingView()) {
-      view.setClickable(false);
-    }
+    view.setClickable(false);
     view.setFocusable(false);
     view.setFocusableInTouchMode(false);
 
