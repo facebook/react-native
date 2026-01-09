@@ -33,6 +33,7 @@ import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
@@ -50,6 +51,7 @@ import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.ClipPath;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
@@ -333,6 +335,15 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         child.layout(layoutLeft, layoutTop, layoutRight, layoutBottom);
       }
     }
+  }
+
+
+  @Override
+  public void draw(Canvas canvas) {
+    BackgroundStyleApplicator.applyClipPathIfPresent(this, canvas, () -> {
+      super.draw(canvas);
+      return null;
+    });
   }
 
   @Override

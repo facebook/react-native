@@ -90,6 +90,12 @@ void ViewShadowNode::initialize() noexcept {
   } else {
     traits_.unset(ShadowNodeTraits::Trait::ChildrenFormStackingContext);
   }
+
+  if (viewProps.clipPath.has_value()) {
+    traits_.set(ShadowNodeTraits::Trait::NeedsComputedBoxModel);
+  } else {
+    traits_.unset(ShadowNodeTraits::Trait::NeedsComputedBoxModel);
+  }
 }
 
 } // namespace facebook::react
