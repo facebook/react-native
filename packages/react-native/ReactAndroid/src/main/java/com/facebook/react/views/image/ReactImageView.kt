@@ -106,6 +106,7 @@ public class ReactImageView(
   private var headers: ReadableMap? = null
   private var resizeMultiplier = 1.0f
   private var resizeMethod = ImageResizeMethod.AUTO
+  private var maxBitmapSize = 0
 
   init {
     // Workaround Android bug where ImageView visibility is not propagated to the Drawable, so you
@@ -269,6 +270,13 @@ public class ReactImageView(
     val isNewMultiplier = abs((resizeMultiplier - multiplier).toDouble()) > 0.0001f
     if (isNewMultiplier) {
       resizeMultiplier = multiplier
+      isDirty = true
+    }
+  }
+
+  public fun setMaxBitmapSize(maxBitmapSize: Int) {
+    if (this.maxBitmapSize != maxBitmapSize) {
+      this.maxBitmapSize = maxBitmapSize
       isDirty = true
     }
   }
@@ -587,7 +595,7 @@ public class ReactImageView(
       if (width <= 0 || height <= 0) {
         return null
       }
-      return ResizeOptions(width, height)
+      return ResizeOptions(width, height, maxBitmapSize.toFloat())
     }
 
   private fun warnImageSource(uri: String?) {
