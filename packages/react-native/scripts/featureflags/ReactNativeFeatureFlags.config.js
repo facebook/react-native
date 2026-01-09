@@ -762,16 +762,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    shouldSetIsClickableByDefault: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Sets isClickable=true by default on all React Native views on Android to improve UI harvesting detection while maintaining focusable=false to preserve expected behavior.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     shouldTriggerResponderTransferOnScrollAndroid: {
       defaultValue: false,
       metadata: {

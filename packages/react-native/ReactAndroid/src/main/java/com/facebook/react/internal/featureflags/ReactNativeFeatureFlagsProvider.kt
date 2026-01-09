@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d6f937b2829cc1f0e49a136aae1044e9>>
+ * @generated SignedSource<<98babc53e50f8ec8b9e324727ed3734b>>
  */
 
 /**
@@ -156,8 +156,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun shouldResetOnClickListenerWhenRecyclingView(): Boolean
 
   @DoNotStrip public fun shouldSetEnabledBasedOnAccessibilityState(): Boolean
-
-  @DoNotStrip public fun shouldSetIsClickableByDefault(): Boolean
 
   @DoNotStrip public fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 

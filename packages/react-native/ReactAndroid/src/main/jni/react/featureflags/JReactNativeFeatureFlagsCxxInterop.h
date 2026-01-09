@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<51f172946b8ecb5c5d637112237a5b83>>
+ * @generated SignedSource<<818d29b2da08e64cec4d20e4b541b7cc>>
  */
 
 /**
@@ -229,9 +229,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool shouldSetEnabledBasedOnAccessibilityState(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool shouldSetIsClickableByDefault(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool shouldTriggerResponderTransferOnScrollAndroid(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<497416e09c55455dccb439c15955ee00>>
+ * @generated SignedSource<<645d8233955b21a3b2d4e822976abd35>>
  */
 
 /**
@@ -161,8 +161,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun shouldResetOnClickListenerWhenRecyclingView(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldSetEnabledBasedOnAccessibilityState(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun shouldSetIsClickableByDefault(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean
 
