@@ -55,7 +55,9 @@ TODO: Explain the different components of React Native at a high level.
       - Globals and environment setup
       - Error handling
     - Developer Tools
-      - React DevTools
+      - React Native DevTools
+        - Infrastructure
+          - [Inspector proxy protocol](../packages/dev-middleware/src/inspector-proxy/__docs__/README.md)
       - LogBox
     - Misc
       - Web APIs
@@ -91,8 +93,6 @@ TODO: Explain the different components of React Native at a high level.
     - ESLint
   - Integration / E2E
     - [Fantom](../private/react-native-fantom/__docs__/README.md)
-- Tooling
-  - React Native DevTools
 
 ### Used by this
 
