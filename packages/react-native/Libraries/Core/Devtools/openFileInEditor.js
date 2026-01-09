@@ -13,8 +13,7 @@
 const getDevServer = require('./getDevServer').default;
 
 export default function openFileInEditor(file: string, lineNumber: number) {
-  // $FlowFixMe[unused-promise]
-  fetch(getDevServer().url + 'open-stack-frame', {
+  void fetch(getDevServer().url + 'open-stack-frame', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

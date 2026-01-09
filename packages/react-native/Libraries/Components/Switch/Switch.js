@@ -199,10 +199,8 @@ const Switch: component(
   const [native, setNative] = useState({value: (null: ?boolean)});
 
   const handleChange = (event: SwitchChangeEvent) => {
-    // $FlowFixMe[unused-promise]
-    onChange?.(event);
-    // $FlowFixMe[unused-promise]
-    onValueChange?.(event.nativeEvent.value);
+    void onChange?.(event);
+    void onValueChange?.(event.nativeEvent.value);
     setNative({value: event.nativeEvent.value});
   };
 

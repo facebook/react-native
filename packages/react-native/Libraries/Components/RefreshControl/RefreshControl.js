@@ -186,8 +186,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
   _onRefresh = () => {
     this._lastNativeRefreshing = true;
 
-    // $FlowFixMe[unused-promise]
-    this.props.onRefresh && this.props.onRefresh();
+    this.props.onRefresh && void this.props.onRefresh();
 
     // The native component will start refreshing so force an update to
     // make sure it stays in sync with the js component.
