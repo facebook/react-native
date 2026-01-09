@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<26eb9af61fedaacaadc23a8698ff6117>>
+ * @generated SignedSource<<d08d1352bfe98e3e84e58ab9ad2e70c6>>
  */
 
 /**
@@ -156,8 +156,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun shouldResetOnClickListenerWhenRecyclingView(): Boolean = true
 
   override fun shouldSetEnabledBasedOnAccessibilityState(): Boolean = true
-
-  override fun shouldSetIsClickableByDefault(): Boolean = false
 
   override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 

@@ -16,7 +16,6 @@ import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -156,8 +155,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       view.setOnClickListener(null);
     }
     if (ReactNativeFeatureFlags.shouldResetClickableWhenRecyclingView()) {
-      view.setClickable(
-          ReactNativeFeatureFlags.shouldSetIsClickableByDefault() && !(view instanceof TextView));
+      view.setClickable(false);
     }
     view.setFocusable(false);
     view.setFocusableInTouchMode(false);
@@ -688,7 +686,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   protected void onAfterUpdateTransaction(@NonNull T view) {
     super.onAfterUpdateTransaction(view);
-    configureClickableState(view);
     updateViewAccessibility(view);
 
     Boolean invalidateTransform = (Boolean) view.getTag(R.id.invalidate_transform);
@@ -1021,31 +1018,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   // Please add new props to BaseViewManagerDelegate as well!
-
-  private static <T extends View> void configureClickableState(@NonNull T view) {
-    if (!ReactNativeFeatureFlags.shouldSetIsClickableByDefault()) {
-      return;
-    }
-
-    boolean shouldBeClickable;
-    if (view instanceof ReactPointerEventsView) {
-      shouldBeClickable =
-          PointerEvents.canBeTouchTarget(((ReactPointerEventsView) view).getPointerEvents());
-    } else if (view instanceof TextView) {
-      shouldBeClickable = view.hasOnClickListeners();
-    } else {
-      shouldBeClickable = true;
-    }
-
-    // NOTE: In Android O+, setClickable(true) has the side effect of setting focusable=true.
-    // We need to preserve the original focusable state to respect the focusable prop.
-    boolean wasFocusable = view.isFocusable();
-    boolean wasFocusableInTouchMode = view.isFocusableInTouchMode();
-
-    view.setClickable(shouldBeClickable);
-    view.setFocusable(wasFocusable);
-    view.setFocusableInTouchMode(wasFocusableInTouchMode);
-  }
 
   /**
    * A helper class to keep track of the original focus change listener if one is set. This is

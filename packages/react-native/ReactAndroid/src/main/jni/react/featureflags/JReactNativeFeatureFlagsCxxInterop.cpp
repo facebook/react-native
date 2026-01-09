@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4e42a02fba11d92d390e1e60de492214>>
+ * @generated SignedSource<<3369c6073006f4dddb297f86f413363f>>
  */
 
 /**
@@ -441,12 +441,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool shouldSetIsClickableByDefault() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldSetIsClickableByDefault");
-    return method(javaProvider_);
-  }
-
   bool shouldTriggerResponderTransferOnScrollAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldTriggerResponderTransferOnScrollAndroid");
@@ -870,11 +864,6 @@ bool JReactNativeFeatureFlagsCxxInterop::shouldSetEnabledBasedOnAccessibilitySta
   return ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::shouldSetIsClickableByDefault(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::shouldSetIsClickableByDefault();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::shouldTriggerResponderTransferOnScrollAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid();
@@ -1177,9 +1166,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "shouldSetEnabledBasedOnAccessibilityState",
         JReactNativeFeatureFlagsCxxInterop::shouldSetEnabledBasedOnAccessibilityState),
-      makeNativeMethod(
-        "shouldSetIsClickableByDefault",
-        JReactNativeFeatureFlagsCxxInterop::shouldSetIsClickableByDefault),
       makeNativeMethod(
         "shouldTriggerResponderTransferOnScrollAndroid",
         JReactNativeFeatureFlagsCxxInterop::shouldTriggerResponderTransferOnScrollAndroid),
