@@ -3846,7 +3846,7 @@ declare module "@babel/types" {
     enter?: TraversalHandler<T>,
     exit?: TraversalHandler<T>,
   };
-  declare export function traverse<T>(n: BabelNode, TraversalHandler<T> | TraversalHandlers<T>, state?: T): void;
+  declare export function traverse<T>(n: BabelNode, handler: TraversalHandler<T> | TraversalHandlers<T>, state?: T): void;
   declare export function traverseFast<T>(n: Node, h: TraversalHandler<T>, state?: T): void;
   declare export function shallowEqual(actual: Object, expected: Object): boolean
   declare export function buildMatchMemberExpression(match: string, allowPartial?: boolean): (?BabelNode) => boolean
