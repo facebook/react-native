@@ -50,36 +50,28 @@ struct AnimationMutations {
 class AnimationBackend : public UIManagerAnimationBackend {
  public:
   using Callback = std::function<AnimationMutations(float)>;
-  using StartOnRenderCallback = std::function<void(std::function<void()> &&, bool /* isAsync */)>;
-  using StopOnRenderCallback = std::function<void(bool /* isAsync */)>;
+  using ResumeCallback = std::function<void()>;
+  using PauseCallback = std::function<void()>;
   using DirectManipulationCallback = std::function<void(Tag, const folly::dynamic &)>;
-  using FabricCommitCallback = std::function<void(std::unordered_map<Tag, folly::dynamic> &)>;
 
   std::vector<Callback> callbacks;
-  const StartOnRenderCallback startOnRenderCallback_;
-  const StopOnRenderCallback stopOnRenderCallback_;
   const DirectManipulationCallback directManipulationCallback_;
-  const FabricCommitCallback fabricCommitCallback_;
   std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry_;
-  UIManager *uiManager_;
+  std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<CallInvoker> jsInvoker_;
   AnimationBackendCommitHook commitHook_;
+  bool isRenderCallbackStarted_{false};
 
-  AnimationBackend(
-      StartOnRenderCallback &&startOnRenderCallback,
-      StopOnRenderCallback &&stopOnRenderCallback,
-      DirectManipulationCallback &&directManipulationCallback,
-      FabricCommitCallback &&fabricCommitCallback,
-      UIManager *uiManager,
-      std::shared_ptr<CallInvoker> jsInvoker);
+  AnimationBackend(DirectManipulationCallback &&directManipulationCallback, std::shared_ptr<UIManager> uiManager);
   void commitUpdates(SurfaceId surfaceId, SurfaceUpdates &surfaceUpdates);
   void synchronouslyUpdateProps(const std::unordered_map<Tag, AnimatedProps> &updates);
   void requestAsyncFlushForSurfaces(const std::set<SurfaceId> &surfaces);
   void clearRegistry(SurfaceId surfaceId) override;
+  void registerJSInvoker(std::shared_ptr<CallInvoker> jsInvoker) override;
 
   void onAnimationFrame(double timestamp) override;
   void trigger() override;
-  void start(const Callback &callback, bool isAsync);
+  void start(const Callback &callback, bool isAsync) override;
   void stop(bool isAsync) override;
 };
 } // namespace facebook::react

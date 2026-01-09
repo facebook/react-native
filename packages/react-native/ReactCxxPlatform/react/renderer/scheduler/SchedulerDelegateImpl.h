@@ -9,6 +9,7 @@
 
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/uimanager/IMountingManager.h>
+#include "AnimationChoreographer.h"
 
 namespace facebook::react {
 
@@ -16,7 +17,9 @@ class IMountingManager;
 
 class SchedulerDelegateImpl : public SchedulerDelegate {
  public:
-  SchedulerDelegateImpl(std::shared_ptr<IMountingManager> mountingManager) noexcept;
+  SchedulerDelegateImpl(
+      std::shared_ptr<IMountingManager> mountingManager,
+      std::shared_ptr<AnimationChoreographer> animationChoreographer) noexcept;
 
   ~SchedulerDelegateImpl() noexcept override = default;
 
@@ -52,6 +55,7 @@ class SchedulerDelegateImpl : public SchedulerDelegate {
   void schedulerShouldPauseAnimationFrameCallbacks() override;
 
   std::shared_ptr<IMountingManager> mountingManager_;
+  std::shared_ptr<AnimationChoreographer> animationChoreographer_;
 };
 
 }; // namespace facebook::react

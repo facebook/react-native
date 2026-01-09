@@ -55,6 +55,15 @@ Scheduler::Scheduler(
   auto uiManager =
       std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
 
+  auto directManipulationCallback = [delegate](
+                                        Tag tag, const folly::dynamic& props) {
+    delegate->schedulerShouldSynchronouslyUpdateViewOnUIThread(tag, props);
+  };
+
+  animationBackend_ = std::make_shared<AnimationBackend>(
+      std::move(directManipulationCallback), uiManager);
+  uiManager->unstable_setAnimationBackend(animationBackend_);
+
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -167,6 +176,8 @@ Scheduler::~Scheduler() {
   for (auto& commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
   }
+
+  animationBackend_ = nullptr;
 
   // All Surfaces must be explicitly stopped before destroying `Scheduler`.
   // The idea is that `UIManager` is allowed to call `Scheduler` only if the
@@ -353,6 +364,18 @@ void Scheduler::uiManagerShouldAddEventListener(
 void Scheduler::uiManagerShouldRemoveEventListener(
     const std::shared_ptr<const EventListener>& listener) {
   removeEventListener(listener);
+}
+
+void Scheduler::uiManagerShouldResumeAnimationBackend() {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerShouldResumeAnimationFrameCallbacks();
+  }
+}
+
+void Scheduler::uiManagerShouldPauseAnimationBackend() {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerShouldPauseAnimationFrameCallbacks();
+  }
 }
 
 void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {

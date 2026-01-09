@@ -437,8 +437,8 @@ void UIManager::setNativeProps_DEPRECATED(
   if (family.nativeProps_DEPRECATED) {
     // Values in `rawProps` patch (take precedence over)
     // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
-    // and `rawProps` contain key 'A'. Value from `rawProps` overrides what was
-    // previously in `nativeProps_DEPRECATED`.
+    // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
+    // was previously in `nativeProps_DEPRECATED`.
     family.nativeProps_DEPRECATED =
         std::make_unique<folly::dynamic>(mergeDynamicProps(
             *family.nativeProps_DEPRECATED,
@@ -529,9 +529,9 @@ std::shared_ptr<const ShadowNode> UIManager::findShadowNodeByTag_DEPRECATED(
     // pointer to a root node because of the possible data race.
     // To work around this, we ask for a commit and immediately cancel it
     // returning `nullptr` instead of a new shadow tree.
-    // We don't want to add a way to access a stored pointer to a root node
-    // because this `findShadowNodeByTag` is deprecated. It is only added
-    // to make migration to the new architecture easier.
+    // We don't want to add a way to access a stored pointer to a root
+    // node because this `findShadowNodeByTag` is deprecated. It is only
+    // added to make migration to the new architecture easier.
     shadowTree.tryCommit(
         [&](const RootShadowNode& oldRootShadowNode) {
           rootShadowNode = &oldRootShadowNode;
@@ -687,12 +687,14 @@ void UIManager::setNativeAnimatedDelegate(
 }
 
 void UIManager::unstable_setAnimationBackend(
-    std::weak_ptr<UIManagerAnimationBackend> animationBackend) {
+    std::shared_ptr<UIManagerAnimationBackend> animationBackend) {
   animationBackend_ = animationBackend;
 }
 
 std::weak_ptr<UIManagerAnimationBackend>
 UIManager::unstable_getAnimationBackend() {
+  react_native_assert(
+      !animationBackend_.expired() && "Animation Backend was not initialized");
   return animationBackend_;
 }
 

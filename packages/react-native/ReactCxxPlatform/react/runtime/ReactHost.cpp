@@ -18,6 +18,7 @@
 #include <react/devsupport/IDevUIDelegate.h>
 #include <react/devsupport/PackagerConnection.h>
 #include <react/devsupport/inspector/Inspector.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/http/IHttpClient.h>
 #include <react/http/IWebSocketClient.h>
 #include <react/io/ResourceLoader.h>
@@ -52,6 +53,7 @@ struct ReactInstanceData {
   std::shared_ptr<NativeAnimatedNodesManagerProvider>
       animatedNodesManagerProvider;
   ReactInstance::BindingsInstallFunc bindingsInstallFunc;
+  std::shared_ptr<AnimationChoreographer> animationChoreographer;
 };
 
 ReactHost::ReactHost(
@@ -66,7 +68,8 @@ ReactHost::ReactHost(
     std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate,
     std::shared_ptr<NativeAnimatedNodesManagerProvider>
         animatedNodesManagerProvider,
-    ReactInstance::BindingsInstallFunc bindingsInstallFunc)
+    ReactInstance::BindingsInstallFunc bindingsInstallFunc,
+    std::shared_ptr<AnimationChoreographer> animationChoreographer)
     : reactInstanceConfig_(std::move(reactInstanceConfig)) {
   auto componentRegistryFactory =
       mountingManager->getComponentRegistryFactory();
@@ -82,7 +85,8 @@ ReactHost::ReactHost(
       .turboModuleProviders = std::move(turboModuleProviders),
       .logBoxSurfaceDelegate = logBoxSurfaceDelegate,
       .animatedNodesManagerProvider = animatedNodesManagerProvider,
-      .bindingsInstallFunc = std::move(bindingsInstallFunc)});
+      .bindingsInstallFunc = std::move(bindingsInstallFunc),
+      .animationChoreographer = std::move(animationChoreographer)});
   if (!reactInstanceData_->contextContainer
            ->find<MessageQueueThreadFactory>(MessageQueueThreadFactoryKey)
            .has_value()) {
@@ -225,9 +229,24 @@ void ReactHost::createReactInstance() {
       };
 
   schedulerDelegate_ = std::make_unique<SchedulerDelegateImpl>(
-      reactInstanceData_->mountingManager);
+      reactInstanceData_->mountingManager,
+      reactInstanceData_->animationChoreographer);
   scheduler_ =
       std::make_unique<Scheduler>(toolbox, nullptr, schedulerDelegate_.get());
+
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    if (reactInstanceData_->animationChoreographer) {
+      std::weak_ptr<UIManagerAnimationBackend> animationBackend =
+          scheduler_->getUIManager()->unstable_getAnimationBackend();
+      reactInstanceData_->animationChoreographer->setOnAnimationTick(
+          [animationBackend](float timestamp) {
+            if (auto strongAnimationBackend = animationBackend.lock()) {
+              strongAnimationBackend->onAnimationFrame(timestamp);
+            }
+          });
+    }
+  }
+
   surfaceManager_ = std::make_unique<SurfaceManager>(*scheduler_);
 
   reactInstanceData_->mountingManager->setSchedulerTaskExecutor(

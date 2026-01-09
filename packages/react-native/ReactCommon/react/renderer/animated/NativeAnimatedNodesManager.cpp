@@ -559,10 +559,8 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
     if (auto animationBackend = animationBackend_.lock()) {
-      std::static_pointer_cast<AnimationBackend>(animationBackend)
-          ->start(
-              [this](float /*f*/) { return pullAnimationMutations(); },
-              isAsync);
+      animationBackend->start(
+          [this](float /*f*/) { return pullAnimationMutations(); }, isAsync);
     }
 #endif
 

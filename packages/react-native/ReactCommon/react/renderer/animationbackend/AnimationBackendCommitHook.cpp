@@ -10,10 +10,11 @@
 namespace facebook::react {
 
 AnimationBackendCommitHook::AnimationBackendCommitHook(
-    UIManager* uiManager,
+    std::shared_ptr<UIManager> uiManager,
     std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry)
-    : animatedPropsRegistry_(std::move(animatedPropsRegistry)) {
-  uiManager->registerCommitHook(*this);
+    : uiManager_(uiManager),
+      animatedPropsRegistry_(std::move(animatedPropsRegistry)) {
+  uiManager_->registerCommitHook(*this);
 }
 
 RootShadowNode::Unshared AnimationBackendCommitHook::shadowTreeWillCommit(
@@ -71,6 +72,10 @@ RootShadowNode::Unshared AnimationBackendCommitHook::shadowTreeWillCommit(
                  .state = shadowNode.getState(),
                  .runtimeShadowNodeReference = true});
           }));
+}
+
+AnimationBackendCommitHook::~AnimationBackendCommitHook() {
+  uiManager_->unregisterCommitHook(*this);
 }
 
 } // namespace facebook::react

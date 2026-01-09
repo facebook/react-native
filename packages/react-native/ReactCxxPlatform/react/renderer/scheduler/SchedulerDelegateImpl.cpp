@@ -10,8 +10,10 @@
 namespace facebook::react {
 
 SchedulerDelegateImpl::SchedulerDelegateImpl(
-    std::shared_ptr<IMountingManager> mountingManager) noexcept
-    : mountingManager_(std::move(mountingManager)) {}
+    std::shared_ptr<IMountingManager> mountingManager,
+    std::shared_ptr<AnimationChoreographer> animationChoreographer) noexcept
+    : mountingManager_(std::move(mountingManager)),
+      animationChoreographer_(std::move(animationChoreographer)) {}
 
 void SchedulerDelegateImpl::schedulerDidFinishTransaction(
     const std::shared_ptr<const MountingCoordinator>& /*mountingCoordinator*/) {
@@ -64,11 +66,15 @@ void SchedulerDelegateImpl::schedulerDidUpdateShadowTree(
 }
 
 void SchedulerDelegateImpl::schedulerShouldResumeAnimationFrameCallbacks() {
-  // no-op for ReactCxxPlatform
+  if (animationChoreographer_) {
+    animationChoreographer_->resume();
+  }
 }
 
 void SchedulerDelegateImpl::schedulerShouldPauseAnimationFrameCallbacks() {
-  // no-op for ReactCxxPlatform
+  if (animationChoreographer_) {
+    animationChoreographer_->pause();
+  }
 }
 
 } // namespace facebook::react
