@@ -764,6 +764,10 @@ void FabricUIManagerBinding::schedulerDidUpdateShadowTree(
   // no-op
 }
 
+void FabricUIManagerBinding::schedulerShouldResumeAnimationFrameCallbacks() {}
+
+void FabricUIManagerBinding::schedulerShouldPauseAnimationFrameCallbacks() {}
+
 void FabricUIManagerBinding::onAnimationStarted() {
   auto mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {

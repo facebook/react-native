@@ -63,4 +63,12 @@ void SchedulerDelegateImpl::schedulerDidUpdateShadowTree(
   mountingManager_->onUpdateShadowTree(tagToProps);
 }
 
+void SchedulerDelegateImpl::schedulerShouldResumeAnimationFrameCallbacks() {
+  // no-op for ReactCxxPlatform
+}
+
+void SchedulerDelegateImpl::schedulerShouldPauseAnimationFrameCallbacks() {
+  // no-op for ReactCxxPlatform
+}
+
 } // namespace facebook::react
