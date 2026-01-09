@@ -273,7 +273,10 @@ describe.each(['HTTP', 'HTTPS'])(
               vm: 'bar-vm',
             },
             {
-              debuggerHostHeader: 'localhost:' + serverRef.port,
+              debuggerHeaders: {
+                Host: 'localhost:' + serverRef.port,
+                Origin: 'http://localhost:8081',
+              },
               deviceHostHeader: sourceHost,
             },
           );

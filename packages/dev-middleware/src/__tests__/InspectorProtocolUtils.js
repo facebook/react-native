@@ -116,11 +116,12 @@ export async function createAndConnectTarget(
   signal: AbortSignal,
   page: PageFromDevice,
   {
-    debuggerHostHeader = null,
+    debuggerHeaders = null,
     deviceId = null,
     deviceHostHeader = null,
   }: Readonly<{
-    debuggerHostHeader?: ?string,
+    debuggerHeaders?: ?{[string]: unknown},
+    debuggerOriginHeader?: ?string,
     deviceId?: ?string,
     deviceHostHeader?: ?string,
   }> = {},
@@ -151,7 +152,7 @@ export async function createAndConnectTarget(
     debugger_ = await createDebuggerMock(
       webSocketDebuggerUrl,
       signal,
-      debuggerHostHeader,
+      debuggerHeaders,
     );
     await until(() => expect(device.connect).toBeCalled());
   } catch (e) {
