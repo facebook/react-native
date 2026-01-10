@@ -152,7 +152,7 @@ class FlowParser implements Parser {
 
   getFunctionTypeAnnotationParameters(
     functionTypeAnnotation: $FlowFixMe,
-  ): $ReadOnlyArray<$FlowFixMe> {
+  ): ReadonlyArray<$FlowFixMe> {
     return functionTypeAnnotation.params;
   }
 
@@ -227,7 +227,7 @@ class FlowParser implements Parser {
 
   parseEnumMembers(
     typeAnnotation: $FlowFixMe,
-  ): $ReadOnlyArray<NativeModuleEnumMember> {
+  ): ReadonlyArray<NativeModuleEnumMember> {
     return typeAnnotation.members.map(member => {
       const value =
         typeof member.init?.value === 'number'
@@ -371,7 +371,7 @@ class FlowParser implements Parser {
     return annotatedElement.right.properties;
   }
 
-  bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe> {
+  bodyProperties(typeAlias: $FlowFixMe): ReadonlyArray<$FlowFixMe> {
     return typeAlias.body.properties;
   }
 
@@ -489,9 +489,9 @@ class FlowParser implements Parser {
   }
 
   removeKnownExtends(
-    typeDefinition: $ReadOnlyArray<PropAST>,
+    typeDefinition: ReadonlyArray<PropAST>,
     types: TypeDeclarationMap,
-  ): $ReadOnlyArray<PropAST> {
+  ): ReadonlyArray<PropAST> {
     return typeDefinition.filter(
       prop =>
         prop.type !== 'ObjectTypeSpreadProperty' ||
@@ -500,9 +500,9 @@ class FlowParser implements Parser {
   }
 
   getExtendsProps(
-    typeDefinition: $ReadOnlyArray<PropAST>,
+    typeDefinition: ReadonlyArray<PropAST>,
     types: TypeDeclarationMap,
-  ): $ReadOnlyArray<ExtendsPropsShape> {
+  ): ReadonlyArray<ExtendsPropsShape> {
     return typeDefinition
       .filter(prop => prop.type === 'ObjectTypeSpreadProperty')
       .map(prop => this.extendsForProp(prop, types, this))
@@ -510,11 +510,11 @@ class FlowParser implements Parser {
   }
 
   getProps(
-    typeDefinition: $ReadOnlyArray<PropAST>,
+    typeDefinition: ReadonlyArray<PropAST>,
     types: TypeDeclarationMap,
   ): {
-    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+    props: ReadonlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: ReadonlyArray<ExtendsPropsShape>,
   } {
     const nonExtendsProps = this.removeKnownExtends(typeDefinition, types);
     const props = flattenProperties(nonExtendsProps, types, this)

@@ -170,7 +170,7 @@ const ModuleSpecClassDeclarationTemplate = ({
   enums: string,
   moduleEventEmitters: EventEmitterCpp[],
   moduleFunctions: string[],
-  methods: $ReadOnlyArray<Readonly<{methodName: string, paramCount: number}>>,
+  methods: ReadonlyArray<Readonly<{methodName: string, paramCount: number}>>,
 }>) => {
   return `${enums}${structs}
 template <typename T>
@@ -504,7 +504,7 @@ function getMemberValueAppearance(member: NativeModuleEnumMember['value']) {
 function generateEnum(
   hasteModuleName: string,
   origEnumName: string,
-  members: $ReadOnlyArray<NativeModuleEnumMember>,
+  members: ReadonlyArray<NativeModuleEnumMember>,
   memberType: NativeModuleEnumMemberType,
 ): string {
   const enumName = getEnumName(hasteModuleName, origEnumName);

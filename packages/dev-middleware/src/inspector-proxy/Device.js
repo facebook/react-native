@@ -282,7 +282,7 @@ export default class Device {
     return this.#app;
   }
 
-  getPagesList(): $ReadOnlyArray<Page> {
+  getPagesList(): ReadonlyArray<Page> {
     if (this.#lastConnectedLegacyReactNativePage) {
       return [...this.#pages.values(), this.#createSyntheticPage()];
     } else {

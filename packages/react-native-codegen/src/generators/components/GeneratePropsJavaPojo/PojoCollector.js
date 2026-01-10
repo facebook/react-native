@@ -29,7 +29,7 @@ const {capitalize} = require('../../Utils');
 export type Pojo = {
   name: string,
   namespace: string,
-  properties: $ReadOnlyArray<PojoProperty>,
+  properties: ReadonlyArray<PojoProperty>,
 };
 
 export type PojoProperty = NamedShape<PojoTypeAnnotation>;
@@ -63,12 +63,12 @@ export type PojoTypeAnnotation =
   | Readonly<{
       type: 'StringEnumTypeAnnotation',
       default: string,
-      options: $ReadOnlyArray<string>,
+      options: ReadonlyArray<string>,
     }>
   | Readonly<{
       type: 'Int32EnumTypeAnnotation',
       default: number,
-      options: $ReadOnlyArray<number>,
+      options: ReadonlyArray<number>,
     }>
   | ReservedPropTypeAnnotation
   | PojoTypeAliasAnnotation
@@ -84,7 +84,7 @@ export type PojoTypeAnnotation =
         | Readonly<{
             type: 'StringEnumTypeAnnotation',
             default: string,
-            options: $ReadOnlyArray<string>,
+            options: ReadonlyArray<string>,
           }>
         | PojoTypeAliasAnnotation
         | ReservedPropTypeAnnotation
@@ -182,7 +182,7 @@ class PojoCollector {
     });
   }
 
-  getAllPojos(): $ReadOnlyArray<Pojo> {
+  getAllPojos(): ReadonlyArray<Pojo> {
     return [...this._pojos.values()];
   }
 }

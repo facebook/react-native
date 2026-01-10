@@ -46,7 +46,7 @@ function getNativeTypeFromAnnotation(
           | ReservedPropTypeAnnotation
           | {
               +default: string,
-              +options: $ReadOnlyArray<string>,
+              +options: ReadonlyArray<string>,
               +type: 'StringEnumTypeAnnotation',
             }
           | {
@@ -54,7 +54,7 @@ function getNativeTypeFromAnnotation(
               +type: 'ArrayTypeAnnotation',
             },
       },
-  nameParts: $ReadOnlyArray<string>,
+  nameParts: ReadonlyArray<string>,
 ): string {
   const typeAnnotation = prop.typeAnnotation;
 
@@ -214,7 +214,7 @@ const convertVarValueToPointer = (type: string, value: string): string => {
 };
 
 function getLocalImports(
-  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  properties: ReadonlyArray<NamedShape<PropTypeAnnotation>>,
 ): Set<string> {
   const imports: Set<string> = new Set();
 

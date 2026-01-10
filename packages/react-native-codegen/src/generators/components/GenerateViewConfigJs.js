@@ -184,7 +184,7 @@ function normalizeInputEventName(name: string) {
 
 // Replicates the behavior of viewConfig in RCTComponentData.m
 function getValidAttributesForEvents(
-  events: $ReadOnlyArray<EventTypeShape>,
+  events: ReadonlyArray<EventTypeShape>,
   imports: Set<string>,
 ) {
   imports.add(
