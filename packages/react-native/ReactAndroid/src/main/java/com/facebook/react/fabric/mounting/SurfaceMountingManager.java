@@ -52,6 +52,7 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewMeasureUtil;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
@@ -1241,6 +1242,18 @@ public class SurfaceMountingManager {
           "Trying to resolve view with tag " + reactTag + " which doesn't exist");
     }
     return view;
+  }
+
+  @UiThread
+  public void measure(int reactTag, int[] outputBuffer) {
+    UiThreadUtil.assertOnUiThread();
+    ViewMeasureUtil.measureViewRelativeToRoot(getView(reactTag), outputBuffer);
+  }
+
+  @UiThread
+  public void measureInWindow(int reactTag, int[] outputBuffer) {
+    UiThreadUtil.assertOnUiThread();
+    ViewMeasureUtil.measureViewInWindow(getView(reactTag), outputBuffer);
   }
 
   private @NonNull ViewState getViewState(int tag) {

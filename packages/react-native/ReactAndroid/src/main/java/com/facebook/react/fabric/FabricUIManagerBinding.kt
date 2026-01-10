@@ -83,6 +83,17 @@ internal class FabricUIManagerBinding : HybridClassBase() {
 
   external fun reportMount(surfaceId: Int)
 
+  @DoNotStrip
+  external fun onMeasureResult(
+      callbackId: Long,
+      inWindow: Boolean,
+      success: Boolean,
+      x: Int,
+      y: Int,
+      width: Int,
+      height: Int,
+  )
+
   fun register(
       runtimeExecutor: RuntimeExecutor,
       runtimeScheduler: RuntimeScheduler,

@@ -1038,6 +1038,51 @@ public class FabricUIManager
     return surfaceManager == null ? null : surfaceManager.getView(reactTag);
   }
 
+  /**
+   * Measures a mounted view by tag on the UI thread and reports the result back to the C++ binding.
+   *
+   * <p>This method is invoked from C++ and must not touch view hierarchy off the UI thread.
+   */
+  @SuppressWarnings("unused")
+  public void measure(int reactTag, long callbackId, boolean inWindow) {
+    Runnable measureRunnable =
+        new Runnable() {
+          @Override
+          public void run() {
+            UiThreadUtil.assertOnUiThread();
+
+            int[] buffer = new int[] {0, 0, 0, 0};
+            boolean success = false;
+
+            try {
+              SurfaceMountingManager surfaceManager = mMountingManager.getSurfaceManagerForView(reactTag);
+              if (surfaceManager != null) {
+                if (inWindow) {
+                  surfaceManager.measureInWindow(reactTag, buffer);
+                } else {
+                  surfaceManager.measure(reactTag, buffer);
+                }
+                success = true;
+              }
+            } catch (Exception e) {
+              success = false;
+            }
+
+            FabricUIManagerBinding binding = mBinding;
+            if (binding != null) {
+              binding.onMeasureResult(
+                  callbackId, inWindow, success, buffer[0], buffer[1], buffer[2], buffer[3]);
+            }
+          }
+        };
+
+    if (UiThreadUtil.isOnUiThread()) {
+      measureRunnable.run();
+    } else {
+      UiThreadUtil.runOnUiThread(measureRunnable);
+    }
+  }
+
   @Override
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
     receiveEvent(View.NO_ID, reactTag, eventName, false, params, EventCategoryDef.UNSPECIFIED);

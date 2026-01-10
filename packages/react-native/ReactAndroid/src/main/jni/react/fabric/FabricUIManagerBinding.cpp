@@ -589,6 +589,12 @@ void FabricUIManagerBinding::uninstallFabricUIManager() {
   animationDriver_ = nullptr;
   scheduler_ = nullptr;
   mountingManager_ = nullptr;
+
+  {
+    std::lock_guard<std::mutex> measureLock(pendingMeasureMutex_);
+    pendingMeasureCallbacks_.clear();
+    pendingMeasureInWindowCallbacks_.clear();
+  }
 }
 
 std::shared_ptr<FabricMountingManager>
@@ -764,6 +770,104 @@ void FabricUIManagerBinding::schedulerDidUpdateShadowTree(
   // no-op
 }
 
+void FabricUIManagerBinding::schedulerMeasure(
+    SurfaceId /*surfaceId*/,
+    Tag tag,
+    MeasureCallback callback) {
+  auto mountingManager = getMountingManager("schedulerMeasure");
+  if (!mountingManager) {
+    callback(std::nullopt);
+    return;
+  }
+
+  auto callbackId = nextMeasureCallbackId_.fetch_add(1);
+  {
+    std::lock_guard<std::mutex> lock(pendingMeasureMutex_);
+    pendingMeasureCallbacks_.emplace(callbackId, std::move(callback));
+  }
+
+  mountingManager->measure(tag, callbackId, /*inWindow*/ false);
+}
+
+void FabricUIManagerBinding::schedulerMeasureInWindow(
+    SurfaceId /*surfaceId*/,
+    Tag tag,
+    MeasureInWindowCallback callback) {
+  auto mountingManager = getMountingManager("schedulerMeasureInWindow");
+  if (!mountingManager) {
+    callback(std::nullopt);
+    return;
+  }
+
+  auto callbackId = nextMeasureCallbackId_.fetch_add(1);
+  {
+    std::lock_guard<std::mutex> lock(pendingMeasureMutex_);
+    pendingMeasureInWindowCallbacks_.emplace(callbackId, std::move(callback));
+  }
+
+  mountingManager->measure(tag, callbackId, /*inWindow*/ true);
+}
+
+void FabricUIManagerBinding::onMeasureResult(
+    jlong callbackId,
+    jboolean inWindow,
+    jboolean success,
+    jint x,
+    jint y,
+    jint width,
+    jint height) {
+  if (inWindow) {
+    MeasureInWindowCallback callback;
+    {
+      std::lock_guard<std::mutex> lock(pendingMeasureMutex_);
+      auto it = pendingMeasureInWindowCallbacks_.find(callbackId);
+      if (it == pendingMeasureInWindowCallbacks_.end()) {
+        return;
+      }
+      callback = std::move(it->second);
+      pendingMeasureInWindowCallbacks_.erase(it);
+    }
+
+    if (!success) {
+      callback(std::nullopt);
+      return;
+    }
+
+    auto result = MeasureInWindowResult{
+        .x = static_cast<double>(x) / pointScaleFactor_,
+        .y = static_cast<double>(y) / pointScaleFactor_,
+        .width = static_cast<double>(width) / pointScaleFactor_,
+        .height = static_cast<double>(height) / pointScaleFactor_,
+    };
+    callback(result);
+    return;
+  }
+
+  MeasureCallback callback;
+  {
+    std::lock_guard<std::mutex> lock(pendingMeasureMutex_);
+    auto it = pendingMeasureCallbacks_.find(callbackId);
+    if (it == pendingMeasureCallbacks_.end()) {
+      return;
+    }
+    callback = std::move(it->second);
+    pendingMeasureCallbacks_.erase(it);
+  }
+
+  if (!success) {
+    callback(std::nullopt);
+    return;
+  }
+
+  auto result = MeasureResult{
+      .pageX = static_cast<double>(x) / pointScaleFactor_,
+      .pageY = static_cast<double>(y) / pointScaleFactor_,
+      .width = static_cast<double>(width) / pointScaleFactor_,
+      .height = static_cast<double>(height) / pointScaleFactor_,
+  };
+  callback(result);
+}
+
 void FabricUIManagerBinding::onAnimationStarted() {
   auto mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {
@@ -804,6 +908,7 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "uninstallFabricUIManager",
           FabricUIManagerBinding::uninstallFabricUIManager),
+      makeNativeMethod("onMeasureResult", FabricUIManagerBinding::onMeasureResult),
       makeNativeMethod(
           "startSurfaceWithSurfaceHandler",
           FabricUIManagerBinding::startSurfaceWithSurfaceHandler),

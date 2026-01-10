@@ -173,6 +173,66 @@ function PressableDelayEvents() {
   );
 }
 
+function PressableDuringNativeDriverAnimation() {
+  const [pressCount, setPressCount] = useState(0);
+  const translateX = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(translateX, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateX, {
+          toValue: 0,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    animation.start();
+
+    return () => {
+      animation.stop();
+    };
+  }, [translateX]);
+
+  const tx = translateX.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 160],
+  });
+
+  return (
+    <View>
+      <View style={styles.logBox}>
+        <Text>
+          Try pressing the moving button while it animates (native driver). If
+          hit testing is broken, the press count won’t increment reliably.
+        </Text>
+        <Text testID="pressable_native_driver_press_count">
+          Press count: {pressCount}
+        </Text>
+      </View>
+
+      <View style={[styles.row, {height: 72}]}>
+        <Animated.View style={{transform: [{translateX: tx}]}}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setPressCount(c => c + 1)}
+            style={({pressed}) => [
+              styles.wrapperCustom,
+              {backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white'},
+            ]}>
+            <Text style={styles.text}>Tap me while moving</Text>
+          </Pressable>
+        </Animated.View>
+      </View>
+    </View>
+  );
+}
+
 function ForceTouchExample() {
   const [force, setForce] = useState(0);
 
@@ -403,6 +463,15 @@ const examples = [
       'onPressOut, and onLongPress as props.': string),
     render: function (): React.Node {
       return <PressableFeedbackEvents />;
+    },
+  },
+  {
+    title: 'Press during native-driver transform animation (Android)',
+    description:
+      ('Repro for pressability regressions during native-driven transforms. Try tapping while it moves.': string),
+    platform: 'android',
+    render(): React.Node {
+      return <PressableDuringNativeDriverAnimation />;
     },
   },
   {

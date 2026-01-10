@@ -1206,4 +1206,16 @@ void FabricMountingManager::synchronouslyUpdateViewOnUIThread(
   synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap);
 }
 
+void FabricMountingManager::measure(Tag viewTag, int64_t callbackId, bool inWindow) {
+  static auto measureJNI =
+      JFabricUIManager::javaClassStatic()->getMethod<void(jint, jlong, jboolean)>(
+          "measure");
+
+  measureJNI(
+      javaUIManager_,
+      static_cast<jint>(viewTag),
+      static_cast<jlong>(callbackId),
+      static_cast<jboolean>(inWindow));
+}
+
 } // namespace facebook::react

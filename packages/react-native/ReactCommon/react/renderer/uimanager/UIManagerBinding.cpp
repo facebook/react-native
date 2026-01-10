@@ -11,10 +11,13 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
+#include <react/bridging/Function.h>
 #include <react/renderer/components/view/PointerEvent.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/dom/DOM.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/primitives.h>
 
 #include <utility>
@@ -650,6 +653,52 @@ jsi::Value UIManagerBinding::get(
 
           auto measureRect = dom::measure(currentRevision, *shadowNode);
 
+#if defined(__ANDROID__) || defined(__APPLE__)
+          auto runtimeSchedulerBinding = RuntimeSchedulerBinding::getBinding(runtime);
+          auto runtimeScheduler = runtimeSchedulerBinding != nullptr
+              ? runtimeSchedulerBinding->getRuntimeScheduler()
+              : nullptr;
+
+          auto* scheduler = dynamic_cast<Scheduler*>(uiManager->getDelegate());
+          auto* schedulerDelegate =
+              scheduler != nullptr ? scheduler->getDelegate() : nullptr;
+
+          if (schedulerDelegate != nullptr && runtimeScheduler != nullptr) {
+            auto jsInvoker =
+                std::make_shared<RuntimeSchedulerCallInvoker>(runtimeScheduler);
+
+            auto asyncCallback =
+                AsyncCallback<double, double, double, double, double, double>(
+                    runtime, std::move(callbackFunction), jsInvoker);
+
+            schedulerDelegate->schedulerMeasure(
+                shadowNode->getSurfaceId(),
+                shadowNode->getTag(),
+                [asyncCallback, measureRect](
+                    std::optional<SchedulerDelegate::MeasureResult> nativeResult)
+                    mutable {
+                      auto width =
+                          nativeResult ? nativeResult->width : measureRect.width;
+                      auto height = nativeResult ? nativeResult->height
+                                                 : measureRect.height;
+                      auto pageX = nativeResult ? nativeResult->pageX
+                                                : measureRect.pageX;
+                      auto pageY = nativeResult ? nativeResult->pageY
+                                                : measureRect.pageY;
+
+                      asyncCallback.call(
+                          measureRect.x,
+                          measureRect.y,
+                          width,
+                          height,
+                          pageX,
+                          pageY);
+                    });
+
+            return jsi::Value::undefined();
+          }
+#endif
+
           callbackFunction.call(
               runtime,
               {jsi::Value{runtime, measureRect.x},
@@ -690,6 +739,44 @@ jsi::Value UIManagerBinding::get(
           }
 
           auto rect = dom::measureInWindow(currentRevision, *shadowNode);
+
+#if defined(__ANDROID__) || defined(__APPLE__)
+          auto runtimeSchedulerBinding = RuntimeSchedulerBinding::getBinding(runtime);
+          auto runtimeScheduler = runtimeSchedulerBinding != nullptr
+              ? runtimeSchedulerBinding->getRuntimeScheduler()
+              : nullptr;
+
+          auto* scheduler = dynamic_cast<Scheduler*>(uiManager->getDelegate());
+          auto* schedulerDelegate =
+              scheduler != nullptr ? scheduler->getDelegate() : nullptr;
+
+          if (schedulerDelegate != nullptr && runtimeScheduler != nullptr) {
+            auto jsInvoker =
+                std::make_shared<RuntimeSchedulerCallInvoker>(runtimeScheduler);
+
+            auto asyncCallback = AsyncCallback<double, double, double, double>(
+                runtime, std::move(callbackFunction), jsInvoker);
+
+            schedulerDelegate->schedulerMeasureInWindow(
+                shadowNode->getSurfaceId(),
+                shadowNode->getTag(),
+                [asyncCallback, rect](
+                    std::optional<SchedulerDelegate::MeasureInWindowResult>
+                        nativeResult) mutable {
+                  auto x = nativeResult ? nativeResult->x : rect.x;
+                  auto y = nativeResult ? nativeResult->y : rect.y;
+                  auto width =
+                      nativeResult ? nativeResult->width : rect.width;
+                  auto height =
+                      nativeResult ? nativeResult->height : rect.height;
+
+                  asyncCallback.call(x, y, width, height);
+                });
+
+            return jsi::Value::undefined();
+          }
+#endif
+
           callbackFunction.call(
               runtime,
               {jsi::Value{runtime, rect.x},

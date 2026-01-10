@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <functional>
 #include <memory>
+#include <optional>
 
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
@@ -20,6 +22,24 @@ namespace facebook::react {
  */
 class SchedulerDelegate {
  public:
+  struct MeasureResult {
+    double pageX{0};
+    double pageY{0};
+    double width{0};
+    double height{0};
+  };
+
+  struct MeasureInWindowResult {
+    double x{0};
+    double y{0};
+    double width{0};
+    double height{0};
+  };
+
+  using MeasureCallback = std::function<void(std::optional<MeasureResult>)>;
+  using MeasureInWindowCallback =
+      std::function<void(std::optional<MeasureInWindowResult>)>;
+
   /*
    * Called right after Scheduler computed (and laid out) a new updated version
    * of the tree and calculated a set of mutations which are sufficient
@@ -59,6 +79,29 @@ class SchedulerDelegate {
   virtual void schedulerShouldSynchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic &props) = 0;
 
   virtual void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) = 0;
+
+  /*
+   * Request measuring a mounted native view (if present). Implementations may
+   * call `callback` on any thread. Default implementation reports failure.
+   */
+  virtual void schedulerMeasure(
+      SurfaceId /*surfaceId*/,
+      Tag /*tag*/,
+      MeasureCallback callback) {
+    callback(std::nullopt);
+  }
+
+  /*
+   * Request measuring a mounted native view (if present) in window coordinates.
+   * Implementations may call `callback` on any thread. Default implementation
+   * reports failure.
+   */
+  virtual void schedulerMeasureInWindow(
+      SurfaceId /*surfaceId*/,
+      Tag /*tag*/,
+      MeasureInWindowCallback callback) {
+    callback(std::nullopt);
+  }
 
   virtual ~SchedulerDelegate() noexcept = default;
 };

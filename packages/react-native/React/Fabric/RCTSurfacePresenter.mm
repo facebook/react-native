@@ -334,6 +334,59 @@ using namespace facebook::react;
   [_mountingManager setIsJSResponder:isJSResponder blockNativeResponder:blockNativeResponder forShadowView:shadowView];
 }
 
+- (void)schedulerMeasure:(ReactTag)surfaceId
+                reactTag:(ReactTag)reactTag
+                inWindow:(BOOL)inWindow
+              callbackId:(int64_t)callbackId
+{
+  RCTScheduler *scheduler = [self scheduler];
+  if (!scheduler) {
+    return;
+  }
+
+  // The component view registry and UIKit measurements must be accessed on the main thread.
+  RCTExecuteOnMainQueue(^{
+    UIView *targetView = [self->_mountingManager.componentViewRegistry findComponentViewWithTag:reactTag];
+    if (!targetView) {
+      [scheduler onMeasureResultWithCallbackId:callbackId
+                                     inWindow:inWindow
+                                      success:NO
+                                            x:0
+                                            y:0
+                                        width:0
+                                       height:0];
+      return;
+    }
+
+    CGRect rect = CGRectZero;
+    if (inWindow) {
+      rect = [targetView convertRect:targetView.bounds toView:nil];
+    } else {
+      RCTFabricSurface *surface = [self surfaceForRootTag:surfaceId];
+      UIView *rootView = surface.view;
+      if (!rootView) {
+        [scheduler onMeasureResultWithCallbackId:callbackId
+                                       inWindow:inWindow
+                                        success:NO
+                                              x:0
+                                              y:0
+                                          width:0
+                                         height:0];
+        return;
+      }
+      rect = [targetView convertRect:targetView.bounds toView:rootView];
+    }
+
+    [scheduler onMeasureResultWithCallbackId:callbackId
+                                   inWindow:inWindow
+                                    success:YES
+                                          x:rect.origin.x
+                                          y:rect.origin.y
+                                      width:rect.size.width
+                                     height:rect.size.height];
+  });
+}
+
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
   std::unique_lock lock(_observerListMutex);
