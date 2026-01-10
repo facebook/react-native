@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f0f6e99458ad95cb0dae170729fc77ca>>
+ * @generated SignedSource<<2b443dd011edd5602a9ea5004f5f9a36>>
  * @flow strict
  * @noformat
  */
@@ -112,7 +112,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   preparedTextCacheSize: Getter<number>,
   preventShadowTreeCommitExhaustion: Getter<boolean>,
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
-  shouldResetClickableWhenRecyclingView: Getter<boolean>,
   shouldResetOnClickListenerWhenRecyclingView: Getter<boolean>,
   shouldSetEnabledBasedOnAccessibilityState: Getter<boolean>,
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
@@ -456,10 +455,6 @@ export const preventShadowTreeCommitExhaustion: Getter<boolean> = createNativeFl
  * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
  */
 export const shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean> = createNativeFlagGetter('shouldPressibilityUseW3CPointerEventsForHover', false);
-/**
- * Reset isClickable to false when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
- */
-export const shouldResetClickableWhenRecyclingView: Getter<boolean> = createNativeFlagGetter('shouldResetClickableWhenRecyclingView', true);
 /**
  * Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
  */
