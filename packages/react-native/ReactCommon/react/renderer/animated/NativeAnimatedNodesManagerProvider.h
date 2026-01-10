@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/animated/MergedValueDispatcher.h>
+#include <react/renderer/uimanager/UIManagerAnimationBackend.h>
 #include <react/renderer/uimanager/UIManagerNativeAnimatedDelegate.h>
 #include "NativeAnimatedNodesManager.h"
 
@@ -32,7 +33,6 @@ class NativeAnimatedNodesManagerProvider {
   std::shared_ptr<EventEmitterListener> getEventEmitterListener();
 
  private:
-  std::shared_ptr<UIManagerAnimationBackend> animationBackend_;
   std::shared_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
 
   std::shared_ptr<EventEmitterListenerContainer> eventEmitterListenerContainer_;

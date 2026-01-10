@@ -80,6 +80,16 @@ class UIManagerDelegate {
   virtual void uiManagerShouldRemoveEventListener(const std::shared_ptr<const EventListener> &listener) = 0;
 
   /*
+   * This is used to resume the platform-specific animation frame scheduling.
+   */
+  virtual void uiManagerShouldResumeAnimationBackend() = 0;
+
+  /*
+   * This is used to pause the platform-specific animation frame scheduling.
+   */
+  virtual void uiManagerShouldPauseAnimationBackend() = 0;
+
+  /*
    * Start surface.
    */
   virtual void uiManagerDidStartSurface(const ShadowTree &shadowTree) = 0;
