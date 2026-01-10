@@ -16,7 +16,7 @@ import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
 import NativeKeyboardObserver from './NativeKeyboardObserver';
 
-export type KeyboardEventName = $Keys<KeyboardEventDefinitions>;
+export type KeyboardEventName = keyof KeyboardEventDefinitions;
 
 export type KeyboardEventEasing =
   | 'easeIn'
@@ -146,7 +146,7 @@ class KeyboardImpl {
    *
    * @param {function} callback function to be called when the event fires.
    */
-  addListener<K: $Keys<KeyboardEventDefinitions>>(
+  addListener<K: keyof KeyboardEventDefinitions>(
     eventType: K,
     listener: (...KeyboardEventDefinitions[K]) => unknown,
     context?: unknown,
@@ -159,7 +159,7 @@ class KeyboardImpl {
    *
    * @param {string} eventType The native event string listeners are watching which will be removed.
    */
-  removeAllListeners<K: $Keys<KeyboardEventDefinitions>>(eventType: ?K): void {
+  removeAllListeners<K: keyof KeyboardEventDefinitions>(eventType: ?K): void {
     this._emitter.removeAllListeners(eventType);
   }
 

@@ -65,9 +65,9 @@ type PassThroughProps = Readonly<{
   passthroughAnimatedPropExplicitValues?: ViewProps | null,
 }>;
 
-type LooseOmit<O: interface {}, K: $Keys<$FlowFixMe>> = Pick<
+type LooseOmit<O: interface {}, K: keyof $FlowFixMe> = Pick<
   O,
-  Exclude<$Keys<O>, K>,
+  Exclude<keyof O, K>,
 >;
 
 export type AnimatedProps<Props: {...}> = LooseOmit<

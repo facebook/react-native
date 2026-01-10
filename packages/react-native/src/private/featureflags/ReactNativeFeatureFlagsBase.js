@@ -52,7 +52,7 @@ function createGetter<T: boolean | number | string>(
 }
 
 export function createJavaScriptFlagGetter<
-  K: $Keys<ReactNativeFeatureFlagsJsOnly>,
+  K: keyof ReactNativeFeatureFlagsJsOnly,
 >(
   configName: K,
   defaultValue: ReturnType<ReactNativeFeatureFlagsJsOnly[K]>,
@@ -69,7 +69,7 @@ export function createJavaScriptFlagGetter<
 
 type NativeFeatureFlags = NonNullable<typeof NativeReactNativeFeatureFlags>;
 
-export function createNativeFlagGetter<K: $Keys<NativeFeatureFlags>>(
+export function createNativeFlagGetter<K: keyof NativeFeatureFlags>(
   configName: K,
   defaultValue: ReturnType<NonNullable<NativeFeatureFlags[K]>>,
   skipUnavailableNativeModuleError: boolean = false,

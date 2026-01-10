@@ -20,7 +20,7 @@ import * as React from 'react';
 /**
  * Status bar style
  */
-export type StatusBarStyle = $Keys<{
+export type StatusBarStyle = keyof {
   /**
    * Default status bar style (dark for iOS, light for Android)
    */
@@ -34,12 +34,12 @@ export type StatusBarStyle = $Keys<{
    */
   'dark-content': string,
   ...
-}>;
+};
 
 /**
  * Status bar animation
  */
-export type StatusBarAnimation = $Keys<{
+export type StatusBarAnimation = keyof {
   /**
    * No animation
    */
@@ -53,7 +53,7 @@ export type StatusBarAnimation = $Keys<{
    */
   slide: string,
   ...
-}>;
+};
 
 export type StatusBarPropsAndroid = Readonly<{
   /**

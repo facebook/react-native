@@ -16,7 +16,7 @@ import type {RCTNetworkingEventDefinitions} from './RCTNetworkingEventDefinition
 import type {NativeResponseType} from './XMLHttpRequest';
 
 declare const RCTNetworking: interface {
-  addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
+  addListener<K: keyof RCTNetworkingEventDefinitions>(
     eventType: K,
     // $FlowFixMe[invalid-computed-prop]
     listener: (...RCTNetworkingEventDefinitions[K]) => unknown,

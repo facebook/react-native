@@ -15,9 +15,9 @@ type NativeCommandsOptions<T = string> = Readonly<{
 }>;
 
 function codegenNativeCommands<T: interface {}>(
-  options: NativeCommandsOptions<$Keys<T>>,
+  options: NativeCommandsOptions<keyof T>,
 ): T {
-  const commandObj: {[$Keys<T>]: (...$ReadOnlyArray<unknown>) => void} = {};
+  const commandObj: {[keyof T]: (...$ReadOnlyArray<unknown>) => void} = {};
 
   options.supportedCommands.forEach(command => {
     // $FlowFixMe[missing-local-annot]

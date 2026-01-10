@@ -34,12 +34,12 @@ export type ReactDevToolsAgentEvents = {
 export type ReactDevToolsAgent = {
   selectNode(node: unknown): void,
   stopInspectingNative(value: boolean): void,
-  addListener<Event: $Keys<ReactDevToolsAgentEvents>>(
+  addListener<Event: keyof ReactDevToolsAgentEvents>(
     event: Event,
     listener: (...ReactDevToolsAgentEvents[Event]) => void,
   ): void,
   removeListener(
-    event: $Keys<ReactDevToolsAgentEvents>,
+    event: keyof ReactDevToolsAgentEvents,
     listener: () => void,
   ): void,
 };
