@@ -75,10 +75,13 @@ def use_react_native! (
   error_if_try_to_use_jsc_from_core()
   warn_if_new_arch_disabled()
 
+  react_native_path = Pathname.pwd.join(path)
+  prefix = react_native_path.relative_path_from(Pod::Config.instance.installation_root)
+
   hermes_enabled= true
   # Set the app_path as env variable so the podspecs can access it.
   ENV['APP_PATH'] = app_path
-  ENV['REACT_NATIVE_PATH'] = path
+  ENV['REACT_NATIVE_PATH'] = react_native_path.to_s
 
   # We set RCT_SKIP_CODEGEN to true, if the user wants to skip the running Codegen step from Cocoapods.
   # This is needed as part of our migration away from cocoapods
@@ -107,15 +110,12 @@ def use_react_native! (
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
-  relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-  react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
+  react_native_version = NewArchitectureHelper.extract_react_native_version(react_native_path)
   fabric_enabled = true
 
   ENV['RCT_FABRIC_ENABLED'] = "1"
   ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
   ENV["RCT_NEW_ARCH_ENABLED"] = "1"
-
-  prefix = path
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
 
