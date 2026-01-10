@@ -219,7 +219,6 @@ const getPreset = (src, options, babel) => {
             require('@babel/plugin-transform-private-property-in-object'),
             {loose},
           ],
-          [require('@babel/plugin-syntax-dynamic-import')],
           [require('@babel/plugin-syntax-export-default-from')],
           ...passthroughSyntaxPlugins,
           [require('@babel/plugin-transform-unicode-regex')],
