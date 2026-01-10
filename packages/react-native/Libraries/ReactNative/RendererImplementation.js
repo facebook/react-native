@@ -37,11 +37,11 @@ function getPaperRenderer(): ReactNativeType {
   return cachedPaperRenderer;
 }
 
-const getMethod: (<MethodName: $Keys<ReactFabricType>>(
+const getMethod: (<MethodName: keyof ReactFabricType>(
   () => ReactFabricType,
   MethodName,
 ) => ReactFabricType[MethodName]) &
-  (<MethodName: $Keys<ReactNativeType>>(
+  (<MethodName: keyof ReactNativeType>(
     () => ReactNativeType,
     MethodName,
   ) => ReactNativeType[MethodName]) = (getRenderer, methodName) => {
@@ -59,13 +59,13 @@ const getMethod: (<MethodName: $Keys<ReactFabricType>>(
   };
 };
 
-function getFabricMethod<MethodName: $Keys<ReactFabricType>>(
+function getFabricMethod<MethodName: keyof ReactFabricType>(
   methodName: MethodName,
 ): ReactFabricType[MethodName] {
   return getMethod(getFabricRenderer, methodName);
 }
 
-function getPaperMethod<MethodName: $Keys<ReactNativeType>>(
+function getPaperMethod<MethodName: keyof ReactNativeType>(
   methodName: MethodName,
 ): ReactNativeType[MethodName] {
   return getMethod(getPaperRenderer, methodName);

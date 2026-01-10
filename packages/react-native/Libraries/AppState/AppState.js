@@ -42,7 +42,7 @@ type AppStateEventDefinitions = {
   focus: [],
 };
 
-export type AppStateEvent = $Keys<AppStateEventDefinitions>;
+export type AppStateEvent = keyof AppStateEventDefinitions;
 
 type NativeAppStateEventDefinitions = {
   appStateDidChange: [{app_state: AppStateStatus}],
