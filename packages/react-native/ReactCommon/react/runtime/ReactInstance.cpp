@@ -228,17 +228,16 @@ std::string simpleBasename(const std::string& path) {
  * JSThread, preferably via the runtimeExecutor_.
  */
 void ReactInstance::loadScript(
-    std::unique_ptr<const JSBigString> script,
+    const std::shared_ptr<const JSBigString>& script,
     const std::string& sourceURL,
     std::function<void(jsi::Runtime& runtime)>&& beforeLoad,
     std::function<void(jsi::Runtime& runtime)>&& afterLoad) {
-  std::shared_ptr<const jsi::Buffer> buffer(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
   runtimeScheduler_->scheduleWork([this,
                                    scriptName,
                                    sourceURL,
-                                   buffer = std::move(buffer),
+                                   script,
                                    weakBufferedRuntimeExecuter =
                                        std::weak_ptr<BufferedRuntimeExecutor>(
                                            bufferedRuntimeExecutor_),
@@ -256,7 +255,7 @@ void ReactInstance::loadScript(
       ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_START);
     }
 
-    // Check if the shermes unit is avaliable.
+    // Check if the shermes unit is available.
     auto* shUnitAPI = jsi::castInterface<hermes::IHermesSHUnit>(&runtime);
     auto* shUnitCreator = shUnitAPI ? shUnitAPI->getSHUnitCreator() : nullptr;
     if (shUnitCreator) {
@@ -265,7 +264,7 @@ void ReactInstance::loadScript(
       hermesAPI->evaluateSHUnit(shUnitCreator);
     } else {
       LOG(WARNING) << "ReactInstance: evaluateJavaScript() with JS bundle";
-      runtime.evaluateJavaScript(buffer, sourceURL);
+      runtime.evaluateJavaScript(script, sourceURL);
     }
 
     /**

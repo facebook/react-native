@@ -18,6 +18,7 @@
 @class RCTBundleManager;
 @class RCTCallableJSModules;
 @class RCTCallInvoker;
+@class RCTBundleProvider;
 
 typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 
@@ -34,6 +35,7 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
                       bundleManager:(RCTBundleManager *)bundleManager
+                     bundleProvider:(RCTBundleProvider *)bundleProvider
                   callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER
     __deprecated_msg("This API will be removed along with the legacy architecture.");
 
@@ -42,6 +44,7 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
                         moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
                          bundleManager:(RCTBundleManager *)bundleManager
+                        bundleProvider:(RCTBundleProvider *)bundleProvider
                      callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER
     __deprecated_msg("This API will be removed along with the legacy architecture.");
 
