@@ -96,7 +96,7 @@ export default class Device {
   #deviceSocket: WS;
 
   // Stores the most recent listing of device's pages, keyed by the `id` field.
-  #pages: $ReadOnlyMap<string, Page> = new Map();
+  #pages: ReadonlyMap<string, Page> = new Map();
 
   // Stores information about currently connected debugger (if any).
   #debuggerConnection: ?DebuggerConnection = null;
