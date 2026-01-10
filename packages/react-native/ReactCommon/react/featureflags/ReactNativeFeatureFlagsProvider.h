@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7068f47bca01d79ddd86856ab9953cdf>>
+ * @generated SignedSource<<aad5f9fdfcebfdbc8a0a5235c02dfc18>>
  */
 
 /**
@@ -92,7 +92,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool shouldResetClickableWhenRecyclingView() = 0;
   virtual bool shouldResetOnClickListenerWhenRecyclingView() = 0;
   virtual bool shouldSetEnabledBasedOnAccessibilityState() = 0;
-  virtual bool shouldSetIsClickableByDefault() = 0;
   virtual bool shouldTriggerResponderTransferOnScrollAndroid() = 0;
   virtual bool skipActivityIdentityAssertionOnHostPause() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;

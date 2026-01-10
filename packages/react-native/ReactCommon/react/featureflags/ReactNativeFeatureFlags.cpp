@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b58aac8de8af5726c9a415ff389090f7>>
+ * @generated SignedSource<<97daf46fe8af38d7af4b7241d1d3bc4e>>
  */
 
 /**
@@ -292,10 +292,6 @@ bool ReactNativeFeatureFlags::shouldResetOnClickListenerWhenRecyclingView() {
 
 bool ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState() {
   return getAccessor().shouldSetEnabledBasedOnAccessibilityState();
-}
-
-bool ReactNativeFeatureFlags::shouldSetIsClickableByDefault() {
-  return getAccessor().shouldSetIsClickableByDefault();
 }
 
 bool ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid() {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3fed1e352144c1a440eaec5c66056964>>
+ * @generated SignedSource<<f3ef67fea2e13d76fa9a1c80175e2409>>
  */
 
 /**
@@ -99,7 +99,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool shouldResetClickableWhenRecyclingView();
   bool shouldResetOnClickListenerWhenRecyclingView();
   bool shouldSetEnabledBasedOnAccessibilityState();
-  bool shouldSetIsClickableByDefault();
   bool shouldTriggerResponderTransferOnScrollAndroid();
   bool skipActivityIdentityAssertionOnHostPause();
   bool traceTurboModulePromiseRejectionsOnAndroid();
@@ -125,7 +124,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 82> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 81> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -194,7 +193,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> shouldResetClickableWhenRecyclingView_;
   std::atomic<std::optional<bool>> shouldResetOnClickListenerWhenRecyclingView_;
   std::atomic<std::optional<bool>> shouldSetEnabledBasedOnAccessibilityState_;
-  std::atomic<std::optional<bool>> shouldSetIsClickableByDefault_;
   std::atomic<std::optional<bool>> shouldTriggerResponderTransferOnScrollAndroid_;
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
