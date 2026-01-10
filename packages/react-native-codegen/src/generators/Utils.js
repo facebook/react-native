@@ -67,7 +67,7 @@ class HeterogeneousUnionError extends Error {
 function parseValidUnionType(
   annotation: NativeModuleUnionTypeAnnotation,
 ): ValidUnionType {
-  const isUnionOfType = (types: $ReadOnlyArray<string>): boolean => {
+  const isUnionOfType = (types: ReadonlyArray<string>): boolean => {
     return annotation.types.every(memberTypeAnnotation =>
       types.includes(memberTypeAnnotation.type),
     );

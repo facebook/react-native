@@ -117,7 +117,7 @@ static char const *toString(const ${enumName} value) {
 function getNativeTypeFromAnnotation(
   componentName: string,
   eventProperty: NamedShape<EventTypeAnnotation>,
-  nameParts: $ReadOnlyArray<string>,
+  nameParts: ReadonlyArray<string>,
 ): string {
   const {typeAnnotation} = eventProperty;
   switch (typeAnnotation.type) {
@@ -156,7 +156,7 @@ function getNativeTypeFromAnnotation(
 }
 function generateEnum(
   structs: StructsMap,
-  options: $ReadOnlyArray<string>,
+  options: ReadonlyArray<string>,
   nameParts: Array<string>,
 ) {
   const structName = generateEventStructName(nameParts);
@@ -186,7 +186,7 @@ function handleGenerateStructForArray(
   name: string,
   componentName: string,
   elementType: EventTypeAnnotation,
-  nameParts: $ReadOnlyArray<string>,
+  nameParts: ReadonlyArray<string>,
 ): void {
   if (elementType.type === 'ObjectTypeAnnotation') {
     generateStruct(
@@ -219,8 +219,8 @@ function handleGenerateStructForArray(
 function generateStruct(
   structs: StructsMap,
   componentName: string,
-  nameParts: $ReadOnlyArray<string>,
-  properties: $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
+  nameParts: ReadonlyArray<string>,
+  properties: ReadonlyArray<NamedShape<EventTypeAnnotation>>,
 ): void {
   const structNameParts = nameParts;
   const structName = generateEventStructName(structNameParts);

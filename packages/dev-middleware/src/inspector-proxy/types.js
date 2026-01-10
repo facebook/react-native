@@ -88,7 +88,7 @@ export type GetPagesRequest = {event: 'getPages'};
 // Response to GetPagesRequest containing a list of page infos.
 export type GetPagesResponse = {
   event: 'getPages',
-  payload: $ReadOnlyArray<PageFromDevice>,
+  payload: ReadonlyArray<PageFromDevice>,
 };
 
 // Union type for all possible messages sent from device to Inspector Proxy.
@@ -141,12 +141,12 @@ export type JSONSerializable =
   | number
   | string
   | null
-  | $ReadOnlyArray<JSONSerializable>
+  | ReadonlyArray<JSONSerializable>
   | {+[string]: JSONSerializable};
 
 export type DeepReadOnly<T> =
-  T extends $ReadOnlyArray<infer V>
-    ? $ReadOnlyArray<DeepReadOnly<V>>
+  T extends ReadonlyArray<infer V>
+    ? ReadonlyArray<DeepReadOnly<V>>
     : T extends {...}
       ? {+[K in keyof T]: DeepReadOnly<T[K]>}
       : T;

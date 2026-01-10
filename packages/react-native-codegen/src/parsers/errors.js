@@ -15,7 +15,7 @@ import type {Parser} from './parser';
 export type ParserType = 'Flow' | 'TypeScript';
 
 class ParserError extends Error {
-  nodes: $ReadOnlyArray<$FlowFixMe>;
+  nodes: ReadonlyArray<$FlowFixMe>;
   constructor(
     nativeModuleName: string,
     astNodeOrNodes: $FlowFixMe,
@@ -57,8 +57,8 @@ class ModuleInterfaceNotFoundParserError extends ParserError {
 class MoreThanOneModuleInterfaceParserError extends ParserError {
   constructor(
     nativeModuleName: string,
-    flowModuleInterfaces: $ReadOnlyArray<$FlowFixMe>,
-    names: $ReadOnlyArray<string>,
+    flowModuleInterfaces: ReadonlyArray<$FlowFixMe>,
+    names: ReadonlyArray<string>,
     language: ParserType,
   ) {
     const finalName = names[names.length - 1];

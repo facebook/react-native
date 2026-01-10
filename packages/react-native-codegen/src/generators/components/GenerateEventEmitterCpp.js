@@ -99,7 +99,7 @@ void ${className}EventEmitter::${eventName}() const {
 function generateSetter(
   variableName: string,
   propertyName: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   usingEvent: boolean,
   valueMapper: string => string = value => value,
 ) {
@@ -114,7 +114,7 @@ function generateSetter(
 function generateObjectSetter(
   variableName: string,
   propertyName: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   typeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
   extraIncludes: Set<string>,
   usingEvent: boolean,
@@ -151,7 +151,7 @@ function setValueAtIndex(
 function generateArraySetter(
   variableName: string,
   propertyName: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   elementType: EventTypeAnnotation,
   extraIncludes: Set<string>,
   usingEvent: boolean,
@@ -184,7 +184,7 @@ function handleArrayElementType(
   propertyName: string,
   indexVariable: string,
   loopLocalVariable: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   extraIncludes: Set<string>,
   usingEvent: boolean,
 ): string {
@@ -249,7 +249,7 @@ function convertObjectTypeArray(
   propertyName: string,
   indexVariable: string,
   loopLocalVariable: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   objectTypeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
   extraIncludes: Set<string>,
 ): string {
@@ -268,7 +268,7 @@ function convertArrayTypeArray(
   propertyName: string,
   indexVariable: string,
   loopLocalVariable: string,
-  propertyParts: $ReadOnlyArray<string>,
+  propertyParts: ReadonlyArray<string>,
   eventTypeAnnotation: EventTypeAnnotation,
   extraIncludes: Set<string>,
   usingEvent: boolean,
@@ -296,8 +296,8 @@ function convertArrayTypeArray(
 
 function generateSetters(
   parentPropertyName: string,
-  properties: $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
-  propertyParts: $ReadOnlyArray<string>,
+  properties: ReadonlyArray<NamedShape<EventTypeAnnotation>>,
+  propertyParts: ReadonlyArray<string>,
   extraIncludes: Set<string>,
   usingEvent: boolean = true,
 ): string {

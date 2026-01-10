@@ -10,7 +10,7 @@
 
 import type {TerminalReporter} from 'metro';
 
-type LoggerFn = (...message: $ReadOnlyArray<string>) => void;
+type LoggerFn = (...message: ReadonlyArray<string>) => void;
 
 /**
  * Create a dev-middleware logger object that will emit logs via Metro's

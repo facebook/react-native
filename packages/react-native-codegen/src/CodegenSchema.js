@@ -70,14 +70,14 @@ export type VoidTypeAnnotation = Readonly<{
 
 export type ObjectTypeAnnotation<+T> = Readonly<{
   type: 'ObjectTypeAnnotation',
-  properties: $ReadOnlyArray<NamedShape<T>>,
+  properties: ReadonlyArray<NamedShape<T>>,
   // metadata for objects that generated from interfaces
-  baseTypes?: $ReadOnlyArray<string>,
+  baseTypes?: ReadonlyArray<string>,
 }>;
 
 export type UnionTypeAnnotation<+T> = Readonly<{
   type: 'UnionTypeAnnotation',
-  types: $ReadOnlyArray<T>,
+  types: ReadonlyArray<T>,
 }>;
 
 export type MixedTypeAnnotation = Readonly<{
@@ -91,7 +91,7 @@ export type EventEmitterTypeAnnotation = Readonly<{
 
 type FunctionTypeAnnotation<+P, +R> = Readonly<{
   type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<NamedShape<P>>,
+  params: ReadonlyArray<NamedShape<P>>,
   returnTypeAnnotation: R,
 }>;
 
@@ -110,10 +110,10 @@ export type ComponentSchema = Readonly<{
 
 export type ComponentShape = Readonly<{
   ...OptionsShape,
-  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
-  events: $ReadOnlyArray<EventTypeShape>,
-  props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-  commands: $ReadOnlyArray<NamedShape<CommandTypeAnnotation>>,
+  extendsProps: ReadonlyArray<ExtendsPropsShape>,
+  events: ReadonlyArray<EventTypeShape>,
+  props: ReadonlyArray<NamedShape<PropTypeAnnotation>>,
+  commands: ReadonlyArray<NamedShape<CommandTypeAnnotation>>,
 }>;
 
 export type OptionsShape = Readonly<{
@@ -124,7 +124,7 @@ export type OptionsShape = Readonly<{
   // Does not check for new name
   paperComponentName?: string,
   // Use for components that are not used on other platforms.
-  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
+  excludedPlatforms?: ReadonlyArray<PlatformType>,
   // Use for components currently being renamed in paper
   // Will use new name if it is available and fallback to this name
   paperComponentNameDeprecated?: string,
@@ -171,7 +171,7 @@ export type ComponentArrayTypeAnnotation = ArrayTypeAnnotation<
   | Readonly<{
       type: 'StringEnumTypeAnnotation',
       default: string,
-      options: $ReadOnlyArray<string>,
+      options: ReadonlyArray<string>,
     }>
   | ObjectTypeAnnotation<PropTypeAnnotation>
   | ReservedPropTypeAnnotation
@@ -220,12 +220,12 @@ export type PropTypeAnnotation =
   | Readonly<{
       type: 'StringEnumTypeAnnotation',
       default: string,
-      options: $ReadOnlyArray<string>,
+      options: ReadonlyArray<string>,
     }>
   | Readonly<{
       type: 'Int32EnumTypeAnnotation',
       default: number,
-      options: $ReadOnlyArray<number>,
+      options: ReadonlyArray<number>,
     }>
   | ReservedPropTypeAnnotation
   | ObjectTypeAnnotation<PropTypeAnnotation>
@@ -283,12 +283,12 @@ export type NativeModuleSchema = Readonly<{
   // Use for modules that are not used on other platforms.
   // TODO: It's clearer to define `restrictedToPlatforms` instead, but
   // `excludedPlatforms` is used here to be consistent with ComponentSchema.
-  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
+  excludedPlatforms?: ReadonlyArray<PlatformType>,
 }>;
 
 type NativeModuleSpec = Readonly<{
-  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
-  methods: $ReadOnlyArray<NativeModulePropertyShape>,
+  eventEmitters: ReadonlyArray<NativeModuleEventEmitterShape>,
+  methods: ReadonlyArray<NativeModulePropertyShape>,
 }>;
 
 export type NativeModuleEventEmitterShape =
@@ -353,7 +353,7 @@ export type NativeModuleEnumDeclarationWithMembers = {
   name: string,
   type: 'EnumDeclarationWithMembers',
   memberType: NativeModuleEnumMemberType,
-  members: $ReadOnlyArray<NativeModuleEnumMember>,
+  members: ReadonlyArray<NativeModuleEnumMember>,
 };
 
 export type NativeModuleGenericObjectTypeAnnotation = Readonly<{

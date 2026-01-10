@@ -239,7 +239,7 @@ function throwIfPropertyValueTypeIsUnsupported(
 
 function throwIfMoreThanOneModuleInterfaceParserError(
   nativeModuleName: string,
-  moduleSpecs: $ReadOnlyArray<$FlowFixMe>,
+  moduleSpecs: ReadonlyArray<$FlowFixMe>,
   parserType: ParserType,
 ) {
   if (moduleSpecs.length > 1) {
@@ -333,7 +333,7 @@ function throwIfPartialWithMoreParameter(typeAnnotation: $FlowFixMe) {
 }
 
 function throwIfMoreThanOneCodegenNativecommands(
-  commandsTypeNames: $ReadOnlyArray<$FlowFixMe>,
+  commandsTypeNames: ReadonlyArray<$FlowFixMe>,
 ) {
   if (commandsTypeNames.length > 1) {
     throw new Error('codegenNativeCommands may only be called once in a file');
@@ -375,9 +375,9 @@ function throwIfBubblingTypeIsNull(
 }
 
 function throwIfArgumentPropsAreNull(
-  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  argumentProps: ?ReadonlyArray<$FlowFixMe>,
   eventName: string,
-): $ReadOnlyArray<$FlowFixMe> {
+): ReadonlyArray<$FlowFixMe> {
   if (!argumentProps) {
     throw new Error(`Unable to determine event arguments for "${eventName}"`);
   }
