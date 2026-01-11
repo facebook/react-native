@@ -9,6 +9,7 @@
 
 #include <array>
 #include <unordered_map>
+#include <string>
 
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
@@ -68,7 +69,7 @@ inline folly::dynamic toDynamic(const YGValue &dimension)
     case YGUnitPoint:
       return dimension.value;
     case YGUnitPercent:
-      return std::format("{}%", dimension.value);
+      return std::to_string(dimension.value) + "%";
   }
 
   return nullptr;
