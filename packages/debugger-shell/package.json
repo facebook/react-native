@@ -38,7 +38,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">= 22.11.0"
+    "node": ">= 20.19.4"
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",
