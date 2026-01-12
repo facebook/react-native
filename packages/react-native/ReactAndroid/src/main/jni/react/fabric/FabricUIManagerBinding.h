@@ -112,6 +112,10 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
 
+  void schedulerShouldResumeAnimationBackend() override;
+
+  void schedulerShouldPauseAnimationBackend() override;
+
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
