@@ -92,6 +92,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   // Result string is initialized lazily to prevent useless but costly allocations.
   NSMutableString *str = nil;
   for (UIView *subview in view.subviews) {
+    // Skip subviews that have accessibilityElementsHidden set to YES
+    if (subview.accessibilityElementsHidden) {
+      continue;
+    }
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);
