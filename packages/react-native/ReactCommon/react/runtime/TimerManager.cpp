@@ -134,7 +134,8 @@ TimerHandle TimerManager::createRecurringTimer(
 
 void TimerManager::deleteTimer(jsi::Runtime& runtime, TimerHandle timerHandle) {
   if (timerHandle < 0) {
-    throw jsi::JSError(runtime, "clearTimeout called with an invalid handle");
+    // Do nothing for invalid handles (match web spec behavior)
+    return;
   }
 
   platformTimerRegistry_->deleteTimer(timerHandle);
