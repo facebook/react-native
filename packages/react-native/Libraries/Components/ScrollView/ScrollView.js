@@ -388,6 +388,14 @@ export type ScrollViewPropsAndroid = Readonly<{
    * @platform android
    */
   fadingEdgeLength?: ?number | {start: number, end: number},
+  /**
+   * When false, the ScrollView will not automatically scroll to a focused child when
+   * the child requests focus. This can be useful when you want to control the scroll
+   * position programmatically. The default value is true.
+   *
+   * @platform android
+   */
+  scrollsChildToFocus?: ?boolean,
 }>;
 
 type StickyHeaderComponentType = component(

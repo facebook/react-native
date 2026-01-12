@@ -88,6 +88,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
           pointerEvents: true,
           isInvertedVirtualizedList: true,
+          scrollsChildToFocus: true,
         },
       }
     : {
