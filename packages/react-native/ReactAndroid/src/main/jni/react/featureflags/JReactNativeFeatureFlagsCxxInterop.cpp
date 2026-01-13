@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<89d63e717ae8634f32613243bcbe2c40>>
+ * @generated SignedSource<<77d79172d377c62d4d26ddd16dab56ec>>
  */
 
 /**
@@ -390,6 +390,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool overrideBySynchronousMountPropsAtMountingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("overrideBySynchronousMountPropsAtMountingAndroid");
+    return method(javaProvider_);
+  }
+
+  bool passScrollToSwipeRefreshChild() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("passScrollToSwipeRefreshChild");
     return method(javaProvider_);
   }
 
@@ -806,6 +812,11 @@ bool JReactNativeFeatureFlagsCxxInterop::overrideBySynchronousMountPropsAtMounti
   return ReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::passScrollToSwipeRefreshChild(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::passScrollToSwipeRefreshChild();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::perfIssuesEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::perfIssuesEnabled();
@@ -1109,6 +1120,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "overrideBySynchronousMountPropsAtMountingAndroid",
         JReactNativeFeatureFlagsCxxInterop::overrideBySynchronousMountPropsAtMountingAndroid),
+      makeNativeMethod(
+        "passScrollToSwipeRefreshChild",
+        JReactNativeFeatureFlagsCxxInterop::passScrollToSwipeRefreshChild),
       makeNativeMethod(
         "perfIssuesEnabled",
         JReactNativeFeatureFlagsCxxInterop::perfIssuesEnabled),

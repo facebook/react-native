@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<44f52bff0ecd0f26c2173581b09dccce>>
+ * @generated SignedSource<<45b7473c077eb6fd4c2b46712962ddbd>>
  */
 
 /**
@@ -83,6 +83,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var overrideBySynchronousMountPropsAtMountingAndroidCache: Boolean? = null
+  private var passScrollToSwipeRefreshChildCache: Boolean? = null
   private var perfIssuesEnabledCache: Boolean? = null
   private var perfMonitorV2EnabledCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
@@ -689,6 +690,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.overrideBySynchronousMountPropsAtMountingAndroid()
       accessedFeatureFlags.add("overrideBySynchronousMountPropsAtMountingAndroid")
       overrideBySynchronousMountPropsAtMountingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun passScrollToSwipeRefreshChild(): Boolean {
+    var cached = passScrollToSwipeRefreshChildCache
+    if (cached == null) {
+      cached = currentProvider.passScrollToSwipeRefreshChild()
+      accessedFeatureFlags.add("passScrollToSwipeRefreshChild")
+      passScrollToSwipeRefreshChildCache = cached
     }
     return cached
   }

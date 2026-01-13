@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc7c74d60512df0a15f85f61fb52b6fa>>
+ * @generated SignedSource<<ea8cfe433bfc61f78e69a4d1f6be77c4>>
  * @flow strict
  * @noformat
  */
@@ -107,6 +107,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
   overrideBySynchronousMountPropsAtMountingAndroid: Getter<boolean>,
+  passScrollToSwipeRefreshChild: Getter<boolean>,
   perfIssuesEnabled: Getter<boolean>,
   perfMonitorV2Enabled: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
@@ -433,6 +434,10 @@ export const hideOffscreenVirtualViewsOnIOS: Getter<boolean> = createNativeFlagG
  * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.
  */
 export const overrideBySynchronousMountPropsAtMountingAndroid: Getter<boolean> = createNativeFlagGetter('overrideBySynchronousMountPropsAtMountingAndroid', false);
+/**
+ * When enabled, ReactSwipeRefreshLayout will forward ACTION_SCROLL events to its child for proper handling.
+ */
+export const passScrollToSwipeRefreshChild: Getter<boolean> = createNativeFlagGetter('passScrollToSwipeRefreshChild', false);
 /**
  * Enable reporting Performance Issues (`detail.devtools.performanceIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.
  */

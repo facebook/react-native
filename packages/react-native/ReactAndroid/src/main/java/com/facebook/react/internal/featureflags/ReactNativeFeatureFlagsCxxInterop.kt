@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ebb2bd0f070345e71737dab60a788a88>>
+ * @generated SignedSource<<54ca4d2bf514ce152b2f566205716aa6>>
  */
 
 /**
@@ -145,6 +145,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun hideOffscreenVirtualViewsOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun passScrollToSwipeRefreshChild(): Boolean
 
   @DoNotStrip @JvmStatic public external fun perfIssuesEnabled(): Boolean
 

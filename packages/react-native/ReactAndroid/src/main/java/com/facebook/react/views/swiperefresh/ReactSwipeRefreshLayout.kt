@@ -12,11 +12,18 @@ import android.view.ViewConfiguration
 import android.view.ViewGroup
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.events.NativeGestureUtil
 import kotlin.math.abs
 
-/** Basic extension of [SwipeRefreshLayout] with ReactNative-specific functionality. */
+/**
+ * Basic extension of [SwipeRefreshLayout] with ReactNative-specific functionality.
+ *
+ * This component wraps a scrollable child (typically a ScrollView or RecyclerView) and provides
+ * pull-to-refresh functionality. It handles touch event interception for the refresh gesture while
+ * properly forwarding other events to its children.
+ */
 public class ReactSwipeRefreshLayout(reactContext: ReactContext) :
     SwipeRefreshLayout(reactContext) {
 
@@ -125,6 +132,31 @@ public class ReactSwipeRefreshLayout(reactContext: ReactContext) :
       }
     }
     return true
+  }
+
+  /**
+   * Dispatches generic motion events to children.
+   *
+   * This override ensures that [MotionEvent.ACTION_SCROLL] events (from joystick, scrollwheel, or
+   * other pointing devices) are properly forwarded to child views.
+   */
+  public override fun dispatchGenericMotionEvent(ev: MotionEvent): Boolean {
+    // For ACTION_SCROLL events, dispatch to child for handling
+    // The child ScrollView will use nested scrolling APIs to communicate with this
+    // SwipeRefreshLayout
+    if (
+        ReactNativeFeatureFlags.passScrollToSwipeRefreshChild() &&
+            ev.actionMasked == MotionEvent.ACTION_SCROLL
+    ) {
+      val child = getChildAt(0)
+      if (child != null) {
+        val handled = child.dispatchGenericMotionEvent(ev)
+        if (handled) {
+          return true
+        }
+      }
+    }
+    return super.dispatchGenericMotionEvent(ev)
   }
 
   private companion object {
