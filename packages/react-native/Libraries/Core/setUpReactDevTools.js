@@ -49,7 +49,7 @@ if (__DEV__) {
     try {
       const parsedSettings = JSON.parse(serializedHookSettings);
       hookSettings = parsedSettings;
-    } catch {
+    } catch (e: unknown) {
       console.error(
         'Failed to parse persisted React DevTools hook settings. React DevTools will be initialized with default settings.',
       );
