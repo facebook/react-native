@@ -732,16 +732,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    shouldSetEnabledBasedOnAccessibilityState: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     shouldTriggerResponderTransferOnScrollAndroid: {
       defaultValue: false,
       metadata: {
