@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b05e1657341801ec03c9f060f4015c0f>>
+ * @generated SignedSource<<53ce4d1fd4a51744dd45f4375b0d3391>>
  */
 
 /**
@@ -358,11 +358,6 @@ class ReactNativeFeatureFlags {
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
    */
   RN_EXPORT static bool shouldPressibilityUseW3CPointerEventsForHover();
-
-  /**
-   * Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.
-   */
-  RN_EXPORT static bool shouldResetOnClickListenerWhenRecyclingView();
 
   /**
    * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
