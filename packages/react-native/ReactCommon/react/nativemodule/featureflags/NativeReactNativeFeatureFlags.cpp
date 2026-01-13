@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aa55300e5c76ba389093d902c72caea7>>
+ * @generated SignedSource<<3d7f32a7be7944a149b788ffe38f89d1>>
  */
 
 /**
@@ -362,11 +362,6 @@ bool NativeReactNativeFeatureFlags::preventShadowTreeCommitExhaustion(
 bool NativeReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
-}
-
-bool NativeReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::shouldSetEnabledBasedOnAccessibilityState();
 }
 
 bool NativeReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid(

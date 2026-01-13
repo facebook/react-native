@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bc052d67d3c4eda1a6cca2084280cc3f>>
+ * @generated SignedSource<<0a3237b70685886405ea47d3a8c83280>>
  */
 
 /**
@@ -96,7 +96,6 @@ class ReactNativeFeatureFlagsAccessor {
   double preparedTextCacheSize();
   bool preventShadowTreeCommitExhaustion();
   bool shouldPressibilityUseW3CPointerEventsForHover();
-  bool shouldSetEnabledBasedOnAccessibilityState();
   bool shouldTriggerResponderTransferOnScrollAndroid();
   bool skipActivityIdentityAssertionOnHostPause();
   bool traceTurboModulePromiseRejectionsOnAndroid();
@@ -122,7 +121,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 79> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 78> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -188,7 +187,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustion_;
   std::atomic<std::optional<bool>> shouldPressibilityUseW3CPointerEventsForHover_;
-  std::atomic<std::optional<bool>> shouldSetEnabledBasedOnAccessibilityState_;
   std::atomic<std::optional<bool>> shouldTriggerResponderTransferOnScrollAndroid_;
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;

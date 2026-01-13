@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb2d034f0c0a37b00c63deaf5d17e025>>
+ * @generated SignedSource<<cc7c74d60512df0a15f85f61fb52b6fa>>
  * @flow strict
  * @noformat
  */
@@ -112,7 +112,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   preparedTextCacheSize: Getter<number>,
   preventShadowTreeCommitExhaustion: Getter<boolean>,
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
-  shouldSetEnabledBasedOnAccessibilityState: Getter<boolean>,
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
@@ -454,10 +453,6 @@ export const preventShadowTreeCommitExhaustion: Getter<boolean> = createNativeFl
  * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
  */
 export const shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean> = createNativeFlagGetter('shouldPressibilityUseW3CPointerEventsForHover', false);
-/**
- * Fix BaseViewManager to properly set view.setEnabled() based on accessibilityState.disabled.
- */
-export const shouldSetEnabledBasedOnAccessibilityState: Getter<boolean> = createNativeFlagGetter('shouldSetEnabledBasedOnAccessibilityState', true);
 /**
  * Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.
  */
