@@ -54,8 +54,12 @@ export function getHermesCompilerTarget(variant: HermesVariant): string {
 export function getBuckModesForPlatform(
   enableRelease: boolean = false,
 ): $ReadOnlyArray<string> {
-  let mode = enableRelease ? 'opt' : 'dev';
+  let modes = ['@//xplat/mode/react-native/granite'];
+  if (enableRelease) {
+    modes.push('@//xplat/mode/hermes/opt');
+  }
 
+  let mode = enableRelease ? 'opt' : 'dev';
   if (enableRelease) {
     if (EnvironmentOptions.enableASAN || EnvironmentOptions.enableTSAN) {
       printConsoleLog({
@@ -101,7 +105,8 @@ export function getBuckModesForPlatform(
       throw new Error(`Unsupported platform: ${os.platform()}`);
   }
 
-  return ['@//xplat/mode/react-native/granite', osPlatform];
+  modes.push(osPlatform);
+  return modes;
 }
 
 // TODO: T240293839 Remove when we get rid of RN_USE_ANIMATION_BACKEND preprocessor flag
