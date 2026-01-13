@@ -134,6 +134,7 @@ declare type ws$CloseListener = (code: number, reason: string) => unknown;
 declare type ws$ErrorListener = (error: Error) => unknown;
 declare type ws$MessageListener = (
   data: string | Buffer | ArrayBuffer | Array<Buffer>,
+  isBinary: boolean,
 ) => unknown;
 declare type ws$OpenListener = () => unknown;
 declare type ws$PingListener = (Buffer) => unknown;
