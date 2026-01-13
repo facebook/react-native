@@ -372,7 +372,7 @@ class MessageQueue {
     } else {
       try {
         fn();
-      } catch (error) {
+      } catch (error: unknown) {
         ErrorUtils.reportFatalError(error);
       }
     }

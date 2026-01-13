@@ -10,6 +10,7 @@
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
+const toError = require('../../src/private/utilities/toError').default;
 const invariant = require('invariant');
 
 export type SimpleTask = {
@@ -113,8 +114,8 @@ const InteractionManagerStub = {
             try {
               task.run();
               resolve();
-            } catch (error) {
-              reject(error);
+            } catch (error: unknown) {
+              reject(toError(error));
             }
           } else {
             reject(new TypeError(`Task "${task.name}" missing gen or run.`));
@@ -123,8 +124,8 @@ const InteractionManagerStub = {
           try {
             task();
             resolve();
-          } catch (error) {
-            reject(error);
+          } catch (error: unknown) {
+            reject(toError(error));
           }
         } else {
           reject(new TypeError('Invalid task of type: ' + typeof task));
