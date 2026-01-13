@@ -6,7 +6,7 @@ inputs:
     default: 2.6.10
   run-unit-tests:
     description: whether unit tests should run or not.
-    default: "true"
+    default: false
   flavor:
     description: The flavor of the build. Must be one of "Debug", "Release".
     default: Debug

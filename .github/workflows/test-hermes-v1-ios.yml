@@ -40,8 +40,6 @@ jobs:
 
       - name: Setup xcode
         uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 16.4.0
 
       - name: Build iOS with retry
         uses: nick-fields/retry@v3

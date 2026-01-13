@@ -124,8 +124,6 @@ jobs:
         uses: ./.github/actions/setup-node
       - name: Setup xcode
         uses: ./.github/actions/setup-xcode
-        with:
-          xcode-version: '16.1'
       - name: Restore XCFramework
         id: restore-xcframework
         uses: actions/cache/restore@v5
