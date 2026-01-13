@@ -38,7 +38,9 @@ NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
 BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
 
 // Returns the current device's orientation
+#if !TARGET_OS_TV
 UIDeviceOrientation RCTDeviceOrientation(void);
+#endif
 
 // Whether the New Architecture is enabled or not
 BOOL RCTIsNewArchEnabled(void)
@@ -381,10 +383,12 @@ CGFloat RCTFontSizeMultiplier(void)
   return mapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
 }
 
+#if !TARGET_OS_TV
 UIDeviceOrientation RCTDeviceOrientation(void)
 {
   return [[UIDevice currentDevice] orientation];
 }
+#endif
 
 CGSize RCTScreenSize(void)
 {
@@ -397,11 +401,16 @@ CGSize RCTScreenSize(void)
     });
   });
 
+#if !TARGET_OS_TV
   if (UIDeviceOrientationIsLandscape(RCTDeviceOrientation())) {
     return CGSizeMake(portraitSize.height, portraitSize.width);
   } else {
     return CGSizeMake(portraitSize.width, portraitSize.height);
   }
+#else
+  // tvOS doesn't have device orientation, always return landscape size
+  return CGSizeMake(portraitSize.height, portraitSize.width);
+#endif
 }
 
 CGSize RCTViewportSize(void)
