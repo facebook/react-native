@@ -187,12 +187,6 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.subspec "templateprocessor" do |ss|
-    ss.source_files         = podspec_sources("react/renderer/templateprocessor/**/*.{m,mm,cpp,h}", "react/renderer/templateprocessor/**/*.h")
-    ss.exclude_files        = "react/renderer/templateprocessor/tests"
-    ss.header_dir           = "react/renderer/templateprocessor"
-  end
-
   s.subspec "telemetry" do |ss|
     ss.source_files         = podspec_sources("react/renderer/telemetry/**/*.{m,mm,cpp,h}", "react/renderer/telemetry/**/*.h")
     ss.exclude_files        = "react/renderer/telemetry/tests"
