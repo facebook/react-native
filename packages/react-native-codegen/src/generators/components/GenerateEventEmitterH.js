@@ -118,23 +118,33 @@ function getNativeTypeFromAnnotation(
   componentName: string,
   eventProperty: NamedShape<EventTypeAnnotation>,
   nameParts: $ReadOnlyArray<string>,
+  generateOptionalProperties = false,
 ): string {
-  const {typeAnnotation} = eventProperty;
-  switch (typeAnnotation.type) {
+  const {type} = eventProperty.typeAnnotation;
+  switch (type) {
     case 'BooleanTypeAnnotation':
     case 'StringTypeAnnotation':
     case 'Int32TypeAnnotation':
     case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'MixedTypeAnnotation':
-      return getCppTypeForAnnotation(typeAnnotation.type);
+      if (generateOptionalProperties && eventProperty.optional) {
+        return getCppTypeForAnnotation(type)+'*';
+      }
+      return getCppTypeForAnnotation(type);
     case 'UnionTypeAnnotation':
       const validUnionType = parseValidUnionType(typeAnnotation);
       if (validUnionType !== 'string') {
         throw new Error('Invalid since it is a union of non strings');
       }
+      if (generateOptionalProperties && eventProperty.optional) {
+        return 'const ' + generateEventStructName([...nameParts, eventProperty.name+'*']);
+      }
       return generateEventStructName([...nameParts, eventProperty.name]);
     case 'ObjectTypeAnnotation':
+      if (generateOptionalProperties && eventProperty.optional) {
+        return 'const ' + generateEventStructName([...nameParts, eventProperty.name+'*']);
+      }
       return generateEventStructName([...nameParts, eventProperty.name]);
     case 'ArrayTypeAnnotation':
       const eventTypeAnnotation = eventProperty.typeAnnotation;
@@ -148,10 +158,8 @@ function getNativeTypeFromAnnotation(
         eventProperty.name,
       ]);
     default:
-      (typeAnnotation.type: empty);
-      throw new Error(
-        `Received invalid event property type ${typeAnnotation.type}`,
-      );
+      type;
+      throw new Error(`Received invalid event property type ${type}`);
   }
 }
 function generateEnum(
@@ -187,6 +195,7 @@ function handleGenerateStructForArray(
   componentName: string,
   elementType: EventTypeAnnotation,
   nameParts: $ReadOnlyArray<string>,
+  generateOptionalProperties = false,
 ): void {
   if (elementType.type === 'ObjectTypeAnnotation') {
     generateStruct(
@@ -194,6 +203,7 @@ function handleGenerateStructForArray(
       componentName,
       nameParts.concat([name]),
       nullthrows(elementType.properties),
+      generateOptionalProperties,
     );
   } else if (elementType.type === 'UnionTypeAnnotation') {
     const validUnionType = parseValidUnionType(elementType);
@@ -212,6 +222,7 @@ function handleGenerateStructForArray(
       componentName,
       elementType.elementType,
       nameParts,
+      generateOptionalProperties,
     );
   }
 }
@@ -221,6 +232,7 @@ function generateStruct(
   componentName: string,
   nameParts: $ReadOnlyArray<string>,
   properties: $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
+  generateOptionalProperties = false,
 ): void {
   const structNameParts = nameParts;
   const structName = generateEventStructName(structNameParts);
@@ -231,6 +243,7 @@ function generateStruct(
         componentName,
         property,
         structNameParts,
+        generateOptionalProperties,
       )} ${property.name};`;
     })
     .join('\n' + '  ');
@@ -252,6 +265,7 @@ function generateStruct(
           componentName,
           typeAnnotation.elementType,
           nameParts,
+          generateOptionalProperties,
         );
         return;
       case 'ObjectTypeAnnotation':
@@ -260,6 +274,7 @@ function generateStruct(
           componentName,
           nameParts.concat([name]),
           nullthrows(typeAnnotation.properties),
+          generateOptionalProperties,
         );
         return;
       case 'UnionTypeAnnotation':
@@ -293,6 +308,7 @@ function generateStruct(
 function generateStructs(
   componentName: string,
   component: ComponentShape,
+  generateOptionalProperties = false,
 ): string {
   const structs: StructsMap = new Map();
 
@@ -303,6 +319,7 @@ function generateStructs(
         componentName,
         [event.name],
         event.typeAnnotation.argument.properties,
+        generateOptionalProperties,
       );
     }
   });
@@ -335,7 +352,8 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
     headerPrefix?: string,
-    includeGetDebugPropsImplementation?: boolean = false,
+    includeGetDebugPropsImplementation: boolean = false,
+    generateOptionalProperties = false,
   ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {
@@ -373,7 +391,7 @@ module.exports = {
 
         const replacedTemplate = ComponentTemplate({
           className: componentName,
-          structs: indent(generateStructs(componentName, component), 2),
+          structs: indent(generateStructs(componentName, component, generateOptionalProperties), 2),
           events: generateEvents(componentName, component),
         });
 
