@@ -13,10 +13,10 @@ import type AnimatedNode from '../../Animated/nodes/AnimatedNode';
 // Helper types to enforce that a single key is used in a transform object
 // after generating a TypeScript definition file from the Flow types.
 // $FlowExpectedError[unclear-type]
-type KeysOfUnion<T> = T extends any ? $Keys<T> : empty;
+type KeysOfUnion<T> = T extends any ? keyof T : empty;
 // $FlowExpectedError[unclear-type]
 type ValueOfUnion<T, K> = T extends any
-  ? K extends $Keys<T>
+  ? K extends keyof T
     ? T[K]
     : empty
   : empty;

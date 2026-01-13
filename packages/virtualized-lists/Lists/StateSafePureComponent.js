@@ -32,7 +32,7 @@ export default class StateSafePureComponent<
   }
 
   // $FlowFixMe[incompatible-type]
-  setState<K: $Keys<State>>(
+  setState<K: keyof State>(
     partialState: ?(Pick<State, K> | ((State, Props) => ?Pick<State, K>)),
     callback?: () => unknown,
   ): void {
