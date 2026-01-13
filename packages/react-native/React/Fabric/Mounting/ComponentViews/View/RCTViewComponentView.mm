@@ -67,7 +67,9 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   if (self = [super initWithFrame:frame]) {
     _props = ViewShadowNode::defaultSharedProps();
     _reactSubviews = [NSMutableArray new];
+#if !TARGET_OS_TV
     self.multipleTouchEnabled = YES;
+#endif
     _useCustomContainerView = NO;
     _removeClippedSubviews = NO;
   }
