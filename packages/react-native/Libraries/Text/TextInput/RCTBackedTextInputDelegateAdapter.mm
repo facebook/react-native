@@ -11,7 +11,13 @@
 
 static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingContext;
 
-@interface RCTBackedTextFieldDelegateAdapter () <UITextFieldDelegate, UITextDropDelegate>
+@interface RCTBackedTextFieldDelegateAdapter () <
+    UITextFieldDelegate
+#if !TARGET_OS_TV
+    ,
+    UITextDropDelegate
+#endif
+    >
 @end
 
 @implementation RCTBackedTextFieldDelegateAdapter {
@@ -25,7 +31,9 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   if (self = [super init]) {
     _backedTextInputView = backedTextInputView;
     backedTextInputView.delegate = self;
+#if !TARGET_OS_TV
     backedTextInputView.textDropDelegate = self;
+#endif
 
     [_backedTextInputView addTarget:self
                              action:@selector(textFieldDidChange)
@@ -160,6 +168,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView.textInputDelegate textInputDidChangeSelection];
 }
 
+#if !TARGET_OS_TV
+
 #pragma mark - UITextDropDelegate
 
 - (UITextDropEditability)textDroppableView:(UIView<UITextDroppable> *)textDroppableView
@@ -196,11 +206,19 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   }
 }
 
+#endif
+
 @end
 
 #pragma mark - RCTBackedTextViewDelegateAdapter (for UITextView)
 
-@interface RCTBackedTextViewDelegateAdapter () <UITextViewDelegate, UITextDropDelegate>
+@interface RCTBackedTextViewDelegateAdapter () <
+    UITextViewDelegate
+#if !TARGET_OS_TV
+    ,
+    UITextDropDelegate
+#endif
+    >
 @end
 
 @implementation RCTBackedTextViewDelegateAdapter {
@@ -216,7 +234,9 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   if (self = [super init]) {
     _backedTextInputView = backedTextInputView;
     backedTextInputView.delegate = self;
+#if !TARGET_OS_TV
     backedTextInputView.textDropDelegate = self;
+#endif
   }
 
   return self;
@@ -342,6 +362,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView.textInputDelegate textInputDidChangeSelection];
 }
 
+#if !TARGET_OS_TV
+
 #pragma mark - UITextDropDelegate
 
 - (UITextDropEditability)textDroppableView:(UIView<UITextDroppable> *)textDroppableView
@@ -377,5 +399,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     return true;
   }
 }
+
+#endif
 
 @end
