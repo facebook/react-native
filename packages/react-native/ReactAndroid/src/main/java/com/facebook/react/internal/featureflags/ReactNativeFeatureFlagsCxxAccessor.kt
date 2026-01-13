@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<397c978a91e1815389ce7162d7ce0181>>
+ * @generated SignedSource<<7558273a79cd4a0c68f7c47dd54ed119>>
  */
 
 /**
@@ -84,7 +84,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
-  private var shouldResetOnClickListenerWhenRecyclingViewCache: Boolean? = null
   private var shouldSetEnabledBasedOnAccessibilityStateCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
@@ -673,15 +672,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.shouldPressibilityUseW3CPointerEventsForHover()
       shouldPressibilityUseW3CPointerEventsForHoverCache = cached
-    }
-    return cached
-  }
-
-  override fun shouldResetOnClickListenerWhenRecyclingView(): Boolean {
-    var cached = shouldResetOnClickListenerWhenRecyclingViewCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.shouldResetOnClickListenerWhenRecyclingView()
-      shouldResetOnClickListenerWhenRecyclingViewCache = cached
     }
     return cached
   }

@@ -732,16 +732,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    shouldResetOnClickListenerWhenRecyclingView: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Reset OnClickListener to null when recycling views on Android to avoid accessibility tools finding views with incorrect state after recycling.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     shouldSetEnabledBasedOnAccessibilityState: {
       defaultValue: true,
       metadata: {
