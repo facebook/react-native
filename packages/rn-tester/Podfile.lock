@@ -1,8 +1,8 @@
 PODS:
   - FBLazyVector (0.84.0-rc.0)
-  - hermes-engine (0.15.0):
-    - hermes-engine/Pre-built (= 0.15.0)
-  - hermes-engine/Pre-built (0.15.0)
+  - hermes-engine (250829098.0.5):
+    - hermes-engine/Pre-built (= 250829098.0.5)
+  - hermes-engine/Pre-built (250829098.0.5)
   - MyNativeView (0.84.0-rc.0):
     - hermes-engine
     - RCTRequired
@@ -1991,7 +1991,7 @@ EXTERNAL SOURCES:
     :path: "../react-native/Libraries/FBLazyVector"
   hermes-engine:
     :podspec: "../react-native/sdks/hermes-engine/hermes-engine.podspec"
-    :tag: hermes-v0.15.0
+    :tag: hermes-v250829098.0.5
   MyNativeView:
     :path: NativeComponentExample
   NativeCxxModuleExample:
@@ -2149,7 +2149,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FBLazyVector: 60db88825afeddb4b8fac96e70230c12bde0fa8e
-  hermes-engine: 938a9cdde5b6f097720af751658786c90769fa30
+  hermes-engine: 733c2f53c483de462d6f97993795369152db68d6
   MyNativeView: 06ffd5f7a4c400b471e230dab9920df2ba67bdd1
   NativeCxxModuleExample: 8af5455cac2bdf72402da5ed6a1b445b443b1ebc
   OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
@@ -2161,7 +2161,7 @@ SPEC CHECKSUMS:
   React: a5f1b853a4eda5dbea8d01430e322650d7cddfe5
   React-callinvoker: 50627079f30a508a8b5e4cefb71329942e60ebcf
   React-Core: 27574a6d01e033fc2fbde60c0fe8ef4a6ccec121
-  React-Core-prebuilt: a4d0e4ba023bf11c14ae79fd57d555ddc9c4e43c
+  React-Core-prebuilt: e7fa6227c9298a24b98f641c08b829d484c1bd3b
   React-CoreModules: 26bdba7a4016457ba13a6233565e8e2c55cf7368
   React-cxxreact: 2271ef9b8f53fb159949edaeb0a539d880f1fbde
   React-debug: 003f262a91683df3033fcb0f660b9f071284346f
@@ -2207,7 +2207,7 @@ SPEC CHECKSUMS:
   React-RCTPushNotification: e03bfdae0cdbda626bdb0ab326c6290b5203195c
   React-RCTRuntime: 774642b42ca8533dea31972e761af95053c378b3
   React-RCTSettings: 36efade455b8edbad99b177051be4b40c544981a
-  React-RCTTest: 0a978c0ce5be24c5c484ed88d5d92a3b73e0a1b3
+  React-RCTTest: 9b1f90df8cae57012145702f0463edd470a1fb29
   React-RCTText: d920aa8f6d55a60d590ae854368a90ff5451f215
   React-RCTVibration: f31a70e15106ed7da934d0c5b4435b0fd872a2d7
   React-rendererconsistency: 8935199fadbd672c9b6bb6e26ab14895e05a1bf7
@@ -2225,7 +2225,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 59fd9793bdb850ddde0063c5d0ab6ea6efa755f5
   ReactCommon: c206b8a681ce20c4652e777a890599ceb3535797
   ReactCommon-Samples: 0f45aab5d3cca4afbf3bb799a552c797a7526200
-  ReactNativeDependencies: 76c872a08280a05a5e4434172e891a0ed69342e8
+  ReactNativeDependencies: eed00171d9e126191ccf91dd4dbed525792a4c8d
   ScreenshotManager: 58a57c417506cc5a2a16b767fd7d3b480f9673e7
   Yoga: e80453f68a32823bc6074a069aa7318875f00dc1
 
