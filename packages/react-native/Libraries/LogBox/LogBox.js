@@ -11,6 +11,7 @@
 import type {IgnorePattern, LogData} from './Data/LogBoxData';
 import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
 
+import toExtendedError from '../../src/private/utilities/toExtendedError';
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 import * as React from 'react';
@@ -192,8 +193,8 @@ if (__DEV__) {
               componentStackType,
             });
           }
-        } catch (err) {
-          LogBoxData.reportLogBoxError(err);
+        } catch (err: unknown) {
+          LogBoxData.reportLogBoxError(toExtendedError(err));
         }
       }
     },
@@ -237,8 +238,8 @@ if (__DEV__) {
           });
         }
       }
-    } catch (err) {
-      LogBoxData.reportLogBoxError(err);
+    } catch (err: unknown) {
+      LogBoxData.reportLogBoxError(toExtendedError(err));
     }
   };
 } else {
