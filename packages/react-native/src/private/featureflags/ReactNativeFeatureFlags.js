@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc7c74d60512df0a15f85f61fb52b6fa>>
+ * @generated SignedSource<<0acb1755465fae151917d6043a737331>>
  * @flow strict
  * @noformat
  */
@@ -38,7 +38,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   reduceDefaultPropsInImage: Getter<boolean>,
   reduceDefaultPropsInText: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
-  shouldUseLinkRoleForPressableText: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
 }>;
@@ -177,11 +176,6 @@ export const reduceDefaultPropsInText: Getter<boolean> = createJavaScriptFlagGet
  * Enables use of AnimatedObject for animating transform values.
  */
 export const shouldUseAnimatedObjectForTransform: Getter<boolean> = createJavaScriptFlagGetter('shouldUseAnimatedObjectForTransform', false);
-
-/**
- * Set accessibilityRole to "link" for pressable Text components by default.
- */
-export const shouldUseLinkRoleForPressableText: Getter<boolean> = createJavaScriptFlagGetter('shouldUseLinkRoleForPressableText', true);
 
 /**
  * removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android

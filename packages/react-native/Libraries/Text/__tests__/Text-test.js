@@ -12,7 +12,6 @@ import type {ReactTestRendererJSON} from '../../Utilities/ReactNativeTestTools';
 import type {ReactTestRenderer} from 'react-test-renderer';
 
 import {create} from '../../../jest/renderer';
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import * as React from 'react';
 
@@ -76,252 +75,153 @@ describe('Text', () => {
   });
 
   describe('accessibilityRole with onPress/onLongPress', () => {
-    describe('when shouldUseLinkRoleForPressableText flag is OFF (default)', () => {
-      beforeEach(() => {
-        jest
-          .spyOn(ReactNativeFeatureFlags, 'shouldUseLinkRoleForPressableText')
-          .mockReturnValue(false);
-      });
+    it('automatically sets accessibilityRole="link" when onPress is provided', async () => {
+      const instance = await create(
+        <Text onPress={() => {}}>Clickable Text</Text>,
+      );
 
-      afterEach(() => {
-        jest.restoreAllMocks();
-      });
-
-      it('does not automatically set accessibilityRole when onPress is provided', async () => {
-        const instance = await create(
-          <Text onPress={() => {}}>Clickable Text</Text>,
-        );
-
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            isPressable={true}
-          >
-            Clickable Text
-          </RCTText>
-        `);
-      });
-
-      it('does not automatically set accessibilityRole when onLongPress is provided', async () => {
-        const instance = await create(
-          <Text onLongPress={() => {}}>Long Press Text</Text>,
-        );
-
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            isPressable={true}
-          >
-            Long Press Text
-          </RCTText>
-        `);
-      });
-
-      it('does not automatically set accessibilityRole when onStartShouldSetResponder is provided', async () => {
-        const instance = await create(
-          <Text onStartShouldSetResponder={() => true}>Responder Text</Text>,
-        );
-
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            isPressable={true}
-          >
-            Responder Text
-          </RCTText>
-        `);
-      });
-
-      it('respects explicit accessibilityRole', async () => {
-        const instance = await create(
-          <Text accessibilityRole="button" onPress={() => {}}>
-            Explicit Button Role
-          </Text>,
-        );
-
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessibilityRole="button"
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            isPressable={true}
-          >
-            Explicit Button Role
-          </RCTText>
-        `);
-      });
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityRole="link"
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+        >
+          Clickable Text
+        </RCTText>
+      `);
     });
 
-    describe('when shouldUseLinkRoleForPressableText flag is ON', () => {
-      beforeEach(() => {
-        jest
-          .spyOn(ReactNativeFeatureFlags, 'shouldUseLinkRoleForPressableText')
-          .mockReturnValue(true);
-      });
+    it('automatically sets accessibilityRole="link" when onLongPress is provided', async () => {
+      const instance = await create(
+        <Text onLongPress={() => {}}>Long Press Text</Text>,
+      );
 
-      afterEach(() => {
-        jest.restoreAllMocks();
-      });
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityRole="link"
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+        >
+          Long Press Text
+        </RCTText>
+      `);
+    });
 
-      it('automatically sets accessibilityRole="link" when onPress is provided', async () => {
-        const instance = await create(
-          <Text onPress={() => {}}>Clickable Text</Text>,
-        );
+    it('automatically sets accessibilityRole="link" when onStartShouldSetResponder is provided', async () => {
+      const instance = await create(
+        <Text onStartShouldSetResponder={() => true}>Responder Text</Text>,
+      );
 
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessibilityRole="link"
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            isPressable={true}
-          >
-            Clickable Text
-          </RCTText>
-        `);
-      });
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityRole="link"
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+        >
+          Responder Text
+        </RCTText>
+      `);
+    });
 
-      it('automatically sets accessibilityRole="link" when onLongPress is provided', async () => {
-        const instance = await create(
-          <Text onLongPress={() => {}}>Long Press Text</Text>,
-        );
+    it('respects explicit accessibilityRole', async () => {
+      const instance = await create(
+        <Text accessibilityRole="button" onPress={() => {}}>
+          Explicit Button Role
+        </Text>,
+      );
 
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessibilityRole="link"
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            isPressable={true}
-          >
-            Long Press Text
-          </RCTText>
-        `);
-      });
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityRole="button"
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+        >
+          Explicit Button Role
+        </RCTText>
+      `);
+    });
 
-      it('automatically sets accessibilityRole="link" when onStartShouldSetResponder is provided', async () => {
-        const instance = await create(
-          <Text onStartShouldSetResponder={() => true}>Responder Text</Text>,
-        );
+    it('respects explicit role prop', async () => {
+      // $FlowFixMe[prop-missing]
+      const instance = await create(
+        <Text onPress={() => {}} role="button">
+          Explicit Role Prop
+        </Text>,
+      );
 
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessibilityRole="link"
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            isPressable={true}
-          >
-            Responder Text
-          </RCTText>
-        `);
-      });
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+          isHighlighted={false}
+          isPressable={true}
+          role="button"
+        >
+          Explicit Role Prop
+        </RCTText>
+      `);
+    });
 
-      it('respects explicit accessibilityRole', async () => {
-        const instance = await create(
-          <Text accessibilityRole="button" onPress={() => {}}>
-            Explicit Button Role
-          </Text>,
-        );
+    it('does not automatically set accessibilityRole when disabled', async () => {
+      const instance = await create(
+        <Text disabled onPress={() => {}}>
+          Disabled Pressable Text
+        </Text>,
+      );
 
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessibilityRole="button"
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            isPressable={true}
-          >
-            Explicit Button Role
-          </RCTText>
-        `);
-      });
-
-      it('respects explicit role prop', async () => {
-        // $FlowFixMe[prop-missing]
-        const instance = await create(
-          <Text onPress={() => {}} role="button">
-            Explicit Role Prop
-          </Text>,
-        );
-
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            isPressable={true}
-            role="button"
-          >
-            Explicit Role Prop
-          </RCTText>
-        `);
-      });
-
-      it('does not automatically set accessibilityRole when disabled', async () => {
-        const instance = await create(
-          <Text disabled onPress={() => {}}>
-            Disabled Pressable Text
-          </Text>,
-        );
-
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
-          <RCTText
-            accessibilityState={
-              Object {
-                "disabled": true,
-              }
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessibilityState={
+            Object {
+              "disabled": true,
             }
-            accessible={true}
-            allowFontScaling={true}
-            disabled={true}
-            ellipsizeMode="tail"
-          >
-            Disabled Pressable Text
-          </RCTText>
-        `);
-      });
+          }
+          accessible={true}
+          allowFontScaling={true}
+          disabled={true}
+          ellipsizeMode="tail"
+        >
+          Disabled Pressable Text
+        </RCTText>
+      `);
+    });
 
-      it('automatically sets accessibilityRole="link" for nested Text with onPress', async () => {
-        const instance = await create(
-          <Text>
-            Parent Text<Text onPress={() => {}}>Nested Clickable Link</Text>
-          </Text>,
-        );
+    it('automatically sets accessibilityRole="link" for nested Text with onPress', async () => {
+      const instance = await create(
+        <Text>
+          Parent Text<Text onPress={() => {}}>Nested Clickable Link</Text>
+        </Text>,
+      );
 
-        expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+      expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
+        <RCTText
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+        >
+          Parent Text
           <RCTText
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
+            accessibilityRole="link"
+            isHighlighted={false}
+            isPressable={true}
           >
-            Parent Text
-            <RCTText
-              accessibilityRole="link"
-              isHighlighted={false}
-              isPressable={true}
-            >
-              Nested Clickable Link
-            </RCTText>
+            Nested Clickable Link
           </RCTText>
-        `);
-      });
+        </RCTText>
+      `);
     });
 
     it('does not set accessibilityRole when no press handlers are provided', async () => {
