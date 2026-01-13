@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",
+    "debug": "^4.4.0",
     "fb-dotslash": "0.5.8"
   },
   "devDependencies": {
