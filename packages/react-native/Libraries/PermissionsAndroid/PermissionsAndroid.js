@@ -78,7 +78,7 @@ type PermissionsType = Readonly<{
 }>;
 
 export type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
-export type Permission = $Values<PermissionsType>;
+export type Permission = Values<PermissionsType>;
 
 const PERMISSIONS = Object.freeze({
   READ_CALENDAR: 'android.permission.READ_CALENDAR',
