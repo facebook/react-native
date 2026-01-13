@@ -50,7 +50,12 @@ val reactNativeRootDir = projectDir.parentFile.parentFile
 val reactNativeDir = File("$reactNativeRootDir/packages/react-native")
 val reactAndroidDir = File("$reactNativeDir/ReactAndroid")
 val reactAndroidBuildDir = File("$reactAndroidDir/build")
-val reactAndroidDownloasdDir = File("$reactAndroidBuildDir/downloads")
+val reactAndroidDownloadsDir =
+    if (System.getenv("REACT_NATIVE_DOWNLOADS_DIR") != null) {
+      File(System.getenv("REACT_NATIVE_DOWNLOADS_DIR"))
+    } else {
+      File("$reactAndroidBuildDir/downloads")
+    }
 
 val testerDir = File("$projectDir/tester")
 val testerBuildDir = File("$buildDir/tester")
@@ -65,7 +70,7 @@ val createNativeDepsDirectories by
       reportsDir.mkdirs()
     }
 
-val downloadFollyDest = File(reactAndroidDownloasdDir, "folly-${FOLLY_VERSION}.tar.gz")
+val downloadFollyDest = File(reactAndroidDownloadsDir, "folly-${FOLLY_VERSION}.tar.gz")
 
 val prepareFolly by
     tasks.registering(Copy::class) {
