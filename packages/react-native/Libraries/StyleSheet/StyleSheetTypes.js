@@ -1105,7 +1105,7 @@ export type ____Styles_Internal = {
 type FlattenDepthLimiter = [void, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 type ____FlattenStyleProp_Helper<
   +TStyleProp: StyleProp<unknown>,
-  Depth: $Values<FlattenDepthLimiter> = 9,
+  Depth: Values<FlattenDepthLimiter> = 9,
 > = Depth extends 0
   ? empty
   : TStyleProp extends null | void | false | ''
