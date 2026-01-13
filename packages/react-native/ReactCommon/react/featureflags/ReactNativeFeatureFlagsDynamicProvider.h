@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<870178cd77459f3cb8ebb75683584f3e>>
+ * @generated SignedSource<<42edffb8e13f0c4fb6e3438bc083f860>>
  */
 
 /**
@@ -619,15 +619,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::shouldPressibilityUseW3CPointerEventsForHover();
-  }
-
-  bool shouldResetOnClickListenerWhenRecyclingView() override {
-    auto value = values_["shouldResetOnClickListenerWhenRecyclingView"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::shouldResetOnClickListenerWhenRecyclingView();
   }
 
   bool shouldSetEnabledBasedOnAccessibilityState() override {

@@ -151,9 +151,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     // NOTE: setClickable MUST be called AFTER setOnClickListener because
     // the latter has the side effect of setting isClickable=true on some views!
-    if (ReactNativeFeatureFlags.shouldResetOnClickListenerWhenRecyclingView()) {
-      view.setOnClickListener(null);
-    }
+    view.setOnClickListener(null);
     view.setClickable(false);
     view.setFocusable(false);
     view.setFocusableInTouchMode(false);

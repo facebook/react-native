@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<77669091f5fbd91a7be1693375163c0c>>
+ * @generated SignedSource<<5e318e662ea5a25be4a5e7e45fe9f967>>
  */
 
 /**
@@ -88,7 +88,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
-  private var shouldResetOnClickListenerWhenRecyclingViewCache: Boolean? = null
   private var shouldSetEnabledBasedOnAccessibilityStateCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
@@ -741,16 +740,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.shouldPressibilityUseW3CPointerEventsForHover()
       accessedFeatureFlags.add("shouldPressibilityUseW3CPointerEventsForHover")
       shouldPressibilityUseW3CPointerEventsForHoverCache = cached
-    }
-    return cached
-  }
-
-  override fun shouldResetOnClickListenerWhenRecyclingView(): Boolean {
-    var cached = shouldResetOnClickListenerWhenRecyclingViewCache
-    if (cached == null) {
-      cached = currentProvider.shouldResetOnClickListenerWhenRecyclingView()
-      accessedFeatureFlags.add("shouldResetOnClickListenerWhenRecyclingView")
-      shouldResetOnClickListenerWhenRecyclingViewCache = cached
     }
     return cached
   }
