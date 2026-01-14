@@ -120,8 +120,8 @@ function getCppArrayTypeForAnnotation(
 
 function getImports(
   properties:
-    | $ReadOnlyArray<NamedShape<PropTypeAnnotation>>
-    | $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
+    | ReadonlyArray<NamedShape<PropTypeAnnotation>>
+    | ReadonlyArray<NamedShape<EventTypeAnnotation>>,
 ): Set<string> {
   const imports: Set<string> = new Set();
 
@@ -183,13 +183,13 @@ function getImports(
   return imports;
 }
 
-function generateEventStructName(parts: $ReadOnlyArray<string> = []): string {
+function generateEventStructName(parts: ReadonlyArray<string> = []): string {
   return parts.map(toSafeCppString).join('');
 }
 
 function generateStructName(
   componentName: string,
-  parts: $ReadOnlyArray<string> = [],
+  parts: ReadonlyArray<string> = [],
 ): string {
   const additional = parts.map(toSafeCppString).join('');
   return `${componentName}${additional}Struct`;

@@ -390,9 +390,7 @@ declare module '@babel/traverse' {
      * Earliest is defined as being "before" all the other nodes in terms of list container
      * position and visiting key.
      */
-    getEarliestCommonAncestorFrom(
-      paths: $ReadOnlyArray<NodePath<>>,
-    ): NodePath<>;
+    getEarliestCommonAncestorFrom(paths: ReadonlyArray<NodePath<>>): NodePath<>;
 
     /**
      * Get the earliest path in the tree where the provided `paths` intersect.
@@ -400,7 +398,7 @@ declare module '@babel/traverse' {
      * TODO: Possible optimisation target.
      */
     getDeepestCommonAncestorFrom(
-      paths: $ReadOnlyArray<NodePath<>>,
+      paths: ReadonlyArray<NodePath<>>,
       filter?: (
         lastCommon: BabelNode,
         lastCommonIndex: number,

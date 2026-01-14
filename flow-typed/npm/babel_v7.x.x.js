@@ -1027,7 +1027,7 @@ declare module '@babel/core' {
   declare export var template: Template;
   declare export var traverse: Traverse;
   declare export var types: Types;
-  declare export var DEFAULT_EXTENSIONS: $ReadOnlyArray<string>;
+  declare export var DEFAULT_EXTENSIONS: ReadonlyArray<string>;
 
   declare export function buildExternalHelpers(
     whitelist?: Array<string>,

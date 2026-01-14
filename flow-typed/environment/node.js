@@ -1887,7 +1887,7 @@ declare module 'fs' {
      */
     exclude?:
       | ((fileName: Node$Conditional<WithFileTypes, Dirent, string>) => boolean)
-      | $ReadOnlyArray<string>,
+      | ReadonlyArray<string>,
     ...
   }>;
 
@@ -1905,12 +1905,12 @@ declare module 'fs' {
    * @since v22.0.0
    */
   declare function glob(
-    pattern: string | $ReadOnlyArray<string>,
+    pattern: string | ReadonlyArray<string>,
     callback: (err: ?ErrnoError, matches: Array<string>) => void,
   ): void;
 
   declare function glob<WithFileTypes: boolean = false>(
-    pattern: string | $ReadOnlyArray<string>,
+    pattern: string | ReadonlyArray<string>,
     options: GlobOptions<WithFileTypes>,
     callback: (
       err: ?ErrnoError,
@@ -1928,7 +1928,7 @@ declare module 'fs' {
    * @returns paths of files that match the pattern.
    */
   declare function globSync<WithFileTypes: boolean = false>(
-    pattern: string | $ReadOnlyArray<string>,
+    pattern: string | ReadonlyArray<string>,
     options?: GlobOptions<WithFileTypes>,
   ): Node$Conditional<WithFileTypes, Array<Dirent>, Array<string>>;
 
@@ -2142,7 +2142,7 @@ declare module 'fs' {
       mtime: number | string | Date,
     ): Promise<void>,
     glob<WithFileTypes: boolean = false>(
-      pattern: string | $ReadOnlyArray<string>,
+      pattern: string | ReadonlyArray<string>,
       options?: GlobOptions<WithFileTypes>,
     ): Node$Conditional<
       WithFileTypes,
@@ -2292,7 +2292,7 @@ declare class http$Agent<+SocketT = net$Socket> {
   constructor(options: http$agentOptions): void;
   destroy(): void;
   // $FlowFixMe[incompatible-variance]
-  freeSockets: {[name: string]: $ReadOnlyArray<SocketT>, ...};
+  freeSockets: {[name: string]: ReadonlyArray<SocketT>, ...};
   getName(options: {
     host: string,
     port: number,
@@ -2302,9 +2302,9 @@ declare class http$Agent<+SocketT = net$Socket> {
   maxFreeSockets: number;
   maxSockets: number;
   // $FlowFixMe[incompatible-variance]
-  requests: {[name: string]: $ReadOnlyArray<http$ClientRequest<SocketT>>, ...};
+  requests: {[name: string]: ReadonlyArray<http$ClientRequest<SocketT>>, ...};
   // $FlowFixMe[incompatible-variance]
-  sockets: {[name: string]: $ReadOnlyArray<SocketT>, ...};
+  sockets: {[name: string]: ReadonlyArray<SocketT>, ...};
 }
 
 declare class http$IncomingMessage<SocketT = net$Socket>
@@ -2968,11 +2968,11 @@ declare module 'perf_hooks' {
   ) => void;
 
   declare export class PerformanceObserver {
-    static supportedEntryTypes: $ReadOnlyArray<EntryType>;
+    static supportedEntryTypes: ReadonlyArray<EntryType>;
     constructor(callback: PerformanceObserverCallback): this;
     observe(
       options: Readonly<{
-        entryTypes?: $ReadOnlyArray<EntryType>,
+        entryTypes?: ReadonlyArray<EntryType>,
         type?: EntryType,
         buffered?: boolean,
       }>,
@@ -3461,7 +3461,7 @@ declare module 'stream' {
       options?: StreamPipelineOptions,
     ): Promise<void>,
     pipeline(
-      streams: $ReadOnlyArray<stream$Stream>,
+      streams: ReadonlyArray<stream$Stream>,
       options?: StreamPipelineOptions,
     ): Promise<void>,
     ...
@@ -3900,7 +3900,7 @@ declare module 'url' {
   };
 
   declare type url$URLPatternResult = {
-    inputs: $ReadOnlyArray<string | url$URLPatternInit>,
+    inputs: ReadonlyArray<string | url$URLPatternInit>,
     protocol: url$URLPatternComponentResult,
     username: url$URLPatternComponentResult,
     password: url$URLPatternComponentResult,
@@ -4104,8 +4104,8 @@ declare module 'util' {
 
   declare type util$DiffEntry = [operation: -1 | 0 | 1, value: string];
   declare function diff(
-    actual: string | $ReadOnlyArray<string>,
-    expected: string | $ReadOnlyArray<string>,
+    actual: string | ReadonlyArray<string>,
+    expected: string | ReadonlyArray<string>,
   ): Array<util$DiffEntry>;
 
   declare function getSystemErrorMessage(err: number): string;
@@ -4224,7 +4224,7 @@ declare module 'util' {
       | ForegroundColors
       | BackgroundColors
       | Modifiers
-      | $ReadOnlyArray<ForegroundColors | BackgroundColors | Modifiers>,
+      | ReadonlyArray<ForegroundColors | BackgroundColors | Modifiers>,
     text: string,
     options?: Readonly<{
       stream?: ?stream$Stream,

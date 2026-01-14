@@ -52,7 +52,7 @@ const ErrorUtils = {
      * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     _globalHandler && _globalHandler(error, true);
   },
-  applyWithGuard<TArgs: $ReadOnlyArray<unknown>, TOut>(
+  applyWithGuard<TArgs: ReadonlyArray<unknown>, TOut>(
     fun: Fn<TArgs, TOut>,
     context?: ?unknown,
     args?: ?TArgs,
@@ -75,7 +75,7 @@ const ErrorUtils = {
     }
     return null;
   },
-  applyWithGuardIfNeeded<TArgs: $ReadOnlyArray<unknown>, TOut>(
+  applyWithGuardIfNeeded<TArgs: ReadonlyArray<unknown>, TOut>(
     fun: Fn<TArgs, TOut>,
     context?: ?unknown,
     args?: ?TArgs,
@@ -94,7 +94,7 @@ const ErrorUtils = {
   inGuard(): boolean {
     return !!_inGuard;
   },
-  guard<TArgs: $ReadOnlyArray<unknown>, TOut>(
+  guard<TArgs: ReadonlyArray<unknown>, TOut>(
     fun: Fn<TArgs, TOut>,
     name?: ?string,
     context?: ?unknown,
