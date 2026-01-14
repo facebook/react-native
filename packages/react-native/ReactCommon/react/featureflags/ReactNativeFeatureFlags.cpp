@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a931a366c816b23f59896dafc9285f85>>
+ * @generated SignedSource<<fa1074c6da1ee0be0ba9160e63f8958f>>
  */
 
 /**
@@ -260,6 +260,10 @@ bool ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS() {
 
 bool ReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid() {
   return getAccessor().overrideBySynchronousMountPropsAtMountingAndroid();
+}
+
+bool ReactNativeFeatureFlags::passScrollToSwipeRefreshChild() {
+  return getAccessor().passScrollToSwipeRefreshChild();
 }
 
 bool ReactNativeFeatureFlags::perfIssuesEnabled() {

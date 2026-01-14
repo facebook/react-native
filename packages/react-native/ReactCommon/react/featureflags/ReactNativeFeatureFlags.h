@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0741bbc608bc7d7fdd242d33197057b7>>
+ * @generated SignedSource<<94420e56d4980f03465c949a42cb6062>>
  */
 
 /**
@@ -333,6 +333,11 @@ class ReactNativeFeatureFlags {
    * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.
    */
   RN_EXPORT static bool overrideBySynchronousMountPropsAtMountingAndroid();
+
+  /**
+   * When enabled, ReactSwipeRefreshLayout will forward ACTION_SCROLL events to its child for proper handling.
+   */
+  RN_EXPORT static bool passScrollToSwipeRefreshChild();
 
   /**
    * Enable reporting Performance Issues (`detail.devtools.performanceIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.

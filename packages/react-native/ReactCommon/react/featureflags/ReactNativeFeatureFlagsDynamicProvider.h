@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5d268976bbf89c50ed0fac1913925803>>
+ * @generated SignedSource<<0984597008f53b23ba0f5ee0fcad0996>>
  */
 
 /**
@@ -574,6 +574,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::overrideBySynchronousMountPropsAtMountingAndroid();
+  }
+
+  bool passScrollToSwipeRefreshChild() override {
+    auto value = values_["passScrollToSwipeRefreshChild"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::passScrollToSwipeRefreshChild();
   }
 
   bool perfIssuesEnabled() override {

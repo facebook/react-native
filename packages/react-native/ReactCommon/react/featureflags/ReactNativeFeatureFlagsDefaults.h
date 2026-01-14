@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4d8ad520eb6442e7d68b739889cc57ce>>
+ * @generated SignedSource<<9ac153a95e55474403a3d4c47ff7c484>>
  */
 
 /**
@@ -260,6 +260,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool overrideBySynchronousMountPropsAtMountingAndroid() override {
+    return false;
+  }
+
+  bool passScrollToSwipeRefreshChild() override {
     return false;
   }
 
