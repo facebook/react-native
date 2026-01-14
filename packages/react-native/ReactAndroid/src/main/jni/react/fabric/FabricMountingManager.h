@@ -17,6 +17,7 @@
 
 namespace facebook::react {
 
+class ComputedBoxModelRegistry;
 class MountingTransaction;
 struct ShadowView;
 
@@ -54,6 +55,8 @@ class FabricMountingManager final {
 
   void synchronouslyUpdateViewOnUIThread(Tag viewTag, const folly::dynamic &props);
 
+  void setComputedBoxModelRegistry(const std::shared_ptr<ComputedBoxModelRegistry> &registry);
+
  private:
   bool isOnMainThread();
 
@@ -73,6 +76,8 @@ class FabricMountingManager final {
 
   std::unordered_map<SurfaceId, std::unordered_set<Tag>> allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
+
+  std::shared_ptr<ComputedBoxModelRegistry> computedBoxModelRegistry_;
 
   /*
    * Calls FabricUIManager.preallocateView() on the Java side if view needs to
