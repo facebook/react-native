@@ -152,10 +152,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
       _disabled !== true;
 
     const shouldUseLinkRole =
-      ReactNativeFeatureFlags.shouldUseLinkRoleForPressableText() &&
-      isPressable &&
-      accessibilityRole == null &&
-      role == null;
+      isPressable && accessibilityRole == null && role == null;
 
     const _accessibilityRole =
       accessibilityRole ?? (shouldUseLinkRole ? 'link' : undefined);
@@ -420,10 +417,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
       _disabled !== true;
 
     const shouldUseLinkRole =
-      ReactNativeFeatureFlags.shouldUseLinkRoleForPressableText() &&
-      isPressable &&
-      accessibilityRole == null &&
-      role == null;
+      isPressable && accessibilityRole == null && role == null;
 
     const _accessibilityRole =
       accessibilityRole ?? (shouldUseLinkRole ? 'link' : undefined);

@@ -980,16 +980,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    shouldUseLinkRoleForPressableText: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Set accessibilityRole to "link" for pressable Text components by default.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     shouldUseRemoveClippedSubviewsAsDefaultOnIOS: {
       defaultValue: false,
       metadata: {
