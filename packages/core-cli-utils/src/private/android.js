@@ -17,7 +17,7 @@ import execa from 'execa';
 type AndroidBuildMode = 'Debug' | 'Release';
 
 type Path = string;
-type Args = $ReadOnlyArray<string>;
+type Args = ReadonlyArray<string>;
 
 type Config = {
   cwd: Path,

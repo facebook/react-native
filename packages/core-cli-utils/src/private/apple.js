@@ -144,7 +144,7 @@ export const tasks = {
   // 2. Build the iOS app using a setup environment
   build: (
     options: AppleBuildOptions,
-    ...args: $ReadOnlyArray<string>
+    ...args: ReadonlyArray<string>
   ): {
     validate: Task<void>,
     hasPodsInstalled: Task<void>,

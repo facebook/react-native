@@ -43,7 +43,7 @@ const communityMiddlewareFallback = {
   createDevServerMiddleware: (params: {
     host?: string,
     port: number,
-    watchFolders: $ReadOnlyArray<string>,
+    watchFolders: ReadonlyArray<string>,
   }): MiddlewareReturn => ({
     // FIXME: Several features will break without community middleware and
     // should be migrated into core.

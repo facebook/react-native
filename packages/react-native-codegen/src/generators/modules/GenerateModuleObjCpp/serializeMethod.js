@@ -57,7 +57,7 @@ export type MethodSerializationOutput = Readonly<{
   methodName: string,
   protocolMethod: string,
   selector: string,
-  structParamRecords: $ReadOnlyArray<StructParameterRecord>,
+  structParamRecords: ReadonlyArray<StructParameterRecord>,
   returnJSType: ReturnJSType,
   argCount: number,
 }>;
@@ -67,7 +67,7 @@ function serializeMethod(
   property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnlyArray<MethodSerializationOutput> {
+): ReadonlyArray<MethodSerializationOutput> {
   const {name: methodName, typeAnnotation: nullableTypeAnnotation} = property;
   const [propertyTypeAnnotation] = unwrapNullable(nullableTypeAnnotation);
   const {params} = propertyTypeAnnotation;
@@ -472,7 +472,7 @@ function serializeConstantsProtocolMethods(
   property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnlyArray<MethodSerializationOutput> {
+): ReadonlyArray<MethodSerializationOutput> {
   const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
   if (propertyTypeAnnotation.params.length !== 0) {
     throw new Error(

@@ -47,13 +47,13 @@ type StructContext = 'CONSTANTS' | 'REGULAR';
 export type RegularStruct = Readonly<{
   context: 'REGULAR',
   name: string,
-  properties: $ReadOnlyArray<StructProperty>,
+  properties: ReadonlyArray<StructProperty>,
 }>;
 
 export type ConstantsStruct = Readonly<{
   context: 'CONSTANTS',
   name: string,
-  properties: $ReadOnlyArray<StructProperty>,
+  properties: ReadonlyArray<StructProperty>,
 }>;
 
 export type Struct = RegularStruct | ConstantsStruct;
@@ -240,7 +240,7 @@ class StructCollector {
     }
   }
 
-  getAllStructs(): $ReadOnlyArray<Struct> {
+  getAllStructs(): ReadonlyArray<Struct> {
     return [...this._structs.values()];
   }
 

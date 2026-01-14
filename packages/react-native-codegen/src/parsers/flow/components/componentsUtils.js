@@ -187,10 +187,10 @@ function getTypeAnnotationForArray<+T>(
 }
 
 function flattenProperties(
-  typeDefinition: $ReadOnlyArray<PropAST>,
+  typeDefinition: ReadonlyArray<PropAST>,
   types: TypeDeclarationMap,
   parser: Parser,
-): $ReadOnlyArray<PropAST> {
+): ReadonlyArray<PropAST> {
   return typeDefinition
     .map(property => {
       if (property.type === 'ObjectTypeProperty') {
