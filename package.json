@@ -11,7 +11,6 @@
     "build-types": "node ./scripts/js-api/build-types",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "clean": "node ./scripts/build/clean.js",
-    "cxx-api-build": "node ./scripts/cxx-api/public-api.js",
     "flow-check": "flow check",
     "flow": "flow",
     "format-check": "prettier --list-different \"./**/*.{js,md,yml,ts,tsx}\"",
