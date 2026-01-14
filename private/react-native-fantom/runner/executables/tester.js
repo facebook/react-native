@@ -79,7 +79,7 @@ export function build(options: TesterOptions): void {
 }
 
 export function run(
-  args: $ReadOnlyArray<string>,
+  args: ReadonlyArray<string>,
   options: TesterOptions,
 ): AsyncCommandResult {
   if (isCI && debugCpp) {

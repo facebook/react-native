@@ -269,7 +269,8 @@ export function compareTypeAnnotation(
       );
 
       return compareReservedTypeAnnotation(newerAnnotation, olderAnnotation);
-    default: // Flow exhaustiveness check
+    default:
+      // Flow exhaustiveness check
       (newerAnnotation: empty);
       throw new Error(`Unsupported type annotation: ${newerAnnotation.type}`);
   }
@@ -449,8 +450,8 @@ function checkOptionalityChanges(
 }
 
 function comparePropertyArrays(
-  newerOriginal: $ReadOnlyArray<NamedShape<CompleteTypeAnnotation>>,
-  olderOriginal: $ReadOnlyArray<NamedShape<CompleteTypeAnnotation>>,
+  newerOriginal: ReadonlyArray<NamedShape<CompleteTypeAnnotation>>,
+  olderOriginal: ReadonlyArray<NamedShape<CompleteTypeAnnotation>>,
 ): PropertiesComparisonResult {
   const newer = newerOriginal.slice(0);
   const older = olderOriginal.slice(0);
@@ -547,8 +548,8 @@ function comparePropertyArrays(
 }
 
 export function compareObjectTypes<T: CompleteTypeAnnotation>(
-  newerPropertyTypes: $ReadOnlyArray<NamedShape<T>>,
-  olderPropertyTypes: $ReadOnlyArray<NamedShape<T>>,
+  newerPropertyTypes: ReadonlyArray<NamedShape<T>>,
+  olderPropertyTypes: ReadonlyArray<NamedShape<T>>,
 ): ComparisonResult {
   if (newerPropertyTypes.length === 0 && olderPropertyTypes.length === 0) {
     return {status: 'matching'};
@@ -612,7 +613,7 @@ export function compareObjectTypes<T: CompleteTypeAnnotation>(
 }
 
 function objectTypeAnnotation<T>(
-  properties: $ReadOnlyArray<NamedShape<T>>,
+  properties: ReadonlyArray<NamedShape<T>>,
 ): ObjectTypeAnnotation<T> {
   return {
     type: 'ObjectTypeAnnotation',
@@ -703,7 +704,8 @@ export function compareEnumDeclarationMemberArrays(
       case 'members':
       case 'unionMembers':
         break;
-      default: // Flow exhaustiveness check
+      default:
+        // Flow exhaustiveness check
         (comparedTypes: empty);
         throw new Error('Unsupported status ' + comparedTypes.status);
     }
@@ -783,7 +785,8 @@ export function compareUnionMemberArrays(
       case 'members':
       case 'unionMembers':
         break;
-      default: // Flow exhaustiveness check
+      default:
+        // Flow exhaustiveness check
         (headComparison: empty);
         throw new Error('Unsupported status ' + headComparison.status);
     }
@@ -1227,8 +1230,8 @@ type ArrayComparisonResult =
 function compareArrayOfTypes(
   fixedOrder: boolean,
   fixedLength: boolean,
-  newerTypes: $ReadOnlyArray<CompleteTypeAnnotation>,
-  olderTypes: $ReadOnlyArray<CompleteTypeAnnotation>,
+  newerTypes: ReadonlyArray<CompleteTypeAnnotation>,
+  olderTypes: ReadonlyArray<CompleteTypeAnnotation>,
 ): ArrayComparisonResult {
   const sameLength = newerTypes.length === olderTypes.length;
   if (fixedLength && !sameLength) {

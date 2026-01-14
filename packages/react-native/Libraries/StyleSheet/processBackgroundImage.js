@@ -37,7 +37,7 @@ type LinearGradientDirection =
 type LinearGradientBackgroundImage = {
   type: 'linear-gradient',
   direction: LinearGradientDirection,
-  colorStops: $ReadOnlyArray<{
+  colorStops: ReadonlyArray<{
     color: ColorStopColor,
     position: ColorStopPosition,
   }>,
@@ -57,7 +57,7 @@ type RadialGradientBackgroundImage = {
   shape: RadialGradientShape,
   size: RadialGradientSize,
   position: RadialGradientPosition,
-  colorStops: $ReadOnlyArray<{
+  colorStops: ReadonlyArray<{
     color: ColorStopColor,
     position: ColorStopPosition,
   }>,
@@ -73,9 +73,9 @@ type ParsedBackgroundImageValue =
   | RadialGradientBackgroundImage;
 
 export default function processBackgroundImage(
-  backgroundImage: ?($ReadOnlyArray<BackgroundImageValue> | string),
-): $ReadOnlyArray<ParsedBackgroundImageValue> {
-  let result: $ReadOnlyArray<ParsedBackgroundImageValue> = [];
+  backgroundImage: ?(ReadonlyArray<BackgroundImageValue> | string),
+): ReadonlyArray<ParsedBackgroundImageValue> {
+  let result: ReadonlyArray<ParsedBackgroundImageValue> = [];
   if (backgroundImage == null) {
     return result;
   }
@@ -183,7 +183,7 @@ export default function processBackgroundImage(
   return result;
 }
 
-function processColorStops(bgImage: BackgroundImageValue): $ReadOnlyArray<{
+function processColorStops(bgImage: BackgroundImageValue): ReadonlyArray<{
   color: ColorStopColor,
   position: ColorStopPosition,
 }> | null {
@@ -249,7 +249,7 @@ function processColorStops(bgImage: BackgroundImageValue): $ReadOnlyArray<{
 
 function parseBackgroundImageCSSString(
   cssString: string,
-): $ReadOnlyArray<ParsedBackgroundImageValue> {
+): ReadonlyArray<ParsedBackgroundImageValue> {
   const gradients = [];
   const bgImageStrings = splitGradients(cssString);
 

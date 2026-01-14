@@ -297,7 +297,7 @@ setPlatformObject(ReadOnlyNode);
 export function getChildNodes(
   node: ReadOnlyNode,
   filter?: (node: ReadOnlyNode) => boolean,
-): $ReadOnlyArray<ReadOnlyNode> {
+): ReadonlyArray<ReadOnlyNode> {
   const shadowNode = getNativeNodeReference(node);
 
   if (shadowNode == null) {
@@ -319,7 +319,7 @@ export function getChildNodes(
 
 function getNodeSiblingsAndPosition(
   node: ReadOnlyNode,
-): [$ReadOnlyArray<ReadOnlyNode>, number] {
+): [ReadonlyArray<ReadOnlyNode>, number] {
   const parent = node.parentNode;
   if (parent == null) {
     // This node is the root or it's disconnected.

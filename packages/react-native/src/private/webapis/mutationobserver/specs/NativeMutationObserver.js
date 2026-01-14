@@ -23,8 +23,8 @@ type ReadOnlyNode = unknown;
 export type NativeMutationRecord = {
   mutationObserverId: MutationObserverId,
   target: ReactNativeElement,
-  addedNodes: $ReadOnlyArray<ReadOnlyNode>,
-  removedNodes: $ReadOnlyArray<ReadOnlyNode>,
+  addedNodes: ReadonlyArray<ReadOnlyNode>,
+  removedNodes: ReadonlyArray<ReadOnlyNode>,
   ...
 };
 
@@ -47,7 +47,7 @@ export interface Spec extends TurboModule {
     ) => ReadOnlyNode,
   ) => void;
   +disconnect: () => void;
-  +takeRecords: () => $ReadOnlyArray<NativeMutationRecord>;
+  +takeRecords: () => ReadonlyArray<NativeMutationRecord>;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

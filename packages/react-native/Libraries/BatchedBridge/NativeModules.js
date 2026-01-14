@@ -18,9 +18,9 @@ const invariant = require('invariant');
 export type ModuleConfig = [
   string /* name */,
   ?{...} /* constants */,
-  ?$ReadOnlyArray<string> /* functions */,
-  ?$ReadOnlyArray<number> /* promise method IDs */,
-  ?$ReadOnlyArray<number> /* sync method IDs */,
+  ?ReadonlyArray<string> /* functions */,
+  ?ReadonlyArray<number> /* promise method IDs */,
+  ?ReadonlyArray<number> /* sync method IDs */,
 ];
 
 export type MethodType = 'async' | 'promise' | 'sync';
@@ -165,7 +165,7 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
   return fn;
 }
 
-function arrayContains<T>(array: $ReadOnlyArray<T>, value: T): boolean {
+function arrayContains<T>(array: ReadonlyArray<T>, value: T): boolean {
   return array.indexOf(value) !== -1;
 }
 

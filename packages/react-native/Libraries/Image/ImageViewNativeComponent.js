@@ -37,7 +37,7 @@ type ImageHostComponentProps = Readonly<{
 
   // Android native props
   shouldNotifyLoadEvents?: boolean,
-  src?: ?ResolvedAssetSource | ?$ReadOnlyArray<?Readonly<{uri?: ?string, ...}>>,
+  src?: ?ResolvedAssetSource | ?ReadonlyArray<?Readonly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
   defaultSource?: ?ImageSource | ?string,
   loadingIndicatorSrc?: ?string,

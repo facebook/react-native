@@ -58,7 +58,7 @@ declare type FilePropertyBag = {
 };
 declare class File extends Blob {
   constructor(
-    fileBits: $ReadOnlyArray<string | BufferDataSource | Blob>,
+    fileBits: ReadonlyArray<string | BufferDataSource | Blob>,
     filename: string,
     options?: FilePropertyBag,
   ): void;
@@ -1216,7 +1216,7 @@ type ClipboardItemOptions = {
 };
 
 declare class ClipboardItem {
-  +types: $ReadOnlyArray<string>;
+  +types: ReadonlyArray<string>;
   getType(type: string): Promise<Blob>;
   constructor(
     items: {[type: string]: ClipboardItemData},
@@ -1315,7 +1315,7 @@ declare class Node extends EventTarget {
   normalize(): void;
   removeChild<T: Node>(oldChild: T): T;
   replaceChild<T: Node>(newChild: Node, oldChild: T): T;
-  replaceChildren(...nodes: $ReadOnlyArray<Node | string>): void;
+  replaceChildren(...nodes: ReadonlyArray<Node | string>): void;
   static ATTRIBUTE_NODE: number;
   static CDATA_SECTION_NODE: number;
   static COMMENT_NODE: number;
@@ -3797,7 +3797,7 @@ declare class CanvasRenderingContext2D {
     y: number,
     w: number,
     h: number,
-    radii?: number | DOMPointInit | $ReadOnlyArray<number | DOMPointInit>,
+    radii?: number | DOMPointInit | ReadonlyArray<number | DOMPointInit>,
   ): void;
   strokeRect(x: number, y: number, w: number, h: number): void;
 

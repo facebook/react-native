@@ -205,10 +205,10 @@ function buildCommandSchema(
 }
 
 function getCommands(
-  commandTypeAST: $ReadOnlyArray<EventTypeAST>,
+  commandTypeAST: ReadonlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
   parser: Parser,
-): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
+): ReadonlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
     .filter(
       property =>

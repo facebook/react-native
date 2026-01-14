@@ -26,7 +26,7 @@ export enum HermesVariant {
 
 export function getBuckOptionsForHermes(
   variant: HermesVariant,
-): $ReadOnlyArray<string> {
+): ReadonlyArray<string> {
   const baseOptions = EnvironmentOptions.enableJSMemoryInstrumentation
     ? ['-c hermes.memory_instrumentation=true']
     : [];
@@ -53,7 +53,7 @@ export function getHermesCompilerTarget(variant: HermesVariant): string {
 
 export function getBuckModesForPlatform(
   enableRelease: boolean = false,
-): $ReadOnlyArray<string> {
+): ReadonlyArray<string> {
   let modes = ['@//xplat/mode/react-native/granite'];
   if (enableRelease) {
     modes.push('@//xplat/mode/hermes/opt');
@@ -110,7 +110,7 @@ export function getBuckModesForPlatform(
 }
 
 // TODO: T240293839 Remove when we get rid of RN_USE_ANIMATION_BACKEND preprocessor flag
-export function getConfigForAnimationBackend(): $ReadOnlyArray<string> {
+export function getConfigForAnimationBackend(): ReadonlyArray<string> {
   return ['-c rn.use_animationbackend=true'];
 }
 
@@ -136,7 +136,7 @@ export type SyncCommandResult = {
   stderr: string,
 };
 
-function maybeLogCommand(command: string, args: $ReadOnlyArray<string>): void {
+function maybeLogCommand(command: string, args: ReadonlyArray<string>): void {
   if (EnvironmentOptions.logCommands) {
     console.log(`RUNNING \`${command} ${args.join(' ')}\``);
   }
@@ -144,7 +144,7 @@ function maybeLogCommand(command: string, args: $ReadOnlyArray<string>): void {
 
 export function runCommand(
   command: string,
-  args: $ReadOnlyArray<string>,
+  args: ReadonlyArray<string>,
 ): AsyncCommandResult {
   maybeLogCommand(command, args);
 
@@ -188,7 +188,7 @@ export function runCommand(
 
 export function runCommandSync(
   command: string,
-  args: $ReadOnlyArray<string>,
+  args: ReadonlyArray<string>,
 ): SyncCommandResult {
   maybeLogCommand(command, args);
 

@@ -23,7 +23,7 @@ export type ParsedBoxShadow = {
 };
 
 export default function processBoxShadow(
-  rawBoxShadows: ?($ReadOnlyArray<BoxShadowValue> | string),
+  rawBoxShadows: ?(ReadonlyArray<BoxShadowValue> | string),
 ): Array<ParsedBoxShadow> {
   const result: Array<ParsedBoxShadow> = [];
   if (rawBoxShadows == null) {

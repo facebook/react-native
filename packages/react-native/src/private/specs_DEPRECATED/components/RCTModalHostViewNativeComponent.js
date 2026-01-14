@@ -124,7 +124,7 @@ type RCTModalHostViewNativeProps = Readonly<{
    * See https://reactnative.dev/docs/modal#supportedorientations
    */
   supportedOrientations?: WithDefault<
-    $ReadOnlyArray<
+    ReadonlyArray<
       | 'portrait'
       | 'portrait-upside-down'
       | 'landscape'

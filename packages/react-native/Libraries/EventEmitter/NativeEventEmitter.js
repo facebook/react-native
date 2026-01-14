@@ -46,8 +46,8 @@ type UnsafeNativeEventObject = Object;
  */
 export default class NativeEventEmitter<
   TEventToArgsMap: Readonly<
-    Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>,
-  > = Readonly<Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>>,
+    Record<string, ReadonlyArray<UnsafeNativeEventObject>>,
+  > = Readonly<Record<string, ReadonlyArray<UnsafeNativeEventObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   _nativeModule: ?NativeModule;

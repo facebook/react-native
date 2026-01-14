@@ -25,7 +25,7 @@ const assertQueue = (
   index: number,
   moduleID: number,
   methodID: number,
-  params: $ReadOnlyArray<unknown>,
+  params: ReadonlyArray<unknown>,
 ) => {
   if (flushedQueue == null) {
     throw new Error('Expected `flushedQueue` to be non-null');

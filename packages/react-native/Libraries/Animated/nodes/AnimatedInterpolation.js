@@ -36,8 +36,8 @@ export type InterpolationConfigType<
   OutputT: InterpolationConfigSupportedOutputType,
 > = Readonly<{
   ...AnimatedNodeConfig,
-  inputRange: $ReadOnlyArray<number>,
-  outputRange: $ReadOnlyArray<OutputT>,
+  inputRange: ReadonlyArray<number>,
+  outputRange: ReadonlyArray<OutputT>,
   easing?: (input: number) => number,
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
@@ -51,7 +51,7 @@ export type InterpolationConfigType<
 function createNumericInterpolation(
   config: InterpolationConfigType<number>,
 ): (input: number) => number {
-  const outputRange: $ReadOnlyArray<number> = (config.outputRange: any);
+  const outputRange: ReadonlyArray<number> = (config.outputRange: any);
   const inputRange = config.inputRange;
 
   const easing = config.easing || Easing.linear;
@@ -187,7 +187,7 @@ function mapStringToNumericComponents(
   input: string,
 ):
   | {isColor: true, components: [number, number, number, number]}
-  | {isColor: false, components: $ReadOnlyArray<number | string>} {
+  | {isColor: false, components: ReadonlyArray<number | string>} {
   let normalizedColor = normalizeColor(input);
   invariant(
     normalizedColor == null || typeof normalizedColor !== 'object',
@@ -262,7 +262,7 @@ function createStringInterpolation(
     );
   }
 
-  const numericComponents: $ReadOnlyArray<$ReadOnlyArray<number>> =
+  const numericComponents: ReadonlyArray<ReadonlyArray<number>> =
     outputRange.map(output =>
       isColor
         ? // $FlowFixMe[incompatible-type]
@@ -297,7 +297,7 @@ function createStringInterpolation(
   }
 }
 
-function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
+function findRange(input: number, inputRange: ReadonlyArray<number>) {
   let i;
   for (i = 1; i < inputRange.length - 1; ++i) {
     if (inputRange[i] >= input) {
@@ -308,8 +308,8 @@ function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
 }
 
 function checkValidRanges<OutputT: InterpolationConfigSupportedOutputType>(
-  inputRange: $ReadOnlyArray<number>,
-  outputRange: $ReadOnlyArray<OutputT>,
+  inputRange: ReadonlyArray<number>,
+  outputRange: ReadonlyArray<OutputT>,
 ) {
   checkInfiniteRange('outputRange', outputRange);
   checkInfiniteRange('inputRange', inputRange);
@@ -325,7 +325,7 @@ function checkValidRanges<OutputT: InterpolationConfigSupportedOutputType>(
   );
 }
 
-function checkValidInputRange(arr: $ReadOnlyArray<number>) {
+function checkValidInputRange(arr: ReadonlyArray<number>) {
   invariant(arr.length >= 2, 'inputRange must have at least 2 elements');
   const message =
     'inputRange must be monotonically non-decreasing ' + String(arr);
@@ -336,7 +336,7 @@ function checkValidInputRange(arr: $ReadOnlyArray<number>) {
 
 function checkInfiniteRange<OutputT: InterpolationConfigSupportedOutputType>(
   name: string,
-  arr: $ReadOnlyArray<OutputT>,
+  arr: ReadonlyArray<OutputT>,
 ) {
   invariant(arr.length >= 2, name + ' must have at least 2 elements');
   invariant(
@@ -428,7 +428,7 @@ export default class AnimatedInterpolation<
     let outputType = null;
     if (typeof outputRange[0] === 'string') {
       // $FlowFixMe[incompatible-type]
-      outputRange = ((outputRange: $ReadOnlyArray<string>).map(value => {
+      outputRange = ((outputRange: ReadonlyArray<string>).map(value => {
         const processedColor = processColor(value);
         if (typeof processedColor === 'number') {
           outputType = 'color';

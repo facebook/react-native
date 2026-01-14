@@ -748,9 +748,9 @@ const TextStylesExample = memo(() => {
 });
 
 type TextStylesContainerProps = {
-  examples: $ReadOnlyArray<{
+  examples: ReadonlyArray<{
     name: string,
-    textStyles: $ReadOnlyArray<TextStyle>,
+    textStyles: ReadonlyArray<TextStyle>,
     multiline?: boolean,
   }>,
 };
@@ -793,7 +793,7 @@ function TextStylesContainer({examples}: TextStylesContainerProps) {
 
 type StyledTextInputProps = {
   name: string,
-  textStyles: $ReadOnlyArray<TextStyle>,
+  textStyles: ReadonlyArray<TextStyle>,
   styleOffset: number,
 };
 

@@ -26,7 +26,7 @@ export type {____TransformStyle_Internal};
 
 declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
-export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
+export type ColorArrayValue = null | ReadonlyArray<____ColorValue_Internal>;
 export type PointValue = {
   x: number,
   y: number,
@@ -729,9 +729,9 @@ type LinearGradientValue = {
   type: 'linear-gradient',
   // Angle or direction enums
   direction?: string,
-  colorStops: $ReadOnlyArray<{
+  colorStops: ReadonlyArray<{
     color: ____ColorValue_Internal,
-    positions?: $ReadOnlyArray<string>,
+    positions?: ReadonlyArray<string>,
   }>,
 };
 
@@ -771,9 +771,9 @@ type RadialGradientValue = {
   shape: RadialGradientShape,
   size: RadialGradientSize,
   position: RadialGradientPosition,
-  colorStops: $ReadOnlyArray<{
+  colorStops: ReadonlyArray<{
     color: ____ColorValue_Internal,
-    positions?: $ReadOnlyArray<string>,
+    positions?: ReadonlyArray<string>,
   }>,
 };
 
@@ -886,17 +886,15 @@ export type ____ViewStyle_InternalBase = Readonly<{
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
   cursor?: CursorValue,
-  boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
-  filter?: $ReadOnlyArray<FilterFunction> | string,
+  boxShadow?: ReadonlyArray<BoxShadowValue> | string,
+  filter?: ReadonlyArray<FilterFunction> | string,
   mixBlendMode?: ____BlendMode_Internal,
-  experimental_backgroundImage?: $ReadOnlyArray<BackgroundImageValue> | string,
-  experimental_backgroundSize?: $ReadOnlyArray<BackgroundSizeValue> | string,
+  experimental_backgroundImage?: ReadonlyArray<BackgroundImageValue> | string,
+  experimental_backgroundSize?: ReadonlyArray<BackgroundSizeValue> | string,
   experimental_backgroundPosition?:
-    | $ReadOnlyArray<BackgroundPositionValue>
+    | ReadonlyArray<BackgroundPositionValue>
     | string,
-  experimental_backgroundRepeat?:
-    | $ReadOnlyArray<BackgroundRepeatValue>
-    | string,
+  experimental_backgroundRepeat?: ReadonlyArray<BackgroundRepeatValue> | string,
   isolation?: 'auto' | 'isolate',
 }>;
 
@@ -997,7 +995,7 @@ export type ____FontVariant_Internal =
   | 'stylistic-twenty';
 
 export type ____FontVariantArray_Internal =
-  $ReadOnlyArray<____FontVariant_Internal>;
+  ReadonlyArray<____FontVariant_Internal>;
 
 type ____TextStyle_InternalBase = Readonly<{
   color?: ____ColorValue_Internal,
@@ -1074,7 +1072,7 @@ export type StyleProp<+T> =
   | T
   | false
   | ''
-  | $ReadOnlyArray<StyleProp<T>>;
+  | ReadonlyArray<StyleProp<T>>;
 
 export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
@@ -1110,7 +1108,7 @@ type ____FlattenStyleProp_Helper<
   ? empty
   : TStyleProp extends null | void | false | ''
     ? empty // When TStyleProp is an array, recurse with decremented Depth
-    : TStyleProp extends $ReadOnlyArray<infer V>
+    : TStyleProp extends ReadonlyArray<infer V>
       ? ____FlattenStyleProp_Helper<
           V,
           Depth extends number ? FlattenDepthLimiter[Depth] : 0,

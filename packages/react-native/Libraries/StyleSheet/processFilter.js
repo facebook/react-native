@@ -35,8 +35,8 @@ type ParsedDropShadow = {
 };
 
 export default function processFilter(
-  filter: ?($ReadOnlyArray<FilterFunction> | string),
-): $ReadOnlyArray<ParsedFilter> {
+  filter: ?(ReadonlyArray<FilterFunction> | string),
+): ReadonlyArray<ParsedFilter> {
   let result: Array<ParsedFilter> = [];
   if (filter == null) {
     return result;

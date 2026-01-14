@@ -147,7 +147,7 @@ export type ButtonProps = Readonly<{
    * Accessibility props.
    */
   accessible?: ?boolean,
-  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  accessibilityActions?: ?ReadonlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => unknown,
   accessibilityState?: ?AccessibilityState,
 

@@ -57,7 +57,7 @@ export function callNativeMethodToChangeBackgroundColor(
 
 export function callNativeMethodToAddOverlays(
   viewRef: React.ElementRef<MyLegacyViewType> | null,
-  overlayColors: $ReadOnlyArray<string>,
+  overlayColors: ReadonlyArray<string>,
 ) {
   if (!viewRef) {
     console.log('viewRef is null');

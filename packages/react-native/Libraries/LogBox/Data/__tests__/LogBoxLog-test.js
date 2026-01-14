@@ -78,7 +78,7 @@ function getLogBoxLog() {
 
 function getLogBoxSymbolication(): {
   symbolicate: JestMockFn<
-    $ReadOnlyArray<Array<StackFrame>>,
+    ReadonlyArray<Array<StackFrame>>,
     Promise<SymbolicatedStackTrace>,
   >,
 } {
@@ -113,7 +113,7 @@ const createComponentStack = (methodNames: Array<string>) =>
   }));
 
 function mockSymbolicate(
-  stack: $ReadOnlyArray<StackFrame>,
+  stack: ReadonlyArray<StackFrame>,
   stackCodeFrame: ?CodeCodeFrame,
   componentCodeFrame: ?CodeCodeFrame,
 ): SymbolicatedStackTrace {

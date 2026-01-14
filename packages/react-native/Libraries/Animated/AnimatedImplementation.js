@@ -543,7 +543,7 @@ function unforkEventImpl(
 }
 
 const eventImpl = function <T>(
-  argMapping: $ReadOnlyArray<?Mapping>,
+  argMapping: ReadonlyArray<?Mapping>,
   config: EventConfig<T>,
 ): any {
   const animatedEvent = new AnimatedEvent(argMapping, config);

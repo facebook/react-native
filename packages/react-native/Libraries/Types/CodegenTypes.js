@@ -33,7 +33,7 @@ export type Int32 = number;
 export type UnsafeObject = Object;
 export type UnsafeMixed = unknown;
 
-type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;
+type DefaultTypes = number | boolean | string | ReadonlyArray<string>;
 // Default handling, ignore the unused value
 // we're only using it for type checking
 //

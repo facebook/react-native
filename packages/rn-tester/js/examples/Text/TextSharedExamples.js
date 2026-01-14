@@ -271,4 +271,4 @@ export default [
     description: 'Shows the a11y behavior of Text with role="link"',
     render: TextWithLinkRoleExample,
   },
-] as $ReadOnlyArray<RNTesterModuleExample>;
+] as ReadonlyArray<RNTesterModuleExample>;

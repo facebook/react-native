@@ -81,8 +81,8 @@ export type FunctionComparisonResult = {
 // Array<NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>
 
 export type PropertiesComparisonResult = {
-  addedProperties?: $ReadOnlyArray<NamedShape<CompleteTypeAnnotation>>,
-  missingProperties?: $ReadOnlyArray<NamedShape<CompleteTypeAnnotation>>,
+  addedProperties?: ReadonlyArray<NamedShape<CompleteTypeAnnotation>>,
+  missingProperties?: ReadonlyArray<NamedShape<CompleteTypeAnnotation>>,
   errorProperties?: Array<{
     property: string,
     fault?: TypeComparisonError,

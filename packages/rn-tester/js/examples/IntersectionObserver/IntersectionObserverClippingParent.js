@@ -72,7 +72,7 @@ function IntersectionObserverCustomClippingRootExample(): React.Node {
   const [rootMarginValue, setRootMarginValue] = useState<string>('0px');
 
   const onObserve = useCallback(
-    (entries: $ReadOnlyArray<IntersectionObserverEntry>) => {
+    (entries: ReadonlyArray<IntersectionObserverEntry>) => {
       entries.forEach(entry => {
         setIntersectionEntry(entry);
       });

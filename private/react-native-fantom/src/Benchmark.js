@@ -48,7 +48,7 @@ export type TestTaskTiming = {
 
 export type BenchmarkResult = {
   type: string,
-  timings: $ReadOnlyArray<TestTaskTiming>,
+  timings: ReadonlyArray<TestTaskTiming>,
 };
 
 type InternalTestOptions = Readonly<{
@@ -66,13 +66,13 @@ type TestWithArgOptions<TestArgType> =
 
 interface ParameterizedTestFunction {
   <TestArgType>(
-    testArgs: $ReadOnlyArray<TestArgType>,
+    testArgs: ReadonlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
     fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,
   ): SuiteAPI;
   only: <TestArgType>(
-    testArgs: $ReadOnlyArray<TestArgType>,
+    testArgs: ReadonlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
     fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,
@@ -243,7 +243,7 @@ export function suite(
 
   // $FlowFixMe[incompatible-type]
   const testEach: ParameterizedTestFunction = <TestArgType>(
-    testArgs: $ReadOnlyArray<TestArgType>,
+    testArgs: ReadonlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
     fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,

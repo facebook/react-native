@@ -210,7 +210,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
             return (
               '(' +
               // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
-              (annotation.types: $ReadOnlyArray<CompleteTypeAnnotation>)
+              (annotation.types: ReadonlyArray<CompleteTypeAnnotation>)
                 .map(boolLit => formatTypeAnnotation(boolLit))
                 .join(' | ') +
               ')'
@@ -226,7 +226,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
             return (
               '(' +
               // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
-              (annotation.types: $ReadOnlyArray<CompleteTypeAnnotation>)
+              (annotation.types: ReadonlyArray<CompleteTypeAnnotation>)
                 .map(numLit => formatTypeAnnotation(numLit))
                 .join(' | ') +
               ')'
@@ -244,7 +244,7 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
             return (
               '(' +
               // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
-              (annotation.types: $ReadOnlyArray<CompleteTypeAnnotation>)
+              (annotation.types: ReadonlyArray<CompleteTypeAnnotation>)
                 .map(stringLit => formatTypeAnnotation(stringLit))
                 .join(' | ') +
               ')'
@@ -335,7 +335,7 @@ export function formatDiffSet(summary: DiffSummary): FormattedDiffSummary {
       // nested errors
       formattedIncompat.incompatibleSpecs = incompat.incompatibleSpecs.reduce(
         (
-          formattedModuleErrors: $ReadOnlyArray<FormattedErrorStore>,
+          formattedModuleErrors: ReadonlyArray<FormattedErrorStore>,
           specErrorStore,
         ) =>
           formattedModuleErrors.concat(

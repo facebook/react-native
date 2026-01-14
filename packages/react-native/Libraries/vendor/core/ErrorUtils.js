@@ -10,22 +10,22 @@
 
 // From @react-native/js-polyfills
 type ErrorHandler = (error: unknown, isFatal: boolean) => void;
-type Fn<Args: $ReadOnlyArray<unknown>, Return> = (...Args) => Return;
+type Fn<Args: ReadonlyArray<unknown>, Return> = (...Args) => Return;
 export type ErrorUtils = {
-  applyWithGuard<TArgs: $ReadOnlyArray<unknown>, TOut>(
+  applyWithGuard<TArgs: ReadonlyArray<unknown>, TOut>(
     fun: Fn<TArgs, TOut>,
     context?: unknown,
     args?: ?TArgs,
     unused_onError?: null,
     unused_name?: ?string,
   ): ?TOut,
-  applyWithGuardIfNeeded<TArgs: $ReadOnlyArray<unknown>, TOut>(
+  applyWithGuardIfNeeded<TArgs: ReadonlyArray<unknown>, TOut>(
     fun: Fn<TArgs, TOut>,
     context?: unknown,
     args?: ?TArgs,
   ): ?TOut,
   getGlobalHandler(): ErrorHandler,
-  guard<TArgs: $ReadOnlyArray<unknown>, TOut>(
+  guard<TArgs: ReadonlyArray<unknown>, TOut>(
     fun: Fn<TArgs, TOut>,
     name?: ?string,
     context?: unknown,

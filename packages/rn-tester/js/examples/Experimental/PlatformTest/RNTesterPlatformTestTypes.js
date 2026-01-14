@@ -33,7 +33,7 @@ export type PlatformTestResultStatus = 'PASS' | 'FAIL' | 'ERROR' | 'SKIPPED';
 export type PlatformTestResult = Readonly<{
   name: string,
   status: PlatformTestResultStatus,
-  assertions: $ReadOnlyArray<PlatformTestAssertionResult>,
+  assertions: ReadonlyArray<PlatformTestAssertionResult>,
   error: unknown | null, // null is technically unnecessary but is kept to ensure the error is described as nullable
 }>;
 

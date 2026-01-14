@@ -19,7 +19,7 @@ import {StyleSheet, Text, View} from 'react-native';
 type Props = Readonly<{
   title: string,
   description: string,
-  instructions?: $ReadOnlyArray<string>,
+  instructions?: ReadonlyArray<string>,
   component: React.ComponentType<PlatformTestComponentBaseProps>,
 }>;
 

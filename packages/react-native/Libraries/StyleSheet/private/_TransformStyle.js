@@ -47,7 +47,7 @@ export type ____TransformStyle_Internal = Readonly<{
    * `transform([{ skewX: '45deg' }])`
    */
   transform?:
-    | $ReadOnlyArray<
+    | ReadonlyArray<
         Readonly<
           MaximumOneOf<
             MergeUnion<
@@ -73,7 +73,7 @@ export type ____TransformStyle_Internal = Readonly<{
               | {+skewY: string | AnimatedNode}
               // TODO: what is the actual type it expects?
               | {
-                  +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+                  +matrix: ReadonlyArray<number | AnimatedNode> | AnimatedNode,
                 },
             >,
           >,

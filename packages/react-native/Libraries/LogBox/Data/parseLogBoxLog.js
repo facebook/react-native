@@ -93,7 +93,7 @@ const RE_BABEL_CODE_FRAME_MARKER_PATTERN = new RegExp(
   'm',
 );
 
-export function hasComponentStack(args: $ReadOnlyArray<unknown>): boolean {
+export function hasComponentStack(args: ReadonlyArray<unknown>): boolean {
   for (const arg of args) {
     if (typeof arg === 'string' && isComponentStack(arg)) {
       return true;
@@ -123,7 +123,7 @@ export type CodeFrame = Readonly<{
 }>;
 export type Message = Readonly<{
   content: string,
-  substitutions: $ReadOnlyArray<
+  substitutions: ReadonlyArray<
     Readonly<{
       length: number,
       offset: number,
@@ -131,12 +131,12 @@ export type Message = Readonly<{
   >,
 }>;
 
-export type ComponentStack = $ReadOnlyArray<CodeFrame>;
+export type ComponentStack = ReadonlyArray<CodeFrame>;
 export type ComponentStackType = 'legacy' | 'stack';
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
-export function parseInterpolation(args: $ReadOnlyArray<unknown>): Readonly<{
+export function parseInterpolation(args: ReadonlyArray<unknown>): Readonly<{
   category: Category,
   message: Message,
 }> {
@@ -456,7 +456,7 @@ export function withoutANSIColorStyles(message: unknown): unknown {
   );
 }
 
-export function parseLogBoxLog(args: $ReadOnlyArray<unknown>): {
+export function parseLogBoxLog(args: ReadonlyArray<unknown>): {
   componentStack: ComponentStack,
   componentStackType: ComponentStackType,
   category: Category,

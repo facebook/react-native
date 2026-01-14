@@ -136,12 +136,12 @@ export type PlatformTestHarnessHookResult = Readonly<{
   harness: PlatformTestHarness,
   numPending: number,
   reset: () => void,
-  results: $ReadOnlyArray<PlatformTestResult>,
+  results: ReadonlyArray<PlatformTestResult>,
 }>;
 
 export default function usePlatformTestHarness(): PlatformTestHarnessHookResult {
   const [testResults, updateTestResults] = useState<
-    $ReadOnlyArray<PlatformTestResult>,
+    ReadonlyArray<PlatformTestResult>,
   >([]);
 
   // Since updating the test results array can get expensive at larger sizes

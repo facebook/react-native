@@ -403,7 +403,7 @@ export type AccessibilityProps = Readonly<{
    * Provides an array of custom actions available for accessibility.
    *
    */
-  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  accessibilityActions?: ?ReadonlyArray<AccessibilityActionInfo>,
 
   /**
    * alias for accessibilityState

@@ -59,20 +59,20 @@ type NativeProps = Readonly<{
     color: ColorValue,
   }>,
 
-  arrayStringUnion?: WithDefault<$ReadOnlyArray<'foo' | 'bar'>, 'foo'>,
+  arrayStringUnion?: WithDefault<ReadonlyArray<'foo' | 'bar'>, 'foo'>,
   arrayStringUnionExtra?: WithDefault<
-    $ReadOnlyArray<'foo' | 'bar' | 'baz'>,
+    ReadonlyArray<'foo' | 'bar' | 'baz'>,
     'bar',
   >,
 
-  arrayNestedObject: $ReadOnlyArray<
+  arrayNestedObject: ReadonlyArray<
     Readonly<{
       string: string,
       color: ColorValue,
     }>,
   >,
 
-  arrayNestedObjectChange: $ReadOnlyArray<
+  arrayNestedObjectChange: ReadonlyArray<
     Readonly<{
       string: boolean,
       color: ColorValue,

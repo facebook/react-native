@@ -16,7 +16,7 @@
 export default function composeStyles<T, U: T, V: T>(
   style1: ?U,
   style2: ?V,
-): ?(T | $ReadOnlyArray<T>) {
+): ?(T | ReadonlyArray<T>) {
   if (style1 == null) {
     return style2;
   }

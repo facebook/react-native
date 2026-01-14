@@ -87,7 +87,7 @@ const NetworkImageCallbackExample = ({
   source,
   prefetchedSource,
 }: NetworkImageCallbackExampleProps): React.Node => {
-  const [events, setEvents] = useState<$ReadOnlyArray<string>>([]);
+  const [events, setEvents] = useState<ReadonlyArray<string>>([]);
   const [startLoadPrefetched, setStartLoadPrefetched] = useState(false);
   const [mountTime, setMountTime] = useState(Date.now());
 
@@ -197,7 +197,7 @@ const NetworkImageCallbackExample = ({
 type NetworkImageExampleState = {
   error: ?string,
   loading: boolean,
-  progress: $ReadOnlyArray<number>,
+  progress: ReadonlyArray<number>,
 };
 
 class NetworkImageExample extends React.Component<
