@@ -2193,10 +2193,10 @@ declare module 'rxjs/operators' {
   ): rxjs$MonoTypeOperatorFunction<T>;
 
   declare export function distinctUntilKeyChanged<T>(
-    key: $Keys<T>,
+    key: keyof T,
   ): rxjs$MonoTypeOperatorFunction<T>;
 
-  declare export function distinctUntilKeyChanged<T, K: $Keys<T>>(
+  declare export function distinctUntilKeyChanged<T, K: keyof T>(
     key: K,
     compare: (x: unknown, y: unknown) => boolean,
   ): rxjs$MonoTypeOperatorFunction<T>;
