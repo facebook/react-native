@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.84.0-rc.1
+
+### Breaking
+
+#### iOS specific
+
+- Make Hermes V1 the default engine for iOS ([f140c4906b](https://github.com/facebook/react-native/commit/f140c4906b286a85772d0b7d97eecd0798805fcd) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- Fixed missing dependency breaking `react-native config` in pnpm setups ([5c43ed2348](https://github.com/facebook/react-native/commit/5c43ed2348d1a0123164f5246aa4a85f909c5560) by [@tido64](https://github.com/tido64))
+
+#### Android specific
+
+- Handle `unstable_path` query param in asset URLs ([42986f27a0](https://github.com/facebook/react-native/commit/42986f27a0285e501f71cf5cedacedefdc44c74e) by [@tido64](https://github.com/tido64))
+
 ## v0.84.0-rc.0
 
 ### Breaking
