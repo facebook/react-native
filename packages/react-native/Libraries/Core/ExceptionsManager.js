@@ -135,8 +135,8 @@ function reportException(
 }
 
 declare var console: {
-  error: (...data: $ReadOnlyArray<unknown>) => void,
-  _errorOriginal: (...data: $ReadOnlyArray<unknown>) => void,
+  error: (...data: ReadonlyArray<unknown>) => void,
+  _errorOriginal: (...data: ReadonlyArray<unknown>) => void,
   reportErrorsAsExceptions: boolean,
   ...
 };

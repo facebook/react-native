@@ -14,14 +14,14 @@ import * as React from 'react';
 import {codegenNativeCommands, codegenNativeComponent} from 'react-native';
 
 type Event = Readonly<{
-  values: $ReadOnlyArray<CodegenTypes.Int32>,
-  boolValues: $ReadOnlyArray<boolean>,
-  floats: $ReadOnlyArray<CodegenTypes.Float>,
-  doubles: $ReadOnlyArray<CodegenTypes.Double>,
-  yesNos: $ReadOnlyArray<'yep' | 'nope'>,
-  strings: $ReadOnlyArray<string>,
-  latLons: $ReadOnlyArray<{lat: CodegenTypes.Double, lon: CodegenTypes.Double}>,
-  multiArrays: $ReadOnlyArray<$ReadOnlyArray<CodegenTypes.Int32>>,
+  values: ReadonlyArray<CodegenTypes.Int32>,
+  boolValues: ReadonlyArray<boolean>,
+  floats: ReadonlyArray<CodegenTypes.Float>,
+  doubles: ReadonlyArray<CodegenTypes.Double>,
+  yesNos: ReadonlyArray<'yep' | 'nope'>,
+  strings: ReadonlyArray<string>,
+  latLons: ReadonlyArray<{lat: CodegenTypes.Double, lon: CodegenTypes.Double}>,
+  multiArrays: ReadonlyArray<ReadonlyArray<CodegenTypes.Int32>>,
 }>;
 
 type LegacyStyleEvent = Readonly<{
@@ -31,7 +31,7 @@ type LegacyStyleEvent = Readonly<{
 type NativeProps = Readonly<{
   ...ViewProps,
   opacity?: CodegenTypes.Float,
-  values: $ReadOnlyArray<CodegenTypes.Int32>,
+  values: ReadonlyArray<CodegenTypes.Int32>,
 
   // Events
   onIntArrayChanged?: ?CodegenTypes.BubblingEventHandler<Event>,
@@ -51,7 +51,7 @@ interface NativeCommands {
 
   +callNativeMethodToAddOverlays: (
     viewRef: React.ElementRef<MyNativeViewType>,
-    overlayColors: $ReadOnlyArray<string>,
+    overlayColors: ReadonlyArray<string>,
   ) => void;
 
   +callNativeMethodToRemoveOverlays: (

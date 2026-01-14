@@ -591,7 +591,7 @@ type ScrollViewBaseProps = Readonly<{
    * top of the scroll view. This property is not supported in conjunction
    * with `horizontal={true}`.
    */
-  stickyHeaderIndices?: ?$ReadOnlyArray<number>,
+  stickyHeaderIndices?: ?ReadonlyArray<number>,
   /**
    * A React Component that will be used to render sticky headers.
    * To be used together with `stickyHeaderIndices` or with `SectionList`, defaults to `ScrollViewStickyHeader`.
@@ -625,7 +625,7 @@ type ScrollViewBaseProps = Readonly<{
    *
    * Overrides less configurable `pagingEnabled` and `snapToInterval` props.
    */
-  snapToOffsets?: ?$ReadOnlyArray<number>,
+  snapToOffsets?: ?ReadonlyArray<number>,
   /**
    * Use in conjunction with `snapToOffsets`. By default, the beginning
    * of the list counts as a snap offset. Set `snapToStart` to false to disable

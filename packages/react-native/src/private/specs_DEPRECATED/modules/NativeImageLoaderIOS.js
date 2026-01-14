@@ -16,7 +16,7 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +getConstants: () => {};
   // Return [width, height] of image uri
-  +getSize: (uri: string) => Promise<$ReadOnlyArray<number>>;
+  +getSize: (uri: string) => Promise<ReadonlyArray<number>>;
   +getSizeWithHeaders: (
     uri: string,
     headers: Object,

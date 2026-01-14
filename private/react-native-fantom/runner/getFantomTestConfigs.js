@@ -434,7 +434,7 @@ export default function getFantomTestConfigs(
 
 function getConfigurationVariations(
   config: FantomTestConfig,
-  variations: $ReadOnlyArray<$ReadOnlyArray<PartialFantomTestConfig>>,
+  variations: ReadonlyArray<ReadonlyArray<PartialFantomTestConfig>>,
 ): Array<FantomTestConfig> {
   if (variations.length === 0) {
     return [config];

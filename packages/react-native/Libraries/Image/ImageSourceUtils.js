@@ -27,7 +27,7 @@ export function getImageSourcesFromImageProps(
   imageProps: ImageProps,
 ):
   | ?ResolvedAssetSource
-  | $ReadOnlyArray<{uri: string, headers: ImageSourceHeaders, ...}> {
+  | ReadonlyArray<{uri: string, headers: ImageSourceHeaders, ...}> {
   let source = resolveAssetSource(imageProps.source);
 
   let sources;

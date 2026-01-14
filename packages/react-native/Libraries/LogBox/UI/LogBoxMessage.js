@@ -29,7 +29,7 @@ type Range = {
   upperBound: number,
 };
 
-function getLinkRanges(string: string): $ReadOnlyArray<Range> {
+function getLinkRanges(string: string): ReadonlyArray<Range> {
   const regex = /https?:\/\/[^\s$.?#].[^\s]*/gi;
   const matches = [];
 

@@ -15,10 +15,10 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
 export type NativeIntersectionObserverEntry = {
   intersectionObserverId: number,
   targetInstanceHandle: unknown,
-  targetRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
-  rootRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
+  targetRect: ReadonlyArray<number>, // It's actually a tuple with x, y, width and height
+  rootRect: ReadonlyArray<number>, // It's actually a tuple with x, y, width and height
   // TODO(T209328432) - Remove optionality of intersectionRect when native changes are released
-  intersectionRect: ?$ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
+  intersectionRect: ?ReadonlyArray<number>, // It's actually a tuple with x, y, width and height
   isIntersectingAboveThresholds: boolean,
   time: number,
 };
@@ -27,8 +27,8 @@ export type NativeIntersectionObserverObserveOptions = {
   intersectionObserverId: number,
   rootShadowNode?: ?unknown,
   targetShadowNode: unknown,
-  thresholds: $ReadOnlyArray<number>,
-  rootThresholds?: ?$ReadOnlyArray<number>,
+  thresholds: ReadonlyArray<number>,
+  rootThresholds?: ?ReadonlyArray<number>,
   rootMargin?: ?string,
 };
 
@@ -44,7 +44,7 @@ export interface Spec extends TurboModule {
   ) => void;
   +connect: (notifyIntersectionObserversCallback: () => void) => void;
   +disconnect: () => void;
-  +takeRecords: () => $ReadOnlyArray<NativeIntersectionObserverEntry>;
+  +takeRecords: () => ReadonlyArray<NativeIntersectionObserverEntry>;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

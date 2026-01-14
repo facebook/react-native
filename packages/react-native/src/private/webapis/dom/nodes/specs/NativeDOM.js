@@ -58,7 +58,7 @@ export interface Spec extends TurboModule {
 
   +getChildNodes: (
     nativeNodeReference: unknown /* NativeNodeReference */,
-  ) => $ReadOnlyArray<unknown> /* $ReadOnlyArray<InstanceHandle> */;
+  ) => ReadonlyArray<unknown> /* $ReadOnlyArray<InstanceHandle> */;
 
   +getElementById?: (
     nativeNodeReference: unknown /* NativeNodeReference */,
@@ -79,24 +79,24 @@ export interface Spec extends TurboModule {
 
   +getBorderWidth: (
     nativeElementReference: unknown /* NativeElementReference */,
-  ) => $ReadOnlyArray<number> /* [topWidth: number, rightWidth: number, bottomWidth: number, leftWidth: number] */;
+  ) => ReadonlyArray<number> /* [topWidth: number, rightWidth: number, bottomWidth: number, leftWidth: number] */;
 
   +getBoundingClientRect: (
     nativeElementReference: unknown /* NativeElementReference */,
     includeTransform: boolean,
-  ) => $ReadOnlyArray<number> /* [x: number, y: number, width: number, height: number] */;
+  ) => ReadonlyArray<number> /* [x: number, y: number, width: number, height: number] */;
 
   +getInnerSize: (
     nativeElementReference: unknown /* NativeElementReference */,
-  ) => $ReadOnlyArray<number> /* [width: number, height: number] */;
+  ) => ReadonlyArray<number> /* [width: number, height: number] */;
 
   +getScrollPosition: (
     nativeElementReference: unknown /* NativeElementReference */,
-  ) => $ReadOnlyArray<number> /* [scrollLeft: number, scrollTop: number] */;
+  ) => ReadonlyArray<number> /* [scrollLeft: number, scrollTop: number] */;
 
   +getScrollSize: (
     nativeElementReference: unknown /* NativeElementReference */,
-  ) => $ReadOnlyArray<number> /* [scrollWidth: number, scrollHeight: number] */;
+  ) => ReadonlyArray<number> /* [scrollWidth: number, scrollHeight: number] */;
 
   +getTagName: (
     nativeElementReference: unknown /* NativeElementReference */,
@@ -127,7 +127,7 @@ export interface Spec extends TurboModule {
 
   +getOffset: (
     nativeElementReference: unknown /* NativeElementReference */,
-  ) => $ReadOnlyArray<unknown> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
+  ) => ReadonlyArray<unknown> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
 
   /*
    * Special methods to handle the root node.
@@ -199,7 +199,7 @@ export interface RefinedSpec {
    */
   +getChildNodes: (
     nativeNodeReference: NativeNodeReference,
-  ) => $ReadOnlyArray<InstanceHandle>;
+  ) => ReadonlyArray<InstanceHandle>;
 
   /**
    * This is a React Native implementation of `Document.prototype.getElementById`

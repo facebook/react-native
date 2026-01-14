@@ -25,5 +25,5 @@ declare export default class HTMLCollection<+T>
 }
 
 declare export function createHTMLCollection<T>(
-  elements: $ReadOnlyArray<T>,
+  elements: ReadonlyArray<T>,
 ): HTMLCollection<T>;

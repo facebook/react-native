@@ -33,7 +33,7 @@ export type EventConfig<T> = {
 export function attachNativeEventImpl(
   viewRef: any,
   eventName: string,
-  argMapping: $ReadOnlyArray<?Mapping>,
+  argMapping: ReadonlyArray<?Mapping>,
   platformConfig: ?PlatformConfig,
 ): {detach: () => void} {
   // Find animated values in `argMapping` and create an array representing their
@@ -93,7 +93,7 @@ export function attachNativeEventImpl(
   };
 }
 
-function validateMapping(argMapping: $ReadOnlyArray<?Mapping>, args: any) {
+function validateMapping(argMapping: ReadonlyArray<?Mapping>, args: any) {
   const validate = (recMapping: ?Mapping, recEvt: any, key: string) => {
     if (recMapping instanceof AnimatedValue) {
       invariant(
@@ -146,13 +146,13 @@ function validateMapping(argMapping: $ReadOnlyArray<?Mapping>, args: any) {
 }
 
 export class AnimatedEvent {
-  _argMapping: $ReadOnlyArray<?Mapping>;
+  _argMapping: ReadonlyArray<?Mapping>;
   _listeners: Array<Function> = [];
   _attachedEvent: ?{detach: () => void, ...};
   __isNative: boolean;
   __platformConfig: ?PlatformConfig;
 
-  constructor(argMapping: $ReadOnlyArray<?Mapping>, config: EventConfig<any>) {
+  constructor(argMapping: ReadonlyArray<?Mapping>, config: EventConfig<any>) {
     this._argMapping = argMapping;
 
     if (config == null) {

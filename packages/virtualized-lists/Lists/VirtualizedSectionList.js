@@ -31,7 +31,7 @@ export type SectionBase<SectionItemT, SectionT = DefaultVirtualizedSectionT> = {
   /**
    * The data for rendering items in this section.
    */
-  data: $ReadOnlyArray<SectionItemT>,
+  data: ReadonlyArray<SectionItemT>,
   /**
    * Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections,
    * the array index will be used by default.
@@ -59,7 +59,7 @@ type RequiredVirtualizedSectionListProps<
   ItemT,
   SectionT = DefaultVirtualizedSectionT,
 > = {
-  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+  sections: ReadonlyArray<SectionData<ItemT, SectionT>>,
 };
 
 type OptionalVirtualizedSectionListProps<
@@ -228,7 +228,7 @@ class VirtualizedSectionList<
 
   _getItem(
     props: VirtualizedSectionListProps<ItemT, SectionT>,
-    sections: ?$ReadOnlyArray<SectionData<ItemT, SectionT>>,
+    sections: ?ReadonlyArray<SectionData<ItemT, SectionT>>,
     index: number,
   ): ?ItemT {
     if (!sections) {

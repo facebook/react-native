@@ -52,7 +52,7 @@ export async function pauseWatchman(command: () => Promise<unknown | void>) {
 
 export function getExistingPath(
   folder: string,
-  paths: $ReadOnlyArray<string>,
+  paths: ReadonlyArray<string>,
 ): string | null {
   for (const p of paths) {
     if (existsSync(path.join(folder, p))) {

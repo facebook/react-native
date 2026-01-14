@@ -13,7 +13,7 @@ import type {CompleteTypeAnnotation} from '@react-native/codegen/src/CodegenSche
 import invariant from 'invariant';
 
 export function sortTypeAnnotations(
-  annotations: $ReadOnlyArray<CompleteTypeAnnotation>,
+  annotations: ReadonlyArray<CompleteTypeAnnotation>,
 ): Array<[number, CompleteTypeAnnotation]> {
   const sortableArray = annotations.map(
     (a, i): [number, CompleteTypeAnnotation] => [i, a],
@@ -209,8 +209,8 @@ function compareNameAnnotationArraysForSorting(
 }
 
 function compareAnnotationArraysForSorting(
-  [originalPositionA, arrayA]: [number, $ReadOnlyArray<CompleteTypeAnnotation>],
-  [originalPositionB, arrayB]: [number, $ReadOnlyArray<CompleteTypeAnnotation>],
+  [originalPositionA, arrayA]: [number, ReadonlyArray<CompleteTypeAnnotation>],
+  [originalPositionB, arrayB]: [number, ReadonlyArray<CompleteTypeAnnotation>],
 ) {
   if (arrayA.length - arrayB.length !== 0) {
     return arrayA.length - arrayB.length;

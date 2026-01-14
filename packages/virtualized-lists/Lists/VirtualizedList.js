@@ -509,7 +509,7 @@ class VirtualizedList extends StateSafePureComponent<
   static _createRenderMask(
     props: VirtualizedListProps,
     cellsAroundViewport: {first: number, last: number},
-    additionalRegions?: ?$ReadOnlyArray<{first: number, last: number}>,
+    additionalRegions?: ?ReadonlyArray<{first: number, last: number}>,
   ): CellRenderMask {
     const itemCount = props.getItemCount(props.data);
 
@@ -1952,7 +1952,7 @@ class VirtualizedList extends StateSafePureComponent<
 
   _getNonViewportRenderRegions = (
     props: CellMetricProps,
-  ): $ReadOnlyArray<{
+  ): ReadonlyArray<{
     first: number,
     last: number,
   }> => {

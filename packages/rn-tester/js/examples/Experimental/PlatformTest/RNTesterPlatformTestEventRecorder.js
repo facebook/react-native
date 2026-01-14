@@ -102,7 +102,7 @@ export default class RNTesterPlatformTestEventRecorder {
   }
 
   createRecorderTestEventHandlers(
-    targetNames: $ReadOnlyArray<string>,
+    targetNames: ReadonlyArray<string>,
     callback?: (event: Object, eventType: string, targetName: string) => void,
   ): Readonly<{[targetName: string]: ViewProps}> {
     const result: {[targetName: string]: ViewProps} = {};
@@ -171,7 +171,7 @@ export default class RNTesterPlatformTestEventRecorder {
 
 export function useRecorderTestEventHandlers(
   eventRecorder: RNTesterPlatformTestEventRecorder,
-  targetNames: $ReadOnlyArray<string>,
+  targetNames: ReadonlyArray<string>,
   callback?: (event: Object, eventType: string, targetName: string) => void,
 ): Readonly<{[targetName: string]: ViewProps}> {
   return useMemo(

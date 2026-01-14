@@ -16,7 +16,7 @@ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNati
 
 export type Props = Readonly<{
   ...ViewProps,
-  sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
+  sizes?: WithDefault<ReadonlyArray<'small' | 'large'>, 'small'>,
 }>;
 
 export default (codegenNativeComponent<Props>(

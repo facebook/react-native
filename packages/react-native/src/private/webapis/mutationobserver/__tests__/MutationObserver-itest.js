@@ -35,7 +35,7 @@ function ensureReactNativeElement(value: unknown): ReactNativeElement {
 
 function ensureMutationRecordArray(
   value: unknown,
-): $ReadOnlyArray<MutationRecord> {
+): ReadonlyArray<MutationRecord> {
   return ensureInstance(value, Array).map((element: unknown) =>
     ensureInstance(element, MutationRecord),
   );
@@ -239,7 +239,7 @@ describe('MutationObserver', () => {
       const node = ensureReactNativeElement(nodeRef.current);
 
       const observerCallbackCallArgs = [];
-      const observerCallback = (...args: $ReadOnlyArray<unknown>) => {
+      const observerCallback = (...args: ReadonlyArray<unknown>) => {
         observerCallbackCallArgs.push(args);
       };
       const observer = new MutationObserver(observerCallback);

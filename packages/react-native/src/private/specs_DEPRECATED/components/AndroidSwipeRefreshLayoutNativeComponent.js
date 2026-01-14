@@ -31,7 +31,7 @@ type AndroidSwipeRefreshLayoutNativeProps = Readonly<{
   /**
    * The colors (at least one) that will be used to draw the refresh indicator.
    */
-  colors?: ?$ReadOnlyArray<ColorValue>,
+  colors?: ?ReadonlyArray<ColorValue>,
   /**
    * The background color of the refresh indicator.
    */

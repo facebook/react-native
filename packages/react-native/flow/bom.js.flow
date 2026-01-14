@@ -32,31 +32,31 @@ declare interface ConsoleTask {
 // $FlowExpectedError[libdef-override] Flow core definitions are incomplete.
 declare var console: {
   // Logging
-  log(...data: $ReadOnlyArray<unknown>): void,
-  trace(...data: $ReadOnlyArray<unknown>): void,
-  debug(...data: $ReadOnlyArray<unknown>): void,
-  info(...data: $ReadOnlyArray<unknown>): void,
-  warn(...data: $ReadOnlyArray<unknown>): void,
-  error(...data: $ReadOnlyArray<unknown>): void,
+  log(...data: ReadonlyArray<unknown>): void,
+  trace(...data: ReadonlyArray<unknown>): void,
+  debug(...data: ReadonlyArray<unknown>): void,
+  info(...data: ReadonlyArray<unknown>): void,
+  warn(...data: ReadonlyArray<unknown>): void,
+  error(...data: ReadonlyArray<unknown>): void,
 
   // Grouping
-  group(...data: $ReadOnlyArray<unknown>): void,
-  groupCollapsed(...data: $ReadOnlyArray<unknown>): void,
+  group(...data: ReadonlyArray<unknown>): void,
+  groupCollapsed(...data: ReadonlyArray<unknown>): void,
   groupEnd(): void,
 
   // Printing
   table(
     tabularData:
       | Readonly<{[key: string]: unknown, ...}>
-      | $ReadOnlyArray<Readonly<{[key: string]: unknown, ...}>>
-      | $ReadOnlyArray<$ReadOnlyArray<unknown>>,
+      | ReadonlyArray<Readonly<{[key: string]: unknown, ...}>>
+      | ReadonlyArray<ReadonlyArray<unknown>>,
   ): void,
-  dir(...data: $ReadOnlyArray<unknown>): void,
-  dirxml(...data: $ReadOnlyArray<unknown>): void,
+  dir(...data: ReadonlyArray<unknown>): void,
+  dirxml(...data: ReadonlyArray<unknown>): void,
   clear(): void,
 
   // Utilities
-  assert(condition: unknown, ...data: $ReadOnlyArray<unknown>): void,
+  assert(condition: unknown, ...data: ReadonlyArray<unknown>): void,
 
   // Profiling
   profile(name?: string): void,
@@ -172,7 +172,7 @@ declare class TaskAttributionTiming extends PerformanceEntry {
 
 // https://w3c.github.io/longtasks/#sec-PerformanceLongTaskTiming
 declare class PerformanceLongTaskTiming extends PerformanceEntry {
-  attribution: $ReadOnlyArray<TaskAttributionTiming>;
+  attribution: ReadonlyArray<TaskAttributionTiming>;
 }
 
 // https://www.w3.org/TR/user-timing/#extensions-performance-interface

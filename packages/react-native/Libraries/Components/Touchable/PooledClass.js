@@ -105,7 +105,7 @@ const addPoolingTo = function <T>(
   pooler: Pooler,
 ): Class<T> & {
   getPooled(
-    ...args: $ReadOnlyArray<unknown>
+    ...args: ReadonlyArray<unknown>
   ): /* arguments of the constructor */ T,
   release(instance: unknown): void,
   ...

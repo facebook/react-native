@@ -119,11 +119,11 @@ export function registerSection(
   registerComponent(appKey, component, true);
 }
 
-export function getAppKeys(): $ReadOnlyArray<string> {
+export function getAppKeys(): ReadonlyArray<string> {
   return Object.keys(runnables);
 }
 
-export function getSectionKeys(): $ReadOnlyArray<string> {
+export function getSectionKeys(): ReadonlyArray<string> {
   return Object.keys(sections);
 }
 

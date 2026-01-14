@@ -68,7 +68,7 @@ class Row extends React.Component<
 type RefreshControlExampleState = Readonly<{
   isRefreshing: boolean,
   loaded: number,
-  rowData: $ReadOnlyArray<Data>,
+  rowData: ReadonlyArray<Data>,
 }>;
 
 class RefreshControlExample extends React.Component<

@@ -306,7 +306,7 @@ export type TextInputIOSProps = Readonly<{
    */
   dataDetectorTypes?:
     | ?DataDetectorTypesType
-    | $ReadOnlyArray<DataDetectorTypesType>,
+    | ReadonlyArray<DataDetectorTypesType>,
 
   /**
    * If `true`, the keyboard disables the return key when there is no text and
@@ -531,7 +531,7 @@ type TextInputBaseProps = Readonly<{
    *
    * @see https://developer.android.com/reference/android/content/ClipData for more information on MIME types
    */
-  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
+  experimental_acceptDragAndDropTypes?: ?ReadonlyArray<string>,
 
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.

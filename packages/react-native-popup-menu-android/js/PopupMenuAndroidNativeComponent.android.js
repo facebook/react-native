@@ -29,7 +29,7 @@ type NativeProps = Readonly<{
   ...ViewProps,
 
   //Props
-  menuItems?: ?$ReadOnlyArray<string>,
+  menuItems?: ?ReadonlyArray<string>,
 
   onPopupMenuSelectionChange?: DirectEventHandler<PopupMenuSelectionEvent>,
   onPopupMenuDismiss?: DirectEventHandler<PopupMenuDismissEvent>,

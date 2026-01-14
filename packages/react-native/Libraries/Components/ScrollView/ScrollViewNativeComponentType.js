@@ -75,7 +75,7 @@ export type ScrollViewNativeProps = Readonly<{
   snapToAlignment?: ?('start' | 'center' | 'end'),
   snapToEnd?: ?boolean,
   snapToInterval?: ?number,
-  snapToOffsets?: ?$ReadOnlyArray<number>,
+  snapToOffsets?: ?ReadonlyArray<number>,
   snapToStart?: ?boolean,
   zoomScale?: ?number,
   // Overrides

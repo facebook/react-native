@@ -17,7 +17,7 @@ import LogBoxLogNotification from './UI/LogBoxNotification';
 import * as React from 'react';
 
 type Props = Readonly<{
-  logs: $ReadOnlyArray<LogBoxLog>,
+  logs: ReadonlyArray<LogBoxLog>,
   selectedLogIndex: number,
   isDisabled?: ?boolean,
 }>;

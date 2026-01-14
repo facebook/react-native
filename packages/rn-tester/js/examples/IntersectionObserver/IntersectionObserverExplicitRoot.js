@@ -75,7 +75,7 @@ function IntersectionObserverExplicitRootExample(): React.Node {
     [position],
   );
   const onObserve = useCallback(
-    (entries: $ReadOnlyArray<IntersectionObserverEntry>) => {
+    (entries: ReadonlyArray<IntersectionObserverEntry>) => {
       entries.forEach(entry => {
         setIntersectionRatio(entry.intersectionRatio);
       });

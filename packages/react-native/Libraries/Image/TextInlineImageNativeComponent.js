@@ -21,7 +21,7 @@ import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegi
 type RCTTextInlineImageNativeProps = Readonly<{
   ...ViewProps,
   resizeMode?: ?ImageResizeMode,
-  src?: ?$ReadOnlyArray<?Readonly<{uri?: ?string, ...}>>,
+  src?: ?ReadonlyArray<?Readonly<{uri?: ?string, ...}>>,
   tintColor?: ?ColorValue,
   headers?: ?{[string]: string},
 }>;

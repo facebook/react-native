@@ -28,7 +28,7 @@ function createAnimatedStyle(
   flatStyle: FlatStyle,
   allowlist: ?AnimatedStyleAllowlist,
   keepUnanimatedValues: boolean,
-): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: unknown}] {
+): [ReadonlyArray<string>, ReadonlyArray<AnimatedNode>, {[string]: unknown}] {
   const nodeKeys: Array<string> = [];
   const nodes: Array<AnimatedNode> = [];
   const style: {[string]: unknown} = {};
@@ -83,8 +83,8 @@ function createAnimatedStyle(
 
 export default class AnimatedStyle extends AnimatedWithChildren {
   _originalStyleForWeb: ?unknown;
-  _nodeKeys: $ReadOnlyArray<string>;
-  _nodes: $ReadOnlyArray<AnimatedNode>;
+  _nodeKeys: ReadonlyArray<string>;
+  _nodes: ReadonlyArray<AnimatedNode>;
   _style: {[string]: unknown};
 
   /**
@@ -113,8 +113,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   }
 
   constructor(
-    nodeKeys: $ReadOnlyArray<string>,
-    nodes: $ReadOnlyArray<AnimatedNode>,
+    nodeKeys: ReadonlyArray<string>,
+    nodes: ReadonlyArray<AnimatedNode>,
     style: {[string]: unknown},
     originalStyleForWeb: ?unknown,
     config?: ?AnimatedNodeConfig,

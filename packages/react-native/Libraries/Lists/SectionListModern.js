@@ -46,7 +46,7 @@ type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
-  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+  sections: ReadonlyArray<SectionData<ItemT, SectionT>>,
 };
 
 type OptionalProps<ItemT, SectionT = DefaultSectionT> = {

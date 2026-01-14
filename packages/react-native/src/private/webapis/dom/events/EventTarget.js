@@ -311,7 +311,7 @@ function dispatch(eventTarget: EventTarget, event: Event): void {
 function getEventPath(
   eventTarget: EventTarget,
   event: Event,
-): $ReadOnlyArray<EventTarget> {
+): ReadonlyArray<EventTarget> {
   const path = [];
   let target: EventTarget | null = eventTarget;
 

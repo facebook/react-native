@@ -198,7 +198,7 @@ function nestedPropertiesCheck(
 
 function checkOptionalityAndSetError(
   typeName: string,
-  properties: $ReadOnlyArray<NamedShape<CompleteTypeAnnotation>>,
+  properties: ReadonlyArray<NamedShape<CompleteTypeAnnotation>>,
   msg: string,
   errorCode: ErrorCode,
 ): Array<ErrorStore> {

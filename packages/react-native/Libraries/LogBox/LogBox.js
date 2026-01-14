@@ -24,7 +24,7 @@ interface ILogBox {
   install(): void;
   uninstall(): void;
   isInstalled(): boolean;
-  ignoreLogs($ReadOnlyArray<IgnorePattern>): void;
+  ignoreLogs(ReadonlyArray<IgnorePattern>): void;
   ignoreAllLogs(value?: boolean): void;
   clearAllLogs(): void;
   addLog(log: LogData): void;
@@ -118,7 +118,7 @@ if (__DEV__) {
     /**
      * Silence any logs that match the given strings or regexes.
      */
-    ignoreLogs(patterns: $ReadOnlyArray<IgnorePattern>): void {
+    ignoreLogs(patterns: ReadonlyArray<IgnorePattern>): void {
       LogBoxData.addIgnorePatterns(patterns);
     },
 
@@ -256,7 +256,7 @@ if (__DEV__) {
       return false;
     },
 
-    ignoreLogs(patterns: $ReadOnlyArray<IgnorePattern>): void {
+    ignoreLogs(patterns: ReadonlyArray<IgnorePattern>): void {
       // Do nothing.
     },
 

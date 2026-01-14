@@ -154,7 +154,7 @@ export function getFabricUIManager(): ?Spec {
  */
 function createProxyWithCachedProperties(
   implementation: Spec,
-  propertiesToCache: $ReadOnlyArray<string>,
+  propertiesToCache: ReadonlyArray<string>,
 ): Spec {
   const proxy = Object.create(implementation);
   for (const propertyName of propertiesToCache) {

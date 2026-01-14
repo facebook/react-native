@@ -20,7 +20,7 @@ type NativeComponentOptions = Readonly<{
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
-  excludedPlatforms?: $ReadOnlyArray<'iOS' | 'android'>,
+  excludedPlatforms?: ReadonlyArray<'iOS' | 'android'>,
 }>;
 
 export type NativeComponentType<T: {...}> = HostComponent<T>;
