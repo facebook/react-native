@@ -43,16 +43,6 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
            ",right:" + getDebugDescription(object.overflowInset.right, {}) +
            ",bottom:" + getDebugDescription(object.overflowInset.bottom, {}) +
            ",left:" + getDebugDescription(object.overflowInset.left, {}) + "}"},
-      {.name = "marginInsets",
-       .value = "{top:" + getDebugDescription(object.marginInsets.top, {}) +
-           ",right:" + getDebugDescription(object.marginInsets.right, {}) +
-           ",bottom:" + getDebugDescription(object.marginInsets.bottom, {}) +
-           ",left:" + getDebugDescription(object.marginInsets.left, {}) + "}"},
-      {.name = "paddingInsets",
-       .value = "{top:" + getDebugDescription(object.paddingInsets.top, {}) +
-           ",right:" + getDebugDescription(object.paddingInsets.right, {}) +
-           ",bottom:" + getDebugDescription(object.paddingInsets.bottom, {}) +
-           ",left:" + getDebugDescription(object.paddingInsets.left, {}) + "}"},
       {.name = "displayType",
        .value = object.displayType == DisplayType::None
            ? "None"

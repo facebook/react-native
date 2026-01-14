@@ -65,7 +65,13 @@ void FabricMountingManager::setComputedBoxModelRegistry(
 namespace {
 
 inline bool needsComputedBoxModel(const ShadowView& shadowView) {
-  return shadowView.traits.check(ShadowNodeTraits::Trait::NeedsComputedBoxModel);
+  return shadowView.traits.check(
+      ShadowNodeTraits::Trait::NeedsComputedBoxModel);
+}
+
+inline std::shared_ptr<const YogaStylableProps> getYogaStylableProps(
+    const ShadowView& shadowView) {
+  return std::static_pointer_cast<const YogaStylableProps>(shadowView.props);
 }
 
 #ifdef REACT_NATIVE_DEBUG
@@ -719,21 +725,35 @@ void FabricMountingManager::executeMount(
             // information has changed and NeedsComputedBoxModel trait is set.
             // This information is needed for proper calculation of the clipPath
             // geometry box.
-            auto oldNeedsComputedBoxModel = needsComputedBoxModel(oldChildShadowView);
-            auto newNeedsComputedBoxModel = needsComputedBoxModel(newChildShadowView);
+            auto oldNeedsComputedBoxModel =
+                needsComputedBoxModel(oldChildShadowView);
+            auto newNeedsComputedBoxModel =
+                needsComputedBoxModel(newChildShadowView);
 
             if (computedBoxModelRegistry_) {
-              if (newNeedsComputedBoxModel &&
-                  (oldChildShadowView.layoutMetrics.marginInsets !=
-                       newChildShadowView.layoutMetrics.marginInsets ||
-                   oldChildShadowView.layoutMetrics.paddingInsets !=
-                       newChildShadowView.layoutMetrics.paddingInsets)) {
-                computedBoxModelRegistry_->store(
-                    surfaceId,
-                    newChildShadowView.tag,
-                    newChildShadowView.layoutMetrics.marginInsets,
-                    newChildShadowView.layoutMetrics.paddingInsets);
-              } else if (oldNeedsComputedBoxModel && !newNeedsComputedBoxModel) {
+              if (newNeedsComputedBoxModel) {
+                auto oldProps = getYogaStylableProps(oldChildShadowView);
+                auto newProps = getYogaStylableProps(newChildShadowView);
+                if (oldProps && newProps) {
+                  auto newMarginInsets =
+                      marginInsetsFromYogaStylableProps(*newProps.get());
+                  auto oldMarginInsets =
+                      marginInsetsFromYogaStylableProps(*oldProps.get());
+                  auto newPaddingInsets =
+                      paddingInsetsFromYogaStylableProps(*newProps.get());
+                  auto oldPaddingInsets =
+                      paddingInsetsFromYogaStylableProps(*oldProps.get());
+                  if (oldMarginInsets != newMarginInsets ||
+                      oldPaddingInsets != newPaddingInsets) {
+                    computedBoxModelRegistry_->store(
+                        surfaceId,
+                        newChildShadowView.tag,
+                        newMarginInsets,
+                        newPaddingInsets);
+                  }
+                }
+              } else if (
+                  oldNeedsComputedBoxModel && !newNeedsComputedBoxModel) {
                 computedBoxModelRegistry_->remove(
                     surfaceId, newChildShadowView.tag);
               }
@@ -828,11 +848,13 @@ void FabricMountingManager::executeMount(
             // geometry box.
             if (needsComputedBoxModel(newChildShadowView)) {
               if (computedBoxModelRegistry_) {
-                computedBoxModelRegistry_->store(
-                    surfaceId,
-                    newChildShadowView.tag,
-                    newChildShadowView.layoutMetrics.marginInsets,
-                    newChildShadowView.layoutMetrics.paddingInsets);
+                if (auto newProps = getYogaStylableProps(newChildShadowView)) {
+                  computedBoxModelRegistry_->store(
+                      surfaceId,
+                      newChildShadowView.tag,
+                      marginInsetsFromYogaStylableProps(*newProps.get()),
+                      paddingInsetsFromYogaStylableProps(*newProps.get()));
+                }
               }
             }
           }
