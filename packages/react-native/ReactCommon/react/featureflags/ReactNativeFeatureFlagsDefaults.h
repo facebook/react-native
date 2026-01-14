@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a54f4c7b1e548f6efec9dbf69628964>>
+ * @generated SignedSource<<72a2a413fce371b02288aa838f5bd450>>
  */
 
 /**
@@ -249,6 +249,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useOptimizedEventBatchingOnAndroid() override {
     return false;
+  }
+
+  bool usePullModelOnAndroid() override {
+    return true;
   }
 
   bool useRawPropsJsiValue() override {

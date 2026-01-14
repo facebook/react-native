@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<21b64dde474f052173af1442e222e62c>>
+ * @generated SignedSource<<cab66b0b46f89670d58428a4707ecfb5>>
  */
 
 /**
@@ -365,6 +365,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useOptimizedEventBatchingOnAndroid(): Boolean = accessor.useOptimizedEventBatchingOnAndroid()
+
+  /**
+   * Use a pull model for mounting on Android. This is similar to what we do on iOS where the transaction is pulled on the main thread right before mounting.
+   */
+  @JvmStatic
+  public fun usePullModelOnAndroid(): Boolean = accessor.usePullModelOnAndroid()
 
   /**
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value

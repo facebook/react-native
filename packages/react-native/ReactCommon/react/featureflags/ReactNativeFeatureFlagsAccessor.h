@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9390960564d09a73a63256c0d70c0fe3>>
+ * @generated SignedSource<<e5453e6d79fdda23699d9c09952afed3>>
  */
 
 /**
@@ -88,6 +88,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useNativeTransformHelperAndroid();
   bool useNativeViewConfigsInBridgelessMode();
   bool useOptimizedEventBatchingOnAndroid();
+  bool usePullModelOnAndroid();
   bool useRawPropsJsiValue();
   bool useShadowNodeStateOnClone();
   bool useTurboModuleInterop();
@@ -105,7 +106,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 62> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 63> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -163,6 +164,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useNativeTransformHelperAndroid_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;
+  std::atomic<std::optional<bool>> usePullModelOnAndroid_;
   std::atomic<std::optional<bool>> useRawPropsJsiValue_;
   std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;

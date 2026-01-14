@@ -102,6 +102,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * We instruct ProGuard not to strip out any fields or methods, because many of these methods are
@@ -189,6 +190,8 @@ public class FabricUIManager
   /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
   @ThreadConfined(UI)
   private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
+
+  private final AtomicReference<Runnable> mScheduledMountRunnable = new AtomicReference<>();
 
   /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
@@ -409,6 +412,14 @@ public class FabricUIManager
   @SuppressWarnings("unused")
   public void onRequestEventBeat() {
     mEventDispatcher.dispatchAllEvents();
+  }
+
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void scheduleMountRunnable(Runnable runnable) {
+    mScheduledMountRunnable.set(runnable);
   }
 
   @AnyThread
@@ -1504,13 +1515,27 @@ public class FabricUIManager
       }
 
       try {
-        // First, execute as many pre mount items as we can within frameTimeNanos time.
-        // If not all pre mount items were executed, following may happen:
-        //   1. In case there are view commands or mount items in MountItemDispatcher: execute
-        //   remaining pre mount items.
-        //   2. In case there are no view commands or mount items, wait until next frame.
         mMountItemDispatcher.dispatchPreMountItems(frameTimeNanos);
-        mMountItemDispatcher.tryDispatchMountItems();
+
+        // When using the pull model, the FabricMountingManager is setting a runnable
+        // that will call pullTransaction + executeMount.
+        // This way we calculate the transaction only on the UI thread when we are ready to mount.
+        // This requires props 2.0 to be enabled to we can go from A -> C (without having to go through B,
+        // which might be skipped in this architecture)
+        Runnable runnable = null;
+        if (ReactNativeFeatureFlags.usePullModelOnAndroid()) {
+          runnable = mScheduledMountRunnable.getAndSet(null);
+        }
+
+        if (runnable != null) {
+          runnable.run();
+        } else {
+          // This is either the:
+          // - default case when not using the pull model, or
+          // - the second case. There are no mounting transaction to pull, BUT, there
+          //   might be other mount items queued (like commands).
+          mMountItemDispatcher.tryDispatchMountItems();
+        }
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         mIsMountingEnabled = false;

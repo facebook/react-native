@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<785cec50c339623ac36278c7eb2fb960>>
+ * @generated SignedSource<<ef3f6122e8cc0b5084f125b4dcfd62a3>>
  */
 
 /**
@@ -318,6 +318,11 @@ class ReactNativeFeatureFlags {
    * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
    */
   RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
+
+  /**
+   * Use a pull model for mounting on Android. This is similar to what we do on iOS where the transaction is pulled on the main thread right before mounting.
+   */
+  RN_EXPORT static bool usePullModelOnAndroid();
 
   /**
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
