@@ -3359,6 +3359,14 @@ public class com/facebook/react/uimanager/IllegalViewOperationException : com/fa
 	public final fun getView ()Landroid/view/View;
 }
 
+public final class com/facebook/react/uimanager/ImportantForInteractionHelper {
+	public static final field IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS I
+	public static final field IMPORTANT_FOR_INTERACTION_NO I
+	public static final field IMPORTANT_FOR_INTERACTION_YES I
+	public static final field INSTANCE Lcom/facebook/react/uimanager/ImportantForInteractionHelper;
+	public static final fun setImportantForInteraction (Landroid/view/View;Lcom/facebook/react/uimanager/PointerEvents;)V
+}
+
 public class com/facebook/react/uimanager/JSPointerDispatcher {
 	public fun <init> (Landroid/view/ViewGroup;)V
 	public fun handleMotionEvent (Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;Z)V

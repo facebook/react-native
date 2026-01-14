@@ -79,6 +79,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     // Reset tags
     view.setTag(null);
     view.setTag(R.id.pointer_events, null);
+    view.setTag(R.id.important_for_interaction, null);
     view.setTag(R.id.react_test_id, null);
     view.setTag(R.id.view_tag_native_id, null);
     view.setTag(R.id.labelled_by, null);

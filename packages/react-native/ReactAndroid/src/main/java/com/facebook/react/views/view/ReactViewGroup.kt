@@ -44,6 +44,7 @@ import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderStyle
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderWidth
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setFeedbackUnderlay
 import com.facebook.react.uimanager.BlendModeHelper.needsIsolatedLayer
+import com.facebook.react.uimanager.ImportantForInteractionHelper
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.MeasureSpecAssertions.assertExplicitMeasureSpec
@@ -176,6 +177,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
     hitSlopRect = null
     _overflow = Overflow.VISIBLE
     pointerEvents = PointerEvents.AUTO
+    ImportantForInteractionHelper.setImportantForInteraction(this, pointerEvents)
     childrenLayoutChangeListener = null
     onInterceptTouchEventListener = null
     needsOffscreenAlphaCompositing = false
