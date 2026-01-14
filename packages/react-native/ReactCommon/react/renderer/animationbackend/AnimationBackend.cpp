@@ -10,19 +10,9 @@
 #include <react/renderer/animationbackend/AnimatedPropsSerializer.h>
 #include <react/renderer/graphics/Color.h>
 #include <chrono>
-#include <set>
 #include "AnimatedPropsRegistry.h"
 
 namespace facebook::react {
-
-static const auto layoutProps = std::set<PropName>{
-    WIDTH,           HEIGHT,        FLEX,          MARGIN,      PADDING,
-    POSITION,        BORDER_WIDTH,  ALIGN_CONTENT, ALIGN_ITEMS, ALIGN_SELF,
-    ASPECT_RATIO,    BOX_SIZING,    DISPLAY,       FLEX_BASIS,  FLEX_DIRECTION,
-    ROW_GAP,         COLUMN_GAP,    FLEX_GROW,     FLEX_SHRINK, FLEX_WRAP,
-    JUSTIFY_CONTENT, MAX_HEIGHT,    MAX_WIDTH,     MIN_HEIGHT,  MIN_WIDTH,
-    STYLE_OVERFLOW,  POSITION_TYPE, DIRECTION,     Z_INDEX,
-};
 
 UIManagerNativeAnimatedDelegateBackendImpl::
     UIManagerNativeAnimatedDelegateBackendImpl(

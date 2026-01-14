@@ -17,7 +17,6 @@
 #include <set>
 #include <vector>
 #include "AnimatedProps.h"
-#include "AnimatedPropsBuilder.h"
 #include "AnimatedPropsRegistry.h"
 #include "AnimationBackendCommitHook.h"
 
