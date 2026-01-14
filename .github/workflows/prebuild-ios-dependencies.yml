@@ -74,8 +74,6 @@ jobs:
       - name: Setup xcode
         if: steps.restore-slice-folder.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup-xcode
-        with:
-          platform: ${{ matrix.slice }}
       - name: Yarn Install
         if: steps.restore-slice-folder.outputs.cache-hit != 'true'
         uses: ./.github/actions/yarn-install
@@ -124,8 +122,6 @@ jobs:
         uses: ./.github/actions/setup-node
       - name: Setup xcode
         uses: ./.github/actions/setup-xcode
-        with:
-          xcode-version: '16.1'
       - name: Restore XCFramework
         id: restore-xcframework
         uses: actions/cache/restore@v5
