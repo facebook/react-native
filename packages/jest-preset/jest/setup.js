@@ -86,8 +86,11 @@ try {
   });
 } catch {}
 
-// $FlowFixMe[incompatible-type] - `./mocks/AppState` is incomplete.
-mock('m#react-native/Libraries/AppState/AppState', 'm#./mocks/AppState');
+mock(
+  'm#react-native/Libraries/AppState/AppState',
+  // $FlowFixMe[incompatible-type] - `./mocks/AppState` is incomplete.
+  'm#./mocks/AppState',
+);
 mock(
   'm#react-native/Libraries/BatchedBridge/NativeModules',
   'm#./mocks/NativeModules',
@@ -109,10 +112,10 @@ mock(
   // $FlowFixMe[incompatible-type] - `react-native/Libraries/Components/RefreshControl/RefreshControl` should export a component type.
   'm#./mocks/RefreshControl',
 );
-// $FlowFixMe[incompatible-exact] - `react-native/Libraries/Components/ScrollView/ScrollView` is... I don't even.
-// $FlowFixMe[incompatible-type]
 mock(
   'm#react-native/Libraries/Components/ScrollView/ScrollView',
+  // $FlowFixMe[incompatible-exact] - `react-native/Libraries/Components/ScrollView/ScrollView` is... I don't even.
+  // $FlowFixMe[incompatible-type]
   'm#./mocks/ScrollView',
 );
 mock(
@@ -132,30 +135,42 @@ mock(
 );
 mock('m#react-native/Libraries/Core/NativeExceptionsManager');
 mock('m#react-native/Libraries/Image/Image', 'm#./mocks/Image');
-// $FlowFixMe[incompatible-type] - `./mocks/Linking` is incomplete.
-mock('m#react-native/Libraries/Linking/Linking', 'm#./mocks/Linking');
-// $FlowFixMe[incompatible-type] - `react-native/Libraries/Modal/Modal` should export a component type.
-mock('m#react-native/Libraries/Modal/Modal', 'm#./mocks/Modal');
+mock(
+  'm#react-native/Libraries/Linking/Linking',
+  // $FlowFixMe[incompatible-type] - `./mocks/Linking` is incomplete.
+  'm#./mocks/Linking',
+);
+mock(
+  'm#react-native/Libraries/Modal/Modal',
+  // $FlowFixMe[incompatible-type] - `react-native/Libraries/Modal/Modal` should export a component type.
+  'm#./mocks/Modal',
+);
 mock(
   'm#react-native/Libraries/NativeComponent/NativeComponentRegistry',
   // $FlowFixMe[incompatible-type] - `./mocks/NativeComponentRegistry` should export named functions.
   'm#./mocks/NativeComponentRegistry',
 );
-// $FlowFixMe[incompatible-type] - `./mocks/RendererProxy` is incomplete.
 mock(
   'm#react-native/Libraries/ReactNative/RendererProxy',
+  // $FlowFixMe[incompatible-type] - `./mocks/RendererProxy` is incomplete.
   'm#./mocks/RendererProxy',
 );
 mock(
   'm#react-native/Libraries/ReactNative/requireNativeComponent',
   'm#./mocks/requireNativeComponent',
 );
-// $FlowFixMe[incompatible-type] - `./mocks/UIManager` is incomplete.
-mock('m#react-native/Libraries/ReactNative/UIManager', 'm#./mocks/UIManager');
+mock(
+  'm#react-native/Libraries/ReactNative/UIManager',
+  // $FlowFixMe[incompatible-type] - `./mocks/UIManager` is incomplete.
+  'm#./mocks/UIManager',
+);
 mock('m#react-native/Libraries/Text/Text', 'm#./mocks/Text');
 mock(
   'm#react-native/Libraries/Utilities/useColorScheme',
   'm#./mocks/useColorScheme',
 );
-// $FlowFixMe[incompatible-type]
-mock('m#react-native/Libraries/Vibration/Vibration', 'm#./mocks/Vibration');
+mock(
+  'm#react-native/Libraries/Vibration/Vibration',
+  // $FlowFixMe[incompatible-type]
+  'm#./mocks/Vibration',
+);
