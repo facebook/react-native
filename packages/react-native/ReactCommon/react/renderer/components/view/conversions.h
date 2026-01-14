@@ -9,6 +9,7 @@
 
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
+#include <react/renderer/components/view/YogaStylableProps.h>
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>

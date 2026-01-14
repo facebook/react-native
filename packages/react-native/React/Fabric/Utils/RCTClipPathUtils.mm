@@ -9,29 +9,31 @@
 
 #import "RCTBasicShapeUtils.h"
 #import <React/RCTConversions.h>
+#import <react/renderer/components/view/conversions.h>
 
 using namespace facebook::react;
 
 @implementation RCTClipPathUtils
 
 + (RCTCornerRadii)adjustCornerRadiiForGeometryBox:(GeometryBox)geometryBox
-                                       cornerRadii:(RCTCornerRadii)cornerRadii
-                                     layoutMetrics:(const LayoutMetrics &)layoutMetrics
-                                         yogaStyle:(const facebook::yoga::Style &)yogaStyle
-{	
-	RCTCornerRadii adjustedRadii = cornerRadii;
+                                      cornerRadii:(RCTCornerRadii)cornerRadii
+                                    layoutMetrics:(const LayoutMetrics &)layoutMetrics
+                                yogaStylableProps:(const YogaStylableProps &)yogaStylableProps
+{
+  RCTCornerRadii adjustedRadii = cornerRadii;
   
   switch (geometryBox) {
     case GeometryBox::MarginBox: {
       // Margin-box: extend border-radius by margin amount
-			adjustedRadii.topLeftHorizontal += layoutMetrics.marginInsets.left;
-      adjustedRadii.topLeftVertical += layoutMetrics.marginInsets.top;
-      adjustedRadii.topRightHorizontal += layoutMetrics.marginInsets.right;
-      adjustedRadii.topRightVertical += layoutMetrics.marginInsets.top;
-      adjustedRadii.bottomLeftHorizontal += layoutMetrics.marginInsets.left;
-      adjustedRadii.bottomLeftVertical += layoutMetrics.marginInsets.bottom;
-      adjustedRadii.bottomRightHorizontal += layoutMetrics.marginInsets.right;
-      adjustedRadii.bottomRightVertical += layoutMetrics.marginInsets.bottom;
+      auto marginInsets = marginInsetsFromYogaStylableProps(yogaStylableProps);
+      adjustedRadii.topLeftHorizontal += marginInsets.left;
+      adjustedRadii.topLeftVertical += marginInsets.top;
+      adjustedRadii.topRightHorizontal += marginInsets.right;
+      adjustedRadii.topRightVertical += marginInsets.top;
+      adjustedRadii.bottomLeftHorizontal += marginInsets.left;
+      adjustedRadii.bottomLeftVertical += marginInsets.bottom;
+      adjustedRadii.bottomRightHorizontal += marginInsets.right;
+      adjustedRadii.bottomRightVertical += marginInsets.bottom;
       break;
     }
     case GeometryBox::BorderBox:
@@ -55,14 +57,15 @@ using namespace facebook::react;
     case GeometryBox::ContentBox:
     case GeometryBox::FillBox: {
       // Content-box: reduce border-radius by border width + padding
-      adjustedRadii.topLeftHorizontal = MAX(0.0f, cornerRadii.topLeftHorizontal - layoutMetrics.borderWidth.left - layoutMetrics.paddingInsets.left);
-      adjustedRadii.topLeftVertical = MAX(0.0f, cornerRadii.topLeftVertical - layoutMetrics.borderWidth.top - layoutMetrics.paddingInsets.top);
-      adjustedRadii.topRightHorizontal = MAX(0.0f, cornerRadii.topRightHorizontal - layoutMetrics.borderWidth.right - layoutMetrics.paddingInsets.right);
-      adjustedRadii.topRightVertical = MAX(0.0f, cornerRadii.topRightVertical - layoutMetrics.borderWidth.top - layoutMetrics.paddingInsets.top);
-      adjustedRadii.bottomLeftHorizontal = MAX(0.0f, cornerRadii.bottomLeftHorizontal - layoutMetrics.borderWidth.left - layoutMetrics.paddingInsets.left);
-      adjustedRadii.bottomLeftVertical = MAX(0.0f, cornerRadii.bottomLeftVertical - layoutMetrics.borderWidth.bottom - layoutMetrics.paddingInsets.bottom);
-      adjustedRadii.bottomRightHorizontal = MAX(0.0f, cornerRadii.bottomRightHorizontal - layoutMetrics.borderWidth.right - layoutMetrics.paddingInsets.right);
-      adjustedRadii.bottomRightVertical = MAX(0.0f, cornerRadii.bottomRightVertical - layoutMetrics.borderWidth.bottom - layoutMetrics.paddingInsets.bottom);
+      // contentInsets = border + padding, so we reduce by full contentInsets
+      adjustedRadii.topLeftHorizontal = MAX(0.0f, cornerRadii.topLeftHorizontal - layoutMetrics.contentInsets.left);
+      adjustedRadii.topLeftVertical = MAX(0.0f, cornerRadii.topLeftVertical - layoutMetrics.contentInsets.top);
+      adjustedRadii.topRightHorizontal = MAX(0.0f, cornerRadii.topRightHorizontal - layoutMetrics.contentInsets.right);
+      adjustedRadii.topRightVertical = MAX(0.0f, cornerRadii.topRightVertical - layoutMetrics.contentInsets.top);
+      adjustedRadii.bottomLeftHorizontal = MAX(0.0f, cornerRadii.bottomLeftHorizontal - layoutMetrics.contentInsets.left);
+      adjustedRadii.bottomLeftVertical = MAX(0.0f, cornerRadii.bottomLeftVertical - layoutMetrics.contentInsets.bottom);
+      adjustedRadii.bottomRightHorizontal = MAX(0.0f, cornerRadii.bottomRightHorizontal - layoutMetrics.contentInsets.right);
+      adjustedRadii.bottomRightVertical = MAX(0.0f, cornerRadii.bottomRightVertical - layoutMetrics.contentInsets.bottom);
       break;
     }
   }
@@ -72,7 +75,7 @@ using namespace facebook::react;
 
 + (CGRect)getGeometryBoxRect:(GeometryBox)geometryBox
                layoutMetrics:(const LayoutMetrics &)layoutMetrics
-                   yogaStyle:(const facebook::yoga::Style &)yogaStyle
+           yogaStylableProps:(const YogaStylableProps &)yogaStylableProps
                       bounds:(CGRect)bounds
 {
   switch (geometryBox) {
@@ -86,11 +89,12 @@ using namespace facebook::react;
     case GeometryBox::ViewBox:
       return bounds;
     case GeometryBox::MarginBox:
+      auto marginInsets = marginInsetsFromYogaStylableProps(yogaStylableProps);
       return CGRectMake(
-        bounds.origin.x - layoutMetrics.marginInsets.left,
-        bounds.origin.y - layoutMetrics.marginInsets.top,
-        bounds.size.width + layoutMetrics.marginInsets.left + layoutMetrics.marginInsets.right,
-        bounds.size.height + layoutMetrics.marginInsets.top + layoutMetrics.marginInsets.bottom
+        bounds.origin.x - marginInsets.left,
+        bounds.origin.y - marginInsets.top,
+        bounds.size.width + marginInsets.left + marginInsets.right,
+        bounds.size.height + marginInsets.top + marginInsets.bottom
       );
   }
   
@@ -99,7 +103,7 @@ using namespace facebook::react;
 
 + (CALayer *)createClipPathLayer:(const ClipPath &)clipPath
                    layoutMetrics:(const LayoutMetrics &)layoutMetrics
-                       yogaStyle:(const facebook::yoga::Style &)yogaStyle
+               yogaStylableProps:(const YogaStylableProps &)yogaStylableProps
                           bounds:(CGRect)bounds
                      cornerRadii:(RCTCornerRadii)cornerRadii
 {
@@ -107,7 +111,7 @@ using namespace facebook::react;
   if (clipPath.geometryBox.has_value()) {
     box = [self getGeometryBoxRect:clipPath.geometryBox.value()
                      layoutMetrics:layoutMetrics
-                         yogaStyle:yogaStyle
+                 yogaStylableProps:yogaStylableProps
                             bounds:bounds];
   }
   
@@ -120,7 +124,7 @@ using namespace facebook::react;
     RCTCornerRadii adjustedRadii = [self adjustCornerRadiiForGeometryBox:clipPath.geometryBox.value()
                                                              cornerRadii:cornerRadii
                                                            layoutMetrics:layoutMetrics
-                                                               yogaStyle:yogaStyle];
+                                                       yogaStylableProps:yogaStylableProps];
     RCTCornerInsets cornerInsets = RCTGetCornerInsets(adjustedRadii, UIEdgeInsetsZero);
     CGPathRef cgPath = RCTPathCreateWithRoundedRect(box, cornerInsets, nil, NO);
     path = [UIBezierPath bezierPathWithCGPath:cgPath];
