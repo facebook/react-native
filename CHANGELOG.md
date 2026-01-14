@@ -1,5 +1,116 @@
 # Changelog
 
+## v0.84.0-rc.1
+
+### Breaking
+
+- Fixed missing dependency breaking `react-native config` in pnpm setups ([5c43ed2348](https://github.com/facebook/react-native/commit/5c43ed2348d1a0123164f5246aa4a85f909c5560) by [@tido64](https://github.com/tido64))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Make Hermes V1 the default engine for iOS ([f140c4906b](https://github.com/facebook/react-native/commit/f140c4906b286a85772d0b7d97eecd0798805fcd) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+- Handle `unstable_path` query param in asset URLs ([42986f27a0](https://github.com/facebook/react-native/commit/42986f27a0285e501f71cf5cedacedefdc44c74e) by [@tido64](https://github.com/tido64))
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.84.0-rc.1 ([240dba8acd](https://github.com/facebook/react-native/commit/240dba8acded2fd62c6ec9905cb9098e56d346fd) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump yarn.lock file ([c576087883](https://github.com/facebook/react-native/commit/c5760878835d04cbd093933ab3686dd6b6187103) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Hermes version ([d289264d2f](https://github.com/facebook/react-native/commit/d289264d2f0266119957206d8ae43c236f3165bc) by [@cipolleschi](https://github.com/cipolleschi))
+- Correctly apply substitution for HERMES_V1_VERSION_NAME ([bdcd173240](https://github.com/facebook/react-native/commit/bdcd17324062cd35337d0ac8d5e4282658e1f89f) by [@cortinico](https://github.com/cortinico))
+- Update yarn.lock file ([56733d3d3f](https://github.com/facebook/react-native/commit/56733d3d3f685e34977a5fd395ea9b38951b1348) by [@cortinico](https://github.com/cortinico))
+- [0.84] Correctly bump hermes-compiler to V1 version ([7d901032a0](https://github.com/facebook/react-native/commit/7d901032a0b6a92c52293650a3ada9e2f9b696c9) by [@cortinico](https://github.com/cortinico))
+- Bump Podfile.lock ([29495d5fab](https://github.com/facebook/react-native/commit/29495d5fab3d28acea1e941a69bf1b26a045d5af) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.84.0-rc.0 (reattempt) ([549b9e7587](https://github.com/facebook/react-native/commit/549b9e7587ce08f904122ab233b83722c1afecd7) by [@huntie](https://github.com/huntie))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+- Fix Template E2E tests ([6d53299207](https://github.com/facebook/react-native/commit/6d5329920787629b1b64cbba35d78dbee23ba42b) by [@cipolleschi](https://github.com/cipolleschi))
+- Disable iOS tests, Bump Xcode to 16.4 and stop downloading Apple SDKs ([99191d989c](https://github.com/facebook/react-native/commit/99191d989caef5e5f3fd25965bb249d845f62177) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Failed to parse
+
+
+
+
 ## v0.84.0-rc.0
 
 ### Breaking
