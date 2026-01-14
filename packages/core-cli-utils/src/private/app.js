@@ -75,16 +75,13 @@ function getNodePackagePath(packageName: string): string {
   return require.resolve(packageName, {cwd: [process.cwd(), ...module.paths]});
 }
 
-function metro(...args: $ReadOnlyArray<string>): ExecaPromise {
+function metro(...args: ReadonlyArray<string>): ExecaPromise {
   log(`🚇 metro ${args.join(' ')} `);
   return execa('npx', ['--offline', 'metro', ...args]);
 }
 
 export const tasks = {
-  bundle: (
-    options: BundlerOptions,
-    ...args: $ReadOnlyArray<string>
-  ): Bundle => {
+  bundle: (options: BundlerOptions, ...args: ReadonlyArray<string>): Bundle => {
     const steps: Bundle = {
       /* eslint-disable sort-keys */
       validate: task(FIRST, 'Check if Metro is available', () => {
@@ -117,7 +114,7 @@ type Bundle = {
 
 const bundleApp = (
   options: BundlerOptions,
-  ...metroArgs: $ReadOnlyArray<string>
+  ...metroArgs: ReadonlyArray<string>
 ) => {
   if (options.outputJsBundle === options.outputBundle) {
     throw new Error('outputJsBundle and outputBundle cannot be the same.');

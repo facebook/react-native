@@ -60,8 +60,8 @@ const ModuleClassConstructorTemplate = ({
   methods,
 }: Readonly<{
   hasteModuleName: string,
-  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
-  methods: $ReadOnlyArray<{
+  eventEmitters: ReadonlyArray<NativeModuleEventEmitterShape>,
+  methods: ReadonlyArray<{
     propertyName: string,
     argCount: number,
   }>,
@@ -109,7 +109,7 @@ const FileTemplate = ({
   libraryName: string,
   include: string,
   modules: string,
-  moduleLookups: $ReadOnlyArray<{
+  moduleLookups: ReadonlyArray<{
     hasteModuleName: string,
     moduleName: string,
   }>,
@@ -527,7 +527,7 @@ module.exports = {
       })
       .join('\n');
 
-    const moduleLookups: $ReadOnlyArray<{
+    const moduleLookups: ReadonlyArray<{
       hasteModuleName: string,
       moduleName: string,
     }> = Object.keys(nativeModules)

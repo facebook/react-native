@@ -13,7 +13,7 @@
 
 // MODIFIED: Added ESLint suppression comment - no-unused-vars doesn't understand declaration files
 
-type JestMockFn<TArguments: $ReadOnlyArray<unknown>, TReturn> = {
+type JestMockFn<TArguments: ReadonlyArray<unknown>, TReturn> = {
   (...args: TArguments): TReturn,
   /**
    * An object for introspecting mock calls
@@ -768,7 +768,7 @@ interface JestExpectType {
   /**
    *
    */
-  toHaveProperty(propPath: string | $ReadOnlyArray<string>, value?: any): void;
+  toHaveProperty(propPath: string | ReadonlyArray<string>, value?: any): void;
   /**
    * Use .toMatch to check that a string matches a regular expression or string.
    */
@@ -881,7 +881,7 @@ type JestObjectType = {
    * implementation.
    */
   // MODIFIED: Added defaults to type arguments.
-  fn<TArguments: $ReadOnlyArray<unknown> = $ReadOnlyArray<any>, TReturn = any>(
+  fn<TArguments: ReadonlyArray<unknown> = ReadonlyArray<any>, TReturn = any>(
     implementation?: (...args: TArguments) => TReturn,
   ): JestMockFn<TArguments, TReturn>,
   /**
@@ -1045,11 +1045,11 @@ declare var describe: {
    */
   each(
     ...table:
-      | $ReadOnlyArray<$ReadOnlyArray<unknown> | unknown>
-      | [$ReadOnlyArray<string>, string]
+      | ReadonlyArray<ReadonlyArray<unknown> | unknown>
+      | [ReadonlyArray<string>, string]
   ): (
     name: JestTestName,
-    fn?: (...args: $ReadOnlyArray<any>) => ?Promise<unknown>,
+    fn?: (...args: ReadonlyArray<any>) => ?Promise<unknown>,
     timeout?: number,
   ) => void,
   ...
@@ -1136,8 +1136,8 @@ declare var it: {
    */
   each(
     ...table:
-      | $ReadOnlyArray<$ReadOnlyArray<unknown> | unknown>
-      | [$ReadOnlyArray<string>, string]
+      | ReadonlyArray<ReadonlyArray<unknown> | unknown>
+      | [ReadonlyArray<string>, string]
   ): (
     name: JestTestName,
     fn?: (...args: Array<any>) => ?Promise<unknown>,
@@ -1252,13 +1252,13 @@ declare var expect: {
   any(value: unknown): JestAsymmetricEqualityType,
   anything(): any,
   // MODIFIED: Array -> $ReadOnlyArray
-  arrayContaining(value: $ReadOnlyArray<unknown>): Array<unknown>,
+  arrayContaining(value: ReadonlyArray<unknown>): Array<unknown>,
   objectContaining(value: Object): Object,
   /** Matches any received string that contains the exact expected string. */
   stringContaining(value: string): string,
   stringMatching(value: string | RegExp): string,
   not: {
-    arrayContaining: (value: $ReadOnlyArray<unknown>) => Array<unknown>,
+    arrayContaining: (value: ReadonlyArray<unknown>) => Array<unknown>,
     objectContaining: (value: {...}) => Object,
     stringContaining: (value: string) => string,
     stringMatching: (value: string | RegExp) => string,

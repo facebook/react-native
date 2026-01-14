@@ -13,7 +13,7 @@ declare module '@react-native-community/cli-server-api' {
 
   declare type MiddlewareOptions = {
     host?: string,
-    watchFolders: $ReadOnlyArray<string>,
+    watchFolders: ReadonlyArray<string>,
     port: number,
   };
 
