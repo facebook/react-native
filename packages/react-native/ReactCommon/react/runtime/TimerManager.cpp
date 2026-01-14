@@ -135,6 +135,9 @@ TimerHandle TimerManager::createRecurringTimer(
 void TimerManager::deleteTimer(jsi::Runtime& runtime, TimerHandle timerHandle) {
   if (timerHandle < 0) {
     // Do nothing for invalid handles (match web spec behavior)
+    // Links:
+    //  - cancelAnimationFrame: https://www.w3.org/TR/animation-timing/;
+    //  - clearTimeout: https://developer.mozilla.org/en-US/docs/Web/API/Window/clearTimeout#notes)
     return;
   }
 
@@ -146,7 +149,10 @@ void TimerManager::deleteRecurringTimer(
     jsi::Runtime& runtime,
     TimerHandle timerHandle) {
   if (timerHandle < 0) {
-    throw jsi::JSError(runtime, "clearInterval called with an invalid handle");
+    // Do nothing for invalid handles (match web spec behavior)
+    // Links:
+    //  - clearInterval: https://developer.mozilla.org/en-US/docs/Web/API/Window/clearInterval
+    return;
   }
 
   platformTimerRegistry_->deleteTimer(timerHandle);
