@@ -126,7 +126,6 @@ export default class EventEmitter<
       // Copy `registrations` to take a snapshot when we invoke `emit`, in case
       // registrations are added or removed when listeners are invoked.
       for (const registration of Array.from(registrations)) {
-        // $FlowFixMe[incompatible-type]
         registration.listener.apply(registration.context, args);
       }
     }
@@ -159,7 +158,6 @@ export default class EventEmitter<
 function allocate<
   TEventToArgsMap: Readonly<Record<string, ReadonlyArray<UnsafeEventObject>>>,
   TEvent: $Keys<TEventToArgsMap>,
-  TEventArgs: TEventToArgsMap[TEvent],
 >(
   registry: Registry<TEventToArgsMap>,
   eventType: TEvent,
