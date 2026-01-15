@@ -148,11 +148,7 @@ if (__DEV__) {
           let format = args[0];
           if (typeof format === 'string') {
             const filterResult =
-              require('../LogBox/Data/LogBoxData').checkWarningFilter(
-                // For legacy reasons, we strip the warning prefix from the message.
-                // Can remove this once we remove the warning module altogether.
-                format.replace(/^Warning: /, ''),
-              );
+              require('../LogBox/Data/LogBoxData').checkWarningFilter(format);
             if (filterResult.monitorEvent !== 'warning_unhandled') {
               if (filterResult.suppressCompletely) {
                 return;
