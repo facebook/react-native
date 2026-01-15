@@ -44,7 +44,6 @@ import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderStyle
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderWidth
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setFeedbackUnderlay
 import com.facebook.react.uimanager.BlendModeHelper.needsIsolatedLayer
-import com.facebook.react.uimanager.ImportantForInteractionHelper
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.MeasureSpecAssertions.assertExplicitMeasureSpec
