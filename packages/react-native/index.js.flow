@@ -320,7 +320,6 @@ export * as NativeComponentRegistry from './Libraries/NativeComponent/NativeComp
 export {default as NativeDialogManagerAndroid} from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 
 export type {
-  EventSubscription,
   EmitterSubscription,
   NativeEventSubscription,
 } from './Libraries/EventEmitter/NativeEventEmitter';
@@ -462,6 +461,12 @@ export type {
   PublicRootInstance,
   PublicTextInstance,
 } from './Libraries/ReactPrivate/ReactNativePrivateInterface';
+
+export type {
+  EventSubscription,
+  IEventEmitter,
+} from './Libraries/vendor/emitter/EventEmitter';
+export {default as EventEmitter} from './Libraries/vendor/emitter/EventEmitter';
 
 export {
   default as unstable_VirtualView,

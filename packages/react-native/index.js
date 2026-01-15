@@ -42,6 +42,9 @@ module.exports = {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid')
       .default;
   },
+  get EventEmitter() {
+    return require('./Libraries/vendor/emitter/EventEmitter').default;
+  },
   get FlatList() {
     return require('./Libraries/Lists/FlatList').default;
   },
