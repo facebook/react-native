@@ -480,7 +480,7 @@ export default class Device {
   /**
    * Returns `true` if a page supports the given target capability flag.
    */
-  #pageHasCapability(page: Page, flag: $Keys<TargetCapabilityFlags>): boolean {
+  #pageHasCapability(page: Page, flag: keyof TargetCapabilityFlags): boolean {
     return page.capabilities[flag] === true;
   }
 

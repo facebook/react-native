@@ -118,7 +118,7 @@ let root: Root;
 
 function getAccessibilityProp(
   content: React.MixedElement,
-  name: $Keys<AccessibilityProps>,
+  name: keyof AccessibilityProps,
 ) {
   Fantom.runTask(() => {
     root.render(content);
@@ -128,7 +128,7 @@ function getAccessibilityProp(
 
 function getAccessibilityProps(
   content: React.MixedElement,
-  names: ReadonlyArray<$Keys<AccessibilityProps>>,
+  names: ReadonlyArray<keyof AccessibilityProps>,
 ) {
   Fantom.runTask(() => {
     root.render(content);
