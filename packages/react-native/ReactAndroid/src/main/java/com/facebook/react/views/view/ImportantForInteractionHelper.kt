@@ -5,10 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager
+package com.facebook.react.views.view
 
 import android.view.View
 import com.facebook.react.R
+import com.facebook.react.uimanager.PointerEvents
 
 /**
  * Helper class for managing the important_for_interaction view tag. This tag determines how a view
@@ -20,15 +21,15 @@ import com.facebook.react.R
  * - [IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS]: Descendants should be excluded from
  *   interaction
  */
-public object ImportantForInteractionHelper {
+internal object ImportantForInteractionHelper {
   /** The view is important for interaction. */
-  public const val IMPORTANT_FOR_INTERACTION_YES: Int = 0x1
+  const val IMPORTANT_FOR_INTERACTION_YES: Int = 0x1
 
   /** The view is not important for interaction. */
-  public const val IMPORTANT_FOR_INTERACTION_NO: Int = 0x2
+  const val IMPORTANT_FOR_INTERACTION_NO: Int = 0x2
 
   /** Descendants of this view should be excluded from interaction handling. */
-  public const val IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS: Int = 0x8
+  const val IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS: Int = 0x8
 
   /**
    * Sets the important_for_interaction tag on a view based on the given [PointerEvents] value.
@@ -45,7 +46,7 @@ public object ImportantForInteractionHelper {
    * @param pointerEvents The pointer events value to convert and set
    */
   @JvmStatic
-  public fun setImportantForInteraction(view: View, pointerEvents: PointerEvents) {
+  fun setImportantForInteraction(view: View, pointerEvents: PointerEvents) {
     val value =
         when (pointerEvents) {
           PointerEvents.AUTO -> IMPORTANT_FOR_INTERACTION_YES
