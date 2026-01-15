@@ -24,7 +24,7 @@ import kotlin.math.abs
  * pull-to-refresh functionality. It handles touch event interception for the refresh gesture while
  * properly forwarding other events to its children.
  */
-public class ReactSwipeRefreshLayout(reactContext: ReactContext) :
+public open class ReactSwipeRefreshLayout(reactContext: ReactContext) :
     SwipeRefreshLayout(reactContext) {
 
   private var didLayout: Boolean = false
