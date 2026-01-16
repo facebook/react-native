@@ -12,7 +12,9 @@
 
 @implementation RCTFabricModalHostViewController {
   CGRect _lastViewBounds;
+#if !TARGET_OS_TV
   RCTSurfaceTouchHandler *_touchHandler;
+#endif
 }
 
 - (instancetype)init
@@ -20,7 +22,9 @@
   if ((self = [super init]) == nullptr) {
     return nil;
   }
+#if !TARGET_OS_TV
   _touchHandler = [RCTSurfaceTouchHandler new];
+#endif
 
   return self;
 }
@@ -37,7 +41,9 @@
 - (void)loadView
 {
   self.view = [UIView new];
+#if !TARGET_OS_TV
   [_touchHandler attachToView:self.view];
+#endif
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
