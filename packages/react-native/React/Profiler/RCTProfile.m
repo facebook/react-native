@@ -393,6 +393,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
     RCTProfileEnd(RCTProfilingBridge(), ^(NSString *result) {
       NSString *outFile = [NSTemporaryDirectory() stringByAppendingString:@"tmp_trace.json"];
       [result writeToFile:outFile atomically:YES encoding:NSUTF8StringEncoding error:nil];
+#if !TARGET_OS_TV
       UIActivityViewController *activityViewController =
           [[UIActivityViewController alloc] initWithActivityItems:@[ [NSURL fileURLWithPath:outFile] ]
                                             applicationActivities:nil];
@@ -409,6 +410,9 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
                                                                                       animated:YES
                                                                                     completion:nil];
       });
+#else
+      RCTProfileControlsWindow.hidden = NO;
+#endif
     });
   } else {
     RCTProfileInit(RCTProfilingBridge());

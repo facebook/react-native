@@ -180,7 +180,11 @@ RCT_EXPORT_MODULE()
     [_container addGestureRecognizer:self.gestureRecognizer];
     [_container addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap)]];
 
+#if TARGET_OS_TV
+    _container.backgroundColor = [UIColor whiteColor];
+#else
     _container.backgroundColor = [UIColor systemBackgroundColor];
+#endif
   }
 
   return _container;

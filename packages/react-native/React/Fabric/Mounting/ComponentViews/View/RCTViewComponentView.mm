@@ -378,6 +378,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   // `accessibilityShowsLargeContentViewer`
   if (oldViewProps.accessibilityShowsLargeContentViewer != newViewProps.accessibilityShowsLargeContentViewer) {
+#if !TARGET_OS_TV
     if (@available(iOS 13.0, *)) {
       if (newViewProps.accessibilityShowsLargeContentViewer) {
         self.showsLargeContentViewer = YES;
@@ -387,13 +388,16 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
         self.showsLargeContentViewer = NO;
       }
     }
+#endif
   }
 
   // `accessibilityLargeContentTitle`
   if (oldViewProps.accessibilityLargeContentTitle != newViewProps.accessibilityLargeContentTitle) {
+#if !TARGET_OS_TV
     if (@available(iOS 13.0, *)) {
       self.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLargeContentTitle);
     }
+#endif
   }
 
   // `accessibilityOrder`
@@ -941,7 +945,8 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     layer.shadowPath = nil;
   }
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
+#if !TARGET_OS_TV && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
   // Stage 1.5. Cursor / Hover Effects
   if (@available(iOS 17.0, *)) {
     UIHoverStyle *hoverStyle = nil;

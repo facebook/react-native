@@ -311,10 +311,12 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
     return;
   }
 
+#if !TARGET_OS_TV
   if (ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
     unsafeExecuteOnMainThreadSync(block);
     return;
   }
+#endif
 
   dispatch_sync(dispatch_get_main_queue(), ^{
     block();
@@ -339,10 +341,12 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
     return;
   }
 
+#if !TARGET_OS_TV
   if (ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
     unsafeExecuteOnMainThreadSync(block);
     return;
   }
+#endif
 
   dispatch_sync(dispatch_get_main_queue(), executeOnce);
 }
@@ -421,10 +425,9 @@ CGSize RCTViewportSize(void)
 
 CGSize RCTSwitchSize(void)
 {
-  // UISwitch is not supported on AppleTV
 #if TARGET_OS_TV
   return CGSizeMake(0, 0);
-#endif
+#else
   static CGSize rctSwitchSize;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -433,6 +436,7 @@ CGSize RCTSwitchSize(void)
     });
   });
   return rctSwitchSize;
+#endif
 }
 
 CGFloat RCTRoundPixelValue(CGFloat value)
@@ -642,7 +646,9 @@ UIWindow *__nullable RCTKeyWindow(void)
     // We have apps internally that might use UIScenes which are not window scenes.
     // Calling keyWindow on a UIScene which is not a UIWindowScene can cause a crash
     UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
-    return windowScene.keyWindow;
+    if (@available(iOS 15.0, tvOS 15.0, *)) {
+      return windowScene.keyWindow;
+    }
   }
 
   return nil;
