@@ -421,6 +421,10 @@ CGSize RCTViewportSize(void)
 
 CGSize RCTSwitchSize(void)
 {
+  // UISwitch is not supported on AppleTV
+#if TARGET_OS_TV
+  return CGSizeMake(0, 0);
+#endif
   static CGSize rctSwitchSize;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
