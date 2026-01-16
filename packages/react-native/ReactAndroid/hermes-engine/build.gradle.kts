@@ -149,28 +149,55 @@ val installCMake by
       )
     }
 
+fun configureBuildForHermesCommandLineArgs(
+    hermesBuildDir: File,
+    jsiDir: File,
+    enableDebugger: Boolean,
+): List<String> {
+  var cmakeCommandLine =
+      windowsAwareCommandLine(
+          cmakeBinaryPath,
+          // Suppress all warnings as this is the Hermes build and we can't fix them.
+          "--log-level=ERROR",
+          "-Wno-dev",
+          "-S",
+          ".",
+          "-B",
+          hermesBuildDir.toString(),
+          "-DJSI_DIR=" + jsiDir.absolutePath,
+          "-DCMAKE_BUILD_TYPE=Release",
+      )
+  if (enableDebugger) {
+    cmakeCommandLine = cmakeCommandLine + "-DHERMES_ENABLE_DEBUGGER=True"
+  }
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    cmakeCommandLine = cmakeCommandLine + "-GNMake Makefiles"
+  }
+  if (hermesV1Enabled) {
+    cmakeCommandLine = cmakeCommandLine + "-DHERMESVM_HEAP_HV_MODE=HEAP_HV_PREFER32"
+  }
+
+  return cmakeCommandLine
+}
+
+fun buildHermesCCommandLineArgs() =
+    listOf(
+        cmakeBinaryPath,
+        "--build",
+        hermesBuildDir.toString(),
+        "--target",
+        "hermesc",
+        "-j",
+        ndkBuildJobs,
+    )
+
 val configureBuildForHermes by
     tasks.registering(CustomExecTask::class) {
       dependsOn(installCMake)
       workingDir(hermesDir)
       inputs.dir(hermesDir)
       outputs.files(hermesBuildOutputFileTree)
-      var cmakeCommandLine =
-          windowsAwareCommandLine(
-              cmakeBinaryPath,
-              // Suppress all warnings as this is the Hermes build and we can't fix them.
-              "--log-level=ERROR",
-              "-Wno-dev",
-              "-S",
-              ".",
-              "-B",
-              hermesBuildDir.toString(),
-              "-DJSI_DIR=" + jsiDir.absolutePath,
-              "-DCMAKE_BUILD_TYPE=Release",
-          )
-      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        cmakeCommandLine = cmakeCommandLine + "-GNMake Makefiles"
-      }
+      val cmakeCommandLine = configureBuildForHermesCommandLineArgs(hermesBuildDir, jsiDir, false)
       commandLine(cmakeCommandLine)
       standardOutputFile.set(project.file("$buildDir/configure-hermesc.log"))
     }
@@ -181,15 +208,8 @@ val buildHermesC by
       workingDir(hermesDir)
       inputs.files(hermesBuildOutputFileTree)
       outputs.file(hermesCOutputBinary)
-      commandLine(
-          cmakeBinaryPath,
-          "--build",
-          hermesBuildDir.toString(),
-          "--target",
-          "hermesc",
-          "-j",
-          ndkBuildJobs,
-      )
+      val cmakeCommandLine = buildHermesCCommandLineArgs()
+      commandLine(cmakeCommandLine)
       standardOutputFile.set(project.file("$buildDir/build-hermesc.log"))
       errorOutputFile.set(project.file("$buildDir/build-hermesc.error.log"))
     }
@@ -207,6 +227,60 @@ val prepareHeadersForPrefab by
 val buildHermesLib by
     tasks.registering(CustomExecTask::class) {
       dependsOn(buildHermesC)
+      workingDir(hermesDir)
+      inputs.files(hermesBuildOutputFileTree)
+      commandLine(
+          cmakeBinaryPath,
+          "--build",
+          hermesBuildDir.toString(),
+          "--target",
+          "hermesvm",
+          "-j",
+          ndkBuildJobs,
+      )
+      standardOutputFile.set(project.file("$buildDir/build-hermes-lib.log"))
+      errorOutputFile.set(project.file("$buildDir/build-hermes-lib.error.log"))
+    }
+
+// The repeated tasks below named "*WithDebugger" are required by Fantom.
+// Hermes V1 by default builds with the debugger disabled, while Fantom needs
+// it to be enabled as it does a debug build of React Native.
+val configureBuildForHermesWithDebugger by
+    tasks.registering(CustomExecTask::class) {
+      dependsOn(installCMake)
+      workingDir(hermesDir)
+      inputs.dir(hermesDir)
+      outputs.files(hermesBuildOutputFileTree)
+      val cmakeCommandLine = configureBuildForHermesCommandLineArgs(hermesBuildDir, jsiDir, true)
+      commandLine(cmakeCommandLine)
+      standardOutputFile.set(project.file("$buildDir/configure-hermesc.log"))
+    }
+
+val buildHermesCWithDebugger by
+    tasks.registering(CustomExecTask::class) {
+      dependsOn(configureBuildForHermesWithDebugger)
+      workingDir(hermesDir)
+      inputs.files(hermesBuildOutputFileTree)
+      outputs.file(hermesCOutputBinary)
+      val cmakeCommandLine = buildHermesCCommandLineArgs()
+      commandLine(cmakeCommandLine)
+      standardOutputFile.set(project.file("$buildDir/build-hermesc.log"))
+      errorOutputFile.set(project.file("$buildDir/build-hermesc.error.log"))
+    }
+
+val prepareHeadersForPrefabWithDebugger by
+    tasks.registering(Copy::class) {
+      dependsOn(buildHermesCWithDebugger)
+      from("$hermesDir/API")
+      from("$hermesDir/public")
+      include("**/*.h")
+      exclude("jsi/**")
+      into(prefabHeadersDir)
+    }
+
+val buildHermesLibWithDebugger by
+    tasks.registering(CustomExecTask::class) {
+      dependsOn(buildHermesCWithDebugger)
       workingDir(hermesDir)
       inputs.files(hermesBuildOutputFileTree)
       commandLine(
@@ -370,6 +444,8 @@ afterEvaluate {
     // download/unzip Hermes from Github then.
     tasks.getByName("configureBuildForHermes").dependsOn(unzipHermes)
     tasks.getByName("prepareHeadersForPrefab").dependsOn(unzipHermes)
+    tasks.getByName("configureBuildForHermesWithDebugger").dependsOn(unzipHermes)
+    tasks.getByName("prepareHeadersForPrefabWithDebugger").dependsOn(unzipHermes)
   }
   tasks.getByName("preBuild").dependsOn(buildHermesC)
   tasks.getByName("preBuild").dependsOn(prepareHeadersForPrefab)
