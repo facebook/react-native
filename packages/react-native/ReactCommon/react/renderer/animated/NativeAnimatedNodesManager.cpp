@@ -555,8 +555,8 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
     if (auto animationBackend = animationBackend_.lock()) {
-      animationBackend->start(
-          [this](float /*f*/) { return pullAnimationMutations(); }, isAsync);
+      animationBackendCallbackId_ = animationBackend->start(
+          [this](float /*f*/) { return pullAnimationMutations(); });
     }
 #endif
 
@@ -577,11 +577,13 @@ void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded(
   auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(false);
 
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+#ifdef RN_USE_ANIMATION_BACKEND
     if (isRenderCallbackStarted) {
       if (auto animationBackend = animationBackend_.lock()) {
-        animationBackend->stop(isAsync);
+        animationBackend->stop(animationBackendCallbackId_);
       }
     }
+#endif
     return;
   }
 
