@@ -6022,7 +6022,7 @@ public abstract interface class com/facebook/react/views/scroll/VirtualView {
 	public abstract fun onModeChange (Lcom/facebook/react/views/virtual/VirtualViewMode;Landroid/graphics/Rect;)V
 }
 
-public final class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout {
+public class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout {
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun canChildScrollUp ()Z
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
