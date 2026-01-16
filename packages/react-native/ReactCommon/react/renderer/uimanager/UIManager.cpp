@@ -702,8 +702,10 @@ void UIManager::animationTick() const {
     });
   }
 
-  if (auto nativeAnimatedDelegate = nativeAnimatedDelegate_.lock()) {
-    nativeAnimatedDelegate->runAnimationFrame();
+  if (!ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    if (auto nativeAnimatedDelegate = nativeAnimatedDelegate_.lock()) {
+      nativeAnimatedDelegate->runAnimationFrame();
+    }
   }
 }
 

@@ -79,9 +79,15 @@ internal class FabricUIManagerBinding : HybridClassBase() {
 
   external fun driveCxxAnimations()
 
+  external fun driveAnimationBackend(frameTimeMs: Double)
+
   external fun drainPreallocateViewsQueue()
 
   external fun reportMount(surfaceId: Int)
+
+  external fun setAnimationBackendChoreographer(
+      animationBackendChoreographer: AnimationBackendChoreographer
+  )
 
   fun register(
       runtimeExecutor: RuntimeExecutor,
@@ -89,8 +95,14 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       fabricUIManager: FabricUIManager,
       eventBeatManager: EventBeatManager,
       componentFactory: ComponentFactory,
+      animationBackendChoreographer: AnimationBackendChoreographer,
   ) {
     fabricUIManager.setBinding(this)
+    animationBackendChoreographer.frameCallback = AnimationFrameCallback { frameTimeMs: Double ->
+      driveAnimationBackend(frameTimeMs)
+    }
+    setAnimationBackendChoreographer(animationBackendChoreographer)
+
     installFabricUIManager(
         runtimeExecutor,
         runtimeScheduler,
