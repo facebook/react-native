@@ -159,8 +159,8 @@ val prepareHermesDependencies by
     tasks.registering {
       dependsOn(
           enableHermesBuild,
-          ":packages:react-native:ReactAndroid:hermes-engine:buildHermesLib",
-          ":packages:react-native:ReactAndroid:hermes-engine:prepareHeadersForPrefab",
+          ":packages:react-native:ReactAndroid:hermes-engine:buildHermesLibWithDebugger",
+          ":packages:react-native:ReactAndroid:hermes-engine:prepareHeadersForPrefabWithDebugger",
       )
     }
 
