@@ -46,8 +46,6 @@ class Scheduler final : public UIManagerDelegate {
 
   /*
    * Registers and unregisters a `SurfaceHandler` object in the `Scheduler`.
-   * All registered `SurfaceHandler` objects must be unregistered
-   * (with the same `Scheduler`) before their deallocation.
    */
   void registerSurface(const SurfaceHandler &surfaceHandler) const noexcept;
   void unregisterSurface(const SurfaceHandler &surfaceHandler) const noexcept;

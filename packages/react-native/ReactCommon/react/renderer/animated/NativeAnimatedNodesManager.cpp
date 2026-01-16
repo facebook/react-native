@@ -35,10 +35,6 @@
 #include <react/renderer/animated/nodes/ValueAnimatedNode.h>
 #include <react/renderer/core/EventEmitter.h>
 
-#ifdef RN_USE_ANIMATION_BACKEND
-#include <react/renderer/animationbackend/AnimatedPropsBuilder.h>
-#endif
-
 namespace facebook::react {
 
 // Global function pointer for getting current time. Current time
@@ -559,10 +555,8 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
     if (auto animationBackend = animationBackend_.lock()) {
-      std::static_pointer_cast<AnimationBackend>(animationBackend)
-          ->start(
-              [this](float /*f*/) { return pullAnimationMutations(); },
-              isAsync);
+      animationBackend->start(
+          [this](float /*f*/) { return pullAnimationMutations(); }, isAsync);
     }
 #endif
 

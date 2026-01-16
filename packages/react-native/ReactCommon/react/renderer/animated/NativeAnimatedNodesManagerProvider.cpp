@@ -88,24 +88,17 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
 #ifdef RN_USE_ANIMATION_BACKEND
-      // TODO: this should be initialized outside of animated, but for now it
-      // was convenient to do it here
-      animationBackend_ = std::make_shared<AnimationBackend>(
-          std::move(startOnRenderCallback_),
-          std::move(stopOnRenderCallback_),
-          std::move(directManipulationCallback),
-          std::move(fabricCommitCallback),
-          uiManager,
-          jsInvoker);
+      auto animationBackend = uiManager->unstable_getAnimationBackend().lock();
+      react_native_assert(
+          animationBackend != nullptr && "animationBackend is nullptr");
+      animationBackend->registerJSInvoker(jsInvoker);
 
       nativeAnimatedNodesManager_ =
-          std::make_shared<NativeAnimatedNodesManager>(animationBackend_);
+          std::make_shared<NativeAnimatedNodesManager>(animationBackend);
 
       nativeAnimatedDelegate_ =
           std::make_shared<UIManagerNativeAnimatedDelegateBackendImpl>(
-              animationBackend_);
-
-      uiManager->unstable_setAnimationBackend(animationBackend_);
+              animationBackend);
 #endif
     } else {
       nativeAnimatedNodesManager_ =
