@@ -182,4 +182,8 @@ public abstract class ReactActivity extends AppCompatActivity
   protected final void loadApp(String appKey) {
     mDelegate.loadApp(appKey);
   }
+
+  protected OnBackPressedCallback getBackPressedCallback() {
+    return mBackPressedCallback;
+  }
 }
