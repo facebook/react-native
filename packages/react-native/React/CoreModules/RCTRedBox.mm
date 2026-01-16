@@ -108,8 +108,10 @@
   _stackTraceTableView.delegate = self;
   _stackTraceTableView.dataSource = self;
   _stackTraceTableView.backgroundColor = [UIColor clearColor];
+#if !TARGET_OS_TV
   _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
   _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+#endif
   _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
   [self.view addSubview:_stackTraceTableView];
 
@@ -308,8 +310,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
     }
   }
+#if !TARGET_OS_TV
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   [pb setString:fullStackTrace];
+#endif
 }
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
