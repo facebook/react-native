@@ -45,7 +45,9 @@ using namespace facebook::react;
 
   // Can be accessed from the main thread only.
   RCTSurfaceView *_Nullable _view;
+#if !TARGET_OS_TV
   RCTSurfaceTouchHandler *_Nullable _touchHandler;
+#endif
 }
 
 @synthesize delegate = _delegate;
@@ -144,8 +146,10 @@ using namespace facebook::react;
   if (!_view) {
     _view = [[RCTSurfaceView alloc] initWithSurface:self];
     [self _updateLayoutContext];
+#if !TARGET_OS_TV
     _touchHandler = [RCTSurfaceTouchHandler new];
     [_touchHandler attachToView:_view];
+#endif
   }
 
   return _view;
