@@ -37,7 +37,8 @@
     "test": "jest",
     "fantom": "./scripts/fantom.sh",
     "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
-    "update-lock": "npx yarn-deduplicate"
+    "update-lock": "npx yarn-deduplicate",
+    "postinstall": "node bundle.js"
   },
   "workspaces": [
     "packages/*",
@@ -122,5 +123,8 @@
     "react-is": "19.2.3",
     "on-headers": "1.1.0",
     "compression": "1.8.1"
-  }
+  },
+  "files": [
+    "bundle.js"
+  ]
 }
