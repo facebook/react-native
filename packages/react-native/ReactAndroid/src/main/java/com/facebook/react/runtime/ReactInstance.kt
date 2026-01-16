@@ -43,6 +43,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
 import com.facebook.react.devsupport.StackTraceHelper
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.fabric.AnimationBackendChoreographer
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.fabric.FabricUIManagerBinding
@@ -250,6 +251,8 @@ internal class ReactInstance(
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
 
+    val animationBackendChoreographer = AnimationBackendChoreographer(context)
+
     val binding = FabricUIManagerBinding()
     binding.register(
         getBufferedRuntimeExecutor(),
@@ -257,6 +260,7 @@ internal class ReactInstance(
         fabricUIManager,
         eventBeatManager,
         componentFactory,
+        animationBackendChoreographer,
     )
 
     // Initialize the FabricUIManager
