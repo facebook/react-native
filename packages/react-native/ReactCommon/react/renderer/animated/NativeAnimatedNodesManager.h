@@ -286,6 +286,10 @@ class NativeAnimatedNodesManager {
   bool warnedAboutGraphTraversal_ = false;
 #endif
 
+#ifdef RN_USE_ANIMATION_BACKEND
+  CallbackId animationBackendCallbackId_{0};
+#endif
+
   friend class ColorAnimatedNode;
   friend class AnimationDriver;
   friend class AnimationTestsBase;

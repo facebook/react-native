@@ -37,19 +37,17 @@ struct AnimationMutations {
   std::set<SurfaceId> asyncFlushSurfaces;
 };
 
+using Callback = std::function<AnimationMutations(float)>;
+
+struct CallbackWithId {
+  CallbackId callbackId;
+  Callback callback;
+};
+
 class AnimationBackend : public UIManagerAnimationBackend {
  public:
-  using Callback = std::function<AnimationMutations(float)>;
   using ResumeCallback = std::function<void()>;
   using PauseCallback = std::function<void()>;
-
-  std::vector<Callback> callbacks;
-  std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry_;
-  std::shared_ptr<AnimationChoreographer> animationChoreographer_;
-  AnimationBackendCommitHook commitHook_;
-  std::weak_ptr<UIManager> uiManager_;
-  std::shared_ptr<CallInvoker> jsInvoker_;
-  bool isRenderCallbackStarted_{false};
 
   AnimationBackend(
       std::shared_ptr<AnimationChoreographer> animationChoreographer,
@@ -62,7 +60,18 @@ class AnimationBackend : public UIManagerAnimationBackend {
 
   void onAnimationFrame(double timestamp) override;
   void trigger() override;
-  void start(const Callback &callback, bool isAsync) override;
-  void stop(bool isAsync) override;
+  CallbackId start(const Callback &callback) override;
+  void stop(CallbackId callbackId) override;
+
+ private:
+  std::vector<CallbackWithId> callbacks;
+  std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry_;
+  std::shared_ptr<AnimationChoreographer> animationChoreographer_;
+  AnimationBackendCommitHook commitHook_;
+  std::weak_ptr<UIManager> uiManager_;
+  std::shared_ptr<CallInvoker> jsInvoker_;
+  bool isRenderCallbackStarted_{false};
+  CallbackId nextCallbackId_{0};
+  std::mutex mutex_;
 };
 } // namespace facebook::react

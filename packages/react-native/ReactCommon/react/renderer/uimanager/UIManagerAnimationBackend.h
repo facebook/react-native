@@ -14,6 +14,7 @@
 namespace facebook::react {
 
 struct AnimationMutations;
+using CallbackId = uint64_t;
 
 class UIManagerAnimationBackend {
  public:
@@ -22,8 +23,8 @@ class UIManagerAnimationBackend {
   virtual ~UIManagerAnimationBackend() = default;
 
   virtual void onAnimationFrame(double timestamp) = 0;
-  virtual void start(const Callback &callback, bool isAsync) = 0;
-  virtual void stop(bool isAsync) = 0;
+  virtual CallbackId start(const Callback &callback) = 0;
+  virtual void stop(CallbackId callbackId) = 0;
   virtual void clearRegistry(SurfaceId surfaceId) = 0;
   virtual void trigger() = 0;
   virtual void registerJSInvoker(std::shared_ptr<CallInvoker> jsInvoker) = 0;
