@@ -679,17 +679,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    passScrollToSwipeRefreshChild: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2026-01-13',
-        description:
-          'When enabled, ReactSwipeRefreshLayout will forward ACTION_SCROLL events to its child for proper handling.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     perfIssuesEnabled: {
       defaultValue: false,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2329e4100b9b70dce294c618d0616e98>>
+ * @generated SignedSource<<27dfa9832869aa05987fa7cb9740f7ba>>
  */
 
 /**
@@ -383,12 +383,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = accessor.overrideBySynchronousMountPropsAtMountingAndroid()
-
-  /**
-   * When enabled, ReactSwipeRefreshLayout will forward ACTION_SCROLL events to its child for proper handling.
-   */
-  @JvmStatic
-  public fun passScrollToSwipeRefreshChild(): Boolean = accessor.passScrollToSwipeRefreshChild()
 
   /**
    * Enable reporting Performance Issues (`detail.devtools.performanceIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.

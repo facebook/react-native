@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a988a1145e1437cd8444dda3863c6065>>
+ * @generated SignedSource<<40870eeb15b0536567bf7bc6c95b7f45>>
  */
 
 /**
@@ -91,7 +91,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxNetworkInspectionEnabled();
   bool hideOffscreenVirtualViewsOnIOS();
   bool overrideBySynchronousMountPropsAtMountingAndroid();
-  bool passScrollToSwipeRefreshChild();
   bool perfIssuesEnabled();
   bool perfMonitorV2Enabled();
   double preparedTextCacheSize();
@@ -121,7 +120,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 78> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 77> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -182,7 +181,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
   std::atomic<std::optional<bool>> overrideBySynchronousMountPropsAtMountingAndroid_;
-  std::atomic<std::optional<bool>> passScrollToSwipeRefreshChild_;
   std::atomic<std::optional<bool>> perfIssuesEnabled_;
   std::atomic<std::optional<bool>> perfMonitorV2Enabled_;
   std::atomic<std::optional<double>> preparedTextCacheSize_;

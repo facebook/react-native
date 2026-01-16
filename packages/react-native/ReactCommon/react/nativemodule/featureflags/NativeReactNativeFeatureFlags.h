@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a8a002af1f2ca32499cc44ff8fa162cc>>
+ * @generated SignedSource<<6d28ea5d159f53988ca76188bc2fa5c0>>
  */
 
 /**
@@ -153,8 +153,6 @@ class NativeReactNativeFeatureFlags
   bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
 
   bool overrideBySynchronousMountPropsAtMountingAndroid(jsi::Runtime& runtime);
-
-  bool passScrollToSwipeRefreshChild(jsi::Runtime& runtime);
 
   bool perfIssuesEnabled(jsi::Runtime& runtime);
 

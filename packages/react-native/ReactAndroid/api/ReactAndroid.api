@@ -6025,7 +6025,6 @@ public abstract interface class com/facebook/react/views/scroll/VirtualView {
 public final class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout {
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun canChildScrollUp ()Z
-	public fun dispatchGenericMotionEvent (Landroid/view/MotionEvent;)Z
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun onLayout (ZIIII)V
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z

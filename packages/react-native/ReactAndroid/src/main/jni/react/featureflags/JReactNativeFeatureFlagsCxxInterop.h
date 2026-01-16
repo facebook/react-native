@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c08164df224d384271a3808d8117afb5>>
+ * @generated SignedSource<<b1325a7991f212671b02bd4072d8b555>>
  */
 
 /**
@@ -205,9 +205,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool overrideBySynchronousMountPropsAtMountingAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool passScrollToSwipeRefreshChild(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool perfIssuesEnabled(
