@@ -17,7 +17,7 @@ type AnotherGenericObject = GenericObject;
 
 export interface Spec extends TurboModule {
   +getGenericObject: (arg: Object) => Object;
-  +getGenericObjectReadOnly: (arg: Object) => $ReadOnly<{a: string}>;
+  +getGenericObjectReadOnly: (arg: Object) => Readonly<{a: string}>;
   +getGenericObjectWithAlias: (arg: GenericObject) => AnotherGenericObject;
   +difficultObject: (A: {
     D: boolean,
