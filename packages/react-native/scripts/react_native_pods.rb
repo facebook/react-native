@@ -75,7 +75,7 @@ def use_react_native! (
   error_if_try_to_use_jsc_from_core()
   warn_if_new_arch_disabled()
 
-  react_native_path = Pathname.pwd.join(path)
+  react_native_path = Pod::Config.instance.installation_root.join(path)
   prefix = react_native_path.relative_path_from(Pod::Config.instance.installation_root)
 
   hermes_enabled= true
