@@ -6,11 +6,13 @@
  */
 
 #include "AnimationBackend.h"
+#include "AnimatedPropsRegistry.h"
+
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/animationbackend/AnimatedPropsSerializer.h>
 #include <react/renderer/graphics/Color.h>
 #include <chrono>
-#include "AnimatedPropsRegistry.h"
+#include <utility>
 
 namespace facebook::react {
 
@@ -51,20 +53,14 @@ static inline Props::Shared cloneProps(
 }
 
 AnimationBackend::AnimationBackend(
-    StartOnRenderCallback&& startOnRenderCallback,
-    StopOnRenderCallback&& stopOnRenderCallback,
-    DirectManipulationCallback&& directManipulationCallback,
-    FabricCommitCallback&& fabricCommitCallback,
-    UIManager* uiManager,
-    std::shared_ptr<CallInvoker> jsInvoker)
-    : startOnRenderCallback_(std::move(startOnRenderCallback)),
-      stopOnRenderCallback_(std::move(stopOnRenderCallback)),
-      directManipulationCallback_(std::move(directManipulationCallback)),
-      fabricCommitCallback_(std::move(fabricCommitCallback)),
-      animatedPropsRegistry_(std::make_shared<AnimatedPropsRegistry>()),
-      uiManager_(uiManager),
-      jsInvoker_(std::move(jsInvoker)),
-      commitHook_(uiManager, animatedPropsRegistry_) {}
+    std::shared_ptr<AnimationChoreographer> animationChoreographer,
+    std::shared_ptr<UIManager> uiManager)
+    : animatedPropsRegistry_(std::make_shared<AnimatedPropsRegistry>()),
+      animationChoreographer_(std::move(animationChoreographer)),
+      commitHook_(*uiManager, animatedPropsRegistry_),
+      uiManager_(std::move(uiManager)) {
+  react_native_assert(uiManager_.expired() == false);
+}
 
 void AnimationBackend::onAnimationFrame(double timestamp) {
   std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
@@ -98,23 +94,18 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
   requestAsyncFlushForSurfaces(asyncFlushSurfaces);
 }
 
-void AnimationBackend::start(const Callback& callback, bool isAsync) {
+void AnimationBackend::start(const Callback& callback, bool /*isAsync*/) {
   callbacks.push_back(callback);
-  // TODO: startOnRenderCallback_ should provide the timestamp from the
-  // platform
-  if (startOnRenderCallback_) {
-    startOnRenderCallback_(
-        [this]() {
-          onAnimationFrame(
-              std::chrono::steady_clock::now().time_since_epoch().count() /
-              1000);
-        },
-        isAsync);
+  if (!isRenderCallbackStarted_) {
+    animationChoreographer_->resume();
+    isRenderCallbackStarted_ = true;
   }
 }
-void AnimationBackend::stop(bool isAsync) {
-  if (stopOnRenderCallback_) {
-    stopOnRenderCallback_(isAsync);
+
+void AnimationBackend::stop(bool /*isAsync*/) {
+  if (isRenderCallbackStarted_) {
+    animationChoreographer_->pause();
+    isRenderCallbackStarted_ = false;
   }
   callbacks.clear();
 }
@@ -127,9 +118,15 @@ void AnimationBackend::trigger() {
 void AnimationBackend::commitUpdates(
     SurfaceId surfaceId,
     SurfaceUpdates& surfaceUpdates) {
+  auto uiManager = uiManager_.lock();
+  if (!uiManager) {
+    return;
+  }
+
   auto& surfaceFamilies = surfaceUpdates.families;
   auto& updates = surfaceUpdates.propsMap;
-  uiManager_->getShadowTreeRegistry().visit(
+
+  uiManager->getShadowTreeRegistry().visit(
       surfaceId, [&surfaceFamilies, &updates](const ShadowTree& shadowTree) {
         shadowTree.commit(
             [&surfaceFamilies,
@@ -160,19 +157,28 @@ void AnimationBackend::synchronouslyUpdateProps(
     const std::unordered_map<Tag, AnimatedProps>& updates) {
   for (auto& [tag, animatedProps] : updates) {
     // TODO: We shouldn't repack it into dynamic, but for that a rewrite
-    // of directManipulationCallback_ is needed
+    // of synchronouslyUpdateViewOnUIThread is needed
     auto dyn = animationbackend::packAnimatedProps(animatedProps);
-    directManipulationCallback_(tag, std::move(dyn));
+    if (auto uiManager = uiManager_.lock()) {
+      uiManager->synchronouslyUpdateViewOnUIThread(tag, dyn);
+    }
   }
 }
 
 void AnimationBackend::requestAsyncFlushForSurfaces(
     const std::set<SurfaceId>& surfaces) {
+  react_native_assert(
+      jsInvoker_ != nullptr ||
+      surfaces.empty() && "jsInvoker_ was not provided");
   for (const auto& surfaceId : surfaces) {
     // perform an empty commit on the js thread, to force the commit hook to
     // push updated shadow nodes to react through RSNRU
-    jsInvoker_->invokeAsync([this, surfaceId]() {
-      uiManager_->getShadowTreeRegistry().visit(
+    jsInvoker_->invokeAsync([weakUIManager = uiManager_, surfaceId]() {
+      auto uiManager = weakUIManager.lock();
+      if (!uiManager) {
+        return;
+      }
+      uiManager->getShadowTreeRegistry().visit(
           surfaceId, [](const ShadowTree& shadowTree) {
             shadowTree.commit(
                 [](const RootShadowNode& oldRootShadowNode) {
@@ -187,6 +193,13 @@ void AnimationBackend::requestAsyncFlushForSurfaces(
 
 void AnimationBackend::clearRegistry(SurfaceId surfaceId) {
   animatedPropsRegistry_->clear(surfaceId);
+}
+
+void AnimationBackend::registerJSInvoker(
+    std::shared_ptr<CallInvoker> jsInvoker) {
+  if (!jsInvoker_) {
+    jsInvoker_ = jsInvoker;
+  }
 }
 
 } // namespace facebook::react

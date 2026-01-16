@@ -64,7 +64,7 @@ class UIManager final : public ShadowTreeDelegate {
   /**
    * Sets and gets UIManager's AnimationBackend reference.
    */
-  void unstable_setAnimationBackend(std::weak_ptr<UIManagerAnimationBackend> animationBackend);
+  void unstable_setAnimationBackend(std::shared_ptr<UIManagerAnimationBackend> animationBackend);
   std::weak_ptr<UIManagerAnimationBackend> unstable_getAnimationBackend();
 
   /**
@@ -248,7 +248,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   std::unique_ptr<LazyShadowTreeRevisionConsistencyManager> lazyShadowTreeRevisionConsistencyManager_;
 
-  std::weak_ptr<UIManagerAnimationBackend> animationBackend_;
+  std::shared_ptr<UIManagerAnimationBackend> animationBackend_;
 };
 
 } // namespace facebook::react

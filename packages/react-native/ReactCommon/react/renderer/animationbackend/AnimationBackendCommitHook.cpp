@@ -7,13 +7,15 @@
 
 #include <react/renderer/animationbackend/AnimationBackendCommitHook.h>
 
+#include <utility>
+
 namespace facebook::react {
 
 AnimationBackendCommitHook::AnimationBackendCommitHook(
-    UIManager* uiManager,
+    UIManager& uiManager,
     std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry)
     : animatedPropsRegistry_(std::move(animatedPropsRegistry)) {
-  uiManager->registerCommitHook(*this);
+  uiManager.registerCommitHook(*this);
 }
 
 RootShadowNode::Unshared AnimationBackendCommitHook::shadowTreeWillCommit(
