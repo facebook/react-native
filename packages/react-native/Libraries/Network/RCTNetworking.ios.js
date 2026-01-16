@@ -18,7 +18,7 @@ import {type RCTNetworkingEventDefinitions} from './RCTNetworkingEventDefinition
 import {type NativeResponseType} from './XMLHttpRequest';
 
 const RCTNetworking = {
-  addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
+  addListener<K: keyof RCTNetworkingEventDefinitions>(
     eventType: K,
     listener: (...RCTNetworkingEventDefinitions[K]) => unknown,
     context?: unknown,

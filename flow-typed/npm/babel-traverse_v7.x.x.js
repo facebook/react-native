@@ -556,24 +556,24 @@ declare module '@babel/traverse' {
      * Check whether we have the input `key`. If the `key` references an array then we check
      * if the array has any items, otherwise we just check if it's falsy.
      */
-    has(key: $Keys<TNode>): boolean;
+    has(key: keyof TNode): boolean;
 
     isStatic(): boolean;
 
     /**
      * Alias of `has`.
      */
-    is(key: $Keys<TNode>): boolean;
+    is(key: keyof TNode): boolean;
 
     /**
      * Opposite of `has`.
      */
-    isnt(key: $Keys<TNode>): boolean;
+    isnt(key: keyof TNode): boolean;
 
     /**
      * Check whether the path node `key` strict equals `value`.
      */
-    equals(key: $Keys<TNode>, value: any): boolean;
+    equals(key: keyof TNode, value: any): boolean;
 
     /**
      * Check the type against our stored internal type of the node. This is handy when a node has
@@ -724,7 +724,7 @@ declare module '@babel/traverse' {
 
     getAllPrevSiblings(): Array<NodePath<>>;
 
-    get<TKey: $Keys<TNode>>(
+    get<TKey: keyof TNode>(
       key: TKey,
       context?: boolean | TraversalContext,
     ): TNode[TKey] extends BabelNode ? NodePath<> : Array<NodePath<>>;

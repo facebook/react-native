@@ -22,7 +22,7 @@ export default class NativeEventEmitter<
   TEventToArgsMap: Readonly<Record<string, ReadonlyArray<unknown>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
-  addListener<TEvent: $Keys<TEventToArgsMap>>(
+  addListener<TEvent: keyof TEventToArgsMap>(
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => unknown,
     context?: unknown,
@@ -30,20 +30,18 @@ export default class NativeEventEmitter<
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   }
 
-  emit<TEvent: $Keys<TEventToArgsMap>>(
+  emit<TEvent: keyof TEventToArgsMap>(
     eventType: TEvent,
     ...args: TEventToArgsMap[TEvent]
   ): void {
     RCTDeviceEventEmitter.emit(eventType, ...args);
   }
 
-  removeAllListeners<TEvent: $Keys<TEventToArgsMap>>(
-    eventType?: ?TEvent,
-  ): void {
+  removeAllListeners<TEvent: keyof TEventToArgsMap>(eventType?: ?TEvent): void {
     RCTDeviceEventEmitter.removeAllListeners(eventType);
   }
 
-  listenerCount<TEvent: $Keys<TEventToArgsMap>>(eventType: TEvent): number {
+  listenerCount<TEvent: keyof TEventToArgsMap>(eventType: TEvent): number {
     return RCTDeviceEventEmitter.listenerCount(eventType);
   }
 }
