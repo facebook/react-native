@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 require "json"
+require "pathname"
 require_relative "./hermes-utils.rb"
 
 begin
@@ -92,8 +93,13 @@ Pod::Spec.new do |spec|
         "require.resolve(\"hermes-compiler\", {paths: [\"#{react_native_path}\"]})", __dir__]).strip
       )
 
+      # Compute a relative path from PODS_ROOT to avoid absolute paths with usernames that cause different checksums across developers,
+      # and works regardless of project structure.
+      hermesc_path = "#{hermes_compiler_path}/hermesc/osx-bin/hermesc"
+      relative_hermesc_path = Pathname.new(hermesc_path).relative_path_from(Pod::Config.instance.sandbox_root)
+
       spec.user_target_xcconfig = {
-        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/hermesc/osx-bin/hermesc"
+        'HERMES_CLI_PATH' => "${PODS_ROOT}/#{relative_hermesc_path}"
       }
     end
 
