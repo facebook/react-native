@@ -273,6 +273,30 @@ public class ReactImageView(
     }
   }
 
+  // todo: this must live elsewhere i think
+  public fun readableMapToImageSource(source: ReadableMap, includeSize: Boolean = false): ImageSource {
+    val cacheControl = computeCacheControl(source.getString("cache"))
+    val uri = source.getString("uri")
+    var imageSource = if (includeSize) {
+      ImageSource(
+        context,
+        uri,
+        source.getDouble("width"),
+        source.getDouble("height"),
+        cacheControl,
+      )
+    } else {
+      ImageSource(context, uri, cacheControl = cacheControl)
+    }
+
+    if (Uri.EMPTY == imageSource.uri) {
+      warnImageSource(uri)
+      imageSource = getTransparentBitmapImageSource(context)
+    }
+
+    return imageSource
+  }
+
   public fun setSource(sources: ReadableArray?) {
     val tmpSources = mutableListOf<ImageSource>()
 
@@ -281,29 +305,12 @@ public class ReactImageView(
     } else if (sources.size() == 1) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       val source = checkNotNull(sources.getMap(0))
-      val cacheControl = computeCacheControl(source.getString("cache"))
-      var imageSource = ImageSource(context, source.getString("uri"), cacheControl = cacheControl)
-      if (Uri.EMPTY == imageSource.uri) {
-        warnImageSource(source.getString("uri"))
-        imageSource = getTransparentBitmapImageSource(context)
-      }
+      val imageSource  = readableMapToImageSource(source, includeSize = false)
       tmpSources.add(imageSource)
     } else {
       for (idx in 0 until sources.size()) {
         val source = sources.getMap(idx) ?: continue
-        val cacheControl = computeCacheControl(source.getString("cache"))
-        var imageSource =
-            ImageSource(
-                context,
-                source.getString("uri"),
-                source.getDouble("width"),
-                source.getDouble("height"),
-                cacheControl,
-            )
-        if (Uri.EMPTY == imageSource.uri) {
-          warnImageSource(source.getString("uri"))
-          imageSource = getTransparentBitmapImageSource(context)
-        }
+        val imageSource = readableMapToImageSource(source, includeSize = true)
         tmpSources.add(imageSource)
       }
     }
