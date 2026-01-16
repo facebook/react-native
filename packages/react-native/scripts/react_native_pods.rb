@@ -106,7 +106,7 @@ def use_react_native! (
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
 
-  CodegenUtils.clean_up_build_folder(path, $CODEGEN_OUTPUT_DIR)
+  CodegenUtils.clean_up_build_folder(react_native_path, $CODEGEN_OUTPUT_DIR)
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
