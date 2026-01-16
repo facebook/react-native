@@ -216,7 +216,7 @@ UITextContentType RCTUITextContentTypeFromString(const std::string &contentType)
       @"oneTimeCode" : UITextContentTypeOneTimeCode,
     }];
 
-    if (@available(iOS 15.0, *)) {
+    if (@available(iOS 15.0, tvOS 15.0, *)) {
       [mutableContentTypeMap addEntriesFromDictionary:@{
         @"dateTime" : UITextContentTypeDateTime,
         @"flightNumber" : UITextContentTypeFlightNumber,
