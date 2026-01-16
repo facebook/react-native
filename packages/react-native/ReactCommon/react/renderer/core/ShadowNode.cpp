@@ -112,20 +112,13 @@ ShadowNode::ShadowNode(
       props_(propsForClonedShadowNode(sourceShadowNode, fragment.props)),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
-      state_(
-          fragment.state ? fragment.state
-                         : (ReactNativeFeatureFlags::useShadowNodeStateOnClone()
-                                ? sourceShadowNode.state_
-                                : sourceShadowNode.getMostRecentState())),
+      state_(fragment.state ? fragment.state : sourceShadowNode.state_),
       orderIndex_(sourceShadowNode.orderIndex_),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
 
   react_native_assert(props_);
   react_native_assert(children_);
-
-  // State could have been progressed above by checking
-  // `sourceShadowNode.getMostRecentState()`.
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
   if (fragment.children) {
