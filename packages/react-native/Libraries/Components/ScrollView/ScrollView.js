@@ -1850,6 +1850,8 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
           {style: StyleSheet.compose(baseStyle, outer)},
           <NativeScrollView
             {...props}
+            // Nested scroll should always be enabled to allow the child scroll view to handle events before passing them to the refresh control parent
+            nestedScrollEnabled={props.nestedScrollEnabled ?? true}
             style={StyleSheet.compose(baseStyle, inner)}
             // $FlowFixMe[incompatible-type] - Flow only knows element refs.
             ref={scrollViewRef}>
