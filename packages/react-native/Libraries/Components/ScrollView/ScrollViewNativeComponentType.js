@@ -69,6 +69,7 @@ export type ScrollViewNativeProps = Readonly<{
   scrollPerfTag?: ?string,
   scrollToOverflowEnabled?: ?boolean,
   scrollsToTop?: ?boolean,
+  scrollsChildToFocus?: ?boolean,
   sendMomentumEvents?: ?boolean,
   showsHorizontalScrollIndicator?: ?boolean,
   showsVerticalScrollIndicator?: ?boolean,

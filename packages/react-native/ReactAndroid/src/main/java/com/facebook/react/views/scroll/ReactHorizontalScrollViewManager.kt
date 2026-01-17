@@ -117,6 +117,11 @@ constructor(private val fpsListener: FpsListener? = null) :
     view.setDisableIntervalMomentum(disableIntervalMomentum)
   }
 
+  @ReactProp(name = "scrollsChildToFocus", defaultBoolean = true)
+  public fun setScrollsChildToFocus(view: ReactHorizontalScrollView, scrollsChildToFocus: Boolean) {
+    view.setScrollsChildToFocus(scrollsChildToFocus)
+  }
+
   @ReactProp(name = "snapToInterval")
   public fun setSnapToInterval(view: ReactHorizontalScrollView, snapToInterval: Float) {
     // snapToInterval needs to be exposed as a float because of the Javascript interface.

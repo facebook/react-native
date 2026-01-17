@@ -133,6 +133,7 @@ public class ReactScrollView extends ScrollView
   private int mFadingEdgeLengthStart;
   private int mFadingEdgeLengthEnd;
   private boolean mEmittedOverScrollSinceScrollBegin;
+  private boolean mScrollsChildToFocus = true;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -196,6 +197,7 @@ public class ReactScrollView extends ScrollView
     mFadingEdgeLengthStart = 0;
     mFadingEdgeLengthEnd = 0;
     mEmittedOverScrollSinceScrollBegin = false;
+    mScrollsChildToFocus = true;
   }
 
   /* package */ void recycleView() {
@@ -296,6 +298,10 @@ public class ReactScrollView extends ScrollView
 
   public void setPagingEnabled(boolean pagingEnabled) {
     mPagingEnabled = pagingEnabled;
+  }
+
+  public void setScrollsChildToFocus(boolean scrollsChildToFocus) {
+    mScrollsChildToFocus = scrollsChildToFocus;
   }
 
   public void setDecelerationRate(float decelerationRate) {
@@ -507,7 +513,7 @@ public class ReactScrollView extends ScrollView
    */
   @Override
   public void requestChildFocus(View child, View focused) {
-    if (focused != null) {
+    if (focused != null && mScrollsChildToFocus) {
       scrollToChild(focused);
     }
     requestChildFocusWithoutScroll(child, focused);
@@ -520,6 +526,14 @@ public class ReactScrollView extends ScrollView
    */
   protected void requestChildFocusWithoutScroll(View child, View focused) {
     super.requestChildFocus(child, focused);
+  }
+
+  @Override
+  public boolean requestChildRectangleOnScreen(View child, Rect rectangle, boolean immediate) {
+    if (!mScrollsChildToFocus) {
+      return false;
+    }
+    return super.requestChildRectangleOnScreen(child, rectangle, immediate);
   }
 
   private int getScrollDelta(View descendent) {
