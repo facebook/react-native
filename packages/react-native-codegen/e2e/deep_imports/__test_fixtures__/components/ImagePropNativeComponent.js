@@ -14,7 +14,7 @@ import type {ImageSource} from 'react-native/Libraries/Image/ImageSource';
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{
+type NativeProps = Readonly<{
   ...ViewProps,
 
   // Props
