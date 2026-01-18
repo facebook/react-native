@@ -1076,6 +1076,66 @@ inline MapBuffer toMapBuffer(const FontVariant &fontVariant)
   if ((int)fontVariant & (int)FontVariant::ProportionalNums) {
     builder.putString(index++, "proportional-nums");
   }
+  if ((int)fontVariant & (int)FontVariant::StylisticOne) {
+    builder.putString(index++, "stylistic-one");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticTwo) {
+    builder.putString(index++, "stylistic-two");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticThree) {
+    builder.putString(index++, "stylistic-three");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticFour) {
+    builder.putString(index++, "stylistic-four");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticFive) {
+    builder.putString(index++, "stylistic-five");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticSix) {
+    builder.putString(index++, "stylistic-six");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticSeven) {
+    builder.putString(index++, "stylistic-seven");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticEight) {
+    builder.putString(index++, "stylistic-eight");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticNine) {
+    builder.putString(index++, "stylistic-nine");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticTen) {
+    builder.putString(index++, "stylistic-ten");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticEleven) {
+    builder.putString(index++, "stylistic-eleven");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticTwelve) {
+    builder.putString(index++, "stylistic-twelve");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticThirteen) {
+    builder.putString(index++, "stylistic-thirteen");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticFourteen) {
+    builder.putString(index++, "stylistic-fourteen");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticFifteen) {
+    builder.putString(index++, "stylistic-fifteen");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticSixteen) {
+    builder.putString(index++, "stylistic-sixteen");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticSeventeen) {
+    builder.putString(index++, "stylistic-seventeen");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticEighteen) {
+    builder.putString(index++, "stylistic-eighteen");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticNineteen) {
+    builder.putString(index++, "stylistic-nineteen");
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticTwenty) {
+    builder.putString(index++, "stylistic-twenty");
+  }
 
   return builder.build();
 }

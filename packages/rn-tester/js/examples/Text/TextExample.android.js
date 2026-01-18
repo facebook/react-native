@@ -389,6 +389,16 @@ function FontVariantsExample(props: {}): React.Node {
         1111{'\n'}
         2222{'\n'}
       </RNTesterText>
+      <RNTesterText style={{fontFamily: 'FiraCode'}}>
+        Non-Stylistic & and $
+      </RNTesterText>
+      <RNTesterText
+        style={{
+          fontFamily: 'FiraCode',
+          fontVariant: ['stylistic-three', 'stylistic-four'],
+        }}>
+        Stylistic & and $
+      </RNTesterText>
     </>
   );
 }
