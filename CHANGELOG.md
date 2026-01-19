@@ -1,5 +1,111 @@
 # Changelog
 
+## v0.84.0-rc.2
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Fix glog namespace issue to allow using interop mode of objcxx ([68aab492e1](https://github.com/facebook/react-native/commit/68aab492e116a60daf33bc3992196b510a497100) by [@riteshshukla04](https://github.com/riteshshukla04))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.84.0-rc.2 ([baf7e4b81f](https://github.com/facebook/react-native/commit/baf7e4b81f9b2e1e571e96367d21a298acd910f5) by [@react-native-bot](https://github.com/react-native-bot))
+- [0.84] Sync debugger-frontend (fix empty panels) ([c1ff074436](https://github.com/facebook/react-native/commit/c1ff074436ed0c9f66f7e23677b11f145bc282d7) by [@huntie](https://github.com/huntie))
+- Bump podfile.lock ([488421897c](https://github.com/facebook/react-native/commit/488421897c5950c9f44ad6c2d04f39310c201690) by [@cipolleschi](https://github.com/cipolleschi))
+- Release 0.84.0-rc.1 ([240dba8acd](https://github.com/facebook/react-native/commit/240dba8acded2fd62c6ec9905cb9098e56d346fd) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.84.0-rc.1
 
 ### Breaking
