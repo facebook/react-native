@@ -4975,72 +4975,185 @@ declare module 'assert/strict' {
   declare module.exports: $Exports<'assert'>['strict'];
 }
 
-type HeapCodeStatistics = {
-  code_and_metadata_size: number,
-  bytecode_and_metadata_size: number,
-  external_script_source_size: number,
-  ...
-};
-
-type HeapStatistics = {
-  total_heap_size: number,
-  total_heap_size_executable: number,
-  total_physical_size: number,
-  total_available_size: number,
-  used_heap_size: number,
-  heap_size_limit: number,
-  malloced_memory: number,
-  peak_malloced_memory: number,
-  does_zap_garbage: 0 | 1,
-  number_of_native_contexts: number,
-  number_of_detached_contexts: number,
-  ...
-};
-
-type HeapSpaceStatistics = {
-  space_name: string,
-  space_size: number,
-  space_used_size: number,
-  space_available_size: number,
-  physical_space_size: number,
-  ...
-};
-
-// Adapted from DefinitelyTyped for Node v14:
-// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/dea4d99dc302a0b0a25270e46e72c1fe9b741a17/types/node/v14/v8.d.ts
 declare module 'v8' {
+  declare export type DoesZapCodeSpaceFlag = 0 | 1;
+
+  declare export type HeapCodeStatistics = {
+    code_and_metadata_size: number,
+    bytecode_and_metadata_size: number,
+    external_script_source_size: number,
+    cpu_profiler_metadata_size: number,
+  };
+
+  declare export type HeapInfo = {
+    total_heap_size: number,
+    total_heap_size_executable: number,
+    total_physical_size: number,
+    total_available_size: number,
+    used_heap_size: number,
+    heap_size_limit: number,
+    malloced_memory: number,
+    peak_malloced_memory: number,
+    does_zap_garbage: DoesZapCodeSpaceFlag,
+    number_of_native_contexts: number,
+    number_of_detached_contexts: number,
+    total_global_handles_size: number,
+    used_global_handles_size: number,
+    external_memory: number,
+  };
+
+  declare export type HeapSpaceInfo = {
+    space_name: string,
+    space_size: number,
+    space_used_size: number,
+    space_available_size: number,
+    physical_space_size: number,
+  };
+
+  declare export type HeapSnapshotOptions = Readonly<{
+    exposeInternals?: boolean,
+    exposeNumericValues?: boolean,
+  }>;
+
+  // For GCProfiler - uses camelCase naming convention
+  declare export type HeapStatistics = {
+    totalHeapSize: number,
+    totalHeapSizeExecutable: number,
+    totalPhysicalSize: number,
+    totalAvailableSize: number,
+    totalGlobalHandlesSize: number,
+    usedGlobalHandlesSize: number,
+    usedHeapSize: number,
+    heapSizeLimit: number,
+    mallocedMemory: number,
+    externalMemory: number,
+    peakMallocedMemory: number,
+  };
+
+  declare export type HeapSpaceStatistics = {
+    spaceName: string,
+    spaceSize: number,
+    spaceUsedSize: number,
+    spaceAvailableSize: number,
+    physicalSpaceSize: number,
+  };
+
+  declare export type GCProfilerResult = {
+    version: number,
+    startTime: number,
+    endTime: number,
+    statistics: $ReadOnlyArray<{
+      gcType: string,
+      cost: number,
+      beforeGC: {
+        heapStatistics: HeapStatistics,
+        heapSpaceStatistics: $ReadOnlyArray<HeapSpaceStatistics>,
+      },
+      afterGC: {
+        heapStatistics: HeapStatistics,
+        heapSpaceStatistics: $ReadOnlyArray<HeapSpaceStatistics>,
+      },
+    }>,
+  };
+
   /**
-   * Returns an integer representing a "version tag" derived from the V8 version, command line flags and detected CPU features.
-   * This is useful for determining whether a vm.Script cachedData buffer is compatible with this instance of V8.
+   * Returns an integer representing a "version tag" derived from the V8 version,
+   * command line flags and detected CPU features. This is useful for determining
+   * whether a vm.Script cachedData buffer is compatible with this instance of V8.
    */
   declare function cachedDataVersionTag(): number;
 
   /**
-   * Generates a snapshot of the current V8 heap and returns a Readable
-   * Stream that may be used to read the JSON serialized representation.
-   * This conversation was marked as resolved by joyeecheung
-   * This JSON stream format is intended to be used with tools such as
-   * Chrome DevTools. The JSON schema is undocumented and specific to the
-   * V8 engine, and may change from one version of V8 to the next.
+   * Returns statistics about code and its metadata in the heap.
    */
-  declare function getHeapSnapshot(): stream$Readable;
-
-  /**
-   *
-   * @param fileName The file path where the V8 heap snapshot is to be
-   * saved. If not specified, a file name with the pattern
-   * `'Heap-${yyyymmdd}-${hhmmss}-${pid}-${thread_id}.heapsnapshot'` will be
-   * generated, where `{pid}` will be the PID of the Node.js process,
-   * `{thread_id}` will be `0` when `writeHeapSnapshot()` is called from
-   * the main Node.js thread or the id of a worker thread.
-   */
-  declare function writeHeapSnapshot(fileName?: string): string;
-
   declare function getHeapCodeStatistics(): HeapCodeStatistics;
 
-  declare function getHeapStatistics(): HeapStatistics;
-  declare function getHeapSpaceStatistics(): Array<HeapSpaceStatistics>;
+  /**
+   * Returns an object with statistics about the V8 heap.
+   */
+  declare function getHeapStatistics(): HeapInfo;
+
+  /**
+   * Returns statistics about the V8 heap spaces.
+   */
+  declare function getHeapSpaceStatistics(): Array<HeapSpaceInfo>;
+
+  /**
+   * Generates a snapshot of the current V8 heap and returns a Readable Stream
+   * that may be used to read the JSON serialized representation. This JSON stream
+   * format is intended to be used with tools such as Chrome DevTools. The JSON
+   * schema is undocumented and specific to the V8 engine.
+   * @param options Optional settings for controlling snapshot detail
+   */
+  declare function getHeapSnapshot(
+    options?: HeapSnapshotOptions,
+  ): stream$Readable;
+
+  /**
+   * Generates a snapshot of the current V8 heap and writes it to a JSON file.
+   * @param fileName The file path where the snapshot will be saved. If not specified,
+   *   a file name with the pattern 'Heap-${yyyymmdd}-${hhmmss}-${pid}-${thread_id}.heapsnapshot'
+   *   will be generated.
+   * @param options Optional settings for controlling snapshot detail
+   * @returns The filename where the snapshot was saved
+   */
+  declare function writeHeapSnapshot(
+    fileName?: string,
+    options?: HeapSnapshotOptions,
+  ): string;
+
+  /**
+   * Sets V8 command-line flags. Use with care; changing settings after the VM has
+   * started may result in unpredictable behavior, crashes, or data loss.
+   */
   declare function setFlagsFromString(flags: string): void;
+
+  /**
+   * Generates a heap snapshot when the heap usage reaches the specified limit.
+   * @param limit The heap size limit that triggers snapshot generation
+   */
+  declare function setHeapSnapshotNearHeapLimit(limit: number): void;
+
+  /**
+   * Searches for objects that match the given constructor on their prototype chain.
+   * Similar to Chrome DevTools' queryObjects() console API.
+   * @since v20.13.0
+   * @experimental
+   */
+  declare function queryObjects(
+    ctor: Function,
+    options?: {format: 'count'},
+  ): number;
+  declare function queryObjects(
+    ctor: Function,
+    options: {format: 'summary'},
+  ): Array<string>;
+
+  /**
+   * Returns C++ heap statistics from the cppgc heap.
+   * @since v22.15.0
+   * @param detailLevel Level of detail: 'brief' for top-level stats, 'detailed' for space/page breakdown
+   */
+  declare function getCppHeapStatistics(
+    detailLevel?: 'brief' | 'detailed',
+  ): Object;
+
+  /**
+   * Checks if a string's internal representation uses one byte per character (Latin-1/ISO-8859-1 encoding).
+   * Useful for optimizing string serialization.
+   * @since v23.10.0, v22.15.0
+   */
+  declare function isStringOneByteRepresentation(content: string): boolean;
+
+  /**
+   * Starts capturing V8 type profile for coverage analysis.
+   */
+  declare function takeCoverage(): void;
+
+  /**
+   * Stops capturing V8 type profile for coverage analysis.
+   */
+  declare function stopCoverage(): void;
 
   declare class Serializer {
     constructor(): void;
@@ -5163,6 +5276,23 @@ declare module 'v8' {
    * Uses a `DefaultDeserializer` with default options to read a JS value from a buffer.
    */
   declare function deserialize(data: Buffer | $TypedArray | DataView): any;
+
+  /**
+   * Starts a GC profiling session that collects detailed garbage collection statistics.
+   */
+  declare class GCProfiler {
+    constructor(): void;
+
+    /**
+     * Starts the GC profiling session.
+     */
+    start(): void;
+
+    /**
+     * Stops the GC profiling session and returns collected statistics.
+     */
+    stop(): GCProfilerResult;
+  }
 }
 
 type repl$DefineCommandOptions = (...args: Array<any>) => void | {
@@ -5598,6 +5728,11 @@ declare module 'node:url' {
 declare module 'node:util' {
   export type * from 'util';
   declare module.exports: $Exports<'util'>;
+}
+
+declare module 'node:v8' {
+  export type * from 'v8';
+  declare module.exports: $Exports<'v8'>;
 }
 
 declare module 'node:worker_threads' {
