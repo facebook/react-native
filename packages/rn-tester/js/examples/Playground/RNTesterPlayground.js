@@ -8,18 +8,20 @@
  * @format
  */
 
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type { RNTesterModuleExample } from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+import { StyleSheet, View, TextInput } from 'react-native';
 
 function Playground() {
+  const [text, setText] = React.useState('test');
   return (
     <View style={styles.container}>
-      <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
-      </RNTesterText>
+      <TextInput
+        onChangeText={setText}
+        value={text}
+      />
     </View>
   );
 }
