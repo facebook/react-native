@@ -10,7 +10,7 @@
 
 import SectionListBaseExample from './SectionListBaseExample';
 import * as React from 'react';
-import {useRef} from 'react';
+import {useRef, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 const Separator =
@@ -34,21 +34,42 @@ const Separator =
   };
 
 export function SectionList_withSeparators(): React.Node {
+  const [isInverted, setInverted] = useState(false);
+
   const exampleProps = {
+    inverted: isInverted,
     ItemSeparatorComponent: Separator('lightgreen', 'green', false),
     SectionSeparatorComponent: Separator('lightblue', 'blue', true),
   };
   const ref = useRef<any>(null);
 
-  return <SectionListBaseExample ref={ref} exampleProps={exampleProps} />;
+  function onTest() {
+    setInverted(!isInverted);
+  }
+
+  return (
+    <SectionListBaseExample
+      ref={ref}
+      exampleProps={exampleProps}
+      itemStyle={styles.item}
+      onTest={onTest}
+      testOutput={`Inverted: ${isInverted.toString()}`}
+      testLabel={isInverted ? 'Toggle false' : 'Toggle true'}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
   separator: {
-    height: 12,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   separatorText: {
     fontSize: 10,
+  },
+  item: {
+    marginVertical: 0,
   },
 });
 

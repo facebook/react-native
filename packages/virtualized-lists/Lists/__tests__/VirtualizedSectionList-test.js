@@ -94,6 +94,7 @@ describe('VirtualizedSectionList', () => {
       component = ReactTestRenderer.create(
         <VirtualizedSectionList
           ItemSeparatorComponent={() => <separator />}
+          SectionSeparatorComponent={() => <sectionSeparator />}
           ListEmptyComponent={() => <empty />}
           ListFooterComponent={() => <footer />}
           ListHeaderComponent={() => <header />}
