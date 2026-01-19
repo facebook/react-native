@@ -344,6 +344,7 @@ SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
           importantForAccessibility,
           defaultProps.importantForAccessibility),
       debugStringConvertibleItem("testID", testId, defaultProps.testId),
+      debugStringConvertibleItem("role", role, defaultProps.role),
   };
 }
 #endif // RN_DEBUG_STRING_CONVERTIBLE
