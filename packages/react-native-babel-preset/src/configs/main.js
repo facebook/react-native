@@ -10,6 +10,8 @@
 
 'use strict';
 
+// This is a test change. @nocommit
+
 const passthroughSyntaxPlugins = require('../passthrough-syntax-plugins');
 const lazyImports = require('./lazy-imports');
 
