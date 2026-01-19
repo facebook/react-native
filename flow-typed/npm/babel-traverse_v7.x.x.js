@@ -885,6 +885,7 @@ declare module '@babel/traverse' {
     isFunction(opts?: Opts): boolean;
     isFunctionDeclaration(opts?: Opts): boolean;
     isFunctionExpression(opts?: Opts): boolean;
+    isFunctionParameter(opts?: Opts): boolean;
     isFunctionParent(opts?: Opts): boolean;
     isFunctionTypeAnnotation(opts?: Opts): boolean;
     isFunctionTypeParam(opts?: Opts): boolean;
@@ -1101,6 +1102,7 @@ declare module '@babel/traverse' {
     isVariableDeclaration(opts?: Opts): boolean;
     isVariableDeclarator(opts?: Opts): boolean;
     isVariance(opts?: Opts): boolean;
+    isVoidPattern(opts?: Opts): boolean;
     isVoidTypeAnnotation(opts?: Opts): boolean;
     isWhile(opts?: Opts): boolean;
     isWhileStatement(opts?: Opts): boolean;
@@ -1204,6 +1206,7 @@ declare module '@babel/traverse' {
     assertFunction(opts?: Opts): void;
     assertFunctionDeclaration(opts?: Opts): void;
     assertFunctionExpression(opts?: Opts): void;
+    assertFunctionParameter(opts?: Opts): void;
     assertFunctionParent(opts?: Opts): void;
     assertFunctionTypeAnnotation(opts?: Opts): void;
     assertFunctionTypeParam(opts?: Opts): void;
@@ -1420,6 +1423,7 @@ declare module '@babel/traverse' {
     assertVariableDeclaration(opts?: Opts): void;
     assertVariableDeclarator(opts?: Opts): void;
     assertVariance(opts?: Opts): void;
+    assertVoidPattern(opts?: Opts): void;
     assertVoidTypeAnnotation(opts?: Opts): void;
     assertWhile(opts?: Opts): void;
     assertWhileStatement(opts?: Opts): void;
@@ -1564,6 +1568,7 @@ declare module '@babel/traverse' {
     Function?: VisitNode<BabelNodeFunction, TState>,
     FunctionDeclaration?: VisitNode<BabelNodeFunctionDeclaration, TState>,
     FunctionExpression?: VisitNode<BabelNodeFunctionExpression, TState>,
+    FunctionParameter?: VisitNode<BabelNodeFunctionParameter, TState>,
     FunctionParent?: VisitNode<BabelNodeFunctionParent, TState>,
     FunctionTypeAnnotation?: VisitNode<BabelNodeFunctionTypeAnnotation, TState>,
     FunctionTypeParam?: VisitNode<BabelNodeFunctionTypeParam, TState>,
@@ -1858,6 +1863,7 @@ declare module '@babel/traverse' {
     VariableDeclaration?: VisitNode<BabelNodeVariableDeclaration, TState>,
     VariableDeclarator?: VisitNode<BabelNodeVariableDeclarator, TState>,
     Variance?: VisitNode<BabelNodeVariance, TState>,
+    VoidPattern?: VisitNode<BabelNodeVoidPattern, TState>,
     VoidTypeAnnotation?: VisitNode<BabelNodeVoidTypeAnnotation, TState>,
     While?: VisitNode<BabelNodeWhile, TState>,
     WhileStatement?: VisitNode<BabelNodeWhileStatement, TState>,
