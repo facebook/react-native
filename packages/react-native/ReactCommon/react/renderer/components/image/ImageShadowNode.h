@@ -17,6 +17,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(facebook-hte-CArray,modernize-avoid-c-arrays)
 extern const char ImageComponentName[];
 
 /*
