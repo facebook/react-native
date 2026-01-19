@@ -1,6 +1,6 @@
 #!/usr/bin/env dotslash
 
-// @generated SignedSource<<53694ca655a73d917d239fe5c3618b5a>>
+// @generated SignedSource<<4b81be1bf8a86d4a70e4ef481a81ae2c>>
 
 
 {
@@ -12,7 +12,7 @@
             "digest": "a6060e1291f9ee7e9feecd511012c041ed2a65c6df6f8ab5aca4d96adbbc9921",
             "providers": [
                 {
-                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.1/React.Native.DevTools-linux-aarch64.tar.gz"
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.2/React.Native.DevTools-linux-aarch64.tar.gz"
                 },
                 {
                     "type": "http",
@@ -28,7 +28,7 @@
             "digest": "354f6550617d0c6b4bb4478ad085d4efe3671ba9a1b78d90d9bfc003a523cb6d",
             "providers": [
                 {
-                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.1/React.Native.DevTools-linux-x86_64.tar.gz"
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.2/React.Native.DevTools-linux-x86_64.tar.gz"
                 },
                 {
                     "type": "http",
@@ -44,7 +44,7 @@
             "digest": "df41cfce9bc977ef4fdc66c3c892c0eedee5b07aa618550308157c51b8e75561",
             "providers": [
                 {
-                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.1/React.Native.DevTools-macos-aarch64.tar.gz"
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.2/React.Native.DevTools-macos-aarch64.tar.gz"
                 },
                 {
                     "type": "http",
@@ -60,7 +60,7 @@
             "digest": "96805c51623a163b1d94b501e2e091f403b4c3575063bd7363f8e1550cda8dc5",
             "providers": [
                 {
-                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.1/React.Native.DevTools-macos-x86_64.tar.gz"
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.2/React.Native.DevTools-macos-x86_64.tar.gz"
                 },
                 {
                     "type": "http",
@@ -76,7 +76,7 @@
             "digest": "7f560e6d68b4b917c53ba0518a778a20e267cce55474ad972d345b2738746a52",
             "providers": [
                 {
-                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.1/React.Native.DevTools-windows-x86_64.tar.gz"
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.84.0-rc.2/React.Native.DevTools-windows-x86_64.tar.gz"
                 },
                 {
                     "type": "http",
