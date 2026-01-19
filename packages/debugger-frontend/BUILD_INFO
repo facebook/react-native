@@ -1,9 +1,9 @@
-@generated SignedSource<<ed580785f8afa314ec8cc43c7523f469>>
-Git revision: 1f006e22bfad4d66df4786d6d775c15101c66e5d
+@generated SignedSource<<4506db882ae105b6b912fa2f47f998fb>>
+Git revision: 7b445c13d1349d49f7289d786857177308ba8272
 Built with --nohooks: false
 Is local checkout: false
 Remote URL: https://github.com/facebook/react-native-devtools-frontend
-Remote branch: main
+Remote branch: 0.84-stable
 GN build args (overrides only): 
   is_official_build = true
 Git status in checkout:
