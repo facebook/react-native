@@ -12,11 +12,8 @@ import android.graphics.PorterDuff
 import com.facebook.common.logging.FLog
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
-import com.facebook.react.BuildConfig
-import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.SoftAssertions
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
@@ -137,31 +134,13 @@ public constructor(
 
   @ReactProp(name = "defaultSource")
   public fun setDefaultSource(view: ReactImageView, source: ReadableMap?) {
-    if (source == null) {
-      view.setDefaultSource(null)
-      return
-    }
-    val imageSource = view.readableMapToImageSource(source, false)
-    SoftAssertions.assertCondition(
-      !BuildConfig.DEBUG && !imageSource.isResource,
-      "ReactImageView: Only local resources can be used as default image. Uri: ${imageSource.uri}")
-
-    view.setDefaultSource(imageSource.source)
+    view.setDefaultSource(source)
   }
 
   // In JS this is Image.props.loadingIndicatorSource.uri
   @ReactProp(name = "loadingIndicatorSrc")
   public fun setLoadingIndicatorSource(view: ReactImageView, source: ReadableMap?) {
-    if (source == null) {
-      view.setLoadingIndicatorSource(null)
-      return
-    }
-    val imageSource = view.readableMapToImageSource(source, false)
-    SoftAssertions.assertCondition(
-      !BuildConfig.DEBUG && !imageSource.isResource,
-      "ReactImageView: Only local resources can be used as loading indicator image. Uri: ${imageSource.uri}")
-
-    view.setLoadingIndicatorSource(imageSource.uri.toString())
+    view.setLoadingIndicatorSource(source)
   }
 
   @ReactProp(name = "borderColor", customType = "Color")
