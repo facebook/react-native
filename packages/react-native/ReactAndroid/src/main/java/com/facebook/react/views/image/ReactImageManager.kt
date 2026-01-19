@@ -142,13 +142,11 @@ public constructor(
       return
     }
     val imageSource = view.readableMapToImageSource(source, false)
-    if (!BuildConfig.DEBUG && !imageSource.isResource) {
-      throw ReactNoCrashSoftException(
-          "ReactImageView: Only local resources can be used as default image. Uri: ${imageSource.uri}",
-      )
-    }
+    SoftAssertions.assertCondition(
+      !BuildConfig.DEBUG && !imageSource.isResource,
+      "ReactImageView: Only local resources can be used as default image. Uri: ${imageSource.uri}")
 
-    view.setDefaultSource(imageSource.uri.toString())
+    view.setDefaultSource(imageSource.source)
   }
 
   // In JS this is Image.props.loadingIndicatorSource.uri
@@ -159,11 +157,10 @@ public constructor(
       return
     }
     val imageSource = view.readableMapToImageSource(source, false)
-    if (!BuildConfig.DEBUG && !imageSource.isResource) {
-      throw ReactNoCrashSoftException(
-          "ReactImageView: Only local resources can be used as loading indicator image. Uri: ${imageSource.uri}",
-      )
-    }
+    SoftAssertions.assertCondition(
+      !BuildConfig.DEBUG && !imageSource.isResource,
+      "ReactImageView: Only local resources can be used as loading indicator image. Uri: ${imageSource.uri}")
+
     view.setLoadingIndicatorSource(imageSource.uri.toString())
   }
 
