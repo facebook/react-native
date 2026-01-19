@@ -90,7 +90,7 @@ PODS:
     - React-utils
     - ReactNativeDependencies
     - Yoga
-  - React-Core-prebuilt (0.84.0-rc.0):
+  - React-Core-prebuilt (0.84.0-rc.1):
     - ReactNativeDependencies
   - React-Core/CoreModulesHeaders (0.84.0-rc.1):
     - hermes-engine
@@ -2149,7 +2149,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FBLazyVector: d54cd72418de7becb27bb234d9662ba7a4e8f749
-  hermes-engine: fece12ac93c1a535ca7cca715bf897c53a1f9bf4
+  hermes-engine: 429a3baf2a7d586b7db78a080ec363c2dd1944a8
   MyNativeView: a3b2ac7d731760df8f60e2bd44831ed726a111ab
   NativeCxxModuleExample: 3e507cb1a5d566a2c3f7a0226ad2abbdfbcb3c5f
   OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
@@ -2161,7 +2161,7 @@ SPEC CHECKSUMS:
   React: 40ce4e640586933fce87cef4b29c2552fbf33eb6
   React-callinvoker: 8c166f462df0409d655748f409b0ccf0e06521ac
   React-Core: d080b769ddaacef3a41fceb09d439363df313450
-  React-Core-prebuilt: e7fa6227c9298a24b98f641c08b829d484c1bd3b
+  React-Core-prebuilt: 8312737ef8a73dae47f3735b3fea78f1de05c5d6
   React-CoreModules: 66f9bf2d50ad3126bc1d66349ee774296f914d1d
   React-cxxreact: c9a643211a1b7d19f214afc8cb62734255f96ac7
   React-debug: dc75b1095af6c7a5b0c667d684699b1ef7e187d1
@@ -2225,10 +2225,10 @@ SPEC CHECKSUMS:
   ReactCodegen: 58886bbb2c4ada942f76b5c160b169cba6ebb1d8
   ReactCommon: f82028d885ce350e77d7c82c8d76e623987bae09
   ReactCommon-Samples: b08b176a185419adb5b5830f3d66e9281262110c
-  ReactNativeDependencies: 31558c329ed81e99875c98fddcd736c90c60c415
+  ReactNativeDependencies: 86889140c11ad7a553fe0e41b64e9901c832f796
   ScreenshotManager: 60ccb001ad608b89169ac48be9de06509b12ce69
   Yoga: 0fd29f50ec0567c368fa938954c576e40b6fc368
 
 PODFILE CHECKSUM: 59f1e7d58cffbfafbeb3df31151743dd4c9a52e8
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
