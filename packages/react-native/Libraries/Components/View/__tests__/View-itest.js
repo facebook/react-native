@@ -313,16 +313,8 @@ describe('<View>', () => {
           root.getRenderedOutput({props: ['pointerEvents']}).toJSX(),
         ).toEqual(null);
       });
-      it('box-only propagates to the mounting layer, does not unflatten', () => {
+      it('box-only propagates to the mounting layer, unflattens', () => {
         const root = Fantom.createRoot();
-
-        Fantom.runTask(() => {
-          root.render(<View collapsable={false} pointerEvents="box-only" />);
-        });
-
-        expect(
-          root.getRenderedOutput({props: ['pointerEvents']}).toJSX(),
-        ).toEqual(<rn-view pointerEvents="box-only" />);
 
         Fantom.runTask(() => {
           root.render(<View pointerEvents="box-only" />);
@@ -330,7 +322,7 @@ describe('<View>', () => {
 
         expect(
           root.getRenderedOutput({props: ['pointerEvents']}).toJSX(),
-        ).toEqual(null);
+        ).toEqual(<rn-view pointerEvents="box-only" />);
       });
       it('none propagates to the mounting layer, unflattens', () => {
         const root = Fantom.createRoot();
