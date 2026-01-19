@@ -6,6 +6,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <cstdint>
 #import <memory>
 
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -43,6 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
                        forShadowView:(const facebook::react::ShadowView &)shadowView;
 
 - (void)schedulerDidSynchronouslyUpdateViewOnUIThread:(facebook::react::Tag)reactTag props:(folly::dynamic)props;
+
+// Measure APIs (used by Fabric `measure` / `measureInWindow`).
+- (void)schedulerMeasure:(ReactTag)surfaceId
+                reactTag:(ReactTag)reactTag
+                inWindow:(BOOL)inWindow
+              callbackId:(int64_t)callbackId;
 @end
 
 /**
@@ -74,6 +81,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addEventListener:(const std::shared_ptr<facebook::react::EventListener> &)listener;
 
 - (void)removeEventListener:(const std::shared_ptr<facebook::react::EventListener> &)listener;
+
+- (void)onMeasureResultWithCallbackId:(int64_t)callbackId
+                             inWindow:(BOOL)inWindow
+                              success:(BOOL)success
+                                    x:(double)x
+                                    y:(double)y
+                                width:(double)width
+                               height:(double)height;
 
 @end
 
