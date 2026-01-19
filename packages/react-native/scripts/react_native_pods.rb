@@ -75,7 +75,7 @@ def use_react_native! (
   error_if_try_to_use_jsc_from_core()
   warn_if_new_arch_disabled()
 
-  react_native_path = Pathname.pwd.join(path)
+  react_native_path = Pod::Config.instance.installation_root.join(path)
   prefix = react_native_path.relative_path_from(Pod::Config.instance.installation_root)
 
   hermes_enabled= true
@@ -106,7 +106,7 @@ def use_react_native! (
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
 
-  CodegenUtils.clean_up_build_folder(path, $CODEGEN_OUTPUT_DIR)
+  CodegenUtils.clean_up_build_folder(react_native_path, $CODEGEN_OUTPUT_DIR)
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
