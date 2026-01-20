@@ -72,6 +72,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   sRuntimeDiagnosticFlags = [flags copy];
 }
 
+@interface RCTBundleProvider : NSObject
+- (void)setBundle:(std::shared_ptr<const JSBigString>)bundleBuffer;
+- (void)setSourceURL:(NSString *)sourceURL;
+@end
+
 @interface RCTBridgelessDisplayLinkModuleHolder : NSObject <RCTDisplayLinkModuleHolder>
 - (instancetype)initWithModule:(id<RCTBridgeModule>)module;
 @end
@@ -113,6 +118,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTPerformanceLogger *_performanceLogger;
   RCTDisplayLink *_displayLink;
   RCTTurboModuleManager *_turboModuleManager;
+  RCTBundleProvider *_bundleProvider;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
@@ -131,6 +137,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
+                  bundleProvider:(RCTBundleProvider *)bundleProvider
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
@@ -139,6 +146,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   return [self initWithDelegate:delegate
                 jsRuntimeFactory:jsRuntimeFactory
                    bundleManager:bundleManager
+                  bundleProvider:bundleProvider
       turboModuleManagerDelegate:tmmDelegate
                   moduleRegistry:moduleRegistry
            parentInspectorTarget:parentInspectorTarget
@@ -149,6 +157,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
+                  bundleProvider:(RCTBundleProvider *)bundleProvider
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
@@ -164,9 +173,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _jsRuntimeFactory = jsRuntimeFactory;
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
+    _bundleProvider = bundleProvider;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
+                                                                    bundleProvider:bundleProvider
                                                                   callableJSModules:[RCTCallableJSModules new]];
     _devMenuConfigurationDecorator =
 #if RCT_DEV_MENU
@@ -601,8 +612,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     return;
   }
 
-  auto script = std::make_unique<NSDataBigString>(source.data);
+  auto script = std::make_shared<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
+
+  [_bundleProvider setBundle:script];
+  [_bundleProvider setSourceURL:@(url)];
 
   auto beforeLoad = [waitUntilModuleSetupComplete = self->_waitUntilModuleSetupComplete](jsi::Runtime &_) {
     if (waitUntilModuleSetupComplete) {
@@ -612,7 +626,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto afterLoad = [](jsi::Runtime &_) {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
   };
-  _reactInstance->loadScript(std::move(script), url, beforeLoad, afterLoad);
+  _reactInstance->loadScript(script, url, beforeLoad, afterLoad);
 }
 
 - (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime

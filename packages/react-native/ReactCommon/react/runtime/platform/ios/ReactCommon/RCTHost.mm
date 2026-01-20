@@ -10,6 +10,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBundleProvider.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTFabricSurface.h>
@@ -116,6 +117,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   NSURL *_oldDelegateBundleURL;
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
+  RCTBundleProvider *_bundleProvider;
   RCTHostBundleURLProvider _bundleURLProvider;
   RCTHostJSEngineProvider _jsEngineProvider;
 
@@ -184,6 +186,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
     _bundleManager = [[RCTBundleManager alloc] initWithBundleConfig:bundleConfiguration];
     _moduleRegistry = [RCTModuleRegistry new];
+    _bundleProvider = [RCTBundleProvider new];
     _jsEngineProvider = [jsEngineProvider copy];
     _launchOptions = [launchOptions copy];
 
@@ -265,6 +268,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   _instance = [[RCTInstance alloc] initWithDelegate:self
                                    jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
+                                    bundleProvider:_bundleProvider
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
@@ -469,6 +473,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   _instance = [[RCTInstance alloc] initWithDelegate:self
                                    jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
+                                     bundleProvider:_bundleProvider
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()

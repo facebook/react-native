@@ -22,6 +22,7 @@
 @class RCTModuleRegistry;
 @class RCTViewRegistry;
 @class RCTCallableJSModules;
+@class RCTBundleProvider;
 
 /**
  * The type of a block that is capable of sending a response to a bridged
@@ -141,6 +142,16 @@ RCT_EXTERN_C_END
  * RCTBundleManager!` to your module.
  */
 @property (nonatomic, weak, readwrite) RCTBundleManager *bundleManager;
+
+/**
+ * A reference to the RCTBundleProvider. Useful for modules that need to use
+ the app's JavaScript bundle and sourceURL.
+ *
+ * To implement this in your module, just add `@synthesize bundleProvider =
+ * _bundleProvider;`. If using Swift, add `@objc var bundleProvider:
+ * RCTBundleProvider!` to your module.
+ */
+@property (nonatomic, weak, readwrite) RCTBundleProvider *bundleProvider;
 
 /**
  * A reference to an RCTCallableJSModules. Useful for modules that need to

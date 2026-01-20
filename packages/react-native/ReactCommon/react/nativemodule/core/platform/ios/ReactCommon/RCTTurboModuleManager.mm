@@ -791,6 +791,7 @@ typedef struct {
                                                          moduleRegistry:_bridge.moduleRegistry
                                                 viewRegistry_DEPRECATED:nil
                                                           bundleManager:nil
+                                                        bundleProvider:nil
                                                       callableJSModules:nil];
     [_bridge registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:data];
   }
