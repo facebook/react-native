@@ -16,18 +16,6 @@
 
 namespace facebook::react {
 
-UIManagerNativeAnimatedDelegateBackendImpl::
-    UIManagerNativeAnimatedDelegateBackendImpl(
-        std::weak_ptr<UIManagerAnimationBackend> animationBackend)
-    : animationBackend_(std::move(animationBackend)) {}
-
-void UIManagerNativeAnimatedDelegateBackendImpl::runAnimationFrame() {
-  if (auto animationBackendStrong = animationBackend_.lock()) {
-    animationBackendStrong->onAnimationFrame(
-        std::chrono::steady_clock::now().time_since_epoch().count() / 1000);
-  }
-}
-
 static inline Props::Shared cloneProps(
     AnimatedProps& animatedProps,
     const ShadowNode& shadowNode) {

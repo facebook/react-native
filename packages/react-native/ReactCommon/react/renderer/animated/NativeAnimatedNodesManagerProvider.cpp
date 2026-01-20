@@ -95,10 +95,6 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(animationBackend);
-
-      nativeAnimatedDelegate_ =
-          std::make_shared<UIManagerNativeAnimatedDelegateBackendImpl>(
-              animationBackend);
 #endif
     } else {
       nativeAnimatedNodesManager_ =
