@@ -108,7 +108,7 @@ class AppStateImpl {
   addEventListener<K: AppStateEvent>(
     type: K,
     handler: (...AppStateEventDefinitions[K]) => void,
-    options?: ?{|once?: ?boolean, signal?: ?AbortSignal|},
+    options?: ?{|once?: ?boolean, signal?: ?mixed|},
   ): EventSubscription {
     return adaptToEventTarget(
       (...args) => this._addEventListener(...args),

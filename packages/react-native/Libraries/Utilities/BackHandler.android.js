@@ -60,7 +60,7 @@ type TBackHandler = {
   +addEventListener: (
     eventName: BackPressEventName,
     handler: BackPressHandler,
-    options?: ?{|once?: ?boolean, signal?: ?AbortSignal|},
+    options?: ?{|once?: ?boolean, signal?: ?mixed|},
   ) => {remove: () => void, ...},
 };
 
@@ -98,7 +98,7 @@ const BackHandler: TBackHandler = {
   addEventListener: function (
     eventName: BackPressEventName,
     handler: BackPressHandler,
-    options?: ?{|once?: ?boolean, signal?: ?AbortSignal|},
+    options?: ?{|once?: ?boolean, signal?: ?mixed|},
   ): {remove: () => void, ...} {
     return adaptToEventTarget(addListener, eventName, handler, options);
   },

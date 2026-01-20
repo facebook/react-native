@@ -17,39 +17,57 @@ import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 export const adaptToEventTarget = <
   R: EventSubscription | {remove(): void, ...},
 >(
-  addEventListener: (
-    ...// $FlowFixMe[unclear-type]
-    args: any[]
-  ) => R,
+  // $FlowFixMe[unclear-type]
+  addEventListener: (...args: any[]) => R,
   type: mixed,
   listener: mixed,
-  options?: ?{|once?: ?boolean, signal?: ?AbortSignal|},
+  options?: ?{|once?: ?boolean, signal?: ?mixed|},
 ): R => {
   // Extract options to avoid mutation issues
-  const abortSignal = options?.signal;
+  // $FlowFixMe[incompatible-type]
+  const signal: ?AbortSignal = options?.signal;
   const once = options?.once;
 
+  if (signal !== undefined && !(signal instanceof AbortSignal)) {
+    throw new TypeError(
+      "Failed to execute 'addEventListener': Failed to convert the 'signal' value to 'AbortSignal'.",
+    );
+  }
+
   const subscription: R = addEventListener(type, (...args) => {
-    once === true && subscription.remove();
+    // $FlowFixMe[sketchy-null-bool]
+    if (once) {
+      subscription.remove();
+      signal?.removeEventListener('abort', onAbort);
+    }
     // $FlowFixMe[not-a-function]
-    listener(...args);
+    return listener(...args);
   });
 
   // If already aborted, remove subscription immediately
-  if (abortSignal?.aborted) {
+  if (signal?.aborted) {
     subscription.remove();
     return subscription;
   }
 
   // Remove subscription if the abort signal is triggered
-  if (abortSignal) {
-    abortSignal.addEventListener(
-      'abort',
-      () => subscription.remove(),
-      // Note: `once` option is supported by `event-target-shim` which is used by `abort-controller`
-      {once: true},
-    );
-  }
+  const onAbort = () => subscription.remove();
+  signal?.addEventListener('abort', onAbort, {once: true}); // Note: `once` option is supported by `event-target-shim` which is used by `abort-controller` polyfill
 
-  return subscription;
+  // $FlowFixMe[incompatible-type]
+  return Object.create(
+    // $FlowFixMe[not-an-object]
+    subscription,
+    {
+      remove: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value: () => {
+          subscription.remove();
+          signal?.removeEventListener('abort', onAbort);
+        },
+      },
+    },
+  );
 };

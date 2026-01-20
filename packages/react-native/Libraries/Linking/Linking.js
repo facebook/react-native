@@ -36,7 +36,7 @@ class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
   addEventListener<K: keyof LinkingEventDefinitions>(
     eventType: K,
     listener: (...LinkingEventDefinitions[K]) => unknown,
-    options?: ?{|once?: ?boolean, signal?: ?AbortSignal|},
+    options?: ?{|once?: ?boolean, signal?: ?mixed|},
   ): EventSubscription {
     return adaptToEventTarget(
       (...args) => this.addListener(...args),

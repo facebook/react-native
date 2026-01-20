@@ -107,7 +107,7 @@ class Dimensions {
   static addEventListener(
     type: 'change',
     handler: Function,
-    options?: ?{|once?: ?boolean, signal?: ?AbortSignal|},
+    options?: ?{|once?: ?boolean, signal?: ?mixed|},
   ): EventSubscription {
     invariant(
       type === 'change',

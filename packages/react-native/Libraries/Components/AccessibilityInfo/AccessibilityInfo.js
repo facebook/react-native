@@ -429,7 +429,7 @@ const AccessibilityInfo = {
     eventName: K,
     // $FlowFixMe[incompatible-type] - Flow bug with unions and generics (T128099423)
     handler: (...AccessibilityEventDefinitions[K]) => void,
-    options?: ?{|once?: ?boolean, signal?: ?AbortSignal|},
+    options?: ?{|once?: ?boolean, signal?: ?mixed|},
   ): EventSubscription {
     const deviceEventName = EventNames.get(eventName);
     return deviceEventName == null
