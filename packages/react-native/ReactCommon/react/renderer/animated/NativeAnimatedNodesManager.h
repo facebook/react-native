@@ -127,8 +127,8 @@ class NativeAnimatedNodesManager {
       AnimationMutations &mutations,
       AnimatedPropsBuilder &propsBuilder,
       bool hasLayoutUpdates = false);
-  AnimationMutations onAnimationFrameForBackend(AnimatedPropsBuilder &propsBuilder, double timestamp);
-  AnimationMutations pullAnimationMutations();
+  AnimationMutations onAnimationFrameForBackend(AnimatedPropsBuilder &propsBuilder, AnimationTimestamp timestamp);
+  AnimationMutations pullAnimationMutations(AnimationTimestamp timestamp);
 #endif
 
 #pragma mark - Drivers

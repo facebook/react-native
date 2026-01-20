@@ -25,7 +25,7 @@ class AnimationChoreographer {
   {
     animationBackend_ = animationBackend;
   }
-  void onAnimationFrame(float timestamp) const
+  void onAnimationFrame(AnimationTimestamp timestamp) const
   {
     if (auto animationBackend = animationBackend_.lock()) {
       animationBackend->onAnimationFrame(timestamp);
