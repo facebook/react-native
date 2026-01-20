@@ -424,8 +424,6 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
 
     const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
-    console.log('Image props=', nativeProps);
-
     return (
       <ImageAnalyticsTagContext.Consumer>
         {analyticTag => {
