@@ -51,11 +51,17 @@ AnimationBackend::AnimationBackend(
 }
 
 void AnimationBackend::onAnimationFrame(double timestamp) {
+  std::vector<CallbackWithId> callbacksCopy;
   std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
   std::set<SurfaceId> asyncFlushSurfaces;
 
-  for (auto& callback : callbacks) {
-    auto mutations = callback(static_cast<float>(timestamp));
+  {
+    std::lock_guard lock(mutex_);
+    callbacksCopy = callbacks;
+  }
+
+  for (auto& callbackWithId : callbacksCopy) {
+    auto mutations = callbackWithId.callback(static_cast<float>(timestamp));
     asyncFlushSurfaces.merge(mutations.asyncFlushSurfaces);
     for (auto& mutation : mutations.batch) {
       const auto family = mutation.family;
@@ -82,20 +88,34 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
   requestAsyncFlushForSurfaces(asyncFlushSurfaces);
 }
 
-void AnimationBackend::start(const Callback& callback, bool /*isAsync*/) {
-  callbacks.push_back(callback);
+CallbackId AnimationBackend::start(const Callback& callback) {
+  std::lock_guard lock(mutex_);
+
+  auto callbackId = nextCallbackId_++;
+  callbacks.push_back({.callbackId = callbackId, .callback = callback});
   if (!isRenderCallbackStarted_) {
     animationChoreographer_->resume();
     isRenderCallbackStarted_ = true;
   }
+
+  return callbackId;
 }
 
-void AnimationBackend::stop(bool /*isAsync*/) {
-  if (isRenderCallbackStarted_) {
+void AnimationBackend::stop(CallbackId callbackId) {
+  std::lock_guard lock(mutex_);
+
+  auto it = std::find_if(callbacks.begin(), callbacks.end(), [&](auto& c) {
+    return c.callbackId == callbackId;
+  });
+  if (it == callbacks.end()) {
+    return;
+  }
+
+  callbacks.erase(it);
+  if (isRenderCallbackStarted_ && callbacks.empty()) {
     animationChoreographer_->pause();
     isRenderCallbackStarted_ = false;
   }
-  callbacks.clear();
 }
 
 void AnimationBackend::trigger() {
