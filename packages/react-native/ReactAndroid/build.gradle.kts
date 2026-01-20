@@ -268,6 +268,8 @@ val preparePrefab by
                       // yoga
                       Pair("../ReactCommon/yoga/", ""),
                       Pair("src/main/jni/first-party/yogajni/jni", ""),
+                      // oscompat
+                      Pair("../ReactCommon/oscompat/", "oscompat/"),
                   ),
               ),
               PrefabPreprocessingEntry(
