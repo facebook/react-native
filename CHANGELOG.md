@@ -4,11 +4,11 @@
 
 ### Fixed
 
-- Fix empty screen for RNDT Network and Performance panels ([c1ff074436](https://github.com/facebook/react-native/commit/c1ff074436ed0c9f66f7e23677b11f145bc282d7) by [@huntie](https://github.com/huntie))
+- **React Native DevTools**: Fix empty screen for RNDT Network and Performance panels ([c1ff074436](https://github.com/facebook/react-native/commit/c1ff074436ed0c9f66f7e23677b11f145bc282d7) by [@huntie](https://github.com/huntie))
 
 #### iOS specific
 
-- Fix glog namespace issue to allow using interop mode of objcxx ([68aab492e1](https://github.com/facebook/react-native/commit/68aab492e116a60daf33bc3992196b510a497100) by [@riteshshukla04](https://github.com/riteshshukla04))
+- **Build**: Fix glog namespace issue to allow using interop mode of objcxx ([68aab492e1](https://github.com/facebook/react-native/commit/68aab492e116a60daf33bc3992196b510a497100) by [@riteshshukla04](https://github.com/riteshshukla04))
 
 ## v0.84.0-rc.1
 
