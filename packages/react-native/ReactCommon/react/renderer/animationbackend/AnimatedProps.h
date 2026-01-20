@@ -24,6 +24,7 @@ enum PropName {
   POSITION,
   FLEX,
   TRANSFORM,
+  TRANSFORM_ORIGIN,
   BACKGROUND_COLOR,
   SHADOW_COLOR,
   SHADOW_OFFSET,
@@ -253,6 +254,10 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case TRANSFORM:
       viewProps.transform = get<Transform>(animatedProp);
+      break;
+
+    case TRANSFORM_ORIGIN:
+      viewProps.transformOrigin = get<TransformOrigin>(animatedProp);
       break;
 
     case BACKGROUND_COLOR:
