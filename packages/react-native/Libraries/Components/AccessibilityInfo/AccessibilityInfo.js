@@ -11,6 +11,7 @@
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 
+import {adaptToEventTarget} from '../../EventEmitter/EventTargetLike';
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import {sendAccessibilityEvent} from '../../ReactNative/RendererProxy';
 import Platform from '../../Utilities/Platform';
@@ -428,12 +429,18 @@ const AccessibilityInfo = {
     eventName: K,
     // $FlowFixMe[incompatible-type] - Flow bug with unions and generics (T128099423)
     handler: (...AccessibilityEventDefinitions[K]) => void,
+    options?: ?{|once?: ?boolean, signal?: ?AbortSignal|},
   ): EventSubscription {
     const deviceEventName = EventNames.get(eventName);
     return deviceEventName == null
       ? {remove(): void {}}
       : // $FlowFixMe[incompatible-type]
-        RCTDeviceEventEmitter.addListener(deviceEventName, handler);
+        adaptToEventTarget(
+          (...args) => RCTDeviceEventEmitter.addListener(...args),
+          eventName,
+          handler,
+          options,
+        );
   },
 
   /**
