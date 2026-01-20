@@ -123,7 +123,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 - (void)displayLinkTick:(CADisplayLink *)sender
 {
   if (_choreographer != nullptr) {
-    _choreographer->onAnimationFrame(static_cast<float>(sender.targetTimestamp * 1000));
+    _choreographer->onAnimationFrame(std::chrono::duration<double>(sender.targetTimestamp));
   }
 }
 @end

@@ -14,15 +14,17 @@
 namespace facebook::react {
 
 struct AnimationMutations;
+
+using AnimationTimestamp = std::chrono::duration<double, std::milli>;
 using CallbackId = uint64_t;
 
 class UIManagerAnimationBackend {
  public:
-  using Callback = std::function<AnimationMutations(float)>;
+  using Callback = std::function<AnimationMutations(AnimationTimestamp)>;
 
   virtual ~UIManagerAnimationBackend() = default;
 
-  virtual void onAnimationFrame(double timestamp) = 0;
+  virtual void onAnimationFrame(AnimationTimestamp timestamp) = 0;
   virtual CallbackId start(const Callback &callback) = 0;
   virtual void stop(CallbackId callbackId) = 0;
   virtual void clearRegistry(SurfaceId surfaceId) = 0;

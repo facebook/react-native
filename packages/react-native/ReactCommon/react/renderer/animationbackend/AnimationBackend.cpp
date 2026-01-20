@@ -50,7 +50,7 @@ AnimationBackend::AnimationBackend(
   react_native_assert(uiManager_.expired() == false);
 }
 
-void AnimationBackend::onAnimationFrame(double timestamp) {
+void AnimationBackend::onAnimationFrame(AnimationTimestamp timestamp) {
   std::vector<CallbackWithId> callbacksCopy;
   std::unordered_map<SurfaceId, SurfaceUpdates> surfaceUpdates;
   std::set<SurfaceId> asyncFlushSurfaces;
@@ -61,7 +61,7 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
   }
 
   for (auto& callbackWithId : callbacksCopy) {
-    auto mutations = callbackWithId.callback(static_cast<float>(timestamp));
+    auto mutations = callbackWithId.callback(timestamp);
     asyncFlushSurfaces.merge(mutations.asyncFlushSurfaces);
     for (auto& mutation : mutations.batch) {
       const auto family = mutation.family;
@@ -119,8 +119,7 @@ void AnimationBackend::stop(CallbackId callbackId) {
 }
 
 void AnimationBackend::trigger() {
-  onAnimationFrame(
-      std::chrono::steady_clock::now().time_since_epoch().count() / 1000);
+  onAnimationFrame(std::chrono::steady_clock::now().time_since_epoch());
 }
 
 void AnimationBackend::commitUpdates(

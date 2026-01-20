@@ -56,7 +56,7 @@ void FabricUIManagerBinding::driveCxxAnimations() {
 }
 
 void FabricUIManagerBinding::driveAnimationBackend(jdouble frameTimeMs) {
-  animationChoreographer_->onAnimationFrame(static_cast<float>(frameTimeMs));
+  animationChoreographer_->onAnimationFrame(AnimationTimestamp{frameTimeMs});
 }
 
 void FabricUIManagerBinding::drainPreallocateViewsQueue() {

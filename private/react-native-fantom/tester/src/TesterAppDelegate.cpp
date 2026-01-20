@@ -265,10 +265,9 @@ void TesterAppDelegate::produceFramesForDuration(double milliseconds) {
 
 void TesterAppDelegate::runUITick() {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
-                            StubClock::now().time_since_epoch())
-                            .count();
-    animationChoreographer_->runUITick(static_cast<float>(microseconds) / 1000);
+    auto milliseconds = std::chrono::duration_cast<AnimationTimestamp>(
+        StubClock::now().time_since_epoch());
+    animationChoreographer_->runUITick(milliseconds);
   } else if (onAnimationRender_) {
     onAnimationRender_();
   }

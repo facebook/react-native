@@ -18,7 +18,7 @@ void TesterAnimationChoreographer::pause() {
   isPaused_ = true;
 }
 
-void TesterAnimationChoreographer::runUITick(float timestamp) {
+void TesterAnimationChoreographer::runUITick(AnimationTimestamp timestamp) {
   if (!isPaused_) {
     onAnimationFrame(timestamp);
   }

@@ -17,7 +17,7 @@ class TesterAnimationChoreographer : public AnimationChoreographer {
  public:
   void resume() override;
   void pause() override;
-  void runUITick(float timestamp);
+  void runUITick(AnimationTimestamp timestamp);
 
  private:
   bool isPaused_{false};

@@ -37,7 +37,7 @@ struct AnimationMutations {
   std::set<SurfaceId> asyncFlushSurfaces;
 };
 
-using Callback = std::function<AnimationMutations(float)>;
+using Callback = std::function<AnimationMutations(AnimationTimestamp)>;
 
 struct CallbackWithId {
   CallbackId callbackId;
@@ -58,7 +58,7 @@ class AnimationBackend : public UIManagerAnimationBackend {
   void clearRegistry(SurfaceId surfaceId) override;
   void registerJSInvoker(std::shared_ptr<CallInvoker> jsInvoker) override;
 
-  void onAnimationFrame(double timestamp) override;
+  void onAnimationFrame(AnimationTimestamp timestamp) override;
   void trigger() override;
   CallbackId start(const Callback &callback) override;
   void stop(CallbackId callbackId) override;
