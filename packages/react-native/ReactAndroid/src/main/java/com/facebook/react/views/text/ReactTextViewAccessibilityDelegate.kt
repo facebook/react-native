@@ -33,19 +33,20 @@ internal class ReactTextViewAccessibilityDelegate(
   }
 
   companion object {
+    fun needsDelegate(view: View): Boolean {
+      return view.getTag(R.id.accessibility_role) != null ||
+          view.getTag(R.id.accessibility_state) != null ||
+          view.getTag(R.id.accessibility_actions) != null ||
+          view.getTag(R.id.react_test_id) != null ||
+          view.getTag(R.id.accessibility_collection_item) != null ||
+          view.getTag(R.id.accessibility_links) != null ||
+          view.getTag(R.id.role) != null
+    }
+
     fun setDelegate(view: View, originalFocus: Boolean, originalImportantForAccessibility: Int) {
       // if a view already has an accessibility delegate, replacing it could cause
       // problems,so leave it alone.
-      if (
-          !ViewCompat.hasAccessibilityDelegate(view) &&
-              (view.getTag(R.id.accessibility_role) != null ||
-                  view.getTag(R.id.accessibility_state) != null ||
-                  view.getTag(R.id.accessibility_actions) != null ||
-                  view.getTag(R.id.react_test_id) != null ||
-                  view.getTag(R.id.accessibility_collection_item) != null ||
-                  view.getTag(R.id.accessibility_links) != null ||
-                  view.getTag(R.id.role) != null)
-      ) {
+      if (!ViewCompat.hasAccessibilityDelegate(view) && needsDelegate(view)) {
         ViewCompat.setAccessibilityDelegate(
             view,
             ReactTextViewAccessibilityDelegate(
@@ -58,14 +59,16 @@ internal class ReactTextViewAccessibilityDelegate(
     }
 
     fun resetDelegate(view: View, originalFocus: Boolean, originalImportantForAccessibility: Int) {
-      ViewCompat.setAccessibilityDelegate(
-          view,
-          ReactTextViewAccessibilityDelegate(
-              view,
-              originalFocus,
-              originalImportantForAccessibility,
-          ),
-      )
+      if (ViewCompat.hasAccessibilityDelegate(view) || needsDelegate(view)) {
+        ViewCompat.setAccessibilityDelegate(
+            view,
+            ReactTextViewAccessibilityDelegate(
+                view,
+                originalFocus,
+                originalImportantForAccessibility,
+            ),
+        )
+      }
     }
   }
 
