@@ -29,6 +29,7 @@ type TextInputChangeEventData = Readonly<{
   eventCount: number,
   target: number,
   text: string,
+  selection?: Selection,
 }>;
 
 export type TextInputChangeEvent =
