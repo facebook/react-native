@@ -68,6 +68,10 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
       viewProps.transform = snapshot.props.transform;
       break;
 
+    case TRANSFORM_ORIGIN:
+      viewProps.transformOrigin = snapshot.props.transformOrigin;
+      break;
+
     case BORDER_RADII:
       viewProps.borderRadii = snapshot.props.borderRadii;
       break;

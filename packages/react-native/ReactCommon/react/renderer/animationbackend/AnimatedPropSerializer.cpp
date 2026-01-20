@@ -74,6 +74,34 @@ void packTransform(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
       folly::dynamic::array(folly::dynamic::object("matrix", matrixArray)));
 }
 
+std::string unitTypeToString(UnitType unit) {
+  switch (unit) {
+    case UnitType::Undefined:
+      return "undefined";
+    case UnitType::Point:
+      return "point";
+    case UnitType::Percent:
+      return "percent";
+    default:
+      throw std::runtime_error("Unknown unit type");
+  }
+}
+
+void packTransformOrigin(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& transformOrigin = get<TransformOrigin>(animatedProp);
+  auto originArray = folly::dynamic::array();
+  for (const auto& xyValue : transformOrigin.xy) {
+    folly::dynamic valueObj = folly::dynamic::object();
+    valueObj["value"] = xyValue.value;
+    valueObj["unit"] = unitTypeToString(xyValue.unit);
+    originArray.push_back(valueObj);
+  }
+  originArray.push_back(transformOrigin.z);
+  dyn.insert("transformOrigin", originArray);
+}
+
 void packBackgroundColor(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
@@ -548,6 +576,10 @@ void packAnimatedProp(
 
     case TRANSFORM:
       packTransform(dyn, *animatedProp);
+      break;
+
+    case TRANSFORM_ORIGIN:
+      packTransformOrigin(dyn, *animatedProp);
       break;
 
     case BACKGROUND_COLOR:

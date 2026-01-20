@@ -56,9 +56,13 @@ struct AnimatedPropsBuilder {
   {
     props.push_back(std::make_unique<AnimatedProp<yoga::FloatOptional>>(FLEX, value));
   }
-  void setTransform(Transform &t)
+  void setTransform(const Transform &t)
   {
-    props.push_back(std::make_unique<AnimatedProp<Transform>>(TRANSFORM, std::move(t)));
+    props.push_back(std::make_unique<AnimatedProp<Transform>>(TRANSFORM, t));
+  }
+  void setTransformOrigin(const TransformOrigin &value)
+  {
+    props.push_back(std::make_unique<AnimatedProp<TransformOrigin>>(TRANSFORM_ORIGIN, value));
   }
   void setBackgroundColor(SharedColor value)
   {
