@@ -292,6 +292,9 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case BACKFACE_VISIBILITY:
       viewProps.backfaceVisibility = snapshot.props.backfaceVisibility;
       break;
+
+    default:
+      throw std::runtime_error("Unknown property name");
   }
 }
 
