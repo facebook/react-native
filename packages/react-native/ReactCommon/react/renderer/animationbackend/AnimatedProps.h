@@ -62,7 +62,8 @@ enum PropName {
   ISOLATION,
   CURSOR,
   BOX_SHADOW,
-  MIX_BLEND_MODE
+  MIX_BLEND_MODE,
+  BACKFACE_VISIBILITY
 };
 
 struct AnimatedPropBase {
@@ -408,6 +409,10 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case MIX_BLEND_MODE:
       viewProps.mixBlendMode = get<BlendMode>(animatedProp);
+      break;
+
+    case BACKFACE_VISIBILITY:
+      viewProps.backfaceVisibility = get<BackfaceVisibility>(animatedProp);
       break;
 
     default:

@@ -462,9 +462,9 @@ void packBoxShadow(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
 void packMixBlendMode(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
-  const auto& blendMode = get<BlendMode>(animatedProp);
+  const auto& mixBlendMode = get<BlendMode>(animatedProp);
   std::string blendModeStr;
-  switch (blendMode) {
+  switch (mixBlendMode) {
     case BlendMode::Normal:
       blendModeStr = "normal";
       break;
@@ -517,6 +517,25 @@ void packMixBlendMode(
       throw std::runtime_error("Unknown blend mode");
   }
   dyn.insert("mixBlendMode", blendModeStr);
+}
+
+void packBackfaceVisibility(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& backfaceVisibility = get<BackfaceVisibility>(animatedProp);
+  std::string visibilityStr;
+  switch (backfaceVisibility) {
+    case BackfaceVisibility::Auto:
+      visibilityStr = "auto";
+      break;
+    case BackfaceVisibility::Visible:
+      visibilityStr = "visible";
+      break;
+    case BackfaceVisibility::Hidden:
+      visibilityStr = "hidden";
+      break;
+  }
+  dyn.insert("backfaceVisibility", visibilityStr);
 }
 
 void packAnimatedProp(
@@ -605,6 +624,10 @@ void packAnimatedProp(
 
     case MIX_BLEND_MODE:
       packMixBlendMode(dyn, *animatedProp);
+      break;
+
+    case BACKFACE_VISIBILITY:
+      packBackfaceVisibility(dyn, *animatedProp);
       break;
 
     case WIDTH:
