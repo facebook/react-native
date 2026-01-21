@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<288cffd334fdaebf18b1bede7bb907c8>>
+ * @generated SignedSource<<e3d7f77795a066ffa164a02d74d7f4d1>>
  */
 
 /**
@@ -465,6 +465,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool useNestedScrollViewAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNestedScrollViewAndroid");
+    return method(javaProvider_);
+  }
+
   bool useSharedAnimatedBackend() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useSharedAnimatedBackend");
@@ -860,6 +866,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useNestedScrollViewAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useNestedScrollViewAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useSharedAnimatedBackend(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useSharedAnimatedBackend();
@@ -1134,6 +1145,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
+      makeNativeMethod(
+        "useNestedScrollViewAndroid",
+        JReactNativeFeatureFlagsCxxInterop::useNestedScrollViewAndroid),
       makeNativeMethod(
         "useSharedAnimatedBackend",
         JReactNativeFeatureFlagsCxxInterop::useSharedAnimatedBackend),
