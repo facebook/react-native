@@ -40,21 +40,21 @@ public class ReactStylesDiffMap(props: ReadableMap) {
 
   public fun toMap(): Map<String, Any?> = backingMap.toHashMap()
 
-  public fun hasKey(name: String): Boolean = backingMap.hasKey(name)
+public fun hasKey(name: String): Boolean = backingMap.hasKey(name)
 
   public fun isNull(name: String): Boolean = backingMap.isNull(name)
 
   public fun getBoolean(name: String, default: Boolean): Boolean =
-      if (backingMap.isNull(name)) default else backingMap.getBoolean(name)
+      if (!backingMap.hasKey(name) || backingMap.isNull(name)) default else backingMap.getBoolean(name)
 
   public fun getDouble(name: String, default: Double): Double =
-      if (backingMap.isNull(name)) default else backingMap.getDouble(name)
+      if (!backingMap.hasKey(name) || backingMap.isNull(name)) default else backingMap.getDouble(name)
 
   public fun getFloat(name: String, default: Float): Float =
-      if (backingMap.isNull(name)) default else backingMap.getDouble(name).toFloat()
+      if (!backingMap.hasKey(name) || backingMap.isNull(name)) default else backingMap.getDouble(name).toFloat()
 
   public fun getInt(name: String, default: Int): Int =
-      if (backingMap.isNull(name)) default else backingMap.getInt(name)
+      if (!backingMap.hasKey(name) || backingMap.isNull(name)) default else backingMap.getInt(name)
 
   public fun getString(name: String): String? = backingMap.getString(name)
 
