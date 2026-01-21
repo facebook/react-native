@@ -562,6 +562,8 @@ void packBackfaceVisibility(
     case BackfaceVisibility::Hidden:
       visibilityStr = "hidden";
       break;
+    default:
+      throw std::runtime_error("Unknown backface visibility");
   }
   dyn.insert("backfaceVisibility", visibilityStr);
 }
@@ -692,6 +694,8 @@ void packAnimatedProp(
     case Z_INDEX:
     case DIRECTION:
       throw std::runtime_error("Tried to synchronously update layout props");
+    default:
+      throw std::runtime_error("Unknown animated prop");
   }
 }
 
