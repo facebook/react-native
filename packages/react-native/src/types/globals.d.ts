@@ -601,6 +601,13 @@ declare global {
      */
     readonly aborted: boolean;
 
+    /**
+     * The **`reason`** read-only property returns a JavaScript value that indicates the abort reason.
+     *
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/AbortSignal/reason)
+     */
+    readonly reason: any;
+
     onabort: (event: AbortEvent) => void;
 
     addEventListener: (
@@ -653,7 +660,7 @@ declare global {
     /**
      * Abort and signal to any observers that the associated activity is to be aborted.
      */
-    abort(): void;
+    abort(reason?: any): void;
   }
 
   interface FileReaderEventMap {
