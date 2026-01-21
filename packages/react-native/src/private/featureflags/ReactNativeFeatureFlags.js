@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b8b1b2973a5c1b1903ea946b15642cf6>>
+ * @generated SignedSource<<39c23183566c77830778d64ad4cc72ad>>
  * @flow strict
  * @noformat
  */
@@ -118,6 +118,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
+  useNestedScrollViewAndroid: Getter<boolean>,
   useSharedAnimatedBackend: Getter<boolean>,
   useTraitHiddenOnAndroid: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
@@ -474,6 +475,10 @@ export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabr
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
+/**
+ * When enabled, ReactScrollView will extend NestedScrollView instead of ScrollView on Android for improved nested scrolling support.
+ */
+export const useNestedScrollViewAndroid: Getter<boolean> = createNativeFlagGetter('useNestedScrollViewAndroid', false);
 /**
  * Use shared animation backend in C++ Animated
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<40870eeb15b0536567bf7bc6c95b7f45>>
+ * @generated SignedSource<<bfd2f53d0eaea739106a1ba206c39b8a>>
  */
 
 /**
@@ -103,6 +103,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
   bool useNativeViewConfigsInBridgelessMode();
+  bool useNestedScrollViewAndroid();
   bool useSharedAnimatedBackend();
   bool useTraitHiddenOnAndroid();
   bool useTurboModuleInterop();
@@ -120,7 +121,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 77> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 78> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -193,6 +194,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
+  std::atomic<std::optional<bool>> useNestedScrollViewAndroid_;
   std::atomic<std::optional<bool>> useSharedAnimatedBackend_;
   std::atomic<std::optional<bool>> useTraitHiddenOnAndroid_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;

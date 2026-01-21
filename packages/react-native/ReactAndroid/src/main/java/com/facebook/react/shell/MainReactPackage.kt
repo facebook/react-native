@@ -52,6 +52,7 @@ import com.facebook.react.views.progressbar.ReactProgressBarViewManager
 import com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+import com.facebook.react.views.scroll.ReactNestedScrollViewManager
 import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
@@ -139,7 +140,8 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactHorizontalScrollViewManager(),
           ReactHorizontalScrollContainerViewManager(),
           ReactProgressBarViewManager(),
-          ReactScrollViewManager(),
+          if (ReactNativeFeatureFlags.useNestedScrollViewAndroid()) ReactNestedScrollViewManager()
+          else ReactScrollViewManager(),
           ReactSwitchManager(),
           ReactSafeAreaViewManager(),
           SwipeRefreshLayoutManager(),
@@ -173,7 +175,11 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactSafeAreaViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactSafeAreaViewManager() },
           ReactScrollViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactScrollViewManager() },
+              ModuleSpec.viewManagerSpec {
+                if (ReactNativeFeatureFlags.useNestedScrollViewAndroid())
+                    ReactNestedScrollViewManager()
+                else ReactScrollViewManager()
+              },
           ReactSwitchManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactSwitchManager() },
           SwipeRefreshLayoutManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { SwipeRefreshLayoutManager() },

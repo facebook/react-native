@@ -806,6 +806,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    useNestedScrollViewAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-01-16',
+        description:
+          'When enabled, ReactScrollView will extend NestedScrollView instead of ScrollView on Android for improved nested scrolling support.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useSharedAnimatedBackend: {
       defaultValue: false,
       metadata: {

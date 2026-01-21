@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1403b30f4dc3d18f39303d91d6824bda>>
+ * @generated SignedSource<<f83c3d5107d900273c09061d6822f83d>>
  */
 
 /**
@@ -95,6 +95,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
+  private var useNestedScrollViewAndroidCache: Boolean? = null
   private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTraitHiddenOnAndroidCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
@@ -808,6 +809,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
+    }
+    return cached
+  }
+
+  override fun useNestedScrollViewAndroid(): Boolean {
+    var cached = useNestedScrollViewAndroidCache
+    if (cached == null) {
+      cached = currentProvider.useNestedScrollViewAndroid()
+      accessedFeatureFlags.add("useNestedScrollViewAndroid")
+      useNestedScrollViewAndroidCache = cached
     }
     return cached
   }
