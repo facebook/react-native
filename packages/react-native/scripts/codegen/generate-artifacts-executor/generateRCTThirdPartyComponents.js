@@ -169,11 +169,10 @@ function findFilesWithExtension(
       return null;
     }
 
-    // Skip hidden folders, that starts with `.` but allow `.pnpm`
-    if (
-      absolutePath.includes(`${path.sep}.`) &&
-      !absolutePath.includes(`${path.sep}.pnpm`)
-    ) {
+    // Skip hidden files/folders (starting with `.`) but allow `.pnpm`
+    // Note: Only check the filename, not the entire path, to avoid false positives
+    // when the workspace itself is under a hidden folder (e.g., ~/.jenkins/)
+    if (file.startsWith('.') && file !== '.pnpm') {
       return null;
     }
 
@@ -226,5 +225,6 @@ function findRCTComponentViewProtocolClass(filepath /*: string */) {
 }
 
 module.exports = {
+  findFilesWithExtension,
   generateRCTThirdPartyComponents,
 };
