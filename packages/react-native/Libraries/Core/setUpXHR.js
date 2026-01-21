@@ -36,9 +36,9 @@ polyfillGlobal('URL', () => require('../Blob/URL').URL);
 polyfillGlobal('URLSearchParams', () => require('../Blob/URL').URLSearchParams);
 polyfillGlobal(
   'AbortController',
-  () => require('abort-controller/dist/abort-controller').AbortController, // flowlint-line untyped-import:off
+  () => require('../vendor/abort-controller/WithTimeoutAndAnyPolyfill').AbortController, // flowlint-line untyped-import:off
 );
 polyfillGlobal(
   'AbortSignal',
-  () => require('abort-controller/dist/abort-controller').AbortSignal, // flowlint-line untyped-import:off
+  () => require('../vendor/abort-controller/WithTimeoutAndAnyPolyfill').AbortSignal, // flowlint-line untyped-import:off
 );

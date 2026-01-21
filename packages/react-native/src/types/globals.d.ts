@@ -626,6 +626,19 @@ declare global {
             capture?: boolean | undefined;
           },
     ) => void;
+
+    /**
+     * The **`AbortSignal.any()`** static method takes an iterable of abort signals and returns an AbortSignal.
+     *
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/AbortSignal/any_static)
+     */
+    static any(signals: AbortSignal[]): AbortSignal;
+    /**
+     * The **`AbortSignal.timeout()`** static method returns an AbortSignal that will automatically abort after a specified time.
+     *
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/AbortSignal/timeout_static)
+     */
+    static timeout(milliseconds: number): AbortSignal;
   }
 
   class AbortController {
