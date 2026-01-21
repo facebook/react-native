@@ -101,20 +101,20 @@ interface Message {
 
 #### Proxy → Device Messages
 
-| Event          | Payload                                    | Description                                   |
-| -------------- | ------------------------------------------ | --------------------------------------------- |
-| `getPages`     | _(none)_                                   | Request current page list. Sent periodically. |
-| `connect`      | `{ pageId: string }`                       | Prepare for debugger connection to page.      |
-| `disconnect`   | `{ pageId: string }`                       | Terminate debugger session for page.          |
-| `wrappedEvent` | `{ pageId: string, wrappedEvent: string }` | Forward CDP message (JSON string) to page.    |
+| Event          | Payload                                                       | Description                                   |
+| -------------- | ------------------------------------------------------------- | --------------------------------------------- |
+| `getPages`     | _(none)_                                                      | Request current page list. Sent periodically. |
+| `connect`      | `{ pageId: string, sessionId: string }`                       | Prepare for debugger connection to page.      |
+| `disconnect`   | `{ pageId: string, sessionId: string }`                       | Terminate debugger session for page.          |
+| `wrappedEvent` | `{ pageId: string, sessionId: string, wrappedEvent: string }` | Forward CDP message (JSON string) to page.    |
 
 #### Device → Proxy Messages
 
-| Event          | Payload                                    | Description                                           |
-| -------------- | ------------------------------------------ | ----------------------------------------------------- |
-| `getPages`     | `Page[]`                                   | Current list of inspectable pages.                    |
-| `disconnect`   | `{ pageId: string }`                       | Notify that page disconnected or rejected connection. |
-| `wrappedEvent` | `{ pageId: string, wrappedEvent: string }` | Forward CDP message (JSON string) from page.          |
+| Event          | Payload                                                        | Description                                           |
+| -------------- | -------------------------------------------------------------- | ----------------------------------------------------- |
+| `getPages`     | `Page[]`                                                       | Current list of inspectable pages.                    |
+| `disconnect`   | `{ pageId: string, sessionId?: string }`                       | Notify that page disconnected or rejected connection. |
+| `wrappedEvent` | `{ pageId: string, sessionId?: string, wrappedEvent: string }` | Forward CDP message (JSON string) from page.          |
 
 #### Page Object
 
@@ -128,9 +128,13 @@ interface Page {
     nativePageReloads?: boolean; // Target keeps the socket open across reloads
     nativeSourceCodeFetching?: boolean; // Target supports Network.loadNetworkResource
     prefersFuseboxFrontend?: boolean; // Target is designed for React Native DevTools
+    supportsMultipleDebuggers?: boolean; // Supports concurrent debugger sessions
   };
 }
 ```
+
+**Note**: The value of `supportsMultipleDebuggers` SHOULD be consistent across
+all pages for a given device.
 
 ### Connection Lifecycle
 
@@ -155,16 +159,18 @@ Debugger            Proxy                        Device
    │                  │                            │
    │── WS Connect ───▶│                            │
    │   ?device&page   │── connect ────────────────▶│
-   │                  │   {pageId}                 │
+   │                  │   {pageId, sessionId}      │
    │                  │                            │
    │── CDP Request ──▶│── wrappedEvent ───────────▶│
-   │                  │   {pageId, wrappedEvent}   │
+   │                  │   {pageId, sessionId,      │
+   │                  │    wrappedEvent}           │
    │                  │                            │
    │                  │◀── wrappedEvent ───────────│
-   │◀── CDP Response ─│   {pageId, wrappedEvent}   │
+   │◀── CDP Response ─│   {pageId, sessionId,      │
+   │                  │    wrappedEvent}           │
    │                  │                            │
    │── WS Close ─────▶│── disconnect ─────────────▶│
-   │                  │   {pageId}                 │
+   │                  │   {pageId, sessionId}      │
 ```
 
 **Connection Rejection:**
@@ -174,12 +180,34 @@ a `disconnect` back to the proxy for that `pageId`.
 
 ### Connection Semantics
 
-1. **One Debugger Per Page**: New debugger connections to an already-connected
-   page disconnect the existing debugger.
+#### Multi-Debugger Support
 
-2. **Device Reconnection**: If a device reconnects with the same `device` ID,
+Multiple debuggers can connect simultaneously to the same page when **both** the
+proxy and device support session multiplexing:
+
+1. **Session IDs**: The proxy assigns a unique, non-empty `sessionId` to each
+   debugger connection. All messages include this `sessionId` for routing. This
+   SHOULD be a UUID or other suitably unique and ephemeral identifier.
+
+2. **Capability Detection**: Devices report `supportsMultipleDebuggers: true` in
+   their page capabilities to indicate session support.
+
+3. **Backwards Compatibility**: Legacy devices ignore `sessionId` fields in
+   incoming messages and don't include them in responses.
+
+#### Connection Rules
+
+1. **Session-Capable Device**: Multiple debuggers can connect to the same page
+   simultaneously. Each connection has an independent session.
+
+2. **Legacy Device (no `supportsMultipleDebuggers`)**: New debugger connections
+   to an already-connected page disconnect the existing debugger. The proxy MUST
+   NOT allow multiple debuggers to connect to the same page.
+
+3. **Device Reconnection**: If a device reconnects with the same `device` ID
+   while debugger connections to the same logical device are open in the proxy,
    the proxy may attempt to preserve active debugger sessions by forwarding them
-   to the new device connection.
+   to the new device.
 
 ### WebSocket Close Reasons
 
