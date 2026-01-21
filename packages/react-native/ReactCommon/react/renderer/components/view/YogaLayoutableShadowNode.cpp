@@ -668,8 +668,13 @@ void YogaLayoutableShadowNode::layoutTree(
     layoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
     layoutMetrics.wasLeftAndRightSwapped = swapLeftAndRight;
     setLayoutMetrics(layoutMetrics);
+    if (layoutContext.includeOriginFromRoot) {
+      setOriginFromRoot(layoutMetrics.frame.origin);
+    }
     yogaNode_.setHasNewLayout(false);
   }
+
+  layoutContext.rootNode = this;
 
   layout(layoutContext);
 }
@@ -727,6 +732,15 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       }
 
       childNode.setLayoutMetrics(newLayoutMetrics);
+
+      if (layoutContext.includeOriginFromRoot) {
+        childNode.setOriginFromRoot(
+            LayoutableShadowNode::computeOriginFromRoot(
+                originFromRoot_,
+                newLayoutMetrics.frame,
+                childNode.getTransform(),
+                childNode.getContentOriginOffset(true)));
+      }
 
       if (newLayoutMetrics.displayType != DisplayType::None) {
         childNode.layout(layoutContext);

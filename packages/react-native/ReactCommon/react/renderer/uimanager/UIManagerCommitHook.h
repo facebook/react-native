@@ -13,6 +13,7 @@ namespace facebook::react {
 
 class ShadowTree;
 struct ShadowTreeCommitOptions;
+enum class ShadowTreeCommitSource;
 class UIManager;
 
 /*
@@ -53,6 +54,8 @@ class UIManagerCommitHook {
     // flavor instead.
     return newRootShadowNode;
   }
+
+  virtual void shadowTreeDidFinishTransaction(SurfaceId surfaceId, ShadowTreeCommitSource source) const noexcept {}
 
   virtual ~UIManagerCommitHook() noexcept = default;
 };
