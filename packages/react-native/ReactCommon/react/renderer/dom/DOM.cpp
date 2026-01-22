@@ -10,6 +10,7 @@
 #include <react/renderer/components/text/RawTextShadowNode.h>
 #include <react/renderer/components/text/TextShadowNode.h>
 #include <react/renderer/core/LayoutMetrics.h>
+#include <react/renderer/dom/DOMPlatform.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/Size.h>
@@ -629,6 +630,47 @@ std::optional<DOMRect> measureLayout(
       .width = frame.size.width,
       .height = frame.size.height,
   };
+}
+
+std::vector<DOMRect> getClientRects(
+    const RootShadowNode::Shared& currentRevision,
+    const ShadowNode& shadowNode) {
+  auto shadowNodeInCurrentRevision =
+      getShadowNodeInRevision(currentRevision, shadowNode);
+  if (shadowNodeInCurrentRevision == nullptr) {
+    return {};
+  }
+
+  auto ancestors = shadowNode.getFamily().getAncestors(*currentRevision);
+  if (ancestors.empty()) {
+    return {};
+  }
+
+  const ParagraphShadowNode* paragraphNode = nullptr;
+  for (const auto& pair : ancestors) {
+    paragraphNode = dynamic_cast<const ParagraphShadowNode*>(&pair.first.get());
+    if (paragraphNode != nullptr) {
+      break;
+    }
+  }
+
+  if (paragraphNode == nullptr) {
+    return {};
+  }
+
+  auto paragraphLayoutMetrics = getLayoutMetricsFromRoot(
+      *currentRevision,
+      *paragraphNode,
+      {.includeTransform = true, .includeViewportOffset = true});
+  if (paragraphLayoutMetrics == EmptyLayoutMetrics) {
+    return {};
+  }
+
+  return getClientRectsForTextNode(
+      *paragraphNode,
+      paragraphLayoutMetrics,
+      shadowNode.getTag(),
+      shadowNode.getSurfaceId());
 }
 
 } // namespace facebook::react::dom
