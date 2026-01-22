@@ -16,6 +16,13 @@ const createCacheKeyFunction =
   require('@jest/create-cache-key-function').default;
 const path = require('path');
 
+// NOTE: This file used to be at `react-native/jest/assetFileTransformer.js`
+// To keep the mock `testUri` paths the same, we create a fake path that outputs the same relative path as before
+const basePath = path.resolve(
+  require.resolve('react-native/package.json'),
+  '../jest/',
+);
+
 module.exports = {
   // Mocks asset requires to return the filename. Makes it possible to test that
   // the correct images are loaded for components. Essentially
@@ -24,9 +31,7 @@ module.exports = {
   process: (_, filename) => ({
     code: `module.exports = {
       testUri:
-        ${JSON.stringify(
-          path.relative(__dirname, filename).replace(/\\/g, '/'),
-        )}
+        ${JSON.stringify(path.relative(basePath, filename).replace(/\\/g, '/'))}
     };`,
   }),
   getCacheKey: createCacheKeyFunction([__filename]),

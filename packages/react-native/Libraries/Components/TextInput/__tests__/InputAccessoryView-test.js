@@ -10,9 +10,9 @@
 
 'use strict';
 
-const render = require('../../../../jest/renderer');
 const View = require('../../View/View').default;
 const InputAccessoryView = require('../InputAccessoryView').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 describe('InputAccessoryView', () => {

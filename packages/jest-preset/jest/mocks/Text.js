@@ -8,9 +8,9 @@
  * @format
  */
 
-import typeof TView from '../../Libraries/Components/View/View';
 import typeof * as TmockComponent from '../mockComponent';
 import typeof * as TMockNativeMethods from '../MockNativeMethods';
+import typeof TText from 'react-native/Libraries/Text/Text';
 
 const mockComponent =
   jest.requireActual<TmockComponent>('../mockComponent').default;
@@ -18,10 +18,10 @@ const MockNativeMethods = jest.requireActual<TMockNativeMethods>(
   '../MockNativeMethods',
 ).default;
 
-const View = mockComponent(
-  '../Libraries/Components/View/View',
+const Text = mockComponent(
+  'react-native/Libraries/Text/Text',
   MockNativeMethods, // instanceMethods
   true, // isESModule
-) as TView;
+) as TText;
 
-export default View;
+export default Text;

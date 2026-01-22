@@ -10,9 +10,9 @@
 
 'use strict';
 
-const render = require('../../../../jest/renderer');
 const LogBoxInspectorSourceMapStatus =
   require('../LogBoxInspectorSourceMapStatus').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 // Mock `LogBoxButton` because we are interested in snapshotting the behavior

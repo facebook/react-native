@@ -8,13 +8,13 @@
  * @format
  */
 
-const {create, update} = require('../../../../jest/renderer');
 const ReactNative = require('../../../ReactNative/RendererProxy');
 const {
   enter,
   expectRendersMatchingSnapshot,
 } = require('../../../Utilities/ReactNativeTestTools');
 const TextInput = require('../TextInput').default;
+const {create, update} = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 const {createRef, useState} = require('react');
 const ReactTestRenderer = require('react-test-renderer');

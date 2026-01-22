@@ -8,17 +8,18 @@
  * @format
  */
 
-import type {RefreshControlProps} from '../../Libraries/Components/RefreshControl/RefreshControl';
-import type {HostComponent} from '../../src/private/types/HostComponent';
+'use strict';
 
-import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
+import type {HostComponent} from 'react-native/src/private/types/HostComponent';
+
 import * as React from 'react';
+import requireNativeComponent from 'react-native/Libraries/ReactNative/requireNativeComponent';
 
 const RCTRefreshControl: HostComponent<{}> = requireNativeComponent<{}>(
   'RCTRefreshControl',
 );
 
-export default class RefreshControlMock extends React.Component<RefreshControlProps> {
+export default class RefreshControlMock extends React.Component<{...}> {
   static latestRef: ?RefreshControlMock;
 
   render(): React.Node {

@@ -11,8 +11,8 @@
 import type {ReactTestRendererJSON} from '../../Utilities/ReactNativeTestTools';
 import type {ReactTestRenderer} from 'react-test-renderer';
 
-import {create} from '../../../jest/renderer';
 import flattenStyle from '../../StyleSheet/flattenStyle';
+import {create} from '@react-native/jest-preset/jest/renderer';
 import * as React from 'react';
 
 const Text = require('../Text').default;

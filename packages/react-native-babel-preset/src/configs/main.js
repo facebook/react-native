@@ -16,6 +16,7 @@ const lazyImports = require('./lazy-imports');
 const EXCLUDED_FIRST_PARTY_PATHS = [
   /[/\\]node_modules[/\\]/,
   /[/\\]packages[/\\]react-native[/\\]/,
+  /[/\\]packages[/\\]jest-preset[/\\]/,
   /[/\\]packages[/\\]virtualized-lists[/\\]/,
   /[/\\]private[/\\]react-native-fantom[/\\]/,
 ];

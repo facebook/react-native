@@ -10,7 +10,7 @@
 
 // In tests, we can use the default version without dependency injection.
 
-import typeof * as TRendererImplementation from '../../Libraries/ReactNative/RendererImplementation';
+import typeof * as TRendererImplementation from 'react-native/Libraries/ReactNative/RendererImplementation';
 
 const {
   dispatchCommand,
@@ -26,7 +26,7 @@ const {
   unmountComponentAtNodeAndRemoveContainer,
   unstable_batchedUpdates,
 } = jest.requireActual<TRendererImplementation>(
-  '../../Libraries/ReactNative/RendererImplementation',
+  'react-native/Libraries/ReactNative/RendererImplementation',
 ) as TRendererImplementation;
 
 export {

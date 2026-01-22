@@ -82,7 +82,6 @@
     "index.js.flow",
     "interface.js",
     "jest-preset.js",
-    "jest",
     "Libraries",
     "LICENSE",
     "React-Core.podspec",
@@ -150,16 +149,19 @@
     "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
+    "@react-native/jest-preset": "0.84.0-main",
     "@types/react": "^19.1.1",
     "react": "^19.2.3"
   },
   "peerDependenciesMeta": {
     "@types/react": {
       "optional": true
+    },
+    "@react-native/jest-preset": {
+      "optional": true
     }
   },
   "dependencies": {
-    "@jest/create-cache-key-function": "^29.7.0",
     "@react-native/assets-registry": "0.85.0-main",
     "@react-native/codegen": "0.85.0-main",
     "@react-native/community-cli-plugin": "0.85.0-main",
@@ -170,14 +172,12 @@
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
-    "babel-jest": "^29.7.0",
     "babel-plugin-syntax-hermes-parser": "0.33.3",
     "base64-js": "^1.5.1",
     "commander": "^12.0.0",
     "flow-enums-runtime": "^0.0.6",
     "hermes-compiler": "0.0.0",
     "invariant": "^2.2.4",
-    "jest-environment-node": "^29.7.0",
     "memoize-one": "^5.0.0",
     "metro-runtime": "^0.83.3",
     "metro-source-map": "^0.83.3",

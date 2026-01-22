@@ -10,21 +10,19 @@
 
 'use strict';
 
-module.exports = {
-  haste: {
-    defaultPlatform: 'ios',
-    platforms: ['android', 'ios', 'native'],
-  },
-  resolver: require.resolve('./jest/resolver.js'),
-  transform: {
-    '^.+\\.(js|ts|tsx)$': 'babel-jest',
-    '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$': require.resolve(
-      './jest/assetFileTransformer.js',
-    ),
-  },
-  transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)',
-  ],
-  setupFiles: [require.resolve('./jest/setup.js')],
-  testEnvironment: require.resolve('./jest/react-native-env.js'),
+const deprecated = () => {
+  throw new Error(
+    'react-native/jest-preset is deprecated.\n' +
+      'To continue using the React Native Jest preset, Install "@react-native/jest-preset" and optionally update Jest\'s "preset" configuration.',
+  );
 };
+
+try {
+  module.exports = require('@react-native/jest-preset');
+} catch (error) {
+  if (error.code === 'MODULE_NOT_FOUND') {
+    deprecated();
+  } else {
+    throw error;
+  }
+}

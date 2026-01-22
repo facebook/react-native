@@ -10,9 +10,9 @@
 
 'use strict';
 
-const render = require('../../../../jest/renderer');
 const LogBoxLog = require('../../Data/LogBoxLog').default;
 const LogBoxNotification = require('../LogBoxNotification').default;
+const render = require('@react-native/jest-preset/jest/renderer');
 const React = require('react');
 
 // Mock child components because we are interested in snapshotting the behavior
