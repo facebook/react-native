@@ -33,6 +33,7 @@ export type ReactDevToolsAgentEvents = {
 
 export type ReactDevToolsAgent = {
   selectNode(node: unknown): void,
+  selectNodeWithViewData(node: mixed): void,
   stopInspectingNative(value: boolean): void,
   addListener<Event: keyof ReactDevToolsAgentEvents>(
     event: Event,
