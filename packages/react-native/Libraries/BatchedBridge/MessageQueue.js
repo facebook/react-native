@@ -11,6 +11,12 @@
 
 'use strict';
 
+const {
+  isBridgeless,
+  nativeCallSyncHook,
+  nativeFlushQueueImmediate,
+  nativeTraceBeginAsyncFlow,
+} = require('../../src/private/runtime/ReactNativeRuntimeGlobals');
 const Systrace = require('../Performance/Systrace');
 const deepFreezeAndThrowOnMutationInDev =
   require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
@@ -179,7 +185,7 @@ class MessageQueue {
   ): unknown {
     if (__DEV__) {
       invariant(
-        global.nativeCallSyncHook,
+        nativeCallSyncHook,
         'Calling synchronous methods on native ' +
           'modules is not supported in Chrome.\n\n Consider providing alternative ' +
           'methods to expose this method in debug mode, e.g. by exposing constants ' +
@@ -187,7 +193,7 @@ class MessageQueue {
       );
     }
     this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
-    return global.nativeCallSyncHook(moduleID, methodID, params);
+    return nativeCallSyncHook?.(moduleID, methodID, params);
   }
 
   processCallbacks(
@@ -231,12 +237,7 @@ class MessageQueue {
       this._failureCallbacks.set(this._callID, onFail);
     }
     if (__DEV__) {
-      global.nativeTraceBeginAsyncFlow &&
-        global.nativeTraceBeginAsyncFlow(
-          TRACE_TAG_REACT,
-          'native',
-          this._callID,
-        );
+      nativeTraceBeginAsyncFlow?.(TRACE_TAG_REACT, 'native', this._callID);
     }
     this._callID++;
   }
@@ -317,13 +318,13 @@ class MessageQueue {
 
     const now = Date.now();
     if (
-      global.nativeFlushQueueImmediate &&
+      nativeFlushQueueImmediate != null &&
       now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS
     ) {
       const queue = this._queue;
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
-      global.nativeFlushQueueImmediate(queue);
+      nativeFlushQueueImmediate(queue);
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && this.__spy && isFinite(moduleID)) {
@@ -422,8 +423,7 @@ class MessageQueue {
         const callableModuleNameList = callableModuleNames.join(', ');
 
         // TODO(T122225939): Remove after investigation: Why are we getting to this line in bridgeless mode?
-        const isBridgelessMode =
-          global.RN$Bridgeless === true ? 'true' : 'false';
+        const isBridgelessMode = isBridgeless ? 'true' : 'false';
         invariant(
           false,
           `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Bridgeless Mode: ${isBridgelessMode}. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.

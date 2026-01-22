@@ -10,16 +10,18 @@
 
 'use strict';
 
+import {isBridgeless} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
+
 const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
 
 if (__DEV__) {
-  if (typeof global.Promise !== 'function') {
+  if (typeof Promise === 'undefined') {
     console.error('Promise should exist before setting up timers.');
   }
 }
 
 // In bridgeless mode, timers are host functions installed from cpp.
-if (global.RN$Bridgeless === true) {
+if (isBridgeless) {
   // This is the flag that tells React to use `queueMicrotask` to batch state
   // updates, instead of using the scheduler to schedule a regular task.
   // We use a global variable because we don't currently have any other

@@ -10,6 +10,8 @@
 
 'use strict';
 
+import {diagnosticFlags} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
+
 /**
  * Perform a set of runtime diagnostics, usually useful for test purpose.
  * This is only meaningful for __DEV__ mode.
@@ -33,8 +35,8 @@ let isEnabled = false;
 let shouldEnableAll = false;
 
 if (__DEV__) {
-  if (typeof global.RN$DiagnosticFlags === 'string') {
-    global.RN$DiagnosticFlags.split(',').forEach(flag => {
+  if (typeof diagnosticFlags === 'string') {
+    diagnosticFlags.split(',').forEach(flag => {
       switch (flag) {
         case 'early_js_errors':
         case 'all':
