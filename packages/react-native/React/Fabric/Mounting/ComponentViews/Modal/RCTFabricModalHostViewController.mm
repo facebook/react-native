@@ -46,20 +46,22 @@
 #endif
 }
 
+#if !TARGET_OS_TV
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
   return [RCTUIStatusBarManager() statusBarStyle];
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+  return [RCTUIStatusBarManager() isStatusBarHidden];
+}
+#endif
+
 - (void)viewDidDisappear:(BOOL)animated
 {
   [super viewDidDisappear:animated];
   _lastViewBounds = CGRectZero;
-}
-
-- (BOOL)prefersStatusBarHidden
-{
-  return [RCTUIStatusBarManager() isStatusBarHidden];
 }
 
 #if RCT_DEV && TARGET_OS_IOS
