@@ -385,40 +385,94 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
-    test('debugger connection with invalid origin is rejected', async () => {
-      const device1 = await createDeviceMock(
-        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
-        autoCleanup.signal,
-      );
-      try {
-        device1.getPages.mockImplementation(() => [
-          {
-            app: 'bar-app',
-            id: 'page1',
-            title: 'bar-title',
-            vm: 'bar-vm',
-          },
-        ]);
+    test.each([
+      'http://[::]:8081',
+      'http://[::]:3213',
+      'http://localhost',
+      'http://0.0.0.0:111',
+    ])(
+      'debugger connection with allowed origins: %s can be established',
+      async origin => {
+        const device1 = await createDeviceMock(
+          `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+          autoCleanup.signal,
+        );
+        try {
+          device1.getPages.mockImplementation(() => [
+            {
+              app: 'bar-app',
+              id: 'page1',
+              title: 'bar-title',
+              vm: 'bar-vm',
+            },
+          ]);
 
-        let pageList: JsonPagesListResponse = [];
-        await until(async () => {
-          pageList = (await fetchJson(
-            `${serverRef.serverBaseUrl}/json`,
-            // $FlowFixMe[unclear-type]
-          ): any);
-          expect(pageList).toHaveLength(1);
-        });
-        const [{webSocketDebuggerUrl}] = pageList;
-        expect(webSocketDebuggerUrl).toBeDefined();
+          let pageList: JsonPagesListResponse = [];
+          await until(async () => {
+            pageList = (await fetchJson(
+              `${serverRef.serverBaseUrl}/json`,
+              // $FlowFixMe[unclear-type]
+            ): any);
+            expect(pageList).toHaveLength(1);
+          });
+          const [{webSocketDebuggerUrl}] = pageList;
+          expect(webSocketDebuggerUrl).toBeDefined();
 
-        await expect(
-          createDebuggerMock(webSocketDebuggerUrl, autoCleanup.signal, {
-            Origin: 'null',
-          }),
-        ).rejects.toThrow('Unexpected server response: 401');
-      } finally {
-        device1.close();
-      }
-    });
+          await expect(
+            createDebuggerMock(webSocketDebuggerUrl, autoCleanup.signal, {
+              ...(origin ? {Origin: origin} : {}),
+            }),
+          ).resolves.toBeDefined();
+        } finally {
+          device1.close();
+        }
+      },
+    );
+
+    test.each([
+      undefined,
+      '',
+      'invalid',
+      'justhost.com',
+      'http://attacker.com',
+      'http://attacker.com:8083',
+    ])(
+      'debugger connection with invalid / different origin: %s is rejected',
+      async origin => {
+        const device1 = await createDeviceMock(
+          `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+          autoCleanup.signal,
+        );
+        try {
+          device1.getPages.mockImplementation(() => [
+            {
+              app: 'bar-app',
+              id: 'page1',
+              title: 'bar-title',
+              vm: 'bar-vm',
+            },
+          ]);
+
+          let pageList: JsonPagesListResponse = [];
+          await until(async () => {
+            pageList = (await fetchJson(
+              `${serverRef.serverBaseUrl}/json`,
+              // $FlowFixMe[unclear-type]
+            ): any);
+            expect(pageList).toHaveLength(1);
+          });
+          const [{webSocketDebuggerUrl}] = pageList;
+          expect(webSocketDebuggerUrl).toBeDefined();
+
+          await expect(
+            createDebuggerMock(webSocketDebuggerUrl, autoCleanup.signal, {
+              ...(origin ? {Origin: origin} : {}),
+            }),
+          ).rejects.toThrow('Unexpected server response: 401');
+        } finally {
+          device1.close();
+        }
+      },
+    );
   },
 );
