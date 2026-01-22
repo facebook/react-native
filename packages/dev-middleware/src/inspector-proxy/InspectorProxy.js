@@ -31,9 +31,11 @@ import WS from 'ws';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
-const WS_DEBUGGER_ALLOWED_ORIGINS = new Set([
-  'http://localhost:8081',
-  'http://127.0.0.1:8081',
+const WS_DEBUGGER_ALLOWED_ORIGIN_HOSTNAMES = new Set([
+  'localhost',
+  '127.0.0.1',
+  '0.0.0.0',
+  '[::]',
 ]);
 
 const WS_DEVICE_URL = '/inspector/device';
@@ -495,7 +497,27 @@ export default class InspectorProxy implements InspectorProxyQueries {
           secure: boolean,
           req: http$IncomingMessage<>,
         }>,
-      ) => WS_DEBUGGER_ALLOWED_ORIGINS.has(info.origin),
+      ) => {
+        if (this.#serverBaseUrl.origin === info.origin) {
+          return true;
+        }
+
+        if (URL.canParse(info.origin)) {
+          const {hostname} = new URL(info.origin);
+          if (WS_DEBUGGER_ALLOWED_ORIGIN_HOSTNAMES.has(hostname)) {
+            return true;
+          }
+        }
+
+        this.#logger?.error(
+          "Connection from DevTools failed to be established for origin '%s' and path '%s'. Was expecting origin: '%s', or origin hostname to be one of: %s",
+          info.origin,
+          info.req.url,
+          this.#serverBaseUrl.origin,
+          Array.from(WS_DEBUGGER_ALLOWED_ORIGIN_HOSTNAMES).join(', '),
+        );
+        return false;
+      },
     });
 
     // $FlowFixMe[value-as-type]
