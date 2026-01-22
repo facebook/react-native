@@ -14,7 +14,7 @@ import type {Domain} from '../../src/private/devsupport/rndevtools/setUpFuseboxR
 import type {Spec as NativeReactDevToolsRuntimeSettingsModuleSpec} from '../../src/private/devsupport/rndevtools/specs/NativeReactDevToolsRuntimeSettingsModule';
 
 if (__DEV__) {
-  if (typeof global.queueMicrotask !== 'function') {
+  if (typeof queueMicrotask !== 'function') {
     console.error(
       'queueMicrotask should exist before setting up React DevTools.',
     );

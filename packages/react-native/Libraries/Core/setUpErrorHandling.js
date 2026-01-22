@@ -10,7 +10,12 @@
 
 'use strict';
 
-if (global.RN$useAlwaysAvailableJSErrorHandling !== true) {
+import {
+  disableExceptionsManager,
+  useAlwaysAvailableJSErrorHandling,
+} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
+
+if (!useAlwaysAvailableJSErrorHandling) {
   /**
    * Sets up the console and exception handling (redbox) for React Native.
    * You can use this module directly, or just require InitializeCore.
@@ -20,7 +25,7 @@ if (global.RN$useAlwaysAvailableJSErrorHandling !== true) {
   ExceptionsManager.installConsoleErrorReporter();
 
   // Set up error handler
-  if (!global.__fbDisableExceptionsManager) {
+  if (!disableExceptionsManager) {
     const handleError = (e: unknown, isFatal: boolean) => {
       try {
         ExceptionsManager.handleException(e, isFatal);

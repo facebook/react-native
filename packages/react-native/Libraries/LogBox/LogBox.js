@@ -11,6 +11,10 @@
 import type {IgnorePattern, LogData} from './Data/LogBoxData';
 import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
 
+import {
+  isRuntimeReady,
+  registerExceptionListener,
+} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import toExtendedError from '../../src/private/utilities/toExtendedError';
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
@@ -55,10 +59,10 @@ if (__DEV__) {
 
       isLogBoxInstalled = true;
 
-      if (global.RN$registerExceptionListener != null) {
-        global.RN$registerExceptionListener(
+      if (registerExceptionListener != null) {
+        registerExceptionListener(
           (error: ExtendedExceptionData & {preventDefault: () => unknown}) => {
-            if (global.RN$isRuntimeReady?.() || !error.isFatal) {
+            if (isRuntimeReady?.() || !error.isFatal) {
               error.preventDefault();
               addException(error);
             }

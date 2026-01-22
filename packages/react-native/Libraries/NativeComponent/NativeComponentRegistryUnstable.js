@@ -8,6 +8,8 @@
  * @format
  */
 
+import {nativeComponentRegistryHasComponent} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
+
 let componentNameToExists: Map<string, boolean> = new Map();
 
 /**
@@ -17,16 +19,16 @@ let componentNameToExists: Map<string, boolean> = new Map();
  * is registered in the native platform.
  */
 export function unstable_hasComponent(name: string): boolean {
-  let hasNativeComponent = componentNameToExists.get(name);
-  if (hasNativeComponent == null) {
-    if (global.__nativeComponentRegistry__hasComponent) {
-      hasNativeComponent = global.__nativeComponentRegistry__hasComponent(name);
-      componentNameToExists.set(name, hasNativeComponent);
+  let hasComponent = componentNameToExists.get(name);
+  if (hasComponent == null) {
+    if (nativeComponentRegistryHasComponent != null) {
+      hasComponent = nativeComponentRegistryHasComponent(name);
+      componentNameToExists.set(name, hasComponent);
     } else {
       throw new Error(
         `unstable_hasComponent('${name}'): Global function is not registered`,
       );
     }
   }
-  return hasNativeComponent;
+  return hasComponent;
 }

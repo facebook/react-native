@@ -13,6 +13,7 @@
 import type {HostComponent} from '../../src/private/types/HostComponent';
 
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
+import {isBridgeless} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import UIManager from '../ReactNative/UIManager';
 
 // TODO: import from CodegenSchema once workspaces are enabled
@@ -35,7 +36,7 @@ function codegenNativeComponent<Props: {...}>(
   componentName: string,
   options?: NativeComponentOptions,
 ): NativeComponentType<Props> {
-  if (global.RN$Bridgeless === true && __DEV__) {
+  if (isBridgeless && __DEV__) {
     console.warn(
       `Codegen didn't run for ${componentName}. This will be an error in the future. Make sure you are using @react-native/babel-preset when building your JavaScript code.`,
     );
