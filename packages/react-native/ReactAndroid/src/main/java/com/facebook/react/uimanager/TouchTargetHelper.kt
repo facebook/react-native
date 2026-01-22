@@ -214,11 +214,8 @@ public object TouchTargetHelper {
       }
 
       val childrenCount = viewGroup.childCount
-      // Consider z-index when determining the touch target.
-      val zIndexedViewGroup = viewGroup as? ReactZIndexedViewGroup
       for (i in childrenCount - 1 downTo 0) {
-        val childIndex = zIndexedViewGroup?.getZIndexMappedChildIndex(i) ?: i
-        val child = viewGroup.getChildAt(childIndex)
+        val child = viewGroup.getChildAt(i)
         val childPoint = tempPoint
         getChildPoint(eventCoords[0], eventCoords[1], viewGroup, child, childPoint)
         // The childPoint value will contain the view coordinates relative to the child.
