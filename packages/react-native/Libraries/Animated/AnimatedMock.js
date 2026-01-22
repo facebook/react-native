@@ -65,7 +65,7 @@ export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,
-  _startNativeLoop: (iterations?: number) => void,
+  _startNativeLoop: (iterations: number, callback: ?EndCallback) => void,
   _isUsingNativeDriver: () => boolean,
   ...
 };
