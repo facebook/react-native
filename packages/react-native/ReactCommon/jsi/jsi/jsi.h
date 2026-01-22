@@ -560,6 +560,7 @@ class JSI_EXPORT IRuntime : public ICast {
   virtual Value getValueAtIndex(const Array&, size_t i) = 0;
   virtual void
   setValueAtIndexImpl(const Array&, size_t i, const Value& value) = 0;
+  virtual size_t push(const Array&, const Value*, size_t) = 0;
 
   virtual Function createFunctionFromHostFunction(
       const PropNameID& name,
@@ -703,6 +704,8 @@ class JSI_EXPORT Runtime : public IRuntime {
       const jsi::PropNameID& sym,
       void* ctx,
       void (*cb)(void* ctx, bool ascii, const void* data, size_t num)) override;
+
+  size_t push(const Array&, const Value*, size_t) override;
 
  protected:
   friend class Pointer;
@@ -1388,8 +1391,18 @@ class JSI_EXPORT Array : public Object {
   template <typename T>
   void setValueAtIndex(IRuntime& runtime, size_t i, T&& value) const;
 
-  /// There is no current API for changing the size of an array once
-  /// created.  We'll probably need that eventually.
+  /// Appends provides values to the end of the Array in the order they appear.
+  /// Returns the new length of the array.
+  template <typename... Args>
+  size_t push(IRuntime& runtime, Args&&... args);
+
+  /// Appends everything in \p elements to the end of the Array in the order
+  /// they appear. Returns the new length of the array.
+  size_t push(IRuntime& runtime, std::initializer_list<Value> elements);
+
+  /// Appends \p count elements at \p elements to the end of the Array in the
+  /// order they appear.
+  size_t push(IRuntime& runtime, const Value* elements, size_t count);
 
   /// Creates a new Array instance from provided values
   template <typename... Args>
