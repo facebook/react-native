@@ -9,6 +9,7 @@
 
 import {HostInstance} from '../../../types/public/ReactNativeTypes';
 import {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
+import {AddEventListenerOptions} from '../../EventEmitter/EventTargetLike';
 
 type AccessibilityChangeEventName =
   | 'change' // deprecated, maps to screenReaderChanged
@@ -129,10 +130,12 @@ export interface AccessibilityInfoStatic {
   addEventListener(
     eventName: AccessibilityChangeEventName,
     handler: AccessibilityChangeEventHandler,
+    options?: AddEventListenerOptions,
   ): EmitterSubscription;
   addEventListener(
     eventName: AccessibilityAnnouncementEventName,
     handler: AccessibilityAnnouncementFinishedEventHandler,
+    options?: AddEventListenerOptions,
   ): EmitterSubscription;
 
   /**

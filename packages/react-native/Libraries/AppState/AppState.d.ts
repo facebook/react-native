@@ -8,6 +8,7 @@
  */
 
 import {NativeEventSubscription} from '../EventEmitter/RCTNativeAppEventEmitter';
+import {AddEventListenerOptions} from '../EventEmitter/EventTargetLike';
 
 /**
  * AppState can tell you if the app is in the foreground or background,
@@ -51,6 +52,7 @@ export interface AppStateStatic {
   addEventListener(
     type: AppStateEvent,
     listener: (state: AppStateStatus) => void,
+    options?: AddEventListenerOptions,
   ): NativeEventSubscription;
 }
 
