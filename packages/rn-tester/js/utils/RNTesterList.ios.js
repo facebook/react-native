@@ -222,6 +222,11 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/Dimensions/DimensionsExample'),
   },
   {
+    key: 'DOMExample',
+    category: 'Basic',
+    module: require('../examples/DOM/DOMExample'),
+  },
+  {
     key: 'DisplayContentsExample',
     category: 'UI',
     module: require('../examples/DisplayContents/DisplayContentsExample')
