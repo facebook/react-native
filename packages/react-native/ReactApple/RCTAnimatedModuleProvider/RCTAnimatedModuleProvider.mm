@@ -57,7 +57,12 @@
 
 - (void)_onDisplayLinkTick
 {
-  if (_nativeAnimatedNodesManagerProvider.lock() != nullptr && _displayLink != nullptr && _onRender != nullptr) {
+  // Hold a strong reference to the provider during callback execution to prevent
+  // use-after-free during hot reload. The provider must remain alive for the
+  // entire duration of _onRender() since it holds references to the animation
+  // nodes manager and related data structures.
+  auto strongProvider = _nativeAnimatedNodesManagerProvider.lock();
+  if (strongProvider != nullptr && _displayLink != nullptr && _onRender != nullptr) {
     _onRender();
   }
 }
