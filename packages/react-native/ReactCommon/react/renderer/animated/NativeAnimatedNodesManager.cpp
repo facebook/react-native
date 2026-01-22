@@ -514,11 +514,9 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
     // proactivelly trigger the animation loop to avoid showing stale
     // frames.
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-#ifdef RN_USE_ANIMATION_BACKEND
       if (auto animationBackend = animationBackend_.lock()) {
         animationBackend->trigger();
       }
-#endif
     } else {
       onRender();
     }
@@ -553,14 +551,12 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded(bool isAsync) {
   }
 
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-#ifdef RN_USE_ANIMATION_BACKEND
     if (auto animationBackend = animationBackend_.lock()) {
       animationBackendCallbackId_ =
           animationBackend->start([this](AnimationTimestamp timestamp) {
             return pullAnimationMutations(timestamp);
           });
     }
-#endif
 
     return;
   }
@@ -579,13 +575,11 @@ void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded(
   auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(false);
 
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-#ifdef RN_USE_ANIMATION_BACKEND
     if (isRenderCallbackStarted) {
       if (auto animationBackend = animationBackend_.lock()) {
         animationBackend->stop(animationBackendCallbackId_);
       }
     }
-#endif
     return;
   }
 
@@ -947,8 +941,6 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
   }
 }
 
-#ifdef RN_USE_ANIMATION_BACKEND
-
 void NativeAnimatedNodesManager::insertMutations(
     std::unordered_map<Tag, std::pair<ShadowNodeFamily::Weak, folly::dynamic>>&
         updates,
@@ -1089,7 +1081,6 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations(
   shouldRequestAsyncFlush_.clear();
   return mutations;
 }
-#endif
 
 void NativeAnimatedNodesManager::onRender() {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
