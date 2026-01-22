@@ -6,7 +6,9 @@
  */
 
 #include "DOM.h"
+#include <react/renderer/components/text/ParagraphShadowNode.h>
 #include <react/renderer/components/text/RawTextShadowNode.h>
+#include <react/renderer/components/text/TextShadowNode.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/Rect.h>
@@ -278,6 +280,49 @@ DOMRect getBoundingClientRect(
       getShadowNodeInRevision(currentRevision, shadowNode);
   if (shadowNodeInCurrentRevision == nullptr) {
     return DOMRect{};
+  }
+
+  // Check if this is a TextShadowNode (virtual text node nested in a paragraph)
+  auto textShadowNode = dynamic_cast<const TextShadowNode*>(&shadowNode);
+  if (textShadowNode != nullptr) {
+    // TextShadowNode is a virtual node that doesn't have its own layout metrics
+    // For getBoundingClientRect, we return the parent paragraph's bounding rect
+    // (matching web behavior where inline elements return their container's
+    // rect) Use getClientRects() to get the individual fragment rects
+    auto ancestors = shadowNode.getFamily().getAncestors(*currentRevision);
+    if (ancestors.empty()) {
+      return DOMRect{};
+    }
+
+    // Find the ParagraphShadowNode in the ancestors
+    const ParagraphShadowNode* paragraphNode = nullptr;
+    for (const auto& pair : ancestors) {
+      paragraphNode =
+          dynamic_cast<const ParagraphShadowNode*>(&pair.first.get());
+      if (paragraphNode != nullptr) {
+        break;
+      }
+    }
+
+    if (paragraphNode == nullptr) {
+      return DOMRect{};
+    }
+
+    // Return the paragraph's bounding rect
+    auto paragraphLayoutMetrics = getLayoutMetricsFromRoot(
+        *currentRevision,
+        *paragraphNode,
+        {.includeTransform = includeTransform, .includeViewportOffset = true});
+    if (paragraphLayoutMetrics == EmptyLayoutMetrics) {
+      return DOMRect{};
+    }
+
+    auto frame = paragraphLayoutMetrics.frame;
+    return DOMRect{
+        .x = frame.origin.x,
+        .y = frame.origin.y,
+        .width = frame.size.width,
+        .height = frame.size.height};
   }
 
   auto layoutMetrics = getLayoutMetricsFromRoot(
