@@ -678,6 +678,12 @@ public class JSPointerDispatcher {
 
   // returns child (0, 0) relative to root coordinate system
   private int[] getChildOffsetRelativeToRoot(View childView) {
+    if (childView.getRootView() != mRootViewGroup.getRootView()) {
+      // NOTE: if we are here it means the target view has been reparented, so we can't call
+      // mRootViewGroup.offsetDescendantRectToMyCoords because an exception will be thrown.
+      // We still return (0, 0) to ensure the cancel event is dispatched.
+      return new int[] {0, 0};
+    }
     Rect childCoords = new Rect(0, 0, 1, 1);
     mRootViewGroup.offsetDescendantRectToMyCoords(childView, childCoords);
     return new int[] {childCoords.top, childCoords.left};
