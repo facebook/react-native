@@ -13,6 +13,7 @@
 #include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/animationbackend/AnimationBackend.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -21,9 +22,6 @@
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
-#ifdef RN_USE_ANIMATION_BACKEND
-#include <react/renderer/animationbackend/AnimationBackend.h>
-#endif
 
 namespace facebook::react {
 
@@ -59,7 +57,6 @@ Scheduler::Scheduler(
       std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
 
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-#ifdef RN_USE_ANIMATION_BACKEND
     auto animationBackend = std::make_shared<AnimationBackend>(
         schedulerToolbox.animationChoreographer, uiManager);
 
@@ -67,7 +64,6 @@ Scheduler::Scheduler(
         animationBackend);
 
     uiManager->unstable_setAnimationBackend(animationBackend);
-#endif
   }
 
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
