@@ -89,7 +89,7 @@ class BlobManager {
       if (curr.type === 'string') {
         /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */
-        return acc + global.unescape(encodeURI(curr.data)).length;
+        return acc + unescape(encodeURI(curr.data)).length;
       } else {
         /* $FlowFixMe[prop-missing] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */
