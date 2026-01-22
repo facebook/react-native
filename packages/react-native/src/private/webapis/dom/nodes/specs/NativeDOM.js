@@ -86,6 +86,12 @@ export interface Spec extends TurboModule {
     includeTransform: boolean,
   ) => ReadonlyArray<number> /* [x: number, y: number, width: number, height: number] */;
 
+  +getClientRects: (
+    nativeElementReference: unknown /* NativeElementReference */,
+  ) => ReadonlyArray<
+    ReadonlyArray<number>,
+  > /* Array<[x: number, y: number, width: number, height: number]> */;
+
   +getInnerSize: (
     nativeElementReference: unknown /* NativeElementReference */,
   ) => ReadonlyArray<number> /* [width: number, height: number] */;
@@ -277,6 +283,30 @@ export interface RefinedSpec {
       /* width: */ number,
       /* height: */ number,
     ],
+  >;
+
+  /**
+   * This is a React Native implementation of `Element.prototype.getClientRects`
+   * (see https://developer.mozilla.org/en-US/docs/Web/API/Element/getClientRects).
+   *
+   * For most elements, this returns an array with a single rect matching
+   * getBoundingClientRect. For text elements (TextShadowNode), this returns
+   * an array of rects representing each line/fragment of the text.
+   *
+   * This is useful for getting the visual boundaries of nested <Text>
+   * components within a text paragraph, where text may span multiple lines.
+   */
+  +getClientRects: (
+    nativeElementReference: NativeElementReference,
+  ) => ReadonlyArray<
+    Readonly<
+      [
+        /* x: */ number,
+        /* y: */ number,
+        /* width: */ number,
+        /* height: */ number,
+      ],
+    >,
   >;
 
   /**
