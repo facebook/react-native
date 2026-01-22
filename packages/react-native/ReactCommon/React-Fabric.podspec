@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
   add_rncore_dependency(s)
 
   s.subspec "animated" do |ss|
+    ss.dependency             "React-Fabric/animationbackend"
     ss.source_files         = podspec_sources("react/renderer/animated/**/*.{m,mm,cpp,h}", "react/renderer/animated/**/*.{h}")
     ss.exclude_files        = "react/renderer/animated/tests"
     ss.header_dir           = "react/renderer/animated"
