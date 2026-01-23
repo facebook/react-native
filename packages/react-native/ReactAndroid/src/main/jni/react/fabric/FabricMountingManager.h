@@ -54,6 +54,8 @@ class FabricMountingManager final {
 
   void synchronouslyUpdateViewOnUIThread(Tag viewTag, const folly::dynamic &props);
 
+  void scheduleReactRevisionMerge(SurfaceId surfaceId);
+
  private:
   bool isOnMainThread();
 

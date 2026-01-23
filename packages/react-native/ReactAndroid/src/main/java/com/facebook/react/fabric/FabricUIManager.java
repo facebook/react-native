@@ -959,6 +959,25 @@ public class FabricUIManager
     }
   }
 
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void scheduleReactRevisionMerge(int surfaceId) {
+    if (UiThreadUtil.isOnUiThread()) {
+      if (mBinding != null) {
+        mBinding.mergeReactRevision(surfaceId);
+      }
+    } else {
+      UiThreadUtil.runOnUiThread(
+          () -> {
+            FabricUIManagerBinding binding = mBinding;
+            if (binding != null) {
+              binding.mergeReactRevision(surfaceId);
+            }
+          });
+    }
+  }
+
   /**
    * This method initiates preloading of an image specified by ImageSource. It can later be consumed
    * by an ImageView.
