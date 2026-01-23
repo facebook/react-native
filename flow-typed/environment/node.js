@@ -3348,6 +3348,125 @@ declare module 'querystring' {
   declare function unescape(str: string, decodeSpaces?: boolean): string;
 }
 
+/**
+ * Node.js sqlite module (only available with node: prefix)
+ * @since v22.5.0
+ */
+declare module 'node:sqlite' {
+  declare export type SupportedValueType =
+    | null
+    | number
+    | bigint
+    | string
+    | Uint8Array;
+
+  declare export type DatabaseSyncOptions = Readonly<{
+    open?: boolean,
+    enableForeignKeyConstraints?: boolean,
+    enableDoubleQuotedStringLiterals?: boolean,
+    readOnly?: boolean,
+    allowExtension?: boolean,
+  }>;
+
+  declare export type CreateSessionOptions = Readonly<{
+    table?: string,
+    db?: string,
+  }>;
+
+  declare export type ApplyChangesetOptions = Readonly<{
+    filter?: (tableName: string) => boolean,
+    onConflict?: number,
+  }>;
+
+  declare export type FunctionOptions = Readonly<{
+    deterministic?: boolean,
+    directOnly?: boolean,
+    useBigIntArguments?: boolean,
+    varargs?: boolean,
+  }>;
+
+  declare export type StatementResultingChanges = {
+    changes: number | bigint,
+    lastInsertRowid: number | bigint,
+  };
+
+  declare export interface Session {
+    changeset(): Uint8Array;
+    patchset(): Uint8Array;
+    close(): void;
+  }
+
+  declare export class StatementSync {
+    all(...anonymousParameters: ReadonlyArray<SupportedValueType>): Array<any>;
+    all(
+      namedParameters: {[key: string]: SupportedValueType, ...},
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): Array<any>;
+
+    +expandedSQL: string;
+
+    get(...anonymousParameters: ReadonlyArray<SupportedValueType>): any;
+    get(
+      namedParameters: {[key: string]: SupportedValueType, ...},
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): any;
+
+    iterate(
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): Iterator<any>;
+    iterate(
+      namedParameters: {[key: string]: SupportedValueType, ...},
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): Iterator<any>;
+
+    run(
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): StatementResultingChanges;
+    run(
+      namedParameters: {[key: string]: SupportedValueType, ...},
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): StatementResultingChanges;
+
+    setAllowBareNamedParameters(enabled: boolean): void;
+    setReadBigInts(enabled: boolean): void;
+
+    +sourceSQL: string;
+  }
+
+  declare export class DatabaseSync {
+    constructor(location: string, options?: DatabaseSyncOptions): void;
+
+    close(): void;
+    loadExtension(path: string): void;
+    enableLoadExtension(allow: boolean): void;
+    exec(sql: string): void;
+
+    function(
+      name: string,
+      options: FunctionOptions,
+      func: (...args: ReadonlyArray<SupportedValueType>) => SupportedValueType,
+    ): void;
+    function(
+      name: string,
+      func: (...args: ReadonlyArray<SupportedValueType>) => SupportedValueType,
+    ): void;
+
+    open(): void;
+    prepare(sql: string): StatementSync;
+    createSession(options?: CreateSessionOptions): Session;
+    applyChangeset(
+      changeset: Uint8Array,
+      options?: ApplyChangesetOptions,
+    ): boolean;
+  }
+
+  declare export var constants: {|
+    +SQLITE_CHANGESET_OMIT: number,
+    +SQLITE_CHANGESET_REPLACE: number,
+    +SQLITE_CHANGESET_ABORT: number,
+  |};
+}
+
 type readline$InterfaceCompleter = (
   line: string,
 ) =>
@@ -5042,16 +5161,16 @@ declare module 'v8' {
     version: number,
     startTime: number,
     endTime: number,
-    statistics: $ReadOnlyArray<{
+    statistics: ReadonlyArray<{
       gcType: string,
       cost: number,
       beforeGC: {
         heapStatistics: HeapStatistics,
-        heapSpaceStatistics: $ReadOnlyArray<HeapSpaceStatistics>,
+        heapSpaceStatistics: ReadonlyArray<HeapSpaceStatistics>,
       },
       afterGC: {
         heapStatistics: HeapStatistics,
-        heapSpaceStatistics: $ReadOnlyArray<HeapSpaceStatistics>,
+        heapSpaceStatistics: ReadonlyArray<HeapSpaceStatistics>,
       },
     }>,
   };
