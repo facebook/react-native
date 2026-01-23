@@ -311,6 +311,9 @@ void ReactHost::destroyReactInstance() {
 
   reactInstanceData_->contextContainer->erase(RuntimeSchedulerKey);
   reactInstanceData_->mountingManager->setSchedulerTaskExecutor(nullptr);
+  reactInstanceData_->mountingManager = nullptr;
+  reactInstanceData_->contextContainer = nullptr;
+  reactInstanceData_->turboModuleProviders.clear();
   reactInstance_ = nullptr;
   reactInstanceData_->messageQueueThread = nullptr;
 }

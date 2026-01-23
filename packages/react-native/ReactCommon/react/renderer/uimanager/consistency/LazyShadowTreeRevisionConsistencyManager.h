@@ -13,7 +13,6 @@
 #include <react/renderer/uimanager/consistency/ShadowTreeRevisionProvider.h>
 #include <cstdint>
 #include <memory>
-#include <shared_mutex>
 
 namespace facebook::react {
 
