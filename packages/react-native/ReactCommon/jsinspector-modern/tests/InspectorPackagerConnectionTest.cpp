@@ -119,8 +119,10 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
                        AtJsonPtr("/app", Eq("my-app")),
                        AtJsonPtr("/capabilities/nativePageReloads", Eq(true)),
                        AtJsonPtr(
-                           "/capabilities/nativeSourceCodeFetching",
-                           Eq(false))),
+                           "/capabilities/nativeSourceCodeFetching", Eq(false)),
+                       AtJsonPtr(
+                           "/capabilities/supportsMultipleDebuggers",
+                           Eq(true))),
                    AllOf(
                        AtJsonPtr("/id", Eq(std::to_string(pageId2))),
                        AtJsonPtr("/title", Eq("my-app (my-device)")),
@@ -130,8 +132,10 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
                        AtJsonPtr("/app", Eq("my-app")),
                        AtJsonPtr("/capabilities/nativePageReloads", Eq(true)),
                        AtJsonPtr(
-                           "/capabilities/nativeSourceCodeFetching",
-                           Eq(false)))}))))))
+                           "/capabilities/nativeSourceCodeFetching", Eq(false)),
+                       AtJsonPtr(
+                           "/capabilities/supportsMultipleDebuggers",
+                           Eq(true)))}))))))
       .RetiresOnSaturation();
   webSockets_[0]->getDelegate().didReceiveMessage(R"({
       "event": "getPages"
@@ -544,6 +548,7 @@ TEST_F(
         }})",
           toJson(std::to_string(pageId))));
   EXPECT_FALSE(localConnections_[0]);
+  EXPECT_EQ(localConnections_.objectsVended(), 1);
 }
 
 TEST_F(InspectorPackagerConnectionTest, TestMultipleDisconnect) {
