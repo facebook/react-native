@@ -109,11 +109,6 @@ export function getBuckModesForPlatform(
   return modes;
 }
 
-// TODO: T240293839 Remove when we get rid of RN_USE_ANIMATION_BACKEND preprocessor flag
-export function getConfigForAnimationBackend(): ReadonlyArray<string> {
-  return ['-c rn.use_animationbackend=true'];
-}
-
 export type AsyncCommandResult = {
   originalCommand: string,
   childProcess: ReturnType<typeof spawn>,

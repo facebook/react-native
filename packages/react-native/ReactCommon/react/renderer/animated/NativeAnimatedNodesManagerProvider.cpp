@@ -11,10 +11,8 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animated/MergedValueDispatcher.h>
 #include <react/renderer/animated/internal/AnimatedMountingOverrideDelegate.h>
-#ifdef RN_USE_ANIMATION_BACKEND
-#include <react/renderer/animationbackend/AnimationBackend.h>
-#endif
 #include <react/renderer/animated/internal/primitives.h>
+#include <react/renderer/animationbackend/AnimationBackend.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -87,7 +85,6 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
     };
 
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-#ifdef RN_USE_ANIMATION_BACKEND
       auto animationBackend = uiManager->unstable_getAnimationBackend().lock();
       react_native_assert(
           animationBackend != nullptr && "animationBackend is nullptr");
@@ -95,7 +92,6 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(animationBackend);
-#endif
     } else {
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(
