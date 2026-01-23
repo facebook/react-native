@@ -55,10 +55,12 @@ test('accepts a ref callback', () => {
     ledger.push({ref: id(current)});
   };
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}]);
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
@@ -85,10 +87,12 @@ test('accepts a ref callback that returns a cleanup function', () => {
     };
   };
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}]);
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
@@ -114,10 +118,12 @@ test('accepts a ref object', () => {
     },
   };
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}]);
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
@@ -156,6 +162,7 @@ test('invokes refs in order', () => {
   };
 
   screen.render(() => (
+    // $FlowFixMe[react-rule-hook]
     <View id="foo" key="foo" ref={useMergeRefs(refA, refB, refC, refD)} />
   ));
 
@@ -194,6 +201,7 @@ test('invokes all refs if any ref changes', () => {
   };
 
   screen.render(() => (
+    // $FlowFixMe[react-rule-hook]
     <View id="foo" key="foo" ref={useMergeRefs(refA, refB)} />
   ));
 
@@ -202,6 +210,7 @@ test('invokes all refs if any ref changes', () => {
   };
 
   screen.render(() => (
+    // $FlowFixMe[react-rule-hook]
     <View id="foo" key="foo" ref={useMergeRefs(refAPrime, refB)} />
   ));
 

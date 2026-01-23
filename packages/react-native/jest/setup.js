@@ -135,6 +135,7 @@ mock(
 // $FlowFixMe[incompatible-type] - `./mocks/UIManager` is incomplete.
 mock('m#../Libraries/ReactNative/UIManager', 'm#./mocks/UIManager');
 mock('m#../Libraries/Text/Text', 'm#./mocks/Text');
+// $FlowFixMe[react-rule-hook-incompatible]
 mock('m#../Libraries/Utilities/useColorScheme', 'm#./mocks/useColorScheme');
 // $FlowFixMe[incompatible-type]
 mock('m#../Libraries/Vibration/Vibration', 'm#./mocks/Vibration');
