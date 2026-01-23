@@ -268,7 +268,17 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
   }
 
   // Shadow
-  if (textAttributes.textShadowOffset.has_value()) {
+  if (!textAttributes.textShadow.empty()) {
+    const auto &firstShadow = textAttributes.textShadow[0];
+    NSShadow *shadow = [NSShadow new];
+    shadow.shadowOffset = CGSize{firstShadow.offsetX, firstShadow.offsetY};
+    shadow.shadowBlurRadius = firstShadow.blurRadius;
+    if (firstShadow.color) {
+      shadow.shadowColor = RCTUIColorFromSharedColor(firstShadow.color);
+    }
+    attributes[NSShadowAttributeName] = shadow;
+  } else if (textAttributes.textShadowOffset.has_value()) {
+    // Fallback to legacy shadow properties
     auto textShadowOffset = textAttributes.textShadowOffset.value();
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = CGSize{textShadowOffset.width, textShadowOffset.height};

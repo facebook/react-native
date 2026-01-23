@@ -29,6 +29,14 @@ import com.facebook.react.views.text.ReactTypefaceUtils.parseFontVariant
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontWeight
 import kotlin.math.ceil
 
+/** Data class representing a single text shadow from the CSS text-shadow property. */
+public data class TextShadowData(
+  val offsetX: Float,
+  val offsetY: Float,
+  val blurRadius: Float,
+  val color: Int,
+)
+
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
 // TextAttributeProps (e.g. TextAlign)
@@ -314,6 +322,10 @@ public class TextAttributeProps private constructor() {
       }
     }
 
+  /** List of text shadows from the CSS text-shadow property. */
+  public var textShadows: List<TextShadowData> = emptyList()
+    private set
+
   private fun setTextTransform(textTransform: String?) {
     this.textTransform =
         when (textTransform) {
@@ -376,6 +388,13 @@ public class TextAttributeProps private constructor() {
     public const val TA_KEY_ROLE: Int = 26
     public const val TA_KEY_TEXT_TRANSFORM: Int = 27
     public const val TA_KEY_MAX_FONT_SIZE_MULTIPLIER: Int = 29
+    public const val TA_KEY_TEXT_SHADOW: Int = 30
+
+    // constants for TextShadow serialization (nested within TA_KEY_TEXT_SHADOW)
+    private const val TS_KEY_OFFSET_X: Int = 0
+    private const val TS_KEY_OFFSET_Y: Int = 1
+    private const val TS_KEY_BLUR_RADIUS: Int = 2
+    private const val TS_KEY_COLOR: Int = 3
 
     public const val UNSET: Int = -1
 
@@ -423,6 +442,32 @@ public class TextAttributeProps private constructor() {
           TA_KEY_TEXT_SHADOW_COLOR -> result.textShadowColor = entry.intValue
           TA_KEY_TEXT_SHADOW_OFFSET_DX -> result.textShadowOffsetDx = entry.doubleValue.toFloat()
           TA_KEY_TEXT_SHADOW_OFFSET_DY -> result.textShadowOffsetDy = entry.doubleValue.toFloat()
+          TA_KEY_TEXT_SHADOW -> {
+            val shadowsBuffer = entry.mapBufferValue
+            val shadows = mutableListOf<TextShadowData>()
+            val shadowIterator = shadowsBuffer.iterator()
+            while (shadowIterator.hasNext()) {
+              val shadowEntry = shadowIterator.next()
+              val shadowBuffer = shadowEntry.mapBufferValue
+              val offsetX =
+                  if (shadowBuffer.contains(TS_KEY_OFFSET_X))
+                      toPixelFromDIP(shadowBuffer.getDouble(TS_KEY_OFFSET_X).toFloat())
+                  else 0f
+              val offsetY =
+                  if (shadowBuffer.contains(TS_KEY_OFFSET_Y))
+                      toPixelFromDIP(shadowBuffer.getDouble(TS_KEY_OFFSET_Y).toFloat())
+                  else 0f
+              val blurRadius =
+                  if (shadowBuffer.contains(TS_KEY_BLUR_RADIUS))
+                      shadowBuffer.getDouble(TS_KEY_BLUR_RADIUS).toFloat()
+                  else 0f
+              val color =
+                  if (shadowBuffer.contains(TS_KEY_COLOR)) shadowBuffer.getInt(TS_KEY_COLOR)
+                  else DEFAULT_TEXT_SHADOW_COLOR
+              shadows.add(TextShadowData(offsetX, offsetY, blurRadius, color))
+            }
+            result.textShadows = shadows
+          }
           TA_KEY_IS_HIGHLIGHTED -> {}
           TA_KEY_LAYOUT_DIRECTION -> result.setLayoutDirection(entry.stringValue)
           TA_KEY_ACCESSIBILITY_ROLE -> result.setAccessibilityRole(entry.stringValue)

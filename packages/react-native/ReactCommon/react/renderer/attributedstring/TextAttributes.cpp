@@ -96,6 +96,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   textShadowColor = textAttributes.textShadowColor
       ? textAttributes.textShadowColor
       : textShadowColor;
+  textShadow = !textAttributes.textShadow.empty() 
+      ? textAttributes.textShadow
+      : textShadow;
 
   // Special
   isHighlighted = textAttributes.isHighlighted.has_value()
@@ -136,6 +139,7 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              textDecorationStyle,
              textShadowOffset,
              textShadowColor,
+             textShadow,
              isHighlighted,
              isPressable,
              layoutDirection,
@@ -159,6 +163,7 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              rhs.textDecorationStyle,
              rhs.textShadowOffset,
              rhs.textShadowColor,
+             rhs.textShadow,
              rhs.isHighlighted,
              rhs.isPressable,
              rhs.layoutDirection,
@@ -268,6 +273,8 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
           textAttributes.textShadowRadius),
       debugStringConvertibleItem(
           "textShadowColor", textShadowColor, textAttributes.textShadowColor),
+      debugStringConvertibleItem(
+          "textShadow", textShadow, textAttributes.textShadow),
 
       // Special
       debugStringConvertibleItem(

@@ -638,6 +638,12 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
     | undefined;
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed' | undefined;
   textDecorationColor?: ColorValue | undefined;
+  textShadow?: string | ReadonlyArray<{
+    offsetX: number,
+    offsetY: number,
+    blurRadius: number,
+    color?: ColorValue,
+  }> | undefined;
   textShadowColor?: ColorValue | undefined;
   textShadowOffset?: {width: number; height: number} | undefined;
   textShadowRadius?: number | undefined;
