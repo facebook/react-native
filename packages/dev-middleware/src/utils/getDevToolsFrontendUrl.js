@@ -16,7 +16,7 @@ import type {Experiments} from '../types/Experiments';
 export default function getDevToolsFrontendUrl(
   experiments: Experiments,
   webSocketDebuggerUrl: string,
-  devServerUrl: string,
+  devServerUrl: URL,
   options?: Readonly<{
     relative?: boolean,
     launchId?: string,
@@ -33,7 +33,7 @@ export default function getDevToolsFrontendUrl(
   });
 
   const appUrl =
-    (options?.relative === true ? '' : devServerUrl) +
+    (options?.relative === true ? '' : devServerUrl.origin) +
     '/debugger-frontend/' +
     (options?.useFuseboxEntryPoint === true
       ? 'rn_fusebox.html'
@@ -67,13 +67,13 @@ function getWsParam({
   devServerUrl,
 }: Readonly<{
   webSocketDebuggerUrl: string,
-  devServerUrl: string,
+  devServerUrl: URL,
 }>): {
   key: string,
   value: string,
 } {
   const wsUrl = new URL(webSocketDebuggerUrl);
-  const serverHost = new URL(devServerUrl).host;
+  const serverHost = devServerUrl.host;
   let value;
   if (wsUrl.host === serverHost) {
     // Use a path-absolute (host-relative) URL if the WS server and frontend

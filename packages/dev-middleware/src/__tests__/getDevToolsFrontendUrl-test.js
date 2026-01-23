@@ -13,7 +13,7 @@ import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 describe('getDevToolsFrontendUrl', () => {
   const webSocketDebuggerUrl =
     'ws://localhost:8081/inspector/debug?device=1a9372c&page=-1';
-  const devServerUrl = 'http://localhost:8081';
+  const devServerUrl = new URL('http://localhost:8081');
 
   const experiments = {
     enableNetworkInspector: false,
