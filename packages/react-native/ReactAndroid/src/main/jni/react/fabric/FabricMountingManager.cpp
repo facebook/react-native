@@ -1206,4 +1206,11 @@ void FabricMountingManager::synchronouslyUpdateViewOnUIThread(
   synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap);
 }
 
+void FabricMountingManager::scheduleReactRevisionMerge(SurfaceId surfaceId) {
+  static const auto scheduleReactRevisionMerge =
+      JFabricUIManager::javaClassStatic()->getMethod<void(int32_t)>(
+          "scheduleReactRevisionMerge");
+  scheduleReactRevisionMerge(javaUIManager_, surfaceId);
+}
+
 } // namespace facebook::react

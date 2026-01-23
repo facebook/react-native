@@ -381,8 +381,9 @@ void Scheduler::uiManagerDidFinishReactCommit(const ShadowTree& shadowTree) {
 }
 
 void Scheduler::uiManagerDidPromoteReactRevision(const ShadowTree& shadowTree) {
-  // Replaced by scheduling on the UI thread in the following diff.
-  shadowTree.mergeReactRevision();
+  if (delegate_ != nullptr) {
+    delegate_->schedulerShouldMergeReactRevision(shadowTree.getSurfaceId());
+  }
 }
 
 void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {
