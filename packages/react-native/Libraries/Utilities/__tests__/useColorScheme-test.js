@@ -13,6 +13,7 @@ import useColorScheme from '../useColorScheme';
 describe('useColorScheme', () => {
   it('should return a mocked light theme by default', () => {
     expect(jest.isMockFunction(useColorScheme)).toBe(true);
+    // $FlowFixMe[react-rule-hook]
     expect(useColorScheme()).toBe('light');
   });
 
@@ -26,6 +27,7 @@ describe('useColorScheme', () => {
     });
 
     expect(() => {
+      // $FlowFixMe[react-rule-hook]
       useColorSchemeActual();
     }).toThrow();
 
