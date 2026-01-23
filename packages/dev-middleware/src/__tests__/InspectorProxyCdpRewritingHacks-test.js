@@ -566,7 +566,7 @@ describe.each(['HTTP', 'HTTPS'])(
 
       describe('Debugger.getScriptSource', () => {
         test('should forward request directly to device (does not read source from disk in proxy)', async () => {
-          const {device, debugger_} = await createAndConnectTarget(
+          const {device, debugger_, sessionId} = await createAndConnectTarget(
             serverRef,
             autoCleanup.signal,
             pageDescription,
@@ -579,10 +579,17 @@ describe.each(['HTTP', 'HTTPS'])(
                 scriptId: 'script1',
               },
             };
-            await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
+            await sendFromDebuggerToTarget(
+              debugger_,
+              device,
+              'page1',
+              message,
+              {sessionId},
+            );
 
             expect(device.wrappedEventParsed).toBeCalledWith({
               pageId: 'page1',
+              sessionId,
               wrappedEvent: message,
             });
           } finally {
@@ -594,7 +601,7 @@ describe.each(['HTTP', 'HTTPS'])(
 
       describe('Network.loadNetworkResource', () => {
         test('should forward event directly to client (does not rewrite url host)', async () => {
-          const {device, debugger_} = await createAndConnectTarget(
+          const {device, debugger_, sessionId} = await createAndConnectTarget(
             serverRef,
             autoCleanup.signal,
             pageDescription,
@@ -607,11 +614,19 @@ describe.each(['HTTP', 'HTTPS'])(
                 url: `${protocol.toLowerCase()}://10.0.2.2:${serverRef.port}`,
               },
             };
-            await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
-            expect(device.wrappedEventParsed).toBeCalledWith({
-              pageId: 'page1',
-              wrappedEvent: message,
-            });
+            await sendFromDebuggerToTarget(
+              debugger_,
+              device,
+              'page1',
+              message,
+              {sessionId},
+            );
+            expect(device.wrappedEventParsed).toBeCalledWith(
+              expect.objectContaining({
+                pageId: 'page1',
+                wrappedEvent: message,
+              }),
+            );
           } finally {
             device.close();
             debugger_.close();
