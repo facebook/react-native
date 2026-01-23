@@ -170,13 +170,47 @@ static std::shared_ptr<ShadowNode> progressState(
   });
 }
 
+/*
+ * Updates the layout context and layout metrics on the RootNode for commits
+ * coming from React. The RootNode is managed outside of it, and may have been
+ * modified concurrently with the React revision.
+ */
+static std::shared_ptr<RootShadowNode> progressRootLayoutInfo(
+    const std::shared_ptr<RootShadowNode>& shadowNode,
+    const RootShadowNode& baseShadowNode,
+    const ContextContainer& contextContainer,
+    const ShadowTreeCommitOptions& commitOptions) {
+  if (commitOptions.source == ShadowTreeCommitSource::React ||
+      commitOptions.source == ShadowTreeCommitSource::ReactRevisionMerge) {
+    const auto& mainBranchRootProps = baseShadowNode.getConcreteProps();
+    const auto& jsBranchRootProps = shadowNode->getConcreteProps();
+
+    if (mainBranchRootProps.layoutConstraints ==
+            jsBranchRootProps.layoutConstraints &&
+        mainBranchRootProps.layoutContext == jsBranchRootProps.layoutContext) {
+      // The layout information kept in the JS branch is up to date.
+      return shadowNode;
+    }
+
+    const auto clonedNode = shadowNode->clone(
+        PropsParserContext{shadowNode->getSurfaceId(), contextContainer},
+        mainBranchRootProps.layoutConstraints,
+        mainBranchRootProps.layoutContext);
+    return std::static_pointer_cast<RootShadowNode>(clonedNode);
+  }
+
+  return shadowNode;
+}
+
 ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     const LayoutConstraints& layoutConstraints,
     const LayoutContext& layoutContext,
     const ShadowTreeDelegate& delegate,
     const ContextContainer& contextContainer)
-    : surfaceId_(surfaceId), delegate_(delegate) {
+    : surfaceId_(surfaceId),
+      delegate_(delegate),
+      contextContainer_(contextContainer) {
   static RootComponentDescriptor globalRootComponentDescriptor(
       ComponentDescriptorParameters{
           .eventDispatcher = EventDispatcher::Shared{},
@@ -328,6 +362,14 @@ CommitStatus ShadowTree::tryCommit(
       newRootShadowNode =
           std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
     }
+  }
+
+  if (ReactNativeFeatureFlags::enableFabricCommitBranching()) {
+    newRootShadowNode = progressRootLayoutInfo(
+        newRootShadowNode,
+        *oldRevisionForStateProgression.rootShadowNode,
+        contextContainer_,
+        commitOptions);
   }
 
   // Run commit hooks.

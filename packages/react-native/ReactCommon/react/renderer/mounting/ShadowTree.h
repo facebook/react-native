@@ -167,6 +167,7 @@ class ShadowTree final {
 
   const SurfaceId surfaceId_;
   const ShadowTreeDelegate &delegate_;
+  const ContextContainer &contextContainer_;
   mutable std::shared_mutex revisionMutex_;
   mutable std::recursive_mutex revisionMutexRecursive_;
   mutable CommitMode commitMode_{CommitMode::Normal}; // Protected by `revisionMutex_`.
