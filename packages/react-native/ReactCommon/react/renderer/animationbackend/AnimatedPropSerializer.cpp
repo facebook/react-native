@@ -74,6 +74,34 @@ void packTransform(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
       folly::dynamic::array(folly::dynamic::object("matrix", matrixArray)));
 }
 
+std::string unitTypeToString(UnitType unit) {
+  switch (unit) {
+    case UnitType::Undefined:
+      return "undefined";
+    case UnitType::Point:
+      return "point";
+    case UnitType::Percent:
+      return "percent";
+    default:
+      throw std::runtime_error("Unknown unit type");
+  }
+}
+
+void packTransformOrigin(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& transformOrigin = get<TransformOrigin>(animatedProp);
+  auto originArray = folly::dynamic::array();
+  for (const auto& xyValue : transformOrigin.xy) {
+    folly::dynamic valueObj = folly::dynamic::object();
+    valueObj["value"] = xyValue.value;
+    valueObj["unit"] = unitTypeToString(xyValue.unit);
+    originArray.push_back(valueObj);
+  }
+  originArray.push_back(transformOrigin.z);
+  dyn.insert("transformOrigin", originArray);
+}
+
 void packBackgroundColor(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
@@ -462,9 +490,9 @@ void packBoxShadow(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
 void packMixBlendMode(
     folly::dynamic& dyn,
     const AnimatedPropBase& animatedProp) {
-  const auto& blendMode = get<BlendMode>(animatedProp);
+  const auto& mixBlendMode = get<BlendMode>(animatedProp);
   std::string blendModeStr;
-  switch (blendMode) {
+  switch (mixBlendMode) {
     case BlendMode::Normal:
       blendModeStr = "normal";
       break;
@@ -519,6 +547,27 @@ void packMixBlendMode(
   dyn.insert("mixBlendMode", blendModeStr);
 }
 
+void packBackfaceVisibility(
+    folly::dynamic& dyn,
+    const AnimatedPropBase& animatedProp) {
+  const auto& backfaceVisibility = get<BackfaceVisibility>(animatedProp);
+  std::string visibilityStr;
+  switch (backfaceVisibility) {
+    case BackfaceVisibility::Auto:
+      visibilityStr = "auto";
+      break;
+    case BackfaceVisibility::Visible:
+      visibilityStr = "visible";
+      break;
+    case BackfaceVisibility::Hidden:
+      visibilityStr = "hidden";
+      break;
+    default:
+      throw std::runtime_error("Unknown backface visibility");
+  }
+  dyn.insert("backfaceVisibility", visibilityStr);
+}
+
 void packAnimatedProp(
     folly::dynamic& dyn,
     const std::unique_ptr<AnimatedPropBase>& animatedProp) {
@@ -529,6 +578,10 @@ void packAnimatedProp(
 
     case TRANSFORM:
       packTransform(dyn, *animatedProp);
+      break;
+
+    case TRANSFORM_ORIGIN:
+      packTransformOrigin(dyn, *animatedProp);
       break;
 
     case BACKGROUND_COLOR:
@@ -607,6 +660,10 @@ void packAnimatedProp(
       packMixBlendMode(dyn, *animatedProp);
       break;
 
+    case BACKFACE_VISIBILITY:
+      packBackfaceVisibility(dyn, *animatedProp);
+      break;
+
     case WIDTH:
     case HEIGHT:
     case FLEX:
@@ -637,6 +694,8 @@ void packAnimatedProp(
     case Z_INDEX:
     case DIRECTION:
       throw std::runtime_error("Tried to synchronously update layout props");
+    default:
+      throw std::runtime_error("Unknown animated prop");
   }
 }
 

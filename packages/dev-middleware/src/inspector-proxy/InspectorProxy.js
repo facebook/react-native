@@ -27,14 +27,15 @@ import Device from './Device';
 import EventLoopPerfTracker from './EventLoopPerfTracker';
 import InspectorProxyHeartbeat from './InspectorProxyHeartbeat';
 import nullthrows from 'nullthrows';
-import url from 'url';
 import WS from 'ws';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
-const WS_DEBUGGER_ALLOWED_ORIGINS = new Set([
-  'http://localhost:8081',
-  'http://127.0.0.1:8081',
+const WS_DEBUGGER_ALLOWED_ORIGIN_HOSTNAMES = new Set([
+  'localhost',
+  '127.0.0.1',
+  '0.0.0.0',
+  '[::]',
 ]);
 
 const WS_DEVICE_URL = '/inspector/device';
@@ -205,7 +206,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response: ServerResponse,
     next: (?Error) => unknown,
   ) {
-    const pathname = url.parse(request.url).pathname;
+    const pathname = new URL(request.url, 'http://example.com').pathname;
     if (
       pathname === PAGES_LIST_JSON_URL ||
       pathname === PAGES_LIST_JSON_URL_2
@@ -336,12 +337,11 @@ export default class InspectorProxy implements InspectorProxyQueries {
       const wssTimestamp = Date.now();
 
       const fallbackDeviceId = String(this.#deviceCounter++);
-
-      const query = url.parse(req.url || '', true).query || {};
-      const deviceId = query.device || fallbackDeviceId;
-      const deviceName = query.name || 'Unknown';
-      const appName = query.app || 'Unknown';
-      const isProfilingBuild = query.profiling === 'true';
+      const query = tryParseQueryParams(req.url);
+      const deviceId = query?.get('device') || fallbackDeviceId;
+      const deviceName = query?.get('name') || 'Unknown';
+      const appName = query?.get('app') || 'Unknown';
+      const isProfilingBuild = query?.get('profiling') === 'true';
 
       try {
         const deviceRelativeBaseUrl =
@@ -497,16 +497,36 @@ export default class InspectorProxy implements InspectorProxyQueries {
           secure: boolean,
           req: http$IncomingMessage<>,
         }>,
-      ) => WS_DEBUGGER_ALLOWED_ORIGINS.has(info.origin),
+      ) => {
+        if (this.#serverBaseUrl.origin === info.origin) {
+          return true;
+        }
+
+        if (URL.canParse(info.origin)) {
+          const {hostname} = new URL(info.origin);
+          if (WS_DEBUGGER_ALLOWED_ORIGIN_HOSTNAMES.has(hostname)) {
+            return true;
+          }
+        }
+
+        this.#logger?.error(
+          "Connection from DevTools failed to be established for origin '%s' and path '%s'. Was expecting origin: '%s', or origin hostname to be one of: %s",
+          info.origin,
+          info.req.url,
+          this.#serverBaseUrl.origin,
+          Array.from(WS_DEBUGGER_ALLOWED_ORIGIN_HOSTNAMES).join(', '),
+        );
+        return false;
+      },
     });
 
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
       const wssTimestamp = Date.now();
 
-      const query = url.parse(req.url || '', true).query || {};
-      const deviceId = query.device;
-      const pageId = query.page;
+      const query = tryParseQueryParams(req.url);
+      const deviceId = query?.get('device') || null;
+      const pageId = query?.get('page') || null;
       const debuggerRelativeBaseUrl =
         getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
       const device: Device | void = deviceId
@@ -593,7 +613,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
         device.handleDebuggerConnection(socket, pageId, {
           debuggerRelativeBaseUrl,
-          userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
+          userAgent:
+            req.headers['user-agent'] ?? query?.get('userAgent') ?? null,
         });
 
         socket.on('close', (code: number, reason: string) => {
@@ -619,7 +640,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           "Connection failed to be established with DevTools for app='%s' on device='%s' and device id='%s' with error:",
           device?.getApp() || 'unknown',
           device?.getName() || 'unknown',
-          deviceId,
+          deviceId || 'unknown',
           error,
         );
         socket.close(INTERNAL_ERROR_CODE, error?.toString() ?? 'Unknown error');
@@ -632,5 +653,13 @@ export default class InspectorProxy implements InspectorProxyQueries {
       }
     });
     return wss;
+  }
+}
+
+function tryParseQueryParams(urlString: string): ?URLSearchParams {
+  try {
+    return new URL(urlString, 'http://example.com').searchParams;
+  } catch {
+    return null;
   }
 }

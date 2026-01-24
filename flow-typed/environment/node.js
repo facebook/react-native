@@ -221,10 +221,10 @@ declare module 'buffer' {
   declare var File: typeof globalThis.File;
 }
 
-type child_process$execOpts = {
+type child_process$execOpts = Readonly<{
   cwd?: string,
-  env?: Object,
-  encoding?: string,
+  env?: Readonly<{[key: string]: string | number | void}>,
+  encoding?: buffer$NonBufferEncoding | 'buffer' | string,
   shell?: string,
   timeout?: number,
   maxBuffer?: number,
@@ -232,8 +232,8 @@ type child_process$execOpts = {
   uid?: number,
   gid?: number,
   windowsHide?: boolean,
-  ...
-};
+  signal?: AbortSignal,
+}>;
 
 declare class child_process$Error extends Error {
   code: number | string | null;
@@ -246,32 +246,31 @@ declare class child_process$Error extends Error {
   cmd: string;
 }
 
-type child_process$execCallback = (
+type child_process$execCallback<T = string | Buffer> = (
   error: ?child_process$Error,
-  stdout: string | Buffer,
-  stderr: string | Buffer,
+  stdout: T,
+  stderr: T,
 ) => void;
 
-type child_process$execSyncOpts = {
+type child_process$execSyncOpts = Readonly<{
   cwd?: string,
   input?: string | Buffer | $TypedArray | DataView,
   stdio?: string | Array<any>,
-  env?: Object,
+  env?: Readonly<{[key: string]: string | number | void}>,
   shell?: string,
   uid?: number,
   gid?: number,
   timeout?: number,
   killSignal?: string | number,
   maxBuffer?: number,
-  encoding?: string,
+  encoding?: buffer$NonBufferEncoding | 'buffer' | string,
   windowsHide?: boolean,
-  ...
-};
+}>;
 
-type child_process$execFileOpts = {
+type child_process$execFileOpts = Readonly<{
   cwd?: string,
-  env?: Object,
-  encoding?: string,
+  env?: Readonly<{[key: string]: string | number | void}>,
+  encoding?: buffer$NonBufferEncoding | 'buffer' | string,
   timeout?: number,
   maxBuffer?: number,
   killSignal?: string | number,
@@ -280,168 +279,414 @@ type child_process$execFileOpts = {
   windowsHide?: boolean,
   windowsVerbatimArguments?: boolean,
   shell?: boolean | string,
-  ...
-};
+  signal?: AbortSignal,
+}>;
 
-type child_process$execFileCallback = (
-  error: ?child_process$Error,
-  stdout: string | Buffer,
-  stderr: string | Buffer,
-) => void;
+type child_process$execFileCallback<T: string | Buffer> =
+  child_process$execCallback<T>;
 
-type child_process$execFileSyncOpts = {
+type child_process$execFileSyncOpts = Readonly<{
   cwd?: string,
   input?: string | Buffer | $TypedArray | DataView,
   stdio?: string | Array<any>,
-  env?: Object,
+  env?: {[key: string]: string | number | void},
   uid?: number,
   gid?: number,
   timeout?: number,
   killSignal?: string | number,
   maxBuffer?: number,
-  encoding?: string,
+  encoding?: buffer$NonBufferEncoding | 'buffer' | string,
   windowsHide?: boolean,
   shell?: boolean | string,
-  ...
-};
+}>;
 
-type child_process$forkOpts = {
+type child_process$forkOpts = Readonly<{
   cwd?: string,
-  env?: Object,
+  env?: Readonly<{[key: string]: string | number | void}>,
   execPath?: string,
-  execArgv?: Array<string>,
+  execArgv?: ReadonlyArray<string>,
   silent?: boolean,
-  stdio?: Array<any> | string,
+  stdio?:
+    | child_process$StdioPipe
+    | string
+    | Readonly<
+        [
+          child_process$StdioPipe,
+          child_process$StdioPipe,
+          child_process$StdioPipe,
+          ...
+        ],
+      >
+    | Readonly<
+        [
+          child_process$StdioPipe,
+          child_process$StdioPipe,
+          string | number,
+          ...
+        ],
+      >
+    | Readonly<
+        [
+          child_process$StdioPipe,
+          string | number,
+          child_process$StdioPipe,
+          ...
+        ],
+      >
+    | Readonly<
+        [
+          string | number,
+          child_process$StdioPipe,
+          child_process$StdioPipe,
+          ...
+        ],
+      >
+    | Readonly<[child_process$StdioPipe, string | number, string | number, ...]>
+    | Readonly<[string | number, child_process$StdioPipe, string | number, ...]>
+    | Readonly<[string | number, string | number, child_process$StdioPipe, ...]>
+    | Readonly<[string | number, string | number, string | number, ...]>,
   windowsVerbatimArguments?: boolean,
   uid?: number,
   gid?: number,
-  ...
-};
+  serialization?: 'json' | 'advanced',
+  killSignal?: string | number,
+  timeout?: number,
+  signal?: AbortSignal,
+}>;
 
 type child_process$Handle = any; // TODO
 
-type child_process$spawnOpts = {
+type child_process$StdioPipe = 'pipe' | 'overlapped';
+
+type child_process$spawnOpts = Readonly<{
   cwd?: string,
-  env?: Object,
+  env?: Readonly<{[key: string]: string | number | void}>,
+  encoding?: buffer$NonBufferEncoding | 'buffer' | string,
   argv0?: string,
-  stdio?: string | Array<any>,
+  stdio?:
+    | child_process$StdioPipe
+    | string
+    | Readonly<
+        [
+          child_process$StdioPipe,
+          child_process$StdioPipe,
+          child_process$StdioPipe,
+          ...
+        ],
+      >
+    | Readonly<
+        [
+          child_process$StdioPipe,
+          child_process$StdioPipe,
+          string | number,
+          ...
+        ],
+      >
+    | Readonly<
+        [
+          child_process$StdioPipe,
+          string | number,
+          child_process$StdioPipe,
+          ...
+        ],
+      >
+    | Readonly<
+        [
+          string | number,
+          child_process$StdioPipe,
+          child_process$StdioPipe,
+          ...
+        ],
+      >
+    | Readonly<[child_process$StdioPipe, string | number, string | number, ...]>
+    | Readonly<[string | number, child_process$StdioPipe, string | number, ...]>
+    | Readonly<[string | number, string | number, child_process$StdioPipe, ...]>
+    | Readonly<[string | number, string | number, string | number, ...]>,
   detached?: boolean,
   uid?: number,
   gid?: number,
   shell?: boolean | string,
   windowsVerbatimArguments?: boolean,
   windowsHide?: boolean,
-  ...
-};
+  signal?: AbortSignal,
+  killSignal?: string | number,
+  timeout?: number,
+  serialization?: 'json' | 'advanced',
+}>;
 
-type child_process$spawnRet = {
+type child_process$spawnSyncRet<T: string | Buffer> = Readonly<{
   pid: number,
   output: Array<any>,
-  stdout: Buffer | string,
-  stderr: Buffer | string,
+  // TODO: subprocess.stdout may be null in case of error
+  stdout: T,
+  // TODO: subprocess.stderr may be null in case of error
+  stderr: T,
+  // TODO: subprocess.status may be null in case of error or signal
   status: number,
-  signal: string,
-  error: Error,
-  ...
-};
+  signal: string | null,
+  error: Error | void,
+}>;
 
-type child_process$spawnSyncOpts = {
+type child_process$spawnSyncOpts = Readonly<{
   cwd?: string,
   input?: string | Buffer,
-  stdio?: string | Array<any>,
-  env?: Object,
+  stdio?: string | ReadonlyArray<any>,
+  env?: Readonly<{[key: string]: string | number | void}>,
   uid?: number,
   gid?: number,
   timeout?: number,
-  killSignal?: string,
+  killSignal?: string | number,
   maxBuffer?: number,
-  encoding?: string,
+  encoding?: buffer$NonBufferEncoding | 'buffer' | string,
   shell?: boolean | string,
-  ...
-};
+  windowsHide?: boolean,
+  windowsVerbatimArguments?: boolean,
+}>;
 
-type child_process$spawnSyncRet = child_process$spawnRet;
+type child_process$Serializable =
+  | string
+  | number
+  | boolean
+  | bigint
+  | {[key: string]: child_process$Serializable}
+  | Array<child_process$Serializable>;
 
-declare class child_process$ChildProcess extends events$EventEmitter {
-  channel: Object;
-  connected: boolean;
-  killed: boolean;
-  pid: number;
-  exitCode: number | null;
-  stderr: stream$Readable;
-  stdin: stream$Writable;
-  stdio: Array<any>;
-  stdout: stream$Readable;
+type child_process$SendHandle = net$Server | net$Socket;
 
+declare class child_process$ChildProcessTyped<
+  TStdin: stream$Writable | null,
+  TStdout: stream$Readable | null,
+  TStderr: stream$Readable | null,
+> extends events$EventEmitter
+{
+  +stdin: TStdin;
+  +stdout: TStdout;
+  +stderr: TStderr;
+  +channel: unknown;
+  +stdio: [TStdin, TStdout, TStderr, ...];
+  +killed: boolean;
+  +pid: number;
+  +connected: boolean;
+  +exitCode: number | null;
+  +signalCode: string | null;
+  +spawnargs: Array<string>;
+  +spawnfile: string;
   disconnect(): void;
-  kill(signal?: string): void;
+  kill(signal?: string | number): boolean;
   send(
-    message: Object,
-    sendHandleOrCallback?: child_process$Handle,
-    optionsOrCallback?: Object | Function,
-    callback?: Function,
+    message: child_process$Serializable,
+    callback?: (error: Error | null) => void,
+  ): boolean;
+  send(
+    message: child_process$Serializable,
+    sendHandle: child_process$SendHandle,
+    callback?: (error: Error | null) => void,
+  ): boolean;
+  send(
+    message: child_process$Serializable,
+    sendHandle: child_process$SendHandle,
+    options: Readonly<{keepOpen?: boolean}>,
+    callback?: (error: Error | null) => void,
   ): boolean;
   unref(): void;
   ref(): void;
 }
 
+/**
+ * @deprecated - Unsafely assumes stdio is piped
+ */
+declare type child_process$ChildProcess = child_process$ChildProcessTyped<
+  stream$Writable,
+  stream$Readable,
+  stream$Readable,
+>;
+
 declare module 'child_process' {
-  declare var ChildProcess: typeof child_process$ChildProcess;
+  declare type ExecOptions = child_process$execOpts;
+  declare type ExecFileOptions = child_process$execFileOpts;
+  declare type ExecSyncOptions = child_process$execSyncOpts;
+  declare type ForkOptions = child_process$forkOpts;
+  declare type SpawnOptions = child_process$spawnOpts;
+  declare type SpawnSyncOptions = child_process$spawnSyncOpts;
+
+  declare var ChildProcess: typeof child_process$ChildProcessTyped<
+    stream$Writable,
+    stream$Readable,
+    stream$Readable,
+  >;
+
+  type StringOrBuffer<Opts, Default: string | Buffer> =
+    Opts extends Readonly<{encoding: infer E, ...}>
+      ? E extends buffer$NonBufferEncoding
+        ? string
+        : E extends 'buffer'
+          ? Buffer
+          : string | Buffer
+      : Default;
+
+  type StreamForChannel<Channel: 0 | 1 | 2> = Channel extends 0
+    ? stream$Writable
+    : stream$Readable;
+
+  type MaybeStream<Opts, FD: 0 | 1 | 2, PipeByDefault: true | false = true> =
+    Opts extends Readonly<{stdio: infer E, ...}>
+      ? E extends child_process$StdioPipe
+        ? StreamForChannel<FD>
+        : E extends string
+          ? null
+          : E[FD] extends child_process$StdioPipe
+            ? StreamForChannel<FD>
+            : E[FD] extends string | number
+              ? null
+              : null | StreamForChannel<FD>
+      : PipeByDefault extends true
+        ? StreamForChannel<FD>
+        : null;
 
   declare function exec(
     command: string,
-    optionsOrCallback?: child_process$execOpts | child_process$execCallback,
-    callback?: child_process$execCallback,
-  ): child_process$ChildProcess;
+    callback?: child_process$execCallback<string>,
+  ): child_process$ChildProcessTyped<
+    stream$Writable,
+    stream$Readable,
+    stream$Readable,
+  >;
 
-  declare function execSync(
+  declare function exec<Opts: child_process$execOpts>(
     command: string,
-    options: {
-      encoding: buffer$NonBufferEncoding,
-      ...
-    } & child_process$execSyncOpts,
-  ): string;
+    options: Opts,
+    callback?: child_process$execCallback<StringOrBuffer<Opts, string>>,
+  ): child_process$ChildProcessTyped<
+    stream$Writable,
+    stream$Readable,
+    stream$Readable,
+  >;
 
-  declare function execSync(
+  declare function execSync<Opts: child_process$execSyncOpts>(
     command: string,
-    options?: child_process$execSyncOpts,
   ): Buffer;
+
+  declare function execSync<Opts: child_process$execSyncOpts>(
+    command: string,
+    options: Opts,
+  ): StringOrBuffer<Opts, Buffer>;
 
   declare function execFile(
     file: string,
-    argsOrOptionsOrCallback?:
-      | Array<string>
-      | child_process$execFileOpts
-      | child_process$execFileCallback,
-    optionsOrCallback?:
-      | child_process$execFileOpts
-      | child_process$execFileCallback,
-    callback?: child_process$execFileCallback,
-  ): child_process$ChildProcess;
+    argsOrCallback?:
+      | ReadonlyArray<string>
+      | child_process$execFileCallback<string>,
+    callback?: child_process$execFileCallback<string>,
+  ): child_process$ChildProcessTyped<
+    stream$Writable,
+    stream$Readable,
+    stream$Readable,
+  >;
+
+  declare function execFile<Opts: child_process$execFileOpts>(
+    file: string,
+    args: ReadonlyArray<string>,
+    options: Opts,
+    callback?: child_process$execFileCallback<StringOrBuffer<Opts, string>>,
+  ): child_process$ChildProcessTyped<
+    stream$Writable,
+    stream$Readable,
+    stream$Readable,
+  >;
+
+  declare function execFile<Opts: child_process$execFileOpts>(
+    file: string,
+    options: Opts,
+    callback?: child_process$execFileCallback<StringOrBuffer<Opts, string>>,
+  ): child_process$ChildProcessTyped<
+    stream$Writable,
+    stream$Readable,
+    stream$Readable,
+  >;
 
   declare function execFileSync(
     command: string,
-    argsOrOptions?: Array<string> | child_process$execFileSyncOpts,
-    options?: child_process$execFileSyncOpts,
-  ): Buffer | string;
+    args?: ReadonlyArray<string>,
+  ): Buffer;
+
+  declare function execFileSync<Opts: child_process$execFileSyncOpts>(
+    command: string,
+    args: ReadonlyArray<string>,
+    options: Opts,
+  ): StringOrBuffer<Opts, Buffer>;
+
+  declare function execFileSync<Opts: child_process$execFileSyncOpts>(
+    command: string,
+    options: Opts,
+  ): StringOrBuffer<Opts, Buffer>;
 
   declare function fork(
     modulePath: string,
-    argsOrOptions?: Array<string> | child_process$forkOpts,
-    options?: child_process$forkOpts,
-  ): child_process$ChildProcess;
+    args?: ReadonlyArray<string>,
+  ): child_process$ChildProcessTyped<null, null, null>;
+
+  declare function fork<Opts: child_process$forkOpts>(
+    modulePath: string,
+    args: ReadonlyArray<string>,
+    options: Opts,
+  ): child_process$ChildProcessTyped<
+    MaybeStream<Opts, 0, false>,
+    MaybeStream<Opts, 1, false>,
+    MaybeStream<Opts, 2, false>,
+  >;
+
+  declare function fork<Opts: child_process$forkOpts>(
+    modulePath: string,
+    options: Opts,
+  ): child_process$ChildProcessTyped<
+    MaybeStream<Opts, 0, false>,
+    MaybeStream<Opts, 1, false>,
+    MaybeStream<Opts, 2, false>,
+  >;
 
   declare function spawn(
     command: string,
-    argsOrOptions?: Array<string> | child_process$spawnOpts,
-    options?: child_process$spawnOpts,
-  ): child_process$ChildProcess;
+    args?: ReadonlyArray<string>,
+  ): child_process$ChildProcessTyped<
+    stream$Writable,
+    stream$Readable,
+    stream$Readable,
+  >;
+
+  declare function spawn<Opts: child_process$spawnOpts>(
+    command: string,
+    args: ReadonlyArray<string>,
+    options: Opts,
+  ): child_process$ChildProcessTyped<
+    MaybeStream<Opts, 0>,
+    MaybeStream<Opts, 1>,
+    MaybeStream<Opts, 2>,
+  >;
+
+  declare function spawn<Opts: child_process$spawnOpts>(
+    command: string,
+    options: Opts,
+  ): child_process$ChildProcessTyped<
+    MaybeStream<Opts, 0>,
+    MaybeStream<Opts, 1>,
+    MaybeStream<Opts, 2>,
+  >;
 
   declare function spawnSync(
     command: string,
-    argsOrOptions?: Array<string> | child_process$spawnSyncOpts,
-    options?: child_process$spawnSyncOpts,
-  ): child_process$spawnSyncRet;
+    args?: ReadonlyArray<string>,
+  ): child_process$spawnSyncRet<Buffer>;
+
+  declare function spawnSync<Opts: child_process$spawnSyncOpts>(
+    command: string,
+    args: ReadonlyArray<string>,
+    options: Opts,
+  ): child_process$spawnSyncRet<StringOrBuffer<Opts, Buffer>>;
+
+  declare function spawnSync<Opts: child_process$spawnSyncOpts>(
+    command: string,
+    options: Opts,
+  ): child_process$spawnSyncRet<StringOrBuffer<Opts, Buffer>>;
 }
 
 declare module 'cluster' {
@@ -2280,6 +2525,10 @@ declare module 'fs' {
   declare var promises: FSPromise;
 }
 
+declare module 'fs/promises' {
+  declare module.exports: $Exports<'fs'>['promises'];
+}
+
 type http$agentOptions = {
   keepAlive?: boolean,
   keepAliveMsecs?: number,
@@ -3061,6 +3310,10 @@ declare module 'perf_hooks' {
   ): RecordableHistogram;
 }
 
+declare module 'process' {
+  declare module.exports: Process;
+}
+
 declare module 'punycode' {
   declare function decode(string: string): string;
   declare function encode(string: string): string;
@@ -3093,6 +3346,125 @@ declare module 'querystring' {
   ): any;
   declare function escape(str: string): string;
   declare function unescape(str: string, decodeSpaces?: boolean): string;
+}
+
+/**
+ * Node.js sqlite module (only available with node: prefix)
+ * @since v22.5.0
+ */
+declare module 'node:sqlite' {
+  declare export type SupportedValueType =
+    | null
+    | number
+    | bigint
+    | string
+    | Uint8Array;
+
+  declare export type DatabaseSyncOptions = Readonly<{
+    open?: boolean,
+    enableForeignKeyConstraints?: boolean,
+    enableDoubleQuotedStringLiterals?: boolean,
+    readOnly?: boolean,
+    allowExtension?: boolean,
+  }>;
+
+  declare export type CreateSessionOptions = Readonly<{
+    table?: string,
+    db?: string,
+  }>;
+
+  declare export type ApplyChangesetOptions = Readonly<{
+    filter?: (tableName: string) => boolean,
+    onConflict?: number,
+  }>;
+
+  declare export type FunctionOptions = Readonly<{
+    deterministic?: boolean,
+    directOnly?: boolean,
+    useBigIntArguments?: boolean,
+    varargs?: boolean,
+  }>;
+
+  declare export type StatementResultingChanges = {
+    changes: number | bigint,
+    lastInsertRowid: number | bigint,
+  };
+
+  declare export interface Session {
+    changeset(): Uint8Array;
+    patchset(): Uint8Array;
+    close(): void;
+  }
+
+  declare export class StatementSync {
+    all(...anonymousParameters: ReadonlyArray<SupportedValueType>): Array<any>;
+    all(
+      namedParameters: {[key: string]: SupportedValueType, ...},
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): Array<any>;
+
+    +expandedSQL: string;
+
+    get(...anonymousParameters: ReadonlyArray<SupportedValueType>): any;
+    get(
+      namedParameters: {[key: string]: SupportedValueType, ...},
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): any;
+
+    iterate(
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): Iterator<any>;
+    iterate(
+      namedParameters: {[key: string]: SupportedValueType, ...},
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): Iterator<any>;
+
+    run(
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): StatementResultingChanges;
+    run(
+      namedParameters: {[key: string]: SupportedValueType, ...},
+      ...anonymousParameters: ReadonlyArray<SupportedValueType>
+    ): StatementResultingChanges;
+
+    setAllowBareNamedParameters(enabled: boolean): void;
+    setReadBigInts(enabled: boolean): void;
+
+    +sourceSQL: string;
+  }
+
+  declare export class DatabaseSync {
+    constructor(location: string, options?: DatabaseSyncOptions): void;
+
+    close(): void;
+    loadExtension(path: string): void;
+    enableLoadExtension(allow: boolean): void;
+    exec(sql: string): void;
+
+    function(
+      name: string,
+      options: FunctionOptions,
+      func: (...args: ReadonlyArray<SupportedValueType>) => SupportedValueType,
+    ): void;
+    function(
+      name: string,
+      func: (...args: ReadonlyArray<SupportedValueType>) => SupportedValueType,
+    ): void;
+
+    open(): void;
+    prepare(sql: string): StatementSync;
+    createSession(options?: CreateSessionOptions): Session;
+    applyChangeset(
+      changeset: Uint8Array,
+      options?: ApplyChangesetOptions,
+    ): boolean;
+  }
+
+  declare export var constants: {|
+    +SQLITE_CHANGESET_OMIT: number,
+    +SQLITE_CHANGESET_REPLACE: number,
+    +SQLITE_CHANGESET_ABORT: number,
+  |};
 }
 
 type readline$InterfaceCompleter = (
@@ -4718,72 +5090,189 @@ declare module 'assert' {
   };
 }
 
-type HeapCodeStatistics = {
-  code_and_metadata_size: number,
-  bytecode_and_metadata_size: number,
-  external_script_source_size: number,
-  ...
-};
+declare module 'assert/strict' {
+  declare module.exports: $Exports<'assert'>['strict'];
+}
 
-type HeapStatistics = {
-  total_heap_size: number,
-  total_heap_size_executable: number,
-  total_physical_size: number,
-  total_available_size: number,
-  used_heap_size: number,
-  heap_size_limit: number,
-  malloced_memory: number,
-  peak_malloced_memory: number,
-  does_zap_garbage: 0 | 1,
-  number_of_native_contexts: number,
-  number_of_detached_contexts: number,
-  ...
-};
-
-type HeapSpaceStatistics = {
-  space_name: string,
-  space_size: number,
-  space_used_size: number,
-  space_available_size: number,
-  physical_space_size: number,
-  ...
-};
-
-// Adapted from DefinitelyTyped for Node v14:
-// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/dea4d99dc302a0b0a25270e46e72c1fe9b741a17/types/node/v14/v8.d.ts
 declare module 'v8' {
+  declare export type DoesZapCodeSpaceFlag = 0 | 1;
+
+  declare export type HeapCodeStatistics = {
+    code_and_metadata_size: number,
+    bytecode_and_metadata_size: number,
+    external_script_source_size: number,
+    cpu_profiler_metadata_size: number,
+  };
+
+  declare export type HeapInfo = {
+    total_heap_size: number,
+    total_heap_size_executable: number,
+    total_physical_size: number,
+    total_available_size: number,
+    used_heap_size: number,
+    heap_size_limit: number,
+    malloced_memory: number,
+    peak_malloced_memory: number,
+    does_zap_garbage: DoesZapCodeSpaceFlag,
+    number_of_native_contexts: number,
+    number_of_detached_contexts: number,
+    total_global_handles_size: number,
+    used_global_handles_size: number,
+    external_memory: number,
+  };
+
+  declare export type HeapSpaceInfo = {
+    space_name: string,
+    space_size: number,
+    space_used_size: number,
+    space_available_size: number,
+    physical_space_size: number,
+  };
+
+  declare export type HeapSnapshotOptions = Readonly<{
+    exposeInternals?: boolean,
+    exposeNumericValues?: boolean,
+  }>;
+
+  // For GCProfiler - uses camelCase naming convention
+  declare export type HeapStatistics = {
+    totalHeapSize: number,
+    totalHeapSizeExecutable: number,
+    totalPhysicalSize: number,
+    totalAvailableSize: number,
+    totalGlobalHandlesSize: number,
+    usedGlobalHandlesSize: number,
+    usedHeapSize: number,
+    heapSizeLimit: number,
+    mallocedMemory: number,
+    externalMemory: number,
+    peakMallocedMemory: number,
+  };
+
+  declare export type HeapSpaceStatistics = {
+    spaceName: string,
+    spaceSize: number,
+    spaceUsedSize: number,
+    spaceAvailableSize: number,
+    physicalSpaceSize: number,
+  };
+
+  declare export type GCProfilerResult = {
+    version: number,
+    startTime: number,
+    endTime: number,
+    statistics: ReadonlyArray<{
+      gcType: string,
+      cost: number,
+      beforeGC: {
+        heapStatistics: HeapStatistics,
+        heapSpaceStatistics: ReadonlyArray<HeapSpaceStatistics>,
+      },
+      afterGC: {
+        heapStatistics: HeapStatistics,
+        heapSpaceStatistics: ReadonlyArray<HeapSpaceStatistics>,
+      },
+    }>,
+  };
+
   /**
-   * Returns an integer representing a "version tag" derived from the V8 version, command line flags and detected CPU features.
-   * This is useful for determining whether a vm.Script cachedData buffer is compatible with this instance of V8.
+   * Returns an integer representing a "version tag" derived from the V8 version,
+   * command line flags and detected CPU features. This is useful for determining
+   * whether a vm.Script cachedData buffer is compatible with this instance of V8.
    */
   declare function cachedDataVersionTag(): number;
 
   /**
-   * Generates a snapshot of the current V8 heap and returns a Readable
-   * Stream that may be used to read the JSON serialized representation.
-   * This conversation was marked as resolved by joyeecheung
-   * This JSON stream format is intended to be used with tools such as
-   * Chrome DevTools. The JSON schema is undocumented and specific to the
-   * V8 engine, and may change from one version of V8 to the next.
+   * Returns statistics about code and its metadata in the heap.
    */
-  declare function getHeapSnapshot(): stream$Readable;
-
-  /**
-   *
-   * @param fileName The file path where the V8 heap snapshot is to be
-   * saved. If not specified, a file name with the pattern
-   * `'Heap-${yyyymmdd}-${hhmmss}-${pid}-${thread_id}.heapsnapshot'` will be
-   * generated, where `{pid}` will be the PID of the Node.js process,
-   * `{thread_id}` will be `0` when `writeHeapSnapshot()` is called from
-   * the main Node.js thread or the id of a worker thread.
-   */
-  declare function writeHeapSnapshot(fileName?: string): string;
-
   declare function getHeapCodeStatistics(): HeapCodeStatistics;
 
-  declare function getHeapStatistics(): HeapStatistics;
-  declare function getHeapSpaceStatistics(): Array<HeapSpaceStatistics>;
+  /**
+   * Returns an object with statistics about the V8 heap.
+   */
+  declare function getHeapStatistics(): HeapInfo;
+
+  /**
+   * Returns statistics about the V8 heap spaces.
+   */
+  declare function getHeapSpaceStatistics(): Array<HeapSpaceInfo>;
+
+  /**
+   * Generates a snapshot of the current V8 heap and returns a Readable Stream
+   * that may be used to read the JSON serialized representation. This JSON stream
+   * format is intended to be used with tools such as Chrome DevTools. The JSON
+   * schema is undocumented and specific to the V8 engine.
+   * @param options Optional settings for controlling snapshot detail
+   */
+  declare function getHeapSnapshot(
+    options?: HeapSnapshotOptions,
+  ): stream$Readable;
+
+  /**
+   * Generates a snapshot of the current V8 heap and writes it to a JSON file.
+   * @param fileName The file path where the snapshot will be saved. If not specified,
+   *   a file name with the pattern 'Heap-${yyyymmdd}-${hhmmss}-${pid}-${thread_id}.heapsnapshot'
+   *   will be generated.
+   * @param options Optional settings for controlling snapshot detail
+   * @returns The filename where the snapshot was saved
+   */
+  declare function writeHeapSnapshot(
+    fileName?: string,
+    options?: HeapSnapshotOptions,
+  ): string;
+
+  /**
+   * Sets V8 command-line flags. Use with care; changing settings after the VM has
+   * started may result in unpredictable behavior, crashes, or data loss.
+   */
   declare function setFlagsFromString(flags: string): void;
+
+  /**
+   * Generates a heap snapshot when the heap usage reaches the specified limit.
+   * @param limit The heap size limit that triggers snapshot generation
+   */
+  declare function setHeapSnapshotNearHeapLimit(limit: number): void;
+
+  /**
+   * Searches for objects that match the given constructor on their prototype chain.
+   * Similar to Chrome DevTools' queryObjects() console API.
+   * @since v20.13.0
+   * @experimental
+   */
+  declare function queryObjects(
+    ctor: Function,
+    options?: {format: 'count'},
+  ): number;
+  declare function queryObjects(
+    ctor: Function,
+    options: {format: 'summary'},
+  ): Array<string>;
+
+  /**
+   * Returns C++ heap statistics from the cppgc heap.
+   * @since v22.15.0
+   * @param detailLevel Level of detail: 'brief' for top-level stats, 'detailed' for space/page breakdown
+   */
+  declare function getCppHeapStatistics(
+    detailLevel?: 'brief' | 'detailed',
+  ): Object;
+
+  /**
+   * Checks if a string's internal representation uses one byte per character (Latin-1/ISO-8859-1 encoding).
+   * Useful for optimizing string serialization.
+   * @since v23.10.0, v22.15.0
+   */
+  declare function isStringOneByteRepresentation(content: string): boolean;
+
+  /**
+   * Starts capturing V8 type profile for coverage analysis.
+   */
+  declare function takeCoverage(): void;
+
+  /**
+   * Stops capturing V8 type profile for coverage analysis.
+   */
+  declare function stopCoverage(): void;
 
   declare class Serializer {
     constructor(): void;
@@ -4906,6 +5395,23 @@ declare module 'v8' {
    * Uses a `DefaultDeserializer` with default options to read a JS value from a buffer.
    */
   declare function deserialize(data: Buffer | $TypedArray | DataView): any;
+
+  /**
+   * Starts a GC profiling session that collects detailed garbage collection statistics.
+   */
+  declare class GCProfiler {
+    constructor(): void;
+
+    /**
+     * Starts the GC profiling session.
+     */
+    start(): void;
+
+    /**
+     * Stops the GC profiling session and returns collected statistics.
+     */
+    stop(): GCProfilerResult;
+  }
 }
 
 type repl$DefineCommandOptions = (...args: Array<any>) => void | {
@@ -5082,68 +5588,6 @@ declare function setImmediate(
 ): Object;
 declare function clearImmediate(immediateObject: any): Object;
 
-// https://nodejs.org/api/esm.html#node-imports
-
-declare module 'node:assert' {
-  declare module.exports: $Exports<'assert'>;
-}
-
-declare module 'node:assert/strict' {
-  declare module.exports: $Exports<'assert'>['strict'];
-}
-
-declare module 'node:events' {
-  declare module.exports: $Exports<'events'>;
-}
-
-declare module 'node:fs' {
-  declare module.exports: $Exports<'fs'>;
-}
-
-declare module 'node:os' {
-  declare module.exports: $Exports<'os'>;
-}
-
-declare module 'fs/promises' {
-  declare module.exports: $Exports<'fs'>['promises'];
-}
-
-declare module 'node:fs/promises' {
-  declare module.exports: $Exports<'fs'>['promises'];
-}
-
-declare module 'node:path' {
-  declare module.exports: $Exports<'path'>;
-}
-
-declare module 'node:perf_hooks' {
-  declare module.exports: $Exports<'perf_hooks'>;
-}
-
-declare module 'process' {
-  declare module.exports: Process;
-}
-
-declare module 'node:process' {
-  declare module.exports: $Exports<'process'>;
-}
-
-declare module 'node:timers' {
-  declare module.exports: $Exports<'timers'>;
-}
-
-declare module 'node:timers/promises' {
-  declare module.exports: $Exports<'timers/promises'>;
-}
-
-declare module 'node:util' {
-  declare module.exports: $Exports<'util'>;
-}
-
-declare module 'node:url' {
-  declare module.exports: $Exports<'url'>;
-}
-
 declare module 'worker_threads' {
   declare var isMainThread: boolean;
   declare var parentPort: null | MessagePort;
@@ -5319,6 +5763,98 @@ declare module 'worker_threads' {
   }
 }
 
+// https://nodejs.org/api/esm.html#node-imports
+
+declare module 'node:assert' {
+  export type * from 'assert';
+  declare module.exports: $Exports<'assert'>;
+}
+
+declare module 'node:assert/strict' {
+  export type * from 'assert/strict';
+  declare module.exports: $Exports<'assert'>['strict'];
+}
+
+declare module 'node:child_process' {
+  export type * from 'child_process';
+  declare module.exports: $Exports<'child_process'>;
+}
+
+declare module 'node:cluster' {
+  export type * from 'cluster';
+  declare module.exports: $Exports<'cluster'>;
+}
+
+declare module 'node:crypto' {
+  export type * from 'crypto';
+  declare module.exports: $Exports<'crypto'>;
+}
+
+declare module 'node:dns' {
+  export type * from 'dns';
+  declare module.exports: $Exports<'dns'>;
+}
+
+declare module 'node:events' {
+  export type * from 'events';
+  declare module.exports: $Exports<'events'>;
+}
+
+declare module 'node:fs' {
+  export type * from 'fs';
+  declare module.exports: $Exports<'fs'>;
+}
+
+declare module 'node:fs/promises' {
+  export type * from 'fs/promises';
+  declare module.exports: $Exports<'fs'>['promises'];
+}
+
+declare module 'node:os' {
+  export type * from 'os';
+  declare module.exports: $Exports<'os'>;
+}
+
+declare module 'node:path' {
+  export type * from 'path';
+  declare module.exports: $Exports<'path'>;
+}
+
+declare module 'node:perf_hooks' {
+  export type * from 'perf_hooks';
+  declare module.exports: $Exports<'perf_hooks'>;
+}
+
+declare module 'node:process' {
+  export type * from 'process';
+  declare module.exports: $Exports<'process'>;
+}
+
+declare module 'node:timers' {
+  export type * from 'timers';
+  declare module.exports: $Exports<'timers'>;
+}
+
+declare module 'node:timers/promises' {
+  export type * from 'timers/promises';
+  declare module.exports: $Exports<'timers/promises'>;
+}
+
+declare module 'node:url' {
+  declare module.exports: $Exports<'url'>;
+}
+
+declare module 'node:util' {
+  export type * from 'util';
+  declare module.exports: $Exports<'util'>;
+}
+
+declare module 'node:v8' {
+  export type * from 'v8';
+  declare module.exports: $Exports<'v8'>;
+}
+
 declare module 'node:worker_threads' {
+  export type * from 'worker_threads';
   declare module.exports: $Exports<'worker_threads'>;
 }

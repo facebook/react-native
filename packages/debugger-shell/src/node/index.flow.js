@@ -101,7 +101,7 @@ async function unstable_spawnDebuggerShellWithArgs(
     } else if (mode === 'syncThenExit') {
       child.on('close', function (code, signal) {
         debug('Debugger exited with code %s and signal %s', code, signal);
-        if (code === null && !silent) {
+        if (code == null && !silent) {
           console.error(
             'Debugger exited with code %s and signal %s',
             code,

@@ -34,7 +34,8 @@ declare type $npm$shelljs$OptionsPoly<Flags: string> = {
 declare interface $npm$shelljs$ExecThen {
   (code: number, stdout: string, stderr: string): void;
 }
-declare type $npm$shelljs$ExecOptionsPoly<T: Object> = T & {
+declare type $npm$shelljs$ExecOptionsPoly<T: Object> = {
+  ...T,
   async?: boolean,
   silent?: boolean,
   ...

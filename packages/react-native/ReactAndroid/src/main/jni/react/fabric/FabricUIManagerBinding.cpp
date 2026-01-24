@@ -7,6 +7,7 @@
 
 #include "FabricUIManagerBinding.h"
 
+#include "AndroidAnimationChoreographer.h"
 #include "AndroidEventBeat.h"
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
@@ -52,6 +53,10 @@ void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
 
 void FabricUIManagerBinding::driveCxxAnimations() {
   getScheduler()->animationTick();
+}
+
+void FabricUIManagerBinding::driveAnimationBackend(jdouble frameTimeMs) {
+  animationChoreographer_->onAnimationFrame(AnimationTimestamp{frameTimeMs});
 }
 
 void FabricUIManagerBinding::drainPreallocateViewsQueue() {
@@ -572,6 +577,11 @@ void FabricUIManagerBinding::installFabricUIManager(
 
   toolbox.eventBeatFactory = eventBeatFactory;
 
+  react_native_assert(
+      animationChoreographer_ != nullptr &&
+      "AnimationChoreographer is nullptr");
+  toolbox.animationChoreographer = animationChoreographer_;
+
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
   scheduler_ =
@@ -798,6 +808,9 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "driveCxxAnimations", FabricUIManagerBinding::driveCxxAnimations),
       makeNativeMethod(
+          "driveAnimationBackend",
+          FabricUIManagerBinding::driveAnimationBackend),
+      makeNativeMethod(
           "drainPreallocateViewsQueue",
           FabricUIManagerBinding::drainPreallocateViewsQueue),
       makeNativeMethod("reportMount", FabricUIManagerBinding::reportMount),
@@ -816,7 +829,17 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "getRelativeAncestorList",
           FabricUIManagerBinding::getRelativeAncestorList),
+      makeNativeMethod(
+          "setAnimationBackendChoreographer",
+          FabricUIManagerBinding::setAnimationBackendChoreographer),
   });
+}
+
+void FabricUIManagerBinding::setAnimationBackendChoreographer(
+    jni::alias_ref<JAnimationBackendChoreographer::javaobject>
+        animationBackendChoreographer) {
+  animationChoreographer_ = std::make_shared<AndroidAnimationChoreographer>(
+      animationBackendChoreographer);
 }
 
 } // namespace facebook::react

@@ -21,6 +21,7 @@
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
 #include <react/renderer/uimanager/primitives.h>
 
+#include "AndroidAnimationChoreographer.h"
 #include "JFabricUIManager.h"
 #include "SurfaceHandlerBinding.h"
 
@@ -116,6 +117,8 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void driveCxxAnimations();
 
+  void driveAnimationBackend(jdouble frameTimeMs);
+
   void drainPreallocateViewsQueue();
 
   void reportMount(SurfaceId surfaceId);
@@ -153,6 +156,10 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   float pointScaleFactor_ = 1;
 
   bool enableFabricLogs_{false};
+
+  std::shared_ptr<AndroidAnimationChoreographer> animationChoreographer_;
+
+  void setAnimationBackendChoreographer(jni::alias_ref<JAnimationBackendChoreographer::javaobject> animationBackend);
 };
 
 } // namespace facebook::react

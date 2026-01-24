@@ -68,6 +68,10 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
       viewProps.transform = snapshot.props.transform;
       break;
 
+    case TRANSFORM_ORIGIN:
+      viewProps.transformOrigin = snapshot.props.transformOrigin;
+      break;
+
     case BORDER_RADII:
       viewProps.borderRadii = snapshot.props.borderRadii;
       break;
@@ -284,6 +288,13 @@ inline void updateProp(const PropName propName, BaseViewProps &viewProps, const 
     case MIX_BLEND_MODE:
       viewProps.mixBlendMode = snapshot.props.mixBlendMode;
       break;
+
+    case BACKFACE_VISIBILITY:
+      viewProps.backfaceVisibility = snapshot.props.backfaceVisibility;
+      break;
+
+    default:
+      throw std::runtime_error("Unknown property name");
   }
 }
 

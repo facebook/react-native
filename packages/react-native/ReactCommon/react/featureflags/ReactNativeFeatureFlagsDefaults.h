@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<046cb410368bfb2d3ba6ed3364376f28>>
+ * @generated SignedSource<<97923f4eaf47f2c9bca01e1d126100df>>
  */
 
 /**
@@ -308,6 +308,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
+    return false;
+  }
+
+  bool useNestedScrollViewAndroid() override {
     return false;
   }
 

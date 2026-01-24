@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<66c8c46d66dde5eb2fd19a67459c83af>>
+ * @generated SignedSource<<2c1823de395b96869083f3b085347417>>
  */
 
 /**
@@ -393,6 +393,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
+
+  /**
+   * When enabled, ReactScrollView will extend NestedScrollView instead of ScrollView on Android for improved nested scrolling support.
+   */
+  RN_EXPORT static bool useNestedScrollViewAndroid();
 
   /**
    * Use shared animation backend in C++ Animated

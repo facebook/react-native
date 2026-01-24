@@ -22,7 +22,6 @@ import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 import {createHash} from 'crypto';
-import url from 'url';
 
 const LEGACY_SYNTHETIC_PAGE_TITLE =
   'React Native Experimental (Improved Chrome Reloads)';
@@ -74,7 +73,7 @@ export default function openDebuggerMiddleware({
       req.method === 'POST' ||
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
-      const parsedUrl = url.parse(req.url, true);
+      const {searchParams} = new URL(req.url, 'http://example.com');
 
       const query: {
         /** @deprecated Will only match legacy Hermes targets */
@@ -86,7 +85,7 @@ export default function openDebuggerMiddleware({
         target?: string,
         panel?: string,
         ...
-      } = parsedUrl.query;
+      } = Object.fromEntries(searchParams);
 
       const targets = inspectorProxy
         .getPageDescriptions({requestorRelativeBaseUrl: new URL(serverBaseUrl)})

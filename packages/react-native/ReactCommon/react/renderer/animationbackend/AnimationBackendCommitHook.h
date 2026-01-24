@@ -19,7 +19,7 @@ class AnimationBackendCommitHook : public UIManagerCommitHook {
   std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry_;
 
  public:
-  AnimationBackendCommitHook(UIManager *uiManager, std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry);
+  AnimationBackendCommitHook(UIManager &uiManager, std::shared_ptr<AnimatedPropsRegistry> animatedPropsRegistry);
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree &shadowTree,
       const RootShadowNode::Shared &oldRootShadowNode,

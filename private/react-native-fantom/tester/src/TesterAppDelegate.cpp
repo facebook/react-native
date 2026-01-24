@@ -18,6 +18,7 @@
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <logger/react_native_log.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/io/ImageLoaderModule.h>
 #include <react/logging/DefaultOnJsErrorHandler.h>
 #include <react/nativemodule/cputime/NativeCPUTime.h>
@@ -109,11 +110,19 @@ TesterAppDelegate::TesterAppDelegate(
 
   g_setNativeAnimatedNowTimestampFunction(StubClock::now);
 
-  auto provider = std::make_shared<NativeAnimatedNodesManagerProvider>(
-      [this](std::function<void()>&& onRender, bool /*isAsync*/) {
-        onAnimationRender_ = std::move(onRender);
-      },
-      [this](bool /*isAsync*/) { onAnimationRender_ = nullptr; });
+  std::shared_ptr<NativeAnimatedNodesManagerProvider> provider;
+
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    provider = std::make_shared<NativeAnimatedNodesManagerProvider>();
+  } else {
+    provider = std::make_shared<NativeAnimatedNodesManagerProvider>(
+        [this](std::function<void()>&& onRender, bool /*isAsync*/) {
+          onAnimationRender_ = std::move(onRender);
+        },
+        [this](bool /*isAsync*/) { onAnimationRender_ = nullptr; });
+  }
+
+  animationChoreographer_ = std::make_shared<TesterAnimationChoreographer>();
 
   reactHost_ = std::make_unique<ReactHost>(
       reactInstanceConfig,
@@ -125,7 +134,9 @@ TesterAppDelegate::TesterAppDelegate(
       nullptr,
       turboModuleProviders,
       nullptr,
-      std::move(provider));
+      std::move(provider),
+      nullptr,
+      animationChoreographer_);
 
   // Ensure that the ReactHost initialisation is completed.
   // This will call `setupJSNativeFantom`.
@@ -253,7 +264,11 @@ void TesterAppDelegate::produceFramesForDuration(double milliseconds) {
 }
 
 void TesterAppDelegate::runUITick() {
-  if (onAnimationRender_) {
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    auto milliseconds = std::chrono::duration_cast<AnimationTimestamp>(
+        StubClock::now().time_since_epoch());
+    animationChoreographer_->runUITick(milliseconds);
+  } else if (onAnimationRender_) {
     onAnimationRender_();
   }
 }

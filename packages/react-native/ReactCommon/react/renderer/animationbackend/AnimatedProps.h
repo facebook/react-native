@@ -24,6 +24,7 @@ enum PropName {
   POSITION,
   FLEX,
   TRANSFORM,
+  TRANSFORM_ORIGIN,
   BACKGROUND_COLOR,
   SHADOW_COLOR,
   SHADOW_OFFSET,
@@ -62,7 +63,8 @@ enum PropName {
   ISOLATION,
   CURSOR,
   BOX_SHADOW,
-  MIX_BLEND_MODE
+  MIX_BLEND_MODE,
+  BACKFACE_VISIBILITY
 };
 
 struct AnimatedPropBase {
@@ -254,6 +256,10 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
       viewProps.transform = get<Transform>(animatedProp);
       break;
 
+    case TRANSFORM_ORIGIN:
+      viewProps.transformOrigin = get<TransformOrigin>(animatedProp);
+      break;
+
     case BACKGROUND_COLOR:
       viewProps.backgroundColor = get<SharedColor>(animatedProp);
       break;
@@ -408,6 +414,10 @@ inline void cloneProp(BaseViewProps &viewProps, const AnimatedPropBase &animated
 
     case MIX_BLEND_MODE:
       viewProps.mixBlendMode = get<BlendMode>(animatedProp);
+      break;
+
+    case BACKFACE_VISIBILITY:
+      viewProps.backfaceVisibility = get<BackfaceVisibility>(animatedProp);
       break;
 
     default:

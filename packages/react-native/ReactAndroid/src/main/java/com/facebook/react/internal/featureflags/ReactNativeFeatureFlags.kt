@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<27dfa9832869aa05987fa7cb9740f7ba>>
+ * @generated SignedSource<<1d13409e4db7a5a48e5d2caf59a5fbcf>>
  */
 
 /**
@@ -455,6 +455,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
+
+  /**
+   * When enabled, ReactScrollView will extend NestedScrollView instead of ScrollView on Android for improved nested scrolling support.
+   */
+  @JvmStatic
+  public fun useNestedScrollViewAndroid(): Boolean = accessor.useNestedScrollViewAndroid()
 
   /**
    * Use shared animation backend in C++ Animated
