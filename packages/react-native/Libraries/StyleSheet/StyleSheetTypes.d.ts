@@ -642,7 +642,7 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
     offsetX: number,
     offsetY: number,
     blurRadius: number,
-    color?: ColorValue,
+    color?: ColorValue | undefined,
   }> | undefined;
   textShadowColor?: ColorValue | undefined;
   textShadowOffset?: {width: number; height: number} | undefined;
