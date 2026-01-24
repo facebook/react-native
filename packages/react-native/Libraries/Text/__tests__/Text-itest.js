@@ -352,19 +352,19 @@ describe('<Text>', () => {
           );
         });
       });
-      
+
       describe('textShadow', () => {
         it('parses CSS text-shadow string', () => {
           const root = Fantom.createRoot();
 
           Fantom.runTask(() => {
             root.render(
-              <Text style={{ textShadow: '2px 4px 8px red' }}>{TEST_TEXT}</Text>,
+              <Text style={{textShadow: '2px 4px 8px red'}}>{TEST_TEXT}</Text>,
             );
           });
 
           expect(
-            root.getRenderedOutput({ props: ['textShadow'] }).toJSX(),
+            root.getRenderedOutput({props: ['textShadow']}).toJSX(),
           ).toEqual(
             <rn-paragraph textShadow="[TextShadow{offsetX: 2.000000, offsetY: 4.000000, blurRadius: 8.000000, color: rgba(255, 0, 0, 1)}]">
               {TEST_TEXT}

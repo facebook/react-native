@@ -1004,12 +1004,14 @@ type ____TextStyle_InternalBase = Readonly<{
   fontStyle?: 'normal' | 'italic',
   fontWeight?: ____FontWeight_Internal,
   fontVariant?: ____FontVariantArray_Internal | string,
-  textShadow?: string | ReadonlyArray<{
-    offsetX: number,
-    offsetY: number,
-    blurRadius: number,
-    color?: ____ColorValue_Internal,
-  }>,
+  textShadow?:
+    | string
+    | ReadonlyArray<{
+        offsetX: number,
+        offsetY: number,
+        blurRadius: number,
+        color?: ____ColorValue_Internal,
+      }>,
   textShadowOffset?: Readonly<{
     width: number,
     height: number,
