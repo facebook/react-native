@@ -16,6 +16,10 @@ import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
 import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
 import com.facebook.react.utils.DependencyUtils.shouldAddJitPack
+import com.facebook.react.utils.DependencyUtils.shouldAddSonatype
+import com.facebook.react.utils.PropertyUtils
+import com.facebook.react.utils.PropertyUtils.INCLUDE_SONATYPE_REPOSITORY
+import com.facebook.react.utils.PropertyUtils.SCOPED_INCLUDE_SONATYPE_REPOSITORY
 import java.net.URI
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
@@ -173,6 +177,64 @@ class DependencyUtilsTest {
     // We test both with scoped and unscoped property
     project = createProject()
     project.extensions.extraProperties.set("react.includeJitpackRepository", "true")
+
+    configureRepositories(project)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            }
+        )
+        .isNotNull()
+  }
+
+  @Test
+  fun configureRepositories_withIncludeSonatypeRepositoryFalse_doesNotContainSonatype() {
+    val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
+    var project = createProject()
+    project.extensions.extraProperties.set(INCLUDE_SONATYPE_REPOSITORY, "false")
+
+    configureRepositories(project)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            }
+        )
+        .isNull()
+
+    // We test both with scoped and unscoped property
+    project = createProject()
+    project.extensions.extraProperties.set(SCOPED_INCLUDE_SONATYPE_REPOSITORY, "false")
+
+    configureRepositories(project)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            }
+        )
+        .isNull()
+  }
+
+  @Test
+  fun configureRepositories_withincludeSonatypeRepositoryTrue_containSonatype() {
+    val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
+    var project = createProject()
+    project.extensions.extraProperties.set(INCLUDE_SONATYPE_REPOSITORY, "true")
+
+    configureRepositories(project)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            }
+        )
+        .isNotNull()
+
+    // We test both with scoped and unscoped property
+    project = createProject()
+    project.extensions.extraProperties.set(SCOPED_INCLUDE_SONATYPE_REPOSITORY, "true")
 
     configureRepositories(project)
 

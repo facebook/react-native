@@ -12,6 +12,8 @@ import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_REACT_PUBLISHING_
 import com.facebook.react.utils.PropertyUtils.EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY_DEFAULT
+import com.facebook.react.utils.PropertyUtils.INCLUDE_SONATYPE_REPOSITORY
+import com.facebook.react.utils.PropertyUtils.INCLUDE_SONATYPE_REPOSITORY_DEFAULT
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_V1_VERSION_NAME
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_VERSION_NAME
@@ -21,6 +23,7 @@ import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
 import com.facebook.react.utils.PropertyUtils.INTERNAL_VERSION_NAME
 import com.facebook.react.utils.PropertyUtils.SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.SCOPED_INCLUDE_JITPACK_REPOSITORY
+import com.facebook.react.utils.PropertyUtils.SCOPED_INCLUDE_SONATYPE_REPOSITORY
 import java.io.File
 import java.net.URI
 import java.util.*
@@ -67,9 +70,11 @@ internal object DependencyUtils {
           return@allprojects
         }
 
-        // We add the snapshot for users on nightlies.
-        mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
-          repo.content { it.excludeGroup("org.webkit") }
+        if (shouldAddSonatype()) {
+          // We add the snapshot for users on nightlies.
+          mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
+            repo.content { it.excludeGroup("org.webkit") }
+          }
         }
         repositories.mavenCentral { repo ->
           // We don't want to fetch JSC from Maven Central as there are older versions there.
@@ -272,6 +277,15 @@ internal object DependencyUtils {
         hasProperty(INCLUDE_JITPACK_REPOSITORY) ->
             property(INCLUDE_JITPACK_REPOSITORY).toString().toBoolean()
         else -> INCLUDE_JITPACK_REPOSITORY_DEFAULT
+      }
+
+  internal fun Project.shouldAddSonatype() =
+      when {
+        hasProperty(SCOPED_INCLUDE_SONATYPE_REPOSITORY) ->
+            property(SCOPED_INCLUDE_SONATYPE_REPOSITORY).toString().toBoolean()
+        hasProperty(INCLUDE_SONATYPE_REPOSITORY) ->
+            property(INCLUDE_SONATYPE_REPOSITORY).toString().toBoolean()
+        else -> INCLUDE_SONATYPE_REPOSITORY_DEFAULT
       }
 
   internal fun Project.exclusiveEnterpriseRepository() =
