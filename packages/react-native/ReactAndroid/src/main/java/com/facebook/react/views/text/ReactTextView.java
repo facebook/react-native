@@ -368,7 +368,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
       }
 
-      StrokeStyleSpan strokeSpan = StrokeStyleSpan.getStrokeSpan((Spanned) getText());
+      CharSequence text = getText();
+      StrokeStyleSpan strokeSpan =
+          text instanceof Spanned ? StrokeStyleSpan.getStrokeSpan((Spanned) text) : null;
       if (strokeSpan == null || !strokeSpan.draw(getPaint(), () -> super.onDraw(canvas))) {
         super.onDraw(canvas);
       }
