@@ -182,6 +182,7 @@ class JSI_EXPORT PreparedJavaScript {
   virtual ~PreparedJavaScript() = 0;
 };
 
+class IRuntime;
 class Runtime;
 class Pointer;
 class PropNameID;
@@ -221,7 +222,7 @@ class JSI_EXPORT HostObject {
   // object.  (This may be as late as when the Runtime is shut down.)
   // You have no control over which thread it is called on.  This will
   // be called from inside the GC, so it is unsafe to do any VM
-  // operations which require a Runtime&.  Derived classes' dtors
+  // operations which require a IRuntime&.  Derived classes' dtors
   // should also avoid doing anything expensive.  Calling the dtor on
   // a jsi object is explicitly ok.  If you want to do JS operations,
   // or any nontrivial work, you should add it to a work queue, and
@@ -325,29 +326,14 @@ class JSI_EXPORT ISerialization : public ICast {
 
 #endif // JSI_UNSTABLE
 
-/// Represents a JS runtime.  Movable, but not copyable.  Note that
-/// this object may not be thread-aware, but cannot be used safely from
-/// multiple threads at once.  The application is responsible for
-/// ensuring that it is used safely.  This could mean using the
-/// Runtime from a single thread, using a mutex, doing all work on a
-/// serial queue, etc.  This restriction applies to the methods of
-/// this class, and any method in the API which take a Runtime& as an
-/// argument.  Destructors (all but ~Scope), operators, or other methods
-/// which do not take Runtime& as an argument are safe to call from any
-/// thread, but it is still forbidden to make write operations on a single
-/// instance of any class from more than one thread.  In addition, to
-/// make shutdown safe, destruction of objects associated with the Runtime
-/// must be destroyed before the Runtime is destroyed, or from the
-/// destructor of a managed HostObject or HostFunction.  Informally, this
-/// means that the main source of unsafe behavior is to hold a jsi object
-/// in a non-Runtime-managed object, and not clean it up before the Runtime
-/// is shut down.  If your lifecycle is such that avoiding this is hard,
-/// you will probably need to do use your own locks.
-class JSI_EXPORT Runtime : public ICast {
+class JSI_EXPORT IRuntime : public ICast {
  public:
-  virtual ~Runtime();
-
-  ICast* castInterface(const UUID& interfaceUUID) override;
+  static constexpr jsi::UUID uuid{
+      0xc2e8e22e,
+      0xd7a6,
+      0x11f0,
+      0x8de9,
+      0x0242ac120002};
 
   /// Evaluates the given JavaScript \c buffer.  \c sourceURL is used
   /// to annotate the stack trace if there is an exception.  The
@@ -441,45 +427,31 @@ class JSI_EXPORT Runtime : public ICast {
   /// \return an interface to extract metrics from this \c Runtime.  The default
   /// implementation of this function returns an \c Instrumentation instance
   /// which returns no metrics.
-  virtual Instrumentation& instrumentation();
+  virtual Instrumentation& instrumentation() = 0;
 
   /// Stores the pointer \p data with the \p uuid in the runtime. This can be
   /// used to store some custom data within the runtime. When the runtime is
   /// destroyed, or if an entry at an existing key is overwritten, the runtime
   /// will release its ownership of the held object.
-  void setRuntimeData(const UUID& uuid, const std::shared_ptr<void>& data);
-
+  virtual void setRuntimeData(
+      const UUID& dataUUID,
+      const std::shared_ptr<void>& data) = 0;
   /// Returns the data associated with the \p uuid in the runtime. If there's no
   /// data associated with the uuid, return a null pointer.
-  std::shared_ptr<void> getRuntimeData(const UUID& uuid);
-
- protected:
-  friend class Pointer;
-  friend class PropNameID;
-  friend class Symbol;
-  friend class BigInt;
-  friend class String;
-  friend class Object;
-  friend class WeakObject;
-  friend class Array;
-  friend class ArrayBuffer;
-  friend class Function;
-  friend class Value;
-  friend class Scope;
-  friend class JSError;
+  virtual std::shared_ptr<void> getRuntimeData(const UUID& dataUUID) = 0;
 
   /// Stores the pointer \p data with the \p uuid in the runtime. This can be
   /// used to store some custom data within the runtime. When the runtime is
   /// destroyed, or if an entry at an existing key is overwritten, the runtime
   /// will release its ownership by calling \p deleter.
   virtual void setRuntimeDataImpl(
-      const UUID& uuid,
+      const UUID& dataUUID,
       const void* data,
-      void (*deleter)(const void* data));
+      void (*deleter)(const void* data)) = 0;
 
   /// Returns the data associated with the \p uuid in the runtime. If there's no
   /// data associated with the uuid, return a null pointer.
-  virtual const void* getRuntimeDataImpl(const UUID& uuid);
+  virtual const void* getRuntimeDataImpl(const UUID& dataUUID) = 0;
 
   // Potential optimization: avoid the cloneFoo() virtual dispatch,
   // and instead just fix the number of fields, and copy them, since
@@ -493,11 +465,11 @@ class JSI_EXPORT Runtime : public ICast {
     virtual ~PointerValue() = default;
   };
 
-  virtual PointerValue* cloneSymbol(const Runtime::PointerValue* pv) = 0;
-  virtual PointerValue* cloneBigInt(const Runtime::PointerValue* pv) = 0;
-  virtual PointerValue* cloneString(const Runtime::PointerValue* pv) = 0;
-  virtual PointerValue* cloneObject(const Runtime::PointerValue* pv) = 0;
-  virtual PointerValue* clonePropNameID(const Runtime::PointerValue* pv) = 0;
+  virtual PointerValue* cloneSymbol(const IRuntime::PointerValue* pv) = 0;
+  virtual PointerValue* cloneBigInt(const IRuntime::PointerValue* pv) = 0;
+  virtual PointerValue* cloneString(const IRuntime::PointerValue* pv) = 0;
+  virtual PointerValue* cloneObject(const IRuntime::PointerValue* pv) = 0;
+  virtual PointerValue* clonePropNameID(const IRuntime::PointerValue* pv) = 0;
 
   virtual PropNameID createPropNameIDFromAscii(
       const char* str,
@@ -507,7 +479,7 @@ class JSI_EXPORT Runtime : public ICast {
       size_t length) = 0;
   virtual PropNameID createPropNameIDFromUtf16(
       const char16_t* utf16,
-      size_t length);
+      size_t length) = 0;
   virtual PropNameID createPropNameIDFromString(const String& str) = 0;
   virtual PropNameID createPropNameIDFromSymbol(const Symbol& sym) = 0;
   virtual std::string utf8(const PropNameID&) = 0;
@@ -524,12 +496,14 @@ class JSI_EXPORT Runtime : public ICast {
 
   virtual String createStringFromAscii(const char* str, size_t length) = 0;
   virtual String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
-  virtual String createStringFromUtf16(const char16_t* utf16, size_t length);
+  virtual String createStringFromUtf16(
+      const char16_t* utf16,
+      size_t length) = 0;
   virtual std::string utf8(const String&) = 0;
 
   // \return a \c Value created from a utf8-encoded JSON string. The default
   // implementation creates a \c String and invokes JSON.parse.
-  virtual Value createValueFromJsonUtf8(const uint8_t* json, size_t length);
+  virtual Value createValueFromJsonUtf8(const uint8_t* json, size_t length) = 0;
 
   virtual Object createObject() = 0;
   virtual Object createObject(std::shared_ptr<HostObject> ho) = 0;
@@ -537,7 +511,7 @@ class JSI_EXPORT Runtime : public ICast {
   virtual HostFunctionType& getHostFunction(const jsi::Function&) = 0;
 
   // Creates a new Object with the custom prototype
-  virtual Object createObjectWithPrototype(const Value& prototype);
+  virtual Object createObjectWithPrototype(const Value& prototype) = 0;
 
   virtual bool hasNativeState(const jsi::Object&) = 0;
   virtual std::shared_ptr<NativeState> getNativeState(const jsi::Object&) = 0;
@@ -545,15 +519,15 @@ class JSI_EXPORT Runtime : public ICast {
       const jsi::Object&,
       std::shared_ptr<NativeState> state) = 0;
 
-  virtual void setPrototypeOf(const Object& object, const Value& prototype);
-  virtual Value getPrototypeOf(const Object& object);
+  virtual void setPrototypeOf(const Object& object, const Value& prototype) = 0;
+  virtual Value getPrototypeOf(const Object& object) = 0;
 
   virtual Value getProperty(const Object&, const PropNameID& name) = 0;
   virtual Value getProperty(const Object&, const String& name) = 0;
-  virtual Value getProperty(const Object&, const Value& name);
+  virtual Value getProperty(const Object&, const Value& name) = 0;
   virtual bool hasProperty(const Object&, const PropNameID& name) = 0;
   virtual bool hasProperty(const Object&, const String& name) = 0;
-  virtual bool hasProperty(const Object&, const Value& name);
+  virtual bool hasProperty(const Object&, const Value& name) = 0;
   virtual void setPropertyValue(
       const Object&,
       const PropNameID& name,
@@ -561,11 +535,11 @@ class JSI_EXPORT Runtime : public ICast {
   virtual void
   setPropertyValue(const Object&, const String& name, const Value& value) = 0;
   virtual void
-  setPropertyValue(const Object&, const Value& name, const Value& value);
+  setPropertyValue(const Object&, const Value& name, const Value& value) = 0;
 
-  virtual void deleteProperty(const Object&, const PropNameID& name);
-  virtual void deleteProperty(const Object&, const String& name);
-  virtual void deleteProperty(const Object&, const Value& name);
+  virtual void deleteProperty(const Object&, const PropNameID& name) = 0;
+  virtual void deleteProperty(const Object&, const String& name) = 0;
+  virtual void deleteProperty(const Object&, const Value& name) = 0;
 
   virtual bool isArray(const Object&) const = 0;
   virtual bool isArrayBuffer(const Object&) const = 0;
@@ -586,6 +560,7 @@ class JSI_EXPORT Runtime : public ICast {
   virtual Value getValueAtIndex(const Array&, size_t i) = 0;
   virtual void
   setValueAtIndexImpl(const Array&, size_t i, const Value& value) = 0;
+  virtual size_t push(const Array&, const Value*, size_t) = 0;
 
   virtual Function createFunctionFromHostFunction(
       const PropNameID& name,
@@ -601,8 +576,8 @@ class JSI_EXPORT Runtime : public ICast {
 
   // Private data for managing scopes.
   struct ScopeState;
-  virtual ScopeState* pushScope();
-  virtual void popScope(ScopeState*);
+  virtual ScopeState* pushScope() = 0;
+  virtual void popScope(ScopeState*) = 0;
 
   virtual bool strictEquals(const Symbol& a, const Symbol& b) const = 0;
   virtual bool strictEquals(const BigInt& a, const BigInt& b) const = 0;
@@ -616,8 +591,8 @@ class JSI_EXPORT Runtime : public ICast {
       const jsi::Object& obj,
       size_t amount) = 0;
 
-  virtual std::u16string utf16(const String& str);
-  virtual std::u16string utf16(const PropNameID& sym);
+  virtual std::u16string utf16(const String& str) = 0;
+  virtual std::u16string utf16(const PropNameID& sym) = 0;
 
   /// Invokes the provided callback \p cb with the String content in \p str.
   /// The callback must take in three arguments: bool ascii, const void* data,
@@ -631,7 +606,7 @@ class JSI_EXPORT Runtime : public ICast {
   virtual void getStringData(
       const jsi::String& str,
       void* ctx,
-      void (*cb)(void* ctx, bool ascii, const void* data, size_t num));
+      void (*cb)(void* ctx, bool ascii, const void* data, size_t num)) = 0;
 
   /// Invokes the provided callback \p cb with the PropNameID content in \p sym.
   /// The callback must take in three arguments: bool ascii, const void* data,
@@ -645,7 +620,107 @@ class JSI_EXPORT Runtime : public ICast {
   virtual void getPropNameIdData(
       const jsi::PropNameID& sym,
       void* ctx,
-      void (*cb)(void* ctx, bool ascii, const void* data, size_t num));
+      void (*cb)(void* ctx, bool ascii, const void* data, size_t num)) = 0;
+
+ protected:
+  virtual ~IRuntime() = default;
+};
+
+/// Represents a JS runtime.  Movable, but not copyable.  Note that
+/// this object may not be thread-aware, but cannot be used safely from
+/// multiple threads at once.  The application is responsible for
+/// ensuring that it is used safely.  This could mean using the
+/// Runtime from a single thread, using a mutex, doing all work on a
+/// serial queue, etc.  This restriction applies to the methods of
+/// this class, and any method in the API which take a Runtime& as an
+/// argument.  Destructors (all but ~Scope), operators, or other methods
+/// which do not take Runtime& as an argument are safe to call from any
+/// thread, but it is still forbidden to make write operations on a single
+/// instance of any class from more than one thread.  In addition, to
+/// make shutdown safe, destruction of objects associated with the Runtime
+/// must be destroyed before the Runtime is destroyed, or from the
+/// destructor of a managed HostObject or HostFunction.  Informally, this
+/// means that the main source of unsafe behavior is to hold a jsi object
+/// in a non-Runtime-managed object, and not clean it up before the Runtime
+/// is shut down.  If your lifecycle is such that avoiding this is hard,
+/// you will probably need to do use your own locks.
+class JSI_EXPORT Runtime : public IRuntime {
+ public:
+  virtual ~Runtime() override;
+
+  using IRuntime::getProperty;
+  using IRuntime::hasProperty;
+  using IRuntime::setPropertyValue;
+  ICast* castInterface(const UUID& uuid) override;
+
+  Instrumentation& instrumentation() override;
+
+  /// Stores the pointer \p data with the \p uuid in the runtime. This can be
+  /// used to store some custom data within the runtime. When the runtime is
+  /// destroyed, or if an entry at an existing key is overwritten, the runtime
+  /// will release its ownership of the held object.
+  void setRuntimeData(const UUID& uuid, const std::shared_ptr<void>& data)
+      override;
+
+  /// Returns the data associated with the \p uuid in the runtime. If there's no
+  /// data associated with the uuid, return a null pointer.
+  std::shared_ptr<void> getRuntimeData(const UUID& uuid) override;
+
+  Value getProperty(const Object&, const Value& name) override;
+  bool hasProperty(const Object&, const Value& name) override;
+  void setPropertyValue(const Object&, const Value& name, const Value& value)
+      override;
+  void deleteProperty(const Object&, const PropNameID& name) override;
+  void deleteProperty(const Object&, const String& name) override;
+  void deleteProperty(const Object&, const Value& name) override;
+
+  void setRuntimeDataImpl(
+      const UUID& uuid,
+      const void* data,
+      void (*deleter)(const void* data)) override;
+  const void* getRuntimeDataImpl(const UUID& uuid) override;
+
+  PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length)
+      override;
+  String createStringFromUtf16(const char16_t* utf16, size_t length) override;
+
+  Value createValueFromJsonUtf8(const uint8_t* json, size_t length) override;
+
+  Object createObjectWithPrototype(const Value& prototype) override;
+  void setPrototypeOf(const Object& object, const Value& prototype) override;
+  Value getPrototypeOf(const Object& object) override;
+
+  ScopeState* pushScope() override;
+  void popScope(ScopeState*) override;
+
+  std::u16string utf16(const String& str) override;
+  std::u16string utf16(const PropNameID& sym) override;
+
+  void getStringData(
+      const jsi::String& str,
+      void* ctx,
+      void (*cb)(void* ctx, bool ascii, const void* data, size_t num)) override;
+  void getPropNameIdData(
+      const jsi::PropNameID& sym,
+      void* ctx,
+      void (*cb)(void* ctx, bool ascii, const void* data, size_t num)) override;
+
+  size_t push(const Array&, const Value*, size_t) override;
+
+ protected:
+  friend class Pointer;
+  friend class PropNameID;
+  friend class Symbol;
+  friend class BigInt;
+  friend class String;
+  friend class Object;
+  friend class WeakObject;
+  friend class Array;
+  friend class ArrayBuffer;
+  friend class Function;
+  friend class Value;
+  friend class Scope;
+  friend class JSError;
 
   // These exist so derived classes can access the private parts of
   // Value, Symbol, String, and Object, which are all friends of Runtime.
@@ -688,7 +763,7 @@ class JSI_EXPORT PropNameID : public Pointer {
  public:
   using Pointer::Pointer;
 
-  PropNameID(Runtime& runtime, const PropNameID& other)
+  PropNameID(IRuntime& runtime, const PropNameID& other)
       : Pointer(runtime.clonePropNameID(other.ptr_)) {}
 
   PropNameID(PropNameID&& other) = default;
@@ -696,32 +771,33 @@ class JSI_EXPORT PropNameID : public Pointer {
 
   /// Create a JS property name id from ascii values.  The data is
   /// copied.
-  static PropNameID forAscii(Runtime& runtime, const char* str, size_t length) {
+  static PropNameID
+  forAscii(IRuntime& runtime, const char* str, size_t length) {
     return runtime.createPropNameIDFromAscii(str, length);
   }
 
   /// Create a property name id from a nul-terminated C ascii name.  The data is
   /// copied.
-  static PropNameID forAscii(Runtime& runtime, const char* str) {
+  static PropNameID forAscii(IRuntime& runtime, const char* str) {
     return forAscii(runtime, str, strlen(str));
   }
 
   /// Create a PropNameID from a C++ string. The string is copied.
-  static PropNameID forAscii(Runtime& runtime, const std::string& str) {
+  static PropNameID forAscii(IRuntime& runtime, const std::string& str) {
     return forAscii(runtime, str.c_str(), str.size());
   }
 
   /// Create a PropNameID from utf8 values.  The data is copied.
   /// Results are undefined if \p utf8 contains invalid code points.
   static PropNameID
-  forUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
+  forUtf8(IRuntime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createPropNameIDFromUtf8(utf8, length);
   }
 
   /// Create a PropNameID from utf8-encoded octets stored in a
   /// std::string.  The string data is transformed and copied.
   /// Results are undefined if \p utf8 contains invalid code points.
-  static PropNameID forUtf8(Runtime& runtime, const std::string& utf8) {
+  static PropNameID forUtf8(IRuntime& runtime, const std::string& utf8) {
     return runtime.createPropNameIDFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.size());
   }
@@ -730,42 +806,42 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// input may contain unpaired surrogates, which will be interpreted as a code
   /// point of the same value.
   static PropNameID
-  forUtf16(Runtime& runtime, const char16_t* utf16, size_t length) {
+  forUtf16(IRuntime& runtime, const char16_t* utf16, size_t length) {
     return runtime.createPropNameIDFromUtf16(utf16, length);
   }
 
   /// Given a series of UTF-16 encoded code units stored inside std::u16string,
   /// create a PropNameId.  The input may contain unpaired surrogates, which
   /// will be interpreted as a code point of the same value.
-  static PropNameID forUtf16(Runtime& runtime, const std::u16string& str) {
+  static PropNameID forUtf16(IRuntime& runtime, const std::u16string& str) {
     return runtime.createPropNameIDFromUtf16(str.data(), str.size());
   }
 
   /// Create a PropNameID from a JS string.
-  static PropNameID forString(Runtime& runtime, const jsi::String& str) {
+  static PropNameID forString(IRuntime& runtime, const jsi::String& str) {
     return runtime.createPropNameIDFromString(str);
   }
 
   /// Create a PropNameID from a JS symbol.
-  static PropNameID forSymbol(Runtime& runtime, const jsi::Symbol& sym) {
+  static PropNameID forSymbol(IRuntime& runtime, const jsi::Symbol& sym) {
     return runtime.createPropNameIDFromSymbol(sym);
   }
 
   // Creates a vector of PropNameIDs constructed from given arguments.
   template <typename... Args>
-  static std::vector<PropNameID> names(Runtime& runtime, Args&&... args);
+  static std::vector<PropNameID> names(IRuntime& runtime, Args&&... args);
 
   // Creates a vector of given PropNameIDs.
   template <size_t N>
   static std::vector<PropNameID> names(PropNameID (&&propertyNames)[N]);
 
   /// Copies the data in a PropNameID as utf8 into a C++ string.
-  std::string utf8(Runtime& runtime) const {
+  std::string utf8(IRuntime& runtime) const {
     return runtime.utf8(*this);
   }
 
   /// Copies the data in a PropNameID as utf16 into a C++ string.
-  std::u16string utf16(Runtime& runtime) const {
+  std::u16string utf16(IRuntime& runtime) const {
     return runtime.utf16(*this);
   }
 
@@ -778,7 +854,7 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// callback must not access runtime functionality, as any operation on the
   /// runtime may invalidate the data pointers.
   template <typename CB>
-  void getPropNameIdData(Runtime& runtime, CB& cb) const {
+  void getPropNameIdData(IRuntime& runtime, CB& cb) const {
     runtime.getPropNameIdData(
         *this, &cb, [](void* ctx, bool ascii, const void* data, size_t num) {
           (*((CB*)ctx))(ascii, data, num);
@@ -786,7 +862,7 @@ class JSI_EXPORT PropNameID : public Pointer {
   }
 
   static bool compare(
-      Runtime& runtime,
+      IRuntime& runtime,
       const jsi::PropNameID& a,
       const jsi::PropNameID& b) {
     return runtime.compare(a, b);
@@ -809,13 +885,14 @@ class JSI_EXPORT Symbol : public Pointer {
   Symbol& operator=(Symbol&& other) = default;
 
   /// \return whether a and b refer to the same symbol.
-  static bool strictEquals(Runtime& runtime, const Symbol& a, const Symbol& b) {
+  static bool
+  strictEquals(IRuntime& runtime, const Symbol& a, const Symbol& b) {
     return runtime.strictEquals(a, b);
   }
 
   /// Converts a Symbol into a C++ string as JS .toString would.  The output
   /// will look like \c Symbol(description) .
-  std::string toString(Runtime& runtime) const {
+  std::string toString(IRuntime& runtime) const {
     return runtime.symbolToString(*this);
   }
 
@@ -832,51 +909,52 @@ class JSI_EXPORT BigInt : public Pointer {
   BigInt& operator=(BigInt&& other) = default;
 
   /// Create a BigInt representing the signed 64-bit \p value.
-  static BigInt fromInt64(Runtime& runtime, int64_t value) {
+  static BigInt fromInt64(IRuntime& runtime, int64_t value) {
     return runtime.createBigIntFromInt64(value);
   }
 
   /// Create a BigInt representing the unsigned 64-bit \p value.
-  static BigInt fromUint64(Runtime& runtime, uint64_t value) {
+  static BigInt fromUint64(IRuntime& runtime, uint64_t value) {
     return runtime.createBigIntFromUint64(value);
   }
 
   /// \return whether a === b.
-  static bool strictEquals(Runtime& runtime, const BigInt& a, const BigInt& b) {
+  static bool
+  strictEquals(IRuntime& runtime, const BigInt& a, const BigInt& b) {
     return runtime.strictEquals(a, b);
   }
 
   /// \returns This bigint truncated to a signed 64-bit integer.
-  int64_t getInt64(Runtime& runtime) const {
+  int64_t getInt64(IRuntime& runtime) const {
     return runtime.truncate(*this);
   }
 
   /// \returns Whether this bigint can be losslessly converted to int64_t.
-  bool isInt64(Runtime& runtime) const {
+  bool isInt64(IRuntime& runtime) const {
     return runtime.bigintIsInt64(*this);
   }
 
   /// \returns This bigint truncated to a signed 64-bit integer. Throws a
   /// JSIException if the truncation is lossy.
-  int64_t asInt64(Runtime& runtime) const;
+  int64_t asInt64(IRuntime& runtime) const;
 
   /// \returns This bigint truncated to an unsigned 64-bit integer.
-  uint64_t getUint64(Runtime& runtime) const {
+  uint64_t getUint64(IRuntime& runtime) const {
     return runtime.truncate(*this);
   }
 
   /// \returns Whether this bigint can be losslessly converted to uint64_t.
-  bool isUint64(Runtime& runtime) const {
+  bool isUint64(IRuntime& runtime) const {
     return runtime.bigintIsUint64(*this);
   }
 
   /// \returns This bigint truncated to an unsigned 64-bit integer. Throws a
   /// JSIException if the truncation is lossy.
-  uint64_t asUint64(Runtime& runtime) const;
+  uint64_t asUint64(IRuntime& runtime) const;
 
   /// \returns this BigInt converted to a String in base \p radix. Throws a
   /// JSIException if radix is not in the [2, 36] range.
-  inline String toString(Runtime& runtime, int radix = 10) const;
+  inline String toString(IRuntime& runtime, int radix = 10) const;
 
   friend class Runtime;
   friend class Value;
@@ -893,19 +971,19 @@ class JSI_EXPORT String : public Pointer {
   /// Create a JS string from ascii values.  The string data is
   /// copied.
   static String
-  createFromAscii(Runtime& runtime, const char* str, size_t length) {
+  createFromAscii(IRuntime& runtime, const char* str, size_t length) {
     return runtime.createStringFromAscii(str, length);
   }
 
   /// Create a JS string from a nul-terminated C ascii string.  The
   /// string data is copied.
-  static String createFromAscii(Runtime& runtime, const char* str) {
+  static String createFromAscii(IRuntime& runtime, const char* str) {
     return createFromAscii(runtime, str, strlen(str));
   }
 
   /// Create a JS string from a C++ string.  The string data is
   /// copied.
-  static String createFromAscii(Runtime& runtime, const std::string& str) {
+  static String createFromAscii(IRuntime& runtime, const std::string& str) {
     return createFromAscii(runtime, str.c_str(), str.size());
   }
 
@@ -913,14 +991,14 @@ class JSI_EXPORT String : public Pointer {
   /// transformed and copied.  Results are undefined if \p utf8 contains invalid
   /// code points.
   static String
-  createFromUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
+  createFromUtf8(IRuntime& runtime, const uint8_t* utf8, size_t length) {
     return runtime.createStringFromUtf8(utf8, length);
   }
 
   /// Create a JS string from utf8-encoded octets stored in a
   /// std::string.  The string data is transformed and copied.  Results are
   /// undefined if \p utf8 contains invalid code points.
-  static String createFromUtf8(Runtime& runtime, const std::string& utf8) {
+  static String createFromUtf8(IRuntime& runtime, const std::string& utf8) {
     return runtime.createStringFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.length());
   }
@@ -929,29 +1007,32 @@ class JSI_EXPORT String : public Pointer {
   /// may contain unpaired surrogates, which will be interpreted as a code point
   /// of the same value.
   static String
-  createFromUtf16(Runtime& runtime, const char16_t* utf16, size_t length) {
+  createFromUtf16(IRuntime& runtime, const char16_t* utf16, size_t length) {
     return runtime.createStringFromUtf16(utf16, length);
   }
 
   /// Given a series of UTF-16 encoded code units stored inside std::u16string,
   /// create a JS String. The input may contain unpaired surrogates, which will
   /// be interpreted as a code point of the same value.
-  static String createFromUtf16(Runtime& runtime, const std::u16string& utf16) {
+  static String createFromUtf16(
+      IRuntime& runtime,
+      const std::u16string& utf16) {
     return runtime.createStringFromUtf16(utf16.data(), utf16.length());
   }
 
   /// \return whether a and b contain the same characters.
-  static bool strictEquals(Runtime& runtime, const String& a, const String& b) {
+  static bool
+  strictEquals(IRuntime& runtime, const String& a, const String& b) {
     return runtime.strictEquals(a, b);
   }
 
   /// Copies the data in a JS string as utf8 into a C++ string.
-  std::string utf8(Runtime& runtime) const {
+  std::string utf8(IRuntime& runtime) const {
     return runtime.utf8(*this);
   }
 
   /// Copies the data in a JS string as utf16 into a C++ string.
-  std::u16string utf16(Runtime& runtime) const {
+  std::u16string utf16(IRuntime& runtime) const {
     return runtime.utf16(*this);
   }
 
@@ -964,7 +1045,7 @@ class JSI_EXPORT String : public Pointer {
   /// must not access runtime functionality, as any operation on the runtime may
   /// invalidate the data pointers.
   template <typename CB>
-  void getStringData(Runtime& runtime, CB& cb) const {
+  void getStringData(IRuntime& runtime, CB& cb) const {
     runtime.getStringData(
         *this, &cb, [](void* ctx, bool ascii, const void* data, size_t num) {
           (*((CB*)ctx))(ascii, data, num);
@@ -987,94 +1068,95 @@ class JSI_EXPORT Object : public Pointer {
   Object& operator=(Object&& other) = default;
 
   /// Creates a new Object instance, like '{}' in JS.
-  explicit Object(Runtime& runtime) : Object(runtime.createObject()) {}
+  explicit Object(IRuntime& runtime) : Object(runtime.createObject()) {}
 
   static Object createFromHostObject(
-      Runtime& runtime,
+      IRuntime& runtime,
       std::shared_ptr<HostObject> ho) {
     return runtime.createObject(ho);
   }
 
   /// Creates a new Object with the custom prototype
-  static Object create(Runtime& runtime, const Value& prototype) {
+  static Object create(IRuntime& runtime, const Value& prototype) {
     return runtime.createObjectWithPrototype(prototype);
   }
 
   /// \return whether this and \c obj are the same JSObject or not.
-  static bool strictEquals(Runtime& runtime, const Object& a, const Object& b) {
+  static bool
+  strictEquals(IRuntime& runtime, const Object& a, const Object& b) {
     return runtime.strictEquals(a, b);
   }
 
   /// \return the result of `this instanceOf ctor` in JS.
-  bool instanceOf(Runtime& rt, const Function& ctor) const {
+  bool instanceOf(IRuntime& rt, const Function& ctor) const {
     return rt.instanceOf(*this, ctor);
   }
 
   /// Sets \p prototype as the prototype of the object. The prototype must be
   /// either an Object or null. If the prototype was not set successfully, this
   /// method will throw.
-  void setPrototype(Runtime& runtime, const Value& prototype) const {
+  void setPrototype(IRuntime& runtime, const Value& prototype) const {
     return runtime.setPrototypeOf(*this, prototype);
   }
 
   /// \return the prototype of the object
-  inline Value getPrototype(Runtime& runtime) const;
+  inline Value getPrototype(IRuntime& runtime) const;
 
   /// \return the property of the object with the given ascii name.
   /// If the name isn't a property on the object, returns the
   /// undefined value.
-  Value getProperty(Runtime& runtime, const char* name) const;
+  Value getProperty(IRuntime& runtime, const char* name) const;
 
   /// \return the property of the object with the String name.
   /// If the name isn't a property on the object, returns the
   /// undefined value.
-  Value getProperty(Runtime& runtime, const String& name) const;
+  Value getProperty(IRuntime& runtime, const String& name) const;
 
   /// \return the property of the object with the given JS PropNameID
   /// name.  If the name isn't a property on the object, returns the
   /// undefined value.
-  Value getProperty(Runtime& runtime, const PropNameID& name) const;
+  Value getProperty(IRuntime& runtime, const PropNameID& name) const;
 
   /// \return the Property of the object with the given JS Value name. If the
   /// name isn't a property on the object, returns the undefined value.This
   /// attempts to convert the JS Value to convert to a property key. If the
   /// conversion fails, this method may throw.
-  Value getProperty(Runtime& runtime, const Value& name) const;
+  Value getProperty(IRuntime& runtime, const Value& name) const;
 
   /// \return true if and only if the object has a property with the
   /// given ascii name.
-  bool hasProperty(Runtime& runtime, const char* name) const;
+  bool hasProperty(IRuntime& runtime, const char* name) const;
 
   /// \return true if and only if the object has a property with the
   /// given String name.
-  bool hasProperty(Runtime& runtime, const String& name) const;
+  bool hasProperty(IRuntime& runtime, const String& name) const;
 
   /// \return true if and only if the object has a property with the
   /// given PropNameID name.
-  bool hasProperty(Runtime& runtime, const PropNameID& name) const;
+  bool hasProperty(IRuntime& runtime, const PropNameID& name) const;
 
   /// \return true if and only if the object has a property with the given
   /// JS Value name. This attempts to convert the JS Value to convert to a
   /// property key. If the conversion fails, this method may throw.
-  bool hasProperty(Runtime& runtime, const Value& name) const;
+  bool hasProperty(IRuntime& runtime, const Value& name) const;
 
   /// Sets the property value from a Value or anything which can be
   /// used to make one: nullptr_t, bool, double, int, const char*,
   /// String, or Object.
   template <typename T>
-  void setProperty(Runtime& runtime, const char* name, T&& value) const;
+  void setProperty(IRuntime& runtime, const char* name, T&& value) const;
 
   /// Sets the property value from a Value or anything which can be
   /// used to make one: nullptr_t, bool, double, int, const char*,
   /// String, or Object.
   template <typename T>
-  void setProperty(Runtime& runtime, const String& name, T&& value) const;
+  void setProperty(IRuntime& runtime, const String& name, T&& value) const;
 
   /// Sets the property value from a Value or anything which can be
   /// used to make one: nullptr_t, bool, double, int, const char*,
   /// String, or Object.
   template <typename T>
-  void setProperty(Runtime& runtime, const PropNameID& name, T&& value) const;
+  void setProperty(IRuntime& runtime, const PropNameID& name, T&& value) const;
 
   /// Sets the property value from a Value or anything which can be
   /// used to make one: nullptr_t, bool, double, int, const char*,
@@ -1082,39 +1164,39 @@ class JSI_EXPORT Object : public Pointer {
   /// attempts to convert to a property key. If the conversion fails, this
   /// method may throw.
   template <typename T>
-  void setProperty(Runtime& runtime, const Value& name, T&& value) const;
+  void setProperty(IRuntime& runtime, const Value& name, T&& value) const;
 
   /// Delete the property with the given ascii name. Throws if the deletion
   /// failed.
-  void deleteProperty(Runtime& runtime, const char* name) const;
+  void deleteProperty(IRuntime& runtime, const char* name) const;
 
   /// Delete the property with the given String name. Throws if the deletion
   /// failed.
-  void deleteProperty(Runtime& runtime, const String& name) const;
+  void deleteProperty(IRuntime& runtime, const String& name) const;
 
   /// Delete the property with the given PropNameID name. Throws if the deletion
   /// failed.
-  void deleteProperty(Runtime& runtime, const PropNameID& name) const;
+  void deleteProperty(IRuntime& runtime, const PropNameID& name) const;
 
   /// Delete the property with the given Value name. Throws if the deletion
   /// failed.
-  void deleteProperty(Runtime& runtime, const Value& name) const;
+  void deleteProperty(IRuntime& runtime, const Value& name) const;
 
   /// \return true iff JS \c Array.isArray() would return \c true.  If
   /// so, then \c getArray() will succeed.
-  bool isArray(Runtime& runtime) const {
+  bool isArray(IRuntime& runtime) const {
     return runtime.isArray(*this);
   }
 
   /// \return true iff the Object is an ArrayBuffer. If so, then \c
   /// getArrayBuffer() will succeed.
-  bool isArrayBuffer(Runtime& runtime) const {
+  bool isArrayBuffer(IRuntime& runtime) const {
     return runtime.isArrayBuffer(*this);
   }
 
   /// \return true iff the Object is callable.  If so, then \c
   /// getFunction will succeed.
-  bool isFunction(Runtime& runtime) const {
+  bool isFunction(IRuntime& runtime) const {
     return runtime.isFunction(*this);
   }
 
@@ -1122,99 +1204,99 @@ class JSI_EXPORT Object : public Pointer {
   /// and the HostObject passed is of type \c T. If returns \c true then
   /// \c getHostObject<T> will succeed.
   template <typename T = HostObject>
-  bool isHostObject(Runtime& runtime) const;
+  bool isHostObject(IRuntime& runtime) const;
 
   /// \return an Array instance which refers to the same underlying
   /// object.  If \c isArray() would return false, this will assert.
-  Array getArray(Runtime& runtime) const&;
+  Array getArray(IRuntime& runtime) const&;
 
   /// \return an Array instance which refers to the same underlying
   /// object.  If \c isArray() would return false, this will assert.
-  Array getArray(Runtime& runtime) &&;
+  Array getArray(IRuntime& runtime) &&;
 
   /// \return an Array instance which refers to the same underlying
   /// object.  If \c isArray() would return false, this will throw
   /// JSIException.
-  Array asArray(Runtime& runtime) const&;
+  Array asArray(IRuntime& runtime) const&;
 
   /// \return an Array instance which refers to the same underlying
   /// object.  If \c isArray() would return false, this will throw
   /// JSIException.
-  Array asArray(Runtime& runtime) &&;
+  Array asArray(IRuntime& runtime) &&;
 
   /// \return an ArrayBuffer instance which refers to the same underlying
   /// object.  If \c isArrayBuffer() would return false, this will assert.
-  ArrayBuffer getArrayBuffer(Runtime& runtime) const&;
+  ArrayBuffer getArrayBuffer(IRuntime& runtime) const&;
 
   /// \return an ArrayBuffer instance which refers to the same underlying
   /// object.  If \c isArrayBuffer() would return false, this will assert.
-  ArrayBuffer getArrayBuffer(Runtime& runtime) &&;
+  ArrayBuffer getArrayBuffer(IRuntime& runtime) &&;
 
   /// \return a Function instance which refers to the same underlying
   /// object.  If \c isFunction() would return false, this will assert.
-  Function getFunction(Runtime& runtime) const&;
+  Function getFunction(IRuntime& runtime) const&;
 
   /// \return a Function instance which refers to the same underlying
   /// object.  If \c isFunction() would return false, this will assert.
-  Function getFunction(Runtime& runtime) &&;
+  Function getFunction(IRuntime& runtime) &&;
 
   /// \return a Function instance which refers to the same underlying
   /// object.  If \c isFunction() would return false, this will throw
   /// JSIException.
-  Function asFunction(Runtime& runtime) const&;
+  Function asFunction(IRuntime& runtime) const&;
 
   /// \return a Function instance which refers to the same underlying
   /// object.  If \c isFunction() would return false, this will throw
   /// JSIException.
-  Function asFunction(Runtime& runtime) &&;
+  Function asFunction(IRuntime& runtime) &&;
 
   /// \return a shared_ptr<T> which refers to the same underlying
   /// \c HostObject that was used to create this object. If \c isHostObject<T>
   /// is false, this will assert. Note that this does a type check and will
   /// assert if the underlying HostObject isn't of type \c T
   template <typename T = HostObject>
-  std::shared_ptr<T> getHostObject(Runtime& runtime) const;
+  std::shared_ptr<T> getHostObject(IRuntime& runtime) const;
 
   /// \return a shared_ptr<T> which refers to the same underlying
   /// \c HostObject that was used to create this object. If \c isHostObject<T>
   /// is false, this will throw.
   template <typename T = HostObject>
-  std::shared_ptr<T> asHostObject(Runtime& runtime) const;
+  std::shared_ptr<T> asHostObject(IRuntime& runtime) const;
 
   /// \return whether this object has native state of type T previously set by
   /// \c setNativeState.
   template <typename T = NativeState>
-  bool hasNativeState(Runtime& runtime) const;
+  bool hasNativeState(IRuntime& runtime) const;
 
   /// \return a shared_ptr to the state previously set by \c setNativeState.
   /// If \c hasNativeState<T> is false, this will assert. Note that this does a
   /// type check and will assert if the native state isn't of type \c T
   template <typename T = NativeState>
-  std::shared_ptr<T> getNativeState(Runtime& runtime) const;
+  std::shared_ptr<T> getNativeState(IRuntime& runtime) const;
 
   /// Set the internal native state property of this object, overwriting any old
   /// value. Creates a new shared_ptr to the object managed by \p state, which
   /// will live until the value at this property becomes unreachable.
   ///
   /// Throws a type error if this object is a proxy or host object.
-  void setNativeState(Runtime& runtime, std::shared_ptr<NativeState> state)
+  void setNativeState(IRuntime& runtime, std::shared_ptr<NativeState> state)
       const;
 
   /// \return same as \c getProperty(name).asObject(), except with
   /// a better exception message.
-  Object getPropertyAsObject(Runtime& runtime, const char* name) const;
+  Object getPropertyAsObject(IRuntime& runtime, const char* name) const;
 
   /// \return similar to \c
   /// getProperty(name).getObject().getFunction(), except it will
   /// throw JSIException instead of asserting if the property is
   /// not an object, or the object is not callable.
-  Function getPropertyAsFunction(Runtime& runtime, const char* name) const;
+  Function getPropertyAsFunction(IRuntime& runtime, const char* name) const;
 
   /// \return an Array consisting of all enumerable property names in
   /// the object and its prototype chain.  All values in the return
   /// will be isString().  (This is probably not optimal, but it
   /// works.  I only need it in one place.)
-  Array getPropertyNames(Runtime& runtime) const;
+  Array getPropertyNames(IRuntime& runtime) const;
 
   /// Inform the runtime that there is additional memory associated with a given
   /// JavaScript object that is not visible to the GC. This can be used if an
@@ -1224,25 +1306,27 @@ class JSI_EXPORT Object : public Pointer {
   /// calls will overwrite any previously set value. Once the object is garbage
   /// collected, the associated external memory will be considered freed and may
   /// no longer factor into GC decisions.
-  void setExternalMemoryPressure(Runtime& runtime, size_t amt) const;
+  void setExternalMemoryPressure(IRuntime& runtime, size_t amt) const;
 
  protected:
   void setPropertyValue(
-      Runtime& runtime,
+      IRuntime& runtime,
       const String& name,
       const Value& value) const {
     return runtime.setPropertyValue(*this, name, value);
   }
 
   void setPropertyValue(
-      Runtime& runtime,
+      IRuntime& runtime,
       const PropNameID& name,
       const Value& value) const {
     return runtime.setPropertyValue(*this, name, value);
   }
 
-  void setPropertyValue(Runtime& runtime, const Value& name, const Value& value)
-      const {
+  void setPropertyValue(
+      IRuntime& runtime,
+      const Value& name,
+      const Value& value) const {
     return runtime.setPropertyValue(*this, name, value);
   }
 
@@ -1261,14 +1345,14 @@ class JSI_EXPORT WeakObject : public Pointer {
   WeakObject& operator=(WeakObject&& other) = default;
 
   /// Create a WeakObject from an Object.
-  WeakObject(Runtime& runtime, const Object& o)
+  WeakObject(IRuntime& runtime, const Object& o)
       : WeakObject(runtime.createWeakObject(o)) {}
 
   /// \return a Value representing the underlying Object if it is still valid;
   /// otherwise returns \c undefined.  Note that this method has nothing to do
   /// with threads or concurrency.  The name is based on std::weak_ptr::lock()
   /// which serves a similar purpose.
-  Value lock(Runtime& runtime) const;
+  Value lock(IRuntime& runtime) const;
 
   friend class Runtime;
 };
@@ -1279,43 +1363,54 @@ class JSI_EXPORT Array : public Object {
  public:
   Array(Array&&) = default;
   /// Creates a new Array instance, with \c length undefined elements.
-  Array(Runtime& runtime, size_t length) : Array(runtime.createArray(length)) {}
+  Array(IRuntime& runtime, size_t length)
+      : Array(runtime.createArray(length)) {}
 
   Array& operator=(Array&&) = default;
 
   /// \return the size of the Array, according to its length property.
   /// (C++ naming convention)
-  size_t size(Runtime& runtime) const {
+  size_t size(IRuntime& runtime) const {
     return runtime.size(*this);
   }
 
   /// \return the size of the Array, according to its length property.
   /// (JS naming convention)
-  size_t length(Runtime& runtime) const {
+  size_t length(IRuntime& runtime) const {
     return size(runtime);
   }
 
   /// \return the property of the array at index \c i.  If there is no
   /// such property, returns the undefined value.  If \c i is out of
   /// range [ 0..\c length ] throws a JSIException.
-  Value getValueAtIndex(Runtime& runtime, size_t i) const;
+  Value getValueAtIndex(IRuntime& runtime, size_t i) const;
 
   /// Sets the property of the array at index \c i.  The argument
   /// value behaves as with Object::setProperty().  If \c i is out of
   /// range [ 0..\c length ] throws a JSIException.
   template <typename T>
-  void setValueAtIndex(Runtime& runtime, size_t i, T&& value) const;
+  void setValueAtIndex(IRuntime& runtime, size_t i, T&& value) const;
 
-  /// There is no current API for changing the size of an array once
-  /// created.  We'll probably need that eventually.
+  /// Appends provides values to the end of the Array in the order they appear.
+  /// Returns the new length of the array.
+  template <typename... Args>
+  size_t push(IRuntime& runtime, Args&&... args);
+
+  /// Appends everything in \p elements to the end of the Array in the order
+  /// they appear. Returns the new length of the array.
+  size_t push(IRuntime& runtime, std::initializer_list<Value> elements);
+
+  /// Appends \p count elements at \p elements to the end of the Array in the
+  /// order they appear.
+  size_t push(IRuntime& runtime, const Value* elements, size_t count);
 
   /// Creates a new Array instance from provided values
   template <typename... Args>
-  static Array createWithElements(Runtime&, Args&&... args);
+  static Array createWithElements(IRuntime&, Args&&... args);
 
   /// Creates a new Array instance from initializer list.
   static Array createWithElements(
-      Runtime& runtime,
+      IRuntime& runtime,
       std::initializer_list<Value> elements);
 
  private:
@@ -1323,7 +1418,7 @@ class JSI_EXPORT Array : public Object {
   friend class Value;
   friend class Runtime;
 
-  void setValueAtIndexImpl(Runtime& runtime, size_t i, const Value& value)
+  void setValueAtIndexImpl(IRuntime& runtime, size_t i, const Value& value)
       const {
     return runtime.setValueAtIndexImpl(*this, i, value);
   }
@@ -1337,21 +1432,21 @@ class JSI_EXPORT ArrayBuffer : public Object {
   ArrayBuffer(ArrayBuffer&&) = default;
   ArrayBuffer& operator=(ArrayBuffer&&) = default;
 
-  ArrayBuffer(Runtime& runtime, std::shared_ptr<MutableBuffer> buffer)
+  ArrayBuffer(IRuntime& runtime, std::shared_ptr<MutableBuffer> buffer)
       : ArrayBuffer(runtime.createArrayBuffer(std::move(buffer))) {}
 
   /// \return the size of the ArrayBuffer storage. This is not affected by
   /// overriding the byteLength property.
   /// (C++ naming convention)
-  size_t size(Runtime& runtime) const {
+  size_t size(IRuntime& runtime) const {
     return runtime.size(*this);
   }
 
-  size_t length(Runtime& runtime) const {
+  size_t length(IRuntime& runtime) const {
     return runtime.size(*this);
   }
 
-  uint8_t* data(Runtime& runtime) const {
+  uint8_t* data(IRuntime& runtime) const {
     return runtime.data(*this);
   }
 
@@ -1381,7 +1476,7 @@ class JSI_EXPORT Function : public Object {
   /// any captured values, you are responsible for ensuring that their
   /// destructors are safe to call on any thread.
   static Function createFromHostFunction(
-      Runtime& runtime,
+      IRuntime& runtime,
       const jsi::PropNameID& name,
       unsigned int paramCount,
       jsi::HostFunctionType func);
@@ -1392,7 +1487,7 @@ class JSI_EXPORT Function : public Object {
   /// \b Note: as with Function.prototype.apply, \c this may not always be
   /// \c undefined in the function itself.  If the function is non-strict,
   /// \c this will be set to the global object.
-  Value call(Runtime& runtime, const Value* args, size_t count) const;
+  Value call(IRuntime& runtime, const Value* args, size_t count) const;
 
   /// Calls the function with a \c std::initializer_list of Value
   /// arguments.  The \c this value of the JS function will not be set by the
@@ -1401,7 +1496,7 @@ class JSI_EXPORT Function : public Object {
   /// \b Note: as with Function.prototype.apply, \c this may not always be
   /// \c undefined in the function itself.  If the function is non-strict,
   /// \c this will be set to the global object.
-  Value call(Runtime& runtime, std::initializer_list<Value> args) const;
+  Value call(IRuntime& runtime, std::initializer_list<Value> args) const;
 
   /// Calls the function with any number of arguments similarly to
   /// Object::setProperty().  The \c this value of the JS function will not be
@@ -1411,12 +1506,12 @@ class JSI_EXPORT Function : public Object {
   /// \c undefined in the function itself.  If the function is non-strict,
   /// \c this will be set to the global object.
   template <typename... Args>
-  Value call(Runtime& runtime, Args&&... args) const;
+  Value call(IRuntime& runtime, Args&&... args) const;
 
   /// Calls the function with \c count \c args and \c jsThis value passed
   /// as the \c this value.
   Value callWithThis(
-      Runtime& Runtime,
+      IRuntime& Runtime,
       const Object& jsThis,
       const Value* args,
       size_t count) const;
@@ -1424,36 +1519,36 @@ class JSI_EXPORT Function : public Object {
   /// Calls the function with a \c std::initializer_list of Value
   /// arguments and \c jsThis passed as the \c this value.
   Value callWithThis(
-      Runtime& runtime,
+      IRuntime& runtime,
       const Object& jsThis,
       std::initializer_list<Value> args) const;
 
   /// Calls the function with any number of arguments similarly to
   /// Object::setProperty(), and with \c jsThis passed as the \c this value.
   template <typename... Args>
-  Value callWithThis(Runtime& runtime, const Object& jsThis, Args&&... args)
+  Value callWithThis(IRuntime& runtime, const Object& jsThis, Args&&... args)
       const;
 
   /// Calls the function as a constructor with \c count \c args. Equivalent
   /// to calling `new Func` where `Func` is the js function reqresented by
   /// this.
-  Value callAsConstructor(Runtime& runtime, const Value* args, size_t count)
+  Value callAsConstructor(IRuntime& runtime, const Value* args, size_t count)
       const;
 
   /// Same as above `callAsConstructor`, except use an initializer_list to
   /// supply the arguments.
-  Value callAsConstructor(Runtime& runtime, std::initializer_list<Value> args)
+  Value callAsConstructor(IRuntime& runtime, std::initializer_list<Value> args)
       const;
 
   /// Same as above `callAsConstructor`, but automatically converts/wraps
   /// any argument with a jsi Value.
   template <typename... Args>
-  Value callAsConstructor(Runtime& runtime, Args&&... args) const;
+  Value callAsConstructor(IRuntime& runtime, Args&&... args) const;
 
   /// Returns whether this was created with Function::createFromHostFunction.
   /// If true then you can use getHostFunction to get the underlying
   /// HostFunctionType.
-  bool isHostFunction(Runtime& runtime) const {
+  bool isHostFunction(IRuntime& runtime) const {
     return runtime.isHostFunction(*this);
   }
 
@@ -1464,7 +1559,7 @@ class JSI_EXPORT Function : public Object {
   /// Note: The reference returned is borrowed from the JS object underlying
   ///       \c this, and thus only lasts as long as the object underlying
   ///       \c this does.
-  HostFunctionType& getHostFunction(Runtime& runtime) const {
+  HostFunctionType& getHostFunction(IRuntime& runtime) const {
     assert(isHostFunction(runtime));
     return runtime.getHostFunction(*this);
   }
@@ -1527,32 +1622,32 @@ class JSI_EXPORT Value {
   Value(Value&& other) noexcept;
 
   /// Copies a Symbol lvalue into a new JS value.
-  Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
+  Value(IRuntime& runtime, const Symbol& sym) : Value(SymbolKind) {
     new (&data_.pointer) Symbol(runtime.cloneSymbol(sym.ptr_));
   }
 
   /// Copies a BigInt lvalue into a new JS value.
-  Value(Runtime& runtime, const BigInt& bigint) : Value(BigIntKind) {
+  Value(IRuntime& runtime, const BigInt& bigint) : Value(BigIntKind) {
     new (&data_.pointer) BigInt(runtime.cloneBigInt(bigint.ptr_));
   }
 
   /// Copies a String lvalue into a new JS value.
-  Value(Runtime& runtime, const String& str) : Value(StringKind) {
+  Value(IRuntime& runtime, const String& str) : Value(StringKind) {
     new (&data_.pointer) String(runtime.cloneString(str.ptr_));
   }
 
   /// Copies a Object lvalue into a new JS value.
-  Value(Runtime& runtime, const Object& obj) : Value(ObjectKind) {
+  Value(IRuntime& runtime, const Object& obj) : Value(ObjectKind) {
     new (&data_.pointer) Object(runtime.cloneObject(obj.ptr_));
   }
 
   /// Creates a JS value from another Value lvalue.
-  Value(Runtime& runtime, const Value& value);
+  Value(IRuntime& runtime, const Value& value);
 
   /// Value(rt, "foo") will treat foo as a bool.  This makes doing
   /// that a compile error.
   template <typename T = void>
-  Value(Runtime&, const char*) {
+  Value(IRuntime&, const char*) {
     static_assert(
         !std::is_same<T, void>::value,
         "Value cannot be constructed directly from const char*");
@@ -1571,13 +1666,13 @@ class JSI_EXPORT Value {
 
   // \return a \c Value created from a utf8-encoded JSON string.
   static Value
-  createFromJsonUtf8(Runtime& runtime, const uint8_t* json, size_t length) {
+  createFromJsonUtf8(IRuntime& runtime, const uint8_t* json, size_t length) {
     return runtime.createValueFromJsonUtf8(json, length);
   }
 
   /// \return according to the Strict Equality Comparison algorithm, see:
   /// https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
-  static bool strictEquals(Runtime& runtime, const Value& a, const Value& b);
+  static bool strictEquals(IRuntime& runtime, const Value& a, const Value& b);
 
   Value& operator=(Value&& other) noexcept {
     this->~Value();
@@ -1638,14 +1733,14 @@ class JSI_EXPORT Value {
   double asNumber() const;
 
   /// \return the Symbol value, or asserts if not a symbol.
-  Symbol getSymbol(Runtime& runtime) const& {
+  Symbol getSymbol(IRuntime& runtime) const& {
     assert(isSymbol());
     return Symbol(runtime.cloneSymbol(data_.pointer.ptr_));
   }
 
   /// \return the Symbol value, or asserts if not a symbol.
   /// Can be used on rvalue references to avoid cloning more symbols.
-  Symbol getSymbol(Runtime&) && {
+  Symbol getSymbol(IRuntime&) && {
     assert(isSymbol());
     auto ptr = data_.pointer.ptr_;
     data_.pointer.ptr_ = nullptr;
@@ -1654,18 +1749,18 @@ class JSI_EXPORT Value {
 
   /// \return the Symbol value, or throws JSIException if not a
   /// symbol
-  Symbol asSymbol(Runtime& runtime) const&;
-  Symbol asSymbol(Runtime& runtime) &&;
+  Symbol asSymbol(IRuntime& runtime) const&;
+  Symbol asSymbol(IRuntime& runtime) &&;
 
   /// \return the BigInt value, or asserts if not a bigint.
-  BigInt getBigInt(Runtime& runtime) const& {
+  BigInt getBigInt(IRuntime& runtime) const& {
     assert(isBigInt());
     return BigInt(runtime.cloneBigInt(data_.pointer.ptr_));
   }
 
   /// \return the BigInt value, or asserts if not a bigint.
   /// Can be used on rvalue references to avoid cloning more bigints.
-  BigInt getBigInt(Runtime&) && {
+  BigInt getBigInt(IRuntime&) && {
     assert(isBigInt());
     auto ptr = data_.pointer.ptr_;
     data_.pointer.ptr_ = nullptr;
@@ -1674,18 +1769,18 @@ class JSI_EXPORT Value {
 
   /// \return the BigInt value, or throws JSIException if not a
   /// bigint
-  BigInt asBigInt(Runtime& runtime) const&;
-  BigInt asBigInt(Runtime& runtime) &&;
+  BigInt asBigInt(IRuntime& runtime) const&;
+  BigInt asBigInt(IRuntime& runtime) &&;
 
   /// \return the String value, or asserts if not a string.
-  String getString(Runtime& runtime) const& {
+  String getString(IRuntime& runtime) const& {
     assert(isString());
     return String(runtime.cloneString(data_.pointer.ptr_));
   }
 
   /// \return the String value, or asserts if not a string.
   /// Can be used on rvalue references to avoid cloning more strings.
-  String getString(Runtime&) && {
+  String getString(IRuntime&) && {
     assert(isString());
     auto ptr = data_.pointer.ptr_;
     data_.pointer.ptr_ = nullptr;
@@ -1694,18 +1789,18 @@ class JSI_EXPORT Value {
 
   /// \return the String value, or throws JSIException if not a
   /// string.
-  String asString(Runtime& runtime) const&;
-  String asString(Runtime& runtime) &&;
+  String asString(IRuntime& runtime) const&;
+  String asString(IRuntime& runtime) &&;
 
   /// \return the Object value, or asserts if not an object.
-  Object getObject(Runtime& runtime) const& {
+  Object getObject(IRuntime& runtime) const& {
     assert(isObject());
     return Object(runtime.cloneObject(data_.pointer.ptr_));
   }
 
   /// \return the Object value, or asserts if not an object.
   /// Can be used on rvalue references to avoid cloning more objects.
-  Object getObject(Runtime&) && {
+  Object getObject(IRuntime&) && {
     assert(isObject());
     auto ptr = data_.pointer.ptr_;
     data_.pointer.ptr_ = nullptr;
@@ -1714,11 +1809,11 @@ class JSI_EXPORT Value {
 
   /// \return the Object value, or throws JSIException if not an
   /// object.
-  Object asObject(Runtime& runtime) const&;
-  Object asObject(Runtime& runtime) &&;
+  Object asObject(IRuntime& runtime) const&;
+  Object asObject(IRuntime& runtime) &&;
 
   // \return a String like JS .toString() would do.
-  String toString(Runtime& runtime) const;
+  String toString(IRuntime& runtime) const;
 
  private:
   friend class Runtime;
@@ -1792,7 +1887,7 @@ class JSI_EXPORT Value {
 /// locking, provided that the lock (if any) is managed with RAII helpers.
 class JSI_EXPORT Scope {
  public:
-  explicit Scope(Runtime& rt) : rt_(rt), prv_(rt.pushScope()) {}
+  explicit Scope(IRuntime& rt) : rt_(rt), prv_(rt.pushScope()) {}
   ~Scope() {
     rt_.popScope(prv_);
   }
@@ -1804,13 +1899,13 @@ class JSI_EXPORT Scope {
   Scope& operator=(Scope&&) = delete;
 
   template <typename F>
-  static auto callInNewScope(Runtime& rt, F f) -> decltype(f()) {
+  static auto callInNewScope(IRuntime& rt, F f) -> decltype(f()) {
     Scope s(rt);
     return f();
   }
 
  private:
-  Runtime& rt_;
+  IRuntime& rt_;
   Runtime::ScopeState* prv_;
 };
 
@@ -1850,25 +1945,25 @@ class JSI_EXPORT JSINativeException : public JSIException {
 class JSI_EXPORT JSError : public JSIException {
  public:
   /// Creates a JSError referring to provided \c value
-  JSError(Runtime& r, Value&& value);
+  JSError(IRuntime& r, Value&& value);
 
   /// Creates a JSError referring to new \c Error instance capturing current
   /// JavaScript stack. The error message property is set to given \c message.
-  JSError(Runtime& rt, std::string message);
+  JSError(IRuntime& rt, std::string message);
 
   /// Creates a JSError referring to new \c Error instance capturing current
   /// JavaScript stack. The error message property is set to given \c message.
-  JSError(Runtime& rt, const char* message)
+  JSError(IRuntime& rt, const char* message)
       : JSError(rt, std::string(message)) {}
 
   /// Creates a JSError referring to a JavaScript Object having message and
   /// stack properties set to provided values.
-  JSError(Runtime& rt, std::string message, std::string stack);
+  JSError(IRuntime& rt, std::string message, std::string stack);
 
   /// Creates a JSError referring to provided value and what string
   /// set to provided message.  This argument order is a bit weird,
   /// but necessary to avoid ambiguity with the above.
-  JSError(std::string what, Runtime& rt, Value&& value);
+  JSError(std::string what, IRuntime& rt, Value&& value);
 
   /// Creates a JSError referring to the provided value, message and stack. This
   /// constructor does not take a Runtime parameter, and therefore cannot result
@@ -1896,7 +1991,7 @@ class JSI_EXPORT JSError : public JSIException {
   // This initializes the value_ member and does some other
   // validation, so it must be called by every branch through the
   // constructors.
-  void setValue(Runtime& rt, Value&& value);
+  void setValue(IRuntime& rt, Value&& value);
 
   // This needs to be on the heap, because throw requires the object
   // be copyable, and Value is not.
