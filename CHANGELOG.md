@@ -1,5 +1,111 @@
 # Changelog
 
+## v0.80.3
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.80.3 ([cb72e3935d](https://github.com/facebook/react-native/commit/cb72e3935dae2d3928920b0e22f3f56de1bbbdd2) by [@react-native-bot](https://github.com/react-native-bot))
+- Backout #46896 - Attempt to fix #50274 ([e7ed0b1347](https://github.com/facebook/react-native/commit/e7ed0b13475cc6b80ee421d679740feba4f71a9a) by [@robhogan](https://github.com/robhogan))
+- Bump Podfile.lock ([c996b9a031](https://github.com/facebook/react-native/commit/c996b9a0312ce3b229c03231f0f5deada63ad3af) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.80.2 ([99d714c22d](https://github.com/facebook/react-native/commit/99d714c22d3341e1417401bba6212736c5d7662d) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+- Use REACT_NATIVE_BOT_GITHUB_TOKEN token for changelog and bump lockfiles ([614dadbd01](https://github.com/facebook/react-native/commit/614dadbd01ca4e71866442704fb681f4c61537b4) by [@cortinico](https://github.com/cortinico))
+
+
 ## v0.84.0-rc.2
 
 ### Fixed
