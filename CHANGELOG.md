@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.84.0-rc.3
+
+### Added
+
+- Added `transformOrigin` prop support to the `AnimationBackend`. ([20779edd3b](https://github.com/facebook/react-native/commit/20779edd3bc9f1c205a063e15b324466ee509c24) by [@coado](https://github.com/coado))
+- Added support for `backfaceVisibility` prop and added missing `flex` style to the `AnimatedPropsBuilder`. ([d379cde036](https://github.com/facebook/react-native/commit/d379cde03682923180f2cf2594a039fa3b32b326) by [@coado](https://github.com/coado))
+- Added support for `borderCurves`, `borderStyles`, `pointerEvents`, `isolation`, `cursor`, `boxShadow`, and `mixBlendMode` props to the AnimationBackend. ([6d5b524f87](https://github.com/facebook/react-native/commit/6d5b524f876a33b883128714e016052c620e1b41) by [@coado](https://github.com/coado))
+- Added support for `overflow`, `position`, `zIndex`, and `direction` props to the AnimationBackend. ([bed1a9a20f](https://github.com/facebook/react-native/commit/bed1a9a20f8a239ad1c096b255b6dea716229074) by [@coado](https://github.com/coado))
+
+### Fixed
+
+#### iOS specific
+
+- Fix codegen failing when project is inside a hidden folder ([a12b442d26](https://github.com/facebook/react-native/commit/a12b442d26d0b3a47b4a3d2c1ccccfeb890b9bdc) by [@dinisnunes1](https://github.com/dinisnunes1))
+
 ## v0.84.0-rc.2
 
 ### Fixed
