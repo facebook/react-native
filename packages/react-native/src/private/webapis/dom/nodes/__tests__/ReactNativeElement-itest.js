@@ -17,7 +17,7 @@ import TextInputState from '../../../../../../Libraries/Components/TextInput/Tex
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
-import {ScrollView, TextInput, View} from 'react-native';
+import {ScrollView, Text, TextInput, View} from 'react-native';
 import {
   NativeText,
   NativeVirtualText,
@@ -867,6 +867,123 @@ describe('ReactNativeElement', () => {
         expect(boundingClientRect.y).toBeCloseTo(232.33);
         expect(boundingClientRect.width).toBeCloseTo(50.33);
         expect(boundingClientRect.height).toBeCloseTo(100.33);
+      });
+
+      it('returns a DOMRect for Text elements', () => {
+        const textRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{
+                position: 'absolute',
+                left: 10,
+                top: 20,
+              }}>
+              <Text
+                style={{
+                  width: 100,
+                  height: 50,
+                }}
+                ref={textRef}>
+                Hello World
+              </Text>
+            </View>,
+          );
+        });
+
+        const textElement = ensureReactNativeElement(textRef.current);
+
+        // Text element should have a valid bounding rect
+        const textBoundingRect = textElement.getBoundingClientRect();
+        expect(textBoundingRect).toBeInstanceOf(DOMRect);
+        expect(textBoundingRect.width).toBe(100);
+        expect(textBoundingRect.height).toBe(50);
+
+        // After unmounting, should return empty DOMRect
+        Fantom.runTask(() => {
+          root.render(<View key="otherParent" />);
+        });
+
+        const textBoundingRectAfterUnmount =
+          textElement.getBoundingClientRect();
+        expect(textBoundingRectAfterUnmount).toBeInstanceOf(DOMRect);
+        expect(textBoundingRectAfterUnmount.x).toBe(0);
+        expect(textBoundingRectAfterUnmount.y).toBe(0);
+        expect(textBoundingRectAfterUnmount.width).toBe(0);
+        expect(textBoundingRectAfterUnmount.height).toBe(0);
+      });
+
+      it('returns a DOMRect for nested Text elements', () => {
+        const outerTextRef = createRef<HostInstance>();
+        const nestedTextRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              style={{
+                position: 'absolute',
+                left: 10,
+                top: 20,
+              }}>
+              <Text
+                style={{
+                  width: 100,
+                  height: 50,
+                }}
+                ref={outerTextRef}>
+                Hello
+                <Text ref={nestedTextRef}> World</Text>
+              </Text>
+            </View>,
+          );
+        });
+
+        const outerTextElement = ensureReactNativeElement(outerTextRef.current);
+        const nestedTextElement = ensureReactNativeElement(
+          nestedTextRef.current,
+        );
+
+        // Outer text element should have a valid bounding rect
+        const outerTextBoundingRect = outerTextElement.getBoundingClientRect();
+        expect(outerTextBoundingRect).toBeInstanceOf(DOMRect);
+        expect(outerTextBoundingRect.width).toBe(100);
+        expect(outerTextBoundingRect.height).toBe(50);
+
+        // Nested text (virtual text) returns a DOMRect with zero values
+        // since it doesn't have its own independent layout
+        const nestedTextBoundingRect =
+          nestedTextElement.getBoundingClientRect();
+        expect(nestedTextBoundingRect).toBeInstanceOf(DOMRect);
+        expect(nestedTextBoundingRect.x).toBe(0);
+        expect(nestedTextBoundingRect.y).toBe(0);
+        expect(nestedTextBoundingRect.width).toBe(0);
+        expect(nestedTextBoundingRect.height).toBe(0);
+
+        // After unmounting, both should return empty DOMRects
+        Fantom.runTask(() => {
+          root.render(<View key="otherParent" />);
+        });
+
+        const outerTextBoundingRectAfterUnmount =
+          outerTextElement.getBoundingClientRect();
+        expect(outerTextBoundingRectAfterUnmount).toBeInstanceOf(DOMRect);
+        expect(outerTextBoundingRectAfterUnmount.x).toBe(0);
+        expect(outerTextBoundingRectAfterUnmount.y).toBe(0);
+        expect(outerTextBoundingRectAfterUnmount.width).toBe(0);
+        expect(outerTextBoundingRectAfterUnmount.height).toBe(0);
+
+        const nestedTextBoundingRectAfterUnmount =
+          nestedTextElement.getBoundingClientRect();
+        expect(nestedTextBoundingRectAfterUnmount).toBeInstanceOf(DOMRect);
+        expect(nestedTextBoundingRectAfterUnmount.x).toBe(0);
+        expect(nestedTextBoundingRectAfterUnmount.y).toBe(0);
+        expect(nestedTextBoundingRectAfterUnmount.width).toBe(0);
+        expect(nestedTextBoundingRectAfterUnmount.height).toBe(0);
       });
     });
 
