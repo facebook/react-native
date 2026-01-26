@@ -29,7 +29,7 @@ internal object ImportantForInteractionHelper {
   const val IMPORTANT_FOR_INTERACTION_NO: Int = 0x2
 
   /** Descendants of this view should be excluded from interaction handling. */
-  const val IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS: Int = 0x8
+  const val IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS: Int = 0x4
 
   /**
    * Sets the important_for_interaction tag on a view based on the given [PointerEvents] value.
