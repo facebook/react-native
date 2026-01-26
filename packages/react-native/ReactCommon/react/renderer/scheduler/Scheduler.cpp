@@ -366,6 +366,22 @@ void Scheduler::uiManagerShouldRemoveEventListener(
   removeEventListener(listener);
 }
 
+void Scheduler::uiManagerDidFinishReactCommit(const ShadowTree& shadowTree) {
+  auto surfaceId = shadowTree.getSurfaceId();
+  runtimeScheduler_->scheduleRenderingUpdate(
+      surfaceId, [surfaceId, uiManager = uiManager_]() {
+        uiManager->getShadowTreeRegistry().visit(
+            surfaceId,
+            [](const ShadowTree& tree) { tree.promoteReactRevision(); });
+      });
+}
+
+void Scheduler::uiManagerDidPromoteReactRevision(const ShadowTree& shadowTree) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerShouldMergeReactRevision(shadowTree.getSurfaceId());
+  }
+}
+
 void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {
   std::shared_lock lock(onSurfaceStartCallbackMutex_);
   if (onSurfaceStartCallback_) {

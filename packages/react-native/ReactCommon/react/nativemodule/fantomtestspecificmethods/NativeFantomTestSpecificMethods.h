@@ -12,6 +12,7 @@
 namespace facebook::react {
 
 struct FantomForcedCloneCommitHook;
+class FantomPromotedRevisionMergeProxyUIManagerDelegate;
 
 class NativeFantomTestSpecificMethods : public NativeFantomTestSpecificMethodsCxxSpec<NativeFantomTestSpecificMethods> {
  public:
@@ -21,8 +22,14 @@ class NativeFantomTestSpecificMethods : public NativeFantomTestSpecificMethodsCx
 
   void takeFunctionAndNoop(jsi::Runtime &runtime, jsi::Function callback);
 
+  void preventNextPromotedRevisionMerge(jsi::Runtime &runtime);
+
+  void mergePromotedRevision(jsi::Runtime &runtime);
+
  private:
   std::shared_ptr<FantomForcedCloneCommitHook> fantomForcedCloneCommitHook_{};
+  std::shared_ptr<FantomPromotedRevisionMergeProxyUIManagerDelegate>
+      fantomPromotedRevisionMergeProxyUIManagerDelegate{};
 };
 
 } // namespace facebook::react

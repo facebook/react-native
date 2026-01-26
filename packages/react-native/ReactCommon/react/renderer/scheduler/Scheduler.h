@@ -95,6 +95,8 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
   void uiManagerShouldAddEventListener(std::shared_ptr<const EventListener> listener) final;
   void uiManagerShouldRemoveEventListener(const std::shared_ptr<const EventListener> &listener) final;
+  void uiManagerDidFinishReactCommit(const ShadowTree &shadowTree) override;
+  void uiManagerDidPromoteReactRevision(const ShadowTree &shadowTree) override;
   void uiManagerDidStartSurface(const ShadowTree &shadowTree) override;
 
 #pragma mark - ContextContainer

@@ -10,6 +10,7 @@
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 #include "internal/FantomForcedCloneCommitHook.h"
+#include "internal/FantomPromotedRevisionMergeProxyUIManagerDelegate.h"
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
@@ -37,7 +38,10 @@ NativeFantomTestSpecificMethods::NativeFantomTestSpecificMethods(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativeFantomTestSpecificMethodsCxxSpec(std::move(jsInvoker)),
       fantomForcedCloneCommitHook_(
-          std::make_shared<FantomForcedCloneCommitHook>()) {}
+          std::make_shared<FantomForcedCloneCommitHook>()),
+      fantomPromotedRevisionMergeProxyUIManagerDelegate(
+          std::make_shared<
+              FantomPromotedRevisionMergeProxyUIManagerDelegate>()) {}
 
 void NativeFantomTestSpecificMethods::registerForcedCloneCommitHook(
     jsi::Runtime& runtime) {
@@ -48,5 +52,22 @@ void NativeFantomTestSpecificMethods::registerForcedCloneCommitHook(
 void NativeFantomTestSpecificMethods::takeFunctionAndNoop(
     jsi::Runtime& runtime,
     jsi::Function function) {}
+
+void NativeFantomTestSpecificMethods::preventNextPromotedRevisionMerge(
+    jsi::Runtime& runtime) {
+  if (!fantomPromotedRevisionMergeProxyUIManagerDelegate->hasDelegate()) {
+    auto& uiManager = getUIManagerFromRuntime(runtime);
+    fantomPromotedRevisionMergeProxyUIManagerDelegate->setUIManager(uiManager);
+    uiManager.setDelegate(&*fantomPromotedRevisionMergeProxyUIManagerDelegate);
+  }
+
+  fantomPromotedRevisionMergeProxyUIManagerDelegate
+      ->preventNextPromotedRevisionMerge();
+}
+
+void NativeFantomTestSpecificMethods::mergePromotedRevision(
+    jsi::Runtime& /*runtime*/) {
+  fantomPromotedRevisionMergeProxyUIManagerDelegate->mergePromotedRevision();
+}
 
 } // namespace facebook::react

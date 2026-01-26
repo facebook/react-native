@@ -6,12 +6,18 @@
  */
 
 #include "SchedulerDelegateImpl.h"
+#include <react/renderer/uimanager/UIManager.h>
 
 namespace facebook::react {
 
 SchedulerDelegateImpl::SchedulerDelegateImpl(
     std::shared_ptr<IMountingManager> mountingManager) noexcept
     : mountingManager_(std::move(mountingManager)) {}
+
+void SchedulerDelegateImpl::setUIManager(
+    std::shared_ptr<UIManager> uiManager) noexcept {
+  uiManager_ = uiManager;
+}
 
 void SchedulerDelegateImpl::schedulerDidFinishTransaction(
     const std::shared_ptr<const MountingCoordinator>& /*mountingCoordinator*/) {
@@ -28,6 +34,13 @@ void SchedulerDelegateImpl::schedulerShouldRenderTransactions(
       mountingManager_->executeMount(surfaceId, std::move(transactionValue));
     }
   }
+}
+
+void SchedulerDelegateImpl::schedulerShouldMergeReactRevision(
+    SurfaceId surfaceId) {
+  uiManager_->getShadowTreeRegistry().visit(
+      surfaceId,
+      [](const ShadowTree& shadowTree) { shadowTree.mergeReactRevision(); });
 }
 
 void SchedulerDelegateImpl::schedulerDidRequestPreliminaryViewAllocation(
