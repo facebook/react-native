@@ -313,7 +313,7 @@ function copyHeaderFilesToSlices(
       'Headers',
     );
 
-    // Link umbrella / header files into the platform folder
+    // Copy umbrella / header files into the platform folder
     Object.keys(umbrellaHeaderFiles).forEach(podSpecName => {
       const umbrellaHeaderFile = umbrellaHeaderFiles[podSpecName];
 
@@ -328,7 +328,7 @@ function copyHeaderFilesToSlices(
         );
       } catch (error) {
         frameworkLog(
-          `Error linking umbrella header file: ${error.message}. Check if the file exists.`,
+          `Error copying umbrella header file: ${umbrellaHeaderFile}\nError: ${error.message}. Check if the file exists.`,
           'error',
         );
       }
