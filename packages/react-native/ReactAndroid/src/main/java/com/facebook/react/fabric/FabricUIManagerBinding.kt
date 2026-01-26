@@ -89,6 +89,8 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       animationBackendChoreographer: AnimationBackendChoreographer
   )
 
+  external fun mergeReactRevision(surfaceId: Int)
+
   fun register(
       runtimeExecutor: RuntimeExecutor,
       runtimeScheduler: RuntimeScheduler,

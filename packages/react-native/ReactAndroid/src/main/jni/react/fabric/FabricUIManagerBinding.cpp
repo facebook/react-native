@@ -695,6 +695,23 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
   }
 }
 
+void FabricUIManagerBinding::schedulerShouldMergeReactRevision(
+    SurfaceId surfaceId) {
+  std::shared_lock lock(installMutex_);
+  auto mountingManager =
+      getMountingManager("schedulerShouldMergeReactRevision");
+  if (mountingManager) {
+    mountingManager->scheduleReactRevisionMerge(surfaceId);
+  }
+}
+
+void FabricUIManagerBinding::mergeReactRevision(SurfaceId surfaceId) {
+  std::shared_lock lock(installMutex_);
+  scheduler_->getUIManager()->getShadowTreeRegistry().visit(
+      surfaceId,
+      [](const ShadowTree& shadowTree) { shadowTree.mergeReactRevision(); });
+}
+
 void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {
   using namespace std::literals::string_view_literals;
@@ -832,6 +849,8 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "setAnimationBackendChoreographer",
           FabricUIManagerBinding::setAnimationBackendChoreographer),
+      makeNativeMethod(
+          "mergeReactRevision", FabricUIManagerBinding::mergeReactRevision),
   });
 }
 

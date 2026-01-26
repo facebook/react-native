@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1d13409e4db7a5a48e5d2caf59a5fbcf>>
+ * @generated SignedSource<<181fb9c6bf3f9b6b023dab89727041b0>>
  */
 
 /**
@@ -161,6 +161,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableExclusivePropsUpdateAndroid(): Boolean = accessor.enableExclusivePropsUpdateAndroid()
+
+  /**
+   * Enables Fabric commit branching to fix starvation problems and atomic JS updates.
+   */
+  @JvmStatic
+  public fun enableFabricCommitBranching(): Boolean = accessor.enableFabricCommitBranching()
 
   /**
    * This feature flag enables logs for Fabric.
