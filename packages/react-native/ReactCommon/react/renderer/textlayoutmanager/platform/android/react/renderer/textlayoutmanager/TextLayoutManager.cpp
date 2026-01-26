@@ -437,4 +437,93 @@ TextMeasurement TextLayoutManager::measurePreparedLayout(
   return textMeasurement;
 }
 
+std::vector<Rect> TextLayoutManager::getFragmentRectsForReactTag(
+    const PreparedLayout& preparedLayout,
+    Tag targetReactTag) const {
+  const auto& fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+  static auto getFragmentRectsForReactTagMethod =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jni::JArrayFloat(JPreparedLayout::javaobject, jint)>(
+              "getFragmentRectsForReactTag");
+
+  auto rectsArr = getFragmentRectsForReactTagMethod(
+      fabricUIManager, preparedLayout.get(), targetReactTag);
+
+  std::vector<Rect> result;
+  if (rectsArr == nullptr || rectsArr->size() == 0) {
+    return result;
+  }
+
+  auto rects = rectsArr->getRegion(0, static_cast<jsize>(rectsArr->size()));
+
+  // The array contains [x, y, width, height] for each rect
+  react_native_assert(rectsArr->size() % 4 == 0);
+  result.reserve(rectsArr->size() / 4);
+
+  for (size_t i = 0; i < rectsArr->size(); i += 4) {
+    result.push_back(
+        Rect{
+            .origin = {.x = rects[i], .y = rects[i + 1]},
+            .size = {.width = rects[i + 2], .height = rects[i + 3]}});
+  }
+
+  return result;
+}
+
+std::vector<Rect> TextLayoutManager::getFragmentRectsFromAttributedString(
+    Tag surfaceId,
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
+    const LayoutConstraints& layoutConstraints,
+    Tag targetReactTag) const {
+  const auto& fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+  static auto getFragmentRectsFromAttributedStringMethod =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jni::JArrayFloat(
+              jint,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              jfloat,
+              jfloat,
+              jint)>("getFragmentRectsFromAttributedString");
+
+  auto attributedStringMB =
+      JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
+  auto paragraphAttributesMB =
+      JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+
+  auto rectsArr = getFragmentRectsFromAttributedStringMethod(
+      fabricUIManager,
+      surfaceId,
+      attributedStringMB.get(),
+      paragraphAttributesMB.get(),
+      layoutConstraints.maximumSize.width,
+      layoutConstraints.maximumSize.height,
+      targetReactTag);
+
+  std::vector<Rect> result;
+  if (rectsArr == nullptr || rectsArr->size() == 0) {
+    return result;
+  }
+
+  auto rects = rectsArr->getRegion(0, static_cast<jsize>(rectsArr->size()));
+
+  // The array contains [x, y, width, height] for each rect
+  react_native_assert(rectsArr->size() % 4 == 0);
+  result.reserve(rectsArr->size() / 4);
+
+  for (size_t i = 0; i < rectsArr->size(); i += 4) {
+    result.push_back(
+        Rect{
+            .origin = {.x = rects[i], .y = rects[i + 1]},
+            .size = {.width = rects[i + 2], .height = rects[i + 3]}});
+  }
+
+  return result;
+}
+
 } // namespace facebook::react
