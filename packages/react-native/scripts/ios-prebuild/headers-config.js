@@ -19,6 +19,26 @@ export type PodSpecConfiguration = $ReadOnly<{
 } | {disabled: true}>;
 */
 
+/*
+ * Podspec Header Configuration Exceptions
+ *
+ * Most podspecs follow a standard pattern for header file locations. However, some pods
+ * require custom configuration for where their headers should be placed in the prebuilt
+ * framework. This map defines those exceptions.
+ *
+ * Each entry is keyed by the relative path to the podspec file and contains:
+ *   - name: The pod name
+ *   - headerPatterns: Glob patterns for header files to include
+ *   - headerDir: Target directory for the headers in the framework
+ *   - excludePatterns: (optional) Glob patterns for files to exclude
+ *   - subSpecs: (optional) Nested subspecs with their own header configurations
+ *   - disabled: (optional) Set to true to skip processing this podspec entirely
+ *
+ * Examples:
+ *   - React-jsi: Headers are placed in the 'jsi' directory
+ *   - React-Fabric: Composed of multiple subspecs (animated, animations, core, etc.),
+ *     each requiring headers in their respective 'react/renderer/...' directories
+ */
 const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
   'ReactCommon/jsi/React-jsi.podspec': {
     name: 'React-jsi',
