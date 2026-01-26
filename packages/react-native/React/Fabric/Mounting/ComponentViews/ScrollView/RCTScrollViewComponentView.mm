@@ -122,6 +122,10 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
   return (RCTScrollViewComponentView *)view;
 }
 
++ (BOOL)shouldBeRecycled {
+    return NO;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
