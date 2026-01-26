@@ -6,14 +6,12 @@
  *
  * @flow strict-local
  * @format
- * @fantom_flags reduceDefaultPropsInImage:*
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {AccessibilityProps, HostInstance} from 'react-native';
 
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
@@ -37,51 +35,27 @@ describe('<Image>', () => {
           root.render(<Image />);
         });
 
-        if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
-          expect(root.getRenderedOutput().toJSX()).toEqual(
-            <rn-image
-              overflow="hidden"
-              resizeMode="cover"
-              source-scale="1"
-              source-type="remote"
-            />,
-          );
-        } else {
-          expect(root.getRenderedOutput().toJSX()).toEqual(
-            <rn-image
-              accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
-              overflow="hidden"
-              resizeMode="cover"
-              source-scale="1"
-              source-type="remote"
-            />,
-          );
-        }
+        expect(root.getRenderedOutput().toJSX()).toEqual(
+          <rn-image
+            overflow="hidden"
+            resizeMode="cover"
+            source-scale="1"
+            source-type="remote"
+          />,
+        );
 
         Fantom.runTask(() => {
           root.render(<Image src="" />);
         });
 
-        if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
-          expect(root.getRenderedOutput().toJSX()).toEqual(
-            <rn-image
-              overflow="hidden"
-              resizeMode="cover"
-              source-scale="1"
-              source-type="remote"
-            />,
-          );
-        } else {
-          expect(root.getRenderedOutput().toJSX()).toEqual(
-            <rn-image
-              accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
-              overflow="hidden"
-              resizeMode="cover"
-              source-scale="1"
-              source-type="remote"
-            />,
-          );
-        }
+        expect(root.getRenderedOutput().toJSX()).toEqual(
+          <rn-image
+            overflow="hidden"
+            resizeMode="cover"
+            source-scale="1"
+            source-type="remote"
+          />,
+        );
       });
     });
 
