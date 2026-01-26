@@ -60,6 +60,18 @@ class SchedulerDelegate {
 
   virtual void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) = 0;
 
+  /*
+   * Called when the animation backend should start receiving frame callbacks.
+   * This is used to control the platform-specific animation frame scheduling.
+   */
+  virtual void schedulerShouldResumeAnimationBackend() = 0;
+
+  /*
+   * Called when the animation backend should stop receiving frame callbacks.
+   * This is used to pause the platform-specific animation frame scheduling.
+   */
+  virtual void schedulerShouldPauseAnimationBackend() = 0;
+
   virtual ~SchedulerDelegate() noexcept = default;
 };
 
