@@ -54,6 +54,7 @@ export function formatErrorMessage(
       );
       return error.message + formattedPositionalChanges.join('');
     case 'TypeAnnotationComparisonError':
+    case 'TypeInformationComparisonError':
       const previousError = error.previousError;
 
       return (
@@ -69,18 +70,6 @@ export function formatErrorMessage(
             '' +
             formatErrorMessage(previousError, indent + 2)
           : '')
-      );
-    case 'TypeInformationComparisonError':
-      // I'm not sure that this error type is possible with the codegen
-
-      return (
-        error.message +
-        indentedLineStart(indent + 1) +
-        '-- new: ' +
-        formatTypeAnnotation(error.newerType) +
-        indentedLineStart(indent + 1) +
-        '-- old: ' +
-        formatTypeAnnotation(error.olderType)
       );
     case 'MemberComparisonError':
       const formattedMembers = error.mismatchedMembers.map(
