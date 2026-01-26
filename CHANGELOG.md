@@ -2,18 +2,6 @@
 
 ## v0.84.0-rc.3
 
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Added
 
 - Added `transformOrigin` prop support to the `AnimationBackend`. ([20779edd3b](https://github.com/facebook/react-native/commit/20779edd3bc9f1c205a063e15b324466ee509c24) by [@coado](https://github.com/coado))
@@ -21,92 +9,11 @@
 - Added support for `borderCurves`, `borderStyles`, `pointerEvents`, `isolation`, `cursor`, `boxShadow`, and `mixBlendMode` props to the AnimationBackend. ([6d5b524f87](https://github.com/facebook/react-native/commit/6d5b524f876a33b883128714e016052c620e1b41) by [@coado](https://github.com/coado))
 - Added support for `overflow`, `position`, `zIndex`, and `direction` props to the AnimationBackend. ([bed1a9a20f](https://github.com/facebook/react-native/commit/bed1a9a20f8a239ad1c096b255b6dea716229074) by [@coado](https://github.com/coado))
 
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Changed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Fixed
-
-
-
-#### Android specific
-
-
 
 #### iOS specific
 
 - Fix codegen failing when project is inside a hidden folder ([a12b442d26](https://github.com/facebook/react-native/commit/a12b442d26d0b3a47b4a3d2c1ccccfeb890b9bdc) by [@dinisnunes1](https://github.com/dinisnunes1))
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.84.0-rc.3 ([af7f3de2dd](https://github.com/facebook/react-native/commit/af7f3de2dda8b56cb1bd157a5daf851b54cc9564) by [@react-native-bot](https://github.com/react-native-bot))
-- Bump Podfile.lock ([c2ba0248d7](https://github.com/facebook/react-native/commit/c2ba0248d7eb05cde7218e75ada1eff3fe313d89) by [@fabriziocucci](https://github.com/fabriziocucci))
-- Release 0.84.0-rc.2 ([baf7e4b81f](https://github.com/facebook/react-native/commit/baf7e4b81f9b2e1e571e96367d21a298acd910f5) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
-
 
 ## v0.84.0-rc.2
 
