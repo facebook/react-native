@@ -320,7 +320,7 @@ function copyHeaderFilesToSlices(
       // Create the target folder for the umbrella header file
       const targetPodSpecFolder = path.join(targetHeadersFolder, podSpecName);
       createFolderIfNotExists(targetPodSpecFolder);
-      // Link the umbrella header file to the target folder
+      // Copy the umbrella header file to the target folder
       try {
         fs.copyFileSync(
           umbrellaHeaderFile,
