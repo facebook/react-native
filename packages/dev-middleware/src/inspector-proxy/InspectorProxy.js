@@ -92,7 +92,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   #eventReporter: ?EventReporter;
 
-  #experiments: Experiments;
+  +#experiments: Experiments;
 
   // custom message handler factory allowing implementers to handle unsupported CDP messages.
   #customMessageHandler: ?CreateCustomMessageHandlerFn;
@@ -360,6 +360,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           deviceRelativeBaseUrl,
           serverRelativeBaseUrl: this.#serverBaseUrl,
           isProfilingBuild,
+          experiments: this.#experiments,
         };
 
         if (oldDevice) {

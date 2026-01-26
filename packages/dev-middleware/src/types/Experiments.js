@@ -27,6 +27,10 @@ export type Experiments = Readonly<{
    * Launch the Fusebox frontend in a standalone shell instead of a browser.
    * When this is enabled, we will use the optional unstable_showFuseboxShell
    * method on the BrowserLauncher, or throw an error if the method is missing.
+   *
+   * NOTE: Disabling this also disables support for concurrent sessions in the
+   * inspector proxy. Without the standalone shell, the proxy remains responsible
+   * for keeping only one debugger frontend active at a time per page.
    */
   enableStandaloneFuseboxShell: boolean,
 }>;
