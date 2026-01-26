@@ -162,7 +162,9 @@ describe('<Image>', () => {
           root.getRenderedOutput({props: ['defaultSource']}).toJSX(),
         ).toEqual(
           <rn-image
-            defaultSource-type="remote"
+            defaultSource-type="local"
+            defaultSource-scale="1"
+            defaultSource-size="{1, 1}"
             defaultSource-uri="file://drawable-mdpi/packages_reactnative_libraries_image___tests___img_img1.png"
           />,
         );

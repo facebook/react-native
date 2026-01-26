@@ -133,13 +133,13 @@ public constructor(
   }
 
   @ReactProp(name = "defaultSource")
-  public fun setDefaultSource(view: ReactImageView, source: String?) {
+  public fun setDefaultSource(view: ReactImageView, source: ReadableMap?) {
     view.setDefaultSource(source)
   }
 
   // In JS this is Image.props.loadingIndicatorSource.uri
   @ReactProp(name = "loadingIndicatorSrc")
-  public fun setLoadingIndicatorSource(view: ReactImageView, source: String?) {
+  public fun setLoadingIndicatorSource(view: ReactImageView, source: ReadableMap?) {
     view.setLoadingIndicatorSource(source)
   }
 

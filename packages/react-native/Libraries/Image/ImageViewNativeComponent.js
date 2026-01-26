@@ -40,7 +40,7 @@ type ImageHostComponentProps = Readonly<{
   src?: ?ResolvedAssetSource | ?ReadonlyArray<?Readonly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
   defaultSource?: ?ImageSource | ?string,
-  loadingIndicatorSrc?: ?string,
+  loadingIndicatorSrc?: ?ImageSource | ?string,
 }>;
 
 interface NativeCommands {
