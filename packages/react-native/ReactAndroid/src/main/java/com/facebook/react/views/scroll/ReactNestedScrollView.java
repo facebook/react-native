@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a79ecc0c8081ff170ad17a559095e1b1>>
+ * @generated SignedSource<<8bc2307ce295e1e0f3246dc185688ee8>>
  */
 
 /**
@@ -955,7 +955,6 @@ class ReactNestedScrollView extends NestedScrollView
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactNestedScrollView.this);
                 }
-                ReactScrollViewHelper.notifyUserDrivenScrollEnded_internal(ReactNestedScrollView.this);
                 disableFpsListener();
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {

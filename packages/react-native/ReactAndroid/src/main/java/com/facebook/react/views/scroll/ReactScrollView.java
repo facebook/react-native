@@ -947,7 +947,6 @@ public class ReactScrollView extends ScrollView
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
                 }
-                ReactScrollViewHelper.notifyUserDrivenScrollEnded_internal(ReactScrollView.this);
                 disableFpsListener();
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {

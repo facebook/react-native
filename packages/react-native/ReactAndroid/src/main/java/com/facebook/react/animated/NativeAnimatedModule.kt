@@ -209,32 +209,6 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
   private var numFabricAnimations = 0
   private var numNonFabricAnimations = 0
 
-  /**
-   * This method is used to notify the JS side that the user has stopped scrolling. With natively
-   * driven animation, we might have to force a resync between the Shadow Tree and the Native Tree.
-   * This is because with natively driven animation, the Shadow Tree is bypassed and it can have
-   * stale information on the layout of the native views. This method takes care of verifying if
-   * there are some views listening to the native driven animation and it triggers the resynch.
-   *
-   * @param viewTag The tag of the scroll view that has stopped scrolling
-   */
-  public fun userDrivenScrollEnded(viewTag: Int) {
-    // ask to the Node Manager for all the native nodes listening to OnScroll event
-    val nodeManager = nodesManagerRef.get() ?: return
-
-    val tags = nodeManager.getTagsOfConnectedNodes(viewTag, "topScrollEnded")
-
-    if (tags.isEmpty()) {
-      return
-    }
-
-    // emit the event to JS to resync the trees
-    val onAnimationEndedData = buildReadableMap { putArray("tags") { tags.forEach { add(it) } } }
-
-    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
-    reactApplicationContext?.emitDeviceEvent("onUserDrivenAnimationEnded", onAnimationEndedData)
-  }
-
   override fun initialize() {
     super.initialize()
 

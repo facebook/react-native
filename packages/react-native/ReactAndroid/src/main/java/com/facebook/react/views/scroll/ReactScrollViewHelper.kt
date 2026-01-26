@@ -19,7 +19,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat.FocusDirection
 import androidx.core.view.ViewCompat.FocusRealDirection
 import com.facebook.common.logging.FLog
-import com.facebook.react.animated.NativeAnimatedModule
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
@@ -153,19 +152,6 @@ public object ReactScrollViewHelper {
       )
       if (scrollEventType == ScrollEventType.SCROLL) {
         scrollView.lastScrollDispatchTime = now
-      }
-    }
-  }
-
-  // TODO: Remove this once C++ animation driver is complete
-  @JvmStatic
-  @JvmName("notifyUserDrivenScrollEnded_internal")
-  internal fun notifyUserDrivenScrollEnded(scrollView: ViewGroup) {
-    val reactContext = scrollView.context as? ReactContext
-    if (reactContext != null) {
-      val nativeAnimated = reactContext.getNativeModule(NativeAnimatedModule::class.java)
-      if (nativeAnimated != null) {
-        nativeAnimated.userDrivenScrollEnded(scrollView.id)
       }
     }
   }
@@ -457,13 +443,11 @@ public object ReactScrollViewHelper {
 
               override fun onAnimationEnd(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isFinished = true
-                notifyUserDrivenScrollEnded(scrollView)
                 updateFabricScrollState(scrollView)
               }
 
               override fun onAnimationCancel(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isCanceled = true
-                notifyUserDrivenScrollEnded(scrollView)
               }
 
               override fun onAnimationRepeat(animator: Animator) = Unit
