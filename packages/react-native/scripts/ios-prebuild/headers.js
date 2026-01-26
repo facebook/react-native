@@ -47,6 +47,7 @@ function getHeaderFilesFromPodspecs(
     if (exception) {
       // Check if the exception is disabled
       if ('disabled' in exception && exception.disabled === true) {
+        headersLog(`⏭️ Skipping disabled podspec: ${relativeKey}`);
         return;
       }
 
