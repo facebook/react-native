@@ -23,6 +23,7 @@ def add_rncore_dependency(s)
         # The VFS overlay file is pre-resolved at pod install time for each platform slice.
         # We reference it directly in the xcframework using the React-VFS.yaml file that
         # is written to the React-Core-prebuilt folder during setup_vfs_overlay.
+        # See scripts/ios-prebuild/__docs__/README.md for more details on VFS overlays.
         vfs_overlay_flag = "-ivfsoverlay $(PODS_ROOT)/React-Core-prebuilt/React-VFS.yaml"
         current_pod_target_xcconfig["OTHER_CFLAGS"] ||= "$(inherited)"
         current_pod_target_xcconfig["OTHER_CFLAGS"] += " #{vfs_overlay_flag}"
