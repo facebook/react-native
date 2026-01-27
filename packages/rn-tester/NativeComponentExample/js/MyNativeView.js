@@ -121,6 +121,7 @@ export default function MyNativeView(props: {}): React.Node {
         style={{flex: 1}}
         opacity={opacity}
         values={arrayValues}
+        isEnabled={true}
         onIntArrayChanged={event => {
           console.log(event.nativeEvent.values);
           console.log(event.nativeEvent.boolValues);
