@@ -10,6 +10,16 @@
 
 import typeof * as SystraceModule from './Systrace';
 
+import {
+  isProfilingEnabled,
+  nativeTraceBeginAsyncSection,
+  nativeTraceBeginSection,
+  nativeTraceCounter,
+  nativeTraceEndAsyncSection,
+  nativeTraceEndSection,
+  nativeTraceIsTracing,
+} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
+
 const TRACE_TAG_REACT = 1 << 13; // eslint-disable-line no-bitwise
 
 let _asyncCookie = 0;
@@ -31,9 +41,9 @@ type EventArgs = ?{[string]: string};
  * }
  */
 export function isEnabled(): boolean {
-  return global.nativeTraceIsTracing
-    ? global.nativeTraceIsTracing(TRACE_TAG_REACT)
-    : Boolean(global.__RCTProfileIsProfiling);
+  return nativeTraceIsTracing != null
+    ? nativeTraceIsTracing(TRACE_TAG_REACT)
+    : isProfilingEnabled;
 }
 
 /**
@@ -52,7 +62,7 @@ export function beginEvent(eventName: EventName, args?: EventArgs): void {
   if (isEnabled()) {
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
-    global.nativeTraceBeginSection(TRACE_TAG_REACT, eventNameString, args);
+    nativeTraceBeginSection?.(TRACE_TAG_REACT, eventNameString, args);
   }
 }
 
@@ -61,7 +71,7 @@ export function beginEvent(eventName: EventName, args?: EventArgs): void {
  */
 export function endEvent(args?: EventArgs): void {
   if (isEnabled()) {
-    global.nativeTraceEndSection(TRACE_TAG_REACT, args);
+    nativeTraceEndSection?.(TRACE_TAG_REACT, args);
   }
 }
 
@@ -79,7 +89,7 @@ export function beginAsyncEvent(
     _asyncCookie++;
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
-    global.nativeTraceBeginAsyncSection(
+    nativeTraceBeginAsyncSection?.(
       TRACE_TAG_REACT,
       eventNameString,
       cookie,
@@ -101,7 +111,7 @@ export function endAsyncEvent(
   if (isEnabled()) {
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
-    global.nativeTraceEndAsyncSection(
+    nativeTraceEndAsyncSection?.(
       TRACE_TAG_REACT,
       eventNameString,
       cookie,
@@ -117,8 +127,7 @@ export function counterEvent(eventName: EventName, value: number): void {
   if (isEnabled()) {
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
-    global.nativeTraceCounter &&
-      global.nativeTraceCounter(TRACE_TAG_REACT, eventNameString, value);
+    nativeTraceCounter?.(TRACE_TAG_REACT, eventNameString, value);
   }
 }
 

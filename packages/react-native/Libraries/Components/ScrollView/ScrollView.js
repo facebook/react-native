@@ -1261,7 +1261,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
    * Invoke this from an `onMomentumScrollBegin` event.
    */
   _handleMomentumScrollBegin: (e: ScrollEvent) => void = (e: ScrollEvent) => {
-    this._lastMomentumScrollBeginTime = global.performance.now();
+    this._lastMomentumScrollBeginTime = performance.now();
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   };
 
@@ -1270,7 +1270,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
    */
   _handleMomentumScrollEnd: (e: ScrollEvent) => void = (e: ScrollEvent) => {
     FrameRateLogger.endScroll();
-    this._lastMomentumScrollEndTime = global.performance.now();
+    this._lastMomentumScrollEndTime = performance.now();
     this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);
   };
 
@@ -1319,7 +1319,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
    * a touch has just started or ended.
    */
   _isAnimating: () => boolean = () => {
-    const now = global.performance.now();
+    const now = performance.now();
     const timeSinceLastMomentumScrollEnd =
       now - this._lastMomentumScrollEndTime;
     const isAnimating =

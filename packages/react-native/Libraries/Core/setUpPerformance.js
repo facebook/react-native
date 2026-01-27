@@ -8,6 +8,7 @@
  * @format
  */
 
+import {nativePerformanceNow} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import setUpPerformanceModern from '../../src/private/setup/setUpPerformanceModern';
 import NativePerformance from '../../src/private/webapis/performance/specs/NativePerformance';
 
@@ -24,7 +25,7 @@ if (NativePerformance) {
       measure: () => {},
       clearMeasures: () => {},
       now: () => {
-        const performanceNow = global.nativePerformanceNow || Date.now;
+        const performanceNow = nativePerformanceNow || Date.now;
         return performanceNow();
       },
     };

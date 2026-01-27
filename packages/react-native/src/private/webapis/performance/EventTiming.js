@@ -100,8 +100,7 @@ function getCachedEventCounts(): Map<string, number> {
   );
   cachedEventCounts = eventCounts;
 
-  // $FlowFixMe[incompatible-type]
-  global.queueMicrotask(() => {
+  queueMicrotask(() => {
     // To be consistent with the calls to the API from the same task,
     // but also not to refetch the data from native too often,
     // schedule to invalidate the cache later,

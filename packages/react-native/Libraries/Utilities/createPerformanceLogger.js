@@ -18,7 +18,7 @@ import type {
 const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
 
 export const getCurrentTimestamp: () => number =
-  global.nativeQPLTimestamp ?? (() => global.performance.now());
+  global.nativeQPLTimestamp ?? (() => performance.now());
 
 class PerformanceLogger implements IPerformanceLogger {
   _timespans: {[key: string]: ?Timespan} = {};

@@ -115,7 +115,7 @@ export default class DecayAnimation extends Animation {
   stop(): void {
     super.stop();
     if (this._animationFrame != null) {
-      global.cancelAnimationFrame(this._animationFrame);
+      cancelAnimationFrame(this._animationFrame);
     }
     this.__notifyAnimationEnd({finished: false});
   }

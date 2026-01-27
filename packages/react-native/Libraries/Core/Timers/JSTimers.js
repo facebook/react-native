@@ -113,17 +113,14 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
     ) {
       callback();
     } else if (type === 'requestAnimationFrame') {
-      callback(global.performance.now());
+      callback(performance.now());
     } else if (type === 'requestIdleCallback') {
       callback({
         timeRemaining: function () {
           // TODO: Optimisation: allow running for longer than one frame if
           // there are no pending JS calls on the bridge from native. This
           // would require a way to check the bridge queue synchronously.
-          return Math.max(
-            0,
-            FRAME_DURATION - (global.performance.now() - frameTime),
-          );
+          return Math.max(0, FRAME_DURATION - (performance.now() - frameTime));
         },
         didTimeout: !!didTimeout,
       });
@@ -298,7 +295,7 @@ const JSTimers = {
         const index: number = requestIdleCallbacks.indexOf(id);
         if (index > -1) {
           requestIdleCallbacks.splice(index, 1);
-          _callTimer(id, global.performance.now(), true);
+          _callTimer(id, performance.now(), true);
         }
         delete requestIdleCallbackTimeouts[id];
         if (requestIdleCallbacks.length === 0) {
