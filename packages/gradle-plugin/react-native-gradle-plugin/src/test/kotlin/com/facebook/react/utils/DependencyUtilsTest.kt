@@ -16,10 +16,7 @@ import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
 import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
 import com.facebook.react.utils.DependencyUtils.shouldAddJitPack
-import com.facebook.react.utils.DependencyUtils.shouldAddSonatype
 import com.facebook.react.utils.PropertyUtils
-import com.facebook.react.utils.PropertyUtils.INCLUDE_SONATYPE_REPOSITORY
-import com.facebook.react.utils.PropertyUtils.SCOPED_INCLUDE_SONATYPE_REPOSITORY
 import java.net.URI
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
@@ -39,7 +36,7 @@ class DependencyUtilsTest {
     val project = createProject()
     project.extensions.extraProperties.set("react.internal.mavenLocalRepo", localMaven.absolutePath)
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -50,26 +47,11 @@ class DependencyUtilsTest {
   }
 
   @Test
-  fun configureRepositories_containsSnapshotRepo() {
-    val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
-    val project = createProject()
-
-    configureRepositories(project)
-
-    assertThat(
-            project.repositories.firstOrNull {
-              it is MavenArtifactRepository && it.url == repositoryURI
-            }
-        )
-        .isNotNull()
-  }
-
-  @Test
   fun configureRepositories_containsMavenCentral() {
     val repositoryURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -84,7 +66,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://dl.google.com/dl/android/maven2/")
     val project = createProject()
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -99,7 +81,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://www.jitpack.io")
     val project = createProject()
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -119,7 +101,7 @@ class DependencyUtilsTest {
         repositoryURI.toString(),
     )
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(project.repositories).hasSize(1)
     assertThat(
@@ -136,7 +118,7 @@ class DependencyUtilsTest {
     var project = createProject()
     project.extensions.extraProperties.set("includeJitpackRepository", "false")
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -149,7 +131,7 @@ class DependencyUtilsTest {
     project = createProject()
     project.extensions.extraProperties.set("react.includeJitpackRepository", "false")
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -165,7 +147,7 @@ class DependencyUtilsTest {
     var project = createProject()
     project.extensions.extraProperties.set("includeJitpackRepository", "true")
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -178,7 +160,7 @@ class DependencyUtilsTest {
     project = createProject()
     project.extensions.extraProperties.set("react.includeJitpackRepository", "true")
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -189,25 +171,11 @@ class DependencyUtilsTest {
   }
 
   @Test
-  fun configureRepositories_withIncludeSonatypeRepositoryFalse_doesNotContainSonatype() {
+  fun configureRepositories_notNightly_doesNotContainSonatype() {
     val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
     var project = createProject()
-    project.extensions.extraProperties.set(INCLUDE_SONATYPE_REPOSITORY, "false")
 
-    configureRepositories(project)
-
-    assertThat(
-            project.repositories.firstOrNull {
-              it is MavenArtifactRepository && it.url == repositoryURI
-            }
-        )
-        .isNull()
-
-    // We test both with scoped and unscoped property
-    project = createProject()
-    project.extensions.extraProperties.set(SCOPED_INCLUDE_SONATYPE_REPOSITORY, "false")
-
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -218,25 +186,11 @@ class DependencyUtilsTest {
   }
 
   @Test
-  fun configureRepositories_withincludeSonatypeRepositoryTrue_containSonatype() {
+  fun configureRepositories_nightly_containSonatype() {
     val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
     var project = createProject()
-    project.extensions.extraProperties.set(INCLUDE_SONATYPE_REPOSITORY, "true")
 
-    configureRepositories(project)
-
-    assertThat(
-            project.repositories.firstOrNull {
-              it is MavenArtifactRepository && it.url == repositoryURI
-            }
-        )
-        .isNotNull()
-
-    // We test both with scoped and unscoped property
-    project = createProject()
-    project.extensions.extraProperties.set(SCOPED_INCLUDE_SONATYPE_REPOSITORY, "true")
-
-    configureRepositories(project)
+    configureRepositories(project, true)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -254,7 +208,7 @@ class DependencyUtilsTest {
     val project = createProject()
     project.extensions.extraProperties.set("react.internal.mavenLocalRepo", localMaven.absolutePath)
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     val indexOfLocalRepo =
         project.repositories.indexOfFirst {
@@ -273,7 +227,7 @@ class DependencyUtilsTest {
     val mavenCentralURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
 
-    configureRepositories(project)
+    configureRepositories(project, false)
 
     val indexOfSnapshotRepo =
         project.repositories.indexOfFirst {
@@ -293,7 +247,7 @@ class DependencyUtilsTest {
     val appProject = ProjectBuilder.builder().withName("app").withParent(rootProject).build()
     val libProject = ProjectBuilder.builder().withName("lib").withParent(rootProject).build()
 
-    configureRepositories(appProject)
+    configureRepositories(appProject, false)
 
     assertThat(
             appProject.repositories.firstOrNull {
@@ -321,7 +275,7 @@ class DependencyUtilsTest {
       repo.content { content -> content.excludeGroup("com.facebook.react") }
     }
 
-    configureRepositories(appProject)
+    configureRepositories(appProject, false)
 
     // We need to make sure we have Maven Central defined twice, one by the library,
     // and another is the override by RNGP.

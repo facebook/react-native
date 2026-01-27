@@ -39,13 +39,6 @@ object PropertyUtils {
   const val SCOPED_INCLUDE_JITPACK_REPOSITORY = "react.includeJitpackRepository"
 
   /**
-   * Public property that allows to control whether the Sonatype Central repository is included or
-   * not
-   */
-  const val INCLUDE_SONATYPE_REPOSITORY = "includeSonatypeRepository"
-  const val SCOPED_INCLUDE_SONATYPE_REPOSITORY = "react.includeSonatypeRepository"
-
-  /**
    * Public property that allows to configure an enterprise repository proxy as exclusive repository
    */
   const val EXCLUSIVE_ENTEPRISE_REPOSITORY = "exclusiveEnterpriseRepository"
@@ -53,9 +46,6 @@ object PropertyUtils {
 
   /** By default we include JitPack to avoid breaking user builds */
   internal const val INCLUDE_JITPACK_REPOSITORY_DEFAULT = true
-
-  /** By default we include Sonatype Central to avoid breaking user builds */
-  internal const val INCLUDE_SONATYPE_REPOSITORY_DEFAULT = true
 
   /**
    * Internal Property that acts as a killswitch to configure the JDK version and align it for app

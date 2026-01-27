@@ -12,8 +12,6 @@ import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_REACT_PUBLISHING_
 import com.facebook.react.utils.PropertyUtils.EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY_DEFAULT
-import com.facebook.react.utils.PropertyUtils.INCLUDE_SONATYPE_REPOSITORY
-import com.facebook.react.utils.PropertyUtils.INCLUDE_SONATYPE_REPOSITORY_DEFAULT
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_V1_VERSION_NAME
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_VERSION_NAME
@@ -23,7 +21,6 @@ import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
 import com.facebook.react.utils.PropertyUtils.INTERNAL_VERSION_NAME
 import com.facebook.react.utils.PropertyUtils.SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.SCOPED_INCLUDE_JITPACK_REPOSITORY
-import com.facebook.react.utils.PropertyUtils.SCOPED_INCLUDE_SONATYPE_REPOSITORY
 import java.io.File
 import java.net.URI
 import java.util.*
@@ -38,13 +35,15 @@ internal object DependencyUtils {
       val hermesV1VersionString: String,
       val reactGroupString: String = DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP,
       val hermesGroupString: String = DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP,
-  )
+  ) {
+    val isNightly: Boolean = versionString.isNightly()
+  }
 
   /**
    * This method takes care of configuring the repositories{} block for both the app and all the 3rd
    * party libraries which are auto-linked.
    */
-  fun configureRepositories(project: Project) {
+  fun configureRepositories(project: Project, isNightly: Boolean) {
     val exclusiveEnterpriseRepository = project.rootProject.exclusiveEnterpriseRepository()
     if (exclusiveEnterpriseRepository != null) {
       project.logger.lifecycle(
@@ -70,7 +69,7 @@ internal object DependencyUtils {
           return@allprojects
         }
 
-        if (shouldAddSonatype()) {
+        if (isNightly) {
           // We add the snapshot for users on nightlies.
           mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
             repo.content { it.excludeGroup("org.webkit") }
@@ -215,7 +214,7 @@ internal object DependencyUtils {
     val versionStringFromFile = (reactAndroidProperties[INTERNAL_VERSION_NAME] as? String).orEmpty()
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
     val versionString =
-        if (versionStringFromFile.startsWith("0.0.0") || "-nightly-" in versionStringFromFile) {
+        if (versionStringFromFile.isNightly()) {
           "$versionStringFromFile-SNAPSHOT"
         } else {
           versionStringFromFile
@@ -279,14 +278,8 @@ internal object DependencyUtils {
         else -> INCLUDE_JITPACK_REPOSITORY_DEFAULT
       }
 
-  internal fun Project.shouldAddSonatype() =
-      when {
-        hasProperty(SCOPED_INCLUDE_SONATYPE_REPOSITORY) ->
-            property(SCOPED_INCLUDE_SONATYPE_REPOSITORY).toString().toBoolean()
-        hasProperty(INCLUDE_SONATYPE_REPOSITORY) ->
-            property(INCLUDE_SONATYPE_REPOSITORY).toString().toBoolean()
-        else -> INCLUDE_SONATYPE_REPOSITORY_DEFAULT
-      }
+  private fun String.isNightly(): Boolean =
+      this.startsWith("0.0.0") || "-nightly-" in this
 
   internal fun Project.exclusiveEnterpriseRepository() =
       when {
