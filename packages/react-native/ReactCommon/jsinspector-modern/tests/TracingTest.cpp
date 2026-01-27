@@ -113,4 +113,76 @@ TEST_F(TracingTest, EmitsScreenshotEventWhenScreenshotValuePassed) {
   EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "Screenshot")));
 }
 
+TEST_F(
+    TracingTest,
+    SecondSessionTracingStartIsRejectedWhileFirstSessionIsTracing) {
+  auto secondary = connectSecondary();
+  InSequence s;
+
+  // Session 1 starts tracing successfully
+  startTracing();
+
+  // Session 2 tries to start tracing - should get error
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/id", 2),
+          AtJsonPtr("/error/message", "Tracing has already been started")))));
+  secondary.toPage().sendMessage(R"({"id": 2, "method": "Tracing.start"})");
+
+  // Session 1 ends tracing normally
+  endTracingAndCollectEvents();
+
+  // Now Session 2 can start tracing
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 3, "result": {}})")));
+  secondary.toPage().sendMessage(R"({"id": 3, "method": "Tracing.start"})");
+
+  // Clean up - end secondary's tracing
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 4, "result": {}})")));
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.dataCollected"))))
+      .Times(AtLeast(1));
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.tracingComplete"))));
+  secondary.toPage().sendMessage(R"({"id": 4, "method": "Tracing.end"})");
+}
+
+TEST_F(TracingTest, CDPTracingPreemptsBackgroundTracing) {
+  InSequence s;
+
+  // Start background tracing directly
+  page_->startTracing(tracing::Mode::Background, {});
+
+  // CDP Tracing.start should preempt background (succeed, not fail)
+  startTracing();
+
+  // End tracing normally
+  endTracingAndCollectEvents();
+}
+
+TEST_F(TracingTest, BackgroundTracingIsRejectedWhileCDPTracingIsRunning) {
+  InSequence s;
+
+  // Start CDP tracing
+  startTracing();
+
+  // Background tracing should be rejected
+  bool started = page_->startTracing(tracing::Mode::Background, {});
+  EXPECT_FALSE(started);
+
+  // End CDP tracing
+  endTracingAndCollectEvents();
+
+  // Now background tracing should succeed
+  started = page_->startTracing(tracing::Mode::Background, {});
+  EXPECT_TRUE(started);
+
+  // Clean up
+  page_->stopTracing();
+}
+
 } // namespace facebook::react::jsinspector_modern

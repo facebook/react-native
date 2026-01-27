@@ -90,6 +90,8 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     bool didNotHaveAlreadyRunningRecording = hostTargetController_.startTracing(
         tracing::Mode::CDP, std::move(enabledCategories));
     if (!didNotHaveAlreadyRunningRecording) {
+      // @cdp Tracing.start fails if there is a tracing session already running
+      // in the current target. This matches Chrome's behavior.
       frontendChannel_(
           cdp::jsonError(
               req.id,
