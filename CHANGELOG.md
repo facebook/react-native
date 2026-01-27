@@ -1,28 +1,5 @@
 # Changelog
 
-## v0.80.3
-
-### Fixed
-
-- **Codegen**: Fix missing dependencies ([24c5eec1a7](https://github.com/facebook/react-native/commit/24c5eec1a75e673475f325c780f7912fd2e88e85) by [@tido64](https://github.com/tido64))
-
-#### Android specific
-
-- **Accessibility**: Stabilize custom accessibility action IDs for TalkBack ([ec91661395](https://github.com/facebook/react-native/commit/ec9166139563f88e59300b830de0537340880669) by [@leg234-png](https://github.com/leg234-png))
-- **Build**: Fix a race condition with codegen libraries missing sources ([75562ca9e5](https://github.com/facebook/react-native/commit/75562ca9e5ec1a08f16da38e7dd919c6afccb4ac) by [@cortinico](https://github.com/cortinico))
-- **HeadlessJsTaskService**: Make accessors inside HeadlessJsTaskService open again ([1eef1fda6e](https://github.com/facebook/react-native/commit/1eef1fda6ef3a0e76243a4425308e8d662f971e3) by [@cortinico](https://github.com/cortinico))
-- **Legacy Architecture**: Fix legacy architecture Android freeze on metro refresh ([e7ed0b1347](https://github.com/facebook/react-native/commit/e7ed0b13475cc6b80ee421d679740feba4f71a9a) by [@robhogan](https://github.com/robhogan))
-- **Permissions**: Fix request permission is not always resolving in Android 16 ([9c8cc347ee](https://github.com/facebook/react-native/commit/9c8cc347ee93dafb38b5654e2723bb27095c8156) by [@lukmccall](https://github.com/lukmccall))
-- **View**: Update font scale on Android when recreating RootView ([98f5c818f5](https://github.com/facebook/react-native/commit/98f5c818f542442245a0ee38a0ea8b6ce1652dd2) by [@j-piasecki](https://github.com/j-piasecki))
-
-#### iOS specific
-
-- **Prebuild**: Fixed cp command to work with gnu coreutils ([ea68e829bb](https://github.com/facebook/react-native/commit/ea68e829bbb936e41aea8e2c7fbaa56b45885124) by [@chrfalch](https://github.com/chrfalch))
-- **RefreshControl**: Fix RefreshControl recycling ([8f8a5bee6b](https://github.com/facebook/react-native/commit/8f8a5bee6bbd118f6cef69cb0c9d9dfb4c30b372) by [@cipolleschi](https://github.com/cipolleschi))
-- **RefreshControl**: Fix RefreshControl not refreshing on initial mount ([be7353881](https://github.com/facebook/react-native/commit/be7353881290cdc5abc8978e53a2387a8b586fc4) by [@cipolleschi](https://github.com/cipolleschi))
-- **RCTDeviceInfo**: Fix RCTDeviceInfo crash when application.delegate.window is nil ([f153e7e05f](https://github.com/facebook/react-native/commit/f153e7e05f9d6afecdbca98c68381efa9d520830) by [@25harsh](https://github.com/25harsh))
-- **TextInput**: Fix setting maxLength to 0 in TextInput still allows typing ([a209403ce3](https://github.com/facebook/react-native/commit/a209403ce34611bb96fd4d64205a71df2525d6dd) by [@riteshshukla04](https://github.com/riteshshukla04))
-
 ## v0.84.0-rc.2
 
 ### Fixed
@@ -857,108 +834,26 @@ None
 
 ## v0.80.3
 
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Added
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Changed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Fixed
 
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Security
-
-
+- **Codegen**: Fix missing dependencies ([24c5eec1a7](https://github.com/facebook/react-native/commit/24c5eec1a75e673475f325c780f7912fd2e88e85) by [@tido64](https://github.com/tido64))
 
 #### Android specific
 
-
+- **Accessibility**: Stabilize custom accessibility action IDs for TalkBack ([ec91661395](https://github.com/facebook/react-native/commit/ec9166139563f88e59300b830de0537340880669) by [@leg234-png](https://github.com/leg234-png))
+- **Build**: Fix a race condition with codegen libraries missing sources ([75562ca9e5](https://github.com/facebook/react-native/commit/75562ca9e5ec1a08f16da38e7dd919c6afccb4ac) by [@cortinico](https://github.com/cortinico))
+- **HeadlessJsTaskService**: Make accessors inside HeadlessJsTaskService open again ([1eef1fda6e](https://github.com/facebook/react-native/commit/1eef1fda6ef3a0e76243a4425308e8d662f971e3) by [@cortinico](https://github.com/cortinico))
+- **Legacy Architecture**: Fix legacy architecture Android freeze on metro refresh ([e7ed0b1347](https://github.com/facebook/react-native/commit/e7ed0b13475cc6b80ee421d679740feba4f71a9a) by [@robhogan](https://github.com/robhogan))
+- **Permissions**: Fix request permission is not always resolving in Android 16 ([9c8cc347ee](https://github.com/facebook/react-native/commit/9c8cc347ee93dafb38b5654e2723bb27095c8156) by [@lukmccall](https://github.com/lukmccall))
+- **View**: Update font scale on Android when recreating RootView ([98f5c818f5](https://github.com/facebook/react-native/commit/98f5c818f542442245a0ee38a0ea8b6ce1652dd2) by [@j-piasecki](https://github.com/j-piasecki))
 
 #### iOS specific
 
-
-
-### Unknown
-
-- Release 0.80.3 ([cb72e3935d](https://github.com/facebook/react-native/commit/cb72e3935dae2d3928920b0e22f3f56de1bbbdd2) by [@react-native-bot](https://github.com/react-native-bot))
-- Backout #46896 - Attempt to fix #50274 ([e7ed0b1347](https://github.com/facebook/react-native/commit/e7ed0b13475cc6b80ee421d679740feba4f71a9a) by [@robhogan](https://github.com/robhogan))
-- Bump Podfile.lock ([c996b9a031](https://github.com/facebook/react-native/commit/c996b9a0312ce3b229c03231f0f5deada63ad3af) by [@react-native-bot](https://github.com/react-native-bot))
-- Release 0.80.2 ([99d714c22d](https://github.com/facebook/react-native/commit/99d714c22d3341e1417401bba6212736c5d7662d) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-- Use REACT_NATIVE_BOT_GITHUB_TOKEN token for changelog and bump lockfiles ([614dadbd01](https://github.com/facebook/react-native/commit/614dadbd01ca4e71866442704fb681f4c61537b4) by [@cortinico](https://github.com/cortinico))
+- **Prebuild**: Fixed cp command to work with gnu coreutils ([ea68e829bb](https://github.com/facebook/react-native/commit/ea68e829bbb936e41aea8e2c7fbaa56b45885124) by [@chrfalch](https://github.com/chrfalch))
+- **RefreshControl**: Fix RefreshControl recycling ([8f8a5bee6b](https://github.com/facebook/react-native/commit/8f8a5bee6bbd118f6cef69cb0c9d9dfb4c30b372) by [@cipolleschi](https://github.com/cipolleschi))
+- **RefreshControl**: Fix RefreshControl not refreshing on initial mount ([be7353881](https://github.com/facebook/react-native/commit/be7353881290cdc5abc8978e53a2387a8b586fc4) by [@cipolleschi](https://github.com/cipolleschi))
+- **RCTDeviceInfo**: Fix RCTDeviceInfo crash when application.delegate.window is nil ([f153e7e05f](https://github.com/facebook/react-native/commit/f153e7e05f9d6afecdbca98c68381efa9d520830) by [@25harsh](https://github.com/25harsh))
+- **TextInput**: Fix setting maxLength to 0 in TextInput still allows typing ([a209403ce3](https://github.com/facebook/react-native/commit/a209403ce34611bb96fd4d64205a71df2525d6dd) by [@riteshshukla04](https://github.com/riteshshukla04))
 
 ## v0.80.2
 
