@@ -118,12 +118,6 @@ function buildXCFrameworks(
       .map(h => h.headers)
       .flat();
 
-    // Use the first podspec spec name as the podspec name (this is the root spec in the podspec file)
-    const podSpecName = podSpecsWithHeaderFiles[podspec][0].specName.replace(
-      '-',
-      '_',
-    );
-
     if (headerFiles.length > 0) {
       // Get podspec name without directory and extension and make sure it is a valid identifier
       // by replacing any non-alphanumeric characters with an underscore.
