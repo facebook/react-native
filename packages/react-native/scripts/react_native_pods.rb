@@ -547,6 +547,13 @@ def react_native_post_install(
     # In XCode 26 we need to revert the new setting SWIFT_ENABLE_EXPLICIT_MODULES when building
     # with precompiled binaries.
     ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ENABLE_EXPLICIT_MODULES", value: "NO")
+
+    # Process the VFS overlay for prebuilt React Native Core - this is done as part of the post install so
+    # that we can update paths based on the final location of the Pods installation.
+    ReactNativeCoreUtils.process_vfs_overlay()
+
+    # Configure xcconfig for prebuilt usage (VFS overlay, header paths, cleanup redundant paths)
+    ReactNativeCoreUtils.configure_aggregate_xcconfig(installer)
   end
 
   SPM.apply_on_post_install(installer)

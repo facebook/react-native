@@ -15,6 +15,7 @@ const {
 } = require('../codegen/generate-artifacts-executor/generateFBReactNativeSpecIOS');
 const headers = require('./headers');
 const utils = require('./utils');
+const vfs = require('./vfs');
 const childProcess = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -22,6 +23,7 @@ const path = require('path');
 const {execSync} = childProcess;
 const {getHeaderFilesFromPodspecs} = headers;
 const {createFolderIfNotExists, createLogger} = utils;
+const {createVFSOverlay} = vfs;
 
 const frameworkLog = createLogger('XCFramework');
 
@@ -118,19 +120,13 @@ function buildXCFrameworks(
       .map(h => h.headers)
       .flat();
 
+    // Use the first podspec spec name as the podspec name (this is the root spec in the podspec file)
+    const podSpecName = podSpecsWithHeaderFiles[podspec][0].specName.replace(
+      '-',
+      '_',
+    );
+
     if (headerFiles.length > 0) {
-      // Get podspec name without directory and extension and make sure it is a valid identifier
-      // by replacing any non-alphanumeric characters with an underscore.
-      let podSpecName = path
-        .basename(podspec, '.podspec')
-        .replace(/[^a-zA-Z0-9_]/g, '_');
-
-      // Fix for FBReactNativeSpec. RN expect FBReactNative spec headers
-      // To be in a folder named FBReactNativeSpec.
-      if (podSpecName === 'React_RCTFBReactNativeSpec') {
-        podSpecName = 'FBReactNativeSpec';
-      }
-
       // Create a folder for the podspec in the output headers path
       const podSpecTargetFolder = path.join(outputHeadersPath, podSpecName);
 
@@ -200,6 +196,29 @@ function buildXCFrameworks(
 
   if (identity) {
     signXCFramework(identity, outputPath);
+  }
+
+  // Tar the output folder to a .tar.gz file
+  const tarFilePath = path.join(
+    buildFolder,
+    'output',
+    'xcframeworks',
+    buildType,
+    'React.xcframework.tar.gz',
+  );
+  frameworkLog('Creating tar file: ' + tarFilePath);
+  try {
+    execSync(
+      `tar -czf ${tarFilePath} -C ${path.dirname(outputPath)} React.xcframework`,
+      {
+        stdio: 'inherit',
+      },
+    );
+  } catch (error) {
+    frameworkLog(
+      `Error creating tar file: ${error.message}. Check if the tar command is available.`,
+      'warning',
+    );
   }
 }
 
@@ -353,6 +372,15 @@ function copyHeaderFilesToSlices(
       });
     });
   });
+
+  // Create VFS overlay file at the XCFramework root (same for all platforms)
+  const vfsFilePath = path.join(outputPath, 'React-VFS-template.yaml');
+  try {
+    fs.writeFileSync(vfsFilePath, createVFSOverlay(rootFolder), 'utf8');
+    frameworkLog(`Created VFS overlay: ${path.basename(vfsFilePath)}`);
+  } catch (error) {
+    frameworkLog(`Error creating VFS overlay file: ${error.message}.`, 'error');
+  }
 }
 
 function createModuleMapFile(outputPath /*: string */) {

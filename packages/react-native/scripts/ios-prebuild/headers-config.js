@@ -19,26 +19,6 @@ export type PodSpecConfiguration = $ReadOnly<{
 } | {disabled: true}>;
 */
 
-/*
- * Podspec Header Configuration Exceptions
- *
- * Most podspecs follow a standard pattern for header file locations. However, some pods
- * require custom configuration for where their headers should be placed in the prebuilt
- * framework. This map defines those exceptions.
- *
- * Each entry is keyed by the relative path to the podspec file and contains:
- *   - name: The pod name
- *   - headerPatterns: Glob patterns for header files to include
- *   - headerDir: Target directory for the headers in the framework
- *   - excludePatterns: (optional) Glob patterns for files to exclude
- *   - subSpecs: (optional) Nested subspecs with their own header configurations
- *   - disabled: (optional) Set to true to skip processing this podspec entirely
- *
- * Examples:
- *   - React-jsi: Headers are placed in the 'jsi' directory
- *   - React-Fabric: Composed of multiple subspecs (animated, animations, core, etc.),
- *     each requiring headers in their respective 'react/renderer/...' directories
- */
 const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
   'ReactCommon/jsi/React-jsi.podspec': {
     name: 'React-jsi',
@@ -237,6 +217,70 @@ const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
       },
     ],
   },
+  // Yoga should preserve its directory structure
+  'ReactCommon/yoga/Yoga.podspec': {
+    name: 'Yoga',
+    headerPatterns: ['yoga/**/*.h'],
+    headerDir: 'yoga',
+    preservePaths: ['yoga/**/*.h'],
+  },
+
+  // ReactCommon.podspec has multiple subspecs with different header_dir values
+  // that the generic parser cannot handle (it only extracts the first header_dir).
+  'ReactCommon/ReactCommon.podspec': {
+    name: 'ReactCommon',
+    headerPatterns: [],
+    headerDir: 'ReactCommon',
+    subSpecs: [
+      {
+        name: 'bridging',
+        headerPatterns: ['react/bridging/**/*.h'],
+        excludePatterns: ['react/bridging/tests/**'],
+        headerDir: 'react/bridging',
+      },
+      {
+        name: 'core',
+        headerPatterns: ['react/nativemodule/core/ReactCommon/**/*.h'],
+        headerDir: 'ReactCommon',
+      },
+    ],
+  },
+
+  // these podspecs set `header_dir` via Ruby variables, which the generic
+  // podspec parser cannot infer. Add explicit exceptions so headers are emitted under
+  // the expected `jsinspector-modern/...` include paths.
+  'React/Runtime/React-RCTRuntime.podspec': {
+    name: 'React-RCTRuntime',
+    headerPatterns: ['*.h'],
+    headerDir: 'React',
+  },
+
+  'ReactCommon/jsinspector-modern/React-jsinspector.podspec': {
+    name: 'React-jsinspector',
+    headerPatterns: ['*.h'],
+    headerDir: 'jsinspector-modern',
+  },
+  'ReactCommon/jsinspector-modern/cdp/React-jsinspectorcdp.podspec': {
+    name: 'React-jsinspectorcdp',
+    headerPatterns: ['*.h'],
+    headerDir: 'jsinspector-modern/cdp',
+  },
+  'ReactCommon/jsinspector-modern/network/React-jsinspectornetwork.podspec': {
+    name: 'React-jsinspectornetwork',
+    headerPatterns: ['*.h'],
+    headerDir: 'jsinspector-modern/network',
+  },
+  'ReactCommon/jsinspector-modern/tracing/React-jsinspectortracing.podspec': {
+    name: 'React-jsinspectortracing',
+    headerPatterns: ['*.h'],
+    headerDir: 'jsinspector-modern/tracing',
+  },
+  'React/React-RCTFabric.podspec': {
+    name: 'React-RCTFabric',
+    headerPatterns: ['Fabric/**/*.h'],
+    headerDir: 'React',
+  },
+
   'React/React-RCTFBReactNativeSpec.podspec': {
     name: 'React-RCTFBReactNativeSpec',
     headerPatterns: ['FBReactNativeSpec/**/*.h'],
