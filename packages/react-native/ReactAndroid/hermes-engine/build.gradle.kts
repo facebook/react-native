@@ -421,7 +421,10 @@ android {
     java.srcDirs("$hermesDir/lib/Platform/Intl/java", "$hermesDir/lib/Platform/Unicode/java")
   }
 
-  buildFeatures { prefab = true }
+  buildFeatures {
+    prefab = true
+    prefabPublishing = true
+  }
 
   dependencies {
     implementation(libs.fbjni)
