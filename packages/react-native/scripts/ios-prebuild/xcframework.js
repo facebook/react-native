@@ -114,7 +114,10 @@ function buildXCFrameworks(
 
   // Enumerate podspecs and copy headers, create umbrella headers and module map file
   Object.keys(podSpecsWithHeaderFiles).forEach(podspec => {
-    const headerFiles = podSpecsWithHeaderFiles[podspec];
+    const headerFiles = podSpecsWithHeaderFiles[podspec]
+      .map(h => h.headers)
+      .flat();
+
     if (headerFiles.length > 0) {
       // Get podspec name without directory and extension and make sure it is a valid identifier
       // by replacing any non-alphanumeric characters with an underscore.
@@ -129,24 +132,24 @@ function buildXCFrameworks(
       }
 
       // Create a folder for the podspec in the output headers path
-      const podSpecFolder = path.join(outputHeadersPath, podSpecName);
-      createFolderIfNotExists(podSpecFolder);
+      const podSpecTargetFolder = path.join(outputHeadersPath, podSpecName);
 
       // Copy each header file to the podspec folder
       copiedHeaderFilesWithPodspecNames[podSpecName] = headerFiles.map(
         headerFile => {
-          // Header files shall be flattened into the podSpecFoldder:
-          const targetFile = path.join(
-            podSpecFolder,
-            path.basename(headerFile),
+          const headerFileTargetPath = path.join(
+            podSpecTargetFolder,
+            headerFile.target,
           );
-          fs.copyFileSync(headerFile, targetFile);
-          return targetFile;
+          createFolderIfNotExists(path.dirname(headerFileTargetPath));
+          fs.copyFileSync(headerFile.source, headerFileTargetPath);
+          return headerFileTargetPath;
         },
       );
+
       // Create umbrella header file for the podspec
       const umbrellaHeaderFilename = path.join(
-        podSpecFolder,
+        podSpecTargetFolder,
         podSpecName + '-umbrella.h',
       );
 
@@ -183,7 +186,9 @@ function buildXCFrameworks(
     return;
   }
 
-  linkArchFolders(
+  // Copy header files and module map file to each platform slice in the XCFramework
+  copyHeaderFilesToSlices(
+    rootFolder,
     outputPath,
     moduleMapFile,
     umbrellaHeaders,
@@ -253,13 +258,15 @@ function copySymbols(
   });
 }
 
-function linkArchFolders(
+// Copy header files and module map file to each platform slice in the XCFramework.
+function copyHeaderFilesToSlices(
+  rootFolder /*:string*/,
   outputPath /*:string*/,
   moduleMapFile /*:string*/,
   umbrellaHeaderFiles /*:{[key: string]: string}*/,
   outputHeaderFiles /*: {[key: string]: string[]} */,
 ) {
-  frameworkLog('Linking modules and headers to platform folders...');
+  frameworkLog('Linking modules and headers to platform folders for slice...');
 
   // Enumerate all platform folders in the output path
   const platformFolders = fs
@@ -300,22 +307,22 @@ function linkArchFolders(
       'Headers',
     );
 
-    // Link umbrella / header files into the platform folder
+    // Copy umbrella / header files into the platform folder
     Object.keys(umbrellaHeaderFiles).forEach(podSpecName => {
       const umbrellaHeaderFile = umbrellaHeaderFiles[podSpecName];
 
       // Create the target folder for the umbrella header file
       const targetPodSpecFolder = path.join(targetHeadersFolder, podSpecName);
       createFolderIfNotExists(targetPodSpecFolder);
-      // Link the umbrella header file to the target folder
+      // Copy the umbrella header file to the target folder
       try {
-        fs.linkSync(
+        fs.copyFileSync(
           umbrellaHeaderFile,
           path.join(targetPodSpecFolder, path.basename(umbrellaHeaderFile)),
         );
       } catch (error) {
         frameworkLog(
-          `Error linking umbrella header file: ${error.message}. Check if the file exists.`,
+          `Error copying umbrella header file: ${umbrellaHeaderFile}\nError: ${error.message}. Check if the file exists.`,
           'error',
         );
       }
@@ -323,21 +330,22 @@ function linkArchFolders(
 
     Object.keys(outputHeaderFiles).forEach(podSpecName => {
       outputHeaderFiles[podSpecName].forEach(headerFile => {
-        // Create the target folder for the umbrella header file
-        const targetPodSpecFolder = path.join(targetHeadersFolder, podSpecName);
-        createFolderIfNotExists(targetPodSpecFolder);
-        // Link the header file to the target folder - here we might have a few files with the same name
-        // since we're flattening the imports. Yoga has two files - these can be ignored.
+        // Get the relative path from the root Headers folder to preserve directory structure
+        // headerFile is like /path/to/Headers/Yoga/yoga/style/Style.h
+        // We need to extract Yoga/yoga/style/Style.h and copy to the same structure in the slice
+        const rootHeadersFolder = path.join(outputPath, 'Headers');
+        const relativeHeaderPath = path.relative(rootHeadersFolder, headerFile);
         const targetHeaderFile = path.join(
-          targetPodSpecFolder,
-          path.basename(headerFile),
+          targetHeadersFolder,
+          relativeHeaderPath,
         );
+        createFolderIfNotExists(path.dirname(targetHeaderFile));
         if (!fs.existsSync(targetHeaderFile)) {
           try {
-            fs.linkSync(headerFile, targetHeaderFile);
+            fs.copyFileSync(headerFile, targetHeaderFile);
           } catch (error) {
             frameworkLog(
-              `Error linking header file: ${error.message}. Check if the file exists.`,
+              `Error copying header file: ${error.message}. Check if the file exists.`,
               'error',
             );
           }
