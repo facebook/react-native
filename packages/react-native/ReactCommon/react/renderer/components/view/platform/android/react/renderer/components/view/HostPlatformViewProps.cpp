@@ -15,6 +15,7 @@
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/graphics/TransformUtils.h>
 
 namespace facebook::react {
 
@@ -429,69 +430,6 @@ inline static void updateNativeDrawableProp(
   }
 
   result[propName] = nativeDrawableResult;
-}
-
-inline static void updateTransformOperationValue(
-    const std::string& operationName,
-    const ValueUnit& valueUnit,
-    folly::dynamic& resultTranslateArray) {
-  folly::dynamic resultTranslate = folly::dynamic::object();
-  if (valueUnit.unit == UnitType::Percent) {
-    resultTranslate[operationName] = std::to_string(valueUnit.value) + "%";
-  } else {
-    resultTranslate[operationName] = valueUnit.value;
-  }
-  resultTranslateArray.push_back(std::move(resultTranslate));
-}
-
-inline static void updateTransformProps(
-    const Transform& transform,
-    const TransformOperation& operation,
-    folly::dynamic& resultTranslateArray) {
-  // See serialization rules in:
-  // react-native-github/packages/react-native/ReactCommon/react/renderer/components/view/conversions.h?lines=592
-  std::string operationName;
-  switch (operation.type) {
-    case TransformOperationType::Scale:
-      operationName = "scale";
-      if (operation.x == operation.y && operation.x == operation.z) {
-        updateTransformOperationValue(
-            operationName, operation.x, resultTranslateArray);
-        return;
-      }
-      break;
-    case TransformOperationType::Translate:
-      operationName = "translate";
-      break;
-    case TransformOperationType::Rotate:
-      operationName = "rotate";
-      break;
-    case TransformOperationType::Perspective:
-      operationName = "perspective";
-      break;
-    case TransformOperationType::Arbitrary:
-      operationName = "matrix";
-      resultTranslateArray[operationName] = transform;
-      break;
-    case TransformOperationType::Identity:
-      // Do nothing
-      break;
-    case TransformOperationType::Skew:
-      operationName = "skew";
-      break;
-  }
-  if (operation.x.value != 0) {
-    updateTransformOperationValue(
-        operationName + "X", operation.x, resultTranslateArray);
-  }
-  if (operation.y.value != 0) {
-    updateTransformOperationValue(
-        operationName + "Y", operation.y, resultTranslateArray);
-  }
-  if (operation.z.value != 0) {
-    updateTransformOperationValue(
-        operationName + "Z", operation.z, resultTranslateArray);
-  }
 }
 
 inline static void updateAccessibilityStateProp(
