@@ -176,7 +176,8 @@ Called during `react_native_post_install`, this method:
 
 1. Reads the `React-VFS-template.yaml` from the XCFramework
 2. Resolves the `${ROOT_PATH}` placeholder with the actual XCFramework path
-3. Writes the resolved overlay to `$(PODS_ROOT)/React-Core-prebuilt/React-VFS.yaml`
+3. Writes the resolved overlay to
+   `$(PODS_ROOT)/React-Core-prebuilt/React-VFS.yaml`
 
 #### `add_rncore_dependency(s)`
 
