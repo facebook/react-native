@@ -56,6 +56,7 @@ bool NetworkHandler::disable() {
   }
 
   enabled_.store(false, std::memory_order_release);
+  std::lock_guard<std::mutex> lock(requestBodyMutex_);
   responseBodyBuffer_.clear();
   return true;
 }
