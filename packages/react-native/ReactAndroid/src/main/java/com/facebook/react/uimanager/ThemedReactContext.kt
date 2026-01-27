@@ -19,6 +19,7 @@ import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.ScrollEndedListeners
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
@@ -154,4 +155,7 @@ public class ThemedReactContext(
   override fun registerSegment(segmentId: Int, path: String?, callback: Callback?) {
     reactApplicationContext.registerSegment(segmentId, path, callback)
   }
+
+  override fun getScrollEndedListeners(): ScrollEndedListeners =
+      reactApplicationContext.scrollEndedListeners
 }
