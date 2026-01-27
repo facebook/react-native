@@ -34,12 +34,17 @@ internal object ImportantForInteractionHelper {
   /**
    * Sets the important_for_interaction tag on a view based on the given [PointerEvents] value.
    *
+   * Note: The pointer events value alone does not determine if a view is important for interaction.
+   * A view with pointerEvents=auto or pointerEvents=box-only is only important for interaction if
+   * it is also clickable. Therefore, for these cases we let the view's own state determine whether
+   * it's important for interaction rather than setting the tag.
+   *
    * The mapping is as follows:
-   * - [PointerEvents.AUTO] -> [IMPORTANT_FOR_INTERACTION_YES]
+   * - [PointerEvents.AUTO] -> No tag set (i.e. the view's own state determines importance)
    * - [PointerEvents.NONE] -> [IMPORTANT_FOR_INTERACTION_NO] |
    *   [IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS]
-   * - [PointerEvents.BOX_ONLY] -> [IMPORTANT_FOR_INTERACTION_YES] |
-   *   [IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS]
+   * - [PointerEvents.BOX_ONLY] -> [IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS] (i.e. the view's
+   *   own state determines importance but its descendants are excluded)
    * - [PointerEvents.BOX_NONE] -> [IMPORTANT_FOR_INTERACTION_NO]
    *
    * @param view The view to set the tag on
@@ -49,11 +54,10 @@ internal object ImportantForInteractionHelper {
   fun setImportantForInteraction(view: View, pointerEvents: PointerEvents) {
     val value =
         when (pointerEvents) {
-          PointerEvents.AUTO -> IMPORTANT_FOR_INTERACTION_YES
+          PointerEvents.AUTO -> return
           PointerEvents.NONE ->
               IMPORTANT_FOR_INTERACTION_NO or IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS
-          PointerEvents.BOX_ONLY ->
-              IMPORTANT_FOR_INTERACTION_YES or IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS
+          PointerEvents.BOX_ONLY -> IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS
           PointerEvents.BOX_NONE -> IMPORTANT_FOR_INTERACTION_NO
         }
     view.setTag(R.id.important_for_interaction, value)
