@@ -21,6 +21,7 @@ extern NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification; /
 @property (nonatomic, copy) NSDictionary<NSString *, NSNumber *> *multipliers;
 
 @property (nonatomic, assign) BOOL isBoldTextEnabled;
+@property (nonatomic, assign) BOOL isDifferentiateWithoutColorEnabled;
 @property (nonatomic, assign) BOOL isGrayscaleEnabled;
 @property (nonatomic, assign) BOOL isInvertColorsEnabled;
 @property (nonatomic, assign) BOOL isReduceMotionEnabled;

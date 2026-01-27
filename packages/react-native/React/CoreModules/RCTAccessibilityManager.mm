@@ -62,6 +62,11 @@ RCT_EXPORT_MODULE()
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(differentiateWithoutColorStatusDidChange:)
+                                                 name:UIAccessibilityDifferentiateWithoutColorStatusDidChangeNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(grayscaleStatusDidChange:)
                                                  name:UIAccessibilityGrayscaleStatusDidChangeNotification
                                                object:nil];
@@ -93,6 +98,7 @@ RCT_EXPORT_MODULE()
 
     self.contentSizeCategory = RCTSharedApplication().preferredContentSizeCategory;
     _isBoldTextEnabled = UIAccessibilityIsBoldTextEnabled();
+    _isDifferentiateWithoutColorEnabled = UIAccessibilityIsDifferentiateWithoutColorEnabled();
     _isGrayscaleEnabled = UIAccessibilityIsGrayscaleEnabled();
     _isInvertColorsEnabled = UIAccessibilityIsInvertColorsEnabled();
     _isReduceMotionEnabled = UIAccessibilityIsReduceMotionEnabled();
@@ -132,6 +138,19 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"boldTextChanged"
                                                                           body:@(_isBoldTextEnabled)];
+#pragma clang diagnostic pop
+  }
+}
+
+- (void)differentiateWithoutColorStatusDidChange:(__unused NSNotification *)notification
+{
+  BOOL newDifferentiateWithoutColorEnabled = UIAccessibilityIsDifferentiateWithoutColorEnabled();
+  if (_isDifferentiateWithoutColorEnabled != newDifferentiateWithoutColorEnabled) {
+    _isDifferentiateWithoutColorEnabled = newDifferentiateWithoutColorEnabled;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"differentiateWithoutColorChanged"
+                                                                          body:@(_isDifferentiateWithoutColorEnabled)];
 #pragma clang diagnostic pop
   }
 }
@@ -367,6 +386,12 @@ RCT_EXPORT_METHOD(
     getCurrentBoldTextState : (RCTResponseSenderBlock)onSuccess onError : (__unused RCTResponseSenderBlock)onError)
 {
   onSuccess(@[ @(_isBoldTextEnabled) ]);
+}
+
+RCT_EXPORT_METHOD(
+    getCurrentDifferentiateWithoutColorState : (RCTResponseSenderBlock)onSuccess onError : (__unused RCTResponseSenderBlock)onError)
+{
+  onSuccess(@[ @(_isDifferentiateWithoutColorEnabled) ]);
 }
 
 RCT_EXPORT_METHOD(
