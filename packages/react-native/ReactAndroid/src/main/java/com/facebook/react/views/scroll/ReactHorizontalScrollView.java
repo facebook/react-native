@@ -1204,8 +1204,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
                 }
-                ReactScrollViewHelper.notifyUserDrivenScrollEnded_internal(
-                    ReactHorizontalScrollView.this);
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {
                   // If we have pagingEnabled and we have not snapped to the page

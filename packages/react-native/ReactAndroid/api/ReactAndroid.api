@@ -477,7 +477,6 @@ public final class com/facebook/react/animated/NativeAnimatedModule : com/facebo
 	public fun stopAnimation (D)V
 	public fun stopListeningToAnimatedNodeValue (D)V
 	public fun updateAnimatedNodeConfig (DLcom/facebook/react/bridge/ReadableMap;)V
-	public final fun userDrivenScrollEnded (I)V
 	public fun willDispatchViewUpdates (Lcom/facebook/react/bridge/UIManager;)V
 	public fun willMountItems (Lcom/facebook/react/bridge/UIManager;)V
 }
