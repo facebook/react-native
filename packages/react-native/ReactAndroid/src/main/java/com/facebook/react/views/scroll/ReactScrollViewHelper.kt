@@ -19,7 +19,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat.FocusDirection
 import androidx.core.view.ViewCompat.FocusRealDirection
 import com.facebook.common.logging.FLog
-import com.facebook.react.animated.NativeAnimatedModule
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
@@ -157,17 +156,11 @@ public object ReactScrollViewHelper {
     }
   }
 
-  // TODO: Remove this once C++ animation driver is complete
   @JvmStatic
   @JvmName("notifyUserDrivenScrollEnded_internal")
   internal fun notifyUserDrivenScrollEnded(scrollView: ViewGroup) {
     val reactContext = scrollView.context as? ReactContext
-    if (reactContext != null) {
-      val nativeAnimated = reactContext.getNativeModule(NativeAnimatedModule::class.java)
-      if (nativeAnimated != null) {
-        nativeAnimated.userDrivenScrollEnded(scrollView.id)
-      }
-    }
+    reactContext?.scrollEndedListeners?.notifyScrollEnded(scrollView)
   }
 
   /** This is only for Java listeners. onLayout events emitted to JS are handled elsewhere. */
