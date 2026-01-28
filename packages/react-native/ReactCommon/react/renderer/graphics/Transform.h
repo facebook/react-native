@@ -19,9 +19,7 @@
 #include <react/renderer/graphics/Vector.h>
 #include <react/utils/hash_combine.h>
 
-#ifdef ANDROID
 #include <folly/dynamic.h>
-#endif
 
 namespace facebook::react {
 
@@ -177,7 +175,6 @@ struct Transform {
   /**
    * Convert to folly::dynamic.
    */
-#ifdef ANDROID
   operator folly::dynamic() const
   {
     return folly::dynamic::array(
@@ -198,7 +195,6 @@ struct Transform {
         matrix[14],
         matrix[15]);
   }
-#endif
 };
 
 /*
