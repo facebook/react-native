@@ -17,6 +17,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableArray
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
 import okhttp3.Headers
 import okhttp3.Protocol
@@ -197,7 +198,7 @@ internal object NetworkEventUtil {
         buildReadableArray {
           add(requestId)
           add(error)
-          if (e?.javaClass == SocketTimeoutException::class.java) {
+          if (e?.javaClass == SocketTimeoutException::class.java || e?.javaClass === InterruptedIOException::class.java) {
             add(true) // last argument is a time out boolean
           }
         },
