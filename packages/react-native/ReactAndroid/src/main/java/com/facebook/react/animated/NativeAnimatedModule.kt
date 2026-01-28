@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ScrollEndedListener
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UIManagerListener
 import com.facebook.react.bridge.buildReadableMap
@@ -80,7 +81,10 @@ import kotlin.concurrent.Volatile
 @OptIn(UnstableReactNativeAPI::class)
 @ReactModule(name = NativeAnimatedModuleSpec.NAME)
 public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
-    NativeAnimatedModuleSpec(reactContext), LifecycleEventListener, UIManagerListener {
+    NativeAnimatedModuleSpec(reactContext),
+    LifecycleEventListener,
+    UIManagerListener,
+    ScrollEndedListener {
 
   // For `queueAndExecuteBatchedOperations`
   private enum class BatchExecutionOpCodes(value: Int) {
@@ -239,6 +243,11 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     super.initialize()
 
     reactApplicationContext.addLifecycleEventListener(this)
+    reactApplicationContext.scrollEndedListeners.addListener(this)
+  }
+
+  override fun onScrollEnded(scrollView: android.view.ViewGroup) {
+    userDrivenScrollEnded(scrollView.id)
   }
 
   override fun onHostResume() {
@@ -913,6 +922,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
   override fun invalidate() {
     super.invalidate()
 
+    reactApplicationContext.scrollEndedListeners.removeListener(this)
     reactApplicationContext.removeLifecycleEventListener(this)
   }
 

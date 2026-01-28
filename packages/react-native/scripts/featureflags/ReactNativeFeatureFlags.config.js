@@ -947,28 +947,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    reduceDefaultPropsInImage: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-7-29',
-        description:
-          'Optimize how default props are processed in Image to avoid unnecessary keys.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    reduceDefaultPropsInText: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-07-25',
-        description:
-          'Optimize how default props are processed in Text to avoid unnecessary keys.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     shouldUseAnimatedObjectForTransform: {
       defaultValue: false,
       metadata: {

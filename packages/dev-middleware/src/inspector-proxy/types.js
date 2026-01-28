@@ -37,6 +37,16 @@ export type TargetCapabilityFlags = Readonly<{
    * In the launch flow, this controls the Chrome DevTools entrypoint that is used.
    */
   prefersFuseboxFrontend?: boolean,
+
+  /**
+   * The target supports multiple concurrent debugger connections.
+   *
+   * When true, the proxy allows multiple debuggers to connect to the same
+   * page simultaneously, each identified by a unique session ID.
+   * When false (default/legacy), connecting a new debugger disconnects
+   * any existing debugger connection to that page.
+   */
+  supportsMultipleDebuggers?: boolean,
 }>;
 
 // Page information received from the device. New page is created for
@@ -59,12 +69,23 @@ export type Page = Readonly<{
   capabilities: NonNullable<PageFromDevice['capabilities']>,
 }>;
 
-// Chrome Debugger Protocol message/event passed between device and debugger.
-export type WrappedEvent = Readonly<{
+// Chrome Debugger Protocol message/event passed from device to proxy.
+export type WrappedEventFromDevice = Readonly<{
   event: 'wrappedEvent',
   payload: Readonly<{
     pageId: string,
     wrappedEvent: string,
+    sessionId?: string,
+  }>,
+}>;
+
+// Chrome Debugger Protocol message/event passed from proxy to device.
+export type WrappedEventToDevice = Readonly<{
+  event: 'wrappedEvent',
+  payload: Readonly<{
+    pageId: string,
+    wrappedEvent: string,
+    sessionId: string,
   }>,
 }>;
 
@@ -72,14 +93,14 @@ export type WrappedEvent = Readonly<{
 // to particular page.
 export type ConnectRequest = Readonly<{
   event: 'connect',
-  payload: Readonly<{pageId: string}>,
+  payload: Readonly<{pageId: string, sessionId: string}>,
 }>;
 
 // Request sent from Inspector Proxy to Device to notify that debugger is
 // disconnected.
 export type DisconnectRequest = Readonly<{
   event: 'disconnect',
-  payload: Readonly<{pageId: string}>,
+  payload: Readonly<{pageId: string, sessionId: string}>,
 }>;
 
 // Request sent from Inspector Proxy to Device to get a list of pages.
@@ -94,13 +115,13 @@ export type GetPagesResponse = {
 // Union type for all possible messages sent from device to Inspector Proxy.
 export type MessageFromDevice =
   | GetPagesResponse
-  | WrappedEvent
+  | WrappedEventFromDevice
   | DisconnectRequest;
 
 // Union type for all possible messages sent from Inspector Proxy to device.
 export type MessageToDevice =
   | GetPagesRequest
-  | WrappedEvent
+  | WrappedEventToDevice
   | ConnectRequest
   | DisconnectRequest;
 

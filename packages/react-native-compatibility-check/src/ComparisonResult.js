@@ -24,8 +24,8 @@ type TypeAnnotationComparisonError = {
 type TypeInformationComparisonError = {
   type: 'TypeInformationComparisonError',
   message: string,
-  newerType: CompleteTypeAnnotation,
-  olderType: CompleteTypeAnnotation,
+  newerAnnotation: CompleteTypeAnnotation,
+  olderAnnotation: CompleteTypeAnnotation,
   previousError?: TypeComparisonError,
 };
 type PropertyComparisonError = {
@@ -179,15 +179,15 @@ export function makeError(error: TypeComparisonError): ComparisonResult {
 
 export function typeInformationComparisonError(
   message: string,
-  newerType: CompleteTypeAnnotation,
-  olderType: CompleteTypeAnnotation,
+  newerAnnotation: CompleteTypeAnnotation,
+  olderAnnotation: CompleteTypeAnnotation,
   previousError?: TypeComparisonError,
 ): TypeComparisonError {
   return {
     type: 'TypeInformationComparisonError',
     message,
-    newerType,
-    olderType,
+    newerAnnotation,
+    olderAnnotation,
     previousError,
   };
 }
