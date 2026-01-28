@@ -916,7 +916,7 @@ describe('ReactNativeElement', () => {
         expect(textBoundingRectAfterUnmount.height).toBe(0);
       });
 
-      it('returns a DOMRect for nested Text elements', () => {
+      it('returns a DOMRect for nested Text elements that matches parent Paragraph boundaries', () => {
         const outerTextRef = createRef<HostInstance>();
         const nestedTextRef = createRef<HostInstance>();
 
@@ -954,15 +954,16 @@ describe('ReactNativeElement', () => {
         expect(outerTextBoundingRect.width).toBe(100);
         expect(outerTextBoundingRect.height).toBe(50);
 
-        // Nested text (virtual text) returns a DOMRect with zero values
-        // since it doesn't have its own independent layout
+        // Nested text (virtual text) returns the parent paragraph's bounding
+        // rect, matching web behavior where inline elements return their
+        // container's rect
         const nestedTextBoundingRect =
           nestedTextElement.getBoundingClientRect();
         expect(nestedTextBoundingRect).toBeInstanceOf(DOMRect);
-        expect(nestedTextBoundingRect.x).toBe(0);
-        expect(nestedTextBoundingRect.y).toBe(0);
-        expect(nestedTextBoundingRect.width).toBe(0);
-        expect(nestedTextBoundingRect.height).toBe(0);
+        expect(nestedTextBoundingRect.x).toBe(10);
+        expect(nestedTextBoundingRect.y).toBe(20);
+        expect(nestedTextBoundingRect.width).toBe(100);
+        expect(nestedTextBoundingRect.height).toBe(50);
 
         // After unmounting, both should return empty DOMRects
         Fantom.runTask(() => {
