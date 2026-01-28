@@ -273,7 +273,6 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).toBeCalledWith({
       category: '﻿%s ...',
       componentStack: [],
-      componentStackType: 'legacy',
       level: 'warn',
       message: {
         content: '(ADVICE) ...',
@@ -306,7 +305,6 @@ describe('LogBox', () => {
       category: 'test',
       message: {content: 'Some warning', substitutions: []},
       componentStack: [],
-      componentStackType: null,
     });
 
     expect(LogBoxData.addLog).not.toHaveBeenCalled();

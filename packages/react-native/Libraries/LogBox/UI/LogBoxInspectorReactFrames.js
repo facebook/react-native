@@ -95,9 +95,9 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
               // Older versions of DevTools do not provide full path.
               // This will not work on Windows, remove check once the
               // DevTools return the full file path.
-              frame.fileName.startsWith('/')
+              frame.file != null && frame.file.startsWith('/')
                 ? () =>
-                    openFileInEditor(frame.fileName, frame.location?.row ?? 1)
+                    openFileInEditor(frame.file ?? '', frame.lineNumber ?? 1)
                 : null
             }
             style={componentStyles.frame}>
@@ -106,13 +106,13 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
                 id="logbox_component_stack_frame_text"
                 style={componentStyles.frameName}>
                 <Text style={componentStyles.bracket}>{'<'}</Text>
-                {frame.content}
+                {frame.methodName}
                 <Text style={componentStyles.bracket}>{' />'}</Text>
               </Text>
             </View>
             <Text style={componentStyles.frameLocation}>
-              {getPrettyFileName(frame.fileName)}
-              {frame.location ? `:${frame.location.row}` : ''}
+              {frame.file != null ? getPrettyFileName(frame.file) : ''}
+              {frame.lineNumber != null ? `:${frame.lineNumber}` : ''}
             </Text>
           </LogBoxButton>
         </View>
