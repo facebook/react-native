@@ -167,4 +167,77 @@ Pod::Spec.new do |s|
                               "react/renderer/textlayoutmanager/platform/cxx"
     ss.header_dir           = "react/renderer/textlayoutmanager"
   end
+
+  s.subspec "dom" do |ss|
+    ss.dependency             "React-Fabric"
+    ss.dependency             "React-FabricComponents/components/text"
+    ss.dependency             "React-graphics"
+    ss.source_files         = podspec_sources("react/renderer/dom/**/*.{m,mm,cpp,h}", "react/renderer/dom/**/*.{h}")
+    ss.exclude_files        = "react/renderer/dom/tests"
+    ss.header_dir           = "react/renderer/dom"
+  end
+
+  s.subspec "uimanager" do |ss|
+    ss.dependency             "React-Fabric"
+    ss.dependency             "React-FabricComponents/dom"
+    ss.dependency             "React-rendererconsistency"
+    ss.subspec "consistency" do |sss|
+      sss.source_files         = podspec_sources("react/renderer/uimanager/consistency/*.{m,mm,cpp,h}", "react/renderer/uimanager/consistency/*.h")
+      sss.header_dir           = "react/renderer/uimanager/consistency"
+    end
+    ss.source_files         = podspec_sources("react/renderer/uimanager/*.{m,mm,cpp,h}", "react/renderer/uimanager/*.h")
+    ss.header_dir           = "react/renderer/uimanager"
+  end
+
+  s.subspec "animationbackend" do |ss|
+    ss.dependency             "React-Fabric"
+    ss.dependency             "React-FabricComponents/uimanager"
+    ss.source_files         = podspec_sources("react/renderer/animationbackend/**/*.{m,mm,cpp,h}", "react/renderer/animationbackend/**/*.{h}")
+    ss.header_dir           = "react/renderer/animationbackend"
+  end
+
+  s.subspec "animated" do |ss|
+    ss.dependency             "React-Fabric"
+    ss.dependency             "React-FabricComponents/animationbackend"
+    ss.dependency             "React-FabricComponents/uimanager"
+    ss.source_files         = podspec_sources("react/renderer/animated/**/*.{m,mm,cpp,h}", "react/renderer/animated/**/*.{h}")
+    ss.exclude_files        = "react/renderer/animated/tests"
+    ss.header_dir           = "react/renderer/animated"
+  end
+
+  s.subspec "animations" do |ss|
+    ss.dependency             "React-Fabric"
+    ss.source_files         = podspec_sources("react/renderer/animations/**/*.{m,mm,cpp,h}", "react/renderer/animations/**/*.{h}")
+    ss.exclude_files        = "react/renderer/animations/tests"
+    ss.header_dir           = "react/renderer/animations"
+  end
+
+  s.subspec "observers" do |ss|
+    ss.dependency             "React-Fabric"
+    ss.dependency             "React-FabricComponents/uimanager"
+
+    ss.subspec "events" do |sss|
+      sss.dependency            "React-performancetimeline"
+      sss.source_files         = podspec_sources("react/renderer/observers/events/**/*.{m,mm,cpp,h}", "react/renderer/observers/events/**/*.h")
+      sss.exclude_files        = "react/renderer/observers/events/tests"
+      sss.header_dir           = "react/renderer/observers/events"
+    end
+
+    ss.subspec "intersection" do |sss|
+      sss.source_files         = podspec_sources("react/renderer/observers/intersection/**/*.{m,mm,cpp,h}", "react/renderer/observers/intersection/**/*.h")
+      sss.exclude_files        = "react/renderer/observers/intersection/tests"
+      sss.header_dir           = "react/renderer/observers/intersection"
+    end
+  end
+
+  s.subspec "scheduler" do |ss|
+    ss.dependency             "React-Fabric"
+    ss.dependency             "React-FabricComponents/uimanager"
+    ss.dependency             "React-FabricComponents/animationbackend"
+    ss.dependency             "React-FabricComponents/observers/events"
+    ss.dependency             "React-performancecdpmetrics"
+    ss.dependency             "React-performancetimeline"
+    ss.source_files         = podspec_sources("react/renderer/scheduler/**/*.{m,mm,cpp,h}", "react/renderer/scheduler/**/*.h")
+    ss.header_dir           = "react/renderer/scheduler"
+  end
 end
