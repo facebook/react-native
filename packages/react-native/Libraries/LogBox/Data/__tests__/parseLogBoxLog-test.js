@@ -21,7 +21,6 @@ const {
 describe('parseLogBoxLog', () => {
   it('parses strings', () => {
     expect(parseLogBoxLog(['A'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: 'A',
       message: {
@@ -33,7 +32,6 @@ describe('parseLogBoxLog', () => {
 
   it('parses strings with arguments', () => {
     expect(parseLogBoxLog(['A', 'B', 'C'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: 'A B C',
       message: {
@@ -45,7 +43,6 @@ describe('parseLogBoxLog', () => {
 
   it('parses formatted strings', () => {
     expect(parseLogBoxLog(['%s', 'A'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: '\ufeff%s',
       message: {
@@ -62,7 +59,6 @@ describe('parseLogBoxLog', () => {
 
   it('parses formatted strings with insufficient arguments', () => {
     expect(parseLogBoxLog(['%s %s', 'A'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: '\ufeff%s %s',
       message: {
@@ -83,7 +79,6 @@ describe('parseLogBoxLog', () => {
 
   it('parses formatted strings with excess arguments', () => {
     expect(parseLogBoxLog(['%s', 'A', 'B'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: '\ufeff%s B',
       message: {
@@ -100,7 +95,6 @@ describe('parseLogBoxLog', () => {
 
   it('treats "%s" in arguments as literals', () => {
     expect(parseLogBoxLog(['%s', '%s', 'A'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: '\ufeff%s A',
       message: {
@@ -121,7 +115,6 @@ describe('parseLogBoxLog', () => {
       originalMessage: 'TransformError failed to transform file.',
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -136,7 +129,6 @@ describe('parseLogBoxLog', () => {
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: 'TransformError failed to transform file.',
     });
@@ -160,7 +152,6 @@ describe('parseLogBoxLog', () => {
   200 |`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -184,7 +175,6 @@ describe('parseLogBoxLog', () => {
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-199-0',
     });
@@ -222,7 +212,6 @@ If you are sure the module exists, try these steps:
 \u001b[0m \u001b[90m 15 | \u001b[39m\u001b[36mimport\u001b[39m fbRemoteAsset from \u001b[32m'fbRemoteAsset'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -254,7 +243,6 @@ If you are sure the module exists, try these steps:
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/file.js-1-1',
     });
@@ -278,7 +266,6 @@ If you are sure the module exists, try these steps:
   200 |`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -302,7 +289,6 @@ If you are sure the module exists, try these steps:
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-199-0',
     });
@@ -328,7 +314,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets
   200 |`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -354,7 +339,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-1-1',
     });
@@ -376,7 +360,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets
 \u001b[0m \u001b[90m 46 | \u001b[39m            headline\u001b[33m=\u001b[39m\u001b[32m"CrashReact Error Boundary"\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 47 | \u001b[39m            body\u001b[33m=\u001b[39m{\u001b[32m\`\${this.state.errorMessage}\`\u001b[39m}\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 | \u001b[39m            icon\u001b[33m=\u001b[39m{fbRemoteAsset(\u001b[32m'null_state_glyphs'\u001b[39m\u001b[33m,\u001b[39m {\u001b[0m\n\u001b[0m \u001b[90m    | \u001b[39m                                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 49 | \u001b[39m              name\u001b[33m:\u001b[39m \u001b[32m'codexxx'\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 50 | \u001b[39m              size\u001b[33m:\u001b[39m \u001b[32m'112'\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 51 | \u001b[39m            })}\u001b[0m`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -399,7 +382,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-1-1',
     });
@@ -412,7 +394,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       isComponentError: false,
       message: '### Fatal',
       originalMessage: '### Fatal',
-      componentStackType: 'legacy',
       componentStack: null,
       name: '',
       stack: [
@@ -434,7 +415,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         content: '### Fatal',
         substitutions: [],
       },
-      componentStackType: 'legacy',
       componentStack: [],
       stack: [
         {
@@ -476,7 +456,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         content: '### Fatal',
         substitutions: [],
       },
-      componentStackType: 'legacy',
       componentStack: [],
       stack: [
         {
@@ -523,7 +502,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         substitutions: [],
       },
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: [],
       stack: [
         {
@@ -558,7 +536,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -576,7 +553,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           },
         ],
         category:
-          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\ufeff%s',
         message: {
           content:
             'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
@@ -596,7 +573,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           'Some kind of message\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -604,8 +580,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             fileName: '/path/to/filename.js',
             location: {column: 1, row: 1},
           },
-          // TODO: we're missing the second component,
-          // because React isn't sending back a properly formatted stackframe.
           {
             collapse: false,
             content: 'MyAppComponent',
@@ -628,7 +602,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -636,8 +609,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             fileName: '/path/to/filename.js',
             location: {column: 1, row: 1},
           },
-          // TODO: we're missing the second component,
-          // because React isn't sending back a properly formatted stackframe.
           {
             collapse: false,
             content: 'MyAppComponent',
@@ -662,7 +633,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -680,7 +650,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           },
         ],
         category:
-          'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+          'Each child in a list should have a unique "key" prop.\ufeff%s\ufeff%s See https://fb.me/react-warning-keys for more information.',
         message: {
           content:
             'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
@@ -727,7 +697,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           content: '### Error',
           substitutions: [],
         },
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -767,7 +736,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -809,7 +777,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -844,7 +811,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           'Some kind of message\nMyTSComponent@/path/to/MyTSComponent.ts:1:1\nMyTSXComponent@/path/to/MyTSXComponent.tsx:2:1\nMyJSXComponent@/path/to/MyJSXComponent.jsx:3:1\nMyJSComponent@/path/to/MyJSComponent.js:4:1',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -898,7 +864,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -936,7 +901,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -1005,7 +969,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           content: '### Error',
           substitutions: [],
         },
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
@@ -1048,7 +1011,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         originalMessage:
           'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         name: '',
-        componentStackType: 'stack',
         componentStack: null,
         stack: [
           {
@@ -1072,7 +1034,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             methodName: 'bar',
           },
         ],
-        componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,

@@ -47,7 +47,6 @@ function getLogBoxLog() {
     message: {content: '...', substitutions: []},
     stack: createStack(['A', 'B', 'C']),
     category: 'Message category...',
-    componentStackType: 'stack',
     componentStack: createComponentStack(['A', 'B', 'C']),
     codeFrame: null,
   });
