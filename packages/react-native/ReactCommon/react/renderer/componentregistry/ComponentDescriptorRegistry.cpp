@@ -32,10 +32,11 @@ void ComponentDescriptorRegistry::add(
     const ComponentDescriptorProvider& componentDescriptorProvider) const {
   std::unique_lock lock(mutex_);
 
-  auto componentDescriptor = componentDescriptorProvider.constructor(
-      {.eventDispatcher = parameters_.eventDispatcher,
-       .contextContainer = parameters_.contextContainer,
-       .flavor = componentDescriptorProvider.flavor});
+  auto args = ComponentDescriptorParameters{
+      .eventDispatcher = parameters_.eventDispatcher,
+      .contextContainer = parameters_.contextContainer,
+      .flavor = componentDescriptorProvider.flavor};
+  auto componentDescriptor = componentDescriptorProvider.constructor(args);
   react_native_assert(
       componentDescriptor->getComponentHandle() ==
       componentDescriptorProvider.handle);
@@ -45,6 +46,7 @@ void ComponentDescriptorRegistry::add(
 
   auto sharedComponentDescriptor = std::shared_ptr<const ComponentDescriptor>(
       std::move(componentDescriptor));
+
   _registryByHandle[componentDescriptorProvider.handle] =
       sharedComponentDescriptor;
   _registryByName[componentDescriptorProvider.name] = sharedComponentDescriptor;
