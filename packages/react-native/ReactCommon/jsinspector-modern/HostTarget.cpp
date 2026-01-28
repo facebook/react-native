@@ -376,7 +376,7 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
 
 bool HostTarget::hasActiveSessionWithFuseboxClient() const {
   bool hasActiveFuseboxSession = false;
-  sessions_.forEach([&](HostTargetSession& session) {
+  sessions_.forEach([&](auto& session) {
     hasActiveFuseboxSession |= session.hasFuseboxClient();
   });
   return hasActiveFuseboxSession;
@@ -385,7 +385,7 @@ bool HostTarget::hasActiveSessionWithFuseboxClient() const {
 void HostTarget::emitTracingProfileForFirstFuseboxClient(
     tracing::HostTracingProfile tracingProfile) {
   bool emitted = false;
-  sessions_.forEach([&](HostTargetSession& session) {
+  sessions_.forEach([&](auto& session) {
     if (emitted) {
       /**
        * HostTracingProfile object is not copiable for performance reasons,
