@@ -10,12 +10,8 @@
 
 import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
-import type {
-  Category,
-  ComponentStack,
-  ExtendedExceptionData,
-  Message,
-} from './parseLogBoxLog';
+import type {Stack} from './LogBoxSymbolication';
+import type {Category, ExtendedExceptionData, Message} from './parseLogBoxLog';
 
 import DebuggerSessionObserver from '../../../src/private/devsupport/rndevtools/FuseboxSessionObserver';
 import toExtendedError from '../../../src/private/utilities/toExtendedError';
@@ -30,7 +26,7 @@ export type LogData = Readonly<{
   level: LogLevel,
   message: Message,
   category: Category,
-  componentStack: ComponentStack,
+  componentStack: Stack,
   stack?: string,
 }>;
 

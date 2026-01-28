@@ -65,12 +65,11 @@ describe('LogBoxInspectorReactFrames', () => {
             category: 'Some kind of message',
             componentStack: [
               {
-                content: 'MyComponent',
-                fileName: 'MyComponentFile.js',
-                location: {
-                  row: 1,
-                  column: -1,
-                },
+                methodName: 'MyComponent',
+                file: 'MyComponentFile.js',
+                lineNumber: 1,
+                column: -1,
+                collapse: false,
               },
             ],
           })
@@ -96,12 +95,11 @@ describe('LogBoxInspectorReactFrames', () => {
             category: 'Some kind of message',
             componentStack: [
               {
-                content: 'MyComponent',
-                fileName: '/path/to/MyComponentFile.js',
-                location: {
-                  row: 1,
-                  column: -1,
-                },
+                methodName: 'MyComponent',
+                file: '/path/to/MyComponentFile.js',
+                lineNumber: 1,
+                column: -1,
+                collapse: false,
               },
             ],
           })
@@ -127,12 +125,11 @@ describe('LogBoxInspectorReactFrames', () => {
             category: 'Some kind of message',
             componentStack: [
               {
-                content: 'MyComponent',
-                fileName: '/path/to/index.js',
-                location: {
-                  row: 1,
-                  column: -1,
-                },
+                methodName: 'MyComponent',
+                file: '/path/to/index.js',
+                lineNumber: 1,
+                column: -1,
+                collapse: false,
               },
             ],
           })
@@ -158,36 +155,32 @@ describe('LogBoxInspectorReactFrames', () => {
             category: 'Some kind of message',
             componentStack: [
               {
-                content: 'MyComponent',
-                fileName: '/path/to/index.js',
-                location: {
-                  row: 1,
-                  column: -1,
-                },
+                methodName: 'MyComponent',
+                file: '/path/to/index.js',
+                lineNumber: 1,
+                column: -1,
+                collapse: false,
               },
               {
-                content: 'MyComponent2',
-                fileName: '/path/to/index2.js',
-                location: {
-                  row: 1,
-                  column: -1,
-                },
+                methodName: 'MyComponent2',
+                file: '/path/to/index2.js',
+                lineNumber: 1,
+                column: -1,
+                collapse: false,
               },
               {
-                content: 'MyComponent3',
-                fileName: '/path/to/index3.js',
-                location: {
-                  row: 1,
-                  column: -1,
-                },
+                methodName: 'MyComponent3',
+                file: '/path/to/index3.js',
+                lineNumber: 1,
+                column: -1,
+                collapse: false,
               },
               {
-                content: 'MyComponent4',
-                fileName: '/path/to/index4.js',
-                location: {
-                  row: 1,
-                  column: -1,
-                },
+                methodName: 'MyComponent4',
+                file: '/path/to/index4.js',
+                lineNumber: 1,
+                column: -1,
+                collapse: false,
               },
             ],
           })
