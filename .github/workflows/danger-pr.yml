@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
     steps:
-      - name: Check out PR branch
+      - name: Check out main branch
         uses: actions/checkout@v6
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
