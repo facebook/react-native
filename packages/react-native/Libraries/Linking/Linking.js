@@ -10,6 +10,7 @@
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
+import {adaptToEventTarget} from '../EventEmitter/EventTargetLike';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import Platform from '../Utilities/Platform';
 import NativeIntentAndroid from './NativeIntentAndroid';
@@ -35,8 +36,14 @@ class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
   addEventListener<K: keyof LinkingEventDefinitions>(
     eventType: K,
     listener: (...LinkingEventDefinitions[K]) => unknown,
+    options?: ?{|once?: ?boolean, signal?: ?mixed|},
   ): EventSubscription {
-    return this.addListener(eventType, listener);
+    return adaptToEventTarget(
+      (...args) => this.addListener(...args),
+      eventType,
+      listener,
+      options,
+    );
   }
 
   /**

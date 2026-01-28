@@ -8,6 +8,7 @@
  * @format
  */
 
+import {adaptToEventTarget} from '../EventEmitter/EventTargetLike';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import logError from '../Utilities/logError';
 import Platform from '../Utilities/Platform';
@@ -104,13 +105,26 @@ class AppStateImpl {
     }
   }
 
+  addEventListener<K: AppStateEvent>(
+    type: K,
+    handler: (...AppStateEventDefinitions[K]) => void,
+    options?: ?{|once?: ?boolean, signal?: ?mixed|},
+  ): EventSubscription {
+    return adaptToEventTarget(
+      (...args) => this._addEventListener(...args),
+      type,
+      handler,
+      options,
+    );
+  }
+
   /**
    * Add a handler to AppState changes by listening to the `change` event type
    * and providing the handler.
    *
    * See https://reactnative.dev/docs/appstate#addeventlistener
    */
-  addEventListener<K: AppStateEvent>(
+  _addEventListener<K: AppStateEvent>(
     type: K,
     handler: (...AppStateEventDefinitions[K]) => void,
   ): EventSubscription {

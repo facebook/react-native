@@ -8,6 +8,7 @@
  */
 
 import {NativeEventEmitter} from '../EventEmitter/NativeEventEmitter';
+import {AddEventListenerOptions} from '../EventEmitter/EventTargetLike';
 import {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 
 export interface LinkingImpl extends NativeEventEmitter {
@@ -18,6 +19,7 @@ export interface LinkingImpl extends NativeEventEmitter {
   addEventListener(
     type: 'url',
     handler: (event: {url: string}) => void,
+    options?: AddEventListenerOptions,
   ): EmitterSubscription;
 
   /**

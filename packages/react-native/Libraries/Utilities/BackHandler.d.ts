@@ -8,6 +8,7 @@
  */
 
 import {NativeEventSubscription} from '../EventEmitter/RCTNativeAppEventEmitter';
+import {AddEventListenerOptions} from '../EventEmitter/EventTargetLike';
 
 export type BackPressEventName = 'hardwareBackPress';
 
@@ -27,6 +28,7 @@ export interface BackHandlerStatic {
   addEventListener(
     eventName: BackPressEventName,
     handler: () => boolean | null | undefined,
+    options?: AddEventListenerOptions,
   ): NativeEventSubscription;
 }
 

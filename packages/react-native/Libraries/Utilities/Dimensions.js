@@ -8,6 +8,7 @@
  * @format
  */
 
+import {adaptToEventTarget} from '../EventEmitter/EventTargetLike';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import EventEmitter, {
   type EventSubscription,
@@ -106,13 +107,19 @@ class Dimensions {
   static addEventListener(
     type: 'change',
     handler: Function,
+    options?: ?{|once?: ?boolean, signal?: ?mixed|},
   ): EventSubscription {
     invariant(
       type === 'change',
       'Trying to subscribe to unknown event: "%s"',
       type,
     );
-    return eventEmitter.addListener(type, handler);
+    return adaptToEventTarget(
+      (...args) => eventEmitter.addListener(...args),
+      type,
+      handler,
+      options,
+    );
   }
 }
 

@@ -8,6 +8,7 @@
  */
 
 import {EmitterSubscription} from '../vendor/emitter/EventEmitter';
+import {AddEventListenerOptions} from '../EventEmitter/EventTargetLike';
 
 // Used by Dimensions below
 export interface ScaledSize {
@@ -71,6 +72,7 @@ export interface Dimensions {
       window: ScaledSize;
       screen: ScaledSize;
     }) => void,
+    options?: AddEventListenerOptions,
   ): EmitterSubscription;
 }
 
