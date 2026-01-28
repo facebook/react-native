@@ -10,6 +10,7 @@
 
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {LogBoxLogData} from './LogBoxLog';
+import type {Stack} from './LogBoxSymbolication';
 
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import UTFSequence from '../../UTFSequence';
@@ -76,15 +77,6 @@ const RE_BABEL_CODE_FRAME_MARKER_PATTERN = new RegExp(
   'm',
 );
 
-export function hasComponentStack(args: ReadonlyArray<unknown>): boolean {
-  for (const arg of args) {
-    if (typeof arg === 'string' && isComponentStack(arg)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
   ...
@@ -113,8 +105,6 @@ export type Message = Readonly<{
     }>,
   >,
 }>;
-
-export type ComponentStack = ReadonlyArray<CodeFrame>;
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
@@ -204,24 +194,11 @@ function isComponentStack(consoleArgument: string) {
 }
 
 export function parseComponentStack(message: string): {
-  stack: ComponentStack,
+  stack: Stack,
 } {
-  // Component stacks are formatted as call stack frames.
-  // Parse the component stack using the error stack parser.
   const stack = parseErrorStack(message);
   return {
-    stack:
-      stack && stack.length > 0
-        ? stack.map(frame => ({
-            content: frame.methodName,
-            collapse: frame.collapse || false,
-            fileName: frame.file == null ? 'unknown' : frame.file,
-            location: {
-              column: frame.column == null ? -1 : frame.column,
-              row: frame.lineNumber == null ? -1 : frame.lineNumber,
-            },
-          }))
-        : [],
+    stack: stack ?? [],
   };
 }
 
@@ -391,13 +368,13 @@ export function withoutANSIColorStyles(message: unknown): unknown {
 }
 
 export function parseLogBoxLog(args: ReadonlyArray<unknown>): {
-  componentStack: ComponentStack,
+  componentStack: Stack,
   category: Category,
   message: Message,
 } {
   const message = withoutANSIColorStyles(args[0]);
   let argsWithoutComponentStack: Array<unknown> = [];
-  let componentStack: ComponentStack = [];
+  let componentStack: Stack = [];
 
   // Extract component stack from warnings like "Some warning%s".
   if (

@@ -9,12 +9,7 @@
  */
 
 import type {Stack} from './LogBoxSymbolication';
-import type {
-  Category,
-  CodeFrame,
-  ComponentStack,
-  Message,
-} from './parseLogBoxLog';
+import type {Category, CodeFrame, Message} from './parseLogBoxLog';
 
 import * as LogBoxSymbolication from './LogBoxSymbolication';
 
@@ -22,45 +17,13 @@ type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
 export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax';
 
-// TODO: once component stacks are fully supported, we can refactor
-// ComponentStack to just be Stack and remove these conversions fns.
-function convertComponentStateToStack(componentStack: ComponentStack): Stack {
-  return componentStack.map(frame => ({
-    column: frame?.location?.column,
-    file: frame.fileName,
-    lineNumber: frame?.location?.row,
-    methodName: frame.content,
-    collapse: false,
-  }));
-}
-
-function convertStackToComponentStack(stack: Stack): ComponentStack {
-  const componentStack = [];
-  for (let i = 0; i < stack.length; i++) {
-    const frame = stack[i];
-    // NOTE: Skip stack frames missing location.
-    if (frame.lineNumber != null && frame.column != null) {
-      componentStack.push({
-        fileName: frame?.file || '',
-        location: {
-          row: frame.lineNumber,
-          column: frame.column,
-        },
-        content: frame.methodName,
-        collapse: false,
-      });
-    }
-  }
-  return componentStack;
-}
-
 export type LogBoxLogData = Readonly<{
   level: LogLevel,
   type?: ?string,
   message: Message,
   stack: Stack,
   category: string,
-  componentStack: ComponentStack,
+  componentStack: Stack,
   codeFrame?: ?CodeFrame,
   isComponentError: boolean,
   extraData?: unknown,
@@ -71,7 +34,7 @@ class LogBoxLog {
   message: Message;
   type: ?string;
   category: Category;
-  componentStack: ComponentStack;
+  componentStack: Stack;
   stack: Stack;
   count: number;
   level: LogLevel;
@@ -89,16 +52,16 @@ class LogBoxLog {
     status: 'NONE',
   };
   symbolicatedComponentStack:
-    | Readonly<{error: null, componentStack: null, status: 'NONE'}>
-    | Readonly<{error: null, componentStack: null, status: 'PENDING'}>
+    | Readonly<{error: null, stack: null, status: 'NONE'}>
+    | Readonly<{error: null, stack: null, status: 'PENDING'}>
     | Readonly<{
         error: null,
-        componentStack: ComponentStack,
+        stack: Stack,
         status: 'COMPLETE',
       }>
-    | Readonly<{error: Error, componentStack: null, status: 'FAILED'}> = {
+    | Readonly<{error: Error, stack: null, status: 'FAILED'}> = {
     error: null,
-    componentStack: null,
+    stack: null,
     status: 'NONE',
   };
   onNotificationPress: ?() => void;
@@ -127,9 +90,9 @@ class LogBoxLog {
       : this.stack;
   }
 
-  getAvailableComponentStack(): ComponentStack {
+  getAvailableComponentStack(): Stack {
     return this.symbolicatedComponentStack.status === 'COMPLETE'
-      ? this.symbolicatedComponentStack.componentStack
+      ? this.symbolicatedComponentStack.stack
       : this.componentStack;
   }
 
@@ -140,9 +103,7 @@ class LogBoxLog {
       retry = true;
     }
     if (this.symbolicatedComponentStack.status !== 'COMPLETE') {
-      LogBoxSymbolication.deleteStack(
-        convertComponentStateToStack(this.componentStack),
-      );
+      LogBoxSymbolication.deleteStack(this.componentStack);
       retry = true;
     }
     if (retry) {
@@ -178,15 +139,11 @@ class LogBoxLog {
       this.symbolicatedComponentStack.status !== 'COMPLETE'
     ) {
       this.updateComponentStackStatus(null, null, null, callback);
-      const componentStackFrames = convertComponentStateToStack(
-        this.componentStack,
-      );
-      LogBoxSymbolication.symbolicate(componentStackFrames, []).then(
+      LogBoxSymbolication.symbolicate(this.componentStack, []).then(
         data => {
           this.updateComponentStackStatus(
             null,
-            // TODO: we shouldn't need to convert back to ComponentStack any more
-            convertStackToComponentStack(data.stack),
+            data.stack,
             data?.codeFrame,
             callback,
           );
@@ -236,7 +193,7 @@ class LogBoxLog {
 
   updateComponentStackStatus(
     error: ?Error,
-    componentStack: ?ComponentStack,
+    stack: ?Stack,
     codeFrame: ?CodeFrame,
     callback?: (status: SymbolicationStatus) => void,
   ): void {
@@ -244,22 +201,22 @@ class LogBoxLog {
     if (error != null) {
       this.symbolicatedComponentStack = {
         error,
-        componentStack: null,
+        stack: null,
         status: 'FAILED',
       };
-    } else if (componentStack != null) {
+    } else if (stack != null) {
       if (codeFrame) {
         this.componentCodeFrame = codeFrame;
       }
       this.symbolicatedComponentStack = {
         error: null,
-        componentStack,
+        stack,
         status: 'COMPLETE',
       };
     } else {
       this.symbolicatedComponentStack = {
         error: null,
-        componentStack: null,
+        stack: null,
         status: 'PENDING',
       };
     }

@@ -43,8 +43,8 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
             "status": "NONE",
           },
           "symbolicatedComponentStack": Object {
-            "componentStack": null,
             "error": null,
+            "stack": null,
             "status": "NONE",
           },
           "type": undefined,
@@ -87,8 +87,8 @@ exports[`LogBoxNotificationContainer should render both an error and warning not
             "status": "NONE",
           },
           "symbolicatedComponentStack": Object {
-            "componentStack": null,
             "error": null,
+            "stack": null,
             "status": "NONE",
           },
           "type": undefined,
@@ -153,8 +153,8 @@ exports[`LogBoxNotificationContainer should render the latest error notification
             "status": "NONE",
           },
           "symbolicatedComponentStack": Object {
-            "componentStack": null,
             "error": null,
+            "stack": null,
             "status": "NONE",
           },
           "type": undefined,
@@ -211,8 +211,8 @@ exports[`LogBoxNotificationContainer should render the latest warning notificati
             "status": "NONE",
           },
           "symbolicatedComponentStack": Object {
-            "componentStack": null,
             "error": null,
+            "stack": null,
             "status": "NONE",
           },
           "type": undefined,
