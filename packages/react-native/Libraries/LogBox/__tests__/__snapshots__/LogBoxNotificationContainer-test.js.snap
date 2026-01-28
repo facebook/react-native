@@ -35,8 +35,8 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
             "status": "NONE",
           },
           "symbolicatedComponentStack": Object {
-            "componentStack": null,
             "error": null,
+            "stack": null,
             "status": "NONE",
           },
           "type": undefined,
@@ -61,8 +61,8 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
             "status": "NONE",
           },
           "symbolicatedComponentStack": Object {
-            "componentStack": null,
             "error": null,
+            "stack": null,
             "status": "NONE",
           },
           "type": undefined,
