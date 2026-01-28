@@ -77,7 +77,7 @@ class ReactPlugin : Plugin<Project> {
             readVersionAndGroupStrings(propertiesFile, hermesVersionPropertiesFile)
         val hermesV1Enabled = rootExtension.hermesV1Enabled.get()
         configureDependencies(project, versionAndGroupStrings, hermesV1Enabled)
-        configureRepositories(project)
+        configureRepositories(project, versionAndGroupStrings.isNightly)
       }
 
       configureReactNativeNdk(project, extension)
