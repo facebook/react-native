@@ -660,7 +660,7 @@ public class JSPointerDispatcher {
         // to the root view
         Rect childOffset = getChildOffsetRelativeToRoot(targetView);
         PointerEventState normalizedEventState =
-            normalizeToRoot(eventState, childOffset.top, childOffset.left);
+            normalizeToRoot(eventState, childOffset.left, childOffset.top);
         Assertions.assertNotNull(eventDispatcher)
             .dispatchEvent(
                 PointerEvent.obtain(
