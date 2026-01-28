@@ -115,159 +115,6 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('does not duplicate message if component stack found but not parsed', () => {
-    expect(
-      parseLogBoxLog([
-        'Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
-        '\n\nCheck the render method of `MyOtherComponent`.',
-        '',
-        '\n    in\n    in\n    in',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [],
-      category:
-        'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
-      message: {
-        content:
-          'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
-        substitutions: [
-          {
-            length: 48,
-            offset: 53,
-          },
-          {
-            length: 0,
-            offset: 101,
-          },
-        ],
-      },
-    });
-  });
-
-  it('detects a component stack in an interpolated warning', () => {
-    expect(
-      parseLogBoxLog([
-        'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
-        '\n\nCheck the render method of `Container(Component)`.',
-        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category:
-        'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
-      message: {
-        content:
-          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `Container(Component)`.',
-        substitutions: [
-          {
-            length: 52,
-            offset: 120,
-          },
-        ],
-      },
-    });
-  });
-
-  it('detects a component stack in the first argument', () => {
-    expect(
-      parseLogBoxLog([
-        'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category: 'Some kind of message',
-      message: {
-        content: 'Some kind of message',
-        substitutions: [],
-      },
-    });
-  });
-
-  it('detects a component stack in the second argument', () => {
-    expect(
-      parseLogBoxLog([
-        'Some kind of message',
-        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category: 'Some kind of message',
-      message: {
-        content: 'Some kind of message',
-        substitutions: [],
-      },
-    });
-  });
-
-  it('detects a component stack in the nth argument', () => {
-    expect(
-      parseLogBoxLog([
-        'Some kind of message',
-        'Some other kind of message',
-        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-        'Some third kind of message',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category:
-        'Some kind of message Some other kind of message Some third kind of message',
-      message: {
-        content:
-          'Some kind of message Some other kind of message Some third kind of message',
-        substitutions: [],
-      },
-    });
-  });
-
   it('parses a transform error as a fatal', () => {
     const error: ExtendedExceptionData = {
       message: 'TransformError failed to transform file.',
@@ -558,116 +405,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
-  it('parses an error log with `error.componentStack`', () => {
-    const error: ExtendedExceptionData = {
-      id: 0,
-      isFatal: false,
-      isComponentError: false,
-      message: '### Error',
-      originalMessage: '### Error',
-      name: '',
-      componentStackType: 'legacy',
-      componentStack:
-        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      stack: [
-        {
-          column: 1,
-          file: 'foo.js',
-          lineNumber: 1,
-          methodName: 'bar',
-          collapse: false,
-        },
-      ],
-    };
-
-    expect(parseLogBoxException(error)).toEqual({
-      level: 'error',
-      category: '### Error',
-      isComponentError: false,
-      message: {
-        content: '### Error',
-        substitutions: [],
-      },
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      stack: [
-        {
-          column: 1,
-          file: 'foo.js',
-          lineNumber: 1,
-          methodName: 'bar',
-          collapse: false,
-        },
-      ],
-    });
-  });
-
-  it('parses an error log with a component stack in the message', () => {
-    const error: ExtendedExceptionData = {
-      id: 0,
-      isFatal: false,
-      isComponentError: false,
-      message:
-        'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      originalMessage:
-        'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      name: '',
-      componentStackType: 'legacy',
-      componentStack: null,
-      stack: [
-        {
-          column: 1,
-          file: 'foo.js',
-          lineNumber: 1,
-          methodName: 'bar',
-          collapse: false,
-        },
-      ],
-    };
-    expect(parseLogBoxException(error)).toEqual({
-      level: 'error',
-      isComponentError: false,
-      stack: [
-        {
-          collapse: false,
-          column: 1,
-          file: 'foo.js',
-          lineNumber: 1,
-          methodName: 'bar',
-        },
-      ],
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category: 'Some kind of message',
-      message: {
-        content: 'Some kind of message',
-        substitutions: [],
-      },
-    });
-  });
-
   it('parses a fatal exception', () => {
     const error: ExtendedExceptionData = {
       id: 0,
@@ -797,269 +534,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           collapse: false,
         },
       ],
-    });
-  });
-
-  describe('Handles component stack frames without debug source', () => {
-    it('detects a component stack in an interpolated warning', () => {
-      expect(
-        parseLogBoxLog([
-          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
-          '\n\nCheck the render method of `MyComponent`.',
-          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        ]),
-      ).toEqual({
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category:
-          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
-        message: {
-          content:
-            'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
-          substitutions: [
-            {
-              length: 43,
-              offset: 120,
-            },
-          ],
-        },
-      });
-    });
-
-    it('detects a component stack in the first argument', () => {
-      expect(
-        parseLogBoxLog([
-          'Some kind of message\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        ]),
-      ).toEqual({
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category: 'Some kind of message',
-        message: {
-          content: 'Some kind of message',
-          substitutions: [],
-        },
-      });
-    });
-
-    it('detects a component stack in the second argument', () => {
-      expect(
-        parseLogBoxLog([
-          'Some kind of message',
-          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        ]),
-      ).toEqual({
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category: 'Some kind of message',
-        message: {
-          content: 'Some kind of message',
-          substitutions: [],
-        },
-      });
-    });
-
-    it('detects a component stack in the nth argument', () => {
-      expect(
-        parseLogBoxLog([
-          'Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
-          '\n\nCheck the render method of `MyOtherComponent`.',
-          '',
-          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        ]),
-      ).toEqual({
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category:
-          'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
-        message: {
-          content:
-            'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
-          substitutions: [
-            {
-              length: 48,
-              offset: 53,
-            },
-            {
-              length: 0,
-              offset: 101,
-            },
-          ],
-        },
-      });
-    });
-
-    it('detects a single component in a component stack', () => {
-      const error: ExtendedExceptionData = {
-        id: 0,
-        isFatal: true,
-        isComponentError: true,
-        message:
-          'Error: Some kind of message\n\nThis error is located at:\n    in MyComponent (created by MyOtherComponent)\n',
-        originalMessage: 'Some kind of message',
-        name: '',
-        componentStackType: 'legacy',
-        componentStack: '\n    in MyComponent (created by MyOtherComponent)\n',
-        stack: [
-          {
-            column: 1,
-            file: 'foo.js',
-            lineNumber: 1,
-            methodName: 'bar',
-            collapse: false,
-          },
-        ],
-      };
-
-      expect(parseLogBoxException(error)).toEqual({
-        level: 'fatal',
-        isComponentError: true,
-        stack: [
-          {
-            collapse: false,
-            column: 1,
-            file: 'foo.js',
-            lineNumber: 1,
-            methodName: 'bar',
-          },
-        ],
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category: 'Some kind of message',
-        message: {
-          content: 'Some kind of message',
-          substitutions: [],
-        },
-      });
-    });
-
-    it('parses an error log with `error.componentStack`', () => {
-      const error: ExtendedExceptionData = {
-        id: 0,
-        isFatal: false,
-        isComponentError: false,
-        message: '### Error',
-        originalMessage: '### Error',
-        name: '',
-        componentStack:
-          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        stack: [
-          {
-            column: 1,
-            file: 'foo.js',
-            lineNumber: 1,
-            methodName: 'bar',
-            collapse: false,
-          },
-        ],
-      };
-
-      expect(parseLogBoxException(error)).toEqual({
-        level: 'error',
-        category: '### Error',
-        isComponentError: false,
-        message: {
-          content: '### Error',
-          substitutions: [],
-        },
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        stack: [
-          {
-            column: 1,
-            file: 'foo.js',
-            lineNumber: 1,
-            methodName: 'bar',
-            collapse: false,
-          },
-        ],
-      });
     });
   });
 
@@ -1367,77 +841,46 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     it('detects a component stack for ts, tsx, jsx, and js files', () => {
       expect(
         parseLogBoxLog([
-          'Some kind of message\n    in MyTSComponent (at MyTSXComponent.ts:1)\n    in MyTSXComponent (at MyTSCComponent.tsx:1)\n    in MyJSXComponent (at MyJSXComponent.jsx:1)\n    in MyJSComponent (at MyJSComponent.js:1)',
-        ]),
-      ).toEqual({
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyTSComponent',
-            fileName: 'MyTSXComponent.ts',
-            location: {
-              column: -1,
-              row: 1,
-            },
-          },
-          {
-            content: 'MyTSXComponent',
-            fileName: 'MyTSCComponent.tsx',
-            location: {
-              column: -1,
-              row: 1,
-            },
-          },
-          {
-            content: 'MyJSXComponent',
-            fileName: 'MyJSXComponent.jsx',
-            location: {
-              column: -1,
-              row: 1,
-            },
-          },
-          {
-            content: 'MyJSComponent',
-            fileName: 'MyJSComponent.js',
-            location: {
-              column: -1,
-              row: 1,
-            },
-          },
-        ],
-        category: 'Some kind of message',
-        message: {
-          content: 'Some kind of message',
-          substitutions: [],
-        },
-      });
-    });
-
-    it('detects a component stack in the first argument (JSC)', () => {
-      expect(
-        parseLogBoxLog([
-          'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
+          'Some kind of message\nMyTSComponent@/path/to/MyTSComponent.ts:1:1\nMyTSXComponent@/path/to/MyTSXComponent.tsx:2:1\nMyJSXComponent@/path/to/MyJSXComponent.jsx:3:1\nMyJSComponent@/path/to/MyJSComponent.js:4:1',
         ]),
       ).toEqual({
         componentStackType: 'stack',
         componentStack: [
           {
             collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            content: 'MyTSComponent',
+            fileName: '/path/to/MyTSComponent.ts',
+            location: {
+              column: 0,
+              row: 1,
+            },
           },
           {
             collapse: false,
-            content: 'forEach',
-            fileName: '[native code]',
-            location: {column: -1, row: -1},
+            content: 'MyTSXComponent',
+            fileName: '/path/to/MyTSXComponent.tsx',
+            location: {
+              column: 0,
+              row: 2,
+            },
           },
           {
             collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            content: 'MyJSXComponent',
+            fileName: '/path/to/MyJSXComponent.jsx',
+            location: {
+              column: 0,
+              row: 3,
+            },
+          },
+          {
+            collapse: false,
+            content: 'MyJSComponent',
+            fileName: '/path/to/MyJSComponent.js',
+            location: {
+              column: 0,
+              row: 4,
+            },
           },
         ],
         category: 'Some kind of message',
