@@ -120,14 +120,14 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
 }
 
 void TracingAgent::emitExternalHostTracingProfile(
-    tracing::HostTracingProfile tracingProfile) const {
+    tracing::HostTracingProfile tracingProfile) {
   frontendChannel_(
       cdp::jsonNotification("ReactNativeApplication.traceRequested"));
   emitHostTracingProfile(std::move(tracingProfile));
 }
 
 void TracingAgent::emitHostTracingProfile(
-    tracing::HostTracingProfile tracingProfile) const {
+    tracing::HostTracingProfile tracingProfile) {
   auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
     frontendChannel_(
         cdp::jsonNotification(
