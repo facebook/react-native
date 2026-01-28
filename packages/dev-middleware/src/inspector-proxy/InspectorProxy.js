@@ -104,14 +104,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
   #eventLoopPerfTracker: EventLoopPerfTracker;
 
   constructor(
-    serverBaseUrl: string,
+    serverBaseUrl: URL,
     eventReporter: ?EventReporter,
     experiments: Experiments,
     logger?: Logger,
     customMessageHandler: ?CreateCustomMessageHandlerFn,
     trackEventLoopPerf?: boolean = false,
   ) {
-    this.#serverBaseUrl = new URL(serverBaseUrl);
+    this.#serverBaseUrl = serverBaseUrl;
     this.#devices = new Map();
     this.#eventReporter = eventReporter;
     this.#experiments = experiments;
@@ -254,7 +254,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     const devtoolsFrontendUrl = getDevToolsFrontendUrl(
       this.#experiments,
       webSocketDebuggerUrl,
-      this.#serverBaseUrl.origin,
+      this.#serverBaseUrl,
       {
         relative: true,
         useFuseboxEntryPoint: page.capabilities.prefersFuseboxFrontend,
