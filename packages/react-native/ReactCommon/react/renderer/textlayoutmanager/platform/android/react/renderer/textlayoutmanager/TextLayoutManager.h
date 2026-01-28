@@ -91,6 +91,26 @@ class TextLayoutManager {
       const TextLayoutContext &layoutContext,
       const LayoutConstraints &layoutConstraints) const;
 
+  /**
+   * Get the bounding rects of all text fragments that belong to the given
+   * react tag within a PreparedLayout. This is useful for getting the visual
+   * boundaries of nested <Text> components within a text paragraph.
+   */
+  std::vector<Rect> getFragmentRectsForReactTag(const PreparedLayout &layout, Tag targetReactTag) const;
+
+  /**
+   * Get the bounding rects of all text fragments that belong to the given
+   * react tag by creating a layout on-demand from the AttributedString.
+   * This is used as a fallback when PreparedLayout is not available
+   * (e.g., when enablePreparedTextLayout feature flag is disabled).
+   */
+  std::vector<Rect> getFragmentRectsFromAttributedString(
+      Tag surfaceId,
+      const AttributedString &attributedString,
+      const ParagraphAttributes &paragraphAttributes,
+      const LayoutConstraints &layoutConstraints,
+      Tag targetReactTag) const;
+
  private:
   std::shared_ptr<const ContextContainer> contextContainer_;
   TextMeasureCache textMeasureCache_;
