@@ -99,7 +99,7 @@ internal class MountingManager(
   }
 
   @AnyThread
-  fun attachRootView(surfaceId: Int, rootView: View?, themedReactContext: ThemedReactContext?) {
+  fun attachRootView(surfaceId: Int, rootView: View, themedReactContext: ThemedReactContext) {
     val surfaceMountingManager = getSurfaceManagerEnforced(surfaceId, "attachView")
 
     if (surfaceMountingManager.isStopped) {
@@ -336,7 +336,7 @@ internal class MountingManager(
   fun enqueuePendingEvent(
       surfaceId: Int,
       reactTag: Int,
-      eventName: String?,
+      eventName: String,
       canCoalesceEvent: Boolean,
       params: WritableMap?,
       @EventCategoryDef eventCategory: Int,

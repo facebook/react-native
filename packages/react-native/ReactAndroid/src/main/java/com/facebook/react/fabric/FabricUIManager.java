@@ -824,8 +824,8 @@ public class FabricUIManager
   private void preallocateView(
       int rootTag,
       int reactTag,
-      final String componentName,
-      @Nullable Object props,
+      String componentName,
+      Object props,
       @Nullable Object stateWrapper,
       boolean isLayoutable) {
     mMountItemDispatcher.addPreAllocateMountItem(

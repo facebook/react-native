@@ -2324,41 +2324,40 @@ public final class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/f
 	public fun createUIManager (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/UIManager;
 }
 
-public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
-	public static final field TAG Ljava/lang/String;
-	public fun <init> (ILcom/facebook/react/touch/JSResponderHandler;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/RootViewManager;Lcom/facebook/react/fabric/mounting/MountingManager$MountItemExecutor;Lcom/facebook/react/uimanager/ThemedReactContext;)V
-	public fun addViewAt (III)V
-	public fun attachRootView (Landroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
-	public fun createView (Ljava/lang/String;ILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)V
-	public fun createViewUnsafe (Ljava/lang/String;ILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)V
-	public fun deleteView (I)V
-	public fun enqueuePendingEvent (ILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
-	public fun getContext ()Lcom/facebook/react/uimanager/ThemedReactContext;
-	public fun getEventEmitter (I)Lcom/facebook/react/fabric/events/EventEmitterWrapper;
-	public fun getSurfaceId ()I
-	public fun getView (I)Landroid/view/View;
-	public fun getViewExists (I)Z
-	public fun isRootViewAttached ()Z
-	public fun isStopped ()Z
-	public fun markActiveTouchForTag (I)V
-	public fun preallocateView (Ljava/lang/String;ILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/uimanager/StateWrapper;Z)V
-	public fun printSurfaceState ()V
-	public fun receiveCommand (IILcom/facebook/react/bridge/ReadableArray;)V
-	public fun receiveCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun removeViewAt (III)V
-	public fun scheduleMountItemOnViewAttach (Lcom/facebook/react/fabric/mounting/mountitems/MountItem;)V
-	public fun sendAccessibilityEvent (II)V
-	public fun setJSResponder (IIZ)V
-	public fun stopSurface ()V
-	public fun storeSynchronousMountPropsOverride (ILcom/facebook/react/bridge/ReadableMap;)V
-	public fun sweepActiveTouchForTag (I)V
-	public fun updateEventEmitter (ILcom/facebook/react/fabric/events/EventEmitterWrapper;)V
-	public fun updateLayout (IIIIIIII)V
-	public fun updateOverflowInset (IIIII)V
-	public fun updatePadding (IIIII)V
-	public fun updateProps (ILcom/facebook/react/bridge/ReadableMap;)V
-	public fun updatePropsSynchronously (ILcom/facebook/react/bridge/ReadableMap;)V
-	public fun updateState (ILcom/facebook/react/uimanager/StateWrapper;)V
+public final class com/facebook/react/fabric/mounting/SurfaceMountingManager {
+	public static final field Companion Lcom/facebook/react/fabric/mounting/SurfaceMountingManager$Companion;
+	public final fun addViewAt (III)V
+	public final fun attachRootView (Landroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
+	public final fun deleteView (I)V
+	public final fun enqueuePendingEvent (ILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
+	public final fun getContext ()Lcom/facebook/react/uimanager/ThemedReactContext;
+	public final fun getSurfaceId ()I
+	public static final fun getTAG ()Ljava/lang/String;
+	public final fun getView (I)Landroid/view/View;
+	public final fun getViewExists (I)Z
+	public final fun isRootViewAttached ()Z
+	public final fun isStopped ()Z
+	public final fun markActiveTouchForTag (I)V
+	public final fun preallocateView (Ljava/lang/String;ILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/uimanager/StateWrapper;Z)V
+	public final fun printSurfaceState ()V
+	public final fun receiveCommand (IILcom/facebook/react/bridge/ReadableArray;)V
+	public final fun receiveCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun removeViewAt (III)V
+	public final fun sendAccessibilityEvent (II)V
+	public final fun setJSResponder (IIZ)V
+	public final fun stopSurface ()V
+	public final fun storeSynchronousMountPropsOverride (ILcom/facebook/react/bridge/ReadableMap;)V
+	public final fun sweepActiveTouchForTag (I)V
+	public final fun updateLayout (IIIIIIII)V
+	public final fun updateOverflowInset (IIIII)V
+	public final fun updatePadding (IIIII)V
+	public final fun updateProps (ILcom/facebook/react/bridge/ReadableMap;)V
+	public final fun updatePropsSynchronously (ILcom/facebook/react/bridge/ReadableMap;)V
+	public final fun updateState (ILcom/facebook/react/uimanager/StateWrapper;)V
+}
+
+public final class com/facebook/react/fabric/mounting/SurfaceMountingManager$Companion {
+	public final fun getTAG ()Ljava/lang/String;
 }
 
 public abstract interface class com/facebook/react/interfaces/TaskInterface {
