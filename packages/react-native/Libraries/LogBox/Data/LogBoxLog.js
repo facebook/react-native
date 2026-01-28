@@ -15,6 +15,12 @@ import * as LogBoxSymbolication from './LogBoxSymbolication';
 
 type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
+type SymbolicationState =
+  | Readonly<{error: null, stack: null, status: 'NONE'}>
+  | Readonly<{error: null, stack: null, status: 'PENDING'}>
+  | Readonly<{error: null, stack: Stack, status: 'COMPLETE'}>
+  | Readonly<{error: Error, stack: null, status: 'FAILED'}>;
+
 export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax';
 
 export type LogBoxLogData = Readonly<{
@@ -42,24 +48,12 @@ class LogBoxLog {
   componentCodeFrame: ?CodeFrame;
   isComponentError: boolean;
   extraData: unknown | void;
-  symbolicated:
-    | Readonly<{error: null, stack: null, status: 'NONE'}>
-    | Readonly<{error: null, stack: null, status: 'PENDING'}>
-    | Readonly<{error: null, stack: Stack, status: 'COMPLETE'}>
-    | Readonly<{error: Error, stack: null, status: 'FAILED'}> = {
+  symbolicated: SymbolicationState = {
     error: null,
     stack: null,
     status: 'NONE',
   };
-  symbolicatedComponentStack:
-    | Readonly<{error: null, stack: null, status: 'NONE'}>
-    | Readonly<{error: null, stack: null, status: 'PENDING'}>
-    | Readonly<{
-        error: null,
-        stack: Stack,
-        status: 'COMPLETE',
-      }>
-    | Readonly<{error: Error, stack: null, status: 'FAILED'}> = {
+  symbolicatedComponentStack: SymbolicationState = {
     error: null,
     stack: null,
     status: 'NONE',
