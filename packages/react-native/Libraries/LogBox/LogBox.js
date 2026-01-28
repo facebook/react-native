@@ -166,7 +166,6 @@ if (__DEV__) {
           const result = parseLogBoxLog(args);
           const category = result.category;
           const message = result.message;
-          let componentStackType = result.componentStackType;
           let componentStack = result.componentStack;
           if (
             (!componentStack || componentStack.length === 0) &&
@@ -177,7 +176,6 @@ if (__DEV__) {
             if (ownerStack != null && ownerStack.length > 0) {
               const parsedComponentStack = parseComponentStack(ownerStack);
               componentStack = parsedComponentStack.stack;
-              componentStackType = parsedComponentStack.type;
             }
           }
           if (!LogBoxData.isMessageIgnored(message.content)) {
@@ -186,7 +184,6 @@ if (__DEV__) {
               category,
               message,
               componentStack,
-              componentStackType,
             });
           }
         } catch (err: unknown) {
@@ -221,8 +218,7 @@ if (__DEV__) {
 
     try {
       if (!isRCTLogAdviceWarning(...args)) {
-        const {category, message, componentStack, componentStackType} =
-          parseLogBoxLog(args);
+        const {category, message, componentStack} = parseLogBoxLog(args);
 
         if (!LogBoxData.isMessageIgnored(message.content)) {
           LogBoxData.addLog({
@@ -230,7 +226,6 @@ if (__DEV__) {
             category,
             message,
             componentStack,
-            componentStackType,
           });
         }
       }

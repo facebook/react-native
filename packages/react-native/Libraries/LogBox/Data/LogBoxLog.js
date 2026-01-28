@@ -13,7 +13,6 @@ import type {
   Category,
   CodeFrame,
   ComponentStack,
-  ComponentStackType,
   Message,
 } from './parseLogBoxLog';
 
@@ -61,7 +60,6 @@ export type LogBoxLogData = Readonly<{
   message: Message,
   stack: Stack,
   category: string,
-  componentStackType?: ComponentStackType,
   componentStack: ComponentStack,
   codeFrame?: ?CodeFrame,
   isComponentError: boolean,
@@ -74,7 +72,6 @@ class LogBoxLog {
   type: ?string;
   category: Category;
   componentStack: ComponentStack;
-  componentStackType: ComponentStackType;
   stack: Stack;
   count: number;
   level: LogLevel;
@@ -113,7 +110,6 @@ class LogBoxLog {
     this.stack = data.stack;
     this.category = data.category;
     this.componentStack = data.componentStack;
-    this.componentStackType = data.componentStackType || 'legacy';
     this.codeFrame = data.codeFrame;
     this.isComponentError = data.isComponentError;
     this.extraData = data.extraData;
@@ -132,9 +128,6 @@ class LogBoxLog {
   }
 
   getAvailableComponentStack(): ComponentStack {
-    if (this.componentStackType === 'legacy') {
-      return this.componentStack;
-    }
     return this.symbolicatedComponentStack.status === 'COMPLETE'
       ? this.symbolicatedComponentStack.componentStack
       : this.componentStack;
@@ -180,7 +173,7 @@ class LogBoxLog {
     }
     if (
       this.componentStack != null &&
-      this.componentStackType === 'stack' &&
+      this.componentStack.length > 0 &&
       this.symbolicatedComponentStack.status !== 'PENDING' &&
       this.symbolicatedComponentStack.status !== 'COMPLETE'
     ) {
@@ -192,6 +185,7 @@ class LogBoxLog {
         data => {
           this.updateComponentStackStatus(
             null,
+            // TODO: we shouldn't need to convert back to ComponentStack any more
             convertStackToComponentStack(data.stack),
             data?.codeFrame,
             callback,
