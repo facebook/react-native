@@ -108,6 +108,10 @@ internal class ReactInstance(
   val nativeModules: Collection<NativeModule>
     get() = turboModuleManager.modules
 
+  val eventDispatcher: EventDispatcher
+    /** @return The [EventDispatcher] used by [FabricUIManager] to emit UI events to JS. */
+    get() = fabricUIManager.eventDispatcher
+
   init {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.initialize")
 
@@ -476,10 +480,6 @@ internal class ReactInstance(
       )
     }
   }
-
-  val eventDispatcher: EventDispatcher
-    /** @return The [EventDispatcher] used by [FabricUIManager] to emit UI events to JS. */
-    get() = fabricUIManager.eventDispatcher
 
   fun registerSegment(segmentId: Int, path: String) {
     registerSegmentNative(segmentId, path)
