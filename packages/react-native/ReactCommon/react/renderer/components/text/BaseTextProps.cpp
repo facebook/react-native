@@ -9,6 +9,7 @@
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/conversions.h>
+#include <react/renderer/components/text/TextShadowPropsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
@@ -170,6 +171,12 @@ static TextAttributes convertRawProp(
       "textShadowColor",
       sourceTextAttributes.textShadowColor,
       defaultTextAttributes.textShadowColor);
+  textAttributes.textShadow = convertRawProp(
+      context,
+      rawProps,
+      "textShadow",
+      sourceTextAttributes.textShadow,
+      defaultTextAttributes.textShadow);
 
   // Special
   textAttributes.isHighlighted = convertRawProp(
@@ -319,6 +326,8 @@ void BaseTextProps::setProp(
         defaults, value, textAttributes, textShadowRadius, "textShadowRadius");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, textShadowColor, "textShadowColor");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, textShadow, "textShadow");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, isHighlighted, "isHighlighted");
     REBUILD_FIELD_SWITCH_CASE(

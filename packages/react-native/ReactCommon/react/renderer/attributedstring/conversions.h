@@ -1027,6 +1027,13 @@ constexpr static MapBuffer::Key TA_KEY_ROLE = 26;
 constexpr static MapBuffer::Key TA_KEY_TEXT_TRANSFORM = 27;
 constexpr static MapBuffer::Key TA_KEY_ALIGNMENT_VERTICAL = 28;
 constexpr static MapBuffer::Key TA_KEY_MAX_FONT_SIZE_MULTIPLIER = 29;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW = 30;
+
+// constants for TextShadow serialization (nested within TA_KEY_TEXT_SHADOW)
+constexpr static MapBuffer::Key TS_KEY_OFFSET_X = 0;
+constexpr static MapBuffer::Key TS_KEY_OFFSET_Y = 1;
+constexpr static MapBuffer::Key TS_KEY_BLUR_RADIUS = 2;
+constexpr static MapBuffer::Key TS_KEY_COLOR = 3;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1217,6 +1224,22 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes)
   if (textAttributes.textShadowOffset) {
     builder.putDouble(TA_KEY_TEXT_SHADOW_OFFSET_DX, textAttributes.textShadowOffset->width);
     builder.putDouble(TA_KEY_TEXT_SHADOW_OFFSET_DY, textAttributes.textShadowOffset->height);
+  }
+  // TextShadow (CSS text-shadow syntax)
+  if (!textAttributes.textShadow.empty()) {
+    auto textShadowBuilder = MapBufferBuilder();
+    for (size_t i = 0; i < textAttributes.textShadow.size(); ++i) {
+      const auto &shadow = textAttributes.textShadow[i];
+      auto shadowBuilder = MapBufferBuilder();
+      shadowBuilder.putDouble(TS_KEY_OFFSET_X, shadow.offsetX);
+      shadowBuilder.putDouble(TS_KEY_OFFSET_Y, shadow.offsetY);
+      shadowBuilder.putDouble(TS_KEY_BLUR_RADIUS, shadow.blurRadius);
+      if (shadow.color) {
+        shadowBuilder.putInt(TS_KEY_COLOR, toAndroidRepr(shadow.color));
+      }
+      textShadowBuilder.putMapBuffer(static_cast<MapBuffer::Key>(i), shadowBuilder.build());
+    }
+    builder.putMapBuffer(TA_KEY_TEXT_SHADOW, textShadowBuilder.build());
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {

@@ -221,6 +221,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   textDecorationColor: colorAttributes,
   textDecorationLine: true,
   textDecorationStyle: true,
+  textShadow: true,
   textShadowColor: colorAttributes,
   textShadowOffset: true,
   textShadowRadius: true,
