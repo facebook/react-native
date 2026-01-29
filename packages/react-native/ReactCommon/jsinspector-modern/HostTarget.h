@@ -363,7 +363,7 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
    *
    * @see \c hasActiveFrontendSession
    */
-  void emitTracingProfileForFirstFuseboxClient(tracing::HostTracingProfile tracingProfile) const;
+  void emitTracingProfileForFirstFuseboxClient(tracing::HostTracingProfile tracingProfile);
 
   /**
    * An endpoint for the Host to report frame timings that will be recorded if and only if there is currently an active

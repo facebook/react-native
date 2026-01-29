@@ -111,8 +111,7 @@ class HostTargetSession {
     return hostAgent_.hasFuseboxClientConnected();
   }
 
-  void emitHostTracingProfile(
-      tracing::HostTracingProfile tracingProfile) const {
+  void emitHostTracingProfile(tracing::HostTracingProfile tracingProfile) {
     hostAgent_.emitExternalTracingProfile(std::move(tracingProfile));
   }
 
@@ -384,7 +383,7 @@ bool HostTarget::hasActiveSessionWithFuseboxClient() const {
 }
 
 void HostTarget::emitTracingProfileForFirstFuseboxClient(
-    tracing::HostTracingProfile tracingProfile) const {
+    tracing::HostTracingProfile tracingProfile) {
   bool emitted = false;
   sessions_.forEach([&](HostTargetSession& session) {
     if (emitted) {
