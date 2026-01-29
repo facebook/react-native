@@ -29,7 +29,6 @@ import com.facebook.react.views.text.ReactTypefaceUtils.parseFontVariant
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontWeight
 import kotlin.math.ceil
 
-/** Data class representing a single text shadow from the CSS text-shadow property. */
 public data class TextShadowData(
   val offsetX: Float,
   val offsetY: Float,
@@ -322,7 +321,6 @@ public class TextAttributeProps private constructor() {
       }
     }
 
-  /** List of text shadows from the CSS text-shadow property. */
   public var textShadows: List<TextShadowData> = emptyList()
     private set
 
@@ -389,8 +387,6 @@ public class TextAttributeProps private constructor() {
     public const val TA_KEY_TEXT_TRANSFORM: Int = 27
     public const val TA_KEY_MAX_FONT_SIZE_MULTIPLIER: Int = 29
     public const val TA_KEY_TEXT_SHADOW: Int = 30
-
-    // constants for TextShadow serialization (nested within TA_KEY_TEXT_SHADOW)
     private const val TS_KEY_OFFSET_X: Int = 0
     private const val TS_KEY_OFFSET_Y: Int = 1
     private const val TS_KEY_BLUR_RADIUS: Int = 2

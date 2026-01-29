@@ -1028,8 +1028,6 @@ constexpr static MapBuffer::Key TA_KEY_TEXT_TRANSFORM = 27;
 constexpr static MapBuffer::Key TA_KEY_ALIGNMENT_VERTICAL = 28;
 constexpr static MapBuffer::Key TA_KEY_MAX_FONT_SIZE_MULTIPLIER = 29;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW = 30;
-
-// constants for TextShadow serialization (nested within TA_KEY_TEXT_SHADOW)
 constexpr static MapBuffer::Key TS_KEY_OFFSET_X = 0;
 constexpr static MapBuffer::Key TS_KEY_OFFSET_Y = 1;
 constexpr static MapBuffer::Key TS_KEY_BLUR_RADIUS = 2;
@@ -1225,7 +1223,6 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes)
     builder.putDouble(TA_KEY_TEXT_SHADOW_OFFSET_DX, textAttributes.textShadowOffset->width);
     builder.putDouble(TA_KEY_TEXT_SHADOW_OFFSET_DY, textAttributes.textShadowOffset->height);
   }
-  // TextShadow (CSS text-shadow syntax)
   if (!textAttributes.textShadow.empty()) {
     auto textShadowBuilder = MapBufferBuilder();
     for (size_t i = 0; i < textAttributes.textShadow.size(); ++i) {
