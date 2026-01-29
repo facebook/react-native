@@ -387,6 +387,7 @@ public class TextAttributeProps private constructor() {
     public const val TA_KEY_TEXT_TRANSFORM: Int = 27
     public const val TA_KEY_MAX_FONT_SIZE_MULTIPLIER: Int = 29
     public const val TA_KEY_TEXT_SHADOW: Int = 30
+    // Text shadow MapBuffer keys, private as they are only used within this class
     private const val TS_KEY_OFFSET_X: Int = 0
     private const val TS_KEY_OFFSET_Y: Int = 1
     private const val TS_KEY_BLUR_RADIUS: Int = 2
