@@ -12,6 +12,7 @@ import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
 import com.facebook.react.utils.DependencyUtils.exclusiveEnterpriseRepository
 import com.facebook.react.utils.DependencyUtils.getDependencySubstitutions
+import com.facebook.react.utils.DependencyUtils.isNightly
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
 import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
@@ -855,5 +856,38 @@ class DependencyUtilsTest {
   fun exclusiveEnterpriseRepository_defaultIsTrue() {
     val project = createProject(tempFolder.root)
     assertThat(project.exclusiveEnterpriseRepository()).isNull()
+  }
+
+  @Test
+  fun isNightly_returnsTrue_forValidNightlyVersions() {
+    val trueCases = listOf(
+      "0.85.0-nightly-20260128-36f07a1b2",
+      "0.82.0-nightly-date-commit",
+      "0.0.0-20230505-2109-9b69263a1",
+      "0.0.0-date-commit",
+      "0.0.0-nightly-"
+    )
+
+    trueCases.forEach { version ->
+      assert(version.isNightly()) { "Expected '$version' to be detected as nightly" }
+    }
+  }
+
+  @Test
+  fun isNightly_returnsFalse_forNonNightlyVersions() {
+    val falseCases = listOf(
+      "0.83.0",             // Standard version
+      "0.0.1",
+      "nightly",            // Missing hyphens
+      "0.83.0-nightly",     // Missing trailing hyphen
+      "any-nightly",        // Missing trailing hyphen
+      "nightly-build",      // Missing leading hyphen
+      "",                   // Empty string
+      "   "                 // Blank string
+    )
+
+    falseCases.forEach { version ->
+      assert(!version.isNightly()) { "Expected '$version' to NOT be detected as nightly" }
+    }
   }
 }

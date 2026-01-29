@@ -279,7 +279,7 @@ internal object DependencyUtils {
         else -> INCLUDE_JITPACK_REPOSITORY_DEFAULT
       }
 
-  private fun String.isNightly(): Boolean =
+  internal fun String.isNightly(): Boolean =
       this.startsWith("0.0.0") || "-nightly-" in this
 
   internal fun Project.exclusiveEnterpriseRepository() =
