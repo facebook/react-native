@@ -12,7 +12,6 @@
 
 import type {SymbolicatedStackTrace} from '../../../Core/Devtools/symbolicateStackTrace';
 import type {StackFrame} from '../../../Core/NativeExceptionsManager';
-import type {CodeFrame} from '../parseLogBoxLog';
 
 jest.mock('../LogBoxSymbolication', () => {
   return {__esModule: true, symbolicate: jest.fn(), deleteStack: jest.fn()};
@@ -69,23 +68,12 @@ const createStack = (methodNames: Array<string>) =>
     methodName,
   }));
 
-const createStackForComponentStack = (methodNames: Array<string>) =>
+const createComponentStack = (methodNames: Array<string>) =>
   methodNames.map((methodName): StackFrame => ({
     column: 0,
     file: 'file://path/to/component.js',
     lineNumber: 1,
     methodName,
-  }));
-
-const createComponentStack = (methodNames: Array<string>) =>
-  methodNames.map((methodName): CodeFrame => ({
-    collapse: false,
-    content: methodName,
-    location: {
-      row: 1,
-      column: 0,
-    },
-    fileName: 'file://path/to/component.js',
   }));
 
 function mockSymbolicate(
@@ -100,9 +88,7 @@ function mockSymbolicate(
     firstFrame.file.indexOf('component.js') > 0
   ) {
     return {
-      stack: createStackForComponentStack(
-        stack.map(frame => `C(${frame.methodName})`),
-      ),
+      stack: createStack(stack.map(frame => `C(${frame.methodName})`)),
       codeFrame: COMPONENT_CODE_FRAME,
     };
   }
@@ -157,7 +143,7 @@ describe('LogBoxLog', () => {
       });
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: null,
+        stack: null,
         status: 'NONE',
       });
     });
@@ -179,7 +165,7 @@ describe('LogBoxLog', () => {
       });
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: null,
+        stack: null,
         status: 'PENDING',
       });
 
@@ -216,7 +202,7 @@ describe('LogBoxLog', () => {
       expect(log.codeFrame).toBe(STACK_CODE_FRAME);
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: createComponentStack(['C(A)', 'C(B)', 'C(C)']),
+        stack: createStack(['C(A)', 'C(B)', 'C(C)']),
         status: 'COMPLETE',
       });
       expect(log.componentCodeFrame).toBe(COMPONENT_CODE_FRAME);
@@ -266,7 +252,7 @@ describe('LogBoxLog', () => {
       });
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: createComponentStack(['C(A)', 'C(B)', 'C(C)']),
+        stack: createStack(['C(A)', 'C(B)', 'C(C)']),
         status: 'COMPLETE',
       });
 
@@ -318,7 +304,7 @@ describe('LogBoxLog', () => {
       expect(log.codeFrame).toBe(STACK_CODE_FRAME);
       expect(log.symbolicatedComponentStack).toEqual({
         error,
-        componentStack: null,
+        stack: null,
         status: 'FAILED',
       });
 
@@ -351,7 +337,7 @@ describe('LogBoxLog', () => {
       });
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: null,
+        stack: null,
         status: 'PENDING',
       });
 
@@ -388,7 +374,7 @@ describe('LogBoxLog', () => {
       expect(log.codeFrame).toBe(STACK_CODE_FRAME);
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: createComponentStack(['C(A)', 'C(B)', 'C(C)']),
+        stack: createStack(['C(A)', 'C(B)', 'C(C)']),
         status: 'COMPLETE',
       });
       expect(log.componentCodeFrame).toBe(COMPONENT_CODE_FRAME);
@@ -432,7 +418,7 @@ describe('LogBoxLog', () => {
       });
       expect(log.symbolicatedComponentStack).toEqual({
         error,
-        componentStack: null,
+        stack: null,
         status: 'FAILED',
       });
 
@@ -463,7 +449,7 @@ describe('LogBoxLog', () => {
       expect(log.codeFrame).toBe(STACK_CODE_FRAME);
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: createComponentStack(['C(A)', 'C(B)', 'C(C)']),
+        stack: createStack(['C(A)', 'C(B)', 'C(C)']),
         status: 'COMPLETE',
       });
       expect(log.componentCodeFrame).toBe(COMPONENT_CODE_FRAME);
@@ -502,7 +488,7 @@ describe('LogBoxLog', () => {
       });
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: createComponentStack(['C(A)', 'C(B)', 'C(C)']),
+        stack: createStack(['C(A)', 'C(B)', 'C(C)']),
         status: 'COMPLETE',
       });
       expect(log.componentCodeFrame).toBe(COMPONENT_CODE_FRAME);
@@ -534,7 +520,7 @@ describe('LogBoxLog', () => {
       expect(log.codeFrame).toBe(STACK_CODE_FRAME);
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: createComponentStack(['C(A)', 'C(B)', 'C(C)']),
+        stack: createStack(['C(A)', 'C(B)', 'C(C)']),
         status: 'COMPLETE',
       });
       expect(log.componentCodeFrame).toBe(COMPONENT_CODE_FRAME);
@@ -574,7 +560,7 @@ describe('LogBoxLog', () => {
       expect(log.codeFrame).toBe(STACK_CODE_FRAME);
       expect(log.symbolicatedComponentStack).toEqual({
         error,
-        componentStack: null,
+        stack: null,
         status: 'FAILED',
       });
 
@@ -605,7 +591,7 @@ describe('LogBoxLog', () => {
       expect(log.codeFrame).toBe(STACK_CODE_FRAME);
       expect(log.symbolicatedComponentStack).toEqual({
         error: null,
-        componentStack: createComponentStack(['C(A)', 'C(B)', 'C(C)']),
+        stack: createStack(['C(A)', 'C(B)', 'C(C)']),
         status: 'COMPLETE',
       });
       expect(log.componentCodeFrame).toBe(COMPONENT_CODE_FRAME);
