@@ -186,9 +186,9 @@ let BaseImage: AbstractImageAndroid = ({
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
     headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
-    defaultSource: defaultSource ? defaultSource.uri : null,
+    defaultSource: defaultSource ? defaultSource : null,
     loadingIndicatorSrc: loadingIndicatorSource
-      ? loadingIndicatorSource.uri
+      ? loadingIndicatorSource
       : null,
     accessibilityLabel:
       props['aria-label'] ?? props.accessibilityLabel ?? props.alt,

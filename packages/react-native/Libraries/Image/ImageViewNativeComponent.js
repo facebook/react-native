@@ -42,7 +42,7 @@ type ImageHostComponentProps = $ReadOnly<{
     | ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
   defaultSource?: ?ImageSource | ?string,
-  loadingIndicatorSrc?: ?string,
+  loadingIndicatorSrc?: ?ImageSource | ?string,
 }>;
 
 interface NativeCommands {

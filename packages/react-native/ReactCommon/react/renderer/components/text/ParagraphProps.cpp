@@ -230,7 +230,7 @@ folly::dynamic ParagraphProps::getDiffProps(const Props* prevProps) const {
     result["textAlignVertical"] =
         paragraphAttributes.textAlignVertical.has_value()
         ? toString(paragraphAttributes.textAlignVertical.value())
-        : nullptr;
+        : folly::dynamic(nullptr);;
   }
 
   if (isSelectable != oldProps->isSelectable) {
