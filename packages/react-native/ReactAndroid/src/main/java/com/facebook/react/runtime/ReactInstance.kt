@@ -105,6 +105,9 @@ internal class ReactInstance(
   val fabricUIManager: FabricUIManager
   val javaScriptContextHolder: JavaScriptContextHolder
 
+  val nativeModules: Collection<NativeModule>
+    get() = turboModuleManager.modules
+
   init {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.initialize")
 
@@ -343,9 +346,6 @@ internal class ReactInstance(
     }
     return false
   }
-
-  val nativeModules: Collection<NativeModule>
-    get() = turboModuleManager.modules
 
   fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
     val annotation = nativeModuleInterface.getAnnotation(ReactModule::class.java)
