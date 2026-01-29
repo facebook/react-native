@@ -36,7 +36,8 @@ internal object DependencyUtils {
       val reactGroupString: String = DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP,
       val hermesGroupString: String = DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP,
   ) {
-    val isNightly: Boolean = versionString.isNightly()
+    val isNightly: Boolean
+      get() = versionString.isNightly()
   }
 
   /**
