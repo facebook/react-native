@@ -44,7 +44,7 @@ class TracingAgent {
   /**
    * Emits the HostTracingProfile that was stashed externally by the HostTarget.
    */
-  void emitExternalHostTracingProfile(tracing::HostTracingProfile tracingProfile) const;
+  void emitExternalHostTracingProfile(tracing::HostTracingProfile tracingProfile);
 
  private:
   /**
@@ -60,7 +60,7 @@ class TracingAgent {
    * Emits captured HostTracingProfile in a series of
    * Tracing.dataCollected events, followed by a Tracing.tracingComplete event.
    */
-  void emitHostTracingProfile(tracing::HostTracingProfile tracingProfile) const;
+  void emitHostTracingProfile(tracing::HostTracingProfile tracingProfile);
 };
 
 } // namespace facebook::react::jsinspector_modern

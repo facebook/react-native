@@ -111,8 +111,7 @@ class HostTargetSession {
     return hostAgent_.hasFuseboxClientConnected();
   }
 
-  void emitHostTracingProfile(
-      tracing::HostTracingProfile tracingProfile) const {
+  void emitHostTracingProfile(tracing::HostTracingProfile tracingProfile) {
     hostAgent_.emitExternalTracingProfile(std::move(tracingProfile));
   }
 
@@ -377,16 +376,16 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
 
 bool HostTarget::hasActiveSessionWithFuseboxClient() const {
   bool hasActiveFuseboxSession = false;
-  sessions_.forEach([&](HostTargetSession& session) {
+  sessions_.forEach([&](auto& session) {
     hasActiveFuseboxSession |= session.hasFuseboxClient();
   });
   return hasActiveFuseboxSession;
 }
 
 void HostTarget::emitTracingProfileForFirstFuseboxClient(
-    tracing::HostTracingProfile tracingProfile) const {
+    tracing::HostTracingProfile tracingProfile) {
   bool emitted = false;
-  sessions_.forEach([&](HostTargetSession& session) {
+  sessions_.forEach([&](auto& session) {
     if (emitted) {
       /**
        * HostTracingProfile object is not copiable for performance reasons,
