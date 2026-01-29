@@ -7,6 +7,7 @@
 
 package com.facebook.react.runtime
 
+import android.annotation.SuppressLint
 import android.content.res.AssetManager
 import android.view.View
 import com.facebook.common.logging.FLog
@@ -359,6 +360,7 @@ internal class ReactInstance(
     return null
   }
 
+  @SuppressLint("KotlinGenericsCast")
   fun <T : NativeModule> getNativeModule(nativeModuleName: String): T? {
     synchronized(turboModuleManager) {
       @Suppress("UNCHECKED_CAST")
