@@ -9,12 +9,40 @@
  */
 
 import type {IgnorePattern, LogData} from './Data/LogBoxData';
+import type {Stack} from './Data/LogBoxSymbolication';
 import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
 
 import toExtendedError from '../../src/private/utilities/toExtendedError';
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 import * as React from 'react';
+
+// TODO: Remove support for LegacyComponentStackFrame in a future version.
+// This is kept for backward compatibility with external callers of LogBox.addLog.
+function convertLegacyComponentStack(componentStack: Stack): Stack {
+  if (componentStack.length === 0) {
+    return [];
+  }
+  // Detect legacy format by checking for 'content' property
+  const firstFrame = componentStack[0];
+  if (
+    firstFrame != null &&
+    typeof firstFrame === 'object' &&
+    // $FlowExpectedError[prop-missing]
+    typeof firstFrame.content === 'string'
+  ) {
+    // Convert from legacy ComponentStack to Stack format
+    return (componentStack: $FlowFixMe).map(frame => ({
+      methodName: frame.content,
+      lineNumber: frame.location.row,
+      column: frame.location.column,
+      file: frame.fileName,
+      collapse: frame.collapse ?? false,
+    }));
+  }
+  // Already in the new Stack format
+  return componentStack;
+}
 
 export type {LogData, ExtendedExceptionData, IgnorePattern};
 
@@ -137,7 +165,10 @@ if (__DEV__) {
 
     addLog(log: LogData): void {
       if (isLogBoxInstalled) {
-        LogBoxData.addLog(log);
+        LogBoxData.addLog({
+          ...log,
+          componentStack: convertLegacyComponentStack(log.componentStack),
+        });
       }
     },
 
@@ -166,7 +197,6 @@ if (__DEV__) {
           const result = parseLogBoxLog(args);
           const category = result.category;
           const message = result.message;
-          let componentStackType = result.componentStackType;
           let componentStack = result.componentStack;
           if (
             (!componentStack || componentStack.length === 0) &&
@@ -177,7 +207,6 @@ if (__DEV__) {
             if (ownerStack != null && ownerStack.length > 0) {
               const parsedComponentStack = parseComponentStack(ownerStack);
               componentStack = parsedComponentStack.stack;
-              componentStackType = parsedComponentStack.type;
             }
           }
           if (!LogBoxData.isMessageIgnored(message.content)) {
@@ -186,7 +215,6 @@ if (__DEV__) {
               category,
               message,
               componentStack,
-              componentStackType,
             });
           }
         } catch (err: unknown) {
@@ -221,8 +249,7 @@ if (__DEV__) {
 
     try {
       if (!isRCTLogAdviceWarning(...args)) {
-        const {category, message, componentStack, componentStackType} =
-          parseLogBoxLog(args);
+        const {category, message, componentStack} = parseLogBoxLog(args);
 
         if (!LogBoxData.isMessageIgnored(message.content)) {
           LogBoxData.addLog({
@@ -230,7 +257,6 @@ if (__DEV__) {
             category,
             message,
             componentStack,
-            componentStackType,
           });
         }
       }

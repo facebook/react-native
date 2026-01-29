@@ -21,7 +21,6 @@ const {
 describe('parseLogBoxLog', () => {
   it('parses strings', () => {
     expect(parseLogBoxLog(['A'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: 'A',
       message: {
@@ -33,7 +32,6 @@ describe('parseLogBoxLog', () => {
 
   it('parses strings with arguments', () => {
     expect(parseLogBoxLog(['A', 'B', 'C'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: 'A B C',
       message: {
@@ -45,7 +43,6 @@ describe('parseLogBoxLog', () => {
 
   it('parses formatted strings', () => {
     expect(parseLogBoxLog(['%s', 'A'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: '\ufeff%s',
       message: {
@@ -62,7 +59,6 @@ describe('parseLogBoxLog', () => {
 
   it('parses formatted strings with insufficient arguments', () => {
     expect(parseLogBoxLog(['%s %s', 'A'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: '\ufeff%s %s',
       message: {
@@ -83,7 +79,6 @@ describe('parseLogBoxLog', () => {
 
   it('parses formatted strings with excess arguments', () => {
     expect(parseLogBoxLog(['%s', 'A', 'B'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: '\ufeff%s B',
       message: {
@@ -100,7 +95,6 @@ describe('parseLogBoxLog', () => {
 
   it('treats "%s" in arguments as literals', () => {
     expect(parseLogBoxLog(['%s', '%s', 'A'])).toEqual({
-      componentStackType: 'legacy',
       componentStack: [],
       category: '\ufeff%s A',
       message: {
@@ -115,166 +109,12 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('does not duplicate message if component stack found but not parsed', () => {
-    expect(
-      parseLogBoxLog([
-        'Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
-        '\n\nCheck the render method of `MyOtherComponent`.',
-        '',
-        '\n    in\n    in\n    in',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [],
-      category:
-        'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
-      message: {
-        content:
-          'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
-        substitutions: [
-          {
-            length: 48,
-            offset: 53,
-          },
-          {
-            length: 0,
-            offset: 101,
-          },
-        ],
-      },
-    });
-  });
-
-  it('detects a component stack in an interpolated warning', () => {
-    expect(
-      parseLogBoxLog([
-        'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
-        '\n\nCheck the render method of `Container(Component)`.',
-        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category:
-        'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
-      message: {
-        content:
-          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `Container(Component)`.',
-        substitutions: [
-          {
-            length: 52,
-            offset: 120,
-          },
-        ],
-      },
-    });
-  });
-
-  it('detects a component stack in the first argument', () => {
-    expect(
-      parseLogBoxLog([
-        'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category: 'Some kind of message',
-      message: {
-        content: 'Some kind of message',
-        substitutions: [],
-      },
-    });
-  });
-
-  it('detects a component stack in the second argument', () => {
-    expect(
-      parseLogBoxLog([
-        'Some kind of message',
-        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category: 'Some kind of message',
-      message: {
-        content: 'Some kind of message',
-        substitutions: [],
-      },
-    });
-  });
-
-  it('detects a component stack in the nth argument', () => {
-    expect(
-      parseLogBoxLog([
-        'Some kind of message',
-        'Some other kind of message',
-        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-        'Some third kind of message',
-      ]),
-    ).toEqual({
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category:
-        'Some kind of message Some other kind of message Some third kind of message',
-      message: {
-        content:
-          'Some kind of message Some other kind of message Some third kind of message',
-        substitutions: [],
-      },
-    });
-  });
-
   it('parses a transform error as a fatal', () => {
     const error: ExtendedExceptionData = {
       message: 'TransformError failed to transform file.',
       originalMessage: 'TransformError failed to transform file.',
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -289,7 +129,6 @@ describe('parseLogBoxLog', () => {
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: 'TransformError failed to transform file.',
     });
@@ -313,7 +152,6 @@ describe('parseLogBoxLog', () => {
   200 |`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -337,7 +175,6 @@ describe('parseLogBoxLog', () => {
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-199-0',
     });
@@ -375,7 +212,6 @@ If you are sure the module exists, try these steps:
 \u001b[0m \u001b[90m 15 | \u001b[39m\u001b[36mimport\u001b[39m fbRemoteAsset from \u001b[32m'fbRemoteAsset'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -407,7 +243,6 @@ If you are sure the module exists, try these steps:
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/file.js-1-1',
     });
@@ -431,7 +266,6 @@ If you are sure the module exists, try these steps:
   200 |`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -455,7 +289,6 @@ If you are sure the module exists, try these steps:
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-199-0',
     });
@@ -481,7 +314,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets
   200 |`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -507,7 +339,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-1-1',
     });
@@ -529,7 +360,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets
 \u001b[0m \u001b[90m 46 | \u001b[39m            headline\u001b[33m=\u001b[39m\u001b[32m"CrashReact Error Boundary"\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 47 | \u001b[39m            body\u001b[33m=\u001b[39m{\u001b[32m\`\${this.state.errorMessage}\`\u001b[39m}\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 | \u001b[39m            icon\u001b[33m=\u001b[39m{fbRemoteAsset(\u001b[32m'null_state_glyphs'\u001b[39m\u001b[33m,\u001b[39m {\u001b[0m\n\u001b[0m \u001b[90m    | \u001b[39m                                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 49 | \u001b[39m              name\u001b[33m:\u001b[39m \u001b[32m'codexxx'\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 50 | \u001b[39m              size\u001b[33m:\u001b[39m \u001b[32m'112'\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 51 | \u001b[39m            })}\u001b[0m`,
       name: '',
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: '',
       stack: ([]: Array<StackFrame>),
       id: 0,
@@ -552,119 +382,8 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         substitutions: [],
       },
       stack: [],
-      componentStackType: 'legacy',
       componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-1-1',
-    });
-  });
-
-  it('parses an error log with `error.componentStack`', () => {
-    const error: ExtendedExceptionData = {
-      id: 0,
-      isFatal: false,
-      isComponentError: false,
-      message: '### Error',
-      originalMessage: '### Error',
-      name: '',
-      componentStackType: 'legacy',
-      componentStack:
-        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      stack: [
-        {
-          column: 1,
-          file: 'foo.js',
-          lineNumber: 1,
-          methodName: 'bar',
-          collapse: false,
-        },
-      ],
-    };
-
-    expect(parseLogBoxException(error)).toEqual({
-      level: 'error',
-      category: '### Error',
-      isComponentError: false,
-      message: {
-        content: '### Error',
-        substitutions: [],
-      },
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      stack: [
-        {
-          column: 1,
-          file: 'foo.js',
-          lineNumber: 1,
-          methodName: 'bar',
-          collapse: false,
-        },
-      ],
-    });
-  });
-
-  it('parses an error log with a component stack in the message', () => {
-    const error: ExtendedExceptionData = {
-      id: 0,
-      isFatal: false,
-      isComponentError: false,
-      message:
-        'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      originalMessage:
-        'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-      name: '',
-      componentStackType: 'legacy',
-      componentStack: null,
-      stack: [
-        {
-          column: 1,
-          file: 'foo.js',
-          lineNumber: 1,
-          methodName: 'bar',
-          collapse: false,
-        },
-      ],
-    };
-    expect(parseLogBoxException(error)).toEqual({
-      level: 'error',
-      isComponentError: false,
-      stack: [
-        {
-          collapse: false,
-          column: 1,
-          file: 'foo.js',
-          lineNumber: 1,
-          methodName: 'bar',
-        },
-      ],
-      componentStackType: 'legacy',
-      componentStack: [
-        {
-          content: 'MyComponent',
-          fileName: 'filename.js',
-          location: {column: -1, row: 1},
-        },
-        {
-          content: 'MyOtherComponent',
-          fileName: 'filename2.js',
-          location: {column: -1, row: 1},
-        },
-      ],
-      category: 'Some kind of message',
-      message: {
-        content: 'Some kind of message',
-        substitutions: [],
-      },
     });
   });
 
@@ -675,7 +394,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       isComponentError: false,
       message: '### Fatal',
       originalMessage: '### Fatal',
-      componentStackType: 'legacy',
       componentStack: null,
       name: '',
       stack: [
@@ -697,7 +415,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         content: '### Fatal',
         substitutions: [],
       },
-      componentStackType: 'legacy',
       componentStack: [],
       stack: [
         {
@@ -739,7 +456,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         content: '### Fatal',
         substitutions: [],
       },
-      componentStackType: 'legacy',
       componentStack: [],
       stack: [
         {
@@ -786,7 +502,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         substitutions: [],
       },
       isComponentError: false,
-      componentStackType: 'legacy',
       componentStack: [],
       stack: [
         {
@@ -797,269 +512,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           collapse: false,
         },
       ],
-    });
-  });
-
-  describe('Handles component stack frames without debug source', () => {
-    it('detects a component stack in an interpolated warning', () => {
-      expect(
-        parseLogBoxLog([
-          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
-          '\n\nCheck the render method of `MyComponent`.',
-          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        ]),
-      ).toEqual({
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category:
-          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
-        message: {
-          content:
-            'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
-          substitutions: [
-            {
-              length: 43,
-              offset: 120,
-            },
-          ],
-        },
-      });
-    });
-
-    it('detects a component stack in the first argument', () => {
-      expect(
-        parseLogBoxLog([
-          'Some kind of message\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        ]),
-      ).toEqual({
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category: 'Some kind of message',
-        message: {
-          content: 'Some kind of message',
-          substitutions: [],
-        },
-      });
-    });
-
-    it('detects a component stack in the second argument', () => {
-      expect(
-        parseLogBoxLog([
-          'Some kind of message',
-          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        ]),
-      ).toEqual({
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category: 'Some kind of message',
-        message: {
-          content: 'Some kind of message',
-          substitutions: [],
-        },
-      });
-    });
-
-    it('detects a component stack in the nth argument', () => {
-      expect(
-        parseLogBoxLog([
-          'Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
-          '\n\nCheck the render method of `MyOtherComponent`.',
-          '',
-          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        ]),
-      ).toEqual({
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category:
-          'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
-        message: {
-          content:
-            'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
-          substitutions: [
-            {
-              length: 48,
-              offset: 53,
-            },
-            {
-              length: 0,
-              offset: 101,
-            },
-          ],
-        },
-      });
-    });
-
-    it('detects a single component in a component stack', () => {
-      const error: ExtendedExceptionData = {
-        id: 0,
-        isFatal: true,
-        isComponentError: true,
-        message:
-          'Error: Some kind of message\n\nThis error is located at:\n    in MyComponent (created by MyOtherComponent)\n',
-        originalMessage: 'Some kind of message',
-        name: '',
-        componentStackType: 'legacy',
-        componentStack: '\n    in MyComponent (created by MyOtherComponent)\n',
-        stack: [
-          {
-            column: 1,
-            file: 'foo.js',
-            lineNumber: 1,
-            methodName: 'bar',
-            collapse: false,
-          },
-        ],
-      };
-
-      expect(parseLogBoxException(error)).toEqual({
-        level: 'fatal',
-        isComponentError: true,
-        stack: [
-          {
-            collapse: false,
-            column: 1,
-            file: 'foo.js',
-            lineNumber: 1,
-            methodName: 'bar',
-          },
-        ],
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        category: 'Some kind of message',
-        message: {
-          content: 'Some kind of message',
-          substitutions: [],
-        },
-      });
-    });
-
-    it('parses an error log with `error.componentStack`', () => {
-      const error: ExtendedExceptionData = {
-        id: 0,
-        isFatal: false,
-        isComponentError: false,
-        message: '### Error',
-        originalMessage: '### Error',
-        name: '',
-        componentStack:
-          '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
-        stack: [
-          {
-            column: 1,
-            file: 'foo.js',
-            lineNumber: 1,
-            methodName: 'bar',
-            collapse: false,
-          },
-        ],
-      };
-
-      expect(parseLogBoxException(error)).toEqual({
-        level: 'error',
-        category: '### Error',
-        isComponentError: false,
-        message: {
-          content: '### Error',
-          substitutions: [],
-        },
-        componentStackType: 'legacy',
-        componentStack: [
-          {
-            content: 'MyComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyOtherComponent',
-            fileName: '',
-            location: null,
-          },
-          {
-            content: 'MyAppComponent',
-            fileName: '',
-            location: null,
-          },
-        ],
-        stack: [
-          {
-            column: 1,
-            file: 'foo.js',
-            lineNumber: 1,
-            methodName: 'bar',
-            collapse: false,
-          },
-        ],
-      });
     });
   });
 
@@ -1084,25 +536,24 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           // TODO: we're missing the second component,
           // because React isn't sending back a properly formatted stackframe.
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
         category:
-          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\ufeff%s',
         message: {
           content:
             'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
@@ -1122,21 +573,20 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           'Some kind of message\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           // TODO: we're missing the second component,
           // because React isn't sending back a properly formatted stackframe.
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
         category: 'Some kind of message',
@@ -1154,21 +604,20 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           // TODO: we're missing the second component,
           // because React isn't sending back a properly formatted stackframe.
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
         category: 'Some kind of message',
@@ -1188,25 +637,24 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           // TODO: we're missing the second component,
           // because React isn't sending back a properly formatted stackframe.
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
         category:
-          'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+          'Each child in a list should have a unique "key" prop.\ufeff%s\ufeff%s See https://fb.me/react-warning-keys for more information.',
         message: {
           content:
             'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
@@ -1253,23 +701,23 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           content: '### Error',
           substitutions: [],
         },
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           // TODO: we're missing the second component,
           // because React isn't sending back a properly formatted stackframe.
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
+        extraData: undefined,
         stack: [
           {
             column: 1,
@@ -1293,25 +741,27 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            arguments: [],
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           {
-            collapse: false,
-            content: 'forEach',
-            fileName: '[native code]',
-            location: {column: -1, row: -1},
+            arguments: [],
+            methodName: 'forEach',
+            file: '[native code]',
+            lineNumber: null,
+            column: null,
           },
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            arguments: [],
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
         category:
@@ -1335,25 +785,27 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            arguments: [],
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           {
-            collapse: false,
-            content: 'forEach',
-            fileName: '[native code]',
-            location: {column: -1, row: -1},
+            arguments: [],
+            methodName: 'forEach',
+            file: '[native code]',
+            lineNumber: null,
+            column: null,
           },
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            arguments: [],
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
         category: 'Some kind of message',
@@ -1367,77 +819,37 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     it('detects a component stack for ts, tsx, jsx, and js files', () => {
       expect(
         parseLogBoxLog([
-          'Some kind of message\n    in MyTSComponent (at MyTSXComponent.ts:1)\n    in MyTSXComponent (at MyTSCComponent.tsx:1)\n    in MyJSXComponent (at MyJSXComponent.jsx:1)\n    in MyJSComponent (at MyJSComponent.js:1)',
+          'Some kind of message\nMyTSComponent@/path/to/MyTSComponent.ts:1:1\nMyTSXComponent@/path/to/MyTSXComponent.tsx:2:1\nMyJSXComponent@/path/to/MyJSXComponent.jsx:3:1\nMyJSComponent@/path/to/MyJSComponent.js:4:1',
         ]),
       ).toEqual({
-        componentStackType: 'legacy',
         componentStack: [
           {
-            content: 'MyTSComponent',
-            fileName: 'MyTSXComponent.ts',
-            location: {
-              column: -1,
-              row: 1,
-            },
+            arguments: [],
+            methodName: 'MyTSComponent',
+            file: '/path/to/MyTSComponent.ts',
+            lineNumber: 1,
+            column: 0,
           },
           {
-            content: 'MyTSXComponent',
-            fileName: 'MyTSCComponent.tsx',
-            location: {
-              column: -1,
-              row: 1,
-            },
+            arguments: [],
+            methodName: 'MyTSXComponent',
+            file: '/path/to/MyTSXComponent.tsx',
+            lineNumber: 2,
+            column: 0,
           },
           {
-            content: 'MyJSXComponent',
-            fileName: 'MyJSXComponent.jsx',
-            location: {
-              column: -1,
-              row: 1,
-            },
+            arguments: [],
+            methodName: 'MyJSXComponent',
+            file: '/path/to/MyJSXComponent.jsx',
+            lineNumber: 3,
+            column: 0,
           },
           {
-            content: 'MyJSComponent',
-            fileName: 'MyJSComponent.js',
-            location: {
-              column: -1,
-              row: 1,
-            },
-          },
-        ],
-        category: 'Some kind of message',
-        message: {
-          content: 'Some kind of message',
-          substitutions: [],
-        },
-      });
-    });
-
-    it('detects a component stack in the first argument (JSC)', () => {
-      expect(
-        parseLogBoxLog([
-          'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
-        ]),
-      ).toEqual({
-        componentStackType: 'stack',
-        componentStack: [
-          {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
-          },
-          {
-            collapse: false,
-            content: 'forEach',
-            fileName: '[native code]',
-            location: {column: -1, row: -1},
-          },
-          {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            arguments: [],
+            methodName: 'MyJSComponent',
+            file: '/path/to/MyJSComponent.js',
+            lineNumber: 4,
+            column: 0,
           },
         ],
         category: 'Some kind of message',
@@ -1455,25 +867,27 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            arguments: [],
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           {
-            collapse: false,
-            content: 'forEach',
-            fileName: '[native code]',
-            location: {column: -1, row: -1},
+            arguments: [],
+            methodName: 'forEach',
+            file: '[native code]',
+            lineNumber: null,
+            column: null,
           },
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            arguments: [],
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
         category: 'Some kind of message',
@@ -1493,25 +907,27 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         ]),
       ).toEqual({
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            arguments: [],
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           {
-            collapse: false,
-            content: 'forEach',
-            fileName: '[native code]',
-            location: {column: -1, row: -1},
+            arguments: [],
+            methodName: 'forEach',
+            file: '[native code]',
+            lineNumber: null,
+            column: null,
           },
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            arguments: [],
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
         category:
@@ -1562,27 +978,30 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           content: '### Error',
           substitutions: [],
         },
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            arguments: [],
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           {
-            collapse: false,
-            content: 'forEach',
-            fileName: '[native code]',
-            location: {column: -1, row: -1},
+            arguments: [],
+            methodName: 'forEach',
+            file: '[native code]',
+            lineNumber: null,
+            column: null,
           },
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            arguments: [],
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
+        extraData: undefined,
         stack: [
           {
             column: 1,
@@ -1605,7 +1024,6 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         originalMessage:
           'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         name: '',
-        componentStackType: 'stack',
         componentStack: null,
         stack: [
           {
@@ -1629,27 +1047,30 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             methodName: 'bar',
           },
         ],
-        componentStackType: 'stack',
         componentStack: [
           {
-            collapse: false,
-            content: 'MyComponent',
-            fileName: '/path/to/filename.js',
-            location: {column: 1, row: 1},
+            arguments: [],
+            methodName: 'MyComponent',
+            file: '/path/to/filename.js',
+            lineNumber: 1,
+            column: 1,
           },
           {
-            collapse: false,
-            content: 'forEach',
-            fileName: '[native code]',
-            location: {column: -1, row: -1},
+            arguments: [],
+            methodName: 'forEach',
+            file: '[native code]',
+            lineNumber: null,
+            column: null,
           },
           {
-            collapse: false,
-            content: 'MyAppComponent',
-            fileName: '/path/to/app.js',
-            location: {column: 19, row: 100},
+            arguments: [],
+            methodName: 'MyAppComponent',
+            file: '/path/to/app.js',
+            lineNumber: 100,
+            column: 19,
           },
         ],
+        extraData: undefined,
         category: 'Some kind of message',
         message: {
           content: 'Some kind of message',

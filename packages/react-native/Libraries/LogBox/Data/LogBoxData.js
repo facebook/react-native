@@ -10,13 +10,8 @@
 
 import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
-import type {
-  Category,
-  ComponentStack,
-  ComponentStackType,
-  ExtendedExceptionData,
-  Message,
-} from './parseLogBoxLog';
+import type {Stack} from './LogBoxSymbolication';
+import type {Category, ExtendedExceptionData, Message} from './parseLogBoxLog';
 
 import DebuggerSessionObserver from '../../../src/private/devsupport/rndevtools/FuseboxSessionObserver';
 import toExtendedError from '../../../src/private/utilities/toExtendedError';
@@ -31,8 +26,7 @@ export type LogData = Readonly<{
   level: LogLevel,
   message: Message,
   category: Category,
-  componentStack: ComponentStack,
-  componentStackType: ComponentStackType | null,
+  componentStack: Stack,
   stack?: string,
 }>;
 
@@ -238,7 +232,6 @@ export function addLog(log: LogData): void {
           stack,
           category: log.category,
           componentStack: log.componentStack,
-          componentStackType: log.componentStackType || 'legacy',
         }),
       );
     } catch (error: unknown) {

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <react/renderer/graphics/Transform.h>
+#include <react/renderer/graphics/TransformUtils.h>
 #include <stdexcept>
 #include "AnimatedPropsSerializer.h"
 
@@ -51,27 +53,14 @@ void packOpacity(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
 }
 
 void packTransform(folly::dynamic& dyn, const AnimatedPropBase& animatedProp) {
-  const auto transform = get<Transform>(animatedProp);
-  const auto matrixArray = folly::dynamic::array(
-      transform.matrix[0],
-      transform.matrix[1],
-      transform.matrix[2],
-      transform.matrix[3],
-      transform.matrix[4],
-      transform.matrix[5],
-      transform.matrix[6],
-      transform.matrix[7],
-      transform.matrix[8],
-      transform.matrix[9],
-      transform.matrix[10],
-      transform.matrix[11],
-      transform.matrix[12],
-      transform.matrix[13],
-      transform.matrix[14],
-      transform.matrix[15]);
-  dyn.insert(
-      "transform",
-      folly::dynamic::array(folly::dynamic::object("matrix", matrixArray)));
+  const auto& transform = get<Transform>(animatedProp);
+  auto transformArray = folly::dynamic::array();
+
+  for (const auto& operation : transform.operations) {
+    updateTransformProps(transform, operation, transformArray);
+  }
+
+  dyn.insert("transform", transformArray);
 }
 
 std::string unitTypeToString(UnitType unit) {

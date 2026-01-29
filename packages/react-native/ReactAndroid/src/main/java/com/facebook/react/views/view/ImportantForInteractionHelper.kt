@@ -40,7 +40,7 @@ internal object ImportantForInteractionHelper {
    * it's important for interaction rather than setting the tag.
    *
    * The mapping is as follows:
-   * - [PointerEvents.AUTO] -> No tag set (i.e. the view's own state determines importance)
+   * - [PointerEvents.AUTO] -> Tag removed (i.e. the view's own state determines importance)
    * - [PointerEvents.NONE] -> [IMPORTANT_FOR_INTERACTION_NO] |
    *   [IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS]
    * - [PointerEvents.BOX_ONLY] -> [IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS] (i.e. the view's
@@ -54,7 +54,7 @@ internal object ImportantForInteractionHelper {
   fun setImportantForInteraction(view: View, pointerEvents: PointerEvents) {
     val value =
         when (pointerEvents) {
-          PointerEvents.AUTO -> return
+          PointerEvents.AUTO -> null
           PointerEvents.NONE ->
               IMPORTANT_FOR_INTERACTION_NO or IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS
           PointerEvents.BOX_ONLY -> IMPORTANT_FOR_INTERACTION_EXCLUDE_DESCENDANTS
