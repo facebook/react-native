@@ -1,0 +1,34 @@
+name: Annotate PR
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  annotate-pr:
+    runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
+    steps:
+      - name: Check out main branch
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+      - name: Run yarn install
+        uses: ./.github/actions/yarn-install
+      - name: Run diff-js-api-changes
+        id: diff-js-api-changes
+        uses: ./.github/actions/diff-js-api-changes
+      # - name: Check PR body
+        # todo
+        # uses: ./.github/actions/check-pr-body
+      # - name: Branch Targetting
+        # todo
+        # uses: ./.github/actions/check-branch-target
+      - name: Post PR comment
+        uses: ./.github/actions/post-pr-comment
+        with:
+          marker: '<!-- annotate-pr -->'
+          sections: '[${{ toJSON(steps.diff-js-api-changes.outputs.message) }}]'
