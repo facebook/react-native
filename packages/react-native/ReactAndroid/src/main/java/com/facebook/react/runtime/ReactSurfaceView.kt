@@ -45,6 +45,20 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   private var widthMeasureSpec = 0
   private var heightMeasureSpec = 0
 
+  private val viewportOffset: Point
+    get() {
+      val locationOnScreen = IntArray(2)
+      getLocationOnScreen(locationOnScreen)
+
+      // we need to subtract visibleWindowCoords - to subtract possible window insets, split
+      // screen or multi window
+      val visibleWindowFrame = Rect()
+      getWindowVisibleDisplayFrame(visibleWindowFrame)
+      locationOnScreen[0] -= visibleWindowFrame.left
+      locationOnScreen[1] -= visibleWindowFrame.top
+      return Point(locationOnScreen[0], locationOnScreen[1])
+    }
+
   init {
     if (ReactFeatureFlags.dispatchPointerEvents) {
       jsPointerDispatcher = JSPointerDispatcher(this)
@@ -104,20 +118,6 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
       )
     }
   }
-
-  private val viewportOffset: Point
-    get() {
-      val locationOnScreen = IntArray(2)
-      getLocationOnScreen(locationOnScreen)
-
-      // we need to subtract visibleWindowCoords - to subtract possible window insets, split
-      // screen or multi window
-      val visibleWindowFrame = Rect()
-      getWindowVisibleDisplayFrame(visibleWindowFrame)
-      locationOnScreen[0] -= visibleWindowFrame.left
-      locationOnScreen[1] -= visibleWindowFrame.top
-      return Point(locationOnScreen[0], locationOnScreen[1])
-    }
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     // Override in order to still receive events to onInterceptTouchEvent even when some other
