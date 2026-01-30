@@ -666,12 +666,13 @@ internal object TextLayoutManager {
     // Calculate visual bounds width from unconstrained layout
     var desiredVisualWidth = 0f
     for (i in 0 until unconstrainedLayout.lineCount) {
-      val lineWidth = unconstrainedLayout.getLineRight(i) - unconstrainedLayout.getLineLeft(i)
+      val lineWidth = unconstrainedLayout.getLineMax(i)
       desiredVisualWidth = max(desiredVisualWidth, lineWidth)
     }
 
     val layoutWidth =
         when (widthYogaMeasureMode) {
+          YogaMeasureMode.EXACTLY -> floor(width).toInt()
           YogaMeasureMode.AT_MOST -> min(ceil(desiredVisualWidth).toInt(), floor(width).toInt())
           else -> ceil(desiredVisualWidth).toInt()
         }
