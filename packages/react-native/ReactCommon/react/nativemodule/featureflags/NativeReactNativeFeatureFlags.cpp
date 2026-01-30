@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4d5d0795ed4cea8c1e185f6fe3fa0fad>>
+ * @generated SignedSource<<daf944d4564e94d392b6eae21cab79e1>>
  */
 
 /**
@@ -37,15 +37,15 @@ NativeReactNativeFeatureFlags::NativeReactNativeFeatureFlags(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativeReactNativeFeatureFlagsCxxSpec(std::move(jsInvoker)) {}
 
-bool NativeReactNativeFeatureFlags::commonTestFlag(jsi::Runtime& /*runtime*/) {
+bool NativeReactNativeFeatureFlags::commonTestFlag(
+    jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
 bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
     jsi::Runtime& /*runtime*/) {
   // This flag is configured with `skipNativeAPI: true`.
-  // TODO(T204838867): Implement support for optional methods in C++ TM codegen
-  // and remove the method definition altogether.
+  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
   return false;
 }
 
@@ -104,10 +104,9 @@ bool NativeReactNativeFeatureFlags::enableCppPropsIteratorSetter(
   return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
 }
 
-bool NativeReactNativeFeatureFlags::
-    enableCustomFocusSearchOnClippedElementsAndroid(jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      enableCustomFocusSearchOnClippedElementsAndroid();
+bool NativeReactNativeFeatureFlags::enableCustomFocusSearchOnClippedElementsAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableCustomFocusSearchOnClippedElementsAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableDestroyShadowTreeRevisionAsync(
@@ -155,11 +154,9 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
-bool NativeReactNativeFeatureFlags::
-    enableInteropViewManagerClassLookUpOptimizationIOS(
-        jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      enableInteropViewManagerClassLookUpOptimizationIOS();
+bool NativeReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
@@ -257,11 +254,9 @@ bool NativeReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection(
   return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
 }
 
-bool NativeReactNativeFeatureFlags::
-    fixMappingOfEventPrioritiesBetweenFabricAndReact(
-        jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      fixMappingOfEventPrioritiesBetweenFabricAndReact();
+bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
@@ -344,12 +339,18 @@ bool NativeReactNativeFeatureFlags::useShadowNodeStateOnClone(
   return ReactNativeFeatureFlags::useShadowNodeStateOnClone();
 }
 
+bool NativeReactNativeFeatureFlags::useSilenceErrorSMMViewNotFound(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useSilenceErrorSMMViewNotFound();
+}
+
 bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
 }
 
-bool NativeReactNativeFeatureFlags::useTurboModules(jsi::Runtime& /*runtime*/) {
+bool NativeReactNativeFeatureFlags::useTurboModules(
+    jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModules();
 }
 

@@ -671,6 +671,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useSilenceErrorSMMViewNotFound: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-01-30',
+        description:
+          'Don\'t hard crash in SurfaceMountingManager when a view is not found. Instead, log a soft error.',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {

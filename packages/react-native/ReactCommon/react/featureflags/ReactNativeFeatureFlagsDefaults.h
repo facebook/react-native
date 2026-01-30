@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<72a2a413fce371b02288aa838f5bd450>>
+ * @generated SignedSource<<b985072af06b85e03cc424962a533cbc>>
  */
 
 /**
@@ -260,6 +260,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useShadowNodeStateOnClone() override {
+    return false;
+  }
+
+  bool useSilenceErrorSMMViewNotFound() override {
     return false;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec11e82bcf4e40b371020f7bc3680263>>
+ * @generated SignedSource<<1a032f94bb3cd11c3350c817d6b20e60>>
  * @flow strict
  * @noformat
  */
@@ -84,6 +84,7 @@ export interface Spec extends TurboModule {
   +usePullModelOnAndroid?: () => boolean;
   +useRawPropsJsiValue?: () => boolean;
   +useShadowNodeStateOnClone?: () => boolean;
+  +useSilenceErrorSMMViewNotFound?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
   +virtualViewPrerenderRatio?: () => number;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<acbbb080877067b64d895d83871f1fa2>>
+ * @generated SignedSource<<659a71483f749acb81b33ac7c2a52b0f>>
  */
 
 /**
@@ -393,6 +393,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool useSilenceErrorSMMViewNotFound() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useSilenceErrorSMMViewNotFound");
+    return method(javaProvider_);
+  }
+
   bool useTurboModuleInterop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModuleInterop");
@@ -716,6 +722,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone(
   return ReactNativeFeatureFlags::useShadowNodeStateOnClone();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useSilenceErrorSMMViewNotFound(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useSilenceErrorSMMViewNotFound();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
@@ -944,6 +955,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useShadowNodeStateOnClone",
         JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone),
+      makeNativeMethod(
+        "useSilenceErrorSMMViewNotFound",
+        JReactNativeFeatureFlagsCxxInterop::useSilenceErrorSMMViewNotFound),
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),

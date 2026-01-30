@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef3f6122e8cc0b5084f125b4dcfd62a3>>
+ * @generated SignedSource<<fe6e42ac8115890306a38b87b7f291cd>>
  */
 
 /**
@@ -333,6 +333,11 @@ class ReactNativeFeatureFlags {
    * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
    */
   RN_EXPORT static bool useShadowNodeStateOnClone();
+
+  /**
+   * Don't hard crash in SurfaceMountingManager when a view is not found. Instead, log a soft error.
+   */
+  RN_EXPORT static bool useSilenceErrorSMMViewNotFound();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

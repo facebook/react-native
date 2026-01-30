@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7e5eb8e53438721ae0bb4b5fafc05433>>
+ * @generated SignedSource<<f80a47becb09a059ea728db783473b32>>
  * @flow strict
  * @noformat
  */
@@ -110,6 +110,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   usePullModelOnAndroid: Getter<boolean>,
   useRawPropsJsiValue: Getter<boolean>,
   useShadowNodeStateOnClone: Getter<boolean>,
+  useSilenceErrorSMMViewNotFound: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   virtualViewPrerenderRatio: Getter<number>,
@@ -436,6 +437,10 @@ export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useR
  * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
  */
 export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', false);
+/**
+ * Don't hard crash in SurfaceMountingManager when a view is not found. Instead, log a soft error.
+ */
+export const useSilenceErrorSMMViewNotFound: Getter<boolean> = createNativeFlagGetter('useSilenceErrorSMMViewNotFound', false);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */

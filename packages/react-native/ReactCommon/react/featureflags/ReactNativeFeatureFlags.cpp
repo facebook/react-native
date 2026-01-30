@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<061018c40f332372b7a6b38fc6bd9f33>>
+ * @generated SignedSource<<30df0a90e94510e3e627a11db5281697>>
  */
 
 /**
@@ -260,6 +260,10 @@ bool ReactNativeFeatureFlags::useRawPropsJsiValue() {
 
 bool ReactNativeFeatureFlags::useShadowNodeStateOnClone() {
   return getAccessor().useShadowNodeStateOnClone();
+}
+
+bool ReactNativeFeatureFlags::useSilenceErrorSMMViewNotFound() {
+  return getAccessor().useSilenceErrorSMMViewNotFound();
 }
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {

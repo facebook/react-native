@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb3059eac9ef5fc4698fe9d99e7ac5bd>>
+ * @generated SignedSource<<ab1eaa0930986a0a6b112e6e531ad9db>>
  */
 
 /**
@@ -145,6 +145,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useRawPropsJsiValue(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useShadowNodeStateOnClone(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useSilenceErrorSMMViewNotFound(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 

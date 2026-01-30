@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<416bf2e33bb7529d8823476bb3d722e9>>
+ * @generated SignedSource<<2dd0956bc9a42c6eebde2c915706d346>>
  */
 
 /**
@@ -79,6 +79,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var usePullModelOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
   private var useShadowNodeStateOnCloneCache: Boolean? = null
+  private var useSilenceErrorSMMViewNotFoundCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
   private var virtualViewPrerenderRatioCache: Double? = null
@@ -611,6 +612,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useShadowNodeStateOnClone()
       useShadowNodeStateOnCloneCache = cached
+    }
+    return cached
+  }
+
+  override fun useSilenceErrorSMMViewNotFound(): Boolean {
+    var cached = useSilenceErrorSMMViewNotFoundCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useSilenceErrorSMMViewNotFound()
+      useSilenceErrorSMMViewNotFoundCache = cached
     }
     return cached
   }

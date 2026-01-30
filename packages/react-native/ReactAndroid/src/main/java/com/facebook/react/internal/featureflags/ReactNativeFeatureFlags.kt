@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cab66b0b46f89670d58428a4707ecfb5>>
+ * @generated SignedSource<<169335ce436d248f0c417bc966f5858e>>
  */
 
 /**
@@ -383,6 +383,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useShadowNodeStateOnClone(): Boolean = accessor.useShadowNodeStateOnClone()
+
+  /**
+   * Don't hard crash in SurfaceMountingManager when a view is not found. Instead, log a soft error.
+   */
+  @JvmStatic
+  public fun useSilenceErrorSMMViewNotFound(): Boolean = accessor.useSilenceErrorSMMViewNotFound()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

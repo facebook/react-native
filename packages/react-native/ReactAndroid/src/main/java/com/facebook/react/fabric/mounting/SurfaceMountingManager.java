@@ -777,16 +777,34 @@ public class SurfaceMountingManager {
       return;
     }
 
-    ViewState viewState = getViewState(reactTag);
-    viewState.mCurrentProps = new ReactStylesDiffMap(props);
-    View view = viewState.mView;
-
-    if (view == null) {
-      throw new IllegalStateException("Unable to find view for tag [" + reactTag + "]");
-    }
-
-    Assertions.assertNotNull(viewState.mViewManager)
+    if (ReactNativeFeatureFlags.useSilenceErrorSMMViewNotFound()) {
+      ViewState viewState = getNullableViewState(reactTag);
+      if (viewState == null || viewState.mView == null) {
+        SoftAssertions.assertUnreachable(
+          "Unable to find view for tag [" + reactTag + "] when updating props. viewState not found");
+        return;
+      }
+      viewState.mCurrentProps = new ReactStylesDiffMap(props);
+      View view = viewState.mView;
+      if (view == null) {
+        SoftAssertions.assertUnreachable(
+          "Unable to find view for tag [" + reactTag + "] when updating props. view not present on viewState");
+        return;
+      }
+      Assertions.assertNotNull(viewState.mViewManager)
         .updateProperties(view, viewState.mCurrentProps);
+    } else {
+      ViewState viewState = getViewState(reactTag);
+      viewState.mCurrentProps = new ReactStylesDiffMap(props);
+      View view = viewState.mView;
+
+      if (view == null) {
+        throw new IllegalStateException("Unable to find view for tag [" + reactTag + "]");
+      }
+
+      Assertions.assertNotNull(viewState.mViewManager)
+        .updateProperties(view, viewState.mCurrentProps);
+    }
   }
 
   @Deprecated

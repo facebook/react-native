@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e5453e6d79fdda23699d9c09952afed3>>
+ * @generated SignedSource<<24465432738e7c857119ad96d73aaaa7>>
  */
 
 /**
@@ -91,6 +91,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool usePullModelOnAndroid();
   bool useRawPropsJsiValue();
   bool useShadowNodeStateOnClone();
+  bool useSilenceErrorSMMViewNotFound();
   bool useTurboModuleInterop();
   bool useTurboModules();
   double virtualViewPrerenderRatio();
@@ -106,7 +107,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 63> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 64> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -167,6 +168,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> usePullModelOnAndroid_;
   std::atomic<std::optional<bool>> useRawPropsJsiValue_;
   std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
+  std::atomic<std::optional<bool>> useSilenceErrorSMMViewNotFound_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;

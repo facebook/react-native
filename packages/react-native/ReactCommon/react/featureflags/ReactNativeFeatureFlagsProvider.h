@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c1028d149c778c8c64a808bee2fb1ef>>
+ * @generated SignedSource<<cb9a279ef241d4b75007e3639f551845>>
  */
 
 /**
@@ -84,6 +84,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool usePullModelOnAndroid() = 0;
   virtual bool useRawPropsJsiValue() = 0;
   virtual bool useShadowNodeStateOnClone() = 0;
+  virtual bool useSilenceErrorSMMViewNotFound() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
   virtual double virtualViewPrerenderRatio() = 0;
