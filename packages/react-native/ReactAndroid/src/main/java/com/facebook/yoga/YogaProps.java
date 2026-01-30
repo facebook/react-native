@@ -183,6 +183,10 @@ public interface YogaProps {
 
   YogaValue getFlexBasis();
 
+  float getFlex();
+
+  YogaWrap getWrap();
+
   float getAspectRatio();
 
   YogaValue getMargin(YogaEdge edge);
