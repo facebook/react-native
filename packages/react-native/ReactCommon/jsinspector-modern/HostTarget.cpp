@@ -8,6 +8,7 @@
 #include "HostTarget.h"
 #include "HostAgent.h"
 #include "HostTargetTraceRecording.h"
+#include "HostTargetTracing.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
@@ -104,6 +105,10 @@ class HostTargetSession {
 
   HostAgent& agent() {
     return hostAgent_;
+  }
+
+  FrontendChannel dangerouslyGetFrontendChannel() {
+    return frontendChannel_;
   }
 
  private:
@@ -370,20 +375,27 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
 }
 
 bool HostTarget::maybeEmitStashedBackgroundTrace() {
-  bool emitted = false;
-  sessions_.forEach([&](auto& session) {
-    if (emitted) {
-      return;
-    }
-    if (session.agent().hasFuseboxClientConnected()) {
-      auto stashedTrace = std::exchange(stashedTracingProfile_, std::nullopt);
-      if (stashedTrace) {
-        session.agent().emitExternalTracingProfile(std::move(*stashedTrace));
-      }
-      emitted = true;
+  std::vector<FrontendChannel> eligibleFrontendChannels;
+  eligibleFrontendChannels.reserve(sessions_.size());
+  sessions_.forEach([&eligibleFrontendChannels](auto& session) {
+    if (session.agent().isEligibleForBackgroundTrace()) {
+      eligibleFrontendChannels.push_back(
+          session.dangerouslyGetFrontendChannel());
     }
   });
-  return emitted;
+
+  if (eligibleFrontendChannels.empty()) {
+    return false;
+  }
+
+  auto stashedTrace = std::exchange(stashedTracingProfile_, std::nullopt);
+  if (stashedTrace) {
+    emitNotificationsForTracingProfile(
+        std::move(*stashedTrace),
+        eligibleFrontendChannels,
+        /* isBackgroundTrace */ true);
+  }
+  return true;
 }
 
 bool HostTarget::stopAndMaybeEmitBackgroundTrace() {

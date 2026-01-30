@@ -6,30 +6,14 @@
  */
 
 #include "TracingAgent.h"
+#include "HostTargetTracing.h"
 
-#include <jsinspector-modern/tracing/HostTracingProfileSerializer.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
 #include <jsinspector-modern/tracing/TraceEventSerializer.h>
 #include <jsinspector-modern/tracing/TracingMode.h>
 
 namespace facebook::react::jsinspector_modern {
-
-namespace {
-
-/**
- * Threshold for the size Trace Event chunk, that will be flushed out with
- * Tracing.dataCollected event.
- */
-const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
-
-/**
- * The maximum number of ProfileChunk trace events
- * that will be sent in a single CDP Tracing.dataCollected message.
- */
-const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 10;
-
-} // namespace
 
 TracingAgent::TracingAgent(
     FrontendChannel frontendChannel,
@@ -112,38 +96,14 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
 
-    emitHostTracingProfile(std::move(tracingProfile));
+    emitNotificationsForTracingProfile(
+        std::move(tracingProfile),
+        frontendChannel_,
+        /* isBackgroundTrace */ false);
     return true;
   }
 
   return false;
-}
-
-void TracingAgent::emitExternalHostTracingProfile(
-    tracing::HostTracingProfile tracingProfile) {
-  frontendChannel_(
-      cdp::jsonNotification("ReactNativeApplication.traceRequested"));
-  emitHostTracingProfile(std::move(tracingProfile));
-}
-
-void TracingAgent::emitHostTracingProfile(
-    tracing::HostTracingProfile tracingProfile) {
-  auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
-    frontendChannel_(
-        cdp::jsonNotification(
-            "Tracing.dataCollected",
-            folly::dynamic::object("value", std::move(eventsChunk))));
-  };
-  tracing::HostTracingProfileSerializer::emitAsDataCollectedChunks(
-      std::move(tracingProfile),
-      dataCollectedCallback,
-      TRACE_EVENT_CHUNK_SIZE,
-      PROFILE_TRACE_EVENT_CHUNK_SIZE);
-
-  frontendChannel_(
-      cdp::jsonNotification(
-          "Tracing.tracingComplete",
-          folly::dynamic::object("dataLossOccurred", false)));
 }
 
 } // namespace facebook::react::jsinspector_modern

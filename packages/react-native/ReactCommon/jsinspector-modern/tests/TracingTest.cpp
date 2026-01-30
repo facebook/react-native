@@ -185,7 +185,7 @@ TEST_F(TracingTest, BackgroundTracingIsRejectedWhileCDPTracingIsRunning) {
   page_->stopTracing();
 }
 
-TEST_F(TracingTest, EmitsToFirstEligibleSessionWhenMultipleSessionsEnabled) {
+TEST_F(TracingTest, EmitsToAllSessionsWithReactNativeApplicationDomainEnabled) {
   auto secondaryFusebox = this->connectSecondary();
   auto secondaryNonFusebox = this->connectSecondary();
 
@@ -230,9 +230,11 @@ TEST_F(TracingTest, EmitsToFirstEligibleSessionWhenMultipleSessionsEnabled) {
           now + HighResDuration::fromNanoseconds(10),
           now + HighResDuration::fromNanoseconds(50)));
 
-  // Primary session should receive the trace (first eligible session).
-  // Events within a session are ordered.
+  // Primary and secondaryFusebox sessions should receive the trace.
+  // Events within each session are ordered, but order between sessions is
+  // arbitrary.
   Sequence primarySeq;
+  Sequence secondarySeq;
 
   EXPECT_CALL(
       this->fromPage(),
@@ -249,12 +251,26 @@ TEST_F(TracingTest, EmitsToFirstEligibleSessionWhenMultipleSessionsEnabled) {
       onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.tracingComplete"))))
       .InSequence(primarySeq);
 
-  // secondaryFusebox and secondaryNonFusebox should NOT receive anything
-  // (only first eligible session receives the trace)
-  EXPECT_CALL(secondaryFusebox.fromPage(), onMessage(_)).Times(0);
+  EXPECT_CALL(
+      secondaryFusebox.fromPage(),
+      onMessage(JsonParsed(
+          AtJsonPtr("/method", "ReactNativeApplication.traceRequested"))))
+      .InSequence(secondarySeq);
+  EXPECT_CALL(
+      secondaryFusebox.fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.dataCollected"))))
+      .Times(AtLeast(1))
+      .InSequence(secondarySeq);
+  EXPECT_CALL(
+      secondaryFusebox.fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.tracingComplete"))))
+      .InSequence(secondarySeq);
+
+  // secondaryNonFusebox should NOT receive anything (it did not enable the
+  // domain)
   EXPECT_CALL(secondaryNonFusebox.fromPage(), onMessage(_)).Times(0);
 
-  // Stop tracing and emit to first eligible session
+  // Stop tracing and emit to all eligible sessions
   EXPECT_TRUE(this->page_->stopAndMaybeEmitBackgroundTrace());
 }
 

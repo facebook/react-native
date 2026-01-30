@@ -244,7 +244,7 @@ class HostTargetController final {
   tracing::HostTracingProfile stopTracing();
 
   /**
-   * If there is a stashed background trace, emit it to the first eligible session.
+   * If there is a stashed background trace, emit it to all eligible sessions.
    * \return true if an eligible session is found (even if there was no stashed background trace).
    */
   bool maybeEmitStashedBackgroundTrace();
