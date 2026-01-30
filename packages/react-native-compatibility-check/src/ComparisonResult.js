@@ -135,12 +135,36 @@ export type NullableComparisonResult = {
 export type ComparisonResult =
   | {status: 'matching'}
   | {status: 'skipped'}
-  | {status: 'nullableChange', nullableLog: NullableComparisonResult}
-  | {status: 'properties', propertyLog: PropertiesComparisonResult}
-  | {status: 'members', memberLog: MembersComparisonResult}
-  | {status: 'unionMembers', memberLog: UnionMembersComparisonResult}
-  | {status: 'functionChange', functionChangeLog: FunctionComparisonResult}
-  | {status: 'positionalTypeChange', changeLog: PositionalComparisonResult}
+  | {
+      status: 'nullableChange',
+      nullableLog: NullableComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
+  | {
+      status: 'properties',
+      propertyLog: PropertiesComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
+  | {
+      status: 'members',
+      memberLog: MembersComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
+  | {
+      status: 'unionMembers',
+      memberLog: UnionMembersComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
+  | {
+      status: 'functionChange',
+      functionChangeLog: FunctionComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
+  | {
+      status: 'positionalTypeChange',
+      changeLog: PositionalComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
   | {status: 'error', errorLog: TypeComparisonError};
 
 export function isPropertyLogEmpty(

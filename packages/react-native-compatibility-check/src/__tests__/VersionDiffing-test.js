@@ -294,13 +294,24 @@ describe('buildSchemaDiff', () => {
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.objectContaining({
-                  '0': expect.objectContaining({
+                incompatibleChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    errorCode: 'removedProps',
                     errorInformation: expect.objectContaining({
-                      message: removedPropertiesMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              previousError: expect.objectContaining({
+                                message: removedPropertiesMessage,
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
-                }),
+                ]),
               }),
             }),
           ]),
@@ -322,13 +333,24 @@ describe('buildSchemaDiff', () => {
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.objectContaining({
-                  '0': expect.objectContaining({
+                incompatibleChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    errorCode: 'optionalProps',
                     errorInformation: expect.objectContaining({
-                      message: tooOptionalPropertiesMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              previousError: expect.objectContaining({
+                                message: tooOptionalPropertiesMessage,
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
-                }),
+                ]),
               }),
             }),
           ]),
@@ -353,13 +375,24 @@ describe('buildSchemaDiff', () => {
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.objectContaining({
-                  '0': expect.objectContaining({
+                incompatibleChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    errorCode: 'nullableOfNonNull',
                     errorInformation: expect.objectContaining({
-                      message: typeNullableChangeMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              previousError: expect.objectContaining({
+                                message: typeNullableChangeMessage,
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
-                }),
+                ]),
               }),
             }),
           ]),
@@ -381,13 +414,24 @@ describe('buildSchemaDiff', () => {
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.objectContaining({
-                  '0': expect.objectContaining({
+                incompatibleChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    errorCode: 'optionalProps',
                     errorInformation: expect.objectContaining({
-                      message: tooOptionalPropertiesMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              previousError: expect.objectContaining({
+                                message: tooOptionalPropertiesMessage,
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
-                }),
+                ]),
               }),
             }),
           ]),
@@ -449,7 +493,17 @@ describe('buildSchemaDiff', () => {
                       expect.objectContaining({
                         errorCode: 'addedEnumCases',
                         errorInformation: expect.objectContaining({
-                          message: addedEnumMessage,
+                          mismatchedProperties: expect.arrayContaining([
+                            expect.objectContaining({
+                              fault: expect.objectContaining({
+                                previousError: expect.objectContaining({
+                                  previousError: expect.objectContaining({
+                                    message: addedEnumMessage,
+                                  }),
+                                }),
+                              }),
+                            }),
+                          ]),
                         }),
                       }),
                     ]),
@@ -577,7 +631,23 @@ describe('buildSchemaDiff', () => {
                       expect.objectContaining({
                         errorCode: 'removedEnumCases',
                         errorInformation: expect.objectContaining({
-                          message: removedEnumMessage,
+                          mismatchedProperties: expect.arrayContaining([
+                            expect.objectContaining({
+                              fault: expect.objectContaining({
+                                previousError: expect.objectContaining({
+                                  mismatchedProperties: expect.arrayContaining([
+                                    expect.objectContaining({
+                                      fault: expect.objectContaining({
+                                        previousError: expect.objectContaining({
+                                          message: removedEnumMessage,
+                                        }),
+                                      }),
+                                    }),
+                                  ]),
+                                }),
+                              }),
+                            }),
+                          ]),
                         }),
                       }),
                     ]),
@@ -1607,8 +1677,17 @@ describe('RN NativeModule getConstants type diffing', () => {
               changeInformation: expect.objectContaining({
                 incompatibleChanges: expect.arrayContaining([
                   expect.objectContaining({
+                    errorCode: 'addedProps',
                     errorInformation: expect.objectContaining({
-                      message: addedPropertiesMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              message: addedPropertiesMessage,
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
                 ]),

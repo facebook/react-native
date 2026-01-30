@@ -15,6 +15,7 @@ import type {
   NullableComparisonResult,
   PositionalComparisonResult,
   PropertiesComparisonResult,
+  TypeComparisonError,
   UnionMembersComparisonResult,
 } from './ComparisonResult';
 import type {
@@ -54,25 +55,50 @@ type checkerType = (
   memberChange: ?MembersComparisonResult,
   unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ) => Array<ErrorStore>;
+
+// Helper to wrap an error with path context (property, parameter, element, etc.)
+function wrapErrorWithPathContext(
+  error: ErrorStore,
+  message: string,
+  pathContext: ?TypeComparisonError,
+  propertyName?: ?string,
+): ErrorStore {
+  const wrappedError: TypeComparisonError =
+    pathContext?.type === 'TypeAnnotationComparisonError' ||
+    pathContext?.type === 'TypeInformationComparisonError'
+      ? typeAnnotationComparisonError(
+          message,
+          pathContext.newerAnnotation,
+          pathContext.olderAnnotation,
+          error.errorInformation,
+        )
+      : error.errorInformation;
+
+  if (propertyName != null) {
+    return {
+      ...error,
+      errorInformation: propertyComparisonError(
+        'Object contained a property with a type mismatch',
+        [{property: propertyName, fault: wrappedError}],
+      ),
+    };
+  }
+
+  return {
+    ...error,
+    errorInformation: wrappedError,
+  };
+}
 
 function nestedPropertiesCheck(
   typeName: string,
   result: ComparisonResult,
   check: checkerType,
   inverseCheck: checkerType,
+  pathContext?: ?TypeComparisonError,
 ): Array<ErrorStore> {
-  const nestedMap =
-    (mid: string, end: string) =>
-    /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
-     * Flow's LTI update could not be added via codemod */
-    ([propertyName, comparisonResult]) =>
-      nestedPropertiesCheck(
-        typeName + mid + propertyName + end,
-        comparisonResult,
-        check,
-        inverseCheck,
-      );
   switch (result.status) {
     case 'error':
     case 'matching':
@@ -88,36 +114,65 @@ function nestedPropertiesCheck(
         null,
         null,
         typeName,
+        pathContext ?? null,
       );
       if (result.propertyLog.nestedPropertyChanges) {
-        finalResult = combine(
-          finalResult,
-          result.propertyLog.nestedPropertyChanges.map(nestedMap('.', '')),
+        const nestedErrors = result.propertyLog.nestedPropertyChanges.flatMap(
+          ([propertyName, nestedResult]) => {
+            // Recurse with the same typeName (don't extend it)
+            const errors = nestedPropertiesCheck(
+              typeName,
+              nestedResult,
+              check,
+              inverseCheck,
+              nestedResult.errorLog ?? null,
+            );
+            // Wrap each error with the property path context
+            return errors.map(error =>
+              wrapErrorWithPathContext(
+                error,
+                'has conflicting type changes',
+                nestedResult.errorLog,
+                propertyName,
+              ),
+            );
+          },
         );
+        finalResult = finalResult.concat(nestedErrors);
       }
       if (result.propertyLog.madeOptional) {
         const furtherNestedProps = result.propertyLog.madeOptional.filter(
           optionalProp => optionalProp.furtherChanges,
         );
         if (furtherNestedProps && furtherNestedProps.length > 0) {
-          const localNestedMap = nestedMap('.', '');
-          const mappedProps = furtherNestedProps.map(optionalProp => {
+          const nestedErrors = furtherNestedProps.flatMap(optionalProp => {
             if (optionalProp.furtherChanges) {
-              return localNestedMap([
-                optionalProp.property,
+              const errors = nestedPropertiesCheck(
+                typeName,
                 optionalProp.furtherChanges,
-              ]);
+                check,
+                inverseCheck,
+                optionalProp.furtherChanges.errorLog ?? null,
+              );
+              return errors.map(error =>
+                wrapErrorWithPathContext(
+                  error,
+                  'has conflicting type changes',
+                  optionalProp.furtherChanges?.errorLog,
+                  optionalProp.property,
+                ),
+              );
             }
             throw new Error('Internal error, filter failed');
           });
-          finalResult = combine(finalResult, mappedProps);
+          finalResult = finalResult.concat(nestedErrors);
         }
       }
       return finalResult;
     case 'members':
-      return check(null, null, null, result.memberLog, null, typeName);
+      return check(null, null, null, result.memberLog, null, typeName, null);
     case 'unionMembers':
-      return check(null, null, null, null, result.memberLog, typeName);
+      return check(null, null, null, null, result.memberLog, typeName, null);
     case 'functionChange':
       let returnTypeResult: Array<ErrorStore> = [];
       if (result.functionChangeLog.returnType) {
@@ -126,21 +181,32 @@ function nestedPropertiesCheck(
           result.functionChangeLog.returnType,
           check,
           inverseCheck,
+          result.functionChangeLog.returnType.errorLog ?? null,
         );
       }
       if (result.functionChangeLog.parameterTypes) {
-        return combine(
-          returnTypeResult,
-          result.functionChangeLog.parameterTypes.nestedChanges.map(
-            ([_oldParameterNumber, newParameterNumber, comparisonResult]) =>
-              nestedPropertiesCheck(
-                typeName + ' parameter ' + newParameterNumber,
-                comparisonResult,
+        const parameterErrors =
+          result.functionChangeLog.parameterTypes.nestedChanges.flatMap(
+            ([_oldParameterNumber, newParameterNumber, nestedResult]) => {
+              // Recurse with the same typeName (don't extend it)
+              const errors = nestedPropertiesCheck(
+                typeName,
+                nestedResult,
                 inverseCheck,
                 check,
-              ),
-          ),
-        );
+                nestedResult.errorLog ?? null,
+              );
+              // Wrap each error with the parameter path context
+              return errors.map(error =>
+                wrapErrorWithPathContext(
+                  error,
+                  `Parameter at index ${newParameterNumber} did not match`,
+                  nestedResult.errorLog,
+                ),
+              );
+            },
+          );
+        return returnTypeResult.concat(parameterErrors);
       }
       return returnTypeResult;
     case 'positionalTypeChange':
@@ -152,16 +218,27 @@ function nestedPropertiesCheck(
         null,
         null,
         typeName,
+        null,
       );
-      return combine(
-        currentPositionalCheck,
-        changeLog.nestedChanges.map(([_oldIndex, newIndex, nestedChange]) =>
-          nestedMap(
-            ' element ',
-            ' of ' + changeLog.typeKind,
-          )([newIndex.toString(), nestedChange]),
-        ),
+      const positionalNestedErrors = changeLog.nestedChanges.flatMap(
+        ([_oldIndex, newIndex, nestedResult]) => {
+          const errors = nestedPropertiesCheck(
+            typeName,
+            nestedResult,
+            check,
+            inverseCheck,
+            nestedResult.errorLog ?? null,
+          );
+          return errors.map(error =>
+            wrapErrorWithPathContext(
+              error,
+              `Element ${newIndex} of ${changeLog.typeKind} did not match`,
+              nestedResult.errorLog,
+            ),
+          );
+        },
       );
+      return currentPositionalCheck.concat(positionalNestedErrors);
     case 'nullableChange':
       const currentCheck = check(
         null,
@@ -170,6 +247,7 @@ function nestedPropertiesCheck(
         null,
         null,
         typeName,
+        null,
       );
       if (result.nullableLog.interiorLog) {
         const interiorLog = result.nullableLog.interiorLog;
@@ -180,9 +258,15 @@ function nestedPropertiesCheck(
           case 'functionChange':
           case 'positionalTypeChange':
           case 'nullableChange':
-            return combine(currentCheck, [
-              nestedPropertiesCheck(typeName, interiorLog, check, inverseCheck),
-            ]);
+            return currentCheck.concat(
+              nestedPropertiesCheck(
+                typeName,
+                interiorLog,
+                check,
+                inverseCheck,
+                interiorLog.errorLog ?? null,
+              ),
+            );
           default:
             throw new Error(
               'Internal error: nested with error or skipped status',
@@ -201,6 +285,7 @@ function checkOptionalityAndSetError(
   properties: ReadonlyArray<NamedShape<CompleteTypeAnnotation>>,
   msg: string,
   errorCode: ErrorCode,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   const requiredProperties = properties.filter(
     objectTypeProperty => !objectTypeProperty.optional,
@@ -215,6 +300,7 @@ function checkOptionalityAndSetError(
           requiredProperties.map(property => ({
             property: property.name,
           })),
+          pathContext ?? undefined,
         ),
       },
     ];
@@ -232,6 +318,7 @@ function checkForUnsafeRemovedProperties(
   _memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (propertyChange && propertyChange.missingProperties) {
     return checkOptionalityAndSetError(
@@ -239,6 +326,7 @@ function checkForUnsafeRemovedProperties(
       propertyChange.missingProperties,
       removedPropertiesMessage,
       'removedProps',
+      pathContext,
     );
   }
   return [];
@@ -253,6 +341,7 @@ function checkForUnsafeAddedProperties(
   _memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (propertyChange && propertyChange.addedProperties) {
     return checkOptionalityAndSetError(
@@ -260,6 +349,7 @@ function checkForUnsafeAddedProperties(
       propertyChange.addedProperties,
       addedPropertiesMessage,
       'addedProps',
+      pathContext,
     );
   }
   return [];
@@ -274,6 +364,7 @@ function checkForUnSafeMadeStrictProperties(
   _memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (
     propertyChange &&
@@ -285,6 +376,7 @@ function checkForUnSafeMadeStrictProperties(
       propertyChange.madeStrict.map(property => ({
         property: property.property,
       })),
+      pathContext ?? undefined,
     );
     return [
       {
@@ -306,6 +398,7 @@ function checkForUnSafeMadeOptionalProperties(
   _memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (
     propertyChange &&
@@ -317,6 +410,7 @@ function checkForUnSafeMadeOptionalProperties(
       propertyChange.madeOptional.map(property => ({
         property: property.property,
       })),
+      pathContext ?? undefined,
     );
     return [
       {
@@ -338,6 +432,7 @@ function checkForUnsafeRemovedEnumItems(
   memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (memberChange?.missingMembers && memberChange?.missingMembers.length > 0) {
     return [
@@ -349,6 +444,7 @@ function checkForUnsafeRemovedEnumItems(
           memberChange.missingMembers.map(member => ({
             member: member.name,
           })),
+          pathContext ?? undefined,
         ),
       },
     ];
@@ -366,6 +462,7 @@ function checkForUnsafeAddedEnumItems(
   memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (memberChange?.addedMembers && memberChange?.addedMembers.length > 0) {
     return [
@@ -377,6 +474,7 @@ function checkForUnsafeAddedEnumItems(
           memberChange.addedMembers.map(member => ({
             member: member.name,
           })),
+          pathContext ?? undefined,
         ),
       },
     ];
@@ -427,6 +525,7 @@ function checkForUnsafeRemovedUnionItems(
   memberChange: ?MembersComparisonResult,
   unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (
     unionMemberChange?.missingMembers &&
@@ -441,6 +540,7 @@ function checkForUnsafeRemovedUnionItems(
           unionMemberChange.missingMembers.map(member => ({
             member: getMemberLabel(member),
           })),
+          pathContext ?? undefined,
         ),
       },
     ];
@@ -458,6 +558,7 @@ function checkForUnsafeAddedUnionItems(
   memberChange: ?MembersComparisonResult,
   unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (
     unionMemberChange?.addedMembers &&
@@ -472,6 +573,7 @@ function checkForUnsafeAddedUnionItems(
           unionMemberChange.addedMembers.map(member => ({
             member: getMemberLabel(member),
           })),
+          pathContext ?? undefined,
         ),
       },
     ];
@@ -489,6 +591,7 @@ function checkForUnsafeRemovedIntersectionItems(
   _memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (
     positionalChange &&
@@ -503,6 +606,7 @@ function checkForUnsafeRemovedIntersectionItems(
         errorInformation: positionalComparisonError(
           removedIntersectionMessage,
           positionalChange.removedElements,
+          pathContext ?? undefined,
         ),
       },
     ];
@@ -519,6 +623,7 @@ function checkForUnsafeAddedIntersectionItems(
   _memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (
     positionalChange &&
@@ -533,6 +638,7 @@ function checkForUnsafeAddedIntersectionItems(
         errorInformation: positionalComparisonError(
           addedIntersectionMessage,
           positionalChange.addedElements,
+          pathContext ?? undefined,
         ),
       },
     ];
@@ -551,6 +657,7 @@ function checkForUnsafeNullableToNativeChange(
   _memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (
     nullableChange &&
@@ -568,6 +675,7 @@ function checkForUnsafeNullableToNativeChange(
             : typeNullableChangeMessage,
           nullableChange.newType,
           nullableChange.oldType,
+          pathContext ?? undefined,
         ),
       },
     ];
@@ -586,6 +694,7 @@ function checkForUnsafeNullableFromNativeChange(
   _memberChange: ?MembersComparisonResult,
   _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
+  pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
   if (
     nullableChange &&
@@ -603,6 +712,7 @@ function checkForUnsafeNullableFromNativeChange(
             : typeNonNullableChangeMessage,
           nullableChange.newType,
           nullableChange.oldType,
+          pathContext ?? undefined,
         ),
       },
     ];
@@ -618,6 +728,7 @@ function chainPropertiesChecks(checks: Array<checkerType>): checkerType {
     memberChange: ?MembersComparisonResult,
     unionMemberChange: ?UnionMembersComparisonResult,
     typeName: string,
+    pathContext: ?TypeComparisonError,
   ) =>
     checks.reduce(
       (errorStore, checker) =>
@@ -629,58 +740,54 @@ function chainPropertiesChecks(checks: Array<checkerType>): checkerType {
             memberChange,
             unionMemberChange,
             typeName,
+            pathContext,
           ),
         ),
       [],
     );
 }
 
-function combine(
-  singleton: Array<ErrorStore>,
-  arrayOf: Array<Array<ErrorStore>>,
-) {
-  if (arrayOf.length > 0) {
-    return arrayOf.reduce(
-      (finalErrorArray, current) => finalErrorArray.concat(current),
-      singleton,
-    );
-  }
-  return singleton;
-}
-
 function compareFunctionTypesInContext(
   typeName: string,
   functionLog: FunctionComparisonResult,
+  functionErrorLog: ?TypeComparisonError,
   check: checkerType,
   inversecheck: checkerType,
   result: Array<ErrorStore>,
 ) {
   if (functionLog.returnType) {
-    result = combine(result, [
+    result = result.concat(
       nestedPropertiesCheck(
         typeName,
         functionLog.returnType,
         check,
         inversecheck,
       ),
-    ]);
+    );
   }
   if (
     functionLog.parameterTypes &&
     functionLog.parameterTypes.nestedChanges.length > 0
   ) {
-    result = combine(
-      result,
-      functionLog.parameterTypes.nestedChanges.map(
-        ([_oldPropertyNum, newPropertyNum, comparisonResult]) =>
-          nestedPropertiesCheck(
-            typeName + ' parameter ' + newPropertyNum,
-            comparisonResult,
-            inversecheck,
-            check,
+    const parameterErrors = functionLog.parameterTypes.nestedChanges.flatMap(
+      ([_oldPropertyNum, newPropertyNum, nestedResult]) => {
+        const errors = nestedPropertiesCheck(
+          typeName,
+          nestedResult,
+          inversecheck,
+          check,
+        );
+        // Wrap each error with the parameter path context
+        return errors.map(error =>
+          wrapErrorWithPathContext(
+            error,
+            `Parameter at index ${newPropertyNum} did not match`,
+            nestedResult.errorLog,
           ),
-      ),
+        );
+      },
     );
+    result = result.concat(parameterErrors);
   }
   return result;
 }
@@ -756,6 +863,7 @@ export function assessComparisonResult(
             memberChange,
             null,
             typeName,
+            difference.errorLog,
           );
 
           const fromNativeErrorResult = checksForTypesFlowingFromNative(
@@ -765,6 +873,7 @@ export function assessComparisonResult(
             memberChange,
             null,
             typeName,
+            difference.errorLog,
           );
 
           switch (oldDirection) {
@@ -800,6 +909,7 @@ export function assessComparisonResult(
             null,
             memberChange,
             typeName,
+            difference.errorLog,
           );
 
           const fromNativeErrorResult = checksForTypesFlowingFromNative(
@@ -809,6 +919,7 @@ export function assessComparisonResult(
             null,
             memberChange,
             typeName,
+            difference.errorLog,
           );
 
           switch (oldDirection) {
@@ -890,6 +1001,7 @@ export function assessComparisonResult(
             propertyErrors = compareFunctionTypesInContext(
               typeName,
               functionLog,
+              difference.errorLog,
               checksForTypesFlowingToNative,
               checksForTypesFlowingFromNative,
               propertyErrors,
@@ -899,6 +1011,7 @@ export function assessComparisonResult(
             propertyErrors = compareFunctionTypesInContext(
               typeName,
               functionLog,
+              difference.errorLog,
               checksForTypesFlowingFromNative,
               checksForTypesFlowingToNative,
               propertyErrors,
@@ -908,6 +1021,7 @@ export function assessComparisonResult(
             propertyErrors = compareFunctionTypesInContext(
               typeName,
               functionLog,
+              difference.errorLog,
               checksForTypesFlowingToNative,
               checksForTypesFlowingFromNative,
               propertyErrors,
@@ -915,6 +1029,7 @@ export function assessComparisonResult(
             propertyErrors = compareFunctionTypesInContext(
               typeName,
               functionLog,
+              difference.errorLog,
               checksForTypesFlowingFromNative,
               checksForTypesFlowingToNative,
               propertyErrors,
@@ -943,18 +1058,26 @@ export function assessComparisonResult(
             null,
             null,
             typeName,
+            null,
           );
-          const toNativeResult = combine(
-            toNativeBase,
-            changes.map(([_oldIndex, newIndex, comparisonResult]) =>
-              nestedPropertiesCheck(
-                `${typeName} element ${newIndex} of ${changeLog.typeKind}`,
-                comparisonResult,
+          const toNativeNestedErrors = changes.flatMap(
+            ([_oldIndex, newIndex, nestedResult]) => {
+              const errors = nestedPropertiesCheck(
+                typeName,
+                nestedResult,
                 checksForTypesFlowingToNative,
                 checksForTypesFlowingFromNative,
-              ),
-            ),
+              );
+              return errors.map(error =>
+                wrapErrorWithPathContext(
+                  error,
+                  `Element ${newIndex} of ${changeLog.typeKind} did not match`,
+                  nestedResult.errorLog,
+                ),
+              );
+            },
           );
+          const toNativeResult = toNativeBase.concat(toNativeNestedErrors);
           const fromNativeBase = checksForTypesFlowingFromNative(
             null,
             changeLog,
@@ -962,17 +1085,27 @@ export function assessComparisonResult(
             null,
             null,
             typeName,
+            null,
           );
-          const fromNativeResult = combine(
-            fromNativeBase,
-            changes.map(([_oldIndex, newIndex, comparisonResult]) =>
-              nestedPropertiesCheck(
-                `${typeName} element ${newIndex} of ${changeLog.typeKind}`,
-                comparisonResult,
+          const fromNativeNestedErrors = changes.flatMap(
+            ([_oldIndex, newIndex, nestedResult]) => {
+              const errors = nestedPropertiesCheck(
+                typeName,
+                nestedResult,
                 checksForTypesFlowingFromNative,
                 checksForTypesFlowingToNative,
-              ),
-            ),
+              );
+              return errors.map(error =>
+                wrapErrorWithPathContext(
+                  error,
+                  `Element ${newIndex} of ${changeLog.typeKind} did not match`,
+                  nestedResult.errorLog,
+                ),
+              );
+            },
+          );
+          const fromNativeResult = fromNativeBase.concat(
+            fromNativeNestedErrors,
           );
           switch (oldDirection) {
             case 'toNative':
@@ -1003,6 +1136,7 @@ export function assessComparisonResult(
               null,
               null,
               typeName,
+              difference.errorLog,
             ).forEach(error => incompatibleChanges.add(error));
             break;
           case 'fromNative':
@@ -1013,6 +1147,7 @@ export function assessComparisonResult(
               null,
               null,
               typeName,
+              difference.errorLog,
             ).forEach(error => incompatibleChanges.add(error));
             break;
           case 'both':
@@ -1020,6 +1155,7 @@ export function assessComparisonResult(
               'Type may not change nullability, due to flowing to and from native',
               newType,
               oldType,
+              difference.errorLog,
             );
             incompatibleChanges.add({
               typeName,
