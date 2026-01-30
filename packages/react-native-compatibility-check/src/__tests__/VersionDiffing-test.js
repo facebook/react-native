@@ -491,7 +491,7 @@ describe('buildSchemaDiff', () => {
                   changeInformation: expect.objectContaining({
                     incompatibleChanges: expect.arrayContaining([
                       expect.objectContaining({
-                        errorCode: 'addedEnumCases',
+                        errorCode: 'addedMemberCases',
                         errorInformation: expect.objectContaining({
                           mismatchedProperties: expect.arrayContaining([
                             expect.objectContaining({
@@ -629,7 +629,7 @@ describe('buildSchemaDiff', () => {
                   changeInformation: expect.objectContaining({
                     incompatibleChanges: expect.arrayContaining([
                       expect.objectContaining({
-                        errorCode: 'removedEnumCases',
+                        errorCode: 'removedMemberCases',
                         errorInformation: expect.objectContaining({
                           mismatchedProperties: expect.arrayContaining([
                             expect.objectContaining({
@@ -975,8 +975,9 @@ describe('buildSchemaDiff', () => {
                                     0,
                                     0,
                                     expect.objectContaining({
-                                      status: 'unionMembers',
+                                      status: 'members',
                                       memberLog: expect.objectContaining({
+                                        memberKind: 'union',
                                         addedMembers: expect.arrayContaining([
                                           expect.objectContaining({
                                             type: 'StringLiteralTypeAnnotation',
@@ -1030,8 +1031,9 @@ describe('buildSchemaDiff', () => {
                                     0,
                                     0,
                                     expect.objectContaining({
-                                      status: 'unionMembers',
+                                      status: 'members',
                                       memberLog: expect.objectContaining({
+                                        memberKind: 'union',
                                         missingMembers: expect.arrayContaining([
                                           expect.objectContaining({
                                             type: 'StringLiteralTypeAnnotation',
@@ -1092,8 +1094,9 @@ describe('buildSchemaDiff', () => {
                                       [
                                         'exampleConstant',
                                         expect.objectContaining({
-                                          status: 'unionMembers',
+                                          status: 'members',
                                           memberLog: expect.objectContaining({
+                                            memberKind: 'union',
                                             addedMembers:
                                               expect.arrayContaining([
                                                 expect.objectContaining({
@@ -1157,8 +1160,9 @@ describe('buildSchemaDiff', () => {
                                       [
                                         'exampleConstant',
                                         expect.objectContaining({
-                                          status: 'unionMembers',
+                                          status: 'members',
                                           memberLog: expect.objectContaining({
+                                            memberKind: 'union',
                                             missingMembers:
                                               expect.arrayContaining([
                                                 expect.objectContaining({
@@ -1536,8 +1540,9 @@ describe('buildSchemaDiff', () => {
                             [
                               'size',
                               expect.objectContaining({
-                                status: 'unionMembers',
+                                status: 'members',
                                 memberLog: expect.objectContaining({
+                                  memberKind: 'union',
                                   addedMembers: expect.arrayContaining([
                                     expect.objectContaining({
                                       type: 'StringLiteralTypeAnnotation',
@@ -1595,8 +1600,9 @@ describe('buildSchemaDiff', () => {
                             [
                               'sizes',
                               expect.objectContaining({
-                                status: 'unionMembers',
+                                status: 'members',
                                 memberLog: expect.objectContaining({
+                                  memberKind: 'union',
                                   addedMembers: expect.arrayContaining([
                                     expect.objectContaining({
                                       type: 'StringLiteralTypeAnnotation',

@@ -16,7 +16,6 @@ import type {
   PositionalComparisonResult,
   PropertiesComparisonResult,
   TypeComparisonError,
-  UnionMembersComparisonResult,
 } from './ComparisonResult';
 import type {
   DiffSet,
@@ -53,7 +52,6 @@ type checkerType = (
   positionalChange: ?PositionalComparisonResult,
   nullableChange: ?NullableComparisonResult,
   memberChange: ?MembersComparisonResult,
-  unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ) => Array<ErrorStore>;
@@ -109,7 +107,6 @@ function nestedPropertiesCheck(
     case 'properties':
       let finalResult = check(
         result.propertyLog,
-        null,
         null,
         null,
         null,
@@ -170,9 +167,7 @@ function nestedPropertiesCheck(
       }
       return finalResult;
     case 'members':
-      return check(null, null, null, result.memberLog, null, typeName, null);
-    case 'unionMembers':
-      return check(null, null, null, null, result.memberLog, typeName, null);
+      return check(null, null, null, result.memberLog, typeName, null);
     case 'functionChange':
       let returnTypeResult: Array<ErrorStore> = [];
       if (result.functionChangeLog.returnType) {
@@ -216,7 +211,6 @@ function nestedPropertiesCheck(
         changeLog,
         null,
         null,
-        null,
         typeName,
         null,
       );
@@ -244,7 +238,6 @@ function nestedPropertiesCheck(
         null,
         null,
         result.nullableLog,
-        null,
         null,
         typeName,
         null,
@@ -316,7 +309,6 @@ function checkForUnsafeRemovedProperties(
   _postionalChange: ?PositionalComparisonResult,
   _nullableChange: ?NullableComparisonResult,
   _memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
@@ -339,7 +331,6 @@ function checkForUnsafeAddedProperties(
   _positionalChange: ?PositionalComparisonResult,
   _nullableChange: ?NullableComparisonResult,
   _memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
@@ -362,7 +353,6 @@ function checkForUnSafeMadeStrictProperties(
   _positionalChange: ?PositionalComparisonResult,
   _nullableChange: ?NullableComparisonResult,
   _memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
@@ -396,7 +386,6 @@ function checkForUnSafeMadeOptionalProperties(
   _positionalChange: ?PositionalComparisonResult,
   _nullableChange: ?NullableComparisonResult,
   _memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
@@ -425,29 +414,55 @@ function checkForUnSafeMadeOptionalProperties(
 
 export const removedEnumMessage =
   'Enum removed items, but native may still provide them';
-function checkForUnsafeRemovedEnumItems(
+export const removedUnionMessage =
+  'Union removed items, but native may still provide them';
+function checkForUnsafeRemovedMemberItems(
   _propertyChange: ?PropertiesComparisonResult,
   _positionalChange: ?PositionalComparisonResult,
   _nullableChange: ?NullableComparisonResult,
   memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
-  if (memberChange?.missingMembers && memberChange?.missingMembers.length > 0) {
-    return [
-      {
-        typeName,
-        errorCode: 'removedEnumCases',
-        errorInformation: memberComparisonError(
-          removedEnumMessage,
-          memberChange.missingMembers.map(member => ({
-            member: member.name,
-          })),
-          pathContext ?? undefined,
-        ),
-      },
-    ];
+  if (memberChange == null) {
+    return [];
+  }
+
+  // Check memberKind first to narrow the type, then access members
+  if (memberChange.memberKind === 'enum') {
+    const missingMembers = memberChange.missingMembers;
+    if (missingMembers && missingMembers.length > 0) {
+      return [
+        {
+          typeName,
+          errorCode: 'removedMemberCases',
+          errorInformation: memberComparisonError(
+            removedEnumMessage,
+            missingMembers.map(member => ({
+              member: member.name,
+            })),
+            pathContext ?? undefined,
+          ),
+        },
+      ];
+    }
+  } else {
+    const missingMembers = memberChange.missingMembers;
+    if (missingMembers && missingMembers.length > 0) {
+      return [
+        {
+          typeName,
+          errorCode: 'removedMemberCases',
+          errorInformation: memberComparisonError(
+            removedUnionMessage,
+            missingMembers.map(member => ({
+              member: getTypeAnnotationLabel(member),
+            })),
+            pathContext ?? undefined,
+          ),
+        },
+      ];
+    }
   }
 
   return [];
@@ -455,50 +470,58 @@ function checkForUnsafeRemovedEnumItems(
 
 export const addedEnumMessage =
   'Enum added items, but native will not expect/support them';
-function checkForUnsafeAddedEnumItems(
+export const addedUnionMessage =
+  'Union added items, but native will not expect/support them';
+function checkForUnsafeAddedMemberItems(
   _propertyChange: ?PropertiesComparisonResult,
   _positionalChange: ?PositionalComparisonResult,
   _nullableChange: ?NullableComparisonResult,
   memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
-  if (memberChange?.addedMembers && memberChange?.addedMembers.length > 0) {
-    return [
-      {
-        typeName,
-        errorCode: 'addedEnumCases',
-        errorInformation: memberComparisonError(
-          addedEnumMessage,
-          memberChange.addedMembers.map(member => ({
-            member: member.name,
-          })),
-          pathContext ?? undefined,
-        ),
-      },
-    ];
+  if (memberChange == null) {
+    return [];
+  }
+
+  // Check memberKind first to narrow the type, then access members
+  if (memberChange.memberKind === 'enum') {
+    const addedMembers = memberChange.addedMembers;
+    if (addedMembers && addedMembers.length > 0) {
+      return [
+        {
+          typeName,
+          errorCode: 'addedMemberCases',
+          errorInformation: memberComparisonError(
+            addedEnumMessage,
+            addedMembers.map(member => ({
+              member: member.name,
+            })),
+            pathContext ?? undefined,
+          ),
+        },
+      ];
+    }
+  } else {
+    const addedMembers = memberChange.addedMembers;
+    if (addedMembers && addedMembers.length > 0) {
+      return [
+        {
+          typeName,
+          errorCode: 'addedMemberCases',
+          errorInformation: memberComparisonError(
+            addedUnionMessage,
+            addedMembers.map(member => ({
+              member: getTypeAnnotationLabel(member),
+            })),
+            pathContext ?? undefined,
+          ),
+        },
+      ];
+    }
   }
 
   return [];
-}
-
-// Helper function to get a label for a member (either enum member or union type annotation)
-function getMemberLabel(member: CompleteTypeAnnotation): string {
-  // Check if it's an enum member by checking if it has both 'name' and 'value' properties
-  // (NativeModuleEnumMember has { name: string, value: TypeAnnotation })
-  if (
-    typeof member === 'object' &&
-    member != null &&
-    'name' in member &&
-    'value' in member &&
-    typeof member.name === 'string'
-  ) {
-    return member.name;
-  }
-  // Otherwise it's a CompleteTypeAnnotation (union member)
-  // Generate a descriptive label based on the type value
-  return getTypeAnnotationLabel(member);
 }
 
 // Helper function to get a descriptive label for a CompleteTypeAnnotation
@@ -516,72 +539,6 @@ function getTypeAnnotationLabel(type: CompleteTypeAnnotation): string {
   }
 }
 
-export const removedUnionMemberMessage =
-  'Union removed items, but native may still provide them';
-function checkForUnsafeRemovedUnionItems(
-  _propertyChange: ?PropertiesComparisonResult,
-  _positionalChange: ?PositionalComparisonResult,
-  _nullableChange: ?NullableComparisonResult,
-  memberChange: ?MembersComparisonResult,
-  unionMemberChange: ?UnionMembersComparisonResult,
-  typeName: string,
-  pathContext: ?TypeComparisonError,
-): Array<ErrorStore> {
-  if (
-    unionMemberChange?.missingMembers &&
-    unionMemberChange?.missingMembers.length > 0
-  ) {
-    return [
-      {
-        typeName,
-        errorCode: 'removedUnionCases',
-        errorInformation: memberComparisonError(
-          removedUnionMemberMessage,
-          unionMemberChange.missingMembers.map(member => ({
-            member: getMemberLabel(member),
-          })),
-          pathContext ?? undefined,
-        ),
-      },
-    ];
-  }
-
-  return [];
-}
-
-export const addedUnionMemberMessage =
-  'Union added items, but native will not expect/support them';
-function checkForUnsafeAddedUnionItems(
-  _propertyChange: ?PropertiesComparisonResult,
-  _positionalChange: ?PositionalComparisonResult,
-  _nullableChange: ?NullableComparisonResult,
-  memberChange: ?MembersComparisonResult,
-  unionMemberChange: ?UnionMembersComparisonResult,
-  typeName: string,
-  pathContext: ?TypeComparisonError,
-): Array<ErrorStore> {
-  if (
-    unionMemberChange?.addedMembers &&
-    unionMemberChange?.addedMembers.length > 0
-  ) {
-    return [
-      {
-        typeName,
-        errorCode: 'addedUnionCases',
-        errorInformation: memberComparisonError(
-          addedUnionMemberMessage,
-          unionMemberChange.addedMembers.map(member => ({
-            member: getMemberLabel(member),
-          })),
-          pathContext ?? undefined,
-        ),
-      },
-    ];
-  }
-
-  return [];
-}
-
 export const removedIntersectionMessage =
   'Intersection removed items, but native may still require properties contained in them';
 function checkForUnsafeRemovedIntersectionItems(
@@ -589,7 +546,6 @@ function checkForUnsafeRemovedIntersectionItems(
   positionalChange: ?PositionalComparisonResult,
   _nullableChange: ?NullableComparisonResult,
   _memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
@@ -621,7 +577,6 @@ function checkForUnsafeAddedIntersectionItems(
   positionalChange: ?PositionalComparisonResult,
   _nullableChange: ?NullableComparisonResult,
   _memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
@@ -655,7 +610,6 @@ function checkForUnsafeNullableToNativeChange(
   _positionalChange: ?PositionalComparisonResult,
   nullableChange: ?NullableComparisonResult,
   _memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
@@ -692,7 +646,6 @@ function checkForUnsafeNullableFromNativeChange(
   _positionalChange: ?PositionalComparisonResult,
   nullableChange: ?NullableComparisonResult,
   _memberChange: ?MembersComparisonResult,
-  _unionMemberChange: ?UnionMembersComparisonResult,
   typeName: string,
   pathContext: ?TypeComparisonError,
 ): Array<ErrorStore> {
@@ -726,7 +679,6 @@ function chainPropertiesChecks(checks: Array<checkerType>): checkerType {
     positionalChange: ?PositionalComparisonResult,
     nullableChange: ?NullableComparisonResult,
     memberChange: ?MembersComparisonResult,
-    unionMemberChange: ?UnionMembersComparisonResult,
     typeName: string,
     pathContext: ?TypeComparisonError,
   ) =>
@@ -738,7 +690,6 @@ function chainPropertiesChecks(checks: Array<checkerType>): checkerType {
             positionalChange,
             nullableChange,
             memberChange,
-            unionMemberChange,
             typeName,
             pathContext,
           ),
@@ -799,8 +750,7 @@ function compareFunctionTypesInContext(
 const checksForTypesFlowingToNative: checkerType = chainPropertiesChecks([
   checkForUnsafeRemovedProperties,
   checkForUnSafeMadeOptionalProperties,
-  checkForUnsafeAddedUnionItems,
-  checkForUnsafeAddedEnumItems,
+  checkForUnsafeAddedMemberItems,
   checkForUnsafeRemovedIntersectionItems,
   checkForUnsafeNullableToNativeChange,
 ]);
@@ -811,8 +761,7 @@ const checksForTypesFlowingToNative: checkerType = chainPropertiesChecks([
 const checksForTypesFlowingFromNative: checkerType = chainPropertiesChecks([
   checkForUnsafeAddedProperties,
   checkForUnSafeMadeStrictProperties,
-  checkForUnsafeRemovedUnionItems,
-  checkForUnsafeRemovedEnumItems,
+  checkForUnsafeRemovedMemberItems,
   checkForUnsafeAddedIntersectionItems,
   checkForUnsafeNullableFromNativeChange,
 ]);
@@ -861,59 +810,11 @@ export function assessComparisonResult(
             null,
             null,
             memberChange,
-            null,
             typeName,
             difference.errorLog,
           );
 
           const fromNativeErrorResult = checksForTypesFlowingFromNative(
-            null,
-            null,
-            null,
-            memberChange,
-            null,
-            typeName,
-            difference.errorLog,
-          );
-
-          switch (oldDirection) {
-            case 'toNative':
-              toNativeErrorResult.forEach(error =>
-                incompatibleChanges.add(error),
-              );
-              break;
-            case 'fromNative':
-              fromNativeErrorResult.forEach(error =>
-                incompatibleChanges.add(error),
-              );
-              break;
-            case 'both':
-              toNativeErrorResult.forEach(error =>
-                incompatibleChanges.add(error),
-              );
-              fromNativeErrorResult.forEach(error =>
-                incompatibleChanges.add(error),
-              );
-              break;
-          }
-        }
-        break;
-      case 'unionMembers':
-        {
-          const memberChange = difference.memberLog;
-
-          const toNativeErrorResult = checksForTypesFlowingToNative(
-            null,
-            null,
-            null,
-            null,
-            memberChange,
-            typeName,
-            difference.errorLog,
-          );
-
-          const fromNativeErrorResult = checksForTypesFlowingFromNative(
-            null,
             null,
             null,
             null,
@@ -1056,7 +957,6 @@ export function assessComparisonResult(
             changeLog,
             null,
             null,
-            null,
             typeName,
             null,
           );
@@ -1081,7 +981,6 @@ export function assessComparisonResult(
           const fromNativeBase = checksForTypesFlowingFromNative(
             null,
             changeLog,
-            null,
             null,
             null,
             typeName,
@@ -1134,7 +1033,6 @@ export function assessComparisonResult(
               null,
               difference.nullableLog,
               null,
-              null,
               typeName,
               difference.errorLog,
             ).forEach(error => incompatibleChanges.add(error));
@@ -1144,7 +1042,6 @@ export function assessComparisonResult(
               null,
               null,
               difference.nullableLog,
-              null,
               null,
               typeName,
               difference.errorLog,

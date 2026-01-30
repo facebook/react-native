@@ -194,7 +194,7 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "addedUnionCases",
+          "errorCode": "addedMemberCases",
           "message": "NativeComponent: Object contained a property with a type mismatch
   -- sizes: has conflicting type changes
       --new: (small | large | huge)
@@ -239,7 +239,7 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "addedUnionCases",
+          "errorCode": "addedMemberCases",
           "message": "NativeComponent: Object contained a property with a type mismatch
   -- size: has conflicting type changes
       --new: (small | huge | large)
@@ -516,7 +516,7 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "addedEnumCases",
+          "errorCode": "addedMemberCases",
           "message": "NativeModuleTest: Object contained a property with a type mismatch
   -- exampleFunction: has conflicting type changes
       --new: (a: Enum<number>, b: number)=>void
@@ -541,7 +541,7 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "removedEnumCases",
+          "errorCode": "removedMemberCases",
           "message": "NativeModuleTest: Object contained a property with a type mismatch
   -- getConstants: has conflicting type changes
       --new: ()=>{exampleConstant: Enum<number>}
@@ -769,7 +769,7 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "addedUnionCases",
+          "errorCode": "addedMemberCases",
           "message": "NativeModuleTest: Object contained a property with a type mismatch
   -- exampleFunction: has conflicting type changes
       --new: (a: (a | b | c | d), b: number)=>void
@@ -820,7 +820,7 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "addedUnionCases",
+          "errorCode": "addedMemberCases",
           "message": "NativeModuleTest: Object contained a property with a type mismatch
   -- exampleFunction: has conflicting type changes
       --new: (a: (a | b | c), b: number)=>void
@@ -846,7 +846,7 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "removedUnionCases",
+          "errorCode": "removedMemberCases",
           "message": "NativeModuleTest: Object contained a property with a type mismatch
   -- getConstants: has conflicting type changes
       --new: ()=>{exampleConstant: (a | b | c)}
@@ -898,7 +898,7 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "addedUnionCases",
+          "errorCode": "addedMemberCases",
           "message": "NativeModuleTest: Object contained a property with a type mismatch
   -- exampleFunction: has conflicting type changes
       --new: (a: Union<mixed>, b: number)=>void
