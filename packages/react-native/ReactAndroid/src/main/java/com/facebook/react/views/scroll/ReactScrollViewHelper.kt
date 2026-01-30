@@ -354,6 +354,11 @@ public object ReactScrollViewHelper {
     if (scrollView.stateWrapper == null) {
       return
     }
+    // NOTE: if the state wrapper is null, we shouldn't even update
+    // the scroll state because there is a chance of going out of sync!
+    if (scrollView.stateWrapper == null) {
+      return
+    }
     val scrollState = scrollView.reactScrollViewScrollState
 
     // User driven scrolling should disable scroll state updates coming from Fabric
