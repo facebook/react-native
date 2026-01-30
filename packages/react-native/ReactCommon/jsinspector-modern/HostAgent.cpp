@@ -385,8 +385,7 @@ class HostAgent::Impl final {
     return fuseboxClientType_ == FuseboxClientType::Fusebox;
   }
 
-  void emitExternalTracingProfile(
-      tracing::HostTracingProfile tracingProfile) const {
+  void emitExternalTracingProfile(tracing::HostTracingProfile tracingProfile) {
     assert(
         hasFuseboxClientConnected() &&
         "Attempted to emit a trace recording to a non-Fusebox client");
@@ -543,11 +542,11 @@ bool HostAgent::hasFuseboxClientConnected() const {
 }
 
 void HostAgent::emitExternalTracingProfile(
-    tracing::HostTracingProfile tracingProfile) const {
+    tracing::HostTracingProfile tracingProfile) {
   impl_->emitExternalTracingProfile(std::move(tracingProfile));
 }
 
-void HostAgent::emitSystemStateChanged(bool isSingleHost) const {
+void HostAgent::emitSystemStateChanged(bool isSingleHost) {
   impl_->emitSystemStateChanged(isSingleHost);
 }
 

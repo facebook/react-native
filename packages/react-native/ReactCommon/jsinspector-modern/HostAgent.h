@@ -77,13 +77,13 @@ class HostAgent final {
    * Emits the HostTracingProfile that was captured externally, not via the
    * CDP-initiated request.
    */
-  void emitExternalTracingProfile(tracing::HostTracingProfile tracingProfile) const;
+  void emitExternalTracingProfile(tracing::HostTracingProfile tracingProfile);
 
   /**
    * Emits a system state changed event when the number of ReactHost instances
    * changes.
    */
-  void emitSystemStateChanged(bool isSingleHost) const;
+  void emitSystemStateChanged(bool isSingleHost);
 
  private:
   // We use the private implementation idiom to ensure this class has the same
