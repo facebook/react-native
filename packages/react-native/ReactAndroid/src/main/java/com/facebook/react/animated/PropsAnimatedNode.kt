@@ -29,6 +29,11 @@ internal class PropsAnimatedNode(
   private val propMap = JavaOnlyMap()
   private var connectedViewUIManager: UIManager? = null
 
+  val connectedView: View?
+    // resolveView throws an [IllegalViewOperationException] when the view doesn't exist
+    // (this can happen if the surface is being deallocated).
+    get() = runCatching { connectedViewUIManager?.resolveView(connectedViewTag) }.getOrNull()
+
   init {
     val props = config.getMap("props")
     val iter = props?.keySetIterator()
@@ -111,11 +116,6 @@ internal class PropsAnimatedNode(
     }
     connectedViewUIManager?.synchronouslyUpdateViewOnUIThread(connectedViewTag, propMap)
   }
-
-  val connectedView: View?
-    // resolveView throws an [IllegalViewOperationException] when the view doesn't exist
-    // (this can happen if the surface is being deallocated).
-    get() = runCatching { connectedViewUIManager?.resolveView(connectedViewTag) }.getOrNull()
 
   override fun prettyPrint(): String =
       "PropsAnimatedNode[$tag] connectedViewTag: $connectedViewTag " +
