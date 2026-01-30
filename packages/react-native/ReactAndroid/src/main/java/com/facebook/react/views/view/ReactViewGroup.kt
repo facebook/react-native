@@ -819,6 +819,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
           } else {
             Overflow.fromString(overflow)
           }
+      if (ReactNativeFeatureFlags.enableClipChildrenForOverflowHidden()) {
+        clipChildren = (_overflow == Overflow.HIDDEN)
+      }
       invalidate()
     }
 
