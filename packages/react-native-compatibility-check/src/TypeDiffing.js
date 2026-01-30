@@ -569,12 +569,22 @@ export function compareObjectTypes<T: CompleteTypeAnnotation>(
     return {
       status: 'properties',
       propertyLog: {missingProperties: sortedOlderTypes},
+      errorLog: typeAnnotationComparisonError(
+        'Object has property changes',
+        objectTypeAnnotation(newerPropertyTypes),
+        objectTypeAnnotation(olderPropertyTypes),
+      ),
     };
   }
   if (sortedOlderTypes.length === 0) {
     return {
       status: 'properties',
       propertyLog: {addedProperties: sortedNewerTypes},
+      errorLog: typeAnnotationComparisonError(
+        'Object has property changes',
+        objectTypeAnnotation(newerPropertyTypes),
+        objectTypeAnnotation(olderPropertyTypes),
+      ),
     };
   }
   const result = comparePropertyArrays(sortedNewerTypes, sortedOlderTypes);
@@ -602,14 +612,20 @@ export function compareObjectTypes<T: CompleteTypeAnnotation>(
     return makeError(
       typeAnnotationComparisonError(
         'Object types do not match.',
-        // $FlowFixMe[incompatible-type]
         objectTypeAnnotation(newerPropertyTypes),
-        // $FlowFixMe[incompatible-type]
         objectTypeAnnotation(olderPropertyTypes),
       ),
     );
   }
-  return {status: 'properties', propertyLog: result};
+  return {
+    status: 'properties',
+    propertyLog: result,
+    errorLog: typeAnnotationComparisonError(
+      'Object has property changes',
+      objectTypeAnnotation(newerPropertyTypes),
+      objectTypeAnnotation(olderPropertyTypes),
+    ),
+  };
 }
 
 function objectTypeAnnotation<T>(
@@ -856,7 +872,15 @@ export function compareEnumDeclarationWithMembers(
     );
   }
 
-  return {status: 'members', memberLog: result};
+  return {
+    status: 'members',
+    memberLog: result,
+    errorLog: typeAnnotationComparisonError(
+      'Enum has member changes',
+      newerDeclaration,
+      olderDeclaration,
+    ),
+  };
 }
 
 function compareNullableChange(
@@ -895,6 +919,11 @@ function compareNullableChange(
         newType: newerAnnotation,
         oldType: olderAnnotation,
       },
+      errorLog: typeAnnotationComparisonError(
+        'Nullable type has changes',
+        newerAnnotation,
+        olderAnnotation,
+      ),
     };
   }
   const interiorLog = compareTypeAnnotation(newVoidRemoved, oldVoidRemoved);
@@ -917,6 +946,11 @@ function compareNullableChange(
           newType: newerAnnotation,
           oldType: olderAnnotation,
         },
+        errorLog: typeAnnotationComparisonError(
+          'Nullable type has changes',
+          newerAnnotation,
+          olderAnnotation,
+        ),
       };
     default:
       return {
@@ -928,6 +962,12 @@ function compareNullableChange(
           newType: newerAnnotation,
           oldType: olderAnnotation,
         },
+        errorLog: typeAnnotationComparisonError(
+          'Nullable type has changes',
+          newerAnnotation,
+          olderAnnotation,
+          interiorLog.errorLog,
+        ),
       };
   }
 }
@@ -977,7 +1017,15 @@ export function compareUnionTypes(
     );
   }
 
-  return {status: 'unionMembers', memberLog: result};
+  return {
+    status: 'unionMembers',
+    memberLog: result,
+    errorLog: typeAnnotationComparisonError(
+      'Union has member changes',
+      newerType,
+      olderType,
+    ),
+  };
 }
 
 export function comparePromiseTypes(
@@ -1128,6 +1176,11 @@ export function compareStringLiteralUnionTypes(
       return {
         status: 'positionalTypeChange',
         changeLog,
+        errorLog: typeAnnotationComparisonError(
+          'String literal union has member changes',
+          newerType,
+          olderType,
+        ),
       };
     case 'matching':
       return {status: 'matching'};
@@ -1206,7 +1259,15 @@ export function compareFunctionTypes(
   if (isFunctionLogEmpty(functionChanges)) {
     return {status: 'matching'};
   }
-  return {status: 'functionChange', functionChangeLog: functionChanges};
+  return {
+    status: 'functionChange',
+    functionChangeLog: functionChanges,
+    errorLog: typeAnnotationComparisonError(
+      'Function has parameter or return type changes',
+      newerType,
+      olderType,
+    ),
+  };
 }
 
 type ArrayComparisonResult =
