@@ -185,4 +185,157 @@ TEST_F(TracingTest, BackgroundTracingIsRejectedWhileCDPTracingIsRunning) {
   page_->stopTracing();
 }
 
+TEST_F(TracingTest, EmitsToAllSessionsWithReactNativeApplicationDomainEnabled) {
+  auto secondaryFusebox = this->connectSecondary();
+  auto secondaryNonFusebox = this->connectSecondary();
+
+  // Enable ReactNativeApplication domain on primary and secondaryFusebox
+  // sessions (but NOT on secondaryNonFusebox)
+  {
+    InSequence s;
+    EXPECT_CALL(
+        this->fromPage(),
+        onMessage(JsonParsed(
+            AtJsonPtr("/method", "ReactNativeApplication.metadataUpdated"))));
+    EXPECT_CALL(
+        this->fromPage(), onMessage(JsonEq(R"({"id": 1, "result": {}})")));
+  }
+  this->toPage_->sendMessage(
+      R"({"id": 1, "method": "ReactNativeApplication.enable"})");
+
+  {
+    InSequence s;
+    EXPECT_CALL(
+        secondaryFusebox.fromPage(),
+        onMessage(JsonParsed(
+            AtJsonPtr("/method", "ReactNativeApplication.metadataUpdated"))));
+    EXPECT_CALL(
+        secondaryFusebox.fromPage(),
+        onMessage(JsonEq(R"({"id": 1, "result": {}})")));
+  }
+  secondaryFusebox.toPage().sendMessage(
+      R"({"id": 1, "method": "ReactNativeApplication.enable"})");
+
+  // Start background tracing
+  this->page_->startTracing(
+      tracing::Mode::Background, {tracing::Category::Timeline});
+
+  // Record some frame timings
+  auto now = HighResTimeStamp::now();
+  this->page_->recordFrameTimings(
+      tracing::FrameTimingSequence(
+          1, // id
+          11, // threadId
+          now,
+          now + HighResDuration::fromNanoseconds(10),
+          now + HighResDuration::fromNanoseconds(50)));
+
+  // Primary and secondaryFusebox sessions should receive the trace.
+  // Events within each session are ordered, but order between sessions is
+  // arbitrary.
+  Sequence primarySeq;
+  Sequence secondarySeq;
+
+  EXPECT_CALL(
+      this->fromPage(),
+      onMessage(JsonParsed(
+          AtJsonPtr("/method", "ReactNativeApplication.traceRequested"))))
+      .InSequence(primarySeq);
+  EXPECT_CALL(
+      this->fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.dataCollected"))))
+      .Times(AtLeast(1))
+      .InSequence(primarySeq);
+  EXPECT_CALL(
+      this->fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.tracingComplete"))))
+      .InSequence(primarySeq);
+
+  EXPECT_CALL(
+      secondaryFusebox.fromPage(),
+      onMessage(JsonParsed(
+          AtJsonPtr("/method", "ReactNativeApplication.traceRequested"))))
+      .InSequence(secondarySeq);
+  EXPECT_CALL(
+      secondaryFusebox.fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.dataCollected"))))
+      .Times(AtLeast(1))
+      .InSequence(secondarySeq);
+  EXPECT_CALL(
+      secondaryFusebox.fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.tracingComplete"))))
+      .InSequence(secondarySeq);
+
+  // secondaryNonFusebox should NOT receive anything (it did not enable the
+  // domain)
+  EXPECT_CALL(secondaryNonFusebox.fromPage(), onMessage(_)).Times(0);
+
+  // Stop tracing and emit to all eligible sessions
+  EXPECT_TRUE(this->page_->stopAndMaybeEmitBackgroundTrace());
+}
+
+TEST_F(TracingTest, StashedTraceIsEmittedOnlyToFirstEligibleSession) {
+  // Start background tracing with no sessions having ReactNativeApplication
+  // enabled
+  this->page_->startTracing(
+      tracing::Mode::Background, {tracing::Category::Timeline});
+
+  // Record some frame timings
+  auto now = HighResTimeStamp::now();
+  this->page_->recordFrameTimings(
+      tracing::FrameTimingSequence(
+          1, // id
+          11, // threadId
+          now,
+          now + HighResDuration::fromNanoseconds(10),
+          now + HighResDuration::fromNanoseconds(50)));
+
+  // Stop tracing - no eligible sessions exist, so the trace is stashed
+  EXPECT_FALSE(this->page_->stopAndMaybeEmitBackgroundTrace());
+
+  // Now the primary session enables ReactNativeApplication - it should receive
+  // the stashed trace. Events within a session are ordered.
+  Sequence primarySeq;
+  EXPECT_CALL(
+      this->fromPage(),
+      onMessage(JsonParsed(
+          AtJsonPtr("/method", "ReactNativeApplication.metadataUpdated"))))
+      .InSequence(primarySeq);
+  EXPECT_CALL(
+      this->fromPage(),
+      onMessage(JsonParsed(
+          AtJsonPtr("/method", "ReactNativeApplication.traceRequested"))))
+      .InSequence(primarySeq);
+  EXPECT_CALL(
+      this->fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.dataCollected"))))
+      .Times(AtLeast(1))
+      .InSequence(primarySeq);
+  EXPECT_CALL(
+      this->fromPage(),
+      onMessage(JsonParsed(AtJsonPtr("/method", "Tracing.tracingComplete"))))
+      .InSequence(primarySeq);
+  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({"id": 1, "result": {}})")))
+      .InSequence(primarySeq);
+  this->toPage_->sendMessage(
+      R"({"id": 1, "method": "ReactNativeApplication.enable"})");
+
+  // Connect a secondary session and enable ReactNativeApplication - it should
+  // NOT receive the already-emitted stashed trace
+  auto secondary = this->connectSecondary();
+  Sequence secondarySeq;
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(
+          AtJsonPtr("/method", "ReactNativeApplication.metadataUpdated"))))
+      .InSequence(secondarySeq);
+  // No traceRequested, dataCollected, or tracingComplete expected for
+  // secondary
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 1, "result": {}})")))
+      .InSequence(secondarySeq);
+  secondary.toPage().sendMessage(
+      R"({"id": 1, "method": "ReactNativeApplication.enable"})");
+}
+
 } // namespace facebook::react::jsinspector_modern

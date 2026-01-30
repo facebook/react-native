@@ -236,13 +236,11 @@ class HostAgent::Impl final {
         emitSystemStateChanged(isSingleHost);
       }
 
-      auto stashedTraceRecording =
-          targetController_.getDelegate()
-              .unstable_getHostTracingProfileThatWillBeEmittedOnInitialization();
-      if (stashedTraceRecording.has_value()) {
-        tracingAgent_.emitExternalHostTracingProfile(
-            std::move(stashedTraceRecording.value()));
-      }
+      auto emitted = targetController_.maybeEmitStashedBackgroundTrace();
+      assert(
+          emitted &&
+          "Expected to find at least one session eligible to receive a background trace after ReactNativeApplication.enable");
+      (void)emitted;
 
       return {
           .isFinishedHandlingRequest = true,
@@ -381,16 +379,8 @@ class HostAgent::Impl final {
     }
   }
 
-  bool hasFuseboxClientConnected() const {
-    return fuseboxClientType_ == FuseboxClientType::Fusebox;
-  }
-
-  void emitExternalTracingProfile(
-      tracing::HostTracingProfile tracingProfile) const {
-    assert(
-        hasFuseboxClientConnected() &&
-        "Attempted to emit a trace recording to a non-Fusebox client");
-    tracingAgent_.emitExternalHostTracingProfile(std::move(tracingProfile));
+  bool isEligibleForBackgroundTrace() const {
+    return sessionState_.isReactNativeApplicationDomainEnabled;
   }
 
   void emitSystemStateChanged(bool isSingleHost) {
@@ -503,10 +493,9 @@ class HostAgent::Impl final {
 
   void handleRequest(const cdp::PreparsedRequest& req) {}
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent) {}
-  bool hasFuseboxClientConnected() const {
+  bool isEligibleForBackgroundTrace() const {
     return false;
   }
-  void emitExternalTracingProfile(tracing::HostTracingProfile tracingProfile) {}
   void emitSystemStateChanged(bool isSingleHost) {}
 };
 
@@ -538,17 +527,8 @@ void HostAgent::setCurrentInstanceAgent(
   impl_->setCurrentInstanceAgent(std::move(instanceAgent));
 }
 
-bool HostAgent::hasFuseboxClientConnected() const {
-  return impl_->hasFuseboxClientConnected();
-}
-
-void HostAgent::emitExternalTracingProfile(
-    tracing::HostTracingProfile tracingProfile) const {
-  impl_->emitExternalTracingProfile(std::move(tracingProfile));
-}
-
-void HostAgent::emitSystemStateChanged(bool isSingleHost) const {
-  impl_->emitSystemStateChanged(isSingleHost);
+bool HostAgent::isEligibleForBackgroundTrace() const {
+  return impl_->isEligibleForBackgroundTrace();
 }
 
 #pragma mark - Tracing

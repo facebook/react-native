@@ -240,7 +240,7 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
   /**
    * Stops previously started trace recording and discards the captured trace.
    */
-  void stopAndDiscardBackgroundTrace();
+  void stopTracing();
 
   jsinspector_modern::HostTarget *getInspectorTarget();
 
@@ -277,8 +277,6 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
   void loadNetworkResource(
       const jsinspector_modern::LoadNetworkResourceRequest &params,
       jsinspector_modern::ScopedExecutor<jsinspector_modern::NetworkRequestListener> executor) override;
-  std::optional<jsinspector_modern::tracing::HostTracingProfile>
-  unstable_getHostTracingProfileThatWillBeEmittedOnInitialization() override;
   jsinspector_modern::HostTargetTracingDelegate *getTracingDelegate() override;
 
  private:
@@ -286,6 +284,13 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
       jni::alias_ref<JReactHostInspectorTarget::javaobject> jobj,
       jni::alias_ref<JReactHostImpl> reactHostImpl,
       jni::alias_ref<JExecutor::javaobject> javaExecutor);
+
+  /**
+   * Returns a reference to the HostTarget, throwing a Java IllegalStateException
+   * if the Fusebox backend is not enabled (i.e., inspectorTarget_ is null).
+   */
+  jsinspector_modern::HostTarget &inspectorTarget();
+
   jni::global_ref<JReactHostInspectorTarget::javaobject> jobj_;
   // This weak reference breaks the cycle between the C++ HostTarget and the
   // Java ReactHostImpl, preventing memory leaks in apps that create multiple
@@ -296,20 +301,6 @@ class JReactHostInspectorTarget : public jni::HybridClass<JReactHostInspectorTar
   std::shared_ptr<jsinspector_modern::HostTarget> inspectorTarget_;
   std::optional<int> inspectorPageId_;
 
-  /**
-   * Stops previously started trace recording and returns the captured HostTracingProfile.
-   */
-  jsinspector_modern::tracing::HostTracingProfile stopTracing();
-  /**
-   * Stashes previously recorded HostTracingProfile that will be emitted when
-   * CDP session is created. Once emitted, the value will be cleared from this
-   * instance.
-   */
-  void stashTracingProfile(jsinspector_modern::tracing::HostTracingProfile &&hostTracingProfile);
-  /**
-   * Previously recorded HostTracingProfile that will be emitted when CDP session is created.
-   */
-  std::optional<jsinspector_modern::tracing::HostTracingProfile> stashedTracingProfile_;
   /**
    * Encapsulates the logic around tracing for this HostInspectorTarget.
    */
