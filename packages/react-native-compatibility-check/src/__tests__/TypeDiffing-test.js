@@ -244,8 +244,9 @@ describe('components', () => {
         ),
       ).toEqual(
         expect.objectContaining({
-          status: 'unionMembers',
+          status: 'members',
           memberLog: {
+            memberKind: 'union',
             addedMembers: [
               {
                 type: 'StringLiteralTypeAnnotation',
@@ -1044,8 +1045,9 @@ describe('compareTypes unions', () => {
       ).functionChangeLog.parameterTypes.nestedChanges[0][2],
     ).toEqual(
       expect.objectContaining({
-        status: 'unionMembers',
+        status: 'members',
         memberLog: expect.objectContaining({
+          memberKind: 'union',
           missingMembers: expect.any(Array),
         }),
         errorLog: expect.objectContaining({
@@ -1237,8 +1239,9 @@ describe('compareTypes on string literal unions', () => {
       ),
     ).toEqual(
       expect.objectContaining({
-        status: 'unionMembers',
+        status: 'members',
         memberLog: {
+          memberKind: 'union',
           missingMembers: [
             {
               type: 'StringLiteralTypeAnnotation',
@@ -1263,8 +1266,9 @@ describe('compareTypes on string literal unions', () => {
       ),
     ).toEqual(
       expect.objectContaining({
-        status: 'unionMembers',
+        status: 'members',
         memberLog: {
+          memberKind: 'union',
           addedMembers: [
             {
               type: 'StringLiteralTypeAnnotation',
@@ -1438,6 +1442,7 @@ describe('compareTypes on enums', () => {
       expect.objectContaining({
         status: 'members',
         memberLog: expect.objectContaining({
+          memberKind: 'enum',
           missingMembers: expect.arrayContaining([
             expect.objectContaining({
               name: 'D',
@@ -1468,6 +1473,7 @@ describe('compareTypes on enums', () => {
       expect.objectContaining({
         status: 'members',
         memberLog: expect.objectContaining({
+          memberKind: 'enum',
           addedMembers: expect.arrayContaining([
             expect.objectContaining({
               name: 'D',

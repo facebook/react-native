@@ -10,6 +10,7 @@
 
 import type {
   ComparisonResult,
+  EnumMembersComparisonResult,
   FunctionComparisonResult,
   MembersComparisonResult,
   PositionalComparisonResult,
@@ -45,7 +46,6 @@ import {
   isFunctionLogEmpty,
   isMemberLogEmpty,
   isPropertyLogEmpty,
-  isUnionMemberLogEmpty,
   makeError,
   memberComparisonError,
   propertyComparisonError,
@@ -325,33 +325,7 @@ function updatePropertyError(
   };
 }
 
-function updateUnionMemberError(
-  name: CompleteTypeAnnotation,
-  newType: CompleteTypeAnnotation,
-  oldType: CompleteTypeAnnotation,
-  result: UnionMembersComparisonResult,
-) {
-  return (oldError: TypeComparisonError) => {
-    const comparisonError = typeAnnotationComparisonError(
-      'has conflicting changes',
-      newType,
-      oldType,
-      oldError,
-    );
-    const memberLabel = getTypeAnnotationLabel(name);
-    const newFault: {fault?: TypeComparisonError, member: string} = {
-      member: memberLabel,
-      fault: comparisonError,
-    };
-    if (result.errorMembers) {
-      result.errorMembers.push(newFault);
-    } else {
-      result.errorMembers = [newFault];
-    }
-  };
-}
-
-function updateEnumMemberError(
+function updateMemberError(
   name: string,
   newType: CompleteTypeAnnotation,
   oldType: CompleteTypeAnnotation,
@@ -501,7 +475,6 @@ function comparePropertyArrays(
           result,
         );
       case 'members':
-      case 'unionMembers':
       case 'properties':
       case 'functionChange':
       case 'positionalTypeChange':
@@ -675,13 +648,13 @@ export function compareEnumDeclarations(
 export function compareEnumDeclarationMemberArrays(
   newer: Array<NativeModuleEnumMember>,
   older: Array<NativeModuleEnumMember>,
-): MembersComparisonResult {
+): EnumMembersComparisonResult {
   if (newer.length === 0 && older.length === 0) {
-    return {};
+    return {memberKind: 'enum'};
   } else if (newer.length === 0) {
-    return {missingMembers: [...older]};
+    return {memberKind: 'enum', missingMembers: [...older]};
   } else if (older.length === 0) {
-    return {addedMembers: [...newer]};
+    return {memberKind: 'enum', addedMembers: [...newer]};
   }
 
   const newerHead = newer.pop();
@@ -702,7 +675,7 @@ export function compareEnumDeclarationMemberArrays(
       case 'matching':
         return result;
       case 'error':
-        updateEnumMemberError(
+        updateMemberError(
           newerName,
           newerHead.value,
           olderHead.value,
@@ -718,7 +691,6 @@ export function compareEnumDeclarationMemberArrays(
       case 'functionChange':
       case 'positionalTypeChange':
       case 'members':
-      case 'unionMembers':
         break;
       default:
         // Flow exhaustiveness check
@@ -753,11 +725,11 @@ export function compareUnionMemberArrays(
   older: Array<CompleteTypeAnnotation>,
 ): UnionMembersComparisonResult {
   if (newer.length === 0 && older.length === 0) {
-    return {};
+    return {memberKind: 'union'};
   } else if (newer.length === 0) {
-    return {missingMembers: [...older]};
+    return {memberKind: 'union', missingMembers: [...older]};
   } else if (older.length === 0) {
-    return {addedMembers: [...newer]};
+    return {memberKind: 'union', addedMembers: [...newer]};
   }
 
   const newerHead = newer.pop();
@@ -777,8 +749,8 @@ export function compareUnionMemberArrays(
       case 'matching':
         return restComparison;
       case 'error':
-        updateUnionMemberError(
-          newerHead,
+        updateMemberError(
+          getTypeAnnotationLabel(newerHead),
           newerHead,
           olderHead,
           restComparison,
@@ -799,7 +771,6 @@ export function compareUnionMemberArrays(
       case 'functionChange':
       case 'positionalTypeChange':
       case 'members':
-      case 'unionMembers':
         break;
       default:
         // Flow exhaustiveness check
@@ -984,7 +955,7 @@ export function compareUnionTypes(
     sortedOlderTypes.map(([_, type]) => type),
   );
 
-  if (isUnionMemberLogEmpty(result)) {
+  if (isMemberLogEmpty(result)) {
     return {status: 'matching'};
   } else if (result.errorMembers) {
     return makeError(
@@ -1018,7 +989,7 @@ export function compareUnionTypes(
   }
 
   return {
-    status: 'unionMembers',
+    status: 'members',
     memberLog: result,
     errorLog: typeAnnotationComparisonError(
       'Union has member changes',
@@ -1212,7 +1183,6 @@ export function compareFunctionTypes(
   if (
     returnTypeResult.status === 'properties' ||
     returnTypeResult.status === 'members' ||
-    returnTypeResult.status === 'unionMembers' ||
     returnTypeResult.status === 'functionChange' ||
     returnTypeResult.status === 'positionalTypeChange' ||
     returnTypeResult.status === 'nullableChange'
@@ -1315,7 +1285,6 @@ function compareArrayOfTypes(
       if (
         result.status === 'properties' ||
         result.status === 'members' ||
-        result.status === 'unionMembers' ||
         result.status === 'functionChange' ||
         result.status === 'positionalTypeChange' ||
         result.status === 'nullableChange'
