@@ -307,7 +307,20 @@ internal object TextLayoutManager {
         if (textAttributes.isLineThroughTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactStrikethroughSpan()))
         }
-        if (
+        // prefer CSS textShadow array over legacy properties
+        if (textAttributes.textShadows.isNotEmpty()) {
+          // Currently, we only support one shadow
+          val shadow = textAttributes.textShadows[0]
+          if (Color.alpha(shadow.color) != 0) {
+            ops.add(
+                SetSpanOperation(
+                    start,
+                    end,
+                    ShadowStyleSpan(shadow.offsetX, shadow.offsetY, shadow.blurRadius, shadow.color),
+                )
+            )
+          }
+        } else if (
             (textAttributes.textShadowOffsetDx != 0f ||
                 textAttributes.textShadowOffsetDy != 0f ||
                 textAttributes.textShadowRadius != 0f) &&
@@ -488,7 +501,18 @@ internal object TextLayoutManager {
           spannable.setSpan(ReactStrikethroughSpan(), start, end, spanFlags)
         }
 
-        if (
+        // prefer CSS textShadow array over legacy properties
+        if (fragment.props.textShadows.isNotEmpty()) {
+          val shadow = fragment.props.textShadows[0]
+          if (Color.alpha(shadow.color) != 0) {
+            spannable.setSpan(
+                ShadowStyleSpan(shadow.offsetX, shadow.offsetY, shadow.blurRadius, shadow.color),
+                start,
+                end,
+                spanFlags,
+            )
+          }
+        } else if (
             (fragment.props.textShadowOffsetDx != 0f ||
                 fragment.props.textShadowOffsetDy != 0f ||
                 fragment.props.textShadowRadius != 0f) &&

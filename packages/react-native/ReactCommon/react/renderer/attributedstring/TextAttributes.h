@@ -19,6 +19,7 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Size.h>
+#include <react/renderer/graphics/TextShadow.h>
 #include <react/utils/hash_combine.h>
 
 namespace facebook::react {
@@ -73,6 +74,9 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<Size> textShadowOffset{};
   Float textShadowRadius{std::numeric_limits<Float>::quiet_NaN()};
   SharedColor textShadowColor{};
+
+  // TextShadow (CSS text-shadow syntax)
+  std::vector<TextShadow> textShadow{};
 
   // Special
   std::optional<bool> isHighlighted{};
@@ -134,6 +138,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textShadowOffset,
         textAttributes.textShadowRadius,
         textAttributes.textShadowColor,
+        textAttributes.textShadow,
         textAttributes.isHighlighted,
         textAttributes.isPressable,
         textAttributes.layoutDirection,
