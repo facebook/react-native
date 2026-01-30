@@ -664,7 +664,8 @@ static float distributeFreeSpaceSecondPass(
         float childSize = YGUndefined;
 
         if (yoga::isDefined(flexLine.layout.totalFlexShrinkScaledFactors) &&
-            flexLine.layout.totalFlexShrinkScaledFactors == 0) {
+            yoga::inexactEquals(
+                flexLine.layout.totalFlexShrinkScaledFactors, 0.0f)) {
           childSize = childFlexBasis + flexShrinkScaledFactor;
         } else {
           childSize = childFlexBasis +
@@ -1536,9 +1537,10 @@ static void calculateLayoutImpl(
 
         if (!useLegacyStretchBehaviour &&
             ((yoga::isDefined(flexLine.layout.totalFlexGrowFactors) &&
-              flexLine.layout.totalFlexGrowFactors == 0) ||
+              yoga::inexactEquals(
+                  flexLine.layout.totalFlexGrowFactors, 0.0f)) ||
              (yoga::isDefined(node->resolveFlexGrow()) &&
-              node->resolveFlexGrow() == 0))) {
+              yoga::inexactEquals(node->resolveFlexGrow(), 0.0f)))) {
           // If we don't have any children to flex or we can't flex the node
           // itself, space we've used is all space we need. Root node also
           // should be shrunk to minimum
