@@ -102,17 +102,8 @@ class HostTargetSession {
     }
   }
 
-  /**
-   * Returns whether the ReactNativeApplication CDP domain is enabled.
-   *
-   * Chrome DevTools Frontend enables this domain as a client.
-   */
-  bool hasFuseboxClient() const {
-    return hostAgent_.hasFuseboxClientConnected();
-  }
-
-  void emitHostTracingProfile(tracing::HostTracingProfile tracingProfile) {
-    hostAgent_.emitExternalTracingProfile(std::move(tracingProfile));
+  HostAgent& agent() {
+    return hostAgent_;
   }
 
  private:
@@ -323,6 +314,10 @@ bool HostTargetController::decrementPauseOverlayCounter() {
   return --pauseOverlayCounter_ != 0;
 }
 
+bool HostTargetController::maybeEmitStashedBackgroundTrace() {
+  return target_.maybeEmitStashedBackgroundTrace();
+}
+
 namespace {
 
 struct StaticHostTargetMetadata {
@@ -374,32 +369,26 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
   return result;
 }
 
-bool HostTarget::hasActiveSessionWithFuseboxClient() const {
-  bool hasActiveFuseboxSession = false;
-  sessions_.forEach([&](auto& session) {
-    hasActiveFuseboxSession |= session.hasFuseboxClient();
-  });
-  return hasActiveFuseboxSession;
-}
-
-void HostTarget::emitTracingProfileForFirstFuseboxClient(
-    tracing::HostTracingProfile tracingProfile) {
+bool HostTarget::maybeEmitStashedBackgroundTrace() {
   bool emitted = false;
   sessions_.forEach([&](auto& session) {
     if (emitted) {
-      /**
-       * HostTracingProfile object is not copiable for performance reasons,
-       * because it could contain large Runtime sampling profile object.
-       *
-       * This approach would not work with multi-client debugger setup.
-       */
       return;
     }
-    if (session.hasFuseboxClient()) {
-      session.emitHostTracingProfile(std::move(tracingProfile));
+    if (session.agent().hasFuseboxClientConnected()) {
+      auto stashedTrace = std::exchange(stashedTracingProfile_, std::nullopt);
+      if (stashedTrace) {
+        session.agent().emitExternalTracingProfile(std::move(*stashedTrace));
+      }
       emitted = true;
     }
   });
+  return emitted;
+}
+
+bool HostTarget::stopAndMaybeEmitBackgroundTrace() {
+  stashedTracingProfile_ = stopTracing();
+  return maybeEmitStashedBackgroundTrace();
 }
 
 } // namespace facebook::react::jsinspector_modern

@@ -73,13 +73,16 @@ JReactHostInspectorTarget::initHybrid(
 }
 
 void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
+  inspectorTarget().sendCommand(HostCommand::DebuggerResume);
+}
+
+jsinspector_modern::HostTarget& JReactHostInspectorTarget::inspectorTarget() {
   if (inspectorTarget_) {
-    inspectorTarget_->sendCommand(HostCommand::DebuggerResume);
-  } else {
-    jni::throwNewJavaException(
-        "java/lang/IllegalStateException",
-        "Cannot send command while the Fusebox backend is not enabled");
+    return *inspectorTarget_;
   }
+  jni::throwNewJavaException(
+      "java/lang/IllegalStateException",
+      "Inspector method called while the Fusebox backend is not enabled.");
 }
 
 jsinspector_modern::HostTargetMetadata
@@ -147,58 +150,22 @@ HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
 }
 
 bool JReactHostInspectorTarget::startBackgroundTrace() {
-  if (inspectorTarget_) {
-    return inspectorTarget_->startTracing(
-        tracing::Mode::Background,
-        {
-            tracing::Category::HiddenTimeline,
-            tracing::Category::RuntimeExecution,
-            tracing::Category::Timeline,
-            tracing::Category::UserTiming,
-        });
-  } else {
-    jni::throwNewJavaException(
-        "java/lang/IllegalStateException",
-        "Cannot start Tracing session while the Fusebox backend is not enabled.");
-  }
+  return inspectorTarget().startTracing(
+      tracing::Mode::Background,
+      {
+          tracing::Category::HiddenTimeline,
+          tracing::Category::RuntimeExecution,
+          tracing::Category::Timeline,
+          tracing::Category::UserTiming,
+      });
 }
 
-tracing::HostTracingProfile JReactHostInspectorTarget::stopTracing() {
-  if (inspectorTarget_) {
-    return inspectorTarget_->stopTracing();
-  } else {
-    jni::throwNewJavaException(
-        "java/lang/IllegalStateException",
-        "Cannot stop Tracing session while the Fusebox backend is not enabled.");
-  }
+void JReactHostInspectorTarget::stopTracing() {
+  inspectorTarget().stopTracing();
 }
 
 jboolean JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace() {
-  auto capturedTrace = inspectorTarget_->stopTracing();
-  if (inspectorTarget_->hasActiveSessionWithFuseboxClient()) {
-    inspectorTarget_->emitTracingProfileForFirstFuseboxClient(
-        std::move(capturedTrace));
-    return jboolean(true);
-  }
-
-  stashTracingProfile(std::move(capturedTrace));
-  return jboolean(false);
-}
-
-void JReactHostInspectorTarget::stopAndDiscardBackgroundTrace() {
-  inspectorTarget_->stopTracing();
-}
-
-void JReactHostInspectorTarget::stashTracingProfile(
-    tracing::HostTracingProfile&& hostTracingProfile) {
-  stashedTracingProfile_ = std::move(hostTracingProfile);
-}
-
-std::optional<tracing::HostTracingProfile> JReactHostInspectorTarget::
-    unstable_getHostTracingProfileThatWillBeEmittedOnInitialization() {
-  auto tracingProfile = std::move(stashedTracingProfile_);
-  stashedTracingProfile_.reset();
-  return tracingProfile;
+  return jboolean(inspectorTarget().stopAndMaybeEmitBackgroundTrace());
 }
 
 void JReactHostInspectorTarget::registerNatives() {
@@ -213,9 +180,7 @@ void JReactHostInspectorTarget::registerNatives() {
       makeNativeMethod(
           "stopAndMaybeEmitBackgroundTrace",
           JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace),
-      makeNativeMethod(
-          "stopAndDiscardBackgroundTrace",
-          JReactHostInspectorTarget::stopAndDiscardBackgroundTrace),
+      makeNativeMethod("stopTracing", JReactHostInspectorTarget::stopTracing),
       makeNativeMethod(
           "getTracingState", JReactHostInspectorTarget::getTracingState),
       makeNativeMethod(
@@ -256,7 +221,7 @@ HostTargetTracingDelegate* JReactHostInspectorTarget::getTracingDelegate() {
 
 void JReactHostInspectorTarget::recordFrameTimings(
     jni::alias_ref<JFrameTimingSequence::javaobject> frameTimingSequence) {
-  inspectorTarget_->recordFrameTimings({
+  inspectorTarget().recordFrameTimings({
       frameTimingSequence->getId(),
       frameTimingSequence->getThreadId(),
       frameTimingSequence->getBeginDrawingTimestamp(),

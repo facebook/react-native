@@ -236,13 +236,11 @@ class HostAgent::Impl final {
         emitSystemStateChanged(isSingleHost);
       }
 
-      auto stashedTraceRecording =
-          targetController_.getDelegate()
-              .unstable_getHostTracingProfileThatWillBeEmittedOnInitialization();
-      if (stashedTraceRecording.has_value()) {
-        tracingAgent_.emitExternalHostTracingProfile(
-            std::move(stashedTraceRecording.value()));
-      }
+      auto emitted = targetController_.maybeEmitStashedBackgroundTrace();
+      assert(
+          emitted &&
+          "Expected to find at least one session eligible to receive a background trace after ReactNativeApplication.enable");
+      (void)emitted;
 
       return {
           .isFinishedHandlingRequest = true,
