@@ -706,6 +706,60 @@ public class FabricUIManager
   }
 
   /**
+   * Returns the bounding rectangles for all text fragments that belong to the specified react tag.
+   * This is useful for getting the visual boundaries of nested {@code <Text>} components within a
+   * paragraph.
+   *
+   * @param preparedLayout The prepared text layout containing the layout and react tags
+   * @param targetReactTag The react tag of the TextShadowNode to get rects for
+   * @return A FloatArray containing [x, y, width, height] for each fragment rect, or empty array if
+   *     no fragments match the tag
+   */
+  @AnyThread
+  @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
+  public float[] getFragmentRectsForReactTag(PreparedLayout preparedLayout, int targetReactTag) {
+    return TextLayoutManager.getFragmentRectsForReactTag(preparedLayout, targetReactTag);
+  }
+
+  /**
+   * Returns the bounding rectangles for all text fragments that belong to the specified react tag
+   * by creating a layout on-demand from the AttributedString. This is used as a fallback when
+   * PreparedLayout is not available (e.g., when enablePreparedTextLayout feature flag is disabled).
+   *
+   * @param surfaceId The surface ID to get context from
+   * @param attributedString The attributed string containing the text fragments
+   * @param paragraphAttributes The paragraph attributes for layout
+   * @param width The layout width constraint
+   * @param height The layout height constraint
+   * @param targetReactTag The react tag of the TextShadowNode to get rects for
+   * @return A FloatArray containing [x, y, width, height] for each fragment rect, or empty array if
+   *     no fragments match the tag
+   */
+  @AnyThread
+  @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
+  public float[] getFragmentRectsFromAttributedString(
+      int surfaceId,
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
+      float width,
+      float height,
+      int targetReactTag) {
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    Context context = surfaceMountingManager != null ? surfaceMountingManager.getContext() : null;
+    if (context == null) {
+      FLog.w(
+          TAG,
+          "Couldn't get context for surfaceId %d in getFragmentRectsFromAttributedString",
+          surfaceId);
+      return new float[0];
+    }
+    return TextLayoutManager.getFragmentRectsFromAttributedString(
+        context, attributedString, paragraphAttributes, width, height, targetReactTag);
+  }
+
+  /**
    * @param surfaceId {@link int} surface ID
    * @param defaultTextInputPadding {@link float[]} output parameter will contain the default theme
    *     padding used by RN Android TextInput.

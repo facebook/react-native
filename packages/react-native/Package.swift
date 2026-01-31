@@ -423,6 +423,10 @@ let reactCore = RNTarget(
 let reactFabric = RNTarget(
   name: .reactFabric,
   path: "ReactCommon/react/renderer",
+  searchPaths: [
+    "ReactCommon/react/renderer/components/text/platform/cxx", // For <react/renderer/components/text/ParagraphState.h>
+    "ReactCommon/react/renderer/textlayoutmanager/platform/ios", // For <react/renderer/textlayoutmanager/TextLayoutManager.h>
+  ],
   excludedPaths: [
     "animations/tests",
     "attributedstring/tests",
@@ -456,7 +460,7 @@ let reactFabric = RNTarget(
     "components/root/tests",
   ],
   dependencies: [.reactNativeDependencies, .reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics, .yoga],
-  sources: ["animationbackend", "animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/view/platform/cxx", "components/scrollview", "components/scrollview/platform/cxx", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "observers/intersection", "telemetry", "consistency", "leakchecker", "uimanager", "uimanager/consistency"]
+  sources: ["animationbackend", "animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/view/platform/cxx", "components/scrollview", "components/scrollview/platform/cxx", "components/legacyviewmanagerinterop", "scheduler", "mounting", "observers/events", "observers/intersection", "telemetry", "consistency", "leakchecker", "uimanager", "uimanager/consistency"]
 )
 
 let reactFabricInputAccessory = RNTarget(
@@ -486,6 +490,13 @@ let reactFabricSafeAreaView = RNTarget(
   name: .reactFabricSafeAreaView,
   path: "ReactCommon/react/renderer/components/safeareaview",
   dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
+)
+
+let reactFabricDOM = RNTarget(
+  name: .reactFabricDOM,
+  path: "ReactCommon/react/renderer/dom",
+  dependencies: [.reactNativeDependencies, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactFabricText],
+  sources: ["."]
 )
 
 let reactFabricTextLayoutManager = RNTarget(
@@ -656,6 +667,7 @@ let targets = [
   reactFabricImage,
   reactFabricInputAccessory,
   reactFabricModal,
+  reactFabricDOM,
   reactFabricSafeAreaView,
   reactFabricSwitch,
   reactFabricTextLayoutManager,
@@ -835,6 +847,7 @@ extension String {
   static let reactFabric = "React-Fabric"
   static let reactRCTFabric = "React-RCTFabric"
 
+  static let reactFabricDOM = "React-FabricDOM"
   static let reactFabricImage = "React-FabricImage"
   static let reactFabricInputAccessory = "React-FabricInputAccessory"
   static let reactFabricModal = "React-FabricModal"
