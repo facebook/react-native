@@ -297,79 +297,6 @@ public class NativeViewHierarchyManager {
     }
   }
 
-  private static String constructManageChildrenErrorMessage(
-      ViewGroup viewToManage,
-      ViewGroupManager viewManager,
-      @Nullable int[] indicesToRemove,
-      @Nullable ViewAtIndex[] viewsToAdd,
-      @Nullable int[] tagsToDelete) {
-    StringBuilder stringBuilder = new StringBuilder();
-
-    if (null != viewToManage) {
-      stringBuilder.append(
-          "View tag:"
-              + viewToManage.getId()
-              + " View Type:"
-              + viewToManage.getClass().toString()
-              + "\n");
-      stringBuilder.append("  children(" + viewManager.getChildCount(viewToManage) + "): [\n");
-      for (int index = 0; viewManager.getChildAt(viewToManage, index) != null; index += 16) {
-        for (int innerOffset = 0;
-            viewManager.getChildAt(viewToManage, index + innerOffset) != null && innerOffset < 16;
-            innerOffset++) {
-          stringBuilder.append(
-              viewManager.getChildAt(viewToManage, index + innerOffset).getId() + ",");
-        }
-        stringBuilder.append("\n");
-      }
-      stringBuilder.append(" ],\n");
-    }
-
-    if (indicesToRemove != null) {
-      stringBuilder.append("  indicesToRemove(" + indicesToRemove.length + "): [\n");
-      for (int index = 0; index < indicesToRemove.length; index += 16) {
-        for (int innerOffset = 0;
-            ((index + innerOffset) < indicesToRemove.length) && innerOffset < 16;
-            innerOffset++) {
-          stringBuilder.append(indicesToRemove[index + innerOffset] + ",");
-        }
-        stringBuilder.append("\n");
-      }
-      stringBuilder.append(" ],\n");
-    }
-    if (viewsToAdd != null) {
-      stringBuilder.append("  viewsToAdd(" + viewsToAdd.length + "): [\n");
-      for (int index = 0; index < viewsToAdd.length; index += 16) {
-        for (int innerOffset = 0;
-            ((index + innerOffset) < viewsToAdd.length) && innerOffset < 16;
-            innerOffset++) {
-          stringBuilder.append(
-              "["
-                  + viewsToAdd[index + innerOffset].mIndex
-                  + ","
-                  + viewsToAdd[index + innerOffset].mTag
-                  + "],");
-        }
-        stringBuilder.append("\n");
-      }
-      stringBuilder.append(" ],\n");
-    }
-    if (tagsToDelete != null) {
-      stringBuilder.append("  tagsToDelete(" + tagsToDelete.length + "): [\n");
-      for (int index = 0; index < tagsToDelete.length; index += 16) {
-        for (int innerOffset = 0;
-            ((index + innerOffset) < tagsToDelete.length) && innerOffset < 16;
-            innerOffset++) {
-          stringBuilder.append(tagsToDelete[index + innerOffset] + ",");
-        }
-        stringBuilder.append("\n");
-      }
-      stringBuilder.append(" ]\n");
-    }
-
-    return stringBuilder.toString();
-  }
-
   private Set<Integer> getPendingDeletionsForTag(int tag) {
     if (mPendingDeletionsForTag == null) {
       mPendingDeletionsForTag = new HashMap<>();
@@ -382,147 +309,6 @@ public class NativeViewHierarchyManager {
     return mPendingDeletionsForTag.get(tag);
   }
 
-  /**
-   * @param tag react tag of the node we want to manage
-   * @param indicesToRemove ordered (asc) list of indices at which view should be removed
-   * @param viewsToAdd ordered (asc based on mIndex property) list of tag-index pairs that represent
-   *     a view which should be added at the specified index
-   * @param tagsToDelete list of tags corresponding to views that should be removed
-   */
-  public synchronized void manageChildren(
-      final int tag,
-      @Nullable int[] indicesToRemove,
-      @Nullable ViewAtIndex[] viewsToAdd,
-      @Nullable int[] tagsToDelete) {
-    if (DEBUG_MODE) {
-      FLog.d(
-          TAG,
-          "createView[%d]: %s %s %s",
-          tag,
-          (indicesToRemove != null ? indicesToRemove.toString() : "<null>"),
-          (viewsToAdd != null ? viewsToAdd.toString() : "<null>"),
-          (tagsToDelete != null ? tagsToDelete.toString() : "<null>"));
-    }
-    UiThreadUtil.assertOnUiThread();
-
-    final Set<Integer> pendingDeletionTags = getPendingDeletionsForTag(tag);
-    final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
-    final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
-    if (viewToManage == null) {
-      throw new IllegalViewOperationException(
-          "Trying to manageChildren view with tag "
-              + tag
-              + " which doesn't exist\n detail: "
-              + constructManageChildrenErrorMessage(
-                  viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
-    }
-
-    int lastIndexToRemove = viewManager.getChildCount(viewToManage);
-
-    if (indicesToRemove != null) {
-      for (int i = indicesToRemove.length - 1; i >= 0; i--) {
-        int indexToRemove = indicesToRemove[i];
-        if (indexToRemove < 0) {
-          throw new IllegalViewOperationException(
-              "Trying to remove a negative view index:"
-                  + indexToRemove
-                  + " view tag: "
-                  + tag
-                  + "\n detail: "
-                  + constructManageChildrenErrorMessage(
-                      viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
-        }
-        if (viewManager.getChildAt(viewToManage, indexToRemove) == null) {
-          if (mRootTags.get(tag) && viewManager.getChildCount(viewToManage) == 0) {
-            // This root node has already been removed (likely due to a threading issue caused by
-            // async js execution). Ignore this root removal.
-            return;
-          }
-          throw new IllegalViewOperationException(
-              "Trying to remove a view index above child "
-                  + "count "
-                  + indexToRemove
-                  + " view tag: "
-                  + tag
-                  + "\n detail: "
-                  + constructManageChildrenErrorMessage(
-                      viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
-        }
-        if (indexToRemove >= lastIndexToRemove) {
-          throw new IllegalViewOperationException(
-              "Trying to remove an out of order view index:"
-                  + indexToRemove
-                  + " view tag: "
-                  + tag
-                  + "\n detail: "
-                  + constructManageChildrenErrorMessage(
-                      viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
-        }
-
-        if (!mLayoutAnimationEnabled) {
-          viewManager.removeViewAt(viewToManage, indexToRemove);
-        }
-
-        lastIndexToRemove = indexToRemove;
-      }
-    }
-
-    if (tagsToDelete != null) {
-      for (int i = 0; i < tagsToDelete.length; i++) {
-        int tagToDelete = tagsToDelete[i];
-        final View viewToDestroy = mTagsToViews.get(tagToDelete);
-        if (viewToDestroy == null) {
-          throw new IllegalViewOperationException(
-              "Trying to destroy unknown view tag: "
-                  + tagToDelete
-                  + "\n detail: "
-                  + constructManageChildrenErrorMessage(
-                      viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
-        }
-
-        if (!mLayoutAnimationEnabled) {
-          dropView(viewToDestroy);
-        }
-      }
-    }
-
-    if (viewsToAdd != null) {
-      for (int i = 0; i < viewsToAdd.length; i++) {
-        ViewAtIndex viewAtIndex = viewsToAdd[i];
-        View viewToAdd = mTagsToViews.get(viewAtIndex.mTag);
-        if (viewToAdd == null) {
-          throw new IllegalViewOperationException(
-              "Trying to add unknown view tag: "
-                  + viewAtIndex.mTag
-                  + "\n detail: "
-                  + constructManageChildrenErrorMessage(
-                      viewToManage, viewManager, indicesToRemove, viewsToAdd, tagsToDelete));
-        }
-
-        int normalizedIndex = viewAtIndex.mIndex;
-        if (!pendingDeletionTags.isEmpty()) {
-          normalizedIndex = 0;
-          int counter = 0;
-          while (normalizedIndex < viewToManage.getChildCount()) {
-            if (counter == viewAtIndex.mIndex) {
-              break;
-            }
-            View v = viewToManage.getChildAt(normalizedIndex);
-            if (!pendingDeletionTags.contains(v.getId())) {
-              counter++;
-            }
-            normalizedIndex++;
-          }
-        }
-
-        viewManager.addView(viewToManage, viewToAdd, normalizedIndex);
-      }
-    }
-    if (pendingDeletionTags.isEmpty()) {
-      mPendingDeletionsForTag.remove(tag);
-    }
-  }
-
   private boolean arrayContains(@Nullable int[] array, int ele) {
     if (array == null) {
       return false;
@@ -533,19 +319,6 @@ public class NativeViewHierarchyManager {
       }
     }
     return false;
-  }
-
-  /**
-   * Simplified version of constructManageChildrenErrorMessage that only deals with adding children
-   * views
-   */
-  private static String constructSetChildrenErrorMessage(
-      ViewGroup viewToManage, ViewGroupManager viewManager, ReadableArray childrenTags) {
-    ViewAtIndex[] viewsToAdd = new ViewAtIndex[childrenTags.size()];
-    for (int i = 0; i < childrenTags.size(); i++) {
-      viewsToAdd[i] = new ViewAtIndex(childrenTags.getInt(i), i);
-    }
-    return constructManageChildrenErrorMessage(viewToManage, viewManager, null, viewsToAdd, null);
   }
 
   /** Simplified version of manageChildren that only deals with adding children views */
@@ -565,10 +338,7 @@ public class NativeViewHierarchyManager {
       View viewToAdd = mTagsToViews.get(childrenTags.getInt(i));
       if (viewToAdd == null) {
         throw new IllegalViewOperationException(
-            "Trying to add unknown view tag: "
-                + childrenTags.getInt(i)
-                + "\n detail: "
-                + constructSetChildrenErrorMessage(viewToManage, viewManager, childrenTags));
+            "Trying to add unknown view tag: " + childrenTags.getInt(i));
       }
       viewManager.addView(viewToManage, viewToAdd, i);
     }
