@@ -1431,4 +1431,162 @@ TEST(LayoutableShadowNodeTest, inversedContentOriginOffset) {
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 130);
 }
 
+/*
+ * Tests for computeOriginFromRoot utility function.
+ * These tests cross-validate computeOriginFromRoot against
+ * computeRelativeLayoutMetrics to ensure they produce consistent results.
+ */
+TEST(LayoutableShadowNodeTest, computeOriginFromRoot) {
+  auto builder = simpleComponentBuilder();
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.origin = {.x=100, .y=200};
+        layoutMetrics.frame.size = {.width=500, .height=500};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {.x=10, .y=20};
+          layoutMetrics.frame.size = {.width=100, .height=200};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .reference(childShadowNode)
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  // Get expected origin from computeRelativeLayoutMetrics
+  auto relativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode->getFamily(), *parentShadowNode, {});
+
+  // Compute origin using computeOriginFromRoot
+  // Parent's origin from root is {0, 0} since parent is the root
+  Point parentOriginFromRoot = {.x = 0, .y = 0};
+  auto computedOrigin = LayoutableShadowNode::computeOriginFromRoot(
+      parentOriginFromRoot,
+      childShadowNode->getLayoutMetrics().frame,
+      childShadowNode->getTransform(),
+      childShadowNode->getContentOriginOffset(true));
+
+  EXPECT_EQ(computedOrigin.x, relativeLayoutMetrics.frame.origin.x);
+  EXPECT_EQ(computedOrigin.y, relativeLayoutMetrics.frame.origin.y);
+}
+
+TEST(LayoutableShadowNodeTest, computeOriginFromRootWithTransform) {
+  auto builder = simpleComponentBuilder();
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {.width=1000, .height=1000};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {.x=10, .y=20};
+          layoutMetrics.frame.size = {.width=100, .height=200};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .props([] {
+          auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+          sharedProps->transform = Transform::Scale(0.5, 0.5, 1);
+          return sharedProps;
+        })
+        .reference(childShadowNode)
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  // Get expected origin from computeRelativeLayoutMetrics
+  auto relativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode->getFamily(), *parentShadowNode, {});
+
+  // Compute origin using computeOriginFromRoot
+  Point parentOriginFromRoot = {.x = 0, .y = 0};
+  auto computedOrigin = LayoutableShadowNode::computeOriginFromRoot(
+      parentOriginFromRoot,
+      childShadowNode->getLayoutMetrics().frame,
+      childShadowNode->getTransform(),
+      childShadowNode->getContentOriginOffset(true));
+
+  EXPECT_EQ(computedOrigin.x, relativeLayoutMetrics.frame.origin.x);
+  EXPECT_EQ(computedOrigin.y, relativeLayoutMetrics.frame.origin.y);
+}
+
+TEST(LayoutableShadowNodeTest, computeOriginFromRootNested) {
+  auto builder = simpleComponentBuilder();
+  auto parentShadowNode = std::shared_ptr<ViewShadowNode>{};
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.origin = {.x=0, .y=0};
+        layoutMetrics.frame.size = {.width=1000, .height=1000};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {.x=50, .y=50};
+          layoutMetrics.frame.size = {.width=200, .height=200};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .reference(parentShadowNode)
+        .children({
+          Element<ViewShadowNode>()
+            .finalize([](ViewShadowNode &shadowNode){
+              auto layoutMetrics = EmptyLayoutMetrics;
+              layoutMetrics.frame.origin = {.x=10, .y=20};
+              layoutMetrics.frame.size = {.width=100, .height=100};
+              shadowNode.setLayoutMetrics(layoutMetrics);
+            })
+            .reference(childShadowNode)
+        })
+    });
+  // clang-format on
+
+  auto rootShadowNode = builder.build(element);
+
+  // Get expected origin from computeRelativeLayoutMetrics
+  auto relativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode->getFamily(), *rootShadowNode, {});
+
+  // Compute origin using computeOriginFromRoot
+  // First compute parent's origin from root
+  Point rootOrigin = {.x = 0, .y = 0};
+  auto parentOriginFromRoot = LayoutableShadowNode::computeOriginFromRoot(
+      rootOrigin,
+      parentShadowNode->getLayoutMetrics().frame,
+      parentShadowNode->getTransform(),
+      parentShadowNode->getContentOriginOffset(true));
+
+  // Then compute child's origin from root using parent's origin
+  auto computedOrigin = LayoutableShadowNode::computeOriginFromRoot(
+      parentOriginFromRoot,
+      childShadowNode->getLayoutMetrics().frame,
+      childShadowNode->getTransform(),
+      childShadowNode->getContentOriginOffset(true));
+
+  EXPECT_EQ(computedOrigin.x, relativeLayoutMetrics.frame.origin.x);
+  EXPECT_EQ(computedOrigin.y, relativeLayoutMetrics.frame.origin.y);
+}
+
 } // namespace facebook::react

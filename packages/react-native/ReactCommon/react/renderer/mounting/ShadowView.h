@@ -45,6 +45,7 @@ struct ShadowView final {
   Props::Shared props{};
   EventEmitter::Shared eventEmitter{};
   LayoutMetrics layoutMetrics{EmptyLayoutMetrics};
+  Point originFromRoot{};
   State::Shared state{};
 };
 
@@ -73,6 +74,7 @@ struct hash<facebook::react::ShadowView> {
         shadowView.props,
         shadowView.eventEmitter,
         shadowView.layoutMetrics,
+        shadowView.originFromRoot,
         shadowView.state);
   }
 };
