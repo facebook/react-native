@@ -108,6 +108,31 @@ const AccessibilityInfo = {
   },
 
   /**
+   * Query whether Differentiate Without Color is currently enabled. iOS only.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when the Differentiate Without Color setting is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo#isDifferentiateWithoutColorEnabled
+   */
+  isDifferentiateWithoutColorEnabled(): Promise<boolean> {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(false);
+    } else {
+      return new Promise((resolve, reject) => {
+        if (NativeAccessibilityManagerIOS != null) {
+          NativeAccessibilityManagerIOS.getCurrentDifferentiateWithoutColorState(
+            resolve,
+            reject,
+          );
+        } else {
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
+        }
+      });
+    }
+  },
+
+  /**
    * Query whether grayscale is currently enabled.
    *
    * Returns a promise which resolves to a boolean.

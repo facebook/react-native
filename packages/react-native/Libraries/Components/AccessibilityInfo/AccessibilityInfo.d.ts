@@ -13,6 +13,7 @@ import {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
 type AccessibilityChangeEventName =
   | 'change' // deprecated, maps to screenReaderChanged
   | 'boldTextChanged' // iOS-only Event
+  | 'differentiateWithoutColorChanged' // iOS-only Event
   | 'grayscaleChanged' // iOS-only Event
   | 'invertColorsChanged' // iOS-only Event
   | 'reduceMotionChanged'
@@ -50,6 +51,13 @@ export interface AccessibilityInfoStatic {
    * @platform ios
    */
   isBoldTextEnabled: () => Promise<boolean>;
+
+  /**
+   * Query whether Differentiate Without Color is currently enabled.
+   *
+   * @platform ios
+   */
+  isDifferentiateWithoutColorEnabled: () => Promise<boolean>;
 
   /**
    * Query whether grayscale is currently enabled.
