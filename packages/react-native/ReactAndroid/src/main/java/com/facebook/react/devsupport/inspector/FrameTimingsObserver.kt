@@ -36,15 +36,8 @@ internal class FrameTimingsObserver(
 
   private val frameMetricsListener =
       Window.OnFrameMetricsAvailableListener { _, frameMetrics, _dropCount ->
-        val beginDrawingTimestamp = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP)
-        val commitTimestamp =
-            beginDrawingTimestamp + frameMetrics.getMetric(FrameMetrics.INPUT_HANDLING_DURATION)
-        +frameMetrics.getMetric(FrameMetrics.ANIMATION_DURATION)
-        +frameMetrics.getMetric(FrameMetrics.LAYOUT_MEASURE_DURATION)
-        +frameMetrics.getMetric(FrameMetrics.DRAW_DURATION)
-        +frameMetrics.getMetric(FrameMetrics.SYNC_DURATION)
-        val endDrawingTimestamp =
-            beginDrawingTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
+        val beginTimestamp = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP)
+        val endTimestamp = beginTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
 
         val frameId = frameCounter++
         val threadId = Process.myTid()
@@ -56,9 +49,8 @@ internal class FrameTimingsObserver(
               FrameTimingSequence(
                   frameId,
                   threadId,
-                  beginDrawingTimestamp,
-                  commitTimestamp,
-                  endDrawingTimestamp,
+                  beginTimestamp,
+                  endTimestamp,
                   screenshot,
               )
           )

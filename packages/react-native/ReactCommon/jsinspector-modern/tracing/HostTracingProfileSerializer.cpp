@@ -106,19 +106,17 @@ constexpr int FALLBACK_LAYER_TREE_ID = 1;
       chunk = generateNewChunk(chunkSize);
     }
 
-    auto [beginDrawingEvent, commitEvent, endDrawingEvent] =
+    auto [beginDrawingEvent, endDrawingEvent] =
         TraceEventGenerator::createFrameTimingsEvents(
             frameTimingSequence.id,
             FALLBACK_LAYER_TREE_ID,
-            frameTimingSequence.beginDrawingTimestamp,
-            frameTimingSequence.commitTimestamp,
-            frameTimingSequence.endDrawingTimestamp,
+            frameTimingSequence.beginTimestamp,
+            frameTimingSequence.endTimestamp,
             processId,
             frameTimingSequence.threadId);
 
     chunk.push_back(
         TraceEventSerializer::serialize(std::move(beginDrawingEvent)));
-    chunk.push_back(TraceEventSerializer::serialize(std::move(commitEvent)));
     chunk.push_back(
         TraceEventSerializer::serialize(std::move(endDrawingEvent)));
 
@@ -127,7 +125,7 @@ constexpr int FALLBACK_LAYER_TREE_ID = 1;
           frameTimingSequence.id,
           FALLBACK_LAYER_TREE_ID,
           std::move(frameTimingSequence.screenshot.value()),
-          frameTimingSequence.endDrawingTimestamp,
+          frameTimingSequence.endTimestamp,
           processId,
           frameTimingSequence.threadId);
 

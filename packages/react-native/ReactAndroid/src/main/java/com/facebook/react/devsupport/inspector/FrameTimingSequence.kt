@@ -10,8 +10,7 @@ package com.facebook.react.devsupport.inspector
 internal data class FrameTimingSequence(
     val id: Int,
     val threadId: Int,
-    val beginDrawingTimestamp: Long,
-    val commitTimestamp: Long,
-    val endDrawingTimestamp: Long,
+    val beginTimestamp: Long,
+    val endTimestamp: Long,
     val screenshot: String? = null,
 )
