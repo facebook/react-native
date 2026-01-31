@@ -79,6 +79,18 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     // This delegate method is not currently used on iOS.
   }
 
+  void schedulerShouldResumeAnimationBackend() override
+  {
+    // Does nothing.
+    // This delegate method is not currently used on iOS.
+  }
+
+  void schedulerShouldPauseAnimationBackend() override
+  {
+    // Does nothing.
+    // This delegate method is not currently used on iOS.
+  }
+
  private:
   void *scheduler_;
 };
