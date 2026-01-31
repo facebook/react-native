@@ -274,6 +274,30 @@ NativeDOM::getBoundingClientRect(
   return std::tuple{domRect.x, domRect.y, domRect.width, domRect.height};
 }
 
+std::vector<std::tuple<
+    /* x: */ double,
+    /* y: */ double,
+    /* width: */ double,
+    /* height: */ double>>
+NativeDOM::getClientRects(
+    jsi::Runtime& rt,
+    std::shared_ptr<const ShadowNode> shadowNode) {
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    return {};
+  }
+
+  auto domRects = dom::getClientRects(currentRevision, *shadowNode);
+
+  std::vector<std::tuple<double, double, double, double>> result;
+  result.reserve(domRects.size());
+  for (const auto& rect : domRects) {
+    result.emplace_back(rect.x, rect.y, rect.width, rect.height);
+  }
+  return result;
+}
+
 std::tuple</* width: */ int, /* height: */ int> NativeDOM::getInnerSize(
     jsi::Runtime& rt,
     std::shared_ptr<const ShadowNode> shadowNode) {
