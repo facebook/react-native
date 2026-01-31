@@ -9,13 +9,14 @@
  */
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
+import {isBridgeless} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import Platform from '../Utilities/Platform';
 
 function shouldUseTurboAnimatedModule(): boolean {
   if (ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()) {
     return false;
   } else {
-    return Platform.OS === 'ios' && global.RN$Bridgeless === true;
+    return Platform.OS === 'ios' && isBridgeless;
   }
 }
 

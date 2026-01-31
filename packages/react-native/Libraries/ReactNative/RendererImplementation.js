@@ -18,6 +18,7 @@ import {
   onRecoverableError,
   onUncaughtError,
 } from '../../src/private/renderer/errorhandling/ErrorHandlers';
+import {isBridgeless} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import * as React from 'react';
 
 let cachedFabricRenderer;
@@ -116,7 +117,7 @@ export function dispatchCommand(
   command: string,
   args: Array<unknown>,
 ): void {
-  if (global.RN$Bridgeless === true) {
+  if (isBridgeless) {
     // Note: this function has the same implementation in the legacy and new renderer.
     // However, evaluating the old renderer comes with some side effects.
     if (cachedFabricDispatchCommand == null) {
