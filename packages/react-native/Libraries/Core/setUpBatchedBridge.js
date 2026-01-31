@@ -10,10 +10,11 @@
 
 'use strict';
 
+import {isBridgeless} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import registerModule from './registerCallableModule';
 
 registerModule('Systrace', () => require('../Performance/Systrace'));
-if (!(global.RN$Bridgeless === true)) {
+if (!isBridgeless) {
   registerModule('JSTimers', () => require('./Timers/JSTimers').default);
 }
 registerModule('RCTLog', () => require('../Utilities/RCTLog').default);

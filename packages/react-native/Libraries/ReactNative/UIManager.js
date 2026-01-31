@@ -10,6 +10,7 @@
 
 import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
+import {isBridgeless} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import {getFabricUIManager} from './FabricUIManager';
 import nullthrows from 'nullthrows';
 
@@ -18,10 +19,9 @@ function isFabricReactTag(reactTag: number): boolean {
   return reactTag % 2 === 0;
 }
 
-const UIManagerImpl: UIManagerJSInterface =
-  global.RN$Bridgeless === true
-    ? require('./BridgelessUIManager').default
-    : require('./PaperUIManager').default;
+const UIManagerImpl: UIManagerJSInterface = isBridgeless
+  ? require('./BridgelessUIManager').default
+  : require('./PaperUIManager').default;
 
 // $FlowFixMe[cannot-spread-interface]
 const UIManager: UIManagerJSInterface = {

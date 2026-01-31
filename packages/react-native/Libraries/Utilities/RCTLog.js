@@ -10,7 +10,8 @@
 
 'use strict';
 
-const invariant = require('invariant');
+import {nativeLoggingHook} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
+import invariant from 'invariant';
 
 const levelsMap = {
   log: 'log',
@@ -26,7 +27,7 @@ const RCTLog = {
   // level one of log, info, warn, error, mustfix
   logIfNoNativeHook(level: string, ...args: Array<unknown>): void {
     // We already printed in the native console, so only log here if using a js debugger
-    if (typeof global.nativeLoggingHook === 'undefined') {
+    if (nativeLoggingHook == null) {
       RCTLog.logToConsole(level, ...args);
     } else {
       // Report native warnings to LogBox

@@ -19,15 +19,17 @@ import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStac
 
 const {TestModule} = NativeModules;
 
+declare const globalEvalWithSourceUrl: ?(code: string, url?: string) => unknown;
+
 function GlobalEvalWithSourceUrlTest(): React.Node {
   useEffect(() => {
-    if (typeof global.globalEvalWithSourceUrl !== 'function') {
+    if (typeof globalEvalWithSourceUrl !== 'function') {
       throw new Error(
         'Expected to find globalEvalWithSourceUrl function on global object but found ' +
-          typeof global.globalEvalWithSourceUrl,
+          typeof globalEvalWithSourceUrl,
       );
     }
-    const value = global.globalEvalWithSourceUrl('42');
+    const value = globalEvalWithSourceUrl('42');
     if (value !== 42) {
       throw new Error(
         'Expected globalEvalWithSourceUrl(expression) to return a value',
@@ -35,7 +37,7 @@ function GlobalEvalWithSourceUrlTest(): React.Node {
     }
     let syntaxError: ?ExtendedError;
     try {
-      global.globalEvalWithSourceUrl('{');
+      globalEvalWithSourceUrl('{');
     } catch (e) {
       syntaxError = e;
     }
@@ -57,7 +59,7 @@ function GlobalEvalWithSourceUrlTest(): React.Node {
     const url = 'http://example.com/foo.js';
     let error;
     try {
-      global.globalEvalWithSourceUrl('throw new Error()', url);
+      globalEvalWithSourceUrl('throw new Error()', url);
     } catch (e) {
       error = e;
     }
