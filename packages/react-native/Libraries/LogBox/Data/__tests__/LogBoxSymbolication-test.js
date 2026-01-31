@@ -40,20 +40,16 @@ describe('LogBoxSymbolication', () => {
   });
 
   it('symbolicates different stacks', () => {
-    // $FlowFixMe[unused-promise]
-    LogBoxSymbolication.symbolicate(createStack(['A', 'B', 'C']));
-    // $FlowFixMe[unused-promise]
-    LogBoxSymbolication.symbolicate(createStack(['D', 'E', 'F']));
+    void LogBoxSymbolication.symbolicate(createStack(['A', 'B', 'C']));
+    void LogBoxSymbolication.symbolicate(createStack(['D', 'E', 'F']));
 
     expect(symbolicateStackTrace.mock.calls.length).toBe(2);
   });
 
   it('batch symbolicates equivalent stacks', () => {
     const stack = createStack(['A', 'B', 'C']);
-    // $FlowFixMe[unused-promise]
-    LogBoxSymbolication.symbolicate(stack);
-    // $FlowFixMe[unused-promise]
-    LogBoxSymbolication.symbolicate(stack);
+    void LogBoxSymbolication.symbolicate(stack);
+    void LogBoxSymbolication.symbolicate(stack);
 
     expect(symbolicateStackTrace.mock.calls.length).toBe(1);
   });
