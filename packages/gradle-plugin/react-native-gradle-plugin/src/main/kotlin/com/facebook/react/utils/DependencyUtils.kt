@@ -35,13 +35,16 @@ internal object DependencyUtils {
       val hermesV1VersionString: String,
       val reactGroupString: String = DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP,
       val hermesGroupString: String = DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP,
-  )
+  ) {
+    val isNightly: Boolean
+      get() = versionString.isNightly()
+  }
 
   /**
    * This method takes care of configuring the repositories{} block for both the app and all the 3rd
    * party libraries which are auto-linked.
    */
-  fun configureRepositories(project: Project) {
+  fun configureRepositories(project: Project, isNightly: Boolean) {
     val exclusiveEnterpriseRepository = project.rootProject.exclusiveEnterpriseRepository()
     if (exclusiveEnterpriseRepository != null) {
       project.logger.lifecycle(
@@ -67,9 +70,11 @@ internal object DependencyUtils {
           return@allprojects
         }
 
-        // We add the snapshot for users on nightlies.
-        mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
-          repo.content { it.excludeGroup("org.webkit") }
+        if (isNightly) {
+          // We add the snapshot for users on nightlies.
+          mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
+            repo.content { it.excludeGroup("org.webkit") }
+          }
         }
         repositories.mavenCentral { repo ->
           // We don't want to fetch JSC from Maven Central as there are older versions there.
@@ -210,7 +215,7 @@ internal object DependencyUtils {
     val versionStringFromFile = (reactAndroidProperties[INTERNAL_VERSION_NAME] as? String).orEmpty()
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
     val versionString =
-        if (versionStringFromFile.startsWith("0.0.0") || "-nightly-" in versionStringFromFile) {
+        if (versionStringFromFile.isNightly()) {
           "$versionStringFromFile-SNAPSHOT"
         } else {
           versionStringFromFile
@@ -273,6 +278,9 @@ internal object DependencyUtils {
             property(INCLUDE_JITPACK_REPOSITORY).toString().toBoolean()
         else -> INCLUDE_JITPACK_REPOSITORY_DEFAULT
       }
+
+  internal fun String.isNightly(): Boolean =
+      this.startsWith("0.0.0") || "-nightly-" in this
 
   internal fun Project.exclusiveEnterpriseRepository() =
       when {
