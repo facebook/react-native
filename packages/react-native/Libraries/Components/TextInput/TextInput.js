@@ -61,7 +61,7 @@ import useMergeRefs from '../../Utilities/useMergeRefs';
 import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
-import * as React from 'react';
+
 import {useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react';
 
 let AndroidTextInput;
