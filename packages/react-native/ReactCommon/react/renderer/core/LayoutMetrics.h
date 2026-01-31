@@ -14,6 +14,7 @@
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/utils/hash_combine.h>
 #include <algorithm>
+#include <limits>
 
 namespace facebook::react {
 
@@ -97,6 +98,16 @@ struct LayoutMetrics {
  */
 static const LayoutMetrics EmptyLayoutMetrics = {
     /* .frame = */ .frame = {.origin = {.x = 0, .y = 0}, .size = {.width = -1.0, .height = -1.0}}};
+
+/*
+ * Represents some undefined, not-yet-computed or meaningless value of
+ * `originFromRoot` (Point type).
+ * Used to indicate that originFromRoot has not been calculated for a node.
+ * The value uses negative infinity to distinguish from valid coordinates.
+ */
+static const Point EmptyOriginFromRoot = {
+    .x = -std::numeric_limits<Float>::infinity(),
+    .y = -std::numeric_limits<Float>::infinity()};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
