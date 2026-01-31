@@ -53,6 +53,14 @@ internal class JavaMethodWrapper(
   private var arguments: Array<Any?>? = null
   private var jsArgumentsNeeded = 0
 
+  val signature: String?
+    get() {
+      if (!argumentsProcessed) {
+        processArguments()
+      }
+      return checkNotNull(internalSignature)
+    }
+
   init {
     method.isAccessible = true
     parameterTypes = method.parameterTypes
@@ -85,14 +93,6 @@ internal class JavaMethodWrapper(
       SystraceMessage.endSection(TRACE_TAG_REACT).flush()
     }
   }
-
-  val signature: String?
-    get() {
-      if (!argumentsProcessed) {
-        processArguments()
-      }
-      return checkNotNull(internalSignature)
-    }
 
   private fun buildSignature(method: Method, paramTypes: Array<Class<*>>, isSync: Boolean): String =
       buildString(paramTypes.size + 2) {
@@ -249,13 +249,6 @@ internal class JavaMethodWrapper(
   }
 
   companion object {
-    init {
-      LegacyArchitectureLogger.assertLegacyArchitecture(
-          "JavaMethodWrapper",
-          LegacyArchitectureLogLevel.ERROR,
-      )
-    }
-
     private val ARGUMENT_EXTRACTOR_BOOLEAN: ArgumentExtractor<Boolean> =
         object : ArgumentExtractor<Boolean>() {
           @Suppress("DEPRECATION")
@@ -387,6 +380,13 @@ internal class JavaMethodWrapper(
 
     private val DEBUG =
         PrinterHolder.printer.shouldDisplayLogMessage(ReactDebugOverlayTags.BRIDGE_CALLS)
+
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "JavaMethodWrapper",
+          LegacyArchitectureLogLevel.ERROR,
+      )
+    }
 
     private fun paramTypeToChar(paramClass: Class<*>): Char {
       val tryCommon = commonTypeToChar(paramClass)
