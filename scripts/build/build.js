@@ -7,7 +7,18 @@
  * @flow
  * @format
  */
-
+/**
+ * Changelog:
+ * [Build System] Improve and refactor JavaScript and type definition build processes for monorepo packages in scripts/build/build.js. Adds stricter artifact validation, robust entry point handling, and better error output.
+ *
+ * Test Plan:
+ * 1. Build all packages: `node ./scripts/build/build.js` – expect “DONE” for all packages.
+ * 2. Build specific package: `node ./scripts/build/build.js <packageName>` – only that package builds.
+ * 3. Validate artifacts: `node ./scripts/build/build.js --validate` – exit 0 if OK, else error output.
+ * 4. TypeScript validation: break a .ts type, run build – see reported errors.
+ * 5. Exports rewrite: build, then inspect rewritten package.json "exports" field.
+ * 6. Error handling: remove required .flow.js, run build – see error message.
+ */
 require('../shared/babelRegister').registerForScript();
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../shared/consts');
