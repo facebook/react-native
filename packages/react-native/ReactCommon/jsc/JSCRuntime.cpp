@@ -146,6 +146,10 @@ class JSCRuntime : public jsi::Runtime {
     friend class JSCRuntime;
   };
 
+  using IRuntime::getProperty;
+  using IRuntime::hasProperty;
+  using IRuntime::setPropertyValue;
+
   PointerValue* cloneSymbol(const Runtime::PointerValue* pv) override;
   PointerValue* cloneBigInt(const Runtime::PointerValue* pv) override;
   PointerValue* cloneString(const Runtime::PointerValue* pv) override;
