@@ -10,8 +10,11 @@ package com.facebook.react.uiapp.component
 import android.graphics.Color
 import androidx.annotation.ColorInt
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.SimpleViewManager
+import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.ViewProps
@@ -34,8 +37,30 @@ internal class MyNativeViewManager :
 
   override fun getName(): String = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext): MyNativeView =
-      MyNativeView(reactContext)
+  private var delegatedInitialProps  = ReactStylesDiffMap(WritableNativeMap()) // capture props
+  override fun createViewInstance(
+    reactTag: Int,
+    reactContext: ThemedReactContext,
+    initialProps: ReactStylesDiffMap?,
+    stateWrapper: StateWrapper?
+  ): MyNativeView {
+    if (initialProps != null) {
+      delegatedInitialProps = initialProps
+    }
+    return super.createViewInstance(reactTag, reactContext, initialProps, stateWrapper)
+  }
+
+    override fun createViewInstance(reactContext: ThemedReactContext): MyNativeView {
+      // here, assume that all props from initialProps are urgently needed during view creation
+      if (!delegatedInitialProps.hasKey("isEnabled")) {
+        throw IllegalStateException("isEnabled prop is required for MyNativeView!")
+        // Note: i know that there is .getBoolean(value, defaultFallback).
+        // But the point is that I don't want to repeat typing the prop name in multiple places.
+        // "Worse" additionally, the user might has even passed the default value explicitly as prop,
+        // but its not received here on the native side.
+      }
+      return MyNativeView(reactContext /*, someComputedValue */)
+    }
 
   override fun callNativeMethodToChangeBackgroundColor(view: MyNativeView, color: String) {
     view.setBackgroundColor(Color.parseColor(color))
@@ -80,4 +105,8 @@ internal class MyNativeViewManager :
                       )
               )
       )
+
+  override fun setIsEnabled(view: MyNativeView?, value: Boolean) {
+    TODO("setIsEnabled called with value: $value")
+  }
 }
