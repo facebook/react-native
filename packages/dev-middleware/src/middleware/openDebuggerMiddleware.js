@@ -27,7 +27,7 @@ const LEGACY_SYNTHETIC_PAGE_TITLE =
   'React Native Experimental (Improved Chrome Reloads)';
 
 type Options = Readonly<{
-  serverBaseUrl: string,
+  serverBaseUrl: URL,
   logger?: Logger,
   browserLauncher: BrowserLauncher,
   eventReporter?: EventReporter,
@@ -88,7 +88,9 @@ export default function openDebuggerMiddleware({
       } = Object.fromEntries(searchParams);
 
       const targets = inspectorProxy
-        .getPageDescriptions({requestorRelativeBaseUrl: new URL(serverBaseUrl)})
+        .getPageDescriptions({
+          requestorRelativeBaseUrl: serverBaseUrl,
+        })
         .filter(app => {
           const betterReloadingSupport =
             app.title === LEGACY_SYNTHETIC_PAGE_TITLE ||
