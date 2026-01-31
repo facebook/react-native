@@ -111,4 +111,11 @@ std::optional<DOMRect> measureLayout(
     const ShadowNode &shadowNode,
     const ShadowNode &relativeToShadowNode);
 
+// Returns the bounding rects of all text fragments that belong to the given
+// shadow node within its parent Paragraph component. This is useful for getting
+// the visual boundaries of nested <Text> components within a text paragraph.
+// Returns an empty vector if the node is not a Text node or if it's not part
+// of a Paragraph.
+std::vector<DOMRect> getClientRects(const RootShadowNode::Shared &currentRevision, const ShadowNode &shadowNode);
+
 } // namespace facebook::react::dom
