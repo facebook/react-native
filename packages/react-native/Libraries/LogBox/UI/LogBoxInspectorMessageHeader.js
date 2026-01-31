@@ -14,6 +14,7 @@ import type {Message} from '../Data/parseLogBoxLog';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
+import LogBoxButton from './LogBoxButton';
 import LogBoxMessage from './LogBoxMessage';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
@@ -24,6 +25,7 @@ type Props = Readonly<{
   level: LogLevel,
   title: string,
   onPress: () => void,
+  onCopy: () => void,
 }>;
 
 const SHOW_MORE_MESSAGE_LENGTH = 300;
@@ -47,12 +49,25 @@ function LogBoxInspectorMessageHeader(props: Props): React.Node {
     <View style={messageStyles.body}>
       <View style={messageStyles.heading}>
         <Text
+          selectable={true}
           style={[messageStyles.headingText, messageStyles[props.level]]}
           id="logbox_message_title_text">
           {props.title}
         </Text>
+        <LogBoxButton
+          backgroundColor={{
+            default: 'transparent',
+            pressed: LogBoxStyle.getBackgroundDarkColor(1),
+          }}
+          onPress={props.onCopy}
+          style={messageStyles.copyButton}>
+          <Text style={messageStyles.copyButtonText}>Copy</Text>
+        </LogBoxButton>
       </View>
-      <Text style={messageStyles.bodyText} id="logbox_message_contents_text">
+      <Text
+        selectable={true}
+        style={messageStyles.bodyText}
+        id="logbox_message_contents_text">
         <LogBoxMessage
           maxLength={props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity}
           message={props.message}
@@ -121,6 +136,19 @@ const messageStyles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 3,
+  },
+  copyButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 3,
+    marginLeft: 8,
+  },
+  copyButtonText: {
+    color: LogBoxStyle.getTextColor(0.6),
+    fontSize: 12,
+    fontWeight: '600',
+    includeFontPadding: false,
+    lineHeight: 16,
   },
 });
 

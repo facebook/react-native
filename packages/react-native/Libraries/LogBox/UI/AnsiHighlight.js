@@ -87,7 +87,7 @@ export default function Ansi({
     <View style={styles.container}>
       {parsedLines.map((items, i) => (
         <View style={styles.line} key={i}>
-          <Text style={styles.text}>
+          <Text selectable={true} style={styles.text}>
             {items.map((bundle, key) => {
               const textStyle =
                 bundle.fg && COLORS[bundle.fg]
