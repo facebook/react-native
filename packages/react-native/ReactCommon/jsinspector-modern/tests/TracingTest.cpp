@@ -66,7 +66,6 @@ TEST_F(TracingTest, RecordsFrameTimings) {
       1, // id
       11, // threadId
       now,
-      now + HighResDuration::fromNanoseconds(10),
       now + HighResDuration::fromNanoseconds(50));
 
   page_->recordFrameTimings(frameTimingSequence);
@@ -86,12 +85,10 @@ TEST_F(TracingTest, EmitsRecordedFrameTimingSequences) {
           1, // id
           11, // threadId
           now,
-          now + HighResDuration::fromNanoseconds(10),
           now + HighResDuration::fromNanoseconds(50)));
 
   auto allTraceEvents = endTracingAndCollectEvents();
   EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "BeginFrame")));
-  EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "Commit")));
   EXPECT_THAT(allTraceEvents, Contains(AtJsonPtr("/name", "DrawFrame")));
 }
 
@@ -105,7 +102,6 @@ TEST_F(TracingTest, EmitsScreenshotEventWhenScreenshotValuePassed) {
           1, // id
           11, // threadId
           now,
-          now + HighResDuration::fromNanoseconds(10),
           now + HighResDuration::fromNanoseconds(50),
           "base64EncodedScreenshotData"));
 
@@ -227,7 +223,6 @@ TEST_F(TracingTest, EmitsToAllSessionsWithReactNativeApplicationDomainEnabled) {
           1, // id
           11, // threadId
           now,
-          now + HighResDuration::fromNanoseconds(10),
           now + HighResDuration::fromNanoseconds(50)));
 
   // Primary and secondaryFusebox sessions should receive the trace.
@@ -287,7 +282,6 @@ TEST_F(TracingTest, StashedTraceIsEmittedOnlyToFirstEligibleSession) {
           1, // id
           11, // threadId
           now,
-          now + HighResDuration::fromNanoseconds(10),
           now + HighResDuration::fromNanoseconds(50)));
 
   // Stop tracing - no eligible sessions exist, so the trace is stashed
