@@ -74,7 +74,7 @@ class ReactPlugin : Plugin<Project> {
         val hermesVersionPropertiesFile =
             File(reactNativeDir, "sdks/hermes-engine/version.properties")
         val versionAndGroupStrings =
-            readVersionAndGroupStrings(propertiesFile, hermesVersionPropertiesFile)
+            readVersionAndGroupStrings(project, propertiesFile, hermesVersionPropertiesFile)
         val hermesV1Enabled = rootExtension.hermesV1Enabled.get()
         configureDependencies(project, versionAndGroupStrings, hermesV1Enabled)
         configureRepositories(project, versionAndGroupStrings.isNightly)

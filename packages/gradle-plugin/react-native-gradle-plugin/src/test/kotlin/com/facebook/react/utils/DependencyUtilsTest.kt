@@ -615,7 +615,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val versionString = strings.versionString
     val hermesVersionString = strings.hermesVersionString
     val hermesV1VersionString = strings.hermesV1VersionString
@@ -652,7 +653,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val versionString = strings.versionString
     val hermesVersionString = strings.hermesVersionString
     val hermesV1VersionString = strings.hermesV1VersionString
@@ -684,7 +686,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val versionString = strings.versionString
     val hermesVersionString = strings.hermesVersionString
     val hermesV1VersionString = strings.hermesV1VersionString
@@ -718,7 +721,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val versionString = strings.versionString
     val hermesVersionString = strings.hermesVersionString
     val hermesV1VersionString = strings.hermesV1VersionString
@@ -753,7 +757,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val reactGroupString = strings.reactGroupString
     val hermesGroupString = strings.hermesGroupString
 
@@ -785,7 +790,8 @@ class DependencyUtilsTest {
           )
         }
 
-    val strings = readVersionAndGroupStrings(propertiesFile, hermesVersionFile)
+    val project = createProject()
+    val strings = readVersionAndGroupStrings(project, propertiesFile, hermesVersionFile)
     val reactGroupString = strings.reactGroupString
     val hermesGroupString = strings.hermesGroupString
 

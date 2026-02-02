@@ -35,9 +35,10 @@ internal object DependencyUtils {
       val hermesV1VersionString: String,
       val reactGroupString: String = DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP,
       val hermesGroupString: String = DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP,
+      private val isHermesNightly: Boolean = false,
   ) {
     val isNightly: Boolean
-      get() = versionString.isNightly()
+      get() = versionString.isNightly() || isHermesNightly
   }
 
   /**
@@ -209,7 +210,7 @@ internal object DependencyUtils {
     return dependencySubstitution
   }
 
-  fun readVersionAndGroupStrings(propertiesFile: File, hermesVersionFile: File): Coordinates {
+  fun readVersionAndGroupStrings(project: Project, propertiesFile: File, hermesVersionFile: File): Coordinates {
     val reactAndroidProperties = Properties()
     propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
     val versionStringFromFile = (reactAndroidProperties[INTERNAL_VERSION_NAME] as? String).orEmpty()
@@ -242,6 +243,7 @@ internal object DependencyUtils {
 
     val hermesV1Version =
         (hermesVersionProperties[INTERNAL_HERMES_V1_VERSION_NAME] as? String).orEmpty()
+    val isHermesNightly = (project.findProperty(INTERNAL_USE_HERMES_NIGHTLY) as? String).toBoolean()
 
     return Coordinates(
         versionString,
@@ -249,6 +251,7 @@ internal object DependencyUtils {
         hermesV1Version,
         reactGroupString,
         hermesGroupString,
+        isHermesNightly,
     )
   }
 
