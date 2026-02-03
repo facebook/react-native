@@ -68,7 +68,9 @@ function replaceRNCoreConfiguration(
     .readdirSync(finalLocation, {withFileTypes: true})
     .filter(dirent => dirent.isDirectory());
   for (const dirent of dirs) {
-    const dirPath = `${finalLocation}/${dirent.name}`;
+    const direntName =
+      typeof dirent.name === 'string' ? dirent.name : dirent.name.toString();
+    const dirPath = `${finalLocation}/${direntName}`;
     console.log('Removing directory', dirPath);
     fs.rmSync(dirPath, {force: true, recursive: true});
   }
