@@ -2,109 +2,11 @@
 
 ## v0.84.0-rc.4
 
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Added
-
-
-
-#### Android specific
-
-- Re-added prefabPublishing=true to make Android build from source work again ([e8eb37414e](https://github.com/facebook/react-native/commit/e8eb37414ed34c360eef6bf988d8cee445e6e72b) by [@chrfalch](https://github.com/chrfalch))
-
-#### iOS specific
-
-
-
-### Changed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Fixed
 
-
-
 #### Android specific
 
-- Fixed so that all build types get the HERMES_V1_ENABLED flag ([8d68b11005](https://github.com/facebook/react-native/commit/8d68b110059fbd0b6e5da24e7ead66554262af60) by [@chrfalch](https://github.com/chrfalch))
-- Fetch() response URL is incorrect after redirect (https://github.com/facebook/react-native/issues/55248) ([fbe6a686e6](https://github.com/facebook/react-native/commit/fbe6a686e65e70dd61700413084ddc54c0b86765) by [@MarkCSmith](https://github.com/MarkCSmith))
-
-#### iOS specific
-
-
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.84.0-rc.4 ([c5bb0b18af](https://github.com/facebook/react-native/commit/c5bb0b18afe0d6b4bee14b6ee840bd257baf3b3d) by [@react-native-bot](https://github.com/react-native-bot))
-- Bump Podfile.lock ([bddbd400ae](https://github.com/facebook/react-native/commit/bddbd400aeddf6a2b76204a2f370fb227df72971) by [@fabriziocucci](https://github.com/fabriziocucci))
-- Release 0.84.0-rc.3 ([af7f3de2dd](https://github.com/facebook/react-native/commit/af7f3de2dda8b56cb1bd157a5daf851b54cc9564) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
-
+- Fix incorrect `fetch()` response URL after redirect (https://github.com/facebook/react-native/issues/55248) ([fbe6a686e6](https://github.com/facebook/react-native/commit/fbe6a686e65e70dd61700413084ddc54c0b86765) by [@MarkCSmith](https://github.com/MarkCSmith))
 
 ## v0.84.0-rc.3
 
