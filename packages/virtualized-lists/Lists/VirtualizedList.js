@@ -1746,9 +1746,21 @@ class VirtualizedList extends StateSafePureComponent<
       zoomScale,
     };
     if (this.state.pendingScrollUpdateCount > 0) {
-      this.setState<'pendingScrollUpdateCount'>(state => ({
-        pendingScrollUpdateCount: state.pendingScrollUpdateCount - 1,
-      }));
+      const {initialScrollIndex} = this.props;
+      // When initialScrollIndex > 0, only decrement pendingScrollUpdateCount if
+      // the offset is non-zero. A scroll event with offset=0 before the native
+      // scroll completes would cause _adjustCellsAroundViewport to use stale
+      // scroll metrics, incorrectly rendering items starting at index 0.
+      const shouldDecrement =
+        initialScrollIndex == null ||
+        initialScrollIndex <= 0 ||
+        offset > 0;
+
+      if (shouldDecrement) {
+        this.setState<'pendingScrollUpdateCount'>(state => ({
+          pendingScrollUpdateCount: state.pendingScrollUpdateCount - 1,
+        }));
+      }
     }
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
     if (!this.props) {

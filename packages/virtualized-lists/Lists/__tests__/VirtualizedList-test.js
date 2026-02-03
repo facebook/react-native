@@ -1837,6 +1837,150 @@ it('retains initial render region when an item is appended', async () => {
   expect(component).toMatchSnapshot();
 });
 
+it('does not render items at index 0 when initialScrollIndex is large and scroll event arrives with offset 0', async () => {
+  // This test reproduces a race condition where:
+  // 1. Component mounts with initialScrollIndex=331
+  // 2. Layout event fires, triggering _scheduleCellsToRenderUpdate
+  // 3. A scroll event arrives with offset=0 (before native scroll completes)
+  // 4. BUG: Items 0-4 get rendered instead of items 331-335
+  const items = generateItems(604);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={331}
+        initialNumToRender={5}
+        windowSize={3}
+        maxToRenderPerBatch={5}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  // Initial render should show items 331-335
+  const getRenderedValues = () => {
+    const tree = component.toJSON();
+    const cells = [];
+    const findCells = node => {
+      if (!node || typeof node !== 'object') return;
+      if (node.type === 'MockCellItem' && node.props?.value !== undefined) {
+        cells.push(node.props.value);
+      }
+      if (node.children) {
+        node.children.forEach(findCells);
+      }
+    };
+    findCells(tree);
+    return cells;
+  };
+
+  const initialValues = getRenderedValues();
+  expect(initialValues).toContain(331);
+  expect(initialValues).toContain(332);
+  expect(initialValues).not.toContain(0);
+  expect(initialValues).not.toContain(1);
+
+  // Simulate layout (this triggers _scheduleCellsToRenderUpdate)
+  await act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 6040}, // 604 items * 10 height
+    });
+  });
+
+  // Simulate scroll event with offset=0 (race condition - native hasn't scrolled yet)
+  // This is the bug: if this scroll event decrements pendingScrollUpdateCount
+  // and then triggers window recalculation with offset=0, items 0-4 will render
+  await act(() => {
+    simulateScroll(component, {x: 0, y: 0});
+    performAllBatches();
+  });
+
+  // BUG: After scroll event with offset=0, items 0-4 should NOT be rendered
+  // when initialScrollIndex=331. The window should stay around 331.
+  // This test FAILS due to the race condition bug.
+  const afterScrollValues = getRenderedValues();
+  expect(afterScrollValues).not.toContain(0);
+  expect(afterScrollValues).not.toContain(1);
+  expect(afterScrollValues).not.toContain(2);
+  expect(afterScrollValues).not.toContain(3);
+  expect(afterScrollValues).not.toContain(4);
+});
+
+it('correctly renders at large initialScrollIndex for horizontal list', async () => {
+  // Reproduces the horizontal FlatList issue where navigating to page 332
+  // incorrectly shows pages 1-3 instead
+  const items = generateItems(604);
+  const ITEM_WIDTH = 400; // Simulating screen width
+
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        horizontal
+        initialScrollIndex={331}
+        initialNumToRender={3}
+        windowSize={3}
+        maxToRenderPerBatch={3}
+        {...baseItemProps(items)}
+        getItemLayout={(_, index) => ({
+          length: ITEM_WIDTH,
+          offset: ITEM_WIDTH * index,
+          index,
+        })}
+      />,
+    );
+  });
+
+  // Helper to extract rendered cell values
+  const getRenderedValues = () => {
+    const tree = component.toJSON();
+    const cells = [];
+    const findCells = node => {
+      if (!node || typeof node !== 'object') return;
+      if (node.type === 'MockCellItem' && node.props?.value !== undefined) {
+        cells.push(node.props.value);
+      }
+      if (node.children) {
+        node.children.forEach(findCells);
+      }
+    };
+    findCells(tree);
+    return cells;
+  };
+
+  // Initial render should show items 331-333
+  const initialValues = getRenderedValues();
+  expect(initialValues).toContain(331);
+  expect(initialValues).toContain(332);
+  expect(initialValues).toContain(333);
+  expect(initialValues).not.toContain(0);
+
+  // Simulate horizontal layout
+  await act(() => {
+    simulateLayout(component, {
+      viewport: {width: ITEM_WIDTH, height: 400},
+      content: {width: ITEM_WIDTH * 604, height: 400},
+    });
+  });
+
+  // Simulate scroll event with offset=0 (race condition)
+  await act(() => {
+    simulateScroll(component, {x: 0, y: 0});
+    performAllBatches();
+  });
+
+  // BUG: After scroll event with offset=0, items 0-2 should NOT be rendered
+  // This test FAILS due to the race condition bug.
+  const afterScrollValues = getRenderedValues();
+  expect(afterScrollValues).not.toContain(0);
+  expect(afterScrollValues).not.toContain(1);
+  expect(afterScrollValues).not.toContain(2);
+});
+
 // TODO: Revisit this test case after upgrading to React 19.
 skipTestSilenceLinter(
   'retains batch render region when an item is appended',
