@@ -55,8 +55,8 @@ class ReactPlugin : Plugin<Project> {
                 project,
             )
 
-    if (project.rootProject.isHermesV1Enabled) {
-      rootExtension.hermesV1Enabled.set(true)
+    if (!project.rootProject.isHermesV1Enabled) {
+      rootExtension.hermesV1Enabled.set(false)
     }
 
     // App Only Configuration
