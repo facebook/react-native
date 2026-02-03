@@ -1981,6 +1981,210 @@ it('correctly renders at large initialScrollIndex for horizontal list', async ()
   expect(afterScrollValues).not.toContain(2);
 });
 
+it('simulates Quran app navigation: maintains correct render window when native scroll is delayed', async () => {
+  // This test simulates the exact scenario from a Quran reading app:
+  // - 604 pages in a horizontal paged FlatList
+  // - User taps page 332 from a list screen
+  // - Detail screen mounts with initialScrollIndex=331
+  // - Multiple scroll events with tiny offsets (0, 0.008) arrive before native scroll completes
+  // - EXPECTED: Items around 331 remain visible, NOT items 0-3
+  const items = generateItems(604);
+  const PAGE_WIDTH = 400; // Screen width - each page takes full screen
+
+  const listRef = createRef(null);
+  let component;
+
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        ref={listRef}
+        horizontal
+        pagingEnabled
+        initialScrollIndex={331}
+        initialNumToRender={3}
+        windowSize={3}
+        maxToRenderPerBatch={3}
+        {...baseItemProps(items)}
+        getItemLayout={(_, index) => ({
+          length: PAGE_WIDTH,
+          offset: PAGE_WIDTH * index,
+          index,
+        })}
+      />,
+    );
+  });
+
+  // Helper to extract rendered cell values
+  const getRenderedValues = () => {
+    const tree = component.toJSON();
+    const cells = [];
+    const findCells = node => {
+      if (!node || typeof node !== 'object') return;
+      if (node.type === 'MockCellItem' && node.props?.value !== undefined) {
+        cells.push(node.props.value);
+      }
+      if (node.children) {
+        node.children.forEach(findCells);
+      }
+    };
+    findCells(tree);
+    return cells;
+  };
+
+  // Verify initial render shows items around 331
+  const initialValues = getRenderedValues();
+  expect(initialValues).toContain(331);
+  expect(initialValues).not.toContain(0);
+
+  // Get the scrollTo mock to verify scrollToIndex is called
+  const {scrollTo} = listRef.current.getScrollRef();
+
+  // Simulate layout (triggers _maybeScrollToInitialScrollIndex)
+  await act(() => {
+    simulateLayout(component, {
+      viewport: {width: PAGE_WIDTH, height: 800},
+      content: {width: PAGE_WIDTH * 604, height: 800},
+    });
+    performAllBatches();
+  });
+
+  // Verify scrollToIndex was called with correct offset
+  const expectedOffset = PAGE_WIDTH * 331; // 132400
+  expect(scrollTo).toHaveBeenCalledWith({x: expectedOffset, animated: false});
+
+  // Simulate the race condition: multiple scroll events with tiny offsets arrive
+  // BEFORE the native scroll completes (native is slow to scroll to position)
+  // This is what happens in the bug: JS receives scroll events with offset near 0
+  // while native is still processing the scrollTo command
+
+  // Event 1: offset = 0 (initial scroll position before native moves)
+  await act(() => {
+    simulateScroll(component, {x: 0, y: 0});
+    performAllBatches();
+  });
+
+  // Render window should STILL be around 331, NOT at 0
+  let currentValues = getRenderedValues();
+  expect(currentValues).not.toContain(0);
+  expect(currentValues).not.toContain(1);
+  expect(currentValues).not.toContain(2);
+
+  // Event 2: offset = 0.008 (tiny movement - momentum scroll starts)
+  await act(() => {
+    simulateScroll(component, {x: 0.008, y: 0});
+    performAllBatches();
+  });
+
+  // Still should not render items at 0
+  currentValues = getRenderedValues();
+  expect(currentValues).not.toContain(0);
+  expect(currentValues).not.toContain(1);
+  expect(currentValues).not.toContain(2);
+
+  // Event 3: offset = 1 (still very far from target)
+  await act(() => {
+    simulateScroll(component, {x: 1, y: 0});
+    performAllBatches();
+  });
+
+  // Still should not render items at 0
+  currentValues = getRenderedValues();
+  expect(currentValues).not.toContain(0);
+  expect(currentValues).not.toContain(1);
+  expect(currentValues).not.toContain(2);
+
+  // Finally, native scroll arrives at correct position
+  await act(() => {
+    simulateScroll(component, {x: expectedOffset, y: 0});
+    performAllBatches();
+  });
+
+  // Now items around 331 should be rendered
+  const finalValues = getRenderedValues();
+  expect(finalValues).toContain(331);
+  expect(finalValues).toContain(332);
+  expect(finalValues).not.toContain(0);
+  expect(finalValues).not.toContain(1);
+});
+
+it('scroll events with offset=0 do not prevent scrollToIndex from being called', async () => {
+  // Tests that scrollToIndex is correctly triggered after content sizing
+  // even when scroll events have been received
+  const items = generateItems(604);
+  const ITEM_WIDTH = 400;
+
+  const listRef = createRef(null);
+  let component;
+
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        ref={listRef}
+        horizontal
+        initialScrollIndex={331}
+        initialNumToRender={3}
+        {...baseItemProps(items)}
+        getItemLayout={(_, index) => ({
+          length: ITEM_WIDTH,
+          offset: ITEM_WIDTH * index,
+          index,
+        })}
+      />,
+    );
+  });
+
+  const {scrollTo} = listRef.current.getScrollRef();
+  scrollTo.mockClear(); // Clear any calls from initial render
+
+  // Simulate layout (triggers _maybeScrollToInitialScrollIndex)
+  await act(() => {
+    simulateLayout(component, {
+      viewport: {width: ITEM_WIDTH, height: 800},
+      content: {width: ITEM_WIDTH * 604, height: 800},
+    });
+  });
+
+  // scrollTo should have been called with the correct offset
+  const expectedOffset = ITEM_WIDTH * 331;
+  expect(scrollTo).toHaveBeenCalledWith({x: expectedOffset, animated: false});
+
+  // Now simulate scroll events with offset=0 (race condition)
+  await act(() => {
+    component.getInstance()._onScroll({
+      nativeEvent: {
+        contentOffset: {x: 0, y: 0},
+        contentSize: {width: ITEM_WIDTH * 604, height: 800},
+        layoutMeasurement: {width: ITEM_WIDTH, height: 800},
+        zoomScale: 1,
+      },
+    });
+    performAllBatches();
+  });
+
+  // Helper to extract rendered cell values
+  const getRenderedValues = () => {
+    const tree = component.toJSON();
+    const cells = [];
+    const findCells = node => {
+      if (!node || typeof node !== 'object') return;
+      if (node.type === 'MockCellItem' && node.props?.value !== undefined) {
+        cells.push(node.props.value);
+      }
+      if (node.children) {
+        node.children.forEach(findCells);
+      }
+    };
+    findCells(tree);
+    return cells;
+  };
+
+  // Render window should NOT have moved to index 0
+  const values = getRenderedValues();
+  expect(values).not.toContain(0);
+  expect(values).not.toContain(1);
+  expect(values).not.toContain(2);
+});
+
 // TODO: Revisit this test case after upgrading to React 19.
 skipTestSilenceLinter(
   'retains batch render region when an item is appended',

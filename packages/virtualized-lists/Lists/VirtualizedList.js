@@ -633,6 +633,26 @@ class VirtualizedList extends StateSafePureComponent<
           : cellsAroundViewport;
       }
 
+      // When initialScrollIndex > 0, don't adjust the viewport if the current
+      // scroll offset is suspiciously low (less than 10% of expected). This
+      // prevents a race condition where stale scroll metrics (offset near 0)
+      // cause the render window to jump to index 0 before native scroll completes.
+      const {initialScrollIndex, getItemLayout} = props;
+      if (
+        initialScrollIndex != null &&
+        initialScrollIndex > 0 &&
+        getItemLayout != null
+      ) {
+        const expectedFrame = getItemLayout(data, initialScrollIndex);
+        const expectedOffset = expectedFrame.offset;
+        const threshold = Math.max(expectedOffset * 0.1, 1);
+        if (offset < threshold) {
+          return cellsAroundViewport.last >= getItemCount(data)
+            ? VirtualizedList._constrainToItemCount(cellsAroundViewport, props)
+            : cellsAroundViewport;
+        }
+      }
+
       newCellsAroundViewport = computeWindowedRenderLimits(
         props,
         maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch),
@@ -1748,13 +1768,23 @@ class VirtualizedList extends StateSafePureComponent<
     if (this.state.pendingScrollUpdateCount > 0) {
       const {initialScrollIndex} = this.props;
       // When initialScrollIndex > 0, only decrement pendingScrollUpdateCount if
-      // the offset is non-zero. A scroll event with offset=0 before the native
-      // scroll completes would cause _adjustCellsAroundViewport to use stale
-      // scroll metrics, incorrectly rendering items starting at index 0.
-      const shouldDecrement =
-        initialScrollIndex == null ||
-        initialScrollIndex <= 0 ||
-        offset > 0;
+      // the offset has moved significantly toward the target. A scroll event with
+      // offset near 0 before the native scroll completes would cause
+      // _adjustCellsAroundViewport to use stale scroll metrics, incorrectly
+      // rendering items starting at index 0.
+      let shouldDecrement = true;
+      if (initialScrollIndex != null && initialScrollIndex > 0) {
+        // Calculate the expected offset for initialScrollIndex
+        const expectedOffset = this._listMetrics.getCellOffsetApprox(
+          initialScrollIndex,
+          this.props,
+        );
+        // Use 10% of expected offset as threshold (minimum 1 pixel)
+        // This prevents tiny scroll offsets (like 0.008) from being considered
+        // valid when scrolling to a large initialScrollIndex
+        const threshold = Math.max(expectedOffset * 0.1, 1);
+        shouldDecrement = offset >= threshold;
+      }
 
       if (shouldDecrement) {
         this.setState<'pendingScrollUpdateCount'>(state => ({
