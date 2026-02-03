@@ -8,9 +8,11 @@
 #include "Registration.h"
 #include "ConnectionDemux.h"
 
-#if defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
+#if defined(HERMES_ENABLE_DEBUGGER)
 
 namespace facebook::hermes::inspector_modern::chrome {
+
+#if !defined(HERMES_V1_ENABLED)
 
 namespace {
 
@@ -32,6 +34,18 @@ void disableDebugging(DebugSessionToken session) {
   demux().disableDebugging(session);
 }
 
+#else
+
+DebugSessionToken enableDebugging(
+    std::unique_ptr<RuntimeAdapter>,
+    const std::string&) {
+  return -1;
+};
+
+void disableDebugging(DebugSessionToken) {}
+
+#endif // !defined(HERMES_V1_ENABLED)
+
 } // namespace facebook::hermes::inspector_modern::chrome
 
-#endif // defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
+#endif // defined(HERMES_ENABLE_DEBUGGER)
