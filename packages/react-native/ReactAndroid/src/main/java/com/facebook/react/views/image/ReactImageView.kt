@@ -570,13 +570,10 @@ public class ReactImageView(
     val cacheControl = computeCacheControl(source.getString("cache"))
     val uri = source.getString("uri")
     var imageSource = if (includeSize) {
-      ImageSource(
-        context,
-        uri,
-        source.getDouble("width"),
-        source.getDouble("height"),
-        cacheControl,
-      )
+      val width = if (source.hasKey("width")) source.getDouble("width") else 0.0
+      val height = if (source.hasKey("height")) source.getDouble("height") else 0.0
+      val isForceCached = if (source.hasKey("isForceCached")) source.getBoolean("isForceCached") else false
+      ImageSource(context, uri, width, height, cacheControl, isForceCached)
     } else {
       ImageSource(context, uri, cacheControl = cacheControl)
     }
