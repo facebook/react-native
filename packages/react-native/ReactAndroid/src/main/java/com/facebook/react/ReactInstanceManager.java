@@ -93,7 +93,6 @@ import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
@@ -194,7 +193,7 @@ public class ReactInstanceManager {
   private boolean mUseFallbackBundle = true;
   private volatile boolean mInstanceManagerInvalidated = false;
 
-  private class ReactContextInitParams {
+  private static class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
     private final JSBundleLoader mJsBundleLoader;
 
@@ -301,14 +300,11 @@ public class ReactInstanceManager {
       mDevSupportManager.startInspector();
     }
 
-    // Using `if (true)` just to prevent tests / lint errors.
-    if (true) {
-      // Legacy architecture of React Native is deprecated and can't be initialized anymore.
-      // More details on:
-      // https://github.com/react-native-community/discussions-and-proposals/blob/nc/legacy-arch-removal/proposals/0929-legacy-architecture-removal.md
-      throw new UnsupportedOperationException(
-          "ReactInstanceManager.createReactContext is unsupported.");
-    }
+    // Legacy architecture of React Native is deprecated and can't be initialized anymore.
+    // More details on:
+    // https://github.com/react-native-community/discussions-and-proposals/blob/nc/legacy-arch-removal/proposals/0929-legacy-architecture-removal.md
+    throw new UnsupportedOperationException(
+        "ReactInstanceManager.createReactContext is unsupported.");
   }
 
   private ReactInstanceDevHelper createDevHelperInterface() {
@@ -450,7 +446,6 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
 
     if (mUseDeveloperSupport && mJSMainModulePath != null) {
-      final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
       if (!Systrace.isTracing(TRACE_TAG_REACT)) {
         if (mBundleLoader == null) {
           mDevSupportManager.handleReloadJS();
@@ -1164,6 +1159,7 @@ public class ReactInstanceManager {
                   try {
                     ReactInstanceManager.this.mHasStartedDestroying.wait();
                   } catch (InterruptedException e) {
+                    // Interrupted while waiting for destruction to complete, just retry
                     continue;
                   }
                 }
