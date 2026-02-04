@@ -8180,10 +8180,10 @@ prelude-ls@^1.2.1:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
-prettier-plugin-hermes-parser@0.33.2:
-  version "0.33.2"
-  resolved "https://registry.yarnpkg.com/prettier-plugin-hermes-parser/-/prettier-plugin-hermes-parser-0.33.2.tgz#abc853c0907fdce5f42457a09221c464c9e3e59e"
-  integrity sha512-YS9F5VhgDIJ+FyIMrwOSQjg5lYkMt4/csljG5E74FbhHAg4u9G0RHx7FImSd77qXDpxQMNW2QhZiWSUzWvegbQ==
+prettier-plugin-hermes-parser@0.34.1:
+  version "0.34.1"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-hermes-parser/-/prettier-plugin-hermes-parser-0.34.1.tgz#75fc7abe0435ab45ee4431b1b1ce1a7baba6903c"
+  integrity sha512-cdA3tlvvFZkr8CuzaRJ28EVl7ep2zbfxKBBiS1t1w2Kud+Gsv/aQeU2a6rmMBnMJn510xPrIy0aZ9AG0uQHcRQ==
 
 prettier@3.6.2:
   version "3.6.2"
