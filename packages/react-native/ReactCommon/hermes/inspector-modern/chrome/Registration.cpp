@@ -39,10 +39,17 @@ void disableDebugging(DebugSessionToken session) {
 DebugSessionToken enableDebugging(
     std::unique_ptr<RuntimeAdapter>,
     const std::string&) {
+  // Backwards compatibility fallback for libraries that are compiled without
+  // `HERMES_V1_ENABLED` but are linked against React Native with
+  // `HERMES_V1_ENABLED` which doesn't provide this symbol.
   return -1;
 };
 
-void disableDebugging(DebugSessionToken) {}
+void disableDebugging(DebugSessionToken) {
+  // Backwards compatibility fallback for libraries that are compiled without
+  // `HERMES_V1_ENABLED` but are linked against React Native with
+  // `HERMES_V1_ENABLED` which doesn't provide this symbol.
+}
 
 #endif // !defined(HERMES_V1_ENABLED)
 
