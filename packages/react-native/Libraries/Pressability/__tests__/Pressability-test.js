@@ -427,7 +427,9 @@ describe('Pressability', () => {
       );
       // $FlowExpectedError[not-a-function]
       handlers.onMouseLeave(createMockMouseEvent('onMouseLeave'));
-      jest.advanceTimersByTime(ONE_MILLISECOND_BEFORE_CONFIGURED_LONG_PRESS_DURATION);
+      jest.advanceTimersByTime(
+        ONE_MILLISECOND_BEFORE_CONFIGURED_LONG_PRESS_DURATION,
+      );
       expect(config.onHoverOut).not.toBeCalled();
       jest.advanceTimersByTime(1);
       expect(config.onHoverOut).toBeCalled();
@@ -461,7 +463,9 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
-      jest.advanceTimersByTime(ONE_MILLISECOND_BEFORE_CONFIGURED_LONG_PRESS_DURATION);
+      jest.advanceTimersByTime(
+        ONE_MILLISECOND_BEFORE_CONFIGURED_LONG_PRESS_DURATION,
+      );
       expect(config.onLongPress).not.toBeCalled();
       jest.advanceTimersByTime(1);
       expect(config.onLongPress).toBeCalled();
@@ -476,7 +480,9 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
-      jest.advanceTimersByTime(ONE_MILLISECOND_BEFORE_CONFIGURED_LONG_PRESS_DURATION);
+      jest.advanceTimersByTime(
+        ONE_MILLISECOND_BEFORE_CONFIGURED_LONG_PRESS_DURATION,
+      );
       expect(config.onLongPress).not.toBeCalled();
       jest.advanceTimersByTime(1);
       expect(config.onLongPress).toBeCalled();
@@ -489,7 +495,9 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
-      jest.advanceTimersByTime(ONE_MILLISECOND_BEFORE_CONFIGURED_LONG_PRESS_DURATION);
+      jest.advanceTimersByTime(
+        ONE_MILLISECOND_BEFORE_CONFIGURED_LONG_PRESS_DURATION,
+      );
       handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
       jest.advanceTimersByTime(1);
 
@@ -739,7 +747,7 @@ describe('Pressability', () => {
 
     it('is not called after `onResponderTerminate` after `delayPressIn`', () => {
       const {config, handlers} = createMockPressability({
-         delayPressIn: 100,
+        delayPressIn: 100,
       });
 
       handlers.onStartShouldSetResponder();
