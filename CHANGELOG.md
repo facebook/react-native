@@ -1,112 +1,5 @@
 # Changelog
 
-## v0.81.6
-
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Added
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Changed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Fixed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.81.6 ([cddf8a7536](https://github.com/facebook/react-native/commit/cddf8a7536de12db889e35e946281cfaf327197a) by [@react-native-bot](https://github.com/react-native-bot))
-- Backout #46896 - Attempt to fix #50274 ([a23dd04dd2](https://github.com/facebook/react-native/commit/a23dd04dd215450047269a230c920e939c7f2fe6) by [@robhogan](https://github.com/robhogan))
-- [0.81] Sync React 19.1.4 into React Native ([b935c53875](https://github.com/facebook/react-native/commit/b935c53875147f38d1c5579871d966a6890032ca) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Bump Podfile.lock ([ed81a8db2b](https://github.com/facebook/react-native/commit/ed81a8db2b40a53a2d5b196d61951fc76e6ff8ec) by [@react-native-bot](https://github.com/react-native-bot))
-- Release 0.81.5 ([57ff54492f](https://github.com/facebook/react-native/commit/57ff54492f4a5a0e9d331e880b3c2264a2bd81f7) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
-
-
 ## v0.84.0-rc.4
 
 ### Fixed
@@ -687,6 +580,13 @@ None
 ### Security
 
 - **Network:** Fixed vulnerability on undici and on-headers ([dd00c9055a](https://github.com/facebook/react-native/commit/dd00c9055a8f0c9ceac1716385a8a9874f7a4c2e) by [@cipolleschi](https://github.com/cipolleschi))
+
+## v0.81.6
+
+### Other
+
+- Backout #46896 - Attempt to fix #50274 ([a23dd04dd2](https://github.com/facebook/react-native/commit/a23dd04dd215450047269a230c920e939c7f2fe6) by [@robhogan](https://github.com/robhogan))
+- Sync React 19.1.4 into React Native ([b935c53875](https://github.com/facebook/react-native/commit/b935c53875147f38d1c5579871d966a6890032ca) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## v0.81.5
 
