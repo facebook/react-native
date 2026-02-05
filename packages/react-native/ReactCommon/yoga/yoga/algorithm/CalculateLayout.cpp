@@ -84,8 +84,8 @@ static void computeFlexBasisForChild(
 
   float childWidth = YGUndefined;
   float childHeight = YGUndefined;
-  SizingMode childWidthSizingMode;
-  SizingMode childHeightSizingMode;
+  SizingMode childWidthSizingMode = SizingMode::MaxContent;
+  SizingMode childHeightSizingMode = SizingMode::MaxContent;
 
   const FloatOptional resolvedFlexBasis = child->resolveFlexBasis(
       direction, mainAxis, mainAxisOwnerSize, ownerWidth);
@@ -709,7 +709,7 @@ static float distributeFreeSpaceSecondPass(
 
     float childCrossSize = YGUndefined;
     float childMainSize = updatedMainSize + marginMain;
-    SizingMode childCrossSizingMode;
+    SizingMode childCrossSizingMode = SizingMode::MaxContent;
     SizingMode childMainSizingMode = SizingMode::StretchFit;
 
     const auto& childStyle = currentLineChild->style();
@@ -2330,7 +2330,7 @@ bool calculateLayoutInternal(
 
   layout->generationCount = generationCount;
 
-  LayoutType layoutType;
+  LayoutType layoutType = LayoutType::kLayout;
   if (performLayout) {
     layoutType = !needToVisitNode && cachedResults == &layout->cachedLayout
         ? LayoutType::kCachedLayout
