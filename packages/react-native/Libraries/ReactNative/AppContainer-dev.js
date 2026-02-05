@@ -8,12 +8,14 @@
  * @format
  */
 
+import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
 import type {
   ReactDevToolsAgent,
   ReactDevToolsGlobalHook,
 } from '../Types/ReactDevToolsTypes';
 import type {Props} from './AppContainer';
 
+import useExternalInspection from '../../src/private/devsupport/devmenu/elementinspector/useExternalInspection';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import View from '../Components/View/View';
 import DebuggingOverlay from '../Debugging/DebuggingOverlay';
@@ -40,16 +42,25 @@ if (reactDevToolsHook) {
   );
 }
 
+type ExternalInspection = {
+  externalInspectingEnabled: boolean,
+  +reportToExternalInspection: (viewData: TouchedViewDataAtPoint) => void,
+};
+
 type InspectorDeferredProps = {
   inspectedViewRef: InspectedViewRef,
   onInspectedViewRerenderRequest: () => void,
   reactDevToolsAgent?: ReactDevToolsAgent,
+  devMenuInspectorOpen: boolean,
+  externalInspection: ExternalInspection,
 };
 
 const InspectorDeferred = ({
   inspectedViewRef,
   onInspectedViewRerenderRequest,
   reactDevToolsAgent,
+  devMenuInspectorOpen,
+  externalInspection,
 }: InspectorDeferredProps) => {
   // D39382967 adds a require cycle: InitializeCore -> AppContainer -> Inspector -> InspectorPanel -> ScrollView -> InitializeCore
   // We can't remove it yet, fallback to dynamic require for now. This is the only reason why this logic is in a separate function.
@@ -61,6 +72,8 @@ const InspectorDeferred = ({
       inspectedViewRef={inspectedViewRef}
       onRequestRerenderApp={onInspectedViewRerenderRequest}
       reactDevToolsAgent={reactDevToolsAgent}
+      devMenuInspectorOpen={devMenuInspectorOpen}
+      externalInspection={externalInspection}
     />
   );
 };
@@ -108,6 +121,7 @@ const AppContainer = ({
   const [shouldRenderInspector, setShouldRenderInspector] = useState(false);
   const [reactDevToolsAgent, setReactDevToolsAgent] =
     useState<ReactDevToolsAgent | void>(reactDevToolsHook?.reactDevtoolsAgent);
+  const externalInspection = useExternalInspection();
 
   useEffect(() => {
     let inspectorSubscription = null;
@@ -179,11 +193,14 @@ const AppContainer = ({
           />
         )}
 
-        {shouldRenderInspector && (
+        {(shouldRenderInspector ||
+          externalInspection.externalInspectingEnabled) && (
           <InspectorDeferred
             inspectedViewRef={innerViewRef}
             onInspectedViewRerenderRequest={onInspectedViewRerenderRequest}
             reactDevToolsAgent={reactDevToolsAgent}
+            devMenuInspectorOpen={shouldRenderInspector}
+            externalInspection={externalInspection}
           />
         )}
 
