@@ -504,13 +504,32 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Run all the linters
-        uses: ./.github/actions/lint
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Lint file structure
+        shell: bash
+        run: ./.github/workflow-scripts/lint_files.sh
+      - name: Run shellcheck
+        shell: bash
+        run: ./.github/workflow-scripts/analyze_scripts.sh
+      - name: Prettier
+        shell: bash
+        run: yarn run format-check
+      - name: markdownlint
+        shell: bash
+        run: yarn run lint-markdown
+      - name: ESLint
+        shell: bash
+        run: ./.github/workflow-scripts/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+      - name: Flow
+        shell: bash
+        run: yarn flow-check
+      - name: TypeScript
+        shell: bash
+        run: yarn test-typescript
 
   build_js_types:
     runs-on: ubuntu-latest
