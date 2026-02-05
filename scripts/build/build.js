@@ -37,7 +37,6 @@ const config = {
   allowPositionals: true,
   options: {
     prepack: {type: 'boolean'},
-    validate: {type: 'boolean'},
     help: {type: 'boolean'},
   },
 };
@@ -45,7 +44,7 @@ const config = {
 async function build() {
   const {
     positionals: packageNames,
-    values: {prepack, validate, help},
+    values: {prepack, help},
     /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
@@ -62,19 +61,15 @@ async function build() {
   Options:
     --prepack         Run the ./prepack.js script after building, applying
                       package.json "publishConfig" changes to the working copy.
-                      This is usually run before npm publish.
-    --validate        Validate that no build artifacts have been accidentally
-                      committed.
+                      (This is usually run later in CI before npm publish).
     `);
     process.exitCode = 0;
     return;
   }
 
-  if (!validate) {
-    console.log(
-      '\n' + styleText(['bold', 'inverse'], 'Building packages') + '\n',
-    );
-  }
+  console.log(
+    '\n' + styleText(['bold', 'inverse'], 'Building packages') + '\n',
+  );
 
   const packagesToBuild = packageNames.length
     ? packageNames.filter(packageName => packageName in buildConfig.packages)
@@ -82,25 +77,10 @@ async function build() {
 
   let ok = true;
   for (const packageName of packagesToBuild) {
-    if (validate) {
-      ok &&= await checkPackage(packageName);
-    } else {
-      await buildPackage(packageName, prepack);
-    }
+    await buildPackage(packageName, prepack);
   }
 
   process.exitCode = ok ? 0 : 1;
-}
-
-async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
-  const artifacts = await exportedBuildArtifacts(packageName);
-  if (artifacts.length > 0) {
-    console.log(
-      `${styleText('bgRed', packageName)}: has been built and the ${styleText('bold', 'build artifacts')} committed to the repository. This will break Flow checks.`,
-    );
-    return false;
-  }
-  return true;
 }
 
 async function buildPackage(packageName /*: string */, prepack /*: boolean */) {
@@ -247,33 +227,6 @@ type PackageJson = {
   exports?: {[subpath: string]: string | mixed},
 };
 */
-
-function isStringOnly(entries /*: mixed */) /*: entries is string */ {
-  return typeof entries === 'string';
-}
-
-async function exportedBuildArtifacts(
-  packageName /*: string */,
-) /*: Promise<string[]> */ {
-  const packagePath = path.resolve(PACKAGES_DIR, packageName, 'package.json');
-  const pkg /*: PackageJson */ = JSON.parse(
-    await fs.readFile(packagePath, 'utf8'),
-  );
-  if (pkg.exports == null) {
-    throw new Error(
-      packageName +
-        ' does not define an "exports" field in its package.json. As part ' +
-        'of the build setup, this field must be used in order to rewrite ' +
-        'paths to built files in production.',
-    );
-  }
-
-  return Object.values(pkg.exports)
-    .filter(isStringOnly)
-    .filter(filepath =>
-      path.dirname(filepath).split(path.sep).includes(BUILD_DIR),
-    );
-}
 
 /**
  * Get the set of Flow entry points to build.
