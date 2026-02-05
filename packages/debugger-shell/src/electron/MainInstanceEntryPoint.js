@@ -68,6 +68,8 @@ function handleLaunchArgs(argv: string[]) {
       },
       // Icon for Linux
       icon: path.join(__dirname, 'resources', 'icon.png'),
+      // Enable tabs for this window (macOS 10.12+)
+      tabbingIdentifier: 'main',
     });
     // Auto-hide the Windows/Linux menu bar
     frontendWindow.setMenuBarVisibility(false);
