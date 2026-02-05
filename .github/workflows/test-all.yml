@@ -486,21 +486,6 @@ jobs:
           flavor: ${{ matrix.flavor }}
           use-frameworks: ${{ matrix.use_frameworks }}
 
-  test_js:
-    runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: ["24", "22", "20.19.4"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Test JS
-        uses: ./.github/actions/test-js
-        with:
-          node-version: ${{ matrix.node-version }}
-
   lint:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
@@ -530,6 +515,21 @@ jobs:
       - name: TypeScript
         shell: bash
         run: yarn test-typescript
+
+  test_js:
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["24", "22", "20.19.4"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Test JS
+        uses: ./.github/actions/test-js
+        with:
+          node-version: ${{ matrix.node-version }}
 
   build_js_types:
     runs-on: ubuntu-latest
