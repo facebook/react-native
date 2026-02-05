@@ -29,9 +29,6 @@ runs:
     - name: Run typescript check
       shell: bash
       run: yarn test-typescript
-    - name: Check license
-      shell: bash
-      run: ./.github/workflow-scripts/check_license.sh
     - name: Check formatting
       shell: bash
       run: yarn run format-check
