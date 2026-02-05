@@ -18,6 +18,7 @@ const {
   getTypeScriptCompilerOptions,
 } = require('./config');
 const babel = require('@babel/core');
+const {spawn} = require('child_process');
 const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
 const micromatch = require('micromatch');
@@ -35,6 +36,7 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 const config = {
   allowPositionals: true,
   options: {
+    prepack: {type: 'boolean'},
     validate: {type: 'boolean'},
     help: {type: 'boolean'},
   },
@@ -43,7 +45,7 @@ const config = {
 async function build() {
   const {
     positionals: packageNames,
-    values: {validate, help},
+    values: {prepack, validate, help},
     /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
@@ -58,6 +60,9 @@ async function build() {
   a package list is provided, builds only those specified.
 
   Options:
+    --prepack         Run the ./prepack.js script after building, applying
+                      package.json "publishConfig" changes to the working copy.
+                      This is usually run before npm publish.
     --validate        Validate that no build artifacts have been accidentally
                       committed.
     `);
@@ -80,7 +85,7 @@ async function build() {
     if (validate) {
       ok &&= await checkPackage(packageName);
     } else {
-      await buildPackage(packageName);
+      await buildPackage(packageName, prepack);
     }
   }
 
@@ -98,7 +103,7 @@ async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
   return true;
 }
 
-async function buildPackage(packageName /*: string */) {
+async function buildPackage(packageName /*: string */, prepack /*: boolean */) {
   try {
     const {emitTypeScriptDefs} = getBuildOptions(packageName);
     const entryPoints = await getEntryPoints(packageName);
@@ -134,6 +139,24 @@ async function buildPackage(packageName /*: string */) {
     // Validate program for emitted .d.ts files
     if (emitTypeScriptDefs) {
       validateTypeScriptDefs(packageName);
+    }
+
+    // Run prepack script if configured
+    if (prepack) {
+      await new Promise((resolve, reject) => {
+        const child = spawn('npm', ['run', 'prepack'], {
+          cwd: path.resolve(PACKAGES_DIR, packageName),
+          stdio: ['ignore', 'ignore', 'inherit'],
+        });
+        child.on('close', code => {
+          if (code !== 0) {
+            reject(new Error(`prepack script exited with code ${code}`));
+          } else {
+            resolve();
+          }
+        });
+        child.on('error', reject);
+      });
     }
 
     process.stdout.write(
