@@ -33,6 +33,23 @@ jobs:
 
           echo "Should I run E2E tests? ${{ inputs.run-e2e-tests }}"
 
+  check_code_changes:
+    runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
+    outputs:
+      debugger_shell: ${{ steps.filter.outputs.debugger_shell }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Check for code changes
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
+        id: filter
+        with:
+          filters: |
+            debugger_shell:
+              - 'packages/debugger-shell/**'
+              - 'scripts/debugger-shell/**'
+
   prebuild_apple_dependencies:
     if: github.repository == 'facebook/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
@@ -496,6 +513,22 @@ jobs:
         uses: ./.github/actions/lint
         with:
           github-token: ${{ env.GH_TOKEN }}
+
+  build_debugger_shell:
+    runs-on: ubuntu-latest
+    needs: check_code_changes
+    if: needs.check_code_changes.outputs.debugger_shell == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Run yarn install
+        uses: ./.github/actions/yarn-install
+      - name: Build packages
+        run: yarn build
+      - name: Verify debugger-shell build
+        run: node scripts/debugger-shell/build-binary.js
 
   # This job should help with the E2E flakyness.
   # In case E2E tests fails, it launches a new retry-workflow workflow, passing the current run_id as input.
