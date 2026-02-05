@@ -26,6 +26,34 @@ namespace debugger {
 class Debugger;
 }
 
+#ifdef JSI_UNSTABLE
+struct IEventLoopControl {
+  /// `scheduleCallback` is an integrator-provided function for the VM to
+  /// schedule a callback task \p callback. This API must be thread-safe and run
+  /// the callback when it is the exclusive user of the Runtime.
+  virtual void scheduleCallback(const std::function<void()> callback) = 0;
+
+ protected:
+  ~IEventLoopControl() = default;
+};
+
+struct JSI_EXPORT ISetEventLoopControl : public jsi::ICast {
+ public:
+  static constexpr jsi::UUID uuid{
+      0x7b6902e6,
+      0xfd38,
+      0x11f0,
+      0x8de9,
+      0x0242ac120002};
+
+  /// Configures the eventloop control mechanism using \p eventLoopControl.
+  virtual void setEventLoopControl(IEventLoopControl* eventLoopControl) = 0;
+
+ protected:
+  ~ISetEventLoopControl() = default;
+};
+#endif
+
 /// Interface for Hermes-specific runtime methods.The actual implementations of
 /// the pure virtual methods are provided by Hermes API.
 class JSI_EXPORT IHermes : public jsi::ICast {
