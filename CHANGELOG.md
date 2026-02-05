@@ -1,5 +1,112 @@
 # Changelog
 
+## v0.83.2
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.83.2 ([e2ad57939d](https://github.com/facebook/react-native/commit/e2ad57939da2b409ee1e950b08418762d36b850c) by [@react-native-bot](https://github.com/react-native-bot))
+- Fix hermes version ([94eada0523](https://github.com/facebook/react-native/commit/94eada052334b2b00ffa03a5e5675249563ca261) by [@fabriziocucci](https://github.com/fabriziocucci))
+- Bump hermes version ([8b09698c38](https://github.com/facebook/react-native/commit/8b09698c38da560fa0ed173feabe95c972d42de2) by [@fabriziocucci](https://github.com/fabriziocucci))
+- Bump Podfile.lock ([f2fabd128b](https://github.com/facebook/react-native/commit/f2fabd128b86f86e1c0dcbfd1eba25a3b5233d7b) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.83.1 ([541213e855](https://github.com/facebook/react-native/commit/541213e85519d3cc5b9a84f0990a88654b4a1a94) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.84.0-rc.4
 
 ### Fixed
