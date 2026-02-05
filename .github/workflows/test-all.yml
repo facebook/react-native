@@ -512,6 +512,23 @@ jobs:
       - name: Run all the linters
         uses: ./.github/actions/lint
 
+  build_js_types:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Build react-native package types
+        shell: bash
+        run: yarn build-types --skip-snapshot
+      - name: Validate generated types
+        shell: bash
+        run: yarn test-generated-typescript
+
   build_debugger_shell:
     runs-on: ubuntu-latest
     needs: check_code_changes
@@ -519,13 +536,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Setup node.js
+      - name: Setup Node.js
         uses: ./.github/actions/setup-node
-      - name: Run yarn install
+      - name: Install dependencies
         uses: ./.github/actions/yarn-install
       - name: Build packages
+        shell: bash
         run: yarn build
       - name: Verify debugger-shell build
+        shell: bash
         run: node scripts/debugger-shell/build-binary.js
 
   # This job should help with the E2E flakyness.
