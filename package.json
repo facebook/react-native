@@ -17,7 +17,6 @@
     "format": "npm run prettier && npm run clang-format",
     "featureflags": "yarn --cwd packages/react-native featureflags",
     "js-api-diff": "node ./scripts/js-api/diff-api-snapshot",
-    "lint-ci": "./.github/workflow-scripts/analyze_code.sh && yarn shellcheck",
     "lint-kotlin-check": "./gradlew ktfmtCheck",
     "lint-kotlin": "./gradlew ktfmtFormat",
     "lint-markdown": "markdownlint-cli2 2>&1",

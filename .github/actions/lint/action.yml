@@ -5,9 +5,6 @@ inputs:
     description: "The node.js version to use"
     required: false
     default: "22"
-  github-token:
-    description: "The GitHub token used by pull-bot"
-    required: true
 runs:
   using: composite
   steps:
@@ -17,12 +14,9 @@ runs:
         node-version: ${{ inputs.node-version }}
     - name: Run yarn install
       uses: ./.github/actions/yarn-install
-    - name: Run linters against modified files (analysis-bot)
+    - name: Run shellcheck
       shell: bash
-      run: yarn lint-ci
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-        GITHUB_PR_NUMBER: ${{ github.event.number }}
+      run: yarn shellcheck
     - name: Lint code
       shell: bash
       run: ./.github/workflow-scripts/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml

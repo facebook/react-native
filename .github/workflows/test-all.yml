@@ -511,8 +511,6 @@ jobs:
         uses: actions/checkout@v6
       - name: Run all the linters
         uses: ./.github/actions/lint
-        with:
-          github-token: ${{ env.GH_TOKEN }}
 
   build_debugger_shell:
     runs-on: ubuntu-latest
