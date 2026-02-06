@@ -33,7 +33,8 @@ class JavaOnlyMapTest {
             "map",
             JavaOnlyMap.of(),
             "null",
-            null)
+            null,
+        )
 
     assertThat(values.getType("int")).isEqualTo(ReadableType.Number)
     assertThat(values.getType("float")).isEqualTo(ReadableType.Number)

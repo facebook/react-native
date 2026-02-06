@@ -17,8 +17,7 @@ class LegacyViewManagerInteropComponentDescriptor final
  public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
-  LegacyViewManagerInteropComponentDescriptor(
-      const ComponentDescriptorParameters& parameters);
+  LegacyViewManagerInteropComponentDescriptor(const ComponentDescriptorParameters &parameters);
   /*
    * Returns `name` and `handle` based on a `flavor`, not on static data from
    * `LegacyViewManagerInteropShadowNode`.
@@ -27,7 +26,7 @@ class LegacyViewManagerInteropComponentDescriptor final
   ComponentName getComponentName() const override;
 
  protected:
-  void adopt(ShadowNode& shadowNode) const override;
+  void adopt(ShadowNode &shadowNode) const override;
 
  private:
   const std::shared_ptr<void> _coordinator;

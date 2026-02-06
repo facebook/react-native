@@ -24,10 +24,12 @@ export function alertWithArgs(
   }
 
   NativeDialogManagerAndroid.showAlert(
-    // $FlowFixMe[prop-missing] - Mismatched platform interfaces.
+    // $FlowFixMe[incompatible-type] - Mismatched platform interfaces.
     args,
     emptyCallback,
-    // $FlowFixMe[incompatible-call] - Mismatched platform interfaces.
+    // $FlowFixMe[incompatible-type] - Mismatched platform interfaces.
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     callback || emptyCallback,
   );
 }

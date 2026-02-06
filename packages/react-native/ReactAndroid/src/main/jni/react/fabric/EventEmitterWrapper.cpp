@@ -8,6 +8,8 @@
 #include "EventEmitterWrapper.h"
 #include <fbjni/fbjni.h>
 
+#include <utility>
+
 using namespace facebook::jni;
 
 namespace facebook::react {
@@ -21,8 +23,8 @@ void EventEmitterWrapper::dispatchEvent(
   // crashing.
   if (eventEmitter != nullptr) {
     eventEmitter->dispatchEvent(
-        eventName,
-        payload ? payload->consume() : folly::dynamic::object(),
+        std::move(eventName),
+        (payload != nullptr) ? payload->consume() : folly::dynamic::object(),
         static_cast<RawEvent::Category>(category));
   }
 }
@@ -51,7 +53,8 @@ void EventEmitterWrapper::dispatchUniqueEvent(
   // crashing.
   if (eventEmitter != nullptr) {
     eventEmitter->dispatchUniqueEvent(
-        eventName, payload ? payload->consume() : folly::dynamic::object());
+        std::move(eventName),
+        (payload != nullptr) ? payload->consume() : folly::dynamic::object());
   }
 }
 

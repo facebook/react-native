@@ -15,6 +15,8 @@
 #import "RCTSurfacePointerHandler.h"
 #import "RCTTouchableComponentViewProtocol.h"
 
+#if !TARGET_OS_TV
+
 using namespace facebook::react;
 
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
@@ -137,7 +139,7 @@ struct PointerHasher {
    * We hold the view weakly to prevent a retain cycle.
    */
   __weak UIView *_rootComponentView;
-  RCTIdentifierPool<11> _identifierPool;
+  RCTIdentifierPool<17> _identifierPool;
 
   RCTSurfacePointerHandler *_pointerHandler;
 }
@@ -399,7 +401,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
   BOOL canBePrevented = [self canBePreventedByGestureRecognizer:otherGestureRecognizer];
-  if (canBePrevented) {
+  if (canBePrevented && otherGestureRecognizer.cancelsTouchesInView) {
     [self _cancelTouches];
   }
   return NO;
@@ -414,3 +416,5 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 }
 
 @end
+
+#endif // !TARGET_OS_TV

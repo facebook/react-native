@@ -168,9 +168,7 @@ class VirtualizedList extends StateSafePureComponent<
     );
     invariant(
       getItemCount(data) >= 1,
-      `scrollToIndex out of range: item length ${getItemCount(
-        data,
-      )} but minimum is 1`,
+      `scrollToIndex out of range: item length ${getItemCount(data)} but minimum is 1`,
     );
     invariant(
       index < getItemCount(data),
@@ -265,7 +263,7 @@ class VirtualizedList extends StateSafePureComponent<
       return;
     }
 
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     scrollRef.scrollTo({
       animated,
       ...this._scrollToParamsFromOffset(offset),
@@ -440,6 +438,8 @@ class VirtualizedList extends StateSafePureComponent<
     );
 
     invariant(
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       getItemCount,
       'VirtualizedList: The "getItemCount" prop must be provided',
     );
@@ -509,7 +509,7 @@ class VirtualizedList extends StateSafePureComponent<
   static _createRenderMask(
     props: VirtualizedListProps,
     cellsAroundViewport: {first: number, last: number},
-    additionalRegions?: ?$ReadOnlyArray<{first: number, last: number}>,
+    additionalRegions?: ?ReadonlyArray<{first: number, last: number}>,
   ): CellRenderMask {
     const itemCount = props.getItemCount(props.data);
 
@@ -942,7 +942,7 @@ class VirtualizedList extends StateSafePureComponent<
         ListHeaderComponent
       ) : (
         // $FlowFixMe[not-a-component]
-        // $FlowFixMe[incompatible-type-arg]
+        // $FlowFixMe[incompatible-type]
         <ListHeaderComponent />
       );
       cells.push(
@@ -977,7 +977,7 @@ class VirtualizedList extends StateSafePureComponent<
         ListEmptyComponent
       ) : (
         // $FlowFixMe[not-a-component]
-        // $FlowFixMe[incompatible-type-arg]
+        // $FlowFixMe[incompatible-type]
         <ListEmptyComponent />
       )): any);
       cells.push(
@@ -1065,7 +1065,7 @@ class VirtualizedList extends StateSafePureComponent<
         ListFooterComponent
       ) : (
         // $FlowFixMe[not-a-component]
-        // $FlowFixMe[incompatible-type-arg]
+        // $FlowFixMe[incompatible-type]
         <ListFooterComponent />
       );
       cells.push(
@@ -1138,7 +1138,7 @@ class VirtualizedList extends StateSafePureComponent<
             this.props.renderScrollComponent ||
             this._defaultRenderScrollComponent
           )(
-            // $FlowExpectedError[prop-missing] scrollProps is a superset of ScrollViewProps
+            // $FlowExpectedError[incompatible-type] scrollProps is a superset of ScrollViewProps
             scrollProps,
           ) as ExactReactElement_DEPRECATED<any>,
           {
@@ -1502,7 +1502,7 @@ class VirtualizedList extends StateSafePureComponent<
   }
 
   _selectLength(
-    metrics: $ReadOnly<{
+    metrics: Readonly<{
       height: number,
       width: number,
       ...
@@ -1513,7 +1513,7 @@ class VirtualizedList extends StateSafePureComponent<
       : metrics.width;
   }
 
-  _selectOffset({x, y}: $ReadOnly<{x: number, y: number, ...}>): number {
+  _selectOffset({x, y}: Readonly<{x: number, y: number, ...}>): number {
     return this._orientation().horizontal ? x : y;
   }
 
@@ -1952,7 +1952,7 @@ class VirtualizedList extends StateSafePureComponent<
 
   _getNonViewportRenderRegions = (
     props: CellMetricProps,
-  ): $ReadOnlyArray<{
+  ): ReadonlyArray<{
     first: number,
     last: number,
   }> => {

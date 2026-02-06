@@ -17,7 +17,7 @@ import com.facebook.react.module.annotations.ReactModule
 @ReactModule(name = NativeDevMenuSpec.NAME)
 internal class DevMenuModule(
     reactContext: ReactApplicationContext?,
-    private val devSupportManager: DevSupportManager
+    private val devSupportManager: DevSupportManager,
 ) : NativeDevMenuSpec(reactContext) {
 
   override fun show() {

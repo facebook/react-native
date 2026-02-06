@@ -74,10 +74,15 @@ public object StackTraceHelper {
             method = method,
             line = lineNumber,
             column = columnNumber,
-            isCollapsed = collapse)
+            isCollapsed = collapse,
+        )
       } else if (type == ReadableType.String) {
         StackFrameImpl(
-            file = null, method = checkNotNull(stack.getString(i)), line = -1, column = -1)
+            file = null,
+            method = checkNotNull(stack.getString(i)),
+            line = -1,
+            column = -1,
+        )
       } else {
         error("Cannot parse the stackframe for $stack")
       }
@@ -112,7 +117,8 @@ public object StackTraceHelper {
             method = method,
             line = lineNumber,
             column = columnNumber,
-            isCollapsed = collapse)
+            isCollapsed = collapse,
+        )
       }
     } catch (exception: JSONException) {
       throw RuntimeException(exception)
@@ -140,7 +146,8 @@ public object StackTraceHelper {
             file = file,
             method = method,
             line = checkNotNull(lineString).toInt(),
-            column = checkNotNull(columnString).toInt())
+            column = checkNotNull(columnString).toInt(),
+        )
       } else {
         StackFrameImpl(file = null, method = stackTrace[i], line = -1, column = -1)
       }
@@ -157,7 +164,8 @@ public object StackTraceHelper {
           fileName = stackTrace[i].fileName,
           method = stackTrace[i].methodName,
           line = stackTrace[i].lineNumber,
-          column = -1)
+          column = -1,
+      )
     }
   }
 
@@ -202,7 +210,8 @@ public object StackTraceHelper {
             frame.lineNumber?.let { putDouble(LINE_NUMBER_KEY, it.toDouble()) }
             putString(FILE_KEY, frame.file)
             putString(METHOD_NAME_KEY, frame.methodName)
-          })
+          }
+      )
     }
 
     return JavaOnlyMap().apply {
@@ -235,7 +244,7 @@ public object StackTraceHelper {
       public override val method: String,
       public override val line: Int,
       public override val column: Int,
-      public override val isCollapsed: Boolean = false
+      public override val isCollapsed: Boolean = false,
   ) : StackFrame {
 
     /** Convert the stack frame to a JSON representation. */
@@ -246,6 +255,8 @@ public object StackTraceHelper {
                 METHOD_NAME_KEY to method,
                 LINE_NUMBER_KEY to line,
                 COLUMN_KEY to column,
-                COLLAPSE_KEY to isCollapsed))
+                COLLAPSE_KEY to isCollapsed,
+            )
+        )
   }
 }

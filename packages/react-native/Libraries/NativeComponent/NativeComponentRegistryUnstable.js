@@ -23,7 +23,9 @@ export function unstable_hasComponent(name: string): boolean {
       hasNativeComponent = global.__nativeComponentRegistry__hasComponent(name);
       componentNameToExists.set(name, hasNativeComponent);
     } else {
-      throw `unstable_hasComponent('${name}'): Global function is not registered`;
+      throw new Error(
+        `unstable_hasComponent('${name}'): Global function is not registered`,
+      );
     }
   }
   return hasNativeComponent;

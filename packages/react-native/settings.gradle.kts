@@ -29,3 +29,35 @@ include(":packages:react-native:ReactAndroid:hermes-engine")
 
 project(":packages:react-native:ReactAndroid:hermes-engine").projectDir =
     file("ReactAndroid/hermes-engine/")
+
+// Since Gradle 9.0, all the projects in the path must have an existing folder.
+// As we build :packages:react-native:ReactAndroid, we need to declare the folders
+// for :packages and :packages:react-native as well as otherwise the build from
+// source will fail with a missing folder exception.
+
+project(":packages").projectDir = file("/tmp")
+
+project(":packages:react-native").projectDir = file("/tmp")
+
+// Gradle properties defined in `gradle.properties` are not inherited by
+// included builds, see https://github.com/gradle/gradle/issues/2534.
+// This is a workaround to read the configuration from the consuming project,
+// and apply relevant properties to the :react-native project.
+buildscript {
+  val properties = java.util.Properties()
+  val propertiesToInherit = listOf("hermesV1Enabled", "react.hermesV1Enabled")
+
+  try {
+    file("../../android/gradle.properties").inputStream().use { properties.load(it) }
+
+    gradle.rootProject {
+      propertiesToInherit.forEach { property ->
+        if (properties.containsKey(property)) {
+          gradle.rootProject.extra.set(property, properties.getProperty(property))
+        }
+      }
+    }
+  } catch (e: Exception) {
+    // fail silently
+  }
+}

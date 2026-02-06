@@ -53,7 +53,7 @@ using namespace facebook;
                        launchOptions:(nullable NSDictionary *)launchOptions
 {
   self = [super self];
-  if (self) {
+  if (self != nullptr) {
     _uiManagerProxy = [[RCTUIManagerProxy alloc] initWithViewRegistry:viewRegistry];
     _moduleRegistry = moduleRegistry;
     _bundleManager = bundleManager;
@@ -75,7 +75,7 @@ using namespace facebook;
 
   if (queue == RCTJSThread) {
     _dispatchToJSThread(block);
-  } else if (queue) {
+  } else if (queue != nullptr) {
     dispatch_async(queue, block);
   }
 }
@@ -308,7 +308,7 @@ using namespace facebook;
            cmd:_cmd];
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 - (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:(RCTModuleData *)moduleData
 {
   [self logError:@"This method is not supported. Nooping" cmd:_cmd];
@@ -319,7 +319,7 @@ using namespace facebook;
   [self logError:@"This method is not supported. Returning nil." cmd:_cmd];
   return nil;
 }
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)newModules
 {
@@ -427,7 +427,7 @@ using namespace facebook;
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
 {
   self = [super self];
-  if (self) {
+  if (self != nullptr) {
     _viewRegistry = viewRegistry;
     _legacyViewRegistry = [NSMutableDictionary new];
   }
@@ -443,9 +443,9 @@ using namespace facebook;
 {
   [self logWarning:@"Please migrate to RCTViewRegistry: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
                cmd:_cmd];
-  UIView *view = [_viewRegistry viewForReactTag:reactTag] ? [_viewRegistry viewForReactTag:reactTag]
-                                                          : [_legacyViewRegistry objectForKey:reactTag];
-  return [RCTUIManager paperViewOrCurrentView:view];
+  UIView *view = ([_viewRegistry viewForReactTag:reactTag] != nullptr) ? [_viewRegistry viewForReactTag:reactTag]
+                                                                       : [_legacyViewRegistry objectForKey:reactTag];
+  return RCTPaperViewOrCurrentView(view);
 }
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
@@ -457,7 +457,7 @@ using namespace facebook;
   __weak __typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     __typeof(self) strongSelf = weakSelf;
-    if (strongSelf) {
+    if (strongSelf != nullptr) {
       RCTUIManager *proxiedManager = (RCTUIManager *)strongSelf;
       RCTComposedViewRegistry *composedViewRegistry =
           [[RCTComposedViewRegistry alloc] initWithUIManager:proxiedManager

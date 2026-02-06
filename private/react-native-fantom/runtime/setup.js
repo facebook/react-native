@@ -8,8 +8,10 @@
  * @format
  */
 
+import type {BenchmarkResult} from '../src/Benchmark';
 import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 
+import {getConstants} from '../src/Constants';
 import expect from './expect';
 import {createMockFunction} from './mocks';
 import patchWeakRef from './patchWeakRef';
@@ -34,9 +36,12 @@ export type FailureDetail = {
   cause?: FailureDetail,
 };
 
+export opaque type CoverageMap = unknown;
+
 export type TestSuiteResult =
   | {
       testResults: Array<TestCaseResult>,
+      coverageMap?: CoverageMap,
     }
   | {
       error: FailureDetail,
@@ -51,7 +56,7 @@ type Spec = {
   ...FocusState,
   title: string,
   parentContext: Context,
-  implementation: () => mixed,
+  implementation: () => unknown,
 };
 
 type Suite = Spec | Context;
@@ -84,7 +89,7 @@ const globalModifiers: Array<'focused' | 'skipped'> = [];
 
 const globalDescribe = (global.describe = (
   title: string,
-  implementation: () => mixed,
+  implementation: () => unknown,
 ) => {
   const parentContext = currentContext;
   const {focused, skipped} = getFocusState();
@@ -134,7 +139,7 @@ function getFocusState(): {focused: boolean, skipped: boolean} {
 const globalIt =
   (global.it =
   global.test =
-    (title: string, implementation: () => mixed) => {
+    (title: string, implementation: () => unknown) => {
       const {focused, skipped} = getFocusState();
       currentContext.children.push({
         title,
@@ -148,7 +153,7 @@ const globalIt =
 // $FlowExpectedError[prop-missing]
 global.fdescribe = global.describe.only = (
   title: string,
-  implementation: () => mixed,
+  implementation: () => unknown,
 ) => {
   globalModifiers.push('focused');
   globalDescribe(title, implementation);
@@ -160,7 +165,7 @@ global.it.only =
   global.fit =
   // $FlowExpectedError[prop-missing]
   global.test.only =
-    (title: string, implementation: () => mixed) => {
+    (title: string, implementation: () => unknown) => {
       globalModifiers.push('focused');
       globalIt(title, implementation);
       globalModifiers.pop();
@@ -169,7 +174,7 @@ global.it.only =
 // $FlowExpectedError[prop-missing]
 global.xdescribe = global.describe.skip = (
   title: string,
-  implementation: () => mixed,
+  implementation: () => unknown,
 ) => {
   globalModifiers.push('skipped');
   globalDescribe(title, implementation);
@@ -182,7 +187,7 @@ global.it.skip =
   // $FlowExpectedError[prop-missing]
   global.test.skip =
   global.xtest =
-    (title: string, implementation: () => mixed) => {
+    (title: string, implementation: () => unknown) => {
       globalModifiers.push('skipped');
       globalIt(title, implementation);
       globalModifiers.pop();
@@ -320,7 +325,7 @@ function runSpec(spec: Spec): TestCaseResult {
   }
 
   let status: 'passed' | 'failed' | 'pending';
-  let error: mixed;
+  let error: unknown;
 
   const start = Date.now();
   snapshotContext.setTargetTest(result.fullName);
@@ -331,7 +336,7 @@ function runSpec(spec: Spec): TestCaseResult {
     invokeHooks(spec.parentContext, 'afterEachHooks');
 
     status = 'passed';
-  } catch (e: mixed) {
+  } catch (e: unknown) {
     error = e;
     status = 'failed';
   }
@@ -399,6 +404,13 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
   );
 }
 
+export function reportBenchmarkResult(result: BenchmarkResult): void {
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+  NativeFantom.reportTestSuiteResultsJSON(JSON.stringify(result));
+}
+
 function validateEmptyMessageQueue(): void {
   // Force the import of the native module to be lazy
   const NativeFantom =
@@ -418,6 +430,33 @@ function serializeError(error: Error): FailureDetail {
   return result;
 }
 
+function runTest(): Array<TestCaseResult> {
+  const {jsTraceOutputPath} = getConstants();
+  if (jsTraceOutputPath == null) {
+    return runSuite(currentContext);
+  }
+
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+
+  try {
+    NativeFantom.startJSSamplingProfiler();
+  } catch (e) {
+    console.error('Could not start JS sampling profiler', e);
+  }
+
+  try {
+    return runSuite(currentContext);
+  } finally {
+    try {
+      NativeFantom.stopJSSamplingProfilerAndSaveToFile(jsTraceOutputPath);
+    } catch (e) {
+      console.error('Could not stop JS sampling profiler', e);
+    }
+  }
+}
+
 global.$$RunTests$$ = () => {
   if (testSetupError != null) {
     reportTestSuiteResult({
@@ -428,7 +467,8 @@ global.$$RunTests$$ = () => {
     });
   } else {
     reportTestSuiteResult({
-      testResults: runSuite(currentContext),
+      testResults: runTest(),
+      coverageMap: global.__coverage__,
     });
   }
 };

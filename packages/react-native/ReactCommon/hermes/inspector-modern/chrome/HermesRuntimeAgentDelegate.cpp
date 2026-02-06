@@ -14,6 +14,8 @@
 #include <hermes/hermes.h>
 #include <jsinspector-modern/ReactCdp.h>
 
+#include <utility>
+
 using namespace facebook::hermes;
 
 namespace facebook::react::jsinspector_modern {
@@ -25,7 +27,7 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
     explicit HermesStateWrapper(HermesState state) : state_(std::move(state)) {}
 
     static HermesState unwrapDestructively(ExportedState* wrapper) {
-      if (!wrapper) {
+      if (wrapper == nullptr) {
         return {};
       }
       if (auto* typedWrapper = dynamic_cast<HermesStateWrapper*>(wrapper)) {
@@ -48,19 +50,20 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
       HermesRuntime& runtime,
       HermesRuntimeTargetDelegate& runtimeTargetDelegate,
       const RuntimeExecutor& runtimeExecutor)
-      : hermes_(hermes::cdp::CDPAgent::create(
-            executionContextDescription.id,
-            runtimeTargetDelegate.getCDPDebugAPI(),
-            // RuntimeTask takes a HermesRuntime whereas our RuntimeExecutor
-            // takes a jsi::Runtime.
-            [runtimeExecutor,
-             &runtime](facebook::hermes::debugger::RuntimeTask fn) {
-              runtimeExecutor(
-                  [&runtime, fn = std::move(fn)](auto&) { fn(runtime); });
-            },
-            frontendChannel,
-            HermesStateWrapper::unwrapDestructively(
-                previouslyExportedState.get()))) {
+      : hermes_(
+            hermes::cdp::CDPAgent::create(
+                executionContextDescription.id,
+                runtimeTargetDelegate.getCDPDebugAPI(),
+                // RuntimeTask takes a HermesRuntime whereas our RuntimeExecutor
+                // takes a jsi::Runtime.
+                [runtimeExecutor,
+                 &runtime](facebook::hermes::debugger::RuntimeTask fn) {
+                  runtimeExecutor(
+                      [&runtime, fn = std::move(fn)](auto&) { fn(runtime); });
+                },
+                std::move(frontendChannel),
+                HermesStateWrapper::unwrapDestructively(
+                    previouslyExportedState.get()))) {
     if (sessionState.isRuntimeDomainEnabled) {
       hermes_->enableRuntimeDomain();
     }
@@ -70,10 +73,9 @@ class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
   }
 
   bool handleRequest(const cdp::PreparsedRequest& req) override {
-    // TODO: Change to string::starts_with when we're on C++20.
-    if (req.method.rfind("Log.", 0) == 0) {
-      // Since we know Hermes doesn't do anything useful with Log messages,
-      // but our containing HostAgent will, bail out early.
+    if (req.method.starts_with("Log.") || req.method.starts_with("Network.")) {
+      // Since we know Hermes doesn't do anything useful with Log or Network
+      // messages, but our containing HostAgent will, bail out early.
       // TODO: We need a way to negotiate this more dynamically with Hermes
       // through the API.
       return false;
@@ -102,14 +104,15 @@ HermesRuntimeAgentDelegate::HermesRuntimeAgentDelegate(
     HermesRuntime& runtime,
     HermesRuntimeTargetDelegate& runtimeTargetDelegate,
     RuntimeExecutor runtimeExecutor)
-    : impl_(std::make_unique<Impl>(
-          std::move(frontendChannel),
-          sessionState,
-          std::move(previouslyExportedState),
-          executionContextDescription,
-          runtime,
-          runtimeTargetDelegate,
-          std::move(runtimeExecutor))) {}
+    : impl_(
+          std::make_unique<Impl>(
+              std::move(frontendChannel),
+              sessionState,
+              std::move(previouslyExportedState),
+              executionContextDescription,
+              runtime,
+              runtimeTargetDelegate,
+              std::move(runtimeExecutor))) {}
 
 bool HermesRuntimeAgentDelegate::handleRequest(
     const cdp::PreparsedRequest& req) {

@@ -133,7 +133,7 @@ NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
   return moduleConstants;
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>))
 {
@@ -246,9 +246,6 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTEnforceNewArchitectureValidation(
-      RCTNotAllowedInBridgeless, self, @"RCTUIManager must not be initialized for the new architecture");
-
   RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
 
@@ -324,6 +321,7 @@ RCT_EXPORT_MODULE()
   });
 }
 
+#if TARGET_OS_IOS
 // Names and coordinate system from html5 spec:
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.orientation
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.lockOrientation
@@ -363,7 +361,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   };
 }
 
-#if TARGET_OS_IOS
 - (void)namedOrientationDidChange
 {
   NSDictionary *orientationEvent = deviceOrientationEventBody([UIDevice currentDevice].orientation);
@@ -473,7 +470,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   if (!view) {
     view = _viewRegistry[reactTag];
   }
-  return [RCTUIManager paperViewOrCurrentView:view];
+  return RCTPaperViewOrCurrentView(view);
 }
 
 - (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag
@@ -670,12 +667,11 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     for (RCTShadowView *shadowView in affectedShadowViews) {
       reactTags[index] = shadowView.reactTag;
       RCTLayoutMetrics layoutMetrics = shadowView.layoutMetrics;
-      frameDataArray[index++] = (RCTFrameData){
-          layoutMetrics.frame,
-          layoutMetrics.layoutDirection,
-          shadowView.isNewView,
-          shadowView.superview.isNewView,
-          layoutMetrics.displayType};
+      frameDataArray[index++] = (RCTFrameData){layoutMetrics.frame,
+                                               layoutMetrics.layoutDirection,
+                                               shadowView.isNewView,
+                                               shadowView.superview.isNewView,
+                                               layoutMetrics.displayType};
     }
   }
 
@@ -947,13 +943,11 @@ static void RCTSetChildren(
   }
 }
 
-RCT_EXPORT_METHOD(manageChildren
-                  : (nonnull NSNumber *)containerTag moveFromIndices
-                  : (NSArray<NSNumber *> *)moveFromIndices moveToIndices
-                  : (NSArray<NSNumber *> *)moveToIndices addChildReactTags
-                  : (NSArray<NSNumber *> *)addChildReactTags addAtIndices
-                  : (NSArray<NSNumber *> *)addAtIndices removeAtIndices
-                  : (NSArray<NSNumber *> *)removeAtIndices)
+RCT_EXPORT_METHOD(
+    manageChildren : (nonnull NSNumber *)containerTag moveFromIndices : (NSArray<NSNumber *> *)
+        moveFromIndices moveToIndices : (NSArray<NSNumber *> *)moveToIndices addChildReactTags : (NSArray<NSNumber *> *)
+            addChildReactTags addAtIndices : (NSArray<NSNumber *> *)
+                addAtIndices removeAtIndices : (NSArray<NSNumber *> *)removeAtIndices)
 {
   [self _manageChildren:containerTag
         moveFromIndices:moveFromIndices
@@ -1030,11 +1024,9 @@ RCT_EXPORT_METHOD(manageChildren
   }
 }
 
-RCT_EXPORT_METHOD(createView
-                  : (nonnull NSNumber *)reactTag viewName
-                  : (NSString *)viewName rootTag
-                  : (nonnull NSNumber *)rootTag props
-                  : (NSDictionary *)props)
+RCT_EXPORT_METHOD(
+    createView : (nonnull NSNumber *)reactTag viewName : (NSString *)viewName rootTag : (nonnull NSNumber *)
+        rootTag props : (NSDictionary *)props)
 {
   RCTComponentData *componentData = _componentDataByName[viewName];
   if (componentData == nil) {
@@ -1091,11 +1083,10 @@ RCT_EXPORT_METHOD(createView
   [self _shadowView:shadowView didReceiveUpdatedProps:[props allKeys]];
 }
 
-RCT_EXPORT_METHOD(updateView
-                  : (nonnull NSNumber *)reactTag viewName
-                  : (NSString *)viewName // not always reliable, use shadowView.viewName if available
-                      props
-                  : (NSDictionary *)props)
+RCT_EXPORT_METHOD(
+    updateView : (nonnull NSNumber *)reactTag viewName : (NSString *)
+        viewName // not always reliable, use shadowView.viewName if available
+            props : (NSDictionary *)props)
 {
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTComponentData *componentData = _componentDataByName[shadowView.viewName ?: viewName];
@@ -1133,10 +1124,8 @@ RCT_EXPORT_METHOD(blur : (nonnull NSNumber *)reactTag)
   }];
 }
 
-RCT_EXPORT_METHOD(findSubviewIn
-                  : (nonnull NSNumber *)reactTag atPoint
-                  : (CGPoint)point callback
-                  : (RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(
+    findSubviewIn : (nonnull NSNumber *)reactTag atPoint : (CGPoint)point callback : (RCTResponseSenderBlock)callback)
 {
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[reactTag];
@@ -1157,10 +1146,9 @@ RCT_EXPORT_METHOD(findSubviewIn
   }];
 }
 
-RCT_EXPORT_METHOD(dispatchViewManagerCommand
-                  : (nonnull NSNumber *)reactTag commandID
-                  : (id /*(NSString or NSNumber) */)commandID commandArgs
-                  : (NSArray<id> *)commandArgs)
+RCT_EXPORT_METHOD(
+    dispatchViewManagerCommand : (nonnull NSNumber *)reactTag commandID : (id /*(NSString or NSNumber) */)
+        commandID commandArgs : (NSArray<id> *)commandArgs)
 {
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTComponentData *componentData = _componentDataByName[shadowView.viewName];
@@ -1260,7 +1248,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand
             [[RCTComposedViewRegistry alloc] initWithUIManager:strongSelf andRegistry:strongSelf->_viewRegistry];
         block(strongSelf, composedViewRegistry);
       }
-    } @catch (NSException *exception) {
+    } @catch (NSException *__unused exception) {
       RCTLogError(@"Exception thrown while executing UI block: %@", exception);
     }
   };
@@ -1423,10 +1411,9 @@ RCT_EXPORT_METHOD(measureInWindow : (nonnull NSNumber *)reactTag callback : (RCT
  * Returns if the shadow view provided has the `ancestor` shadow view as
  * an actual ancestor.
  */
-RCT_EXPORT_METHOD(viewIsDescendantOf
-                  : (nonnull NSNumber *)reactTag ancestor
-                  : (nonnull NSNumber *)ancestorReactTag callback
-                  : (RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(
+    viewIsDescendantOf : (nonnull NSNumber *)reactTag ancestor : (nonnull NSNumber *)
+        ancestorReactTag callback : (RCTResponseSenderBlock)callback)
 {
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTShadowView *ancestorShadowView = _shadowViewRegistry[ancestorReactTag];
@@ -1472,11 +1459,9 @@ static void RCTMeasureLayout(RCTShadowView *view, RCTShadowView *ancestor, RCTRe
  * anything on the main UI thread. Invokes supplied callback with (x, y, width,
  * height).
  */
-RCT_EXPORT_METHOD(measureLayout
-                  : (nonnull NSNumber *)reactTag relativeTo
-                  : (nonnull NSNumber *)ancestorReactTag errorCallback
-                  : (__unused RCTResponseSenderBlock)errorCallback callback
-                  : (RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(
+    measureLayout : (nonnull NSNumber *)reactTag relativeTo : (nonnull NSNumber *)ancestorReactTag errorCallback : (
+        __unused RCTResponseSenderBlock)errorCallback callback : (RCTResponseSenderBlock)callback)
 {
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTShadowView *ancestorShadowView = _shadowViewRegistry[ancestorReactTag];
@@ -1487,9 +1472,8 @@ RCT_EXPORT_METHOD(measureLayout
  * JS sets what *it* considers to be the responder. Later, scroll views can use
  * this in order to determine if scrolling is appropriate.
  */
-RCT_EXPORT_METHOD(setJSResponder
-                  : (nonnull NSNumber *)reactTag blockNativeResponder
-                  : (__unused BOOL)blockNativeResponder)
+RCT_EXPORT_METHOD(
+    setJSResponder : (nonnull NSNumber *)reactTag blockNativeResponder : (__unused BOOL)blockNativeResponder)
 {
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     _jsResponder = viewRegistry[reactTag];
@@ -1585,10 +1569,9 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView : (NSString *)name)
   };
 }
 
-RCT_EXPORT_METHOD(configureNextLayoutAnimation
-                  : (NSDictionary *)config withCallback
-                  : (RCTResponseSenderBlock)callback errorCallback
-                  : (__unused RCTResponseSenderBlock)errorCallback)
+RCT_EXPORT_METHOD(
+    configureNextLayoutAnimation : (NSDictionary *)config withCallback : (RCTResponseSenderBlock)
+        callback errorCallback : (__unused RCTResponseSenderBlock)errorCallback)
 {
   RCTLayoutAnimationGroup *layoutAnimationGroup = [[RCTLayoutAnimationGroup alloc] initWithConfig:config
                                                                                          callback:callback];
@@ -1624,17 +1607,7 @@ static UIView *_jsResponder;
 
 + (UIView *)JSResponder
 {
-  RCTErrorNewArchitectureValidation(
-      RCTNotAllowedInFabricWithoutLegacy, @"RCTUIManager", @"Please migrate this legacy surface to Fabric.");
   return _jsResponder;
-}
-
-+ (UIView *)paperViewOrCurrentView:(UIView *)view
-{
-  if ([view respondsToSelector:@selector(paperView)]) {
-    return [view performSelector:@selector(paperView)];
-  }
-  return view;
 }
 
 - (void)removeViewFromRegistry:(NSNumber *)reactTag
@@ -1653,7 +1626,7 @@ static UIView *_jsResponder;
 
 @end
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 
 @implementation RCTUIManager
 - (void)registerRootViewTag:(NSNumber *)rootTag
@@ -1737,11 +1710,6 @@ static UIView *_jsResponder;
   return nil;
 }
 
-+ (UIView *)paperViewOrCurrentView:(UIView *)view
-{
-  return nil;
-}
-
 + (NSString *)moduleName
 {
   return @"UIManager";
@@ -1762,7 +1730,15 @@ static UIView *_jsResponder;
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
+
+UIView *RCTPaperViewOrCurrentView(UIView *view)
+{
+  if ([view respondsToSelector:@selector(paperView)]) {
+    return [view performSelector:@selector(paperView)];
+  }
+  return view;
+}
 
 @implementation RCTComposedViewRegistry {
   __weak RCTUIManager *_uiManager;
@@ -1798,11 +1774,11 @@ static UIView *_jsResponder;
   NSNumber *index = (NSNumber *)key;
   UIView *view = _registry[index];
   if (view) {
-    return [RCTUIManager paperViewOrCurrentView:view];
+    return RCTPaperViewOrCurrentView(view);
   }
   view = [_uiManager viewForReactTag:index];
   if (view) {
-    return [RCTUIManager paperViewOrCurrentView:view];
+    return RCTPaperViewOrCurrentView(view);
   }
   return NULL;
 }

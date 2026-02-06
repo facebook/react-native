@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {DialogOptions} from '../../src/private/specs_DEPRECATED/modules/NativeDialogManagerAndroid';
+
 import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
 import NativePermissionsAndroid from './NativePermissionsAndroid';
 import invariant from 'invariant';
@@ -29,7 +31,7 @@ const PERMISSION_REQUEST_RESULT = Object.freeze({
   NEVER_ASK_AGAIN: 'never_ask_again',
 });
 
-type PermissionsType = $ReadOnly<{
+type PermissionsType = Readonly<{
   READ_CALENDAR: 'android.permission.READ_CALENDAR',
   WRITE_CALENDAR: 'android.permission.WRITE_CALENDAR',
   CAMERA: 'android.permission.CAMERA',
@@ -76,7 +78,7 @@ type PermissionsType = $ReadOnly<{
 }>;
 
 export type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
-export type Permission = $Values<PermissionsType>;
+export type Permission = Values<PermissionsType>;
 
 const PERMISSIONS = Object.freeze({
   READ_CALENDAR: 'android.permission.READ_CALENDAR',
@@ -132,7 +134,7 @@ const PERMISSIONS = Object.freeze({
  */
 class PermissionsAndroidImpl {
   PERMISSIONS: PermissionsType = PERMISSIONS;
-  RESULTS: $ReadOnly<{
+  RESULTS: Readonly<{
     DENIED: 'denied',
     GRANTED: 'granted',
     NEVER_ASK_AGAIN: 'never_ask_again',
@@ -249,24 +251,24 @@ class PermissionsAndroidImpl {
 
       if (shouldShowRationale && !!NativeDialogManagerAndroid) {
         return new Promise((resolve, reject) => {
-          const options = {
+          /* $FlowFixMe[incompatible-exact] (>=0.111.0 site=react_native_fb)
+           * This comment suppresses an error found when Flow v0.111 was
+           * deployed. To see the error, delete this comment and run Flow.
+           */
+          const options: DialogOptions = {
             ...rationale,
           };
           NativeDialogManagerAndroid.showAlert(
-            /* $FlowFixMe[incompatible-exact] (>=0.111.0 site=react_native_fb)
-             * This comment suppresses an error found when Flow v0.111 was
-             * deployed. To see the error, delete this comment and run Flow.
-             */
             options,
             () => reject(new Error('Error showing rationale')),
             () =>
-              // $FlowFixMe[incompatible-call]
+              // $FlowFixMe[incompatible-type]
               resolve(NativePermissionsAndroid.requestPermission(permission)),
           );
         });
       }
     }
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     return NativePermissionsAndroid.requestPermission(permission);
   }
 
@@ -291,8 +293,7 @@ class PermissionsAndroidImpl {
       NativePermissionsAndroid,
       'PermissionsAndroid is not installed correctly.',
     );
-    // $FlowFixMe[incompatible-return]
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }

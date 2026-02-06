@@ -31,9 +31,10 @@ export default class StateSafePureComponent<
     this._installSetStateHooks();
   }
 
-  setState<K: $Keys<State>>(
+  // $FlowFixMe[incompatible-type]
+  setState<K: keyof State>(
     partialState: ?(Pick<State, K> | ((State, Props) => ?Pick<State, K>)),
-    callback?: () => mixed,
+    callback?: () => unknown,
   ): void {
     if (typeof partialState === 'function') {
       super.setState((state, props) => {

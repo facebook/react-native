@@ -19,7 +19,7 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   onPress?: ?(event: GestureResponderEvent) => void,
   status: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING',
 }>;
@@ -42,7 +42,7 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
             useNativeDriver: true,
           }),
         );
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         setState({
           animation,
           rotate: animated.interpolate({

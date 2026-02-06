@@ -7,6 +7,10 @@
 
 #import <React/RCTVirtualTextView.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 @implementation RCTVirtualTextView
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

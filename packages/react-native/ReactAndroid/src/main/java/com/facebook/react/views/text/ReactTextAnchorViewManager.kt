@@ -37,8 +37,10 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorH
  * whole text subtree.
  */
 @UnstableReactNativeAPI
-public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
-    BaseViewManager<ReactTextView, C>() {
+public abstract class ReactTextAnchorViewManager<
+    @Suppress("DEPRECATION")
+    C : ReactBaseTextShadowNode?
+> : BaseViewManager<ReactTextView, C>() {
 
   @ReactProp(name = "accessible")
   internal fun setAccessible(view: ReactTextView, accessible: Boolean) {
@@ -127,8 +129,10 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
               ViewProps.BORDER_TOP_LEFT_RADIUS,
               ViewProps.BORDER_TOP_RIGHT_RADIUS,
               ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-              ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+          ],
+      defaultFloat = Float.NaN,
+  )
   internal fun setBorderRadius(view: ReactTextView, index: Int, borderRadius: Float) {
     val radius =
         if (borderRadius.isNaN()) {
@@ -154,8 +158,10 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
               ViewProps.BORDER_TOP_WIDTH,
               ViewProps.BORDER_BOTTOM_WIDTH,
               ViewProps.BORDER_START_WIDTH,
-              ViewProps.BORDER_END_WIDTH],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_END_WIDTH,
+          ],
+      defaultFloat = Float.NaN,
+  )
   internal fun setBorderWidth(view: ReactTextView, index: Int, width: Float) {
     BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width)
   }
@@ -167,8 +173,10 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
               "borderLeftColor",
               "borderRightColor",
               "borderTopColor",
-              "borderBottomColor"],
-      customType = "Color")
+              "borderBottomColor",
+          ],
+      customType = "Color",
+  )
   internal fun setBorderColor(view: ReactTextView, index: Int, color: Int?) {
     BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.values()[index], color)
   }

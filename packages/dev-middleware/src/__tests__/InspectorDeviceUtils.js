@@ -16,7 +16,7 @@ import type {
   JSONSerializable,
   MessageFromDevice,
   MessageToDevice,
-  WrappedEvent,
+  WrappedEventToDevice,
 } from '../inspector-proxy/types';
 
 import nullthrows from 'nullthrows';
@@ -90,7 +90,7 @@ export class DeviceAgent {
     });
   }
 
-  // $FlowIgnore[unsafe-getters-setters]
+  // $FlowFixMe[unsafe-getters-setters]
   get socket(): WebSocket {
     return nullthrows(this.#ws);
   }
@@ -106,9 +106,14 @@ export class DeviceMock extends DeviceAgent {
     | Promise<GetPagesResponse['payload'] | void>
     | void,
   > = jest.fn();
-  +wrappedEvent: JestMockFn<[message: WrappedEvent], void> = jest.fn();
+  +wrappedEvent: JestMockFn<[message: WrappedEventToDevice], void> = jest.fn();
   +wrappedEventParsed: JestMockFn<
-    [payload: {...WrappedEvent['payload'], wrappedEvent: JSONSerializable}],
+    [
+      payload: {
+        ...WrappedEventToDevice['payload'],
+        wrappedEvent: JSONSerializable,
+      },
+    ],
     void,
   > = jest.fn();
 
@@ -152,12 +157,12 @@ export class DeviceMock extends DeviceAgent {
         if (!payload) {
           return;
         }
-        // $FlowFixMe[incompatible-call] TODO(moti) Figure out the right way to type maybePayload generically
+        // $FlowFixMe[incompatible-type] TODO(moti) Figure out the right way to type maybePayload generically
         this.send({event, payload});
       });
       return;
     }
-    // $FlowFixMe[incompatible-call] TODO(moti) Figure out the right way to type maybePayload generically
+    // $FlowFixMe[incompatible-type] TODO(moti) Figure out the right way to type maybePayload generically
     this.send({event, payload: maybePayload});
   }
 }

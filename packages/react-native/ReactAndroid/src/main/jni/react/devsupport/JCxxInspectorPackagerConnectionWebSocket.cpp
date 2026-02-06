@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <fbjni/ByteBuffer.h>
+
 #include "JCxxInspectorPackagerConnectionWebSocket.h"
 
 using namespace facebook::jni;
@@ -12,10 +14,35 @@ using namespace facebook::react::jsinspector_modern;
 
 namespace facebook::react::jsinspector_modern {
 
+namespace {
+
+local_ref<JByteBuffer::javaobject> getReadOnlyByteBufferFromStringView(
+    std::string_view sv) {
+  auto buffer = JByteBuffer::wrapBytes(
+      const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(sv.data())),
+      sv.size());
+
+  /**
+   * Return a read-only buffer that shares the underlying contents.
+   * This guards from accidential mutations on the Java side, since we did
+   * casting above.
+   *
+   * https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html#asReadOnlyBuffer--
+   */
+  static auto method =
+      buffer->javaClassStatic()->getMethod<JByteBuffer::javaobject()>(
+          "asReadOnlyBuffer");
+  return method(buffer);
+}
+
+} // namespace
+
 void JCxxInspectorPackagerConnectionWebSocket::send(std::string_view message) {
   static auto method =
-      javaClassStatic()->getMethod<void(const std::string&)>("send");
-  method(self(), std::string(message));
+      javaClassStatic()->getMethod<void(local_ref<JByteBuffer::javaobject>)>(
+          "send");
+  auto byteBuffer = getReadOnlyByteBufferFromStringView(message);
+  method(self(), byteBuffer);
 }
 
 void JCxxInspectorPackagerConnectionWebSocket::close() {

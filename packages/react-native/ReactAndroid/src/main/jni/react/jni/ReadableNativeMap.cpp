@@ -30,7 +30,8 @@ void addDynamicToJArray(
       break;
     }
     case folly::dynamic::Type::BOOL: {
-      (*jarray)[index] = JBoolean::valueOf(dyn.getBool());
+      (*jarray)[index] =
+          JBoolean::valueOf(static_cast<unsigned char>(dyn.getBool()));
       break;
     }
     case folly::dynamic::Type::INT64: {
@@ -104,7 +105,7 @@ local_ref<JArrayClass<jobject>> ReadableNativeMap::importTypes() {
 local_ref<ReadableNativeMap::jhybridobject>
 ReadableNativeMap::createWithContents(folly::dynamic&& map) {
   if (map.isNull()) {
-    return local_ref<jhybridobject>(nullptr);
+    return {nullptr};
   }
 
   if (!map.isObject()) {

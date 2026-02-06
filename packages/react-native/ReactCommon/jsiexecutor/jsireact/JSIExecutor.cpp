@@ -25,7 +25,7 @@ using namespace facebook::jsi;
 
 namespace facebook::react {
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
@@ -45,7 +45,10 @@ class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
     return nativeModules->getModule(rt, name);
   }
 
-  void set(Runtime&, const PropNameID&, const Value&) override {
+  void set(
+      Runtime& /*unused*/,
+      const PropNameID& /*name*/,
+      const Value& /*value*/) override {
     throw std::runtime_error(
         "Unable to put on NativeModules: Operation unsupported");
   }
@@ -71,8 +74,9 @@ JSIExecutor::JSIExecutor(
     RuntimeInstaller runtimeInstaller)
     : runtime_(runtime),
       delegate_(delegate),
-      nativeModules_(std::make_shared<JSINativeModules>(
-          delegate ? delegate->getModuleRegistry() : nullptr)),
+      nativeModules_(
+          std::make_shared<JSINativeModules>(
+              delegate ? delegate->getModuleRegistry() : nullptr)),
       moduleRegistry_(delegate ? delegate->getModuleRegistry() : nullptr),
       scopedTimeoutInvoker_(scopedTimeoutInvoker),
       runtimeInstaller_(runtimeInstaller) {
@@ -164,8 +168,7 @@ void JSIExecutor::loadBundle(
     ReactMarker::logTaggedMarker(
         ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
   }
-  runtime_->evaluateJavaScript(
-      std::make_unique<BigStringBuffer>(std::move(script)), sourceURL);
+  runtime_->evaluateJavaScript(std::move(script), sourceURL);
   flush();
   if (hasLogger) {
     ReactMarker::logTaggedMarker(
@@ -208,7 +211,7 @@ void JSIExecutor::registerBundle(
           "Empty bundle registered with ID " + tag + " from " + bundlePath);
     }
     runtime_->evaluateJavaScript(
-        std::make_unique<BigStringBuffer>(std::move(script)),
+        std::move(script),
         JSExecutor::getSyntheticBundlePath(bundleId, bundlePath));
   }
   ReactMarker::logTaggedMarker(
@@ -265,8 +268,9 @@ void JSIExecutor::invokeCallback(
     ret = invokeCallbackAndReturnFlushedQueue_->call(
         *runtime_, callbackId, valueFromDynamic(*runtime_, arguments));
   } catch (...) {
-    std::throw_with_nested(std::runtime_error(
-        "Error invoking callback " + std::to_string(callbackId)));
+    std::throw_with_nested(
+        std::runtime_error(
+            "Error invoking callback " + std::to_string(callbackId)));
   }
 
   callNativeModules(ret, true);
@@ -523,7 +527,7 @@ Value JSIExecutor::globalEvalWithSourceUrl(const Value* args, size_t count) {
       std::make_unique<StringBuffer>(std::move(code)), url);
 }
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 
 JSIExecutor::JSIExecutor(
     std::shared_ptr<jsi::Runtime> runtime,
@@ -570,46 +574,6 @@ void JSIExecutor::handleMemoryPressure(int pressureLevel) {}
 
 void JSIExecutor::flush() {}
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
-
-void bindNativeLogger(Runtime& runtime, Logger logger) {
-  runtime.global().setProperty(
-      runtime,
-      "nativeLoggingHook",
-      Function::createFromHostFunction(
-          runtime,
-          PropNameID::forAscii(runtime, "nativeLoggingHook"),
-          2,
-          [logger = std::move(logger)](
-              jsi::Runtime& runtime,
-              const jsi::Value&,
-              const jsi::Value* args,
-              size_t count) {
-            if (count != 2) {
-              throw std::invalid_argument(
-                  "nativeLoggingHook takes 2 arguments");
-            }
-            logger(
-                args[0].asString(runtime).utf8(runtime),
-                static_cast<unsigned int>(args[1].asNumber()));
-            return Value::undefined();
-          }));
-}
-
-void bindNativePerformanceNow(Runtime& runtime) {
-  runtime.global().setProperty(
-      runtime,
-      "nativePerformanceNow",
-      Function::createFromHostFunction(
-          runtime,
-          PropNameID::forAscii(runtime, "nativePerformanceNow"),
-          0,
-          [](jsi::Runtime& runtime,
-             const jsi::Value&,
-             const jsi::Value* args,
-             size_t /*count*/) {
-            return HighResTimeStamp::now().toDOMHighResTimeStamp();
-          }));
-}
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 } // namespace facebook::react

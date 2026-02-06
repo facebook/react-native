@@ -77,6 +77,9 @@ function generatePropsDiffString(
   className: string,
   componentName: string,
   component: ComponentShape,
+  debugProps: string = '',
+  includeGetDebugPropsImplementation?: boolean = false,
+  generateOptionalProperties?: boolean = false,
 ) {
   const diffProps = component.props
     .map(prop => {
@@ -86,39 +89,116 @@ function generatePropsDiffString(
         case 'Int32TypeAnnotation':
         case 'BooleanTypeAnnotation':
         case 'MixedTypeAnnotation':
-          return `
+          if (
+            prop.optional &&
+            prop.typeAnnotation.default == null &&
+            generateOptionalProperties
+          ) {
+            return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    if (${prop.name}.has_value()) {
+      result["${prop.name}"] = ${prop.name}.value();
+    } else {
+      result["${prop.name}"] = folly::dynamic(nullptr);
+    }
+  }`;
+          } else {
+            return `
   if (${prop.name} != oldProps->${prop.name}) {
     result["${prop.name}"] = ${prop.name};
   }`;
+          }
         case 'DoubleTypeAnnotation':
         case 'FloatTypeAnnotation':
-          return `
+          if (
+            prop.optional &&
+            prop.typeAnnotation.default == null &&
+            generateOptionalProperties
+          ) {
+            return `
+  if ((${prop.name} != oldProps->${prop.name})) {
+    if (${prop.name}.has_value()) {
+      if (!oldProps->${prop.name}.has_value() || !(std::isnan(${prop.name}.value()) && std::isnan(oldProps->${prop.name}.value()))) {
+        result["${prop.name}"] = ${prop.name}.value();
+      }
+    } else {
+       result["${prop.name}"] = folly::dynamic(nullptr);
+    }
+  }`;
+          } else {
+            return `
   if ((${prop.name} != oldProps->${prop.name}) && !(std::isnan(${prop.name}) && std::isnan(oldProps->${prop.name}))) {
     result["${prop.name}"] = ${prop.name};
   }`;
+          }
         case 'ArrayTypeAnnotation':
         case 'ObjectTypeAnnotation':
         case 'StringEnumTypeAnnotation':
         case 'Int32EnumTypeAnnotation':
-          return `
+          if (
+            prop.optional &&
+            prop.typeAnnotation.default == null &&
+            generateOptionalProperties
+          ) {
+            return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    if (${prop.name}.has_value()) {
+      result["${prop.name}"] = toDynamic(${prop.name}.value());
+    } else {
+      result["${prop.name}"] = folly::dynamic(nullptr);
+     }
+  }`;
+          } else {
+            return `
   if (${prop.name} != oldProps->${prop.name}) {
     result["${prop.name}"] = toDynamic(${prop.name});
   }`;
+          }
         case 'ReservedPropTypeAnnotation':
           switch (typeAnnotation.name) {
             case 'ColorPrimitive':
-              return `
+              if (
+                prop.optional &&
+                prop.typeAnnotation.default == null &&
+                generateOptionalProperties
+              ) {
+                return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    if (${prop.name}.has_value()) {
+      result["${prop.name}"] = *${prop.name}.value();
+    } else {
+      result["${prop.name}"] = folly::dynamic(nullptr);
+    }
+  }`;
+              } else {
+                return `
   if (${prop.name} != oldProps->${prop.name}) {
     result["${prop.name}"] = *${prop.name};
   }`;
+              }
             case 'ImageSourcePrimitive':
             case 'PointPrimitive':
             case 'EdgeInsetsPrimitive':
             case 'DimensionPrimitive':
-              return `
+              if (
+                prop.optional &&
+                prop.typeAnnotation.default == null &&
+                generateOptionalProperties
+              ) {
+                return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    if (${prop.name}.has_value()) {
+      result["${prop.name}"] = toDynamic(${prop.name}.value());
+    } else {
+      result["${prop.name}"] = folly::dynamic(nullptr);
+    }
+  }`;
+              } else {
+                return `
   if (${prop.name} != oldProps->${prop.name}) {
     result["${prop.name}"] = toDynamic(${prop.name});
   }`;
+              }
             case 'ImageRequestPrimitive':
               // Shouldn't be used in props
               throw new Error(
@@ -133,6 +213,12 @@ function generatePropsDiffString(
       }
     })
     .join('\n' + '    ');
+
+  const getDebugPropsString = `#if RN_DEBUG_STRING_CONVERTIBLE
+SharedDebugStringConvertibleList ${className}::getDebugProps() const {
+  return ViewProps::getDebugProps()${debugProps && debugProps.length > 0 ? ` +\n\t\tSharedDebugStringConvertibleList{${debugProps}\n\t}` : ''};
+}
+#endif`;
 
   return `
 #ifdef RN_SERIALIZABLE_STATE
@@ -153,8 +239,11 @@ folly::dynamic ${className}::getDiffProps(
   ${diffProps}
   return result;
 }
-#endif`;
+#endif
+${includeGetDebugPropsImplementation ? getDebugPropsString : ''}
+`;
 }
+
 function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
     .map(prop => {
@@ -168,6 +257,24 @@ function generatePropsString(componentName: string, component: ComponentShape) {
       return `${prop.name}(${convertRawProp})`;
     })
     .join(',\n' + '    ');
+}
+
+function generateDebugPropsString(
+  componentName: string,
+  component: ComponentShape,
+) {
+  return component.props
+    .map(prop => {
+      if (prop.typeAnnotation.type === 'ObjectTypeAnnotation') {
+        // Skip ObjectTypeAnnotation because there is no generic `toString`
+        // method for it. We would have to define an interface that the structs implement.
+        return '';
+      }
+
+      const defaultValue = convertDefaultTypeToString(componentName, prop);
+      return `\n\t\t\tdebugStringConvertibleItem("${prop.name}", ${prop.name}${defaultValue ? `, ${defaultValue}` : ''})`;
+    })
+    .join(',');
 }
 
 function getClassExtendString(component: ComponentShape): string {
@@ -202,12 +309,20 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
     headerPrefix?: string,
+    includeGetDebugPropsImplementation?: boolean = false,
   ): FilesOutput {
     const fileName = 'Props.cpp';
     const allImports: Set<string> = new Set([
       '#include <react/renderer/core/propsConversions.h>',
       '#include <react/renderer/core/PropsParserContext.h>',
     ]);
+
+    if (includeGetDebugPropsImplementation) {
+      allImports.add('#include <react/renderer/core/graphicsConversions.h>');
+      allImports.add(
+        '#include <react/renderer/debug/debugStringConvertibleUtils.h>',
+      );
+    }
 
     const componentProps = Object.keys(schema.modules)
       .map(moduleName => {
@@ -229,10 +344,16 @@ module.exports = {
 
             const propsString = generatePropsString(componentName, component);
             const extendString = getClassExtendString(component);
+            const debugProps = includeGetDebugPropsImplementation
+              ? generateDebugPropsString(componentName, component)
+              : '';
             const diffPropsString = generatePropsDiffString(
               newName,
               componentName,
               component,
+              debugProps,
+              includeGetDebugPropsImplementation,
+              component.generateOptionalProperties,
             );
 
             const imports = getImports(component.props);

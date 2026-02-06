@@ -37,7 +37,8 @@ public interface ViewManagerDelegate<T : View> {
   @Suppress("INAPPLICABLE_JVM_NAME")
   @Deprecated(
       message = "propName is not nullable, please update your method signature",
-      replaceWith = ReplaceWith("setProperty(view, propName, value)"))
+      replaceWith = ReplaceWith("setProperty(view, propName, value)"),
+  )
   @JvmName("setProperty")
   public fun javaCompat_setProperty(view: T, propName: String?, value: Any?): Unit =
       setProperty(view, checkNotNull(propName), value)
@@ -61,7 +62,8 @@ public interface ViewManagerDelegate<T : View> {
   @Deprecated(
       message = "args is not nullable, please update your method signature",
       replaceWith =
-          ReplaceWith("receiveCommand(view: T, commandName: String, args: ReadableArray)"))
+          ReplaceWith("receiveCommand(view: T, commandName: String, args: ReadableArray)"),
+  )
   @JvmName("kotlinCompat\$receiveCommandNullableArgs")
   @JvmSynthetic
   public fun receiveCommand(view: T, commandName: String, args: ReadableArray?): Unit =
@@ -70,7 +72,8 @@ public interface ViewManagerDelegate<T : View> {
   @Suppress("INAPPLICABLE_JVM_NAME")
   @Deprecated(
       message = "commandName is not nullable, please update your method signature",
-      replaceWith = ReplaceWith("receiveCommand(view, commandName, args)"))
+      replaceWith = ReplaceWith("receiveCommand(view, commandName, args)"),
+  )
   @JvmName("receiveCommand")
   public fun javaCompat_receiveCommand(view: T, commandName: String?, args: ReadableArray?): Unit =
       receiveCommand(view, checkNotNull(commandName), checkNotNull(args))

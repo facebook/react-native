@@ -179,34 +179,6 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should strip "Warning: " without breaking substitution', async () => {
-    const output = await render.create(
-      <LogBoxMessage
-        style={{}}
-        message={{
-          content: 'Warning: normal substitution normal',
-          substitutions: [{length: 12, offset: 16}],
-        }}
-      />,
-    );
-
-    expect(output).toMatchSnapshot();
-  });
-
-  it('Should strip "Warning: Warning: " without breaking substitution', async () => {
-    const output = await render.create(
-      <LogBoxMessage
-        style={{}}
-        message={{
-          content: 'Warning: Warning: normal substitution normal',
-          substitutions: [{length: 12, offset: 25}],
-        }}
-      />,
-    );
-
-    expect(output).toMatchSnapshot();
-  });
-
   it('Should make links tappable', async () => {
     const output = await render.create(
       <LogBoxMessage

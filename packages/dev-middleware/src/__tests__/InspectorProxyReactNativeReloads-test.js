@@ -25,7 +25,6 @@ jest.setTimeout(10000);
 describe('inspector proxy React Native reloads', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
-    projectRoot: '',
   });
   const autoCleanup = withAbortSignalForEachTest();
   afterEach(() => {
@@ -55,7 +54,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });
@@ -91,6 +90,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(() =>
         expect(device1.wrappedEventParsed).toBeCalledWith({
           pageId: 'originalPage-initial',
+          sessionId: expect.any(String),
           wrappedEvent: {
             method: 'Console.enable',
             id: 0,
@@ -113,7 +113,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList).toContainEqual(
           expect.objectContaining({
@@ -134,6 +134,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(() =>
         expect(device1.wrappedEventParsed).toBeCalledWith({
           pageId: 'originalPage-updated',
+          sessionId: expect.any(String),
           wrappedEvent: {
             method: 'Console.disable',
             id: 1,
@@ -169,7 +170,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });
@@ -222,7 +223,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList).toContainEqual(
           expect.objectContaining({
@@ -273,7 +274,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });
@@ -312,6 +313,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         expect(device1.wrappedEventParsed).toBeCalledWith({
           pageId: 'originalPage-updated',
+          sessionId: expect.any(String),
           wrappedEvent: {
             method: 'Runtime.enable',
             id: expect.any(Number),
@@ -319,6 +321,7 @@ describe('inspector proxy React Native reloads', () => {
         });
         expect(device1.wrappedEventParsed).toBeCalledWith({
           pageId: 'originalPage-updated',
+          sessionId: expect.any(String),
           wrappedEvent: {
             method: 'Debugger.enable',
             id: expect.any(Number),
@@ -355,6 +358,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(() => {
         expect(device1.wrappedEventParsed).toBeCalledWith({
           pageId: 'originalPage-updated',
+          sessionId: expect.any(String),
           wrappedEvent: expect.objectContaining({
             method: 'Debugger.resume',
             id: expect.any(Number),
@@ -368,7 +372,7 @@ describe('inspector proxy React Native reloads', () => {
   });
 
   test('device disconnect event results in a nonstandard "reload" message to the debugger', async () => {
-    const {device, debugger_} = await createAndConnectTarget(
+    const {device, debugger_, sessionId} = await createAndConnectTarget(
       serverRef,
       autoCleanup.signal,
       {
@@ -384,6 +388,7 @@ describe('inspector proxy React Native reloads', () => {
         event: 'disconnect',
         payload: {
           pageId: 'page1',
+          sessionId,
         },
       });
       await until(() =>
@@ -423,7 +428,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });
@@ -459,7 +464,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList).toContainEqual(
           expect.objectContaining({

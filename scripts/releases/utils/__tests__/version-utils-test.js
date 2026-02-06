@@ -43,7 +43,7 @@ describe('version-utils', () => {
   describe('parseVersion', () => {
     it('should throw error if buildType is not `release`, `dry-run` or `nightly`', () => {
       function testInvalidVersion() {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         parseVersion('v0.10.5', 'invalid_build_type');
       }
       expect(testInvalidVersion).toThrowErrorMatchingInlineSnapshot(

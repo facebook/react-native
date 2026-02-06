@@ -8,7 +8,6 @@
 #include "TimerManager.h"
 
 #include <cxxreact/TraceSection.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 
 #include <cmath>
 #include <utility>
@@ -57,44 +56,21 @@ TimerManager::TimerManager(
     std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept
     : platformTimerRegistry_(std::move(platformTimerRegistry)) {}
 
+TimerManager::~TimerManager() noexcept {
+  quit();
+}
+
+void TimerManager::quit() {
+  if (platformTimerRegistry_ == nullptr) {
+    return;
+  }
+  platformTimerRegistry_->quit();
+  platformTimerRegistry_ = nullptr;
+}
+
 void TimerManager::setRuntimeExecutor(
     RuntimeExecutor runtimeExecutor) noexcept {
-  runtimeExecutor_ = runtimeExecutor;
-}
-
-TimerHandle TimerManager::createReactNativeMicrotask(
-    jsi::Function&& callback,
-    std::vector<jsi::Value>&& args) {
-  // Get the id for the callback.
-  TimerHandle timerID = timerIndex_++;
-  timers_.emplace(
-      std::piecewise_construct,
-      std::forward_as_tuple(timerID),
-      std::forward_as_tuple(
-          std::move(callback), std::move(args), /* repeat */ false));
-
-  reactNativeMicrotasksQueue_.push_back(timerID);
-  return timerID;
-}
-
-void TimerManager::callReactNativeMicrotasks(jsi::Runtime& runtime) {
-  std::vector<TimerHandle> reactNativeMicrotasksQueue;
-  while (!reactNativeMicrotasksQueue_.empty()) {
-    reactNativeMicrotasksQueue.clear();
-    reactNativeMicrotasksQueue.swap(reactNativeMicrotasksQueue_);
-
-    for (auto reactNativeMicrotaskID : reactNativeMicrotasksQueue) {
-      // ReactNativeMicrotasks can clear other scheduled reactNativeMicrotasks.
-      auto it = timers_.find(reactNativeMicrotaskID);
-      if (it != timers_.end()) {
-        it->second.invoke(runtime);
-
-        // Invoking a timer has the potential to delete it. Do not re-use the
-        // existing iterator to erase it from the map.
-        timers_.erase(reactNativeMicrotaskID);
-      }
-    }
-  }
+  runtimeExecutor_ = std::move(runtimeExecutor);
 }
 
 TimerHandle TimerManager::createTimer(
@@ -156,27 +132,17 @@ TimerHandle TimerManager::createRecurringTimer(
   return timerID;
 }
 
-void TimerManager::deleteReactNativeMicrotask(
-    jsi::Runtime& runtime,
-    TimerHandle timerHandle) {
-  if (timerHandle < 0) {
-    throw jsi::JSError(
-        runtime, "clearReactNativeMicrotask was called with an invalid handle");
-  }
-
-  auto it = std::find(
-      reactNativeMicrotasksQueue_.begin(),
-      reactNativeMicrotasksQueue_.end(),
-      timerHandle);
-  if (it != reactNativeMicrotasksQueue_.end()) {
-    reactNativeMicrotasksQueue_.erase(it);
-    timers_.erase(timerHandle);
-  }
-}
-
 void TimerManager::deleteTimer(jsi::Runtime& runtime, TimerHandle timerHandle) {
   if (timerHandle < 0) {
-    throw jsi::JSError(runtime, "clearTimeout called with an invalid handle");
+    /**
+     * Do nothing for negative values to match web spec.
+     *
+     * cancelAnimationFrame:
+     * https://www.w3.org/TR/animation-timing/#Window-interface-extensions
+     * clearTimeout:
+     * https://developer.mozilla.org/en-US/docs/Web/API/Window/clearTimeout#notes
+     */
+    return;
   }
 
   platformTimerRegistry_->deleteTimer(timerHandle);
@@ -187,7 +153,13 @@ void TimerManager::deleteRecurringTimer(
     jsi::Runtime& runtime,
     TimerHandle timerHandle) {
   if (timerHandle < 0) {
-    throw jsi::JSError(runtime, "clearInterval called with an invalid handle");
+    /**
+     * Do nothing for negative values to match web spec.
+     *
+     * clearInterval:
+     * https://developer.mozilla.org/en-US/docs/Web/API/Window/clearInterval
+     */
+    return;
   }
 
   platformTimerRegistry_->deleteTimer(timerHandle);
@@ -232,7 +204,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           3, // Function, delay, ...args
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count == 0) {
@@ -272,7 +244,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           1, // timerID
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count > 0 && args[0].isNumber()) {
@@ -291,7 +263,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           3, // Function, delay, ...args
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count == 0) {
@@ -332,7 +304,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           1, // timerID
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count > 0 && args[0].isNumber()) {
@@ -351,7 +323,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           1, // callback
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count == 0) {
@@ -373,9 +345,9 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
                 [callbackContainer = std::make_shared<jsi::Function>(
                      args[0].getObject(rt).getFunction(rt))](
                     jsi::Runtime& rt,
-                    const jsi::Value& thisVal,
-                    const jsi::Value* args,
-                    size_t count) {
+                    const jsi::Value& /*thisVal*/,
+                    const jsi::Value* /*args*/,
+                    size_t /*count*/) {
                   auto performance =
                       rt.global().getPropertyAsObject(rt, "performance");
                   auto nowFn = performance.getPropertyAsFunction(rt, "now");
@@ -402,7 +374,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           1, // timerID
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count > 0 && args[0].isNumber()) {

@@ -7,6 +7,8 @@
 
 #include "HostTarget.h"
 #include "HostAgent.h"
+#include "HostTargetTraceRecording.h"
+#include "HostTargetTracing.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
@@ -19,6 +21,7 @@
 #include <folly/json.h>
 
 #include <memory>
+#include <utility>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -45,13 +48,13 @@ class HostTargetSession {
             targetController,
             std::move(hostMetadata),
             state_,
-            executor) {}
+            std::move(executor)) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
    * Agent.
    */
-  void operator()(std::string message) {
+  void operator()(const std::string& message) {
     cdp::PreparsedRequest request;
     // Messages may be invalid JSON, or have unexpected types.
     try {
@@ -61,8 +64,9 @@ class HostTargetSession {
           cdp::jsonError(std::nullopt, cdp::ErrorCode::ParseError, e.what()));
       return;
     } catch (const cdp::TypeError& e) {
-      frontendChannel_(cdp::jsonError(
-          std::nullopt, cdp::ErrorCode::InvalidRequest, e.what()));
+      frontendChannel_(
+          cdp::jsonError(
+              std::nullopt, cdp::ErrorCode::InvalidRequest, e.what()));
       return;
     }
 
@@ -91,12 +95,20 @@ class HostTargetSession {
    * there's no current instance.
    */
   void setCurrentInstance(InstanceTarget* instance) {
-    if (instance) {
+    if (instance != nullptr) {
       hostAgent_.setCurrentInstanceAgent(
           instance->createAgent(frontendChannel_, state_));
     } else {
       hostAgent_.setCurrentInstanceAgent(nullptr);
     }
+  }
+
+  HostAgent& agent() {
+    return hostAgent_;
+  }
+
+  FrontendChannel dangerouslyGetFrontendChannel() {
+    return frontendChannel_;
   }
 
  private:
@@ -144,11 +156,55 @@ class HostCommandSender {
   std::unique_ptr<ILocalConnection> connection_;
 };
 
+/**
+ * Enables the caller to install and subscribe to a named CDP runtime binding
+ * on the HostTarget via a callback. Note: Per CDP spec, this does not need to
+ * check if the `Runtime` domain is enabled.
+ */
+class HostRuntimeBinding {
+ public:
+  explicit HostRuntimeBinding(
+      HostTarget& target,
+      std::string name,
+      std::function<void(std::string)> callback)
+      : connection_(target.connect(
+            std::make_unique<CallbackRemoteConnection>(
+                [callback = std::move(callback)](const std::string& message) {
+                  auto parsedMessage = folly::parseJson(message);
+
+                  // Ignore initial Runtime.addBinding response
+                  if (parsedMessage["id"] == 0 &&
+                      parsedMessage["result"].isObject() &&
+                      parsedMessage["result"].empty()) {
+                    return;
+                  }
+
+                  // Assert that we only intercept bindingCalled responses
+                  assert(
+                      parsedMessage["method"].asString() ==
+                      "Runtime.bindingCalled");
+                  callback(parsedMessage["params"]["payload"].asString());
+                }))) {
+    // Install runtime binding
+    connection_->sendMessage(
+        cdp::jsonRequest(
+            0,
+            "Runtime.addBinding",
+            folly::dynamic::object("name", std::move(name))));
+  }
+
+ private:
+  std::unique_ptr<ILocalConnection> connection_;
+};
+
 std::shared_ptr<HostTarget> HostTarget::create(
     HostTargetDelegate& delegate,
     VoidExecutor executor) {
   std::shared_ptr<HostTarget> hostTarget{new HostTarget(delegate)};
-  hostTarget->setExecutor(executor);
+  hostTarget->setExecutor(std::move(executor));
+  if (InspectorFlags::getInstance().getPerfIssuesEnabled()) {
+    hostTarget->installPerfIssuesBinding();
+  }
   return hostTarget;
 }
 
@@ -166,21 +222,28 @@ std::unique_ptr<ILocalConnection> HostTarget::connect(
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
-      [session](std::string message) { (*session)(message); });
+      [session](const std::string& message) { (*session)(message); });
 }
 
 HostTarget::~HostTarget() {
   // HostCommandSender owns a session, so we must release it for the assertion
   // below to be valid.
   commandSender_.reset();
+
+  // HostRuntimeBinding owns a connection, so we must release it for the
+  // assertion
+  perfMetricsBinding_.reset();
+
   // Sessions are owned by InspectorPackagerConnection, not by HostTarget, but
   // they hold a HostTarget& that we must guarantee is valid.
   assert(
       sessions_.empty() &&
       "HostTargetSession objects must be destroyed before their HostTarget. Did you call getInspectorInstance().removePage()?");
+  // Trace Recording object (traceRecording_) doesn't create an actual session,
+  // so we don't need to reset it explicitly here.
 }
 
-HostTargetDelegate::~HostTargetDelegate() {}
+HostTargetDelegate::~HostTargetDelegate() = default;
 
 InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
   assert(!currentInstance_ && "Only one instance allowed");
@@ -190,6 +253,13 @@ InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
       [currentInstance = &*currentInstance_](HostTargetSession& session) {
         session.setCurrentInstance(currentInstance);
       });
+
+  if (traceRecording_) {
+    // Registers the Instance for tracing, if a Trace is currently being
+    // recorded.
+    traceRecording_->setTracedInstance(currentInstance_.get());
+  }
+
   return *currentInstance_;
 }
 
@@ -199,6 +269,13 @@ void HostTarget::unregisterInstance(InstanceTarget& instance) {
       "Invalid unregistration");
   sessions_.forEach(
       [](HostTargetSession& session) { session.setCurrentInstance(nullptr); });
+
+  if (traceRecording_) {
+    // Unregisters the Instance for tracing, if a Trace is currently being
+    // recorded.
+    traceRecording_->setTracedInstance(nullptr);
+  }
+
   currentInstance_.reset();
 }
 
@@ -209,6 +286,17 @@ void HostTarget::sendCommand(HostCommand command) {
     }
     self.commandSender_->sendCommand(command);
   });
+}
+
+void HostTarget::installPerfIssuesBinding() {
+  perfMonitorUpdateHandler_ =
+      std::make_unique<PerfMonitorUpdateHandler>(delegate_);
+  perfMetricsBinding_ = std::make_unique<HostRuntimeBinding>(
+      *this, // Used immediately
+      "__react_native_perf_issues_reporter",
+      [this](const std::string& message) {
+        perfMonitorUpdateHandler_->handlePerfIssueAdded(message);
+      });
 }
 
 HostTargetController::HostTargetController(HostTarget& target)
@@ -228,10 +316,11 @@ void HostTargetController::incrementPauseOverlayCounter() {
 
 bool HostTargetController::decrementPauseOverlayCounter() {
   assert(pauseOverlayCounter_ > 0 && "Pause overlay counter underflow");
-  if (--pauseOverlayCounter_ == 0) {
-    return false;
-  }
-  return true;
+  return --pauseOverlayCounter_ != 0;
+}
+
+bool HostTargetController::maybeEmitStashedBackgroundTrace() {
+  return target_.maybeEmitStashedBackgroundTrace();
 }
 
 namespace {
@@ -283,6 +372,35 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
   }
 
   return result;
+}
+
+bool HostTarget::maybeEmitStashedBackgroundTrace() {
+  std::vector<FrontendChannel> eligibleFrontendChannels;
+  eligibleFrontendChannels.reserve(sessions_.size());
+  sessions_.forEach([&eligibleFrontendChannels](auto& session) {
+    if (session.agent().isEligibleForBackgroundTrace()) {
+      eligibleFrontendChannels.push_back(
+          session.dangerouslyGetFrontendChannel());
+    }
+  });
+
+  if (eligibleFrontendChannels.empty()) {
+    return false;
+  }
+
+  auto stashedTrace = std::exchange(stashedTracingProfile_, std::nullopt);
+  if (stashedTrace) {
+    emitNotificationsForTracingProfile(
+        std::move(*stashedTrace),
+        eligibleFrontendChannels,
+        /* isBackgroundTrace */ true);
+  }
+  return true;
+}
+
+bool HostTarget::stopAndMaybeEmitBackgroundTrace() {
+  stashedTracingProfile_ = stopTracing();
+  return maybeEmitStashedBackgroundTrace();
 }
 
 } // namespace facebook::react::jsinspector_modern

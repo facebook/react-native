@@ -13,7 +13,7 @@
 const React = require('react');
 const {Text, View} = require('react-native');
 
-class SetPropertiesExampleApp extends React.Component<$FlowFixMeProps> {
+class SetPropertiesExampleApp extends React.Component<$FlowFixMe> {
   render(): React.Node {
     const wrapperStyle = {
       backgroundColor: this.props.color,

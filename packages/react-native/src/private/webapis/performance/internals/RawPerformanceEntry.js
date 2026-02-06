@@ -44,7 +44,6 @@ export function rawToPerformanceEntry(
     case RawPerformanceEntryTypeValues.LONGTASK:
       return new PerformanceLongTaskTiming({
         name: entry.name,
-        entryType: rawToPerformanceEntryType(entry.entryType),
         startTime: entry.startTime,
         duration: entry.duration,
       });
@@ -53,7 +52,8 @@ export function rawToPerformanceEntry(
         startTime: entry.startTime,
       });
     case RawPerformanceEntryTypeValues.MEASURE:
-      return new PerformanceMeasure(entry.name, {
+      return new PerformanceMeasure({
+        name: entry.name,
         startTime: entry.startTime,
         duration: entry.duration,
       });
@@ -68,12 +68,14 @@ export function rawToPerformanceEntry(
         connectEnd: entry.connectEnd ?? 0,
         responseStart: entry.responseStart ?? 0,
         responseEnd: entry.responseEnd ?? 0,
-        responseStatus: entry.responseStatus,
+        responseStatus: entry.responseStatus ?? 0,
+        contentType: entry.contentType ?? '',
+        encodedBodySize: entry.encodedBodySize ?? 0,
+        decodedBodySize: entry.decodedBodySize ?? 0,
       });
     default:
-      return new PerformanceEntry({
+      return new PerformanceEntry(rawToPerformanceEntryType(entry.entryType), {
         name: entry.name,
-        entryType: rawToPerformanceEntryType(entry.entryType),
         startTime: entry.startTime,
         duration: entry.duration,
       });

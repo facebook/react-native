@@ -40,7 +40,7 @@ class TestEffect {
     this.key = key;
   }
   static called(name: string, key: ?string): $FlowFixMe {
-    // $FlowIssue[prop-missing] - Flow does not support type augmentation.
+    // $FlowFixMe[prop-missing] - Flow does not support type augmentation.
     return expect.effect(name, key);
   }
 }
@@ -56,7 +56,7 @@ class TestEffectCleanup {
     this.key = key;
   }
   static called(name: string, key: ?string): $FlowFixMe {
-    // $FlowIssue[prop-missing] - Flow does not support type augmentation.
+    // $FlowFixMe[prop-missing] - Flow does not support type augmentation.
     return expect.effectCleanup(name, key);
   }
 }
@@ -86,7 +86,7 @@ expect.extend({
 function mockEffectRegistry(): {
   mockEffect: string => () => () => void,
   mockEffectWithoutCleanup: string => () => void,
-  registry: $ReadOnlyArray<TestEffect | TestEffectCleanup>,
+  registry: ReadonlyArray<TestEffect | TestEffectCleanup>,
 } {
   const registry: Array<TestEffect | TestEffectCleanup> = [];
   return {

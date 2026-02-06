@@ -21,7 +21,8 @@ public interface RootView {
 
   @Deprecated(
       message = "Use onChildStartedNativeGesture with a childView parameter.",
-      replaceWith = ReplaceWith("onChildStartedNativeGesture"))
+      replaceWith = ReplaceWith("onChildStartedNativeGesture"),
+  )
   public fun onChildStartedNativeGesture(ev: MotionEvent) {
     onChildStartedNativeGesture(null, ev)
   }

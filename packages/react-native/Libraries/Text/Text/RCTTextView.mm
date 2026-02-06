@@ -7,6 +7,8 @@
 
 #import <React/RCTTextView.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <MobileCoreServices/UTCoreTypes.h>
 
 #import <React/RCTUtils.h>
@@ -292,3 +294,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

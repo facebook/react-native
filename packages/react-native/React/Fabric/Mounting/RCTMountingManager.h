@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<RCTMountingManagerDelegate> delegate;
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
 
-- (void)setContextContainer:(facebook::react::ContextContainer::Shared)contextContainer;
+- (void)setContextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer;
 
 /**
  * Designates the view as a rendering viewport of a React Native surface.

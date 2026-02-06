@@ -27,6 +27,7 @@ import java.util.HashMap
  * Concrete class for [ReactTextAnchorViewManager] which represents view managers of anchor `<Text>`
  * nodes.
  */
+@Suppress("DEPRECATION")
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
 @OptIn(UnstableReactNativeAPI::class)
 public class ReactTextViewManager
@@ -45,7 +46,7 @@ public constructor(
 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
-      view: ReactTextView
+      view: ReactTextView,
   ): ReactTextView? {
     // BaseViewManager
     val preparedView = super.prepareToRecycleView(reactContext, view)
@@ -62,7 +63,10 @@ public constructor(
 
   override fun updateViewAccessibility(view: ReactTextView) {
     ReactTextViewAccessibilityDelegate.setDelegate(
-        view, view.isFocusable(), view.getImportantForAccessibility())
+        view,
+        view.isFocusable,
+        view.importantForAccessibility,
+    )
   }
 
   public override fun createViewInstance(context: ThemedReactContext): ReactTextView =
@@ -83,9 +87,14 @@ public constructor(
       val accessibilityLinks: ReactTextViewAccessibilityDelegate.AccessibilityLinks =
           ReactTextViewAccessibilityDelegate.AccessibilityLinks(spannable)
       view.setTag(
-          R.id.accessibility_links, if (accessibilityLinks.size() > 0) accessibilityLinks else null)
+          R.id.accessibility_links,
+          if (accessibilityLinks.size() > 0) accessibilityLinks else null,
+      )
       ReactTextViewAccessibilityDelegate.resetDelegate(
-          view, view.isFocusable(), view.getImportantForAccessibility())
+          view,
+          view.isFocusable,
+          view.importantForAccessibility,
+      )
     }
   }
 
@@ -108,7 +117,7 @@ public constructor(
   override fun updateState(
       view: ReactTextView,
       props: ReactStylesDiffMap,
-      stateWrapper: StateWrapper
+      stateWrapper: StateWrapper,
   ): Any? {
     SystraceSection("ReactTextViewManager.updateState").use { s ->
       val stateMapBuffer = stateWrapper.stateDataMapBuffer
@@ -123,14 +132,17 @@ public constructor(
   private fun getReactTextUpdate(
       view: ReactTextView,
       props: ReactStylesDiffMap,
-      state: MapBuffer
+      state: MapBuffer,
   ): Any {
     val attributedString: MapBuffer = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING.toInt())
     val paragraphAttributes: MapBuffer =
         state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES.toInt())
     val spanned: Spannable =
         TextLayoutManager.getOrCreateSpannableForText(
-            view.getContext(), attributedString, reactTextViewManagerCallback)
+            view.context,
+            attributedString,
+            reactTextViewManagerCallback,
+        )
     view.setSpanned(spanned)
 
     val minimumFontSize: Float =
@@ -139,9 +151,10 @@ public constructor(
 
     val textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY))
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY)
+        )
     val currentJustificationMode =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 0 else view.getJustificationMode()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 0 else view.justificationMode
 
     return ReactTextUpdate(
         spanned,
@@ -149,7 +162,8 @@ public constructor(
         false, // TODO add this into local Data
         TextLayoutManager.getTextGravity(attributedString, spanned),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode))
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode),
+    )
   }
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any>? {

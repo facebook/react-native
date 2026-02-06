@@ -26,10 +26,12 @@ fun getListReactAndroidProperty(name: String) = reactAndroidProperties.getProper
 
 apiValidation {
   ignoredPackages.addAll(
-      getListReactAndroidProperty("binaryCompatibilityValidator.ignoredPackages"))
+      getListReactAndroidProperty("binaryCompatibilityValidator.ignoredPackages")
+  )
   ignoredClasses.addAll(getListReactAndroidProperty("binaryCompatibilityValidator.ignoredClasses"))
   nonPublicMarkers.addAll(
-      getListReactAndroidProperty("binaryCompatibilityValidator.nonPublicMarkers"))
+      getListReactAndroidProperty("binaryCompatibilityValidator.nonPublicMarkers")
+  )
   validationDisabled =
       reactAndroidProperties
           .getProperty("binaryCompatibilityValidator.validationDisabled")
@@ -37,8 +39,9 @@ apiValidation {
 }
 
 version =
-    if (project.hasProperty("isSnapshot") &&
-        (project.property("isSnapshot") as? String).toBoolean()) {
+    if (
+        project.hasProperty("isSnapshot") && (project.property("isSnapshot") as? String).toBoolean()
+    ) {
       "${reactAndroidProperties.getProperty("VERSION_NAME")}-SNAPSHOT"
     } else {
       reactAndroidProperties.getProperty("VERSION_NAME")
@@ -66,8 +69,10 @@ tasks.register("clean", Delete::class.java) {
   description = "Remove all the build files and intermediate build outputs"
   dependsOn(gradle.includedBuild("gradle-plugin").task(":clean"))
   subprojects.forEach {
-    if (it.project.plugins.hasPlugin("com.android.library") ||
-        it.project.plugins.hasPlugin("com.android.application")) {
+    if (
+        it.project.plugins.hasPlugin("com.android.library") ||
+            it.project.plugins.hasPlugin("com.android.application")
+    ) {
       dependsOn(it.tasks.named("clean"))
     }
   }
@@ -77,10 +82,13 @@ tasks.register("clean", Delete::class.java) {
   delete(rootProject.file("./packages/react-native/sdks/download/"))
   delete(rootProject.file("./packages/react-native/sdks/hermes/"))
   delete(
-      rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/arm64-v8a/"))
+      rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/arm64-v8a/")
+  )
   delete(
       rootProject.file(
-          "./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/"))
+          "./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/"
+      )
+  )
   delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86/"))
   delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86_64/"))
   delete(rootProject.file("./packages/react-native-codegen/lib"))
@@ -96,37 +104,70 @@ tasks.register("build") {
 tasks.register("publishAllToMavenTempLocal") {
   description = "Publish all the artifacts to be available inside a Maven Local repository on /tmp."
   dependsOn(":packages:react-native:ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
-  // We don't publish the external-artifacts to Maven Local as ci is using it via workspace.
-  dependsOn(
-      ":packages:react-native:ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
 }
 
 tasks.register("publishAndroidToSonatype") {
   description = "Publish the Android artifacts to Sonatype (Maven Central or Snapshot repository)"
   dependsOn(":packages:react-native:ReactAndroid:publishToSonatype")
-  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:publishToSonatype")
 }
 
-if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoolean() == true) {
+var hermesSubstitution: Pair<String, String>? = null
+
+if (project.findProperty("react.internal.useHermesStable")?.toString()?.toBoolean() == true) {
+  val hermesVersions = java.util.Properties()
+  val hermesVersionPropertiesFile =
+      File("./packages/react-native/sdks/hermes-engine/version.properties")
+  hermesVersionPropertiesFile.inputStream().use { hermesVersions.load(it) }
+  val selectedHermesVersion = hermesVersions["HERMES_V1_VERSION_NAME"] as String
+
+  hermesSubstitution = selectedHermesVersion to "Users opted to use stable hermes release"
+} else if (
+    project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoolean() == true
+) {
+  val reactNativePackageJson = File("./packages/react-native/package.json")
+  val reactNativePackageJsonContent = reactNativePackageJson.readText()
+  val packageJson = groovy.json.JsonSlurper().parseText(reactNativePackageJsonContent) as Map<*, *>
+
+  val hermesCompilerVersion =
+      (packageJson["dependencies"] as Map<*, *>)["hermes-compiler"] as String
+
+  if (hermesCompilerVersion == "0.0.0") {
+    throw RuntimeException(
+        "Trying to use Hermes Nightly but hermes-compiler version is not specified"
+    )
+  }
+
+  hermesSubstitution = "$hermesCompilerVersion-SNAPSHOT" to "Users opted to use hermes nightly"
+} else {
   logger.warn(
       """
       ********************************************************************************
-      INFO: You're using Hermes from nightly as you set
+      INFO: You're building Hermes from source as you set
 
-      react.internal.useHermesNightly=true
+      react.internal.useHermesStable=false
+      react.internal.useHermesNightly=false
 
       in the ./gradle.properties file.
 
       That's fine for local development, but you should not commit this change.
       ********************************************************************************
-  """
-          .trimIndent())
+      """
+          .trimIndent()
+  )
+}
+
+if (hermesSubstitution != null) {
+  val (hermesVersion, reason) = hermesSubstitution!!
+  project(":packages:react-native:ReactAndroid:hermes-engine") {
+    tasks.configureEach { enabled = false }
+  }
+
   allprojects {
     configurations.all {
       resolutionStrategy.dependencySubstitution {
         substitute(project(":packages:react-native:ReactAndroid:hermes-engine"))
-            .using(module("com.facebook.react:hermes-android:0.+"))
-            .because("Users opted to use hermes from nightly")
+            .using(module("com.facebook.hermes:hermes-android:$hermesVersion"))
+            .because(reason)
       }
     }
   }
@@ -152,9 +193,22 @@ allprojects {
           "**/build/**",
           "**/hermes-engine/**",
           "**/internal/featureflags/**",
-          "**/systeminfo/ReactNativeVersion.kt")
+          "**/systeminfo/ReactNativeVersion.kt",
+      )
   listOf(
           com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask::class,
-          com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask::class)
+          com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask::class,
+      )
       .forEach { tasks.withType(it) { exclude(excludePatterns) } }
+
+  // Disable the problematic ktfmt script tasks due to symbolic link issues in subprojects
+  afterEvaluate {
+    listOf("ktfmtCheckScripts", "ktfmtFormatScripts").forEach {
+      tasks.findByName(it)?.enabled = false
+    }
+  }
 }
+
+// We intentionally disable the `ktfmtCheck` tasks as the formatting is primarly handled inside
+// fbsource
+allprojects { tasks.withType<com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask>() { enabled = false } }

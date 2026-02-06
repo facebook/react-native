@@ -39,7 +39,7 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
       moduleName: String,
       initialProps: WritableMap?,
       widthMeasureSpec: Int,
-      heightMeasureSpec: Int
+      heightMeasureSpec: Int,
   ): Int {
     error("Not yet implemented")
   }
@@ -53,7 +53,7 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
       widthMeasureSpec: Int,
       heightMeasureSpec: Int,
       offsetX: Int,
-      offsetY: Int
+      offsetY: Int,
   ) {
     error("Not yet implemented")
   }

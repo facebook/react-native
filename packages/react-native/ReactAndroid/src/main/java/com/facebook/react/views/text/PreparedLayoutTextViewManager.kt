@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.text
 
 import android.text.Spannable
@@ -48,7 +50,7 @@ internal class PreparedLayoutTextViewManager :
 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
-      view: PreparedLayoutTextView
+      view: PreparedLayoutTextView,
   ): PreparedLayoutTextView? {
     val preparedView = super.prepareToRecycleView(reactContext, view)
     preparedView?.recycleView()
@@ -59,7 +61,10 @@ internal class PreparedLayoutTextViewManager :
 
   override fun updateViewAccessibility(view: PreparedLayoutTextView) {
     ReactTextViewAccessibilityDelegate.setDelegate(
-        view, view.isFocusable, view.importantForAccessibility)
+        view,
+        view.isFocusable,
+        view.importantForAccessibility,
+    )
   }
 
   public override fun createViewInstance(context: ThemedReactContext): PreparedLayoutTextView =
@@ -77,9 +82,13 @@ internal class PreparedLayoutTextViewManager :
         val accessibilityLinks = AccessibilityLinks(spannedText)
         view.setTag(
             R.id.accessibility_links,
-            if (accessibilityLinks.size() > 0) accessibilityLinks else null)
+            if (accessibilityLinks.size() > 0) accessibilityLinks else null,
+        )
         ReactTextViewAccessibilityDelegate.resetDelegate(
-            view, view.isFocusable, view.importantForAccessibility)
+            view,
+            view.isFocusable,
+            view.importantForAccessibility,
+        )
       }
     }
   }
@@ -87,7 +96,7 @@ internal class PreparedLayoutTextViewManager :
   override fun updateState(
       view: PreparedLayoutTextView,
       props: ReactStylesDiffMap,
-      stateWrapper: StateWrapper
+      stateWrapper: StateWrapper,
   ): Any? = (stateWrapper as? ReferenceStateWrapper)?.stateDataReference
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
@@ -129,8 +138,10 @@ internal class PreparedLayoutTextViewManager :
               ViewProps.BORDER_TOP_LEFT_RADIUS,
               ViewProps.BORDER_TOP_RIGHT_RADIUS,
               ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-              ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+          ],
+      defaultFloat = Float.NaN,
+  )
   fun setBorderRadius(view: PreparedLayoutTextView, index: Int, borderRadius: Float): Unit {
     val radius =
         if (borderRadius.isNaN()) null
@@ -153,8 +164,10 @@ internal class PreparedLayoutTextViewManager :
               ViewProps.BORDER_TOP_WIDTH,
               ViewProps.BORDER_BOTTOM_WIDTH,
               ViewProps.BORDER_START_WIDTH,
-              ViewProps.BORDER_END_WIDTH],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_END_WIDTH,
+          ],
+      defaultFloat = Float.NaN,
+  )
   fun setBorderWidth(view: PreparedLayoutTextView, index: Int, width: Float): Unit {
     BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width)
   }
@@ -173,14 +186,15 @@ internal class PreparedLayoutTextViewManager :
               ViewProps.BORDER_BLOCK_END_COLOR,
               ViewProps.BORDER_BLOCK_START_COLOR,
           ],
-      customType = "Color")
+      customType = "Color",
+  )
   fun setBorderColor(view: PreparedLayoutTextView, index: Int, color: Int?): Unit {
     BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.values()[index], color)
   }
 
   @ReactProp(name = "disabled", defaultBoolean = false)
   fun setDisabled(view: PreparedLayoutTextView, disabled: Boolean): Unit {
-    view.setEnabled(!disabled)
+    view.isEnabled = !disabled
   }
 
   override fun setPadding(
@@ -188,7 +202,7 @@ internal class PreparedLayoutTextViewManager :
       left: Int,
       top: Int,
       right: Int,
-      bottom: Int
+      bottom: Int,
   ): Unit {
     view.setPadding(left, top, right, bottom)
   }

@@ -89,11 +89,13 @@ const diffClampImpl = function (
 
 const _combineCallbacks = function (
   callback: ?EndCallback,
-  config: $ReadOnly<{...AnimationConfig, ...}>,
+  config: Readonly<{...AnimationConfig, ...}>,
 ) {
   if (callback && config.onComplete) {
     return (...args: Array<EndResult>) => {
       config.onComplete && config.onComplete(...args);
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       callback && callback(...args);
     };
   } else {
@@ -372,7 +374,7 @@ const parallelImpl = function (
   const hasEnded: {[number]: boolean} = {};
   const stopTogether = !(config && config.stopTogether === false);
 
-  const result = {
+  const result: CompositeAnimation = {
     start: function (callback?: ?EndCallback, isLooping?: boolean) {
       if (doneCount === animations.length) {
         callback && callback({finished: true});
@@ -460,7 +462,7 @@ type LoopAnimationConfig = {
 
 const loopImpl = function (
   animation: CompositeAnimation,
-  // $FlowFixMe[prop-missing]
+  // $FlowFixMe[incompatible-type]
   {iterations = -1, resetBeforeIteration = true}: LoopAnimationConfig = {},
 ): CompositeAnimation {
   let isFinished = false;
@@ -541,7 +543,7 @@ function unforkEventImpl(
 }
 
 const eventImpl = function <T>(
-  argMapping: $ReadOnlyArray<?Mapping>,
+  argMapping: ReadonlyArray<?Mapping>,
   config: EventConfig<T>,
 ): any {
   const animatedEvent = new AnimatedEvent(argMapping, config);

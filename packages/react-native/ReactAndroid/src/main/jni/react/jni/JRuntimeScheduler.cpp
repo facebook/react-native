@@ -7,11 +7,13 @@
 
 #include "JRuntimeScheduler.h"
 
+#include <utility>
+
 namespace facebook::react {
 
 JRuntimeScheduler::JRuntimeScheduler(
     std::weak_ptr<RuntimeScheduler> runtimeScheduler)
-    : runtimeScheduler_(runtimeScheduler) {}
+    : runtimeScheduler_(std::move(runtimeScheduler)) {}
 
 std::weak_ptr<RuntimeScheduler> JRuntimeScheduler::get() {
   return runtimeScheduler_;

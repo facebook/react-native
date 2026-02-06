@@ -37,14 +37,15 @@ std::string getType(jsi::Runtime& rt, const jsi::Value& v) {
 
 JavaInteropTurboModule::JavaInteropTurboModule(
     const JavaTurboModule::InitParams& params,
-    std::vector<MethodDescriptor> methodDescriptors)
+    const std::vector<MethodDescriptor>& methodDescriptors)
     : JavaTurboModule(params),
       methodDescriptors_(methodDescriptors),
       methodIDs_(methodDescriptors.size()),
       constantsCache_(jsi::Value::undefined()) {
   for (const auto& methodDescriptor : methodDescriptors) {
     methodMap_[methodDescriptor.methodName] = MethodMetadata{
-        static_cast<size_t>(methodDescriptor.jsArgCount), nullptr};
+        .argCount = static_cast<size_t>(methodDescriptor.jsArgCount),
+        .invoker = nullptr};
   }
 }
 
@@ -60,7 +61,7 @@ jsi::Value JavaInteropTurboModule::create(
             static_cast<unsigned int>(methodDescriptors_[i].jsArgCount),
             [this, i](
                 jsi::Runtime& rt,
-                const jsi::Value& thisVal,
+                const jsi::Value& /*thisVal*/,
                 const jsi::Value* args,
                 size_t count) mutable {
               if (!this->constantsCache_.isUndefined()) {
@@ -103,7 +104,7 @@ jsi::Value JavaInteropTurboModule::create(
           static_cast<unsigned int>(methodDescriptors_[i].jsArgCount),
           [this, i](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             return this->invokeJavaMethod(

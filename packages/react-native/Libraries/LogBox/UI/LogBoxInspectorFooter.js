@@ -17,7 +17,7 @@ import LogBoxInspectorFooterButton from './LogBoxInspectorFooterButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   onDismiss: () => void,
   onMinimize: () => void,
   level?: ?LogLevel,

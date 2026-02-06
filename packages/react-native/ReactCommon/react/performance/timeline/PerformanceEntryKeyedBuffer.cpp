@@ -33,9 +33,7 @@ void PerformanceEntryKeyedBuffer::getEntries(
 void PerformanceEntryKeyedBuffer::getEntries(
     std::vector<PerformanceEntry>& target,
     const std::string& name) const {
-  std::string nameStr{name};
-
-  if (auto node = entryMap_.find(nameStr); node != entryMap_.end()) {
+  if (auto node = entryMap_.find(name); node != entryMap_.end()) {
     target.insert(target.end(), node->second.begin(), node->second.end());
   }
 }

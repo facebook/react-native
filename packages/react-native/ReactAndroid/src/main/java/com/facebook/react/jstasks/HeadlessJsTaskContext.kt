@@ -72,12 +72,14 @@ public class HeadlessJsTaskContext private constructor(reactContext: ReactContex
     val reactContext =
         Assertions.assertNotNull(
             reactContext.get(),
-            "Tried to start a task on a react context that has already been destroyed")
+            "Tried to start a task on a react context that has already been destroyed",
+        )
     check(
         !(reactContext.lifecycleState == LifecycleState.RESUMED &&
-            !taskConfig.isAllowedInForeground)) {
-          "Tried to start task ${taskConfig.taskKey} while in foreground, but this is not allowed."
-        }
+            !taskConfig.isAllowedInForeground)
+    ) {
+      "Tried to start task ${taskConfig.taskKey} while in foreground, but this is not allowed."
+    }
     activeTasks.add(taskId)
     activeTaskConfigs[taskId] = HeadlessJsTaskConfig(taskConfig)
     if (reactContext.hasActiveReactInstance()) {
@@ -87,7 +89,8 @@ public class HeadlessJsTaskContext private constructor(reactContext: ReactContex
     } else {
       logSoftException(
           "HeadlessJsTaskContext",
-          RuntimeException("Cannot start headless task, CatalystInstance not available"))
+          RuntimeException("Cannot start headless task, CatalystInstance not available"),
+      )
     }
     if (taskConfig.timeout > 0) {
       scheduleTaskTimeout(taskId, taskConfig.timeout)
@@ -120,7 +123,8 @@ public class HeadlessJsTaskContext private constructor(reactContext: ReactContex
             sourceTaskConfig.data,
             sourceTaskConfig.timeout,
             sourceTaskConfig.isAllowedInForeground,
-            retryPolicy.update())
+            retryPolicy.update(),
+        )
 
     val retryAttempt = Runnable { startTask(taskConfig, taskId) }
 

@@ -5,19 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "ImageState.h"
+
 #include <cstdlib>
 #include <limits>
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/image/ImageShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/imagemanager/ImageRequestParams.h>
-#include "ImageState.h"
 
 namespace facebook::react {
 
 const char ImageComponentName[] = "Image";
 
-void ImageShadowNode::setImageManager(const SharedImageManager& imageManager) {
+void ImageShadowNode::setImageManager(
+    const std::shared_ptr<ImageManager>& imageManager) {
   ensureUnsealed();
   imageManager_ = imageManager;
 
@@ -27,7 +30,8 @@ void ImageShadowNode::setImageManager(const SharedImageManager& imageManager) {
   // layout, if the image source was changed we have to initiate the image
   // request now since there is no guarantee that layout will run for the shadow
   // node at a later time.
-  if (getIsLayoutClean()) {
+  if (getIsLayoutClean() ||
+      ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
     auto sources = getConcreteProps().sources;
     auto layoutMetric = getLayoutMetrics();
     if (sources.size() <= 1 ||
@@ -61,7 +65,12 @@ void ImageShadowNode::updateStateIfNeeded() {
       imageProps.fadeDuration,
       imageProps.progressiveRenderingEnabled,
       imageProps.loadingIndicatorSource,
-      imageProps.internal_analyticTag
+      imageProps.internal_analyticTag,
+      Size{
+          .width =
+              layoutMetrics_.frame.size.width * layoutMetrics_.pointScaleFactor,
+          .height = layoutMetrics_.frame.size.height *
+              layoutMetrics_.pointScaleFactor}
 #endif
   );
 
@@ -70,17 +79,30 @@ void ImageShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  auto state = ImageState{
+#ifdef ANDROID
+  // Check if we should skip prefetching based on shouldResize logic
+  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
+    const auto& resizeMethod = imageProps.resizeMethod;
+    const auto& uri = newImageSource.uri;
+    bool shouldResize = (resizeMethod == "resize") ||
+        // Only resize for local content/file URIs
+        (resizeMethod == "auto" &&
+         (uri.starts_with("content://") || uri.starts_with("file://")));
+    // If we would resize but have no dimensions, skip creating the request
+    if (shouldResize &&
+        (newImageSource.size.width == 0 || newImageSource.size.height == 0 ||
+         layoutMetrics_.frame.size.width == 0 ||
+         layoutMetrics_.frame.size.height == 0)) {
+      // Keep the old state - don't create a new image request
+      return;
+    }
+  }
+#endif
+
+  ImageState state{
       newImageSource,
       imageManager_->requestImage(
-          newImageSource,
-          getSurfaceId()
-#ifdef ANDROID
-              ,
-          newImageRequestParams,
-          getTag()
-#endif
-              ),
+          newImageSource, getSurfaceId(), newImageRequestParams, getTag()),
       newImageRequestParams};
   setStateData(std::move(state));
 }

@@ -35,8 +35,8 @@ type ParsedDropShadow = {
 };
 
 export default function processFilter(
-  filter: ?($ReadOnlyArray<FilterFunction> | string),
-): $ReadOnlyArray<ParsedFilter> {
+  filter: ?(ReadonlyArray<FilterFunction> | string),
+): ReadonlyArray<ParsedFilter> {
   let result: Array<ParsedFilter> = [];
   if (filter == null) {
     return result;
@@ -69,9 +69,9 @@ export default function processFilter(
 
         if (amount != null) {
           const filterFunction = {};
-          // $FlowFixMe The key will be the correct one but flow can't see that.
+          // $FlowFixMe[prop-missing] The key will be the correct one but flow can't see that.
           filterFunction[camelizedName] = amount;
-          // $FlowFixMe The key will be the correct one but flow can't see that.
+          // $FlowFixMe[incompatible-type] The key will be the correct one but flow can't see that.
           result.push(filterFunction);
         } else {
           // If any primitive is invalid then apply none of the filters. This is how
@@ -85,7 +85,7 @@ export default function processFilter(
     for (const filterFunction of filter) {
       const [filterName, filterValue] = Object.entries(filterFunction)[0];
       if (filterName === 'dropShadow') {
-        // $FlowFixMe
+        // $FlowFixMe[incompatible-type]
         const dropShadow = parseDropShadow(filterValue);
         if (dropShadow == null) {
           return [];
@@ -96,9 +96,9 @@ export default function processFilter(
 
         if (amount != null) {
           const resultObject = {};
-          // $FlowFixMe
+          // $FlowFixMe[prop-missing]
           resultObject[filterName] = amount;
-          // $FlowFixMe
+          // $FlowFixMe[incompatible-type]
           result.push(resultObject);
         } else {
           // If any primitive is invalid then apply none of the filters. This is how
@@ -115,7 +115,7 @@ export default function processFilter(
   return result;
 }
 
-function _getFilterAmount(filterName: string, filterArgs: mixed): ?number {
+function _getFilterAmount(filterName: string, filterArgs: unknown): ?number {
   let filterArgAsNumber: number;
   let unit: string;
   if (typeof filterArgs === 'string') {

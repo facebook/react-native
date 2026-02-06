@@ -19,7 +19,7 @@ namespace facebook::react {
 
 class ImageManager;
 
-using SharedImageManager = std::shared_ptr<ImageManager>;
+using SharedImageManager [[deprecated("Use std::shared_ptr<ImageManager> instead.")]] = std::shared_ptr<ImageManager>;
 
 /*
  * Cross platform facade for image management (e.g. iOS-specific
@@ -27,21 +27,20 @@ using SharedImageManager = std::shared_ptr<ImageManager>;
  */
 class ImageManager {
  public:
-  ImageManager(const ContextContainer::Shared& contextContainer);
+  ImageManager(const std::shared_ptr<const ContextContainer> &contextContainer);
   virtual ~ImageManager();
 
   virtual ImageRequest requestImage(
-      const ImageSource& imageSource,
-      SurfaceId surfaceId) const;
-
-  virtual ImageRequest requestImage(
-      const ImageSource& imageSource,
+      const ImageSource &imageSource,
       SurfaceId surfaceId,
-      const ImageRequestParams& imageRequestParams,
-      Tag tag) const;
+      const ImageRequestParams &imageRequestParams = {},
+      Tag tag = {}) const;
 
  private:
-  void* self_{};
+#ifdef ANDROID
+  std::shared_ptr<const ContextContainer> contextContainer_{};
+#endif
+  void *self_{};
 };
 
 } // namespace facebook::react

@@ -250,15 +250,17 @@ TEST(CSSSyntaxParser, complex) {
 }
 
 TEST(CSSSyntaxParser, unterminated_functions) {
-  EXPECT_FALSE(CSSSyntaxParser{"foo("}.consumeComponentValue<bool>(
-      [](const CSSFunctionBlock&, CSSSyntaxParser& /*blockParser*/) {
-        return true;
-      }));
+  EXPECT_FALSE(
+      CSSSyntaxParser{"foo("}.consumeComponentValue<bool>(
+          [](const CSSFunctionBlock&, CSSSyntaxParser& /*blockParser*/) {
+            return true;
+          }));
 
-  EXPECT_FALSE(CSSSyntaxParser{"foo(a bar()baz()"}.consumeComponentValue<bool>(
-      [](const CSSFunctionBlock&, CSSSyntaxParser& /*blockParser*/) {
-        return true;
-      }));
+  EXPECT_FALSE(
+      CSSSyntaxParser{"foo(a bar()baz()"}.consumeComponentValue<bool>(
+          [](const CSSFunctionBlock&, CSSSyntaxParser& /*blockParser*/) {
+            return true;
+          }));
 }
 
 TEST(CSSSyntaxParser, simple_blocks) {
@@ -492,7 +494,7 @@ TEST(CSSSyntaxParser, solidus_or_whitespace) {
 
   auto delimValue1 = parser.consumeComponentValue<bool>(
       CSSDelimiter::SolidusOrWhitespace,
-      [](const CSSPreservedToken& token) { return true; });
+      [](const CSSPreservedToken& /*token*/) { return true; });
 
   EXPECT_FALSE(delimValue1);
 }
@@ -549,8 +551,8 @@ TEST(CSSSyntaxParser, component_value_not_consumed_on_visitor_failure) {
   EXPECT_TRUE(visitor2Attempted);
 
   bool visitor3Attempted = false;
-  bool visitor3Ret =
-      parser.consumeComponentValue<bool>([&](const CSSPreservedToken& token) {
+  bool visitor3Ret = parser.consumeComponentValue<bool>(
+      [&](const CSSPreservedToken& /*token*/) {
         visitor3Attempted = true;
         return true;
       });

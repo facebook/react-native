@@ -17,11 +17,11 @@ import {createViewConfig} from '../NativeComponent/ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
 
-export type NativeTextProps = $ReadOnly<{
+export type NativeTextProps = Readonly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
-  onClick?: ?(event: GestureResponderEvent) => mixed,
+  onClick?: ?(event: GestureResponderEvent) => unknown,
   // This is only needed for platforms that optimize text hit testing, e.g.,
   // react-native-windows. It can be used to only hit test virtual text spans
   // that have pressable events attached to them.
@@ -65,9 +65,19 @@ const virtualTextViewConfig = {
   uiViewClassName: 'RCTVirtualText',
 };
 
+/**
+ * `NativeText` is an internal React Native host component, and is exported to
+ * provide lower-level access for libraries.
+ *
+ * @warning `<unstable_NativeText>` provides no semver guarantees and is not
+ *   intended to be used in app code. Please use
+ *   [`<Text>`](https://reactnative.dev/docs/text) instead.
+ */
+// Additional note: Our long term plan is to reduce the overhead of the <Text>
+// and <View> wrappers so that we no longer have any reason to export these APIs.
 export const NativeText: HostComponent<NativeTextProps> =
   (createReactNativeComponentClass('RCTText', () =>
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     createViewConfig(textViewConfig),
   ): any);
@@ -76,7 +86,7 @@ export const NativeVirtualText: HostComponent<NativeTextProps> =
   !global.RN$Bridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')
     ? NativeText
     : (createReactNativeComponentClass('RCTVirtualText', () =>
-        /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */
         createViewConfig(virtualTextViewConfig),
       ): any);

@@ -45,7 +45,7 @@ function generateRCTThirdPartyComponents(
   codegenLog(`Generated artifact: ${finalPathH}`);
 
   codegenLog('Generating RCTThirdPartyComponentsProvider.mm');
-  let componentsInLibraries = {} /*:: as {[string]: Array<$FlowFixMe>} */;
+  let componentsInLibraries /*: {[string]: Array<$FlowFixMe>} */ = {};
 
   const componentLibraries = libraries.filter(({config, libraryPath}) => {
     if (isReactNativeCoreLibrary(config.name) || config.type === 'modules') {
@@ -54,7 +54,7 @@ function generateRCTThirdPartyComponents(
     return true;
   });
 
-  const librariesToCrawl = {} /*:: as {[string]: $FlowFixMe} */;
+  const librariesToCrawl /*: {[string]: $FlowFixMe} */ = {};
 
   // Using new API explicitly or not using any config field to define components.
   const componentLibrariesUsingNewApi = [];
@@ -169,11 +169,10 @@ function findFilesWithExtension(
       return null;
     }
 
-    // Skip hidden folders, that starts with `.` but allow `.pnpm`
-    if (
-      absolutePath.includes(`${path.sep}.`) &&
-      !absolutePath.includes(`${path.sep}.pnpm`)
-    ) {
+    // Skip hidden files/folders (starting with `.`) but allow `.pnpm`
+    // Note: Only check the filename, not the entire path, to avoid false positives
+    // when the workspace itself is under a hidden folder (e.g., ~/.jenkins/)
+    if (file.startsWith('.') && file !== '.pnpm') {
       return null;
     }
 
@@ -226,5 +225,6 @@ function findRCTComponentViewProtocolClass(filepath /*: string */) {
 }
 
 module.exports = {
+  findFilesWithExtension,
   generateRCTThirdPartyComponents,
 };

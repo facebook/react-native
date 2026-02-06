@@ -37,7 +37,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * Check if the app has the permission given. successCallback is called with true if the
    * permission had been granted, false otherwise. See [Activity.checkSelfPermission].
    */
-  public override fun checkPermission(permission: String, promise: Promise): Unit {
+  public override fun checkPermission(permission: String, promise: Promise) {
     val context = reactApplicationContext.baseContext
     promise.resolve(context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED)
   }
@@ -50,10 +50,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * again). For devices before Android M, this always returns false. See
    * [PermissionAwareActivity.shouldShowRequestPermissionRationale].
    */
-  public override fun shouldShowRequestPermissionRationale(
-      permission: String,
-      promise: Promise
-  ): Unit {
+  public override fun shouldShowRequestPermissionRationale(permission: String, promise: Promise) {
     try {
       promise.resolve(permissionAwareActivity.shouldShowRequestPermissionRationale(permission))
     } catch (e: IllegalStateException) {
@@ -67,8 +64,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * user has the permission given or not and resolves with GRANTED or DENIED. See
    * [Activity.checkSelfPermission].
    */
-  public override fun requestPermission(permission: String, promise: Promise): Unit {
-    val context = getReactApplicationContext().getBaseContext()
+  public override fun requestPermission(permission: String, promise: Promise) {
+    val context = reactApplicationContext.baseContext
     if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       promise.resolve(GRANTED)
       return
@@ -91,7 +88,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
                 }
               }
             }
-          })
+          },
+      )
       activity.requestPermissions(arrayOf(permission), requestCode, this)
       requestCode++
     } catch (e: IllegalStateException) {
@@ -99,14 +97,11 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  public override fun requestMultiplePermissions(
-      permissions: ReadableArray,
-      promise: Promise
-  ): Unit {
+  public override fun requestMultiplePermissions(permissions: ReadableArray, promise: Promise) {
     val grantedPermissions = WritableNativeMap()
     val permissionsToCheck = ArrayList<String>()
     var checkedPermissionsCount = 0
-    val context = getReactApplicationContext().getBaseContext()
+    val context = reactApplicationContext.baseContext
     for (i in 0 until permissions.size()) {
       val perm = permissions.getString(i) ?: continue
       if (context.checkSelfPermission(perm) == PackageManager.PERMISSION_GRANTED) {
@@ -142,7 +137,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
               }
               promise.resolve(grantedPermissions)
             }
-          })
+          },
+      )
       activity.requestPermissions(permissionsToCheck.toTypedArray<String>(), requestCode, this)
       requestCode++
     } catch (e: IllegalStateException) {
@@ -154,7 +150,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
   override fun onRequestPermissionsResult(
       requestCode: Int,
       permissions: Array<String>,
-      grantResults: IntArray
+      grantResults: IntArray,
   ): Boolean =
       try {
         val callback = callbacks[requestCode]
@@ -169,7 +165,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
         FLog.e(
             "PermissionsModule",
             e,
-            "Unexpected invocation of `onRequestPermissionsResult` with invalid current activity")
+            "Unexpected invocation of `onRequestPermissionsResult` with invalid current activity",
+        )
         false
       }
 

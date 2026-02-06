@@ -8,6 +8,7 @@
 package com.facebook.react.animated
 
 import androidx.core.graphics.ColorUtils
+import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -23,7 +24,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
   private enum class OutputType {
     Number,
     Color,
-    String
+    String,
   }
 
   private val inputRange: DoubleArray = fromDoubleArray(config.getArray("inputRange"))
@@ -44,6 +45,15 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
       outputType = OutputType.String
       outputRange = fromStringPattern(output)
       pattern = output.getString(0)
+    } else if (output != null && output.size() > 0 && output.getType(0) != ReadableType.Number) {
+      FLog.e(
+          TAG,
+          "Unsupported value type in interpolation outputRange: expected Number but got " +
+              "${output.getType(0)}. This may indicate PlatformColor or other unsupported " +
+              "values are being used. Interpolation will not work correctly.",
+      )
+      outputType = OutputType.Number
+      outputRange = DoubleArray(output.size())
     } else {
       outputType = OutputType.Number
       outputRange = fromDoubleArray(output)
@@ -72,7 +82,8 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
                   inputRange,
                   outputRange as DoubleArray,
                   extrapolateLeft,
-                  extrapolateRight)
+                  extrapolateRight,
+              )
       OutputType.Color ->
           objectValue =
               Integer.valueOf(interpolateColor(parentValue, inputRange, outputRange as IntArray))
@@ -86,7 +97,8 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
                     inputRange,
                     outputRange as Array<DoubleArray>,
                     extrapolateLeft,
-                    extrapolateRight)
+                    extrapolateRight,
+                )
           }
 
       else -> {}
@@ -99,6 +111,8 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
       "InterpolationAnimatedNode[$tag] super: ${super.prettyPrint()}"
 
   companion object {
+    private const val TAG = "InterpolationAnimatedNode"
+
     const val EXTRAPOLATE_TYPE_IDENTITY: String = "identity"
     const val EXTRAPOLATE_TYPE_CLAMP: String = "clamp"
     const val EXTRAPOLATE_TYPE_EXTEND: String = "extend"
@@ -130,7 +144,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
       val outputRange = arrayOfNulls<DoubleArray>(size)
 
       // Match the first pattern into a List, since we don't know its length yet
-      var m = numericPattern.matcher(array.getString(0) ?: "")
+      var m = numericPattern.matcher(array.getString(0).orEmpty())
       val firstOutputRange: MutableList<Double> = ArrayList()
       while (m.find()) {
         firstOutputRange.add(m.group().toDouble())
@@ -143,7 +157,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
       for (i in 1 until size) {
         val outputArr = DoubleArray(firstOutputRangeArr.size)
         var j = 0
-        m = numericPattern.matcher(array.getString(i) ?: "")
+        m = numericPattern.matcher(array.getString(i).orEmpty())
         while (m.find() && j < firstOutputRangeArr.size) {
           outputArr[j++] = m.group().toDouble()
         }
@@ -159,7 +173,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
         outputMin: Double,
         outputMax: Double,
         extrapolateLeft: String?,
-        extrapolateRight: String?
+        extrapolateRight: String?,
     ): Double {
       var result = value
 
@@ -171,7 +185,8 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
           EXTRAPOLATE_TYPE_EXTEND -> {}
           else ->
               throw JSApplicationIllegalArgumentException(
-                  "Invalid extrapolation type " + extrapolateLeft + "for left extrapolation")
+                  "Invalid extrapolation type " + extrapolateLeft + "for left extrapolation"
+              )
         }
       }
       if (result > inputMax) {
@@ -181,7 +196,8 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
           EXTRAPOLATE_TYPE_EXTEND -> {}
           else ->
               throw JSApplicationIllegalArgumentException(
-                  "Invalid extrapolation type " + extrapolateRight + "for right extrapolation")
+                  "Invalid extrapolation type " + extrapolateRight + "for right extrapolation"
+              )
         }
       }
       if (outputMin == outputMax) {
@@ -199,7 +215,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
         inputRange: DoubleArray,
         outputRange: DoubleArray,
         extrapolateLeft: String?,
-        extrapolateRight: String?
+        extrapolateRight: String?,
     ): Double {
       val rangeIndex = findRangeIndex(value, inputRange)
       return interpolate(
@@ -209,7 +225,8 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
           outputRange[rangeIndex],
           outputRange[rangeIndex + 1],
           extrapolateLeft,
-          extrapolateRight)
+          extrapolateRight,
+      )
     }
 
     fun interpolateColor(value: Double, inputRange: DoubleArray, outputRange: IntArray): Int {
@@ -236,7 +253,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
         inputRange: DoubleArray,
         outputRange: Array<DoubleArray>,
         extrapolateLeft: String?,
-        extrapolateRight: String?
+        extrapolateRight: String?,
     ): String {
       val rangeIndex = findRangeIndex(value, inputRange)
       val sb = StringBuffer(pattern.length)
@@ -251,7 +268,8 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
                 outputRange[rangeIndex][i],
                 outputRange[rangeIndex + 1][i],
                 extrapolateLeft,
-                extrapolateRight)
+                extrapolateRight,
+            )
         val intVal = v.toInt()
         m.appendReplacement(sb, if (intVal.toDouble() != v) v.toString() else intVal.toString())
         i++
@@ -261,7 +279,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
     }
 
     private fun findRangeIndex(value: Double, ranges: DoubleArray): Int {
-      var index: Int = 1
+      var index = 1
       while (index < ranges.size - 1) {
         if (ranges[index] >= value) {
           break

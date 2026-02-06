@@ -44,8 +44,7 @@ RawProps::RawProps(folly::dynamic dynamic) noexcept {
   dynamic_ = std::move(dynamic);
 }
 
-RawProps::RawProps(const RawProps& other) noexcept {
-  mode_ = other.mode_;
+RawProps::RawProps(const RawProps& other) noexcept : mode_(other.mode_) {
   if (mode_ == Mode::JSI) {
     runtime_ = other.runtime_;
     value_ = jsi::Value(*runtime_, other.value_);
@@ -118,7 +117,8 @@ const RawValue* RawProps::at(
   react_native_assert(
       parser_ &&
       "The object is not parsed. `parse` must be called before `at`.");
-  return parser_->at(*this, RawPropsKey{prefix, name, suffix});
+  return parser_->at(
+      *this, RawPropsKey{.prefix = prefix, .name = name, .suffix = suffix});
 }
 
 } // namespace facebook::react

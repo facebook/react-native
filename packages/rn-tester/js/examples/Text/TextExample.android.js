@@ -38,7 +38,7 @@ class Entity extends React.Component<{children: React.Node}> {
     );
   }
 }
-class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
+class AttributeToggler extends React.Component<{...}, $FlowFixMe> {
   state: {fontSize: number, fontWeight: 'bold' | 'normal'} = {
     fontWeight: 'bold',
     fontSize: 15,
@@ -87,7 +87,7 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{}>;
+type AdjustingFontSizeProps = Readonly<{}>;
 
 type AdjustingFontSizeState = {
   dynamicText: string,
@@ -388,6 +388,16 @@ function FontVariantsExample(props: {}): React.Node {
         Proportional nums{'\n'}
         1111{'\n'}
         2222{'\n'}
+      </RNTesterText>
+      <RNTesterText style={{fontFamily: 'FiraCode'}}>
+        Non-Stylistic & and $
+      </RNTesterText>
+      <RNTesterText
+        style={{
+          fontFamily: 'FiraCode',
+          fontVariant: ['stylistic-three', 'stylistic-four'],
+        }}>
+        Stylistic & and $
       </RNTesterText>
     </>
   );
@@ -1408,6 +1418,10 @@ const examples = [
           <RNTesterText style={{fontStyle: 'normal'}}>
             Move fast and be normal
           </RNTesterText>
+          <RNTesterText style={{fontStyle: 'italic'}}>
+            Move fast and be italic, but just be longer so that you don't fit on
+            a single line and make sure text is not truncated.
+          </RNTesterText>
         </>
       );
     },
@@ -1714,6 +1728,20 @@ const examples = [
             }}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </RNTesterText>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Disabled',
+    name: 'disabled',
+    render: function (): React.Node {
+      return (
+        <View>
+          <RNTesterText testID="text-disabled" disabled={true}>
+            This text has its corresponding text view in the disabled state for
+            testing purposes.
           </RNTesterText>
         </View>
       );

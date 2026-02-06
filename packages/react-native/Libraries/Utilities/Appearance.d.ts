@@ -9,7 +9,7 @@
 
 import {NativeEventSubscription} from '../EventEmitter/RCTNativeAppEventEmitter';
 
-type ColorSchemeName = 'light' | 'dark' | null | undefined;
+type ColorSchemeName = 'light' | 'dark' | 'unspecified';
 
 export namespace Appearance {
   type AppearancePreferences = {
@@ -26,7 +26,7 @@ export namespace Appearance {
    *
    * Example: `const colorScheme = Appearance.getColorScheme();`
    */
-  export function getColorScheme(): ColorSchemeName;
+  export function getColorScheme(): ColorSchemeName | null | undefined;
 
   /**
    * Set the color scheme preference. This is useful for overriding the default
@@ -34,9 +34,7 @@ export namespace Appearance {
    * appearance of the system UI, only the appearance of the app.
    * Only available on iOS 13+ and Android 10+.
    */
-  export function setColorScheme(
-    scheme: ColorSchemeName | null | undefined,
-  ): void;
+  export function setColorScheme(scheme: ColorSchemeName): void;
 
   /**
    * Add an event handler that is fired when appearance preferences change.

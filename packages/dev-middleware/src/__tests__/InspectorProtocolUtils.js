@@ -21,18 +21,18 @@ import {createDebuggerMock} from './InspectorDebuggerUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
 import until from 'wait-for-expect';
 
-export type CdpMessageFromTarget = $ReadOnly<{
+export type CdpMessageFromTarget = Readonly<{
   method: string,
   id?: number,
   params?: JSONSerializable,
 }>;
 
-export type CdpResponseFromTarget = $ReadOnly<{
+export type CdpResponseFromTarget = Readonly<{
   id: number,
   result: JSONSerializable,
 }>;
 
-export type CdpMessageToTarget = $ReadOnly<{
+export type CdpMessageToTarget = Readonly<{
   method: string,
   id: number,
   params?: JSONSerializable,
@@ -64,9 +64,9 @@ export async function sendFromTargetToDebugger<Message: CdpMessageFromTarget>(
     originalHandleCallsArray === debugger_.handle.mock.calls
       ? debugger_.handle.mock.calls.slice(originalHandleCallCount)
       : debugger_.handle.mock.calls;
-  // $FlowIgnore[incompatible-type]
+  // $FlowFixMe[incompatible-type]
   const [receivedMessage]: [Message] = newHandleCalls.find(
-    // $FlowIgnore[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     (call: [Message]) => call[0].method === message.method,
   );
   return receivedMessage;
@@ -81,6 +81,7 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
   device: DeviceMock,
   pageId: string,
   message: Message,
+  {sessionId}: {sessionId?: string} = {},
 ): Promise<Message> {
   const originalEventCallsArray = device.wrappedEventParsed.mock.calls;
   const originalEventCallCount = originalEventCallsArray.length;
@@ -88,6 +89,7 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
   await until(() =>
     expect(device.wrappedEventParsed).toBeCalledWith({
       pageId,
+      sessionId: sessionId ?? expect.any(String),
       wrappedEvent: expect.objectContaining({id: message.id}),
     }),
   );
@@ -97,18 +99,18 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
     originalEventCallsArray === device.wrappedEventParsed.mock.calls
       ? device.wrappedEventParsed.mock.calls.slice(originalEventCallCount)
       : device.wrappedEventParsed.mock.calls;
-  // $FlowIgnore[incompatible-use]
+  // $FlowFixMe[incompatible-use]
   const [receivedMessage] = newEventCalls.find(
-    // $FlowIgnore[prop-missing]
-    // $FlowIgnore[incompatible-use]
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-use]
     call => call[0].wrappedEvent.id === message.id,
   );
-  // $FlowIgnore[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   return receivedMessage.wrappedEvent;
 }
 
 export async function createAndConnectTarget(
-  serverRef: $ReadOnly<{
+  serverRef: Readonly<{
     serverBaseUrl: string,
     serverBaseWsUrl: string,
     ...
@@ -116,17 +118,19 @@ export async function createAndConnectTarget(
   signal: AbortSignal,
   page: PageFromDevice,
   {
-    debuggerHostHeader = null,
+    debuggerHeaders = null,
     deviceId = null,
     deviceHostHeader = null,
-  }: $ReadOnly<{
-    debuggerHostHeader?: ?string,
+  }: Readonly<{
+    debuggerHeaders?: ?{[string]: unknown},
+    debuggerOriginHeader?: ?string,
     deviceId?: ?string,
     deviceHostHeader?: ?string,
   }> = {},
-): Promise<{device: DeviceMock, debugger_: DebuggerMock}> {
+): Promise<{device: DeviceMock, debugger_: DebuggerMock, sessionId: string}> {
   let device;
   let debugger_;
+  let sessionId;
   try {
     device = await createDeviceMock(
       `${serverRef.serverBaseWsUrl}/inspector/device?device=${
@@ -141,23 +145,33 @@ export async function createAndConnectTarget(
     await until(async () => {
       pageList = (await fetchJson(
         `${serverRef.serverBaseUrl}/json`,
-        // $FlowIgnore[unclear-type]
+        // $FlowFixMe[unclear-type]
       ): any);
       expect(pageList).toHaveLength(1);
     });
     const [{webSocketDebuggerUrl}] = pageList;
     expect(webSocketDebuggerUrl).toBeDefined();
 
+    const originalConnectCallsArray = device.connect.mock.calls;
+    const originalConnectCallCount = originalConnectCallsArray.length;
     debugger_ = await createDebuggerMock(
       webSocketDebuggerUrl,
       signal,
-      debuggerHostHeader,
+      debuggerHeaders,
     );
     await until(() => expect(device.connect).toBeCalled());
+    // Find the first connect call that wasn't already in the mock calls array
+    // before we connected the debugger.
+    const newConnectCalls =
+      originalConnectCallsArray === device.connect.mock.calls
+        ? device.connect.mock.calls.slice(originalConnectCallCount)
+        : device.connect.mock.calls;
+    const [[{payload}]] = newConnectCalls;
+    sessionId = payload.sessionId;
   } catch (e) {
     device?.close();
     debugger_?.close();
     throw e;
   }
-  return {device, debugger_};
+  return {device, debugger_, sessionId};
 }

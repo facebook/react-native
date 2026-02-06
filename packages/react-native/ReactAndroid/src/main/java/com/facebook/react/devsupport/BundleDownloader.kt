@@ -82,7 +82,7 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       outputFile: File,
       bundleURL: String?,
       bundleInfo: BundleInfo?,
-      requestBuilder: Request.Builder = Request.Builder()
+      requestBuilder: Request.Builder = Request.Builder(),
   ) {
     checkNotNull(bundleURL)
     val request = requestBuilder.url(bundleURL).addHeader("Accept", "multipart/mixed").build()
@@ -92,23 +92,28 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
             object : Callback {
               override fun onFailure(call: Call, e: IOException) {
                 // ignore callback if call was cancelled
-                if (downloadBundleFromURLCall == null ||
-                    downloadBundleFromURLCall?.isCanceled() == true) {
+                if (
+                    downloadBundleFromURLCall == null ||
+                        downloadBundleFromURLCall?.isCanceled() == true
+                ) {
                   downloadBundleFromURLCall = null
                   return
                 }
                 downloadBundleFromURLCall = null
                 val url = call.request().url().toString()
                 callback.onFailure(
-                    makeGeneric(url, "Could not connect to development server.", "URL: $url", e))
+                    makeGeneric(url, "Could not connect to development server.", "URL: $url", e)
+                )
               }
 
               @Throws(IOException::class)
               override fun onResponse(call: Call, response: Response) {
                 response.use { resp ->
                   // ignore callback if call was cancelled
-                  if (downloadBundleFromURLCall == null ||
-                      downloadBundleFromURLCall?.isCanceled() == true) {
+                  if (
+                      downloadBundleFromURLCall == null ||
+                          downloadBundleFromURLCall?.isCanceled() == true
+                  ) {
                     downloadBundleFromURLCall = null
                     return
                   }
@@ -139,13 +144,15 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                             body.source(),
                             outputFile,
                             bundleInfo,
-                            callback)
+                            callback,
+                        )
                       }
                     }
                   }
                 }
               }
-            })
+            }
+        )
   }
 
   @Throws(IOException::class)
@@ -155,7 +162,7 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       boundary: String,
       outputFile: File,
       bundleInfo: BundleInfo?,
-      callback: DevBundleDownloadListener
+      callback: DevBundleDownloadListener,
   ) {
     if (response.body() == null) {
       callback.onFailure(
@@ -169,7 +176,9 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     
                     
                     """
-                  .trimIndent())))
+                  .trimIndent())
+          )
+      )
       return
     }
     val source = checkNotNull(response.body()?.source())
@@ -181,7 +190,7 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
               override fun onChunkComplete(
                   headers: Map<String, String>,
                   body: Buffer,
-                  isLastChunk: Boolean
+                  isLastChunk: Boolean,
               ) {
                 // This will get executed for every chunk of the multipart response. The last chunk
                 // (isLastChunk = true) will be the JS bundle, the other ones will be progress
@@ -194,10 +203,19 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     status = headers.getOrDefault("X-Http-Status", "0").toInt()
                   }
                   processBundleResult(
-                      url, status, Headers.of(headers), body, outputFile, bundleInfo, callback)
+                      url,
+                      status,
+                      Headers.of(headers),
+                      body,
+                      outputFile,
+                      bundleInfo,
+                      callback,
+                  )
                 } else {
-                  if (!headers.containsKey("Content-Type") ||
-                      headers["Content-Type"] != "application/json") {
+                  if (
+                      !headers.containsKey("Content-Type") ||
+                          headers["Content-Type"] != "application/json"
+                  ) {
                     return
                   }
 
@@ -223,14 +241,18 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
               override fun onChunkProgress(
                   headers: Map<String, String>,
                   loaded: Long,
-                  total: Long
+                  total: Long,
               ) {
                 if ("application/javascript" == headers["Content-Type"]) {
                   callback.onProgress(
-                      "Downloading", (loaded / 1024).toInt(), (total / 1024).toInt())
+                      "Downloading",
+                      (loaded / 1024).toInt(),
+                      (total / 1024).toInt(),
+                  )
                 }
               }
-            })
+            }
+        )
     if (!completed) {
       callback.onFailure(
           DebugServerException(
@@ -243,7 +265,9 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     
                     
                     """
-                  .trimIndent())))
+                  .trimIndent())
+          )
+      )
     }
   }
 
@@ -255,7 +279,7 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       body: BufferedSource,
       outputFile: File,
       bundleInfo: BundleInfo?,
-      callback: DevBundleDownloadListener
+      callback: DevBundleDownloadListener,
   ) {
     // Check for server errors. If the server error has the expected form, fail with more info.
     if (statusCode != 200) {

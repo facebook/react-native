@@ -42,33 +42,35 @@ type AccessibilityEventDefinitions = {
   screenReaderChanged: [boolean],
 };
 
-type AccessibilityEventTypes = 'click' | 'focus' | 'viewHoverEnter';
+type AccessibilityEventTypes =
+  | 'click'
+  | 'focus'
+  | 'viewHoverEnter'
+  | 'windowStateChange';
 
 // Mapping of public event names to platform-specific event names.
-const EventNames: Map<
-  $Keys<AccessibilityEventDefinitions>,
-  string,
-> = Platform.OS === 'android'
-  ? new Map([
-      ['change', 'touchExplorationDidChange'],
-      ['reduceMotionChanged', 'reduceMotionDidChange'],
-      ['highTextContrastChanged', 'highTextContrastDidChange'],
-      ['screenReaderChanged', 'touchExplorationDidChange'],
-      ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
-      ['invertColorsChanged', 'invertColorDidChange'],
-      ['grayscaleChanged', 'grayscaleModeDidChange'],
-    ])
-  : new Map([
-      ['announcementFinished', 'announcementFinished'],
-      ['boldTextChanged', 'boldTextChanged'],
-      ['change', 'screenReaderChanged'],
-      ['grayscaleChanged', 'grayscaleChanged'],
-      ['invertColorsChanged', 'invertColorsChanged'],
-      ['reduceMotionChanged', 'reduceMotionChanged'],
-      ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
-      ['screenReaderChanged', 'screenReaderChanged'],
-      ['darkerSystemColorsChanged', 'darkerSystemColorsChanged'],
-    ]);
+const EventNames: Map<keyof AccessibilityEventDefinitions, string> =
+  Platform.OS === 'android'
+    ? new Map([
+        ['change', 'touchExplorationDidChange'],
+        ['reduceMotionChanged', 'reduceMotionDidChange'],
+        ['highTextContrastChanged', 'highTextContrastDidChange'],
+        ['screenReaderChanged', 'touchExplorationDidChange'],
+        ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
+        ['invertColorsChanged', 'invertColorDidChange'],
+        ['grayscaleChanged', 'grayscaleModeDidChange'],
+      ])
+    : new Map([
+        ['announcementFinished', 'announcementFinished'],
+        ['boldTextChanged', 'boldTextChanged'],
+        ['change', 'screenReaderChanged'],
+        ['grayscaleChanged', 'grayscaleChanged'],
+        ['invertColorsChanged', 'invertColorsChanged'],
+        ['reduceMotionChanged', 'reduceMotionChanged'],
+        ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
+        ['screenReaderChanged', 'screenReaderChanged'],
+        ['darkerSystemColorsChanged', 'darkerSystemColorsChanged'],
+      ]);
 
 /**
  * Sometimes it's useful to know whether or not the device has a screen reader
@@ -99,7 +101,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
@@ -119,7 +121,11 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid?.isGrayscaleEnabled != null) {
           NativeAccessibilityInfoAndroid.isGrayscaleEnabled(resolve);
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityInfoAndroid.isGrayscaleEnabled is not available',
+            ),
+          );
         }
       });
     } else {
@@ -130,7 +136,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('AccessibilityInfo native module is not available'));
         }
       });
     }
@@ -150,7 +156,11 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid?.isInvertColorsEnabled != null) {
           NativeAccessibilityInfoAndroid.isInvertColorsEnabled(resolve);
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityInfoAndroid.isInvertColorsEnabled is not available',
+            ),
+          );
         }
       });
     } else {
@@ -161,7 +171,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('AccessibilityInfo native module is not available'));
         }
       });
     }
@@ -181,7 +191,7 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid != null) {
           NativeAccessibilityInfoAndroid.isReduceMotionEnabled(resolve);
         } else {
-          reject(null);
+          reject(new Error('AccessibilityInfo native module is not available'));
         }
       } else {
         if (NativeAccessibilityManagerIOS != null) {
@@ -190,7 +200,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       }
     });
@@ -208,7 +218,11 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid?.isHighTextContrastEnabled != null) {
           NativeAccessibilityInfoAndroid.isHighTextContrastEnabled(resolve);
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityInfoAndroid.isHighTextContrastEnabled is not available',
+            ),
+          );
         }
       } else {
         return Promise.resolve(false);
@@ -236,7 +250,11 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityManagerIOS.getCurrentDarkerSystemColorsState is not available',
+            ),
+          );
         }
       }
     });
@@ -264,7 +282,11 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityManagerIOS.getCurrentPrefersCrossFadeTransitionsState is not available',
+            ),
+          );
         }
       }
     });
@@ -289,7 +311,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       });
     }
@@ -309,7 +331,7 @@ const AccessibilityInfo = {
         if (NativeAccessibilityInfoAndroid != null) {
           NativeAccessibilityInfoAndroid.isTouchExplorationEnabled(resolve);
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityInfoAndroid is not available'));
         }
       } else {
         if (NativeAccessibilityManagerIOS != null) {
@@ -318,7 +340,7 @@ const AccessibilityInfo = {
             reject,
           );
         } else {
-          reject(null);
+          reject(new Error('NativeAccessibilityManagerIOS is not available'));
         }
       }
     });
@@ -343,10 +365,18 @@ const AccessibilityInfo = {
         ) {
           NativeAccessibilityInfoAndroid.isAccessibilityServiceEnabled(resolve);
         } else {
-          reject(null);
+          reject(
+            new Error(
+              'NativeAccessibilityInfoAndroid.isAccessibilityServiceEnabled is not available',
+            ),
+          );
         }
       } else {
-        reject(null);
+        reject(
+          new Error(
+            'isAccessibilityServiceEnabled is only available on Android',
+          ),
+        );
       }
     });
   },
@@ -394,15 +424,15 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo#addeventlistener
    */
-  addEventListener<K: $Keys<AccessibilityEventDefinitions>>(
+  addEventListener<K: keyof AccessibilityEventDefinitions>(
     eventName: K,
-    // $FlowIssue[incompatible-type] - Flow bug with unions and generics (T128099423)
+    // $FlowFixMe[incompatible-type] - Flow bug with unions and generics (T128099423)
     handler: (...AccessibilityEventDefinitions[K]) => void,
   ): EventSubscription {
     const deviceEventName = EventNames.get(eventName);
     return deviceEventName == null
       ? {remove(): void {}}
-      : // $FlowFixMe[incompatible-call]
+      : // $FlowFixMe[incompatible-type]
         RCTDeviceEventEmitter.addListener(deviceEventName, handler);
   },
 
@@ -410,6 +440,8 @@ const AccessibilityInfo = {
    * Set accessibility focus to a React component.
    *
    * See https://reactnative.dev/docs/accessibilityinfo#setaccessibilityfocus
+   *
+   * @deprecated Use `sendAccessibilityEvent` with eventType `focus` instead.
    */
   setAccessibilityFocus(reactTag: number): void {
     legacySendAccessibilityEvent(reactTag, 'focus');
@@ -448,10 +480,15 @@ const AccessibilityInfo = {
    * - `announcement`: The string announced by the screen reader.
    * - `options`: An object that configures the reading options.
    *   - `queue`: The announcement will be queued behind existing announcements. iOS only.
+   *   - `priority`: The priority of the announcement. Possible values: 'low' | 'default' | 'high'.
+   *     High priority announcements will interrupt any ongoing speech and cannot be interrupted.
+   *     Default priority announcements will interrupt any ongoing speech but can be interrupted.
+   *     Low priority announcements will not interrupt ongoing speech and can be interrupted.
+   *     (iOS only).
    */
   announceForAccessibilityWithOptions(
     announcement: string,
-    options: {queue?: boolean},
+    options: {queue?: boolean, priority?: 'low' | 'default' | 'high'},
   ): void {
     if (Platform.OS === 'android') {
       NativeAccessibilityInfoAndroid?.announceForAccessibility(announcement);

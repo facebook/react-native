@@ -18,7 +18,8 @@ import com.facebook.systrace.Systrace
 internal class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTModernEventEmitter {
   @Deprecated(
       "Use receiveEvent with surfaceId instead.",
-      ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"))
+      ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"),
+  )
   override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?): Unit {
     receiveEvent(ViewUtil.NO_SURFACE_ID, targetTag, eventName, params)
   }
@@ -27,7 +28,7 @@ internal class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTM
       surfaceId: Int,
       targetTag: Int,
       eventName: String,
-      params: WritableMap?
+      params: WritableMap?,
   ) {
     receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
   }
@@ -39,7 +40,7 @@ internal class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTM
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
       params: WritableMap?,
-      @EventCategoryDef category: Int
+      @EventCategoryDef category: Int,
   ) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "FabricEventEmitter.receiveEvent('$eventName')")
     try {
@@ -54,7 +55,7 @@ internal class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTM
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
-      changedIndices: WritableArray
+      changedIndices: WritableArray,
   ): Unit {
     throw UnsupportedOperationException("EventEmitter#receiveTouches is not supported by Fabric")
   }

@@ -551,6 +551,7 @@ export namespace Animated {
     [K in keyof T]: WithAnimatedValue<T[K]>;
   };
 
+  // prettier-ignore
   export type WithAnimatedValue<T> = T extends Builtin | Nullable
     ? T
     : T extends Primitive
@@ -563,6 +564,7 @@ export namespace Animated {
 
   type NonAnimatedProps = 'key' | 'ref';
 
+  // prettier-ignore
   type TAugmentRef<T> = T extends React.Ref<infer R>
     ? unknown extends R
       ? never

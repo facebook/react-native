@@ -18,7 +18,8 @@ internal class DrawerStateChangedEvent : Event<DrawerStateChangedEvent> {
 
   @Deprecated(
       "Use constructor with surfaceId",
-      ReplaceWith("DrawerStateChangedEvent(surfaceId, viewId, drawerState)"))
+      ReplaceWith("DrawerStateChangedEvent(surfaceId, viewId, drawerState)"),
+  )
   constructor(viewId: Int, drawerState: Int) : this(ViewUtil.NO_SURFACE_ID, viewId, drawerState)
 
   constructor(surfaceId: Int, viewId: Int, drawerState: Int) : super(surfaceId, viewId) {

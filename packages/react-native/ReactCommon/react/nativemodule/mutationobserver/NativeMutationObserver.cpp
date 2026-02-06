@@ -35,7 +35,7 @@ NativeMutationObserver::NativeMutationObserver(
 
 void NativeMutationObserver::observe(
     jsi::Runtime& runtime,
-    NativeMutationObserverObserveOptions options) {
+    const NativeMutationObserverObserveOptions& options) {
   auto mutationObserverId = options.mutationObserverId;
   auto subtree = options.subtree;
   auto shadowNode = options.targetShadowNode;
@@ -46,7 +46,7 @@ void NativeMutationObserver::observe(
 }
 
 void NativeMutationObserver::unobserveAll(
-    jsi::Runtime& runtime,
+    jsi::Runtime& /*runtime*/,
     MutationObserverId mutationObserverId) {
   mutationObserverManager_.unobserveAll(mutationObserverId);
 }
@@ -113,13 +113,14 @@ void NativeMutationObserver::onMutations(std::vector<MutationRecord>& records) {
   TraceSection s("NativeMutationObserver::onMutations");
 
   for (const auto& record : records) {
-    pendingRecords_.emplace_back(NativeMutationRecord{
-        record.mutationObserverId,
-        // FIXME(T157129303) Instead of assuming we can call into JS from here,
-        // we should use an API that explicitly indicates it.
-        getPublicInstanceFromShadowNode(*record.targetShadowNode),
-        getPublicInstancesFromShadowNodes(record.addedShadowNodes),
-        getPublicInstancesFromShadowNodes(record.removedShadowNodes)});
+    pendingRecords_.emplace_back(
+        NativeMutationRecord{
+            record.mutationObserverId,
+            // FIXME(T157129303) Instead of assuming we can call into JS from
+            // here, we should use an API that explicitly indicates it.
+            getPublicInstanceFromShadowNode(*record.targetShadowNode),
+            getPublicInstancesFromShadowNodes(record.addedShadowNodes),
+            getPublicInstancesFromShadowNodes(record.removedShadowNodes)});
   }
 
   notifyMutationObserversIfNecessary();

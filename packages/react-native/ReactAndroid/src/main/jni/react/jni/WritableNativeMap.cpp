@@ -61,7 +61,7 @@ void WritableNativeMap::putString(std::string key, alias_ref<jstring> val) {
 void WritableNativeMap::putNativeArray(
     std::string key,
     ReadableNativeArray* otherArray) {
-  if (!otherArray) {
+  if (otherArray == nullptr) {
     putNull(std::move(key));
     return;
   }
@@ -72,7 +72,7 @@ void WritableNativeMap::putNativeArray(
 void WritableNativeMap::putNativeMap(
     std::string key,
     ReadableNativeMap* otherMap) {
-  if (!otherMap) {
+  if (otherMap == nullptr) {
     putNull(std::move(key));
     return;
   }
@@ -84,7 +84,7 @@ void WritableNativeMap::mergeNativeMap(ReadableNativeMap* other) {
   throwIfConsumed();
   other->throwIfConsumed();
 
-  for (auto sourceIt : other->map_.items()) {
+  for (const auto& sourceIt : other->map_.items()) {
     map_[sourceIt.first] = sourceIt.second;
   }
 }

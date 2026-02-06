@@ -9,7 +9,6 @@
 
 #include <glog/logging.h>
 
-#include <cxxreact/CxxModule.h>
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/JsArgumentHelpers.h>
@@ -23,9 +22,7 @@
 #include "CatalystInstanceImpl.h"
 #include "ReadableNativeArray.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
-
-using facebook::xplat::module::CxxModule;
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 
@@ -126,7 +123,7 @@ void JavaNativeModule::invoke(
         invokeMethod(
             wrapper_,
             static_cast<jint>(reactMethodId),
-            ReadableNativeArray::newObjectCxxArgs(std::move(params)).get());
+            ReadableNativeArray::newObjectCxxArgs(params).get());
       });
 }
 

@@ -9,6 +9,7 @@
 
 #include <chrono>
 #include <string>
+#include <utility>
 
 using namespace std::chrono;
 using namespace std::literals::string_view_literals;
@@ -26,7 +27,8 @@ FallbackRuntimeAgentDelegate::FallbackRuntimeAgentDelegate(
     FrontendChannel frontendChannel,
     const SessionState& sessionState,
     std::string engineDescription)
-    : frontendChannel_(frontendChannel), engineDescription_(engineDescription) {
+    : frontendChannel_(std::move(frontendChannel)),
+      engineDescription_(std::move(engineDescription)) {
   if (sessionState.isLogDomainEnabled) {
     sendFallbackRuntimeWarning();
   }
@@ -54,16 +56,17 @@ void FallbackRuntimeAgentDelegate::sendFallbackRuntimeWarning() {
 }
 
 void FallbackRuntimeAgentDelegate::sendWarningLogEntry(std::string_view text) {
-  frontendChannel_(cdp::jsonNotification(
-      "Log.entryAdded",
-      folly::dynamic::object(
-          "entry",
+  frontendChannel_(
+      cdp::jsonNotification(
+          "Log.entryAdded",
           folly::dynamic::object(
-              "timestamp",
-              duration_cast<milliseconds>(
-                  system_clock::now().time_since_epoch())
-                  .count())("source", "other")("level", "warning")(
-              "text", text))));
+              "entry",
+              folly::dynamic::object(
+                  "timestamp",
+                  duration_cast<milliseconds>(
+                      system_clock::now().time_since_epoch())
+                      .count())("source", "other")("level", "warning")(
+                  "text", text))));
 }
 
 } // namespace facebook::react::jsinspector_modern

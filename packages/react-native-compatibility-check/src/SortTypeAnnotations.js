@@ -13,7 +13,7 @@ import type {CompleteTypeAnnotation} from '@react-native/codegen/src/CodegenSche
 import invariant from 'invariant';
 
 export function sortTypeAnnotations(
-  annotations: $ReadOnlyArray<CompleteTypeAnnotation>,
+  annotations: ReadonlyArray<CompleteTypeAnnotation>,
 ): Array<[number, CompleteTypeAnnotation]> {
   const sortableArray = annotations.map(
     (a, i): [number, CompleteTypeAnnotation] => [i, a],
@@ -116,6 +116,9 @@ export function compareTypeAnnotationForSorting(
     case 'NumberLiteralTypeAnnotation':
       invariant(typeB.type === 'NumberLiteralTypeAnnotation', EQUALITY_MSG);
       return typeA.value - typeB.value;
+    case 'BooleanLiteralTypeAnnotation':
+      invariant(typeB.type === 'BooleanLiteralTypeAnnotation', EQUALITY_MSG);
+      return originalPositionA - originalPositionB;
     case 'ObjectTypeAnnotation':
       invariant(typeB.type === 'ObjectTypeAnnotation', EQUALITY_MSG);
       return compareNameAnnotationArraysForSorting(
@@ -133,18 +136,12 @@ export function compareTypeAnnotationForSorting(
     case 'StringLiteralTypeAnnotation':
       invariant(typeB.type === 'StringLiteralTypeAnnotation', EQUALITY_MSG);
       return typeA.value.localeCompare(typeB.value);
-    case 'StringLiteralUnionTypeAnnotation':
-      invariant(
-        typeB.type === 'StringLiteralUnionTypeAnnotation',
-        EQUALITY_MSG,
-      );
+    case 'UnionTypeAnnotation':
+      invariant(typeB.type === 'UnionTypeAnnotation', EQUALITY_MSG);
       return compareAnnotationArraysForSorting(
         [originalPositionA, typeA.types],
         [originalPositionB, typeB.types],
       );
-    case 'UnionTypeAnnotation':
-      invariant(typeB.type === 'UnionTypeAnnotation', EQUALITY_MSG);
-      return 0;
     case 'VoidTypeAnnotation':
       return 0;
     case 'ReservedTypeAnnotation':
@@ -212,8 +209,8 @@ function compareNameAnnotationArraysForSorting(
 }
 
 function compareAnnotationArraysForSorting(
-  [originalPositionA, arrayA]: [number, $ReadOnlyArray<CompleteTypeAnnotation>],
-  [originalPositionB, arrayB]: [number, $ReadOnlyArray<CompleteTypeAnnotation>],
+  [originalPositionA, arrayA]: [number, ReadonlyArray<CompleteTypeAnnotation>],
+  [originalPositionB, arrayB]: [number, ReadonlyArray<CompleteTypeAnnotation>],
 ) {
   if (arrayA.length - arrayB.length !== 0) {
     return arrayA.length - arrayB.length;
@@ -261,8 +258,8 @@ function typeAnnotationArbitraryOrder(annotation: CompleteTypeAnnotation) {
       return 14;
     case 'ObjectTypeAnnotation':
       return 15;
-    case 'StringLiteralUnionTypeAnnotation':
-      return 17;
+    case 'BooleanLiteralTypeAnnotation':
+      return 16;
     case 'StringTypeAnnotation':
       return 18;
     case 'StringLiteralTypeAnnotation':

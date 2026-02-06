@@ -26,7 +26,7 @@ public abstract class JSBundleLoader {
     public fun createAssetLoader(
         context: Context,
         assetUrl: String,
-        loadSynchronously: Boolean
+        loadSynchronously: Boolean,
     ): JSBundleLoader =
         object : JSBundleLoader() {
           override fun loadScript(delegate: JSBundleLoaderDelegate): String {
@@ -47,7 +47,7 @@ public abstract class JSBundleLoader {
     public fun createFileLoader(
         fileName: String,
         assetUrl: String,
-        loadSynchronously: Boolean
+        loadSynchronously: Boolean,
     ): JSBundleLoader =
         object : JSBundleLoader() {
           override fun loadScript(delegate: JSBundleLoaderDelegate): String {
@@ -66,7 +66,7 @@ public abstract class JSBundleLoader {
     @JvmStatic
     public fun createCachedBundleFromNetworkLoader(
         sourceURL: String,
-        cachedFileLocation: String
+        cachedFileLocation: String,
     ): JSBundleLoader =
         object : JSBundleLoader() {
           override fun loadScript(delegate: JSBundleLoaderDelegate): String {
@@ -83,7 +83,7 @@ public abstract class JSBundleLoader {
     @JvmStatic
     public fun createCachedSplitBundleFromNetworkLoader(
         sourceURL: String,
-        cachedFileLocation: String
+        cachedFileLocation: String,
     ): JSBundleLoader =
         object : JSBundleLoader() {
           override fun loadScript(delegate: JSBundleLoaderDelegate): String {

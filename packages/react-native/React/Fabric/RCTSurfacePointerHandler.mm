@@ -15,6 +15,8 @@
 #import "RCTConversions.h"
 #import "RCTTouchableComponentViewProtocol.h"
 
+#if !TARGET_OS_TV
+
 using namespace facebook::react;
 
 typedef NS_ENUM(NSInteger, RCTPointerEventType) {
@@ -299,17 +301,21 @@ static PointerEvent CreatePointerEventFromActivePointer(
 
   event.pressure = activePointer.force;
 
-  if (activePointer.touchType == UITouchTypeIndirectPointer) {
-    // pointer events with a mouse button pressed should report a pressure of 0.5
-    // when the touch is down and 0.0 when it is lifted regardless of how it is reported by the OS
-    event.pressure = eventType != RCTPointerEventTypeEnd ? 0.5 : 0.0;
+  if (@available(iOS 13.4, tvOS 13.4, *)) {
+    if (activePointer.touchType == UITouchTypeIndirectPointer) {
+      // pointer events with a mouse button pressed should report a pressure of 0.5
+      // when the touch is down and 0.0 when it is lifted regardless of how it is reported by the OS
+      event.pressure = eventType != RCTPointerEventTypeEnd ? 0.5 : 0.0;
+    }
   }
 
   CGFloat pointerSize = activePointer.majorRadius * 2.0;
 
-  if (activePointer.touchType == UITouchTypeIndirectPointer) {
-    // mouse type pointers should always report a size of 1
-    pointerSize = 1.0;
+  if (@available(iOS 13.4, tvOS 13.4, *)) {
+    if (activePointer.touchType == UITouchTypeIndirectPointer) {
+      // mouse type pointers should always report a size of 1
+      pointerSize = 1.0;
+    }
   }
 
   event.width = pointerSize;
@@ -437,7 +443,7 @@ struct PointerHasher {
    * We hold the view weakly to prevent a retain cycle.
    */
   __weak UIView *_rootComponentView;
-  RCTIdentifierPool<11> _identifierPool;
+  RCTIdentifierPool<17> _identifierPool;
 
   UIHoverGestureRecognizer *_mouseHoverRecognizer API_AVAILABLE(ios(13.0));
   UIHoverGestureRecognizer *_penHoverRecognizer API_AVAILABLE(ios(13.0));
@@ -771,3 +777,5 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 }
 
 @end
+
+#endif // !TARGET_OS_TV

@@ -22,24 +22,28 @@ struct Size {
   Float width{0};
   Float height{0};
 
-  Size& operator+=(const Point& point) noexcept {
+  Size &operator+=(const Point &point) noexcept
+  {
     width += point.x;
     height += point.y;
     return *this;
   }
 
-  Size& operator*=(const Point& point) noexcept {
+  Size &operator*=(const Point &point) noexcept
+  {
     width *= point.x;
     height *= point.y;
     return *this;
   }
 };
 
-inline bool operator==(const Size& rhs, const Size& lhs) noexcept {
+inline bool operator==(const Size &rhs, const Size &lhs) noexcept
+{
   return std::tie(lhs.width, lhs.height) == std::tie(rhs.width, rhs.height);
 }
 
-inline bool operator!=(const Size& rhs, const Size& lhs) noexcept {
+inline bool operator!=(const Size &rhs, const Size &lhs) noexcept
+{
   return !(lhs == rhs);
 }
 
@@ -49,7 +53,8 @@ namespace std {
 
 template <>
 struct hash<facebook::react::Size> {
-  size_t operator()(const facebook::react::Size& size) const {
+  size_t operator()(const facebook::react::Size &size) const
+  {
     return facebook::react::hash_combine(size.width, size.height);
   }
 };

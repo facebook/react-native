@@ -8,7 +8,7 @@
 #include "Registration.h"
 #include "ConnectionDemux.h"
 
-#ifdef HERMES_ENABLE_DEBUGGER
+#if defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
 
 namespace facebook::hermes::inspector_modern::chrome {
 
@@ -34,4 +34,4 @@ void disableDebugging(DebugSessionToken session) {
 
 } // namespace facebook::hermes::inspector_modern::chrome
 
-#endif // HERMES_ENABLE_DEBUGGER
+#endif // defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)

@@ -14,6 +14,10 @@ import Text, {type TextProps} from '../../Text/Text';
 import createAnimatedComponent from '../createAnimatedComponent';
 import * as React from 'react';
 
-export default (createAnimatedComponent(
-  (Text: $FlowFixMe),
-): AnimatedComponentType<TextProps, React.ElementRef<typeof Text>>);
+export default (createAnimatedComponent<
+  $FlowFixMe,
+  React.ElementRef<typeof Text>,
+>((Text: $FlowFixMe)): AnimatedComponentType<
+  TextProps,
+  React.ElementRef<typeof Text>,
+>);

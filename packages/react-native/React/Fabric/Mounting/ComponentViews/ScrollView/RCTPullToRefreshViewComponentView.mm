@@ -23,6 +23,22 @@ using namespace facebook::react;
 @interface RCTPullToRefreshViewComponentView () <RCTPullToRefreshViewViewProtocol, RCTRefreshableProtocol>
 @end
 
+#if TARGET_OS_TV
+
+@implementation RCTPullToRefreshViewComponentView
+
+- (void)setNativeRefreshing:(BOOL)refreshing
+{
+}
+
+- (void)setRefreshing:(BOOL)refreshing
+{
+}
+
+@end
+
+#else
+
 @implementation RCTPullToRefreshViewComponentView {
   UIRefreshControl *_refreshControl;
   RCTScrollViewComponentView *__weak _scrollViewComponentView;
@@ -40,6 +56,7 @@ using namespace facebook::react;
     // attaching and detaching of a pull-to-refresh view to a scroll view.
     // The pull-to-refresh view is not a subview of this view.
     self.hidden = YES;
+    _props = PullToRefreshViewShadowNode::defaultSharedProps();
     _recycled = NO;
     [self _initializeUIRefreshControl];
   }
@@ -257,6 +274,8 @@ using namespace facebook::react;
 }
 
 @end
+
+#endif
 
 Class<RCTComponentViewProtocol> RCTPullToRefreshViewCls(void)
 {

@@ -57,6 +57,7 @@ import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.JSKeyDispatcher;
 import com.facebook.react.uimanager.JSPointerDispatcher;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
@@ -105,8 +106,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private boolean mShouldLogContentAppeared;
   private @Nullable JSTouchDispatcher mJSTouchDispatcher;
   private @Nullable JSPointerDispatcher mJSPointerDispatcher;
+  private @Nullable JSKeyDispatcher mJSKeyDispatcher;
   private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper =
-      new ReactAndroidHWInputDeviceHelper(this);
+      new ReactAndroidHWInputDeviceHelper();
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -205,10 +207,15 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
+    @Nullable ReactContext reactContext = getCurrentReactContext();
+    if (reactContext == null) {
+      return;
+    }
+
     EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+        UIManagerHelper.getEventDispatcher(reactContext, getUIManagerType());
     if (eventDispatcher != null) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher, reactContext);
       if (childView != null && mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
       }
@@ -328,7 +335,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to handle key event as the catalyst instance has not been attached");
       return super.dispatchKeyEvent(ev);
     }
-    mAndroidHWInputDeviceHelper.handleKeyEvent(ev);
+
+    ReactContext context = getCurrentReactContext();
+    if (context == null) {
+      return super.dispatchKeyEvent(ev);
+    }
+
+    mAndroidHWInputDeviceHelper.handleKeyEvent(ev, context);
+
+    // Dispatch during the capture phase before children handle the event as the focus could shift
+    dispatchJSKeyEvent(ev);
+
     return super.dispatchKeyEvent(ev);
   }
 
@@ -341,7 +358,21 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
       return;
     }
-    mAndroidHWInputDeviceHelper.clearFocus();
+    ReactContext context = getCurrentReactContext();
+    if (context != null) {
+      mAndroidHWInputDeviceHelper.clearFocus(context);
+
+      if (mJSKeyDispatcher != null && ReactNativeFeatureFlags.enableKeyEvents()) {
+        if (gainFocus) {
+          @Nullable View focusedChild = getFocusedChild();
+          if (focusedChild != null) {
+            mJSKeyDispatcher.setFocusedView(focusedChild.getId());
+          }
+        } else {
+          mJSKeyDispatcher.clearFocus();
+        }
+      }
+    }
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
   }
 
@@ -355,7 +386,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       super.requestChildFocus(child, focused);
       return;
     }
-    mAndroidHWInputDeviceHelper.onFocusChanged(focused);
+    ReactContext context = getCurrentReactContext();
+    if (context != null) {
+      mAndroidHWInputDeviceHelper.onFocusChanged(focused, context);
+
+      if (mJSKeyDispatcher != null && ReactNativeFeatureFlags.enableKeyEvents()) {
+        mJSKeyDispatcher.setFocusedView(focused.getId());
+      }
+    }
     super.requestChildFocus(child, focused);
   }
 
@@ -393,6 +431,31 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
     if (eventDispatcher != null) {
       mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher, getCurrentReactContext());
+    }
+  }
+
+  protected void dispatchJSKeyEvent(KeyEvent ev) {
+    if (!ReactNativeFeatureFlags.enableKeyEvents()) {
+      // Silently return early if key events are disabled
+      return;
+    }
+    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
+      FLog.w(
+          TAG, "Unable to dispatch key event to JS as the catalyst instance has not been attached");
+      return;
+    }
+    if (mJSKeyDispatcher == null) {
+      FLog.w(TAG, "Unable to dispatch key event to JS before the dispatcher is available");
+      return;
+    }
+    ReactContext context = getCurrentReactContext();
+    if (context != null) {
+      EventDispatcher eventDispatcher =
+          UIManagerHelper.getEventDispatcher(context, getUIManagerType());
+      int surfaceId = UIManagerHelper.getSurfaceId(context);
+      if (eventDispatcher != null) {
+        mJSKeyDispatcher.handleKeyEvent(ev, eventDispatcher, surfaceId);
+      }
     }
   }
 
@@ -554,6 +617,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return appProperties != null ? appProperties.getString("surfaceID") : null;
   }
 
+  @Override
   public AtomicInteger getState() {
     return mState;
   }
@@ -652,6 +716,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mJSPointerDispatcher = new JSPointerDispatcher(this);
     }
 
+    if (ReactNativeFeatureFlags.enableKeyEvents()) {
+      mJSKeyDispatcher = new JSKeyDispatcher();
+    }
+
     if (mRootViewEventListener != null) {
       mRootViewEventListener.onAttachedToReactInstance(this);
     }
@@ -729,6 +797,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     mJSTouchDispatcher = new JSTouchDispatcher(this);
     if (ReactFeatureFlags.dispatchPointerEvents) {
       mJSPointerDispatcher = new JSPointerDispatcher(this);
+    }
+    if (ReactNativeFeatureFlags.enableKeyEvents()) {
+      mJSKeyDispatcher = new JSKeyDispatcher();
     }
   }
 
@@ -869,7 +940,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     private int mDeviceRotation = 0;
 
     /* package */ CustomGlobalLayoutListener() {
-      DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext());
+      DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
       mVisibleViewArea = new Rect();
       mMinKeyboardHeightDetected = (int) PixelUtil.toPixelFromDIP(60);
     }
@@ -992,7 +1063,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         return;
       }
       mDeviceRotation = rotation;
-      DisplayMetricsHolder.initDisplayMetrics(getContext());
+      DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
       emitOrientationChanged(rotation);
     }
 

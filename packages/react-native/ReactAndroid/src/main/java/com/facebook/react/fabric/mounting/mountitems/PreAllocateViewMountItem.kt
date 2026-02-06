@@ -21,7 +21,7 @@ internal class PreAllocateViewMountItem(
     component: String,
     private val props: ReadableMap?,
     private val stateWrapper: StateWrapper?,
-    private val isLayoutable: Boolean
+    private val isLayoutable: Boolean,
 ) : MountItem {
   private val fabricComponentName = getFabricComponentName(component)
 
@@ -32,11 +32,17 @@ internal class PreAllocateViewMountItem(
     if (surfaceMountingManager == null) {
       FLog.e(
           FabricUIManager.TAG,
-          "Skipping View PreAllocation; no SurfaceMountingManager found for [$surfaceId]")
+          "Skipping View PreAllocation; no SurfaceMountingManager found for [$surfaceId]",
+      )
       return
     }
     surfaceMountingManager.preallocateView(
-        fabricComponentName, reactTag, props, stateWrapper, isLayoutable)
+        fabricComponentName,
+        reactTag,
+        props,
+        stateWrapper,
+        isLayoutable,
+    )
   }
 
   override fun toString(): String {

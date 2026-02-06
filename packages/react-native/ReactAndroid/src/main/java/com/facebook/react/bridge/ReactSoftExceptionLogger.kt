@@ -25,7 +25,8 @@ internal object ReactSoftExceptionLogger {
       RVG_ON_VIEW_REMOVED,
       CLIPPING_PROHIBITED_VIEW,
       SOFT_ASSERTIONS,
-      SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE)
+      SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+  )
   annotation class CategoryMode
 
   /** Constants that listeners can utilize for custom category-based behavior. */
@@ -44,24 +45,24 @@ internal object ReactSoftExceptionLogger {
   private val listeners: MutableList<ReactSoftExceptionListener> = CopyOnWriteArrayList()
 
   @JvmStatic
-  fun addListener(listener: ReactSoftExceptionListener): Unit {
+  fun addListener(listener: ReactSoftExceptionListener) {
     if (!listeners.contains(listener)) {
       listeners.add(listener)
     }
   }
 
   @JvmStatic
-  fun removeListener(listener: ReactSoftExceptionListener): Unit {
+  fun removeListener(listener: ReactSoftExceptionListener) {
     listeners.remove(listener)
   }
 
   @JvmStatic
-  fun logSoftExceptionVerbose(@CategoryMode category: String, cause: Throwable): Unit {
+  fun logSoftExceptionVerbose(@CategoryMode category: String, cause: Throwable) {
     logSoftException("${category}|${cause.javaClass.simpleName}:${cause.message}", cause)
   }
 
   @JvmStatic
-  fun logSoftException(@CategoryMode category: String, cause: Throwable): Unit {
+  fun logSoftException(@CategoryMode category: String, cause: Throwable) {
     if (listeners.isNotEmpty()) {
       for (listener in listeners) {
         listener.logSoftException(category, cause)

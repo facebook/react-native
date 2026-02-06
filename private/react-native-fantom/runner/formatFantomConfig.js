@@ -11,24 +11,73 @@
 import type {FeatureFlagValue} from '../../../packages/react-native/scripts/featureflags/types';
 import type {FantomTestConfig} from '../runner/getFantomTestConfigs';
 import type {HermesVariant} from '../runner/utils';
+import type {PartialFantomTestConfig} from './getFantomTestConfigs';
 
-import {
-  DEFAULT_FEATURE_FLAGS,
-  DEFAULT_HERMES_VARIANT,
-  DEFAULT_MODE,
-  FantomTestConfigHermesVariant,
-  FantomTestConfigMode,
-} from '../runner/getFantomTestConfigs';
+import {FantomTestConfigHermesVariant} from '../runner/getFantomTestConfigs';
+import {getOverrides} from './getFantomTestConfigs';
 
-function formatFantomMode(mode: FantomTestConfigMode): string {
-  switch (mode) {
-    case FantomTestConfigMode.DevelopmentWithSource:
-      return 'mode 🐛';
-    case FantomTestConfigMode.DevelopmentWithBytecode:
-      return 'mode 🐛🔢';
-    case FantomTestConfigMode.Optimized:
-      return 'mode 🚀';
+function formatModes(overrides: PartialFantomTestConfig) {
+  const parts = [];
+
+  if (
+    overrides.isNativeOptimized === false &&
+    overrides.isJsOptimized === false &&
+    overrides.isJsBytecode === false
+  ) {
+    return ['mode 🐛'];
+  } else if (
+    overrides.isNativeOptimized === true &&
+    overrides.isJsOptimized === true &&
+    overrides.isJsBytecode === true
+  ) {
+    return ['mode 🚀'];
   }
+
+  if (overrides.isNativeOptimized != null) {
+    parts.push(overrides.isNativeOptimized ? 'native 🚀' : 'native 🐛');
+  }
+
+  if (overrides.isJsOptimized != null) {
+    parts.push(overrides.isJsOptimized ? 'js 🚀' : 'js 🐛');
+  }
+
+  if (overrides.isJsBytecode != null && overrides.isJsBytecode) {
+    parts.push('bytecode');
+  }
+
+  return parts;
+}
+
+function formatModesShort(overrides: PartialFantomTestConfig) {
+  const parts = [];
+
+  if (
+    overrides.isNativeOptimized === false &&
+    overrides.isJsOptimized === false &&
+    overrides.isJsBytecode === false
+  ) {
+    return ['dev'];
+  } else if (
+    overrides.isNativeOptimized === true &&
+    overrides.isJsOptimized === true &&
+    overrides.isJsBytecode === true
+  ) {
+    return ['opt'];
+  }
+
+  if (overrides.isNativeOptimized != null) {
+    parts.push(overrides.isNativeOptimized ? 'native-opt' : 'native-dev');
+  }
+
+  if (overrides.isJsOptimized != null) {
+    parts.push(overrides.isJsOptimized ? 'js-opt' : 'js-dev');
+  }
+
+  if (overrides.isJsBytecode != null && overrides.isJsBytecode) {
+    parts.push('bytecode');
+  }
+
+  return parts;
 }
 
 function formatFantomHermesVariant(hermesVariant: HermesVariant): string {
@@ -37,8 +86,6 @@ function formatFantomHermesVariant(hermesVariant: HermesVariant): string {
       return 'hermes';
     case FantomTestConfigHermesVariant.StaticHermesStable:
       return 'shermes 🆕';
-    case FantomTestConfigHermesVariant.StaticHermesStaging:
-      return 'shermes ⏭️';
     case FantomTestConfigHermesVariant.StaticHermesExperimental:
       return 'shermes 🧪';
   }
@@ -55,26 +102,63 @@ function formatFantomFeatureFlag(
   return `🔐 ${flagName} = ${flagValue}`;
 }
 
-export default function formatFantomConfig(config: FantomTestConfig): string {
+function formatFantomConfigPretty(config: PartialFantomTestConfig): string {
   const parts = [];
 
-  if (config.mode !== DEFAULT_MODE) {
-    parts.push(formatFantomMode(config.mode));
-  }
+  parts.push(...formatModes(config));
 
-  if (config.hermesVariant !== DEFAULT_HERMES_VARIANT) {
+  if (config.hermesVariant) {
     parts.push(formatFantomHermesVariant(config.hermesVariant));
   }
 
-  for (const flagType of ['common', 'jsOnly', 'reactInternal'] as const) {
-    for (const [flagName, flagValue] of Object.entries(
-      config.flags[flagType],
-    )) {
-      if (flagValue !== DEFAULT_FEATURE_FLAGS[flagType][flagName]) {
-        parts.push(formatFantomFeatureFlag(flagName, flagValue));
+  if (config.flags) {
+    for (const flagType of ['common', 'jsOnly', 'reactInternal'] as const) {
+      if (config.flags[flagType]) {
+        for (const [flagName, flagValue] of Object.entries(
+          config.flags[flagType],
+        )) {
+          parts.push(formatFantomFeatureFlag(flagName, flagValue));
+        }
       }
     }
   }
 
   return parts.join(', ');
+}
+
+function formatFantomConfigShort(config: PartialFantomTestConfig): string {
+  const parts = [];
+
+  parts.push(...formatModesShort(config));
+
+  if (config.hermesVariant) {
+    parts.push((config.hermesVariant as string).toLocaleLowerCase());
+  }
+
+  if (config.flags) {
+    for (const flagType of ['common', 'jsOnly', 'reactInternal'] as const) {
+      if (config.flags[flagType]) {
+        for (const [flagName, flagValue] of Object.entries(
+          config.flags[flagType],
+        )) {
+          parts.push(`${flagName}[${String(flagValue)}]`);
+        }
+      }
+    }
+  }
+
+  return parts.join('-');
+}
+
+export default function formatFantomConfig(
+  config: FantomTestConfig,
+  options?: ?{style?: 'pretty' | 'short'},
+): string {
+  const overrides = getOverrides(config);
+
+  if (options?.style === 'short') {
+    return formatFantomConfigShort(overrides);
+  }
+
+  return formatFantomConfigPretty(overrides);
 }

@@ -16,7 +16,7 @@
 
 namespace facebook::react {
 
-ImageManager::ImageManager(const ContextContainer::Shared &contextContainer)
+ImageManager::ImageManager(const std::shared_ptr<const ContextContainer> &contextContainer)
 {
   id<RCTImageLoaderWithAttributionProtocol> imageLoader =
       (id<RCTImageLoaderWithAttributionProtocol>)unwrapManagedObject(
@@ -32,11 +32,6 @@ ImageManager::~ImageManager()
 {
   CFRelease(self_);
   self_ = nullptr;
-}
-
-ImageRequest ImageManager::requestImage(const ImageSource &imageSource, SurfaceId surfaceId) const
-{
-  return requestImage(imageSource, surfaceId, ImageRequestParams{}, {});
 }
 
 ImageRequest ImageManager::requestImage(

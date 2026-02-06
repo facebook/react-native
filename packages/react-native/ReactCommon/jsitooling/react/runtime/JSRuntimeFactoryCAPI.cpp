@@ -9,7 +9,7 @@
 #include "JSRuntimeFactory.h"
 
 void js_runtime_factory_destroy(JSRuntimeFactoryRef factory) {
-  if (factory) {
+  if (factory != nullptr) {
     delete static_cast<facebook::react::JSRuntimeFactory*>(factory);
   }
 }

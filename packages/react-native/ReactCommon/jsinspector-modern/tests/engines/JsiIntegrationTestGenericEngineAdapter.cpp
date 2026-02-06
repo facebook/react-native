@@ -10,8 +10,6 @@
 
 #include "JsiIntegrationTestGenericEngineAdapter.h"
 
-using facebook::hermes::makeHermesRuntime;
-
 namespace facebook::react::jsinspector_modern {
 
 JsiIntegrationTestGenericEngineAdapter::JsiIntegrationTestGenericEngineAdapter(
@@ -20,11 +18,6 @@ JsiIntegrationTestGenericEngineAdapter::JsiIntegrationTestGenericEngineAdapter(
       jsExecutor_{jsExecutor},
       runtimeTargetDelegate_{
           "Generic engine (" + runtime_->description() + ")"} {}
-
-/* static */ InspectorFlagOverrides
-JsiIntegrationTestGenericEngineAdapter::getInspectorFlagOverrides() noexcept {
-  return {};
-}
 
 RuntimeTargetDelegate&
 JsiIntegrationTestGenericEngineAdapter::getRuntimeTargetDelegate() {

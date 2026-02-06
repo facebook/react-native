@@ -14,6 +14,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <cxxreact/TraceSection.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
@@ -143,7 +144,7 @@ static void RCTPerformMountInstructions(
   RCTMountingTransactionObserverCoordinator _observerCoordinator;
   BOOL _transactionInFlight;
   BOOL _followUpTransactionRequired;
-  ContextContainer::Shared _contextContainer;
+  std::shared_ptr<const ContextContainer> _contextContainer;
 }
 
 - (instancetype)init
@@ -155,7 +156,7 @@ static void RCTPerformMountInstructions(
   return self;
 }
 
-- (void)setContextContainer:(ContextContainer::Shared)contextContainer
+- (void)setContextContainer:(std::shared_ptr<const ContextContainer>)contextContainer
 {
   _contextContainer = contextContainer;
 }
@@ -286,7 +287,6 @@ static void RCTPerformMountInstructions(
                       componentDescriptor:(const ComponentDescriptor &)componentDescriptor
 {
   RCTAssertMainQueue();
-  NSArray<NSString *> *propsKeysToBeUpdated = extractKeysFromFollyDynamic(props);
   bool updatesTransform = props.find("transform") != props.items().end();
   bool updatesOpacity = props.find("opacity") != props.items().end();
 
@@ -296,13 +296,18 @@ static void RCTPerformMountInstructions(
     return;
   }
 
+  NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];
+
+  if (!ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    NSArray<NSString *> *propsKeysToBeUpdated = extractKeysFromFollyDynamic(props);
+    propKeys = [propKeys setByAddingObjectsFromArray:propsKeysToBeUpdated];
+  }
+
   SurfaceId surfaceId = RCTSurfaceIdForView(componentView);
   Props::Shared oldProps = [componentView props];
   Props::Shared newProps = componentDescriptor.cloneProps(
-      PropsParserContext{surfaceId, *_contextContainer.get()}, oldProps, RawProps(std::move(props)));
+      PropsParserContext{surfaceId, *_contextContainer}, oldProps, RawProps(std::move(props)));
 
-  NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];
-  propKeys = [propKeys setByAddingObjectsFromArray:propsKeysToBeUpdated];
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   [componentView updateProps:newProps oldProps:oldProps];
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;

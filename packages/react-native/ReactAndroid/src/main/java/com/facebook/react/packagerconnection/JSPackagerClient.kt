@@ -21,7 +21,7 @@ public constructor(
     clientId: String,
     settings: PackagerConnectionSettings,
     private val requestHandlers: Map<String, RequestHandler>,
-    connectionCallback: ReconnectingWebSocket.ConnectionCallback? = null
+    connectionCallback: ReconnectingWebSocket.ConnectionCallback? = null,
 ) : MessageCallback {
   private val webSocket: ReconnectingWebSocket
 

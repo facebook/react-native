@@ -9,6 +9,7 @@
 
 namespace facebook::react {
 
-extern const char SafeAreaViewComponentName[] = "SafeAreaView";
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
+const char SafeAreaViewComponentName[] = "SafeAreaView";
 
 } // namespace facebook::react

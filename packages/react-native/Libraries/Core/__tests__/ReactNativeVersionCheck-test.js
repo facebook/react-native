@@ -22,17 +22,17 @@ describe('checkVersion', () => {
   });
 });
 
-function _setDevelopmentModeForTests(dev: mixed) {
+function _setDevelopmentModeForTests(dev: unknown) {
   let originalDev;
 
   beforeAll(() => {
     originalDev = global.__DEV__;
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.__DEV__ = dev;
   });
 
   afterAll(() => {
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.__DEV__ = originalDev;
   });
 }

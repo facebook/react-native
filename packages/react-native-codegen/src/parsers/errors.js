@@ -10,13 +10,12 @@
 
 'use strict';
 
-import type {UnionTypeAnnotationMemberType} from '../CodegenSchema';
 import type {Parser} from './parser';
 
 export type ParserType = 'Flow' | 'TypeScript';
 
 class ParserError extends Error {
-  nodes: $ReadOnlyArray<$FlowFixMe>;
+  nodes: ReadonlyArray<$FlowFixMe>;
   constructor(
     nativeModuleName: string,
     astNodeOrNodes: $FlowFixMe,
@@ -58,8 +57,8 @@ class ModuleInterfaceNotFoundParserError extends ParserError {
 class MoreThanOneModuleInterfaceParserError extends ParserError {
   constructor(
     nativeModuleName: string,
-    flowModuleInterfaces: $ReadOnlyArray<$FlowFixMe>,
-    names: $ReadOnlyArray<string>,
+    flowModuleInterfaces: ReadonlyArray<$FlowFixMe>,
+    names: ReadonlyArray<string>,
     language: ParserType,
   ) {
     const finalName = names[names.length - 1];
@@ -338,26 +337,6 @@ class UnsupportedEnumDeclarationParserError extends ParserError {
 }
 
 /**
- * Union parsing errors
- */
-
-class UnsupportedUnionTypeAnnotationParserError extends ParserError {
-  constructor(
-    nativeModuleName: string,
-    arrayElementTypeAST: $FlowFixMe,
-    types: UnionTypeAnnotationMemberType[],
-  ) {
-    super(
-      nativeModuleName,
-      arrayElementTypeAST,
-      `Union members must be of the same type, but multiple types were found ${types.join(
-        ', ',
-      )}'.`,
-    );
-  }
-}
-
-/**
  * Module parsing errors
  */
 
@@ -460,7 +439,6 @@ module.exports = {
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
-  UnsupportedUnionTypeAnnotationParserError,
   UnsupportedModuleEventEmitterTypePropertyParserError,
   UnsupportedModuleEventEmitterPropertyParserError,
   UnsupportedModulePropertyParserError,

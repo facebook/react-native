@@ -38,25 +38,26 @@ struct PerformanceMark : AbstractPerformanceEntry {
 };
 
 struct PerformanceMeasure : AbstractPerformanceEntry {
-  static constexpr PerformanceEntryType entryType =
-      PerformanceEntryType::MEASURE;
+  static constexpr PerformanceEntryType entryType = PerformanceEntryType::MEASURE;
 };
 
 struct PerformanceEventTiming : AbstractPerformanceEntry {
   static constexpr PerformanceEntryType entryType = PerformanceEntryType::EVENT;
   HighResTimeStamp processingStart;
   HighResTimeStamp processingEnd;
+  // Custom RN extension not exposed to JS for now.
+  // It's the same "taskEndTime" defined in the spec for the Event Loop:
+  // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
+  HighResTimeStamp taskEndTime;
   PerformanceEntryInteractionId interactionId;
 };
 
 struct PerformanceLongTaskTiming : AbstractPerformanceEntry {
-  static constexpr PerformanceEntryType entryType =
-      PerformanceEntryType::LONGTASK;
+  static constexpr PerformanceEntryType entryType = PerformanceEntryType::LONGTASK;
 };
 
 struct PerformanceResourceTiming : AbstractPerformanceEntry {
-  static constexpr PerformanceEntryType entryType =
-      PerformanceEntryType::RESOURCE;
+  static constexpr PerformanceEntryType entryType = PerformanceEntryType::RESOURCE;
   /** Aligns with `startTime`. */
   HighResTimeStamp fetchStart;
   HighResTimeStamp requestStart;
@@ -65,7 +66,10 @@ struct PerformanceResourceTiming : AbstractPerformanceEntry {
   std::optional<HighResTimeStamp> responseStart;
   /** Aligns with `duration`. */
   std::optional<HighResTimeStamp> responseEnd;
-  std::optional<int> responseStatus;
+  int responseStatus;
+  std::string contentType;
+  int encodedBodySize;
+  int decodedBodySize;
 };
 
 using PerformanceEntry = std::variant<
@@ -76,9 +80,10 @@ using PerformanceEntry = std::variant<
     PerformanceResourceTiming>;
 
 struct PerformanceEntrySorter {
-  bool operator()(const PerformanceEntry& lhs, const PerformanceEntry& rhs) {
+  bool operator()(const PerformanceEntry &lhs, const PerformanceEntry &rhs)
+  {
     return std::visit(
-        [](const auto& left, const auto& right) {
+        [](const auto &left, const auto &right) {
           if (left.startTime != right.startTime) {
             return left.startTime < right.startTime;
           }

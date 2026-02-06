@@ -22,6 +22,7 @@
 #import "RCTTextInputNativeCommands.h"
 #import "RCTTextInputUtils.h"
 
+#import <limits>
 #import "RCTFabricComponentsPlugins.h"
 
 /** Native iOS text field bottom keyboard offset amount */
@@ -31,8 +32,12 @@ using namespace facebook::react;
 
 @interface RCTTextInputComponentView () <
     RCTBackedTextInputDelegate,
-    RCTTextInputViewProtocol,
-    UIDropInteractionDelegate>
+    RCTTextInputViewProtocol
+#if !TARGET_OS_TV
+    ,
+    UIDropInteractionDelegate
+#endif
+    >
 @end
 
 static NSSet<NSNumber *> *returnKeyTypesSet;
@@ -210,11 +215,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _backedTextInputView.editable = newTextInputProps.traits.editable;
   }
 
+#if !TARGET_OS_TV
   if (newTextInputProps.multiline &&
       newTextInputProps.traits.dataDetectorTypes != oldTextInputProps.traits.dataDetectorTypes) {
     _backedTextInputView.dataDetectorTypes =
         RCTUITextViewDataDetectorTypesFromStringVector(newTextInputProps.traits.dataDetectorTypes);
   }
+#endif
 
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
       oldTextInputProps.traits.enablesReturnKeyAutomatically) {
@@ -377,6 +384,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
   _didMoveToWindow = NO;
+  _backedTextInputView.inputAccessoryViewID = nil;
+  _backedTextInputView.inputAccessoryView = nil;
+  _hasInputAccessoryView = false;
   [_backedTextInputView resignFirstResponder];
 }
 
@@ -447,7 +457,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     }
   }
 
-  if (props.maxLength) {
+  if (props.maxLength < std::numeric_limits<int>::max()) {
     NSInteger allowedLength = props.maxLength - _backedTextInputView.attributedText.string.length + range.length;
 
     if (allowedLength > 0 && text.length > allowedLength) {
@@ -661,6 +671,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   _hasInputAccessoryView = shouldHaveInputAccessoryView;
 
+#if !TARGET_OS_TV
   if (shouldHaveInputAccessoryView) {
     NSString *buttonLabel = inputAccessoryViewButtonLabel != nil ? inputAccessoryViewButtonLabel
                                                                  : [self returnKeyTypeToString:returnKeyType];
@@ -678,6 +689,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   } else {
     _backedTextInputView.inputAccessoryView = nil;
   }
+#endif
 
   if (_backedTextInputView.isFirstResponder) {
     [_backedTextInputView reloadInputViews];
@@ -730,7 +742,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
                                                   toPosition:selectedTextRange.start];
   NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                 toPosition:selectedTextRange.end];
-  return AttributedString::Range{(int)start, (int)(end - start)};
+  return AttributedString::Range{.location = (int)start, .length = (int)(end - start)};
 }
 
 - (void)_restoreTextSelection

@@ -37,13 +37,13 @@ class Screen {
 }
 
 function TestComponent(
-  props: $ReadOnly<{children: () => React.MixedElement}>,
+  props: Readonly<{children: () => React.MixedElement}>,
 ): React.Node {
   return props.children();
 }
 
 function id(instance: HostInstance | null): string | null {
-  // $FlowIgnore[prop-missing] - Intentional.
+  // $FlowFixMe[prop-missing] - Intentional.
   return instance?.props?.id ?? null;
 }
 
@@ -55,10 +55,12 @@ test('accepts a ref callback', () => {
     ledger.push({ref: id(current)});
   };
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}]);
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
@@ -85,10 +87,12 @@ test('accepts a ref callback that returns a cleanup function', () => {
     };
   };
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}]);
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
@@ -108,16 +112,18 @@ test('accepts a ref object', () => {
   const ledger: Array<{[string]: string | null}> = [];
 
   const ref = {
-    // $FlowIgnore[unsafe-getters-setters] - Intentional.
+    // $FlowFixMe[unsafe-getters-setters] - Intentional.
     set current(current: HostInstance | null) {
       ledger.push({ref: id(current)});
     },
   };
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}]);
 
+  // $FlowFixMe[react-rule-hook]
   screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
 
   expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
@@ -140,7 +146,7 @@ test('invokes refs in order', () => {
     ledger.push({refA: id(current)});
   };
   const refB = {
-    // $FlowIgnore[unsafe-getters-setters] - Intentional.
+    // $FlowFixMe[unsafe-getters-setters] - Intentional.
     set current(current: HostInstance | null) {
       ledger.push({refB: id(current)});
     },
@@ -149,13 +155,14 @@ test('invokes refs in order', () => {
     ledger.push({refC: id(current)});
   };
   const refD = {
-    // $FlowIgnore[unsafe-getters-setters] - Intentional.
+    // $FlowFixMe[unsafe-getters-setters] - Intentional.
     set current(current: HostInstance | null) {
       ledger.push({refD: id(current)});
     },
   };
 
   screen.render(() => (
+    // $FlowFixMe[react-rule-hook]
     <View id="foo" key="foo" ref={useMergeRefs(refA, refB, refC, refD)} />
   ));
 
@@ -194,6 +201,7 @@ test('invokes all refs if any ref changes', () => {
   };
 
   screen.render(() => (
+    // $FlowFixMe[react-rule-hook]
     <View id="foo" key="foo" ref={useMergeRefs(refA, refB)} />
   ));
 
@@ -202,6 +210,7 @@ test('invokes all refs if any ref changes', () => {
   };
 
   screen.render(() => (
+    // $FlowFixMe[react-rule-hook]
     <View id="foo" key="foo" ref={useMergeRefs(refAPrime, refB)} />
   ));
 

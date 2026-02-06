@@ -309,7 +309,6 @@ void AccessibilityProps::setProp(
 SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
   const auto& defaultProps = AccessibilityProps();
   return SharedDebugStringConvertibleList{
-      debugStringConvertibleItem("testID", testId, defaultProps.testId),
       debugStringConvertibleItem(
           "accessibilityRole",
           accessibilityRole,
@@ -320,6 +319,10 @@ SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
           "accessibilityActions",
           accessibilityActions,
           defaultProps.accessibilityActions),
+      debugStringConvertibleItem(
+          "accessibilityState",
+          accessibilityState,
+          defaultProps.accessibilityState),
       debugStringConvertibleItem(
           "accessibilityElementsHidden",
           accessibilityElementsHidden,
@@ -336,6 +339,11 @@ SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
           "accessibilityLiveRegion",
           accessibilityLiveRegion,
           defaultProps.accessibilityLiveRegion),
+      debugStringConvertibleItem(
+          "importantForAccessibility",
+          importantForAccessibility,
+          defaultProps.importantForAccessibility),
+      debugStringConvertibleItem("testID", testId, defaultProps.testId),
   };
 }
 #endif // RN_DEBUG_STRING_CONVERTIBLE

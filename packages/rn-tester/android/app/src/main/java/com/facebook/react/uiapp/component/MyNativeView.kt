@@ -44,17 +44,17 @@ internal class MyNativeView(context: ThemedReactContext) : View(context) {
 
   fun addOverlays(overlayColors: ReadableArray) {
     val numOverlays = overlayColors.size()
-    val width = getMeasuredWidth() / numOverlays
+    val width = measuredWidth / numOverlays
     for (i in 0 until numOverlays) {
       val drawable = ColorDrawable(Color.parseColor(overlayColors.getString(i)))
       val leftOffset = width * i
-      drawable.setBounds(leftOffset, 0, leftOffset + width, getMeasuredHeight())
-      getOverlay().add(drawable)
+      drawable.setBounds(leftOffset, 0, leftOffset + width, measuredHeight)
+      overlay.add(drawable)
     }
   }
 
   fun removeOverlays() {
-    getOverlay().clear()
+    overlay.clear()
   }
 
   private fun emitNativeEvent(color: Int) {
@@ -136,7 +136,7 @@ internal class MyNativeView(context: ThemedReactContext) : View(context) {
   inner class OnIntArrayChangedEvent(
       surfaceId: Int,
       viewId: Int,
-      private val payload: WritableMap
+      private val payload: WritableMap,
   ) : Event<OnIntArrayChangedEvent>(surfaceId, viewId) {
     override fun getEventName() = "topIntArrayChanged"
 

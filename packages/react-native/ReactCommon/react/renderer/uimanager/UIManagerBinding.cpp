@@ -277,8 +277,8 @@ jsi::Value UIManagerBinding::get(
           auto locationY = (Float)arguments[2].getNumber();
           auto onSuccessFunction =
               arguments[3].getObject(runtime).getFunction(runtime);
-          auto targetNode =
-              uiManager->findNodeAtPoint(node, Point{locationX, locationY});
+          auto targetNode = uiManager->findNodeAtPoint(
+              node, Point{.x = locationX, .y = locationY});
 
           if (!targetNode) {
             onSuccessFunction.call(runtime, jsi::Value::null());
@@ -511,7 +511,7 @@ jsi::Value UIManagerBinding::get(
               Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
                   runtime, arguments[1])
                   .get(),
-              {/* .includeTransform = */ false});
+              {/* .includeTransform = */ .includeTransform = false});
           auto frame = layoutMetrics.frame;
           auto result = jsi::Object(runtime);
           result.setProperty(runtime, "left", frame.origin.x);

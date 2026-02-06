@@ -38,11 +38,12 @@ function buildCommandSchemaInternal(
       firstParam.typeAnnotation != null &&
       firstParam.typeAnnotation.type === 'TSTypeReference' &&
       firstParam.typeAnnotation.typeName.left?.name === 'React' &&
-      firstParam.typeAnnotation.typeName.right?.name === 'ElementRef'
+      (firstParam.typeAnnotation.typeName.right?.name === 'ElementRef' ||
+        firstParam.typeAnnotation.typeName.right?.name === 'ComponentRef')
     )
   ) {
     throw new Error(
-      `The first argument of method ${name} must be of type React.ElementRef<>`,
+      `The first argument of method ${name} must be of type React.ElementRef<> or React.ComponentRef<>`,
     );
   }
 
@@ -76,6 +77,8 @@ function buildCommandSchemaInternal(
         break;
       case 'Array':
       case 'ReadOnlyArray':
+        /* $FlowFixMe[invalid-compare] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
         if (!paramValue.type === 'TSTypeReference') {
           throw new Error(
             'Array and ReadOnlyArray are TSTypeReference for array',
@@ -99,7 +102,7 @@ function buildCommandSchemaInternal(
         };
         break;
       default:
-        (type: mixed);
+        (type: unknown);
         throw new Error(
           `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
         );
@@ -126,7 +129,7 @@ function buildCommandSchemaInternal(
 }
 
 function getCommandArrayElementTypeType(
-  inputType: mixed,
+  inputType: unknown,
   parser: Parser,
 ): ComponentCommandArrayTypeAnnotation['elementType'] {
   // TODO: T172453752 support more complex type annotation for array element
@@ -202,10 +205,10 @@ function buildCommandSchema(
 }
 
 function getCommands(
-  commandTypeAST: $ReadOnlyArray<EventTypeAST>,
+  commandTypeAST: ReadonlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
   parser: Parser,
-): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
+): ReadonlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
     .filter(
       property =>

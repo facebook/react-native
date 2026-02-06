@@ -23,7 +23,7 @@ jest.mock('shelljs', () => ({exec: execMock}));
 jest.mock('../../shared/monorepoUtils', () => ({
   getPackages: getPackagesMock,
 }));
-// $FlowIgnore[cannot-write]
+// $FlowFixMe[cannot-write]
 global.fetch = fetchMock;
 
 const BUMP_COMMIT_MESSAGE =

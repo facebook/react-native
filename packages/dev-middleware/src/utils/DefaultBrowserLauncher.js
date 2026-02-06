@@ -8,6 +8,12 @@
  * @format
  */
 
+import type {DebuggerShellPreparationResult} from '../';
+
+const {
+  unstable_prepareDebuggerShell,
+  unstable_spawnDebuggerShellWithArgs,
+} = require('@react-native/debugger-shell');
 const {spawn} = require('child_process');
 const ChromeLauncher = require('chrome-launcher');
 const {Launcher: EdgeLauncher} = require('chromium-edge-launcher');
@@ -61,6 +67,22 @@ const DefaultBrowserLauncher = {
         }
       });
     });
+  },
+
+  async unstable_showFuseboxShell(
+    url: string,
+    windowKey: string,
+  ): Promise<void> {
+    return await unstable_spawnDebuggerShellWithArgs([
+      '--frontendUrl=' + url,
+      '--windowKey=' + windowKey,
+    ]);
+  },
+
+  async unstable_prepareFuseboxShell(
+    prebuiltBinaryPath?: ?string,
+  ): Promise<DebuggerShellPreparationResult> {
+    return await unstable_prepareDebuggerShell();
   },
 };
 

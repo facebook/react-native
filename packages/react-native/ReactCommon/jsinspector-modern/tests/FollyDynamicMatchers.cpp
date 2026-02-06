@@ -17,7 +17,7 @@ namespace facebook::folly_dynamic_matchers_utils {
 std::string as_string(std::string value) {
   return value;
 }
-std::string as_string(folly::dynamic value) {
+std::string as_string(const folly::dynamic& value) {
   return value.asString();
 }
 

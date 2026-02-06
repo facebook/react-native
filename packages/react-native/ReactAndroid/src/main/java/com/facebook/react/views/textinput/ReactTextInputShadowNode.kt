@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.textinput
 
 import android.annotation.SuppressLint
@@ -37,6 +39,10 @@ import com.facebook.yoga.YogaNode
 
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @LegacyArchitectureShadowNodeWithCxxImpl
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal class ReactTextInputShadowNode
 @JvmOverloads
 constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) :
@@ -61,7 +67,7 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
     }
 
   init {
-    mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
+    textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
     setMeasureFunction(this)
   }
 
@@ -92,7 +98,9 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
     // setting the layoutParams fixes it: https://code.google.com/p/android/issues/detail?id=75877
     internalEditText?.layoutParams =
         ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+        )
   }
 
   override fun measure(
@@ -100,7 +108,7 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
       width: Float,
       widthMode: YogaMeasureMode,
       height: Float,
-      heightMode: YogaMeasureMode
+      heightMode: YogaMeasureMode,
   ): Long {
     // measure() should never be called before setThemedContext()
     val editText = checkNotNull(internalEditText)
@@ -108,15 +116,15 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
     if (localData != null) {
       localData?.apply(editText)
     } else {
-      editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.effectiveFontSize.toFloat())
+      editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textAttributes.effectiveFontSize.toFloat())
 
-      if (mNumberOfLines != ReactConstants.UNSET) {
-        editText.setLines(mNumberOfLines)
+      if (numberOfLines != ReactConstants.UNSET) {
+        editText.setLines(numberOfLines)
       }
 
       @SuppressLint("WrongConstant")
-      if (editText.breakStrategy != mTextBreakStrategy) {
-        editText.breakStrategy = mTextBreakStrategy
+      if (editText.breakStrategy != textBreakStrategy) {
+        editText.breakStrategy = textBreakStrategy
       }
     }
 
@@ -150,12 +158,12 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
   override fun setTextBreakStrategy(textBreakStrategy: String?) {
     when (textBreakStrategy) {
       null,
-      "simple" -> mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE
-      "highQuality" -> mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
-      "balanced" -> mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED
+      "simple" -> this.textBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE
+      "highQuality" -> this.textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
+      "balanced" -> this.textBreakStrategy = Layout.BREAK_STRATEGY_BALANCED
       else -> {
         FLog.w(ReactConstants.TAG, "Invalid textBreakStrategy: $textBreakStrategy")
-        mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE
+        this.textBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE
       }
     }
   }
@@ -170,17 +178,18 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
                   this,
                   text, /* supportsInlineViews: */
                   false, /* nativeViewHierarchyOptimizer: */
-                  null // only needed to support inline views
-                  ),
+                  null, // only needed to support inline views
+              ),
               mostRecentEventCount,
-              mContainsImages,
+              containsImages,
               getPadding(Spacing.LEFT),
               getPadding(Spacing.TOP),
               getPadding(Spacing.RIGHT),
               getPadding(Spacing.BOTTOM),
-              mTextAlign,
-              mTextBreakStrategy,
-              mJustificationMode)
+              textAlign,
+              textBreakStrategy,
+              justificationMode,
+          )
       uiViewOperationQueue.enqueueUpdateExtraData(reactTag, reactTextUpdate)
     }
   }
@@ -211,7 +220,9 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ReactTextInputShadowNode", LegacyArchitectureLogLevel.ERROR)
+          "ReactTextInputShadowNode",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

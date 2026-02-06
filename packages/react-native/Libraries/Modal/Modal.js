@@ -59,7 +59,7 @@ const ModalEventEmitter =
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-type OrientationChangeEvent = $ReadOnly<{
+type OrientationChangeEvent = Readonly<{
   orientation: 'portrait' | 'landscape',
 }>;
 
@@ -125,7 +125,7 @@ export type ModalPropsIOS = {
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    * On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field.
    */
-  supportedOrientations?: ?$ReadOnlyArray<
+  supportedOrientations?: ?ReadonlyArray<
     | 'portrait'
     | 'portrait-upside-down'
     | 'landscape'
@@ -292,7 +292,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
       backgroundColor:
         this.props.transparent === true
           ? 'transparent'
-          : this.props.backdropColor ?? 'white',
+          : (this.props.backdropColor ?? 'white'),
     };
 
     let animationType = this.props.animationType || 'none';
@@ -370,20 +370,20 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
   },
-  /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+  /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
    * https://fburl.com/workplace/6291gfvu */
   container: {
     /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb) This
      * comment suppresses an error found when Flow v0.111 was deployed. To see
      * the error, delete this comment and run Flow. */
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     [side]: 0,
     top: 0,
     flex: 1,
   },
 });
 
-type ModalRefProps = $ReadOnly<{
+type ModalRefProps = Readonly<{
   ref?: React.RefSetter<PublicModalInstance>,
 }>;
 

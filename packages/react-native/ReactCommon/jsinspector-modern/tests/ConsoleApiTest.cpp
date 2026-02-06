@@ -58,7 +58,7 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
         onMessage(
             JsonParsed(AllOf(AtJsonPtr("/method", "Debugger.scriptParsed")))))
         .Times(AnyNumber())
-        .WillRepeatedly(Invoke<>([this](std::string message) {
+        .WillRepeatedly(Invoke<>([this](const std::string& message) {
           auto params = folly::parseJson(message);
           // Store the script ID and URL for later use.
           scriptUrlsById_.emplace(
@@ -90,11 +90,13 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
    * Expect a console API call to be reported with parameters matching \param
    * paramsMatcher.
    */
-  void expectConsoleApiCall(Matcher<folly::dynamic> paramsMatcher) {
+  void expectConsoleApiCall(
+      Matcher<folly::dynamic> paramsMatcher,
+      std::source_location location = std::source_location::current()) {
     if (runtimeEnabled_) {
-      expectConsoleApiCallImpl(std::move(paramsMatcher));
+      expectConsoleApiCallImpl(std::move(paramsMatcher), location);
     } else {
-      expectedConsoleApiCalls_.emplace_back(paramsMatcher);
+      expectedConsoleApiCalls_.emplace_back(paramsMatcher, location);
     }
   }
 
@@ -103,9 +105,11 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
    * paramsMatcher, only if the Runtime domain is currently enabled ( = the call
    * is reported in real time).
    */
-  void expectConsoleApiCallImmediate(Matcher<folly::dynamic> paramsMatcher) {
+  void expectConsoleApiCallImmediate(
+      Matcher<folly::dynamic> paramsMatcher,
+      std::source_location location = std::source_location::current()) {
     if (runtimeEnabled_) {
-      expectConsoleApiCallImpl(std::move(paramsMatcher));
+      expectConsoleApiCallImpl(std::move(paramsMatcher), location);
     }
   }
 
@@ -114,9 +118,11 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
    * paramsMatcher, only if the Runtime domain is currently disabled ( = the
    * call will be buffered and reported later upon enabling the domain).
    */
-  void expectConsoleApiCallBuffered(Matcher<folly::dynamic> paramsMatcher) {
+  void expectConsoleApiCallBuffered(
+      const Matcher<folly::dynamic>& paramsMatcher,
+      std::source_location location = std::source_location::current()) {
     if (!runtimeEnabled_) {
-      expectedConsoleApiCalls_.emplace_back(paramsMatcher);
+      expectedConsoleApiCalls_.emplace_back(paramsMatcher, location);
     }
   }
 
@@ -136,7 +142,7 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
   }
 
  private:
-  std::optional<std::string> getScriptUrlById(std::string scriptId) {
+  std::optional<std::string> getScriptUrlById(const std::string& scriptId) {
     auto it = scriptUrlsById_.find(scriptId);
     if (it == scriptUrlsById_.end()) {
       return std::nullopt;
@@ -144,10 +150,14 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
     return it->second;
   }
 
-  void expectConsoleApiCallImpl(Matcher<folly::dynamic> paramsMatcher) {
-    this->expectMessageFromPage(JsonParsed(AllOf(
-        AtJsonPtr("/method", "Runtime.consoleAPICalled"),
-        AtJsonPtr("/params", std::move(paramsMatcher)))));
+  void expectConsoleApiCallImpl(
+      Matcher<folly::dynamic> paramsMatcher,
+      std::source_location location) {
+    this->expectMessageFromPage(
+        JsonParsed(AllOf(
+            AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+            AtJsonPtr("/params", std::move(paramsMatcher)))),
+        location);
   }
 
   void enableRuntimeDomain() {
@@ -155,8 +165,8 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
     auto executionContextInfo = this->expectMessageFromPage(JsonParsed(
         AllOf(AtJsonPtr("/method", "Runtime.executionContextCreated"))));
     if (!runtimeEnabled_) {
-      for (auto& call : expectedConsoleApiCalls_) {
-        expectConsoleApiCallImpl(call);
+      for (auto& [call, location] : expectedConsoleApiCalls_) {
+        expectConsoleApiCallImpl(call, location);
       }
       expectedConsoleApiCalls_.clear();
     }
@@ -199,7 +209,8 @@ class ConsoleApiTest : public JsiIntegrationPortableTestBase<
     }
   }
 
-  std::vector<Matcher<folly::dynamic>> expectedConsoleApiCalls_;
+  std::vector<std::pair<Matcher<folly::dynamic>, std::source_location>>
+      expectedConsoleApiCalls_;
   bool runtimeEnabled_{false};
   std::unordered_map<std::string, std::string> scriptUrlsById_;
 };

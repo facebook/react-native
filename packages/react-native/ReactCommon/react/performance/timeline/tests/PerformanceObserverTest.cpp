@@ -96,6 +96,7 @@ TEST(PerformanceObserver, PerformanceObserverTestFilterMulti) {
       HighResDuration::fromMilliseconds(10),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
   reporter->reportEvent(
       "test2",
@@ -103,11 +104,13 @@ TEST(PerformanceObserver, PerformanceObserverTestFilterMulti) {
       HighResDuration::fromMilliseconds(10),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
   reporter->reportEvent(
       "test3",
       timeOrigin + HighResDuration::fromMilliseconds(10),
       HighResDuration::fromMilliseconds(10),
+      timeOrigin,
       timeOrigin,
       timeOrigin,
       0);
@@ -155,6 +158,7 @@ TEST(PerformanceObserver, PerformanceObserverTestFilterMultiCallbackNotCalled) {
       HighResDuration::fromMilliseconds(10),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
   reporter->reportEvent(
       "test2",
@@ -162,11 +166,13 @@ TEST(PerformanceObserver, PerformanceObserverTestFilterMultiCallbackNotCalled) {
       HighResDuration::fromMilliseconds(10),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
   reporter->reportEvent(
       "off3",
       timeOrigin + HighResDuration::fromMilliseconds(10),
       HighResDuration::fromMilliseconds(10),
+      timeOrigin,
       timeOrigin,
       timeOrigin,
       0);
@@ -190,7 +196,8 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveTakeRecords) {
   reporter->reportMeasure(
       "off",
       timeOrigin + HighResDuration::fromMilliseconds(10),
-      HighResDuration::fromMilliseconds(20));
+      HighResDuration::fromMilliseconds(20),
+      std::nullopt);
   reporter->reportMark(
       "test2", timeOrigin + HighResDuration::fromMilliseconds(20));
   reporter->reportMark(
@@ -230,6 +237,7 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveDurationThreshold) {
       HighResDuration::fromMilliseconds(50),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
   reporter->reportEvent(
       "test2",
@@ -237,11 +245,13 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveDurationThreshold) {
       HighResDuration::fromMilliseconds(100),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
   reporter->reportEvent(
       "off1",
       timeOrigin,
       HighResDuration::fromMilliseconds(40),
+      timeOrigin,
       timeOrigin,
       timeOrigin,
       0);
@@ -253,6 +263,7 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveDurationThreshold) {
       HighResDuration::fromMilliseconds(60),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
 
   const std::vector<PerformanceEntry> expected = {
@@ -262,6 +273,7 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveDurationThreshold) {
            .duration = HighResDuration::fromMilliseconds(50)},
           timeOrigin,
           timeOrigin,
+          timeOrigin,
           0},
       PerformanceEventTiming{
           {.name = "test2",
@@ -269,11 +281,13 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveDurationThreshold) {
            .duration = HighResDuration::fromMilliseconds(100)},
           timeOrigin,
           timeOrigin,
+          timeOrigin,
           0},
       PerformanceEventTiming{
           {.name = "test3",
            .startTime = timeOrigin,
            .duration = HighResDuration::fromMilliseconds(60)},
+          timeOrigin,
           timeOrigin,
           timeOrigin,
           0},
@@ -295,11 +309,13 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveBuffered) {
       HighResDuration::fromMilliseconds(50),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
   reporter->reportEvent(
       "test2",
       timeOrigin,
       HighResDuration::fromMilliseconds(100),
+      timeOrigin,
       timeOrigin,
       timeOrigin,
       0);
@@ -309,11 +325,13 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveBuffered) {
       HighResDuration::fromMilliseconds(40),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
   reporter->reportEvent(
       "test4",
       timeOrigin,
       HighResDuration::fromMilliseconds(100),
+      timeOrigin,
       timeOrigin,
       timeOrigin,
       0);
@@ -332,6 +350,7 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveBuffered) {
            .duration = HighResDuration::fromMilliseconds(50)},
           timeOrigin,
           timeOrigin,
+          timeOrigin,
           0},
       PerformanceEventTiming{
           {.name = "test2",
@@ -339,11 +358,13 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveBuffered) {
            .duration = HighResDuration::fromMilliseconds(100)},
           timeOrigin,
           timeOrigin,
+          timeOrigin,
           0},
       PerformanceEventTiming{
           {.name = "test4",
            .startTime = timeOrigin,
            .duration = HighResDuration::fromMilliseconds(100)},
+          timeOrigin,
           timeOrigin,
           timeOrigin,
           0},
@@ -371,11 +392,15 @@ TEST(PerformanceObserver, PerformanceObserverTestMultiple) {
       {.durationThreshold = HighResDuration::fromMilliseconds(80)});
 
   reporter->reportMeasure(
-      "measure", timeOrigin, HighResDuration::fromMilliseconds(50));
+      "measure",
+      timeOrigin,
+      HighResDuration::fromMilliseconds(50),
+      std::nullopt);
   reporter->reportEvent(
       "event1",
       timeOrigin,
       HighResDuration::fromMilliseconds(100),
+      timeOrigin,
       timeOrigin,
       timeOrigin,
       0);
@@ -383,6 +408,7 @@ TEST(PerformanceObserver, PerformanceObserverTestMultiple) {
       "event2",
       timeOrigin,
       HighResDuration::fromMilliseconds(40),
+      timeOrigin,
       timeOrigin,
       timeOrigin,
       0);
@@ -394,6 +420,7 @@ TEST(PerformanceObserver, PerformanceObserverTestMultiple) {
       HighResDuration::fromMilliseconds(60),
       timeOrigin,
       timeOrigin,
+      timeOrigin,
       0);
 
   const std::vector<PerformanceEntry> expected1 = {
@@ -403,11 +430,13 @@ TEST(PerformanceObserver, PerformanceObserverTestMultiple) {
            .duration = HighResDuration::fromMilliseconds(100)},
           timeOrigin,
           timeOrigin,
+          timeOrigin,
           0},
       PerformanceEventTiming{
           {.name = "event3",
            .startTime = timeOrigin,
            .duration = HighResDuration::fromMilliseconds(60)},
+          timeOrigin,
           timeOrigin,
           timeOrigin,
           0},
@@ -418,6 +447,7 @@ TEST(PerformanceObserver, PerformanceObserverTestMultiple) {
           {.name = "event1",
            .startTime = timeOrigin,
            .duration = HighResDuration::fromMilliseconds(100)},
+          timeOrigin,
           timeOrigin,
           timeOrigin,
           0},

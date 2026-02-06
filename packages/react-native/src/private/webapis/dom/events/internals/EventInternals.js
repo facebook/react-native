@@ -43,14 +43,14 @@ export function setCurrentTarget(
   event[CURRENT_TARGET_KEY] = currentTarget;
 }
 
-export function getComposedPath(event: Event): $ReadOnlyArray<EventTarget> {
+export function getComposedPath(event: Event): ReadonlyArray<EventTarget> {
   // $FlowExpectedError[prop-missing]
   return event[COMPOSED_PATH_KEY];
 }
 
 export function setComposedPath(
   event: Event,
-  composedPath: $ReadOnlyArray<EventTarget>,
+  composedPath: ReadonlyArray<EventTarget>,
 ): void {
   // $FlowExpectedError[prop-missing]
   event[COMPOSED_PATH_KEY] = composedPath;

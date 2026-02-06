@@ -19,7 +19,7 @@ import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   frame: StackFrame,
   onPress?: ?(event: GestureResponderEvent) => void,
 }>;

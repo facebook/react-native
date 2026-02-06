@@ -15,7 +15,7 @@ import {createElement} from 'react';
 
 export default class View extends React.Component<ViewProps> {
   render(): React.Node {
-    // $FlowIgnore[not-a-function]
+    // $FlowFixMe[not-a-function]
     return createElement('View', this.props, this.props.children);
   }
 }

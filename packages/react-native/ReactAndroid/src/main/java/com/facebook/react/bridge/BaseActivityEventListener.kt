@@ -15,14 +15,15 @@ public open class BaseActivityEventListener : ActivityEventListener {
   @Suppress("UNUSED_PARAMETER")
   @Deprecated(
       "Use onActivityResult(Activity, Int, Int, Intent) instead.",
-      ReplaceWith("onActivityResult(activity, requestCode, resultCode, data)"))
+      ReplaceWith("onActivityResult(activity, requestCode, resultCode, data)"),
+  )
   public open fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = Unit
 
   public override fun onActivityResult(
       activity: Activity,
       requestCode: Int,
       resultCode: Int,
-      data: Intent?
+      data: Intent?,
   ): Unit = Unit
 
   public override fun onNewIntent(intent: Intent): Unit = Unit

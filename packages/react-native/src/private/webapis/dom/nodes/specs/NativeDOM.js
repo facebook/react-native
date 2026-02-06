@@ -13,9 +13,7 @@ import type {Node as ShadowNode} from '../../../../../../Libraries/Renderer/shim
 import type {TurboModule} from '../../../../../../Libraries/TurboModule/RCTExport';
 import type {InstanceHandle} from '../internals/NodeInternals';
 
-import {getFabricUIManager} from '../../../../../../Libraries/ReactNative/FabricUIManager';
 import * as TurboModuleRegistry from '../../../../../../Libraries/TurboModule/TurboModuleRegistry';
-import nullthrows from 'nullthrows';
 
 export opaque type NativeElementReference = ShadowNode;
 export opaque type NativeTextReference = ShadowNode;
@@ -54,20 +52,25 @@ export interface Spec extends TurboModule {
    */
 
   +compareDocumentPosition: (
-    nativeNodeReference: mixed /* NativeNodeReference */,
-    otherNativeNodeReference: mixed /* NativeNodeReference */,
+    nativeNodeReference: unknown /* NativeNodeReference */,
+    otherNativeNodeReference: unknown /* NativeNodeReference */,
   ) => number;
 
   +getChildNodes: (
-    nativeNodeReference: mixed /* NativeNodeReference */,
-  ) => $ReadOnlyArray<mixed> /* $ReadOnlyArray<InstanceHandle> */;
+    nativeNodeReference: unknown /* NativeNodeReference */,
+  ) => ReadonlyArray<unknown> /* $ReadOnlyArray<InstanceHandle> */;
+
+  +getElementById?: (
+    nativeNodeReference: unknown /* NativeNodeReference */,
+    id: string,
+  ) => unknown /* ?InstanceHandle */;
 
   +getParentNode: (
-    nativeNodeReference: mixed /* NativeNodeReference */,
-  ) => mixed /* ?InstanceHandle */;
+    nativeNodeReference: unknown /* NativeNodeReference */,
+  ) => unknown /* ?InstanceHandle */;
 
   +isConnected: (
-    nativeNodeReference: mixed /* NativeNodeReference */,
+    nativeNodeReference: unknown /* NativeNodeReference */,
   ) => boolean;
 
   /*
@@ -75,46 +78,46 @@ export interface Spec extends TurboModule {
    */
 
   +getBorderWidth: (
-    nativeElementReference: mixed /* NativeElementReference */,
-  ) => $ReadOnlyArray<number> /* [topWidth: number, rightWidth: number, bottomWidth: number, leftWidth: number] */;
+    nativeElementReference: unknown /* NativeElementReference */,
+  ) => ReadonlyArray<number> /* [topWidth: number, rightWidth: number, bottomWidth: number, leftWidth: number] */;
 
   +getBoundingClientRect: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
     includeTransform: boolean,
-  ) => $ReadOnlyArray<number> /* [x: number, y: number, width: number, height: number] */;
+  ) => ReadonlyArray<number> /* [x: number, y: number, width: number, height: number] */;
 
   +getInnerSize: (
-    nativeElementReference: mixed /* NativeElementReference */,
-  ) => $ReadOnlyArray<number> /* [width: number, height: number] */;
+    nativeElementReference: unknown /* NativeElementReference */,
+  ) => ReadonlyArray<number> /* [width: number, height: number] */;
 
   +getScrollPosition: (
-    nativeElementReference: mixed /* NativeElementReference */,
-  ) => $ReadOnlyArray<number> /* [scrollLeft: number, scrollTop: number] */;
+    nativeElementReference: unknown /* NativeElementReference */,
+  ) => ReadonlyArray<number> /* [scrollLeft: number, scrollTop: number] */;
 
   +getScrollSize: (
-    nativeElementReference: mixed /* NativeElementReference */,
-  ) => $ReadOnlyArray<number> /* [scrollWidth: number, scrollHeight: number] */;
+    nativeElementReference: unknown /* NativeElementReference */,
+  ) => ReadonlyArray<number> /* [scrollWidth: number, scrollHeight: number] */;
 
   +getTagName: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
   ) => string;
 
   +getTextContent: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
   ) => string;
 
   +hasPointerCapture: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
     pointerId: number,
   ) => boolean;
 
   +releasePointerCapture: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
     pointerId: number,
   ) => void;
 
   +setPointerCapture: (
-    nativeElementReference: mixed /* NativeElementReference */,
+    nativeElementReference: unknown /* NativeElementReference */,
     pointerId: number,
   ) => void;
 
@@ -123,8 +126,8 @@ export interface Spec extends TurboModule {
    */
 
   +getOffset: (
-    nativeElementReference: mixed /* NativeElementReference */,
-  ) => $ReadOnlyArray<mixed> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
+    nativeElementReference: unknown /* NativeElementReference */,
+  ) => ReadonlyArray<unknown> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
 
   /*
    * Special methods to handle the root node.
@@ -132,26 +135,26 @@ export interface Spec extends TurboModule {
 
   +linkRootNode?: (
     rootTag: number /* RootTag */,
-    instanceHandle: mixed /* InstanceHandle */,
-  ) => mixed /* ?NativeElementReference */;
+    instanceHandle: unknown /* InstanceHandle */,
+  ) => unknown /* ?NativeElementReference */;
 
   /**
    * Legacy layout APIs (for `ReactNativeElement`).
    */
 
   +measure: (
-    nativeElementReference: mixed,
+    nativeElementReference: unknown,
     callback: MeasureOnSuccessCallback,
   ) => void;
 
   +measureInWindow: (
-    nativeElementReference: mixed,
+    nativeElementReference: unknown,
     callback: MeasureInWindowOnSuccessCallback,
   ) => void;
 
   +measureLayout: (
-    nativeElementReference: mixed,
-    relativeNode: mixed,
+    nativeElementReference: unknown,
+    relativeNode: unknown,
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void;
@@ -160,16 +163,10 @@ export interface Spec extends TurboModule {
    * Legacy direct manipulation APIs (for `ReactNativeElement`).
    */
 
-  +setNativeProps?: (
-    nativeElementReference: mixed,
-    updatePayload: mixed,
+  +setNativeProps: (
+    nativeElementReference: unknown,
+    updatePayload: unknown,
   ) => void;
-}
-
-const RawNativeDOM = (TurboModuleRegistry.get<Spec>('NativeDOMCxx'): ?Spec);
-
-export function getRawNativeDOMForTests(): ?Spec {
-  return RawNativeDOM;
 }
 
 // This is the actual interface of this module, but the native module codegen
@@ -202,7 +199,16 @@ export interface RefinedSpec {
    */
   +getChildNodes: (
     nativeNodeReference: NativeNodeReference,
-  ) => $ReadOnlyArray<InstanceHandle>;
+  ) => ReadonlyArray<InstanceHandle>;
+
+  /**
+   * This is a React Native implementation of `Document.prototype.getElementById`
+   * (see https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById).
+   *
+   * If the document is active and contains an element with the given ID, it
+   * returns the instance handle of that element. Otherwise, it returns `null`.
+   */
+  +getElementById: (rootTag: RootTag, id: string) => ?InstanceHandle;
 
   /**
    * This is a React Native implementation of `Node.prototype.parentNode`
@@ -241,7 +247,7 @@ export interface RefinedSpec {
    */
   +getBorderWidth: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<
+  ) => Readonly<
     [
       /* topWidth: */ number,
       /* rightWidth: */ number,
@@ -264,7 +270,7 @@ export interface RefinedSpec {
   +getBoundingClientRect: (
     nativeElementReference: NativeElementReference,
     includeTransform: boolean,
-  ) => $ReadOnly<
+  ) => Readonly<
     [
       /* x: */ number,
       /* y: */ number,
@@ -287,7 +293,7 @@ export interface RefinedSpec {
    */
   +getInnerSize: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<[/* width: */ number, /* height: */ number]>;
+  ) => Readonly<[/* width: */ number, /* height: */ number]>;
 
   /**
    * This is a method to access scroll information for a shadow node, to
@@ -302,7 +308,7 @@ export interface RefinedSpec {
    */
   +getScrollPosition: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>;
+  ) => Readonly<[/* scrollLeft: */ number, /* scrollTop: */ number]>;
 
   /**
    *
@@ -318,7 +324,7 @@ export interface RefinedSpec {
    */
   +getScrollSize: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>;
+  ) => Readonly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>;
 
   /**
    * This is a method to access the normalized tag name of a shadow node, to
@@ -371,7 +377,7 @@ export interface RefinedSpec {
    */
   +getOffset: (
     nativeElementReference: NativeElementReference,
-  ) => $ReadOnly<
+  ) => Readonly<
     [
       /* offsetParent: */ ?InstanceHandle,
       /* top: */ number,
@@ -432,186 +438,14 @@ export interface RefinedSpec {
   ) => void;
 }
 
-const NativeDOM: RefinedSpec = {
-  /*
-   * Methods from the `Node` interface (for `ReadOnlyNode`).
-   */
-
-  compareDocumentPosition(nativeNodeReference, otherNativeNodeReference) {
-    return nullthrows(RawNativeDOM).compareDocumentPosition(
-      nativeNodeReference,
-      otherNativeNodeReference,
-    );
-  },
-
-  getChildNodes(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getChildNodes(
-      nativeNodeReference,
-    ): $ReadOnlyArray<InstanceHandle>);
-  },
-
-  getParentNode(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getParentNode(
-      nativeNodeReference,
-    ): ?InstanceHandle);
-  },
-
-  isConnected(nativeNodeReference) {
-    return nullthrows(RawNativeDOM).isConnected(nativeNodeReference);
-  },
-
-  /*
-   * Methods from the `Element` interface (for `ReactNativeElement`).
-   */
-
-  getBorderWidth(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getBorderWidth(
-      nativeNodeReference,
-    ): $ReadOnly<
-      [
-        /* topWidth: */ number,
-        /* rightWidth: */ number,
-        /* bottomWidth: */ number,
-        /* leftWidth: */ number,
-      ],
-    >);
-  },
-
-  getBoundingClientRect(nativeNodeReference, includeTransform: boolean) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getBoundingClientRect(
-      nativeNodeReference,
-      includeTransform,
-    ): $ReadOnly<
-      [
-        /* x: */ number,
-        /* y: */ number,
-        /* width: */ number,
-        /* height: */ number,
-      ],
-    >);
-  },
-
-  getInnerSize(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getInnerSize(
-      nativeNodeReference,
-    ): $ReadOnly<[/* width: */ number, /* height: */ number]>);
-  },
-
-  getScrollPosition(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getScrollPosition(
-      nativeNodeReference,
-    ): $ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>);
-  },
-
-  getScrollSize(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getScrollSize(
-      nativeNodeReference,
-    ): $ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>);
-  },
-
-  getTagName(nativeNodeReference) {
-    return nullthrows(RawNativeDOM).getTagName(nativeNodeReference);
-  },
-
-  getTextContent(nativeNodeReference) {
-    return nullthrows(RawNativeDOM).getTextContent(nativeNodeReference);
-  },
-
-  hasPointerCapture(nativeNodeReference, pointerId) {
-    return nullthrows(RawNativeDOM).hasPointerCapture(
-      nativeNodeReference,
-      pointerId,
-    );
-  },
-
-  releasePointerCapture(nativeNodeReference, pointerId) {
-    return nullthrows(RawNativeDOM).releasePointerCapture(
-      nativeNodeReference,
-      pointerId,
-    );
-  },
-
-  setPointerCapture(nativeNodeReference, pointerId) {
-    return nullthrows(RawNativeDOM).setPointerCapture(
-      nativeNodeReference,
-      pointerId,
-    );
-  },
-
-  /*
-   * Methods from the `HTMLElement` interface (for `ReactNativeElement`).
-   */
-
-  getOffset(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getOffset(nativeNodeReference): $ReadOnly<
-      [
-        /* offsetParent: */ ?InstanceHandle,
-        /* top: */ number,
-        /* left: */ number,
-      ],
-    >);
-  },
-
-  /*
-   * Special methods to handle the root node.
-   */
-
-  linkRootNode(rootTag, instanceHandle) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM?.linkRootNode)(
-      // $FlowExpectedError[incompatible-call]
-      rootTag,
-      instanceHandle,
-    ): ?NativeElementReference);
-  },
-
-  /**
-   * Legacy layout APIs
-   */
-
-  measure(nativeNodeReference, callback) {
-    return nullthrows(RawNativeDOM).measure(nativeNodeReference, callback);
-  },
-
-  measureInWindow(nativeNodeReference, callback) {
-    return nullthrows(RawNativeDOM).measureInWindow(
-      nativeNodeReference,
-      callback,
-    );
-  },
-
-  measureLayout(nativeNodeReference, relativeNode, onFail, onSuccess) {
-    return nullthrows(RawNativeDOM).measureLayout(
-      nativeNodeReference,
-      relativeNode,
-      onFail,
-      onSuccess,
-    );
-  },
-
-  /**
-   * Legacy direct manipulation APIs
-   */
-  setNativeProps(nativeNodeReference, updatePayload) {
-    // TODO: remove when RawNativeDOM.setNativeProps is NOT nullable.
-    if (RawNativeDOM?.setNativeProps == null) {
-      nullthrows(getFabricUIManager()).setNativeProps(
-        nativeNodeReference,
-        updatePayload,
-      );
-      return;
-    }
-
-    return RawNativeDOM.setNativeProps(nativeNodeReference, updatePayload);
-  },
-};
-
-export default NativeDOM;
+// We used to implement all methods in RefineSpec, manually refining the types
+// for all methods. However, this is slower as every call to the native module
+// requires an additional call only to handle types. Instead, we do an unsafe
+// casting here. Keep in mind that:
+// 1. We use `get` and not `getEnforcing` because we don't want to fail when
+//    the module is evaluated, only when used. This is necessary because we
+//    don't use inline requires within the `react-native` package and some code
+//    might end up loading this but not using it.
+// 2. We lose automatic backwards compatibility checks because of this.
+// $FlowExpectedError[incompatible-type]
+export default (TurboModuleRegistry.get<Spec>('NativeDOMCxx'): RefinedSpec);

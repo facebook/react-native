@@ -27,12 +27,12 @@ const ModuleTemplate = ({
   moduleName,
   eventEmitters,
   methodSerializationOutputs,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
-  structs: $ReadOnlyArray<Struct>,
+  structs: ReadonlyArray<Struct>,
   moduleName: string,
-  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
-  methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
+  eventEmitters: ReadonlyArray<NativeModuleEventEmitterShape>,
+  methodSerializationOutputs: ReadonlyArray<MethodSerializationOutput>,
 }>) => `
 @implementation ${hasteModuleName}SpecBase
 ${eventEmitters
@@ -74,29 +74,29 @@ namespace facebook::react {
           }),
         )
         .join('\n' + ' '.repeat(8))}${
-  eventEmitters.length > 0
-    ? eventEmitters
-        .map(eventEmitter => {
-          return `
+        eventEmitters.length > 0
+          ? eventEmitters
+              .map(eventEmitter => {
+                return `
         eventEmitterMap_["${eventEmitter.name}"] = std::make_shared<AsyncEventEmitter<id>>();`;
-        })
-        .join('')
-    : ''
-}${
-  eventEmitters.length > 0
-    ? `
+              })
+              .join('')
+          : ''
+      }${
+        eventEmitters.length > 0
+          ? `
         setEventEmitterCallback([&](const std::string &name, id value) {
           static_cast<AsyncEventEmitter<id> &>(*eventEmitterMap_[name]).emit(value);
         });`
-    : ''
-}
+          : ''
+      }
   }
 } // namespace facebook::react`;
 
 const RCTCxxConvertCategoryTemplate = ({
   hasteModuleName,
   structName,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   structName: string,
 }>) => `@implementation RCTCxxConvert (${hasteModuleName}_${structName})
@@ -111,7 +111,7 @@ const InlineHostFunctionTemplate = ({
   methodName,
   returnJSType,
   selector,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   methodName: string,
   returnJSType: string,
@@ -126,10 +126,10 @@ const MethodMapEntryTemplate = ({
   methodName,
   structParamRecords,
   argCount,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   methodName: string,
-  structParamRecords: $ReadOnlyArray<StructParameterRecord>,
+  structParamRecords: ReadonlyArray<StructParameterRecord>,
   argCount: number,
 }>) => `
         methodMap_["${methodName}"] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${methodName}};
@@ -141,10 +141,10 @@ const MethodMapEntryTemplate = ({
 
 function serializeModuleSource(
   hasteModuleName: string,
-  structs: $ReadOnlyArray<Struct>,
+  structs: ReadonlyArray<Struct>,
   moduleName: string,
-  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
-  methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
+  eventEmitters: ReadonlyArray<NativeModuleEventEmitterShape>,
+  methodSerializationOutputs: ReadonlyArray<MethodSerializationOutput>,
 ): string {
   return ModuleTemplate({
     hasteModuleName,

@@ -14,24 +14,25 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
 
 export type NativeIntersectionObserverEntry = {
   intersectionObserverId: number,
-  targetInstanceHandle: mixed,
-  targetRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
-  rootRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
+  targetInstanceHandle: unknown,
+  targetRect: ReadonlyArray<number>, // It's actually a tuple with x, y, width and height
+  rootRect: ReadonlyArray<number>, // It's actually a tuple with x, y, width and height
   // TODO(T209328432) - Remove optionality of intersectionRect when native changes are released
-  intersectionRect: ?$ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
+  intersectionRect: ?ReadonlyArray<number>, // It's actually a tuple with x, y, width and height
   isIntersectingAboveThresholds: boolean,
   time: number,
 };
 
 export type NativeIntersectionObserverObserveOptions = {
   intersectionObserverId: number,
-  rootShadowNode?: ?mixed,
-  targetShadowNode: mixed,
-  thresholds: $ReadOnlyArray<number>,
-  rootThresholds?: ?$ReadOnlyArray<number>,
+  rootShadowNode?: ?unknown,
+  targetShadowNode: unknown,
+  thresholds: ReadonlyArray<number>,
+  rootThresholds?: ?ReadonlyArray<number>,
+  rootMargin?: ?string,
 };
 
-export opaque type NativeIntersectionObserverToken = mixed;
+export opaque type NativeIntersectionObserverToken = unknown;
 
 export interface Spec extends TurboModule {
   +observeV2?: (
@@ -43,7 +44,7 @@ export interface Spec extends TurboModule {
   ) => void;
   +connect: (notifyIntersectionObserversCallback: () => void) => void;
   +disconnect: () => void;
-  +takeRecords: () => $ReadOnlyArray<NativeIntersectionObserverEntry>;
+  +takeRecords: () => ReadonlyArray<NativeIntersectionObserverEntry>;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

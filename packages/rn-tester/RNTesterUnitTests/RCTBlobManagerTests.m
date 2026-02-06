@@ -8,6 +8,9 @@
 #import <XCTest/XCTest.h>
 
 #import <React/RCTBlobManager.h>
+#import <React/RCTMockDef.h>
+
+RCT_MOCK_REF(RCTBlobManager, dispatch_async);
 
 @interface RCTBlobManagerTests : XCTestCase
 
@@ -68,8 +71,17 @@
   XCTAssertNil([_module resolve:_blobId offset:0 size:_data.length]);
 }
 
+static void dispatch_async_mock([[maybe_unused]] dispatch_queue_t queue, dispatch_block_t block)
+{
+  if (block) {
+    block();
+  }
+}
+
 - (void)testCreateFromParts
 {
+  RCT_MOCK_SET(RCTBlobManager, dispatch_async, dispatch_async_mock);
+
   NSDictionary<NSString *, id> *blobData = @{
     @"blobId" : _blobId,
     @"offset" : @0,
@@ -96,6 +108,8 @@
   NSData *result = [_module resolve:resultId offset:0 size:expectedData.length];
 
   XCTAssertTrue([expectedData isEqualToData:result]);
+
+  RCT_MOCK_RESET(RCTBlobManager, dispatch_async);
 }
 
 @end

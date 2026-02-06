@@ -61,7 +61,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
   constructor(
       reactContext: ReactApplicationContext,
       imagePipeline: ImagePipeline,
-      callerContextFactory: ReactCallerContextFactory
+      callerContextFactory: ReactCallerContextFactory,
   ) : super(reactContext) {
     this.callerContextFactory = callerContextFactory
     this.imagePipeline = imagePipeline
@@ -230,8 +230,8 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
           override fun doInBackgroundGuarded(vararg params: Void) {
             val result = buildReadableMap {
               val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline
-              repeat(uris.size()) {
-                val uriString = uris.getString(it)
+              repeat(uris.size()) { index ->
+                val uriString = uris.getString(index)
                 if (!uriString.isNullOrEmpty()) {
                   val uri = Uri.parse(uriString)
                   if (imagePipeline.isInBitmapMemoryCache(uri)) {

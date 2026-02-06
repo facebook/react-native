@@ -9,9 +9,9 @@
 
 #if RCT_DEV || RCT_REMOTE_PROFILE
 
+#import <React/RCTAssert.h>
 #import <React/RCTInspector.h>
 #import <React/RCTInspectorPackagerConnection.h>
-#import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <SocketRocket/SRWebSocket.h>
 #import <jsinspector-modern/InspectorPackagerConnection.h>
@@ -22,7 +22,11 @@ using namespace facebook::react::jsinspector_modern;
 namespace {
 NSString *NSStringFromUTF8StringView(std::string_view view)
 {
-  return [[NSString alloc] initWithBytes:(const char *)view.data() length:view.size() encoding:NSUTF8StringEncoding];
+  NSString *result = [[NSString alloc] initWithBytes:(const char *)view.data()
+                                              length:view.size()
+                                            encoding:NSUTF8StringEncoding];
+  RCTAssert(result != nil, @"string_view contains invalid UTF-8 bytes");
+  return result;
 }
 } // namespace
 @interface RCTCxxInspectorWebSocketAdapter () <SRWebSocketDelegate> {
@@ -34,7 +38,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 @implementation RCTCxxInspectorWebSocketAdapter
 - (instancetype)initWithURL:(const std::string &)url delegate:(std::weak_ptr<IWebSocketDelegate>)delegate
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _delegate = delegate;
     _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:NSStringFromUTF8StringView(url)]];
     _webSocket.delegate = self;
@@ -49,7 +53,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
   NSString *messageStr = NSStringFromUTF8StringView(message);
   dispatch_async(dispatch_get_main_queue(), ^{
     RCTCxxInspectorWebSocketAdapter *strongSelf = weakSelf;
-    if (strongSelf) {
+    if (strongSelf != nullptr) {
       [strongSelf->_webSocket sendString:messageStr error:NULL];
     }
   });

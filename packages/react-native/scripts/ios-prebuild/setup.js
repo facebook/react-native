@@ -10,6 +10,9 @@
 
 /*:: import type {BuildFlavor} from './types'; */
 
+const {
+  generateFBReactNativeSpecIOS,
+} = require('../codegen/generate-artifacts-executor/generateFBReactNativeSpecIOS');
 const {prepareHermesArtifactsAsync} = require('./hermes');
 const {
   prepareReactNativeDependenciesArtifactsAsync,
@@ -25,6 +28,9 @@ async function setup(
   currentVersion /*: string */,
   buildType /*: BuildFlavor */,
 ) {
+  // First of all, let's run codegen to make sure that we have the FBreactNativeSpec files in the prebuilds
+  generateFBReactNativeSpecIOS('.');
+
   const prebuildLog = createLogger('prebuild');
   createFolderIfNotExists(buildFolder);
 

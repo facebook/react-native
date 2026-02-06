@@ -15,7 +15,7 @@ internal class ReactQueueConfigurationImpl
 private constructor(
     private val uiQueueThread: MessageQueueThreadImpl,
     private val nativeModulesQueueThread: MessageQueueThreadImpl,
-    private val jsQueueThread: MessageQueueThreadImpl
+    private val jsQueueThread: MessageQueueThreadImpl,
 ) : ReactQueueConfiguration {
   override fun getUIQueueThread(): MessageQueueThread = uiQueueThread
 
@@ -40,7 +40,7 @@ private constructor(
     @JvmStatic
     fun create(
         spec: ReactQueueConfigurationSpec,
-        exceptionHandler: QueueThreadExceptionHandler
+        exceptionHandler: QueueThreadExceptionHandler,
     ): ReactQueueConfigurationImpl {
       val uiThread = create(mainThreadSpec(), exceptionHandler)
       val jsThread = create(spec.jSQueueThreadSpec, exceptionHandler)

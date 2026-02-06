@@ -191,8 +191,9 @@ TEST(CSSColor, rgb_rgba_values) {
 
   auto rgbLegacySyntaxWithSolidusAlphaValue =
       parseCSSProperty<CSSColor>("rgb(1, 4, 5 /0.5)");
-  EXPECT_TRUE(std::holds_alternative<std::monostate>(
-      rgbLegacySyntaxWithSolidusAlphaValue));
+  EXPECT_TRUE(
+      std::holds_alternative<std::monostate>(
+          rgbLegacySyntaxWithSolidusAlphaValue));
 
   auto rgbaWithSolidusAlphaValue =
       parseCSSProperty<CSSColor>("rgba(255 255 255 / 0.5)");
@@ -317,8 +318,9 @@ TEST(CSSColor, hsl_hsla_values) {
 
   auto rgbLegacySyntaxWithSolidusAlphaValue =
       parseCSSProperty<CSSColor>("hsl(1, 4, 5 / 0.5)");
-  EXPECT_TRUE(std::holds_alternative<std::monostate>(
-      rgbLegacySyntaxWithSolidusAlphaValue));
+  EXPECT_TRUE(
+      std::holds_alternative<std::monostate>(
+          rgbLegacySyntaxWithSolidusAlphaValue));
 
   auto hslaWithoutAlphaValue = parseCSSProperty<CSSColor>("hsla(70 190% 75%)");
   EXPECT_TRUE(std::holds_alternative<CSSColor>(hslaWithoutAlphaValue));

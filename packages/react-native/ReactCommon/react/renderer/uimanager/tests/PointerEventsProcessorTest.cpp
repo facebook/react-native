@@ -36,8 +36,6 @@ static inline void listenToAllPointerEvents(ViewProps& props) {
 class PointerEventsProcessorTest : public ::testing::Test {
  public:
   PointerEventsProcessorTest() {
-    surfaceId_ = 0;
-
     auto contextContainer = std::make_shared<ContextContainer>();
 
     ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
@@ -45,7 +43,9 @@ class PointerEventsProcessorTest : public ::testing::Test {
     auto componentDescriptorRegistry =
         componentDescriptorProviderRegistry.createComponentDescriptorRegistry(
             ComponentDescriptorParameters{
-                eventDispatcher, std::move(contextContainer), nullptr});
+                .eventDispatcher = eventDispatcher,
+                .contextContainer = std::move(contextContainer),
+                .flavor = nullptr});
 
     componentDescriptorProviderRegistry.add(
         concreteComponentDescriptorProvider<RootComponentDescriptor>());
@@ -85,7 +85,7 @@ class PointerEventsProcessorTest : public ::testing::Test {
             auto sharedProps = std::make_shared<RootProps>();
             auto &props = *sharedProps;
             listenToAllPointerEvents(props);
-            props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+            props.layoutConstraints = LayoutConstraints{.minimumSize={.width=0,.height=0}, .maximumSize={.width=500, .height=500}};
             auto &yogaStyle = props.yogaStyle;
             yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(400));
             yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(400));
@@ -180,7 +180,7 @@ class PointerEventsProcessorTest : public ::testing::Test {
         *uiManager_,
         *contextContainer);
     shadowTree->commit(
-        [this](const RootShadowNode& oldRootShadowNode) {
+        [this](const RootShadowNode& /*oldRootShadowNode*/) {
           return std::static_pointer_cast<RootShadowNode>(this->rootNode_);
         },
         {true});
@@ -199,13 +199,13 @@ class PointerEventsProcessorTest : public ::testing::Test {
 
   EventLog dispatchPointerEvent(
       const std::shared_ptr<const ShadowNode>& target,
-      std::string eventName,
-      PointerEvent eventPayload) {
+      const std::string& eventName,
+      const PointerEvent& eventPayload) {
     EventLog eventLog;
     auto dispatchCallback = [&eventLog](
                                 const ShadowNode& targetNode,
                                 const std::string& type,
-                                ReactEventPriority priority,
+                                ReactEventPriority /*priority*/,
                                 const EventPayload& eventPayload) {
       eventLog.push_back({
           .tag = targetNode.getTag(),
@@ -223,7 +223,7 @@ class PointerEventsProcessorTest : public ::testing::Test {
     return eventLog;
   }
 
-  SurfaceId surfaceId_;
+  SurfaceId surfaceId_{0};
 
   std::shared_ptr<RootShadowNode> rootNode_;
   std::shared_ptr<ViewShadowNode> nodeA_;

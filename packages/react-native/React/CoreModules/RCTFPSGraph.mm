@@ -37,7 +37,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame color:(UIColor *)color
 {
-  if ((self = [super initWithFrame:frame])) {
+  if ((self = [super initWithFrame:frame]) != nullptr) {
     _frameCount = -1;
     _prevTime = -1;
     _maxFPS = 0;
@@ -64,7 +64,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (CAShapeLayer *)graph
 {
-  if (!_graph) {
+  if (_graph == nullptr) {
     _graph = [CAShapeLayer new];
     _graph.frame = self.bounds;
     _graph.backgroundColor = [_color colorWithAlphaComponent:0.2].CGColor;
@@ -76,7 +76,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (UILabel *)label
 {
-  if (!_label) {
+  if (_label == nullptr) {
     _label = [[UILabel alloc] initWithFrame:self.bounds];
     _label.font = [UIFont boldSystemFontOfSize:13];
     _label.textAlignment = NSTextAlignmentCenter;

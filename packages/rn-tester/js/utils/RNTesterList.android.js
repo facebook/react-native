@@ -13,7 +13,6 @@
 import type {RNTesterModule, RNTesterModuleInfo} from '../types/RNTesterTypes';
 
 import * as RNTesterListFbInternal from './RNTesterListFbInternal';
-import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 
 const Components: Array<RNTesterModuleInfo> = [
   {
@@ -58,6 +57,11 @@ const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'KeyboardAvoidingViewExample',
     module: require('../examples/KeyboardAvoidingView/KeyboardAvoidingViewExample'),
+  },
+  {
+    key: 'KeyEvents',
+    module: require('../examples/KeyboardEventsExample/KeyboardEventsExample')
+      .default,
   },
   {
     key: 'ModalExample',
@@ -145,10 +149,6 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'PerformanceComparisonExample',
     category: 'Basic',
     module: require('../examples/Performance/PerformanceComparisonExample'),
-  },
-  {
-    key: 'OSSLibraryExample',
-    module: require('../examples/OSSLibraryExample/OSSLibraryExample'),
   },
   ...RNTesterListFbInternal.Components,
 ];
@@ -335,6 +335,11 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/RadialGradient/RadialGradientExample'),
   },
   {
+    key: 'BackgroundImageExample',
+    category: 'UI',
+    module: require('../examples/BackgroundImage/BackgroundImageExample'),
+  },
+  {
     key: 'MixBlendModeExample',
     category: 'UI',
     module: require('../examples/MixBlendMode/MixBlendModeExample'),
@@ -363,21 +368,29 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'LegacyModuleExample',
     module: require('../examples/TurboModule/LegacyModuleExample'),
   },
-  {
-    key: 'TurboCxxModuleExample',
-    category: 'Basic',
-    module: require('../examples/TurboModule/TurboCxxModuleExample'),
-  },
+  // Basic check to detect the availability of the IntersectionObserver API.
+  // $FlowExpectedError[cannot-resolve-name]
+  ...(typeof IntersectionObserver === 'function'
+    ? [
+        {
+          key: 'IntersectionObserver',
+          category: 'UI',
+          module: require('../examples/IntersectionObserver/IntersectionObserverIndex'),
+        },
+      ]
+    : []),
+  // Basic check to detect the availability of the modern Performance API.
+  ...(typeof performance.getEntries === 'function'
+    ? [
+        {
+          key: 'PerformanceApiExample',
+          category: 'Basic',
+          module: require('../examples/Performance/PerformanceApiExample'),
+        },
+      ]
+    : []),
   ...RNTesterListFbInternal.APIs,
 ]: Array<?RNTesterModuleInfo>).filter(Boolean);
-
-if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {
-  APIs.push({
-    key: 'W3C PointerEvents',
-    category: 'Experimental',
-    module: require('../examples/Experimental/W3CPointerEventsExample').default,
-  });
-}
 
 const Playgrounds: Array<RNTesterModuleInfo> = [
   {

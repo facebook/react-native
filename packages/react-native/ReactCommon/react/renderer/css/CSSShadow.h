@@ -32,7 +32,7 @@ struct CSSShadow {
   CSSColor color{CSSColor::black()};
   bool inset{false};
 
-  constexpr bool operator==(const CSSShadow& rhs) const = default;
+  constexpr bool operator==(const CSSShadow &rhs) const = default;
 };
 
 /**
@@ -46,20 +46,15 @@ static_assert(CSSDataType<CSSInsetShadowKeyword>);
 
 template <>
 struct CSSDataTypeParser<CSSShadow> {
-  static constexpr auto consume(CSSSyntaxParser& parser)
-      -> std::optional<CSSShadow> {
+  static constexpr auto consume(CSSSyntaxParser &parser) -> std::optional<CSSShadow>
+  {
     std::optional<CSSColor> color{};
     bool inset{false};
-    std::optional<std::tuple<CSSLength, CSSLength, CSSLength, CSSLength>>
-        lengths{};
+    std::optional<std::tuple<CSSLength, CSSLength, CSSLength, CSSLength>> lengths{};
 
-    for (auto nextValue =
-             parseNextCSSValue<CSSLength, CSSColor, CSSInsetShadowKeyword>(
-                 parser);
+    for (auto nextValue = parseNextCSSValue<CSSLength, CSSColor, CSSInsetShadowKeyword>(parser);
          !std::holds_alternative<std::monostate>(nextValue);
-         nextValue =
-             parseNextCSSValue<CSSLength, CSSColor, CSSInsetShadowKeyword>(
-                 parser, CSSDelimiter::Whitespace)) {
+         nextValue = parseNextCSSValue<CSSLength, CSSColor, CSSInsetShadowKeyword>(parser, CSSDelimiter::Whitespace)) {
       if (std::holds_alternative<CSSLength>(nextValue)) {
         if (lengths.has_value()) {
           return {};
@@ -103,41 +98,29 @@ struct CSSDataTypeParser<CSSShadow> {
   }
 
  private:
-  static constexpr auto parseRestLengths(
-      CSSLength offsetX,
-      CSSSyntaxParser& parser)
-      -> std::optional<std::tuple<CSSLength, CSSLength, CSSLength, CSSLength>> {
-    auto offsetY =
-        parseNextCSSValue<CSSLength>(parser, CSSDelimiter::Whitespace);
+  static constexpr auto parseRestLengths(CSSLength offsetX, CSSSyntaxParser &parser)
+      -> std::optional<std::tuple<CSSLength, CSSLength, CSSLength, CSSLength>>
+  {
+    auto offsetY = parseNextCSSValue<CSSLength>(parser, CSSDelimiter::Whitespace);
     if (std::holds_alternative<std::monostate>(offsetY)) {
       return {};
     }
 
-    auto blurRadius =
-        parseNextCSSValue<CSSLength>(parser, CSSDelimiter::Whitespace);
+    auto blurRadius = parseNextCSSValue<CSSLength>(parser, CSSDelimiter::Whitespace);
     if (std::holds_alternative<std::monostate>(blurRadius)) {
-      return std::make_tuple(
-          offsetX, std::get<CSSLength>(offsetY), CSSLength{}, CSSLength{});
+      return std::make_tuple(offsetX, std::get<CSSLength>(offsetY), CSSLength{}, CSSLength{});
     }
     if (std::get<CSSLength>(blurRadius).value < 0) {
       return {};
     }
 
-    auto spreadDistance =
-        parseNextCSSValue<CSSLength>(parser, CSSDelimiter::Whitespace);
+    auto spreadDistance = parseNextCSSValue<CSSLength>(parser, CSSDelimiter::Whitespace);
     if (std::holds_alternative<std::monostate>(spreadDistance)) {
-      return std::make_tuple(
-          offsetX,
-          std::get<CSSLength>(offsetY),
-          std::get<CSSLength>(blurRadius),
-          CSSLength{});
+      return std::make_tuple(offsetX, std::get<CSSLength>(offsetY), std::get<CSSLength>(blurRadius), CSSLength{});
     }
 
     return std::make_tuple(
-        offsetX,
-        std::get<CSSLength>(offsetY),
-        std::get<CSSLength>(blurRadius),
-        std::get<CSSLength>(spreadDistance));
+        offsetX, std::get<CSSLength>(offsetY), std::get<CSSLength>(blurRadius), std::get<CSSLength>(spreadDistance));
   }
 };
 

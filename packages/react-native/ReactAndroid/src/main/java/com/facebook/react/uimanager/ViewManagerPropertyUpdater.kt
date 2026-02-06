@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManagersPropertyCache.PropSetter
 import java.util.HashMap
 
+@Suppress("DEPRECATION")
 public object ViewManagerPropertyUpdater {
   public fun interface Settable {
     public fun getProperties(props: MutableMap<String, String>)
@@ -24,7 +25,7 @@ public object ViewManagerPropertyUpdater {
   }
 
   @Suppress("FINITE_BOUNDS_VIOLATION_IN_JAVA")
-  public interface ShadowNodeSetter<in T : ReactShadowNode<*>> : Settable {
+  public interface ShadowNodeSetter<@Suppress("DEPRECATION") in T : ReactShadowNode<*>> : Settable {
     public fun setProperty(node: T, name: String, value: Any?)
   }
 
@@ -34,7 +35,7 @@ public object ViewManagerPropertyUpdater {
   private val SHADOW_NODE_SETTER_MAP: MutableMap<Class<*>, ShadowNodeSetter<*>> = HashMap()
 
   @JvmStatic
-  public fun clear(): Unit {
+  public fun clear() {
     ViewManagersPropertyCache.clear()
     VIEW_MANAGER_SETTER_MAP.clear()
     SHADOW_NODE_SETTER_MAP.clear()
@@ -45,7 +46,7 @@ public object ViewManagerPropertyUpdater {
   public fun <T : ViewManagerDelegate<V>, V : View> updateProps(
       delegate: T,
       view: V,
-      props: ReactStylesDiffMap
+      props: ReactStylesDiffMap,
   ) {
     val iterator = props.backingMap.entryIterator
     while (iterator.hasNext()) {
@@ -59,7 +60,7 @@ public object ViewManagerPropertyUpdater {
   public fun <V : View> updateProps(
       manager: ViewManager<V, *>,
       view: V,
-      props: ReactStylesDiffMap
+      props: ReactStylesDiffMap,
   ) {
     val setter = findManagerSetter(manager.javaClass)
     val iterator = props.backingMap.entryIterator
@@ -71,7 +72,10 @@ public object ViewManagerPropertyUpdater {
 
   @JvmStatic
   @Deprecated("Use ViewManager#updateProperties to update a view's properties")
-  public fun <T : ReactShadowNode<T>> updateProps(node: T, props: ReactStylesDiffMap) {
+  public fun <@Suppress("DEPRECATION") T : ReactShadowNode<T>> updateProps(
+      node: T,
+      props: ReactStylesDiffMap,
+  ) {
     val setter = findNodeSetter(node.javaClass)
     val iterator = props.backingMap.entryIterator
     while (iterator.hasNext()) {
@@ -83,7 +87,7 @@ public object ViewManagerPropertyUpdater {
   @JvmStatic
   public fun getNativeProps(
       viewManagerTopClass: Class<out ViewManager<Nothing, *>>,
-      shadowNodeTopClass: Class<out Nothing>?
+      shadowNodeTopClass: Class<out Nothing>?,
   ): Map<String, String> {
     val props: MutableMap<String, String> = HashMap()
     findManagerSetter(viewManagerTopClass).getProperties(props)
@@ -108,7 +112,7 @@ public object ViewManagerPropertyUpdater {
     return setter as ViewManagerSetter<ViewManager<V, *>, V>
   }
 
-  private fun <T : ReactShadowNode<T>> findNodeSetter(
+  private fun <@Suppress("DEPRECATION") T : ReactShadowNode<T>> findNodeSetter(
       nodeClass: Class<out T>
   ): ShadowNodeSetter<T> {
     var setter = SHADOW_NODE_SETTER_MAP[nodeClass]
@@ -143,16 +147,16 @@ public object ViewManagerPropertyUpdater {
   private class FallbackViewManagerSetter<V : View>(
       viewManagerClass: Class<out ViewManager<V, *>>
   ) : ViewManagerSetter<ViewManager<V, *>, V> {
-    private val mPropSetters: Map<String, PropSetter> =
+    private val propSetters: Map<String, PropSetter> =
         ViewManagersPropertyCache.getNativePropSettersForViewManagerClass(viewManagerClass)
 
     override fun setProperty(manager: ViewManager<V, *>, view: V, name: String, value: Any?) {
-      val setter = mPropSetters[name]
+      val setter = propSetters[name]
       setter?.updateViewProp(manager, view, value)
     }
 
     override fun getProperties(props: MutableMap<String, String>) {
-      for (setter in mPropSetters.values) {
+      for (setter in propSetters.values) {
         props[setter.propName] = setter.propType
       }
     }
@@ -180,7 +184,7 @@ public object ViewManagerPropertyUpdater {
     private val setter = findManagerSetter(manager.javaClass)
 
     @Suppress("ACCIDENTAL_OVERRIDE")
-    override fun setProperty(view: T, propName: String, value: Any?): Unit {
+    override fun setProperty(view: T, propName: String, value: Any?) {
       setter.setProperty(manager, view, propName, value)
     }
 

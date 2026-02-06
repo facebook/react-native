@@ -15,7 +15,7 @@ import React from 'react';
 import {useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   style: ViewStyleProp,
   testID?: string,
 }>;
@@ -48,7 +48,7 @@ function LayeredImage(props: Props) {
         <ImageBackground
           source={require('../../assets/rainbow.jpeg')}
           style={[styles.backdrop, {width: 200}]}>
-          {/* $FlowFixMe - ImageStyle is not compatible with ViewStyle */}
+          {/* $FlowFixMe[incompatible-use] - ImageStyle is not compatible with ViewStyle */}
           <Image
             source={require('../../assets/alpha-hotdog.png')}
             style={[styles.commonImage, props.style]}

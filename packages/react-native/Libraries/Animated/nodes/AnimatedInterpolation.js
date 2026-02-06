@@ -12,6 +12,7 @@
 
 'use strict';
 
+import type {NativeColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from './AnimatedNode';
 import type {AnimatedNodeConfig} from './AnimatedNode';
@@ -26,10 +27,17 @@ import invariant from 'invariant';
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
-export type InterpolationConfigType<OutputT: number | string> = $ReadOnly<{
+export type InterpolationConfigSupportedOutputType =
+  | number
+  | string
+  | NativeColorValue;
+
+export type InterpolationConfigType<
+  OutputT: InterpolationConfigSupportedOutputType,
+> = Readonly<{
   ...AnimatedNodeConfig,
-  inputRange: $ReadOnlyArray<number>,
-  outputRange: $ReadOnlyArray<OutputT>,
+  inputRange: ReadonlyArray<number>,
+  outputRange: ReadonlyArray<OutputT>,
   easing?: (input: number) => number,
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
@@ -43,7 +51,7 @@ export type InterpolationConfigType<OutputT: number | string> = $ReadOnly<{
 function createNumericInterpolation(
   config: InterpolationConfigType<number>,
 ): (input: number) => number {
-  const outputRange: $ReadOnlyArray<number> = (config.outputRange: any);
+  const outputRange: ReadonlyArray<number> = (config.outputRange: any);
   const inputRange = config.inputRange;
 
   const easing = config.easing || Easing.linear;
@@ -79,6 +87,28 @@ function createNumericInterpolation(
       extrapolateLeft,
       extrapolateRight,
     ): any);
+  };
+}
+
+function createPlatformColorInterpolation(
+  config: InterpolationConfigType<NativeColorValue>,
+): (input: number) => NativeColorValue {
+  const outputRange = config.outputRange;
+  const outputRangeIndices = Array.from(Array(outputRange.length).keys());
+  const interpolateIndex = createNumericInterpolation({
+    ...config,
+    inputRange: config.inputRange,
+    outputRange: outputRangeIndices,
+  });
+
+  return input => {
+    const interpolateResult = interpolateIndex(input);
+    if (!Number.isInteger(interpolateResult)) {
+      console.warn(
+        'PlatformColor interpolation should happen natively, here we fallback to the closest color',
+      );
+    }
+    return outputRange[Math.floor(interpolateResult)];
   };
 }
 
@@ -157,7 +187,7 @@ function mapStringToNumericComponents(
   input: string,
 ):
   | {isColor: true, components: [number, number, number, number]}
-  | {isColor: false, components: $ReadOnlyArray<number | string>} {
+  | {isColor: false, components: ReadonlyArray<number | string>} {
   let normalizedColor = normalizeColor(input);
   invariant(
     normalizedColor == null || typeof normalizedColor !== 'object',
@@ -224,7 +254,7 @@ function createStringInterpolation(
       outputRange.every(output =>
         output.components.every(
           (component, i) =>
-            // $FlowIgnoreMe[invalid-compare]
+            // $FlowFixMe[invalid-compare]
             typeof component === 'number' || component === firstOutput[i],
         ),
       ),
@@ -232,12 +262,12 @@ function createStringInterpolation(
     );
   }
 
-  const numericComponents: $ReadOnlyArray<$ReadOnlyArray<number>> =
+  const numericComponents: ReadonlyArray<ReadonlyArray<number>> =
     outputRange.map(output =>
       isColor
-        ? // $FlowIgnoreMe[incompatible-call]
+        ? // $FlowFixMe[incompatible-type]
           output.components
-        : // $FlowIgnoreMe[incompatible-call]
+        : // $FlowFixMe[incompatible-call]
           output.components.filter(c => typeof c === 'number'),
     );
   const interpolations = numericComponents[0].map((_, i) =>
@@ -267,7 +297,7 @@ function createStringInterpolation(
   }
 }
 
-function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
+function findRange(input: number, inputRange: ReadonlyArray<number>) {
   let i;
   for (i = 1; i < inputRange.length - 1; ++i) {
     if (inputRange[i] >= input) {
@@ -277,9 +307,9 @@ function findRange(input: number, inputRange: $ReadOnlyArray<number>) {
   return i - 1;
 }
 
-function checkValidRanges<OutputT: number | string>(
-  inputRange: $ReadOnlyArray<number>,
-  outputRange: $ReadOnlyArray<OutputT>,
+function checkValidRanges<OutputT: InterpolationConfigSupportedOutputType>(
+  inputRange: ReadonlyArray<number>,
+  outputRange: ReadonlyArray<OutputT>,
 ) {
   checkInfiniteRange('outputRange', outputRange);
   checkInfiniteRange('inputRange', inputRange);
@@ -295,7 +325,7 @@ function checkValidRanges<OutputT: number | string>(
   );
 }
 
-function checkValidInputRange(arr: $ReadOnlyArray<number>) {
+function checkValidInputRange(arr: ReadonlyArray<number>) {
   invariant(arr.length >= 2, 'inputRange must have at least 2 elements');
   const message =
     'inputRange must be monotonically non-decreasing ' + String(arr);
@@ -304,9 +334,9 @@ function checkValidInputRange(arr: $ReadOnlyArray<number>) {
   }
 }
 
-function checkInfiniteRange<OutputT: number | string>(
+function checkInfiniteRange<OutputT: InterpolationConfigSupportedOutputType>(
   name: string,
-  arr: $ReadOnlyArray<OutputT>,
+  arr: ReadonlyArray<OutputT>,
 ) {
   invariant(arr.length >= 2, name + ' must have at least 2 elements');
   invariant(
@@ -322,7 +352,7 @@ function checkInfiniteRange<OutputT: number | string>(
 }
 
 export default class AnimatedInterpolation<
-  OutputT: number | string,
+  OutputT: InterpolationConfigSupportedOutputType,
 > extends AnimatedWithChildren {
   _parent: AnimatedNode;
   _config: InterpolationConfigType<OutputT>;
@@ -347,6 +377,10 @@ export default class AnimatedInterpolation<
       const config = this._config;
       if (config.outputRange && typeof config.outputRange[0] === 'string') {
         this._interpolation = (createStringInterpolation((config: any)): any);
+      } else if (typeof config.outputRange[0] === 'object') {
+        this._interpolation = (createPlatformColorInterpolation(
+          (config: any),
+        ): any);
       } else {
         this._interpolation = (createNumericInterpolation((config: any)): any);
       }
@@ -393,8 +427,8 @@ export default class AnimatedInterpolation<
     let outputRange = this._config.outputRange;
     let outputType = null;
     if (typeof outputRange[0] === 'string') {
-      // $FlowIgnoreMe[incompatible-cast]
-      outputRange = ((outputRange: $ReadOnlyArray<string>).map(value => {
+      // $FlowFixMe[incompatible-type]
+      outputRange = ((outputRange: ReadonlyArray<string>).map(value => {
         const processedColor = processColor(value);
         if (typeof processedColor === 'number') {
           outputType = 'color';
@@ -403,6 +437,8 @@ export default class AnimatedInterpolation<
           return NativeAnimatedHelper.transformDataType(value);
         }
       }): any);
+    } else if (typeof outputRange[0] === 'object') {
+      outputType = 'platform_color';
     }
 
     return {

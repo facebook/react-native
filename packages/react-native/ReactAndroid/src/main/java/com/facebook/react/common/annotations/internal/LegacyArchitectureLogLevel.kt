@@ -18,5 +18,5 @@ package com.facebook.react.common.annotations.internal
  */
 public enum class LegacyArchitectureLogLevel {
   WARNING,
-  ERROR
+  ERROR,
 }

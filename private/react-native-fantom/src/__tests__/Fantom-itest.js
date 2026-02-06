@@ -584,6 +584,31 @@ describe('Fantom', () => {
       expect(focusEvent).toHaveBeenCalledTimes(1);
     });
 
+    it('sends event without payload (with ref)', () => {
+      const root = Fantom.createRoot();
+
+      let focusEvent = jest.fn();
+
+      const ref = createRef<HostInstance>();
+
+      Fantom.runTask(() => {
+        root.render(<TextInput onFocus={focusEvent} ref={ref} />);
+      });
+
+      expect(focusEvent).toHaveBeenCalledTimes(0);
+
+      Fantom.runOnUIThread(() => {
+        Fantom.enqueueNativeEvent(ref, 'focus');
+      });
+
+      // The tasks have not run.
+      expect(focusEvent).toHaveBeenCalledTimes(0);
+
+      Fantom.runWorkLoop();
+
+      expect(focusEvent).toHaveBeenCalledTimes(1);
+    });
+
     it('sends event with payload', () => {
       const root = Fantom.createRoot();
       const ref = createRef<HostInstance>();
@@ -692,6 +717,23 @@ describe('Fantom', () => {
 
       expect(focusEvent).toHaveBeenCalledTimes(1);
     });
+
+    it('flushes the event and runs the work loop (with ref)', () => {
+      const root = Fantom.createRoot();
+      const ref = createRef<HostInstance>();
+
+      let focusEvent = jest.fn();
+
+      Fantom.runTask(() => {
+        root.render(<TextInput onFocus={focusEvent} ref={ref} />);
+      });
+
+      expect(focusEvent).toHaveBeenCalledTimes(0);
+
+      Fantom.dispatchNativeEvent(ref, 'focus');
+
+      expect(focusEvent).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('enqueueScrollEvent', () => {
@@ -783,6 +825,36 @@ describe('Fantom', () => {
 
       root.destroy();
     });
+
+    it('delivers onScroll event (with ref)', () => {
+      const root = Fantom.createRoot();
+      const viewRef = createRef<HostInstance>();
+      const scrollViewRef = createRef<HostInstance>();
+      const onScroll = jest.fn();
+
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            onScroll={event => {
+              onScroll(event.nativeEvent);
+            }}
+            ref={scrollViewRef}>
+            <View style={{width: 1, height: 2, top: 3}} ref={viewRef} />
+          </ScrollView>,
+        );
+      });
+
+      Fantom.runOnUIThread(() => {
+        Fantom.enqueueScrollEvent(scrollViewRef, {
+          x: 0,
+          y: 1,
+        });
+      });
+
+      Fantom.runWorkLoop();
+
+      expect(onScroll).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('scrollTo', () => {
@@ -872,6 +944,39 @@ describe('Fantom', () => {
 
       root.destroy();
     });
+
+    it('delivers onScroll event and affects position of elements on screen (with ref)', () => {
+      const root = Fantom.createRoot();
+      const scrollViewRef = createRef<HostInstance>();
+      const viewRef = createRef<HostInstance>();
+      const onScroll = jest.fn();
+
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            onScroll={event => {
+              onScroll(event.nativeEvent);
+            }}
+            ref={scrollViewRef}>
+            <View style={{width: 1, height: 2, top: 3}} ref={viewRef} />
+          </ScrollView>,
+        );
+      });
+
+      const scrollViewElement = ensureInstance(
+        scrollViewRef.current,
+        ReactNativeElement,
+      );
+
+      expect(scrollViewElement.scrollTop).toBe(0);
+
+      Fantom.scrollTo(scrollViewRef, {
+        x: 0,
+        y: 1,
+      });
+
+      expect(scrollViewElement.scrollTop).toBe(1);
+    });
   });
 
   describe('flushAllNativeEvents', () => {
@@ -940,6 +1045,38 @@ describe('Fantom', () => {
 
       Fantom.runOnUIThread(() => {
         Fantom.enqueueModalSizeUpdate(modalElement, {
+          width: 100,
+          height: 100,
+        });
+      });
+
+      Fantom.runWorkLoop();
+
+      const viewElement = ensureInstance(
+        viewNodeRef.current,
+        ReactNativeElement,
+      );
+
+      const boundingClientRect = viewElement.getBoundingClientRect();
+      expect(boundingClientRect.height).toBe(25);
+      expect(boundingClientRect.width).toBe(50);
+    });
+
+    it('change size of <Modal /> (with ref)', () => {
+      const root = Fantom.createRoot();
+      const modalNodeRef = createRef<HostInstance>();
+      const viewNodeRef = createRef<HostInstance>();
+
+      Fantom.runTask(() => {
+        root.render(
+          <Modal ref={modalNodeRef}>
+            <View style={{width: '50%', height: '25%'}} ref={viewNodeRef} />
+          </Modal>,
+        );
+      });
+
+      Fantom.runOnUIThread(() => {
+        Fantom.enqueueModalSizeUpdate(modalNodeRef, {
           width: 100,
           height: 100,
         });

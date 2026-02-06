@@ -7,6 +7,11 @@
 
 #import <React/RCTShadowView.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTImageShadowView : RCTShadowView
 
 @end
+
+#endif

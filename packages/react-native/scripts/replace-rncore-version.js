@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {execSync} = require('child_process');
+const {spawnSync} = require('child_process');
 const fs = require('fs');
 const yargs = require('yargs');
 
@@ -62,12 +62,23 @@ function replaceRNCoreConfiguration(
   const tarballURLPath = `${podsRoot}/ReactNativeCore-artifacts/reactnative-core-${version.toLowerCase()}-${configuration.toLowerCase()}.tar.gz`;
 
   const finalLocation = 'React-Core-prebuilt';
-  console.log('Preparing the final location', finalLocation);
-  fs.rmSync(finalLocation, {force: true, recursive: true});
-  fs.mkdirSync(finalLocation, {recursive: true});
+
+  // Delete all directories - not files, since we want to keep the React-VFS.yaml file
+  const dirs = fs
+    .readdirSync(finalLocation, {withFileTypes: true})
+    .filter(dirent => dirent.isDirectory());
+  for (const dirent of dirs) {
+    const direntName =
+      typeof dirent.name === 'string' ? dirent.name : dirent.name.toString();
+    const dirPath = `${finalLocation}/${direntName}`;
+    console.log('Removing directory', dirPath);
+    fs.rmSync(dirPath, {force: true, recursive: true});
+  }
 
   console.log('Extracting the tarball', tarballURLPath);
-  execSync(`tar -xf ${tarballURLPath} -C ${finalLocation}`);
+  spawnSync('tar', ['-xf', tarballURLPath, '-C', finalLocation], {
+    stdio: 'inherit',
+  });
 }
 
 function updateLastBuildConfiguration(configuration /*: string */) {

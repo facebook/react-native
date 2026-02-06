@@ -32,7 +32,7 @@ public object ReactClippingViewGroupHelper {
    * @param outputRect where the calculated rectangle will be written
    */
   @JvmStatic
-  public fun calculateClippingRect(view: View, outputRect: Rect): Unit {
+  public fun calculateClippingRect(view: View, outputRect: Rect) {
     when (val parent = view.parent) {
       null -> {
         outputRect.setEmpty()
@@ -42,11 +42,14 @@ public object ReactClippingViewGroupHelper {
         if (parent.removeClippedSubviews) {
           parent.getClippingRect(helperRect)
           // Intersect the view with the parent's rectangle
-          if (!helperRect.intersect(
-              view.left,
-              view.top + view.translationY.toInt(),
-              view.right,
-              view.bottom + view.translationY.toInt())) {
+          if (
+              !helperRect.intersect(
+                  view.left,
+                  view.top + view.translationY.toInt(),
+                  view.right,
+                  view.bottom + view.translationY.toInt(),
+              )
+          ) {
             outputRect.setEmpty()
             return
           }

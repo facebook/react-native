@@ -11,11 +11,11 @@
 
 #import <jsinspector-modern/ReactCdp.h>
 
-typedef facebook::react::jsinspector_modern::NetworkRequestListener RCTInspectorNetworkListener;
+using RCTInspectorNetworkListener = facebook::react::jsinspector_modern::NetworkRequestListener;
 
-typedef facebook::react::jsinspector_modern::ScopedExecutor<RCTInspectorNetworkListener> RCTInspectorNetworkExecutor;
+using RCTInspectorNetworkExecutor = facebook::react::jsinspector_modern::ScopedExecutor<RCTInspectorNetworkListener>;
 
-typedef facebook::react::jsinspector_modern::LoadNetworkResourceRequest RCTInspectorLoadNetworkResourceRequest;
+using RCTInspectorLoadNetworkResourceRequest = facebook::react::jsinspector_modern::LoadNetworkResourceRequest;
 
 /**
  * A helper class that wraps around NSURLSession to make network requests.

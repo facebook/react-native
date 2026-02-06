@@ -8,12 +8,11 @@
  * @format
  */
 
+import type {HostInstance} from '../..';
 import type {RootTag} from '../Types/RootTagTypes';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {ImageSource} from './ImageSource';
-import typeof ImageViewNativeComponent from './ImageViewNativeComponent';
-import typeof TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
 import * as React from 'react';
 
@@ -24,12 +23,12 @@ export type ImageSize = {
 
 export type ImageResolvedAssetSource = ResolvedAssetSource;
 
-type ImageComponentStaticsIOS = $ReadOnly<{
+type ImageComponentStaticsIOS = Readonly<{
   getSize(uri: string): Promise<ImageSize>,
   getSize(
     uri: string,
     success: (width: number, height: number) => void,
-    failure?: (error: mixed) => void,
+    failure?: (error: unknown) => void,
   ): void,
 
   getSizeWithHeaders(
@@ -40,7 +39,7 @@ type ImageComponentStaticsIOS = $ReadOnly<{
     uri: string,
     headers: {[string]: string, ...},
     success: (width: number, height: number) => void,
-    failure?: (error: mixed) => void,
+    failure?: (error: unknown) => void,
   ): void,
 
   prefetch(url: string): Promise<boolean>,
@@ -61,23 +60,20 @@ type ImageComponentStaticsIOS = $ReadOnly<{
   resolveAssetSource(source: ImageSource): ?ImageResolvedAssetSource,
 }>;
 
-type ImageComponentStaticsAndroid = $ReadOnly<{
+type ImageComponentStaticsAndroid = Readonly<{
   ...ImageComponentStaticsIOS,
   abortPrefetch(requestId: number): void,
 }>;
 
 export type AbstractImageAndroid = component(
-  ref?: React.RefSetter<
-    | React.ElementRef<TextInlineImageNativeComponent>
-    | React.ElementRef<ImageViewNativeComponent>,
-  >,
+  ref?: React.RefSetter<HostInstance>,
   ...props: ImagePropsType
 );
 
 export type ImageAndroid = AbstractImageAndroid & ImageComponentStaticsAndroid;
 
 export type AbstractImageIOS = component(
-  ref?: React.RefSetter<React.ElementRef<ImageViewNativeComponent>>,
+  ref?: React.RefSetter<HostInstance>,
   ...props: ImagePropsType
 );
 

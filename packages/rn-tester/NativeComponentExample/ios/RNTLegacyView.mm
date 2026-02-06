@@ -17,7 +17,7 @@
 
 - (void)emitEvent
 {
-  if (!self.onColorChanged) {
+  if (self.onColorChanged == nullptr) {
     return;
   }
   CGFloat hue = 0.0;

@@ -22,12 +22,17 @@ import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
  */
 internal class PropsAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private var connectedViewTag = -1
   private val propNodeMapping: MutableMap<String, Int>
   private val propMap = JavaOnlyMap()
   private var connectedViewUIManager: UIManager? = null
+
+  val connectedView: View?
+    // resolveView throws an [IllegalViewOperationException] when the view doesn't exist
+    // (this can happen if the surface is being deallocated).
+    get() = runCatching { connectedViewUIManager?.resolveView(connectedViewTag) }.getOrNull()
 
   init {
     val props = config.getMap("props")
@@ -43,7 +48,8 @@ internal class PropsAnimatedNode(
   fun connectToView(viewTag: Int, uiManager: UIManager?) {
     if (connectedViewTag != -1) {
       throw JSApplicationIllegalArgumentException(
-          "Animated node $tag is already attached to a view: $connectedViewTag")
+          "Animated node $tag is already attached to a view: $connectedViewTag"
+      )
     }
     connectedViewTag = viewTag
     connectedViewUIManager = uiManager
@@ -54,7 +60,8 @@ internal class PropsAnimatedNode(
       throw JSApplicationIllegalArgumentException(
           "Attempting to disconnect view that has " +
               "not been connected with the given animated node: $viewTag " +
-              "but is connected to view $connectedViewTag")
+              "but is connected to view $connectedViewTag"
+      )
     }
     connectedViewTag = -1
   }
@@ -103,16 +110,12 @@ internal class PropsAnimatedNode(
         node.collectViewUpdates(key, propMap)
       } else {
         throw IllegalArgumentException(
-            "Unsupported type of node used in property node ${node.javaClass}")
+            "Unsupported type of node used in property node ${node.javaClass}"
+        )
       }
     }
     connectedViewUIManager?.synchronouslyUpdateViewOnUIThread(connectedViewTag, propMap)
   }
-
-  val connectedView: View?
-    // resolveView throws an [IllegalViewOperationException] when the view doesn't exist
-    // (this can happen if the surface is being deallocated).
-    get() = runCatching { connectedViewUIManager?.resolveView(connectedViewTag) }.getOrNull()
 
   override fun prettyPrint(): String =
       "PropsAnimatedNode[$tag] connectedViewTag: $connectedViewTag " +

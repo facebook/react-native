@@ -21,7 +21,7 @@
 #import <React/RCTCallInvoker.h>
 #import <React/RCTCallInvokerModule.h>
 #import <React/RCTConstants.h>
-#import <React/RCTCxxModule.h>
+#import <React/RCTDevMenuConfigurationDecorator.h>
 #import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
@@ -29,9 +29,7 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
-#import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
-#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 using namespace facebook;
 using namespace facebook::react;
@@ -215,15 +213,17 @@ typedef struct {
 
   RCTBridgeProxy *_bridgeProxy;
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
+  RCTDevMenuConfigurationDecorator *_devMenuConfigurationDecorator;
 
   dispatch_queue_t _sharedModuleQueue;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-                   bridgeProxy:(RCTBridgeProxy *)bridgeProxy
-         bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
-                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                     jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                      bridgeProxy:(RCTBridgeProxy *)bridgeProxy
+            bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                         delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                        jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+    devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator
 {
   if (self = [super init]) {
     _jsInvoker = std::move(jsInvoker);
@@ -233,6 +233,7 @@ typedef struct {
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
     _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
+    _devMenuConfigurationDecorator = devMenuConfigurationDecorator;
 
     if (RCTTurboModuleInteropEnabled()) {
       // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
@@ -273,10 +274,11 @@ typedef struct {
                      jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   return [self initWithBridge:bridge
-                  bridgeProxy:nil
-        bridgeModuleDecorator:[bridge bridgeModuleDecorator]
-                     delegate:delegate
-                    jsInvoker:jsInvoker];
+                        bridgeProxy:nil
+              bridgeModuleDecorator:[bridge bridgeModuleDecorator]
+                           delegate:delegate
+                          jsInvoker:jsInvoker
+      devMenuConfigurationDecorator:nil];
 }
 
 - (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
@@ -285,10 +287,25 @@ typedef struct {
                           jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   return [self initWithBridge:nil
-                  bridgeProxy:bridgeProxy
-        bridgeModuleDecorator:bridgeModuleDecorator
-                     delegate:delegate
-                    jsInvoker:jsInvoker];
+                        bridgeProxy:bridgeProxy
+              bridgeModuleDecorator:bridgeModuleDecorator
+                           delegate:delegate
+                          jsInvoker:jsInvoker
+      devMenuConfigurationDecorator:nil];
+}
+
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+      devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator
+{
+  return [self initWithBridge:nil
+                        bridgeProxy:bridgeProxy
+              bridgeModuleDecorator:bridgeModuleDecorator
+                           delegate:delegate
+                          jsInvoker:jsInvoker
+      devMenuConfigurationDecorator:devMenuConfigurationDecorator];
 }
 
 /**
@@ -398,7 +415,6 @@ typedef struct {
         .jsInvoker = _jsInvoker,
         .nativeMethodCallInvoker = nativeMethodCallInvoker,
         .isSyncModule = methodQueue == RCTJSThread,
-        .shouldVoidMethodsExecuteSync = (bool)RCTTurboModuleSyncVoidMethodsEnabled(),
     };
 
     auto turboModule = [(id<RCTTurboModule>)moduleProvider getTurboModule:params];
@@ -453,15 +469,6 @@ typedef struct {
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
       std::make_shared<LegacyModuleNativeMethodCallInvoker>(methodQueue, [self _requiresMainQueueSetup:moduleClass]);
 
-  // If module is a legacy cxx module, return TurboCxxModule
-  if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
-    // Use TurboCxxModule compat class to wrap the CxxModule instance.
-    // This is only for migration convenience, despite less performant.
-    auto turboModule = std::make_shared<TurboCxxModule>([((RCTCxxModule *)module) createModule], _jsInvoker);
-    _legacyModuleCache.insert({moduleName, turboModule});
-    return turboModule;
-  }
-
   // Create interop module
   ObjCTurboModule::InitParams params = {
       .moduleName = moduleName,
@@ -469,7 +476,6 @@ typedef struct {
       .jsInvoker = _jsInvoker,
       .nativeMethodCallInvoker = std::move(nativeMethodCallInvoker),
       .isSyncModule = methodQueue == RCTJSThread,
-      .shouldVoidMethodsExecuteSync = (bool)RCTTurboModuleSyncVoidMethodsEnabled(),
   };
 
   auto turboModule = std::make_shared<ObjCInteropTurboModule>(params);
@@ -482,7 +488,7 @@ typedef struct {
 - (BOOL)_isTurboModule:(const char *)moduleName
 {
   Class moduleClass = [self _getModuleClassFromName:moduleName];
-  return moduleClass != nil && (isTurboModuleClass(moduleClass) && ![moduleClass isSubclassOfClass:RCTCxxModule.class]);
+  return moduleClass != nil && isTurboModuleClass(moduleClass);
 }
 
 - (BOOL)_isLegacyModule:(const char *)moduleName
@@ -493,7 +499,7 @@ typedef struct {
 
 - (BOOL)_isLegacyModuleClass:(Class)moduleClass
 {
-  return moduleClass != nil && (!isTurboModuleClass(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
+  return moduleClass != nil && !isTurboModuleClass(moduleClass);
 }
 
 - (id<RCTModuleProvider>)_moduleProviderForName:(const char *)moduleName
@@ -709,7 +715,7 @@ typedef struct {
       } else if (_bridgeProxy) {
         [(id)module setValue:_bridgeProxy forKey:@"bridge"];
       }
-    } @catch (NSException *exception) {
+    } @catch (NSException *) {
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
            "permitted. You must either @synthesize the bridge property, "
@@ -757,7 +763,7 @@ typedef struct {
 
       @try {
         [(id)module setValue:methodQueue forKey:@"methodQueue"];
-      } @catch (NSException *exception) {
+      } @catch (NSException *) {
         RCTLogError(
             @"%@ has no setter or ivar for its methodQueue, which is not "
              "permitted. You must either @synthesize the methodQueue property, "
@@ -780,6 +786,12 @@ typedef struct {
   if ([module respondsToSelector:@selector(initialize)]) {
     [(id<RCTInitializing>)module initialize];
   }
+
+#if RCT_DEV_MENU
+
+  [_devMenuConfigurationDecorator decorate:module];
+
+#endif
 
   /**
    * Attach method queue to id<RCTBridgeModule> object.
@@ -927,8 +939,8 @@ typedef struct {
    * aren't any strong references to it in ObjC. Hence, we give
    * __turboModuleProxy a strong reference to TurboModuleManager.
    */
-  auto turboModuleProvider = [self,
-                              runtime = &runtime](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+  auto turboModuleProvider =
+      [self](jsi::Runtime &runtime, const std::string &name) -> std::shared_ptr<react::TurboModule> {
     auto moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
@@ -942,7 +954,7 @@ typedef struct {
      * Additionally, if a TurboModule with the name `name` isn't found, then we
      * trigger an assertion failure.
      */
-    auto turboModule = [self provideTurboModule:moduleName runtime:runtime];
+    auto turboModule = [self provideTurboModule:moduleName runtime:&runtime];
 
     if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
       [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
@@ -957,7 +969,8 @@ typedef struct {
   };
 
   if (RCTTurboModuleInteropEnabled()) {
-    auto legacyModuleProvider = [self](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+    auto legacyModuleProvider =
+        [self](jsi::Runtime & /*runtime*/, const std::string &name) -> std::shared_ptr<react::TurboModule> {
       auto moduleName = name.c_str();
 
       TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);

@@ -14,7 +14,6 @@
 #include <deque>
 #include <memory>
 #include <optional>
-#include <ranges>
 #include <vector>
 
 namespace facebook::react {
@@ -26,7 +25,7 @@ struct ShadowNodeUpdateInfo {
   int depth;
   std::weak_ptr<const ShadowNode> node;
   // populate for node that needs props update
-  std::optional<folly::dynamic> changedProps;
+  std::optional<folly::dynamic> changedProps{};
   // populate for node that's also a ancestor node for updated nodes
   std::vector<int> updatedChildrenIndices{};
 };
@@ -86,10 +85,15 @@ void addAncestorsToUpdateList(
  * license).
  */
 void UIManager::updateShadowTree(
-    const std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+    std::unordered_map<Tag, folly::dynamic>&& tagToProps) {
   const auto& contextContainer = *contextContainer_;
 
-  std::unordered_map<Tag, folly::dynamic> remainingTagToProps = tagToProps;
+  auto remainingTagToProps = std::move(tagToProps);
+
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidUpdateShadowTree(remainingTagToProps);
+  }
+
   getShadowTreeRegistry().enumerate([&](const ShadowTree& shadowTree,
                                         bool& stop) {
     if (remainingTagToProps.empty()) {
@@ -219,10 +223,6 @@ void UIManager::updateShadowTree(
       LOG(ERROR) << "Root ShadowNode has not been cloned";
     }
   });
-
-  if (delegate_ != nullptr) {
-    delegate_->uiManagerDidUpdateShadowTree(tagToProps);
-  }
 }
 
 } // namespace facebook::react

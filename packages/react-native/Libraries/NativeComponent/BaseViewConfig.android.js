@@ -122,6 +122,18 @@ const bubblingEventTypes = {
       bubbled: 'onFocus',
     },
   },
+  topKeyDown: {
+    phasedRegistrationNames: {
+      captured: 'onKeyDownCapture',
+      bubbled: 'onKeyDown',
+    },
+  },
+  topKeyUp: {
+    phasedRegistrationNames: {
+      captured: 'onKeyUpCapture',
+      bubbled: 'onKeyUp',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -179,8 +191,17 @@ const validAttributesForNonEventProps = {
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
   transformOrigin: true,
-  experimental_backgroundImage: {
-    process: require('../StyleSheet/processBackgroundImage').default,
+  experimental_backgroundImage: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? (true as const)
+    : {process: require('../StyleSheet/processBackgroundImage').default},
+  experimental_backgroundSize: {
+    process: require('../StyleSheet/processBackgroundSize').default,
+  },
+  experimental_backgroundPosition: {
+    process: require('../StyleSheet/processBackgroundPosition').default,
+  },
+  experimental_backgroundRepeat: {
+    process: require('../StyleSheet/processBackgroundRepeat').default,
   },
   boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
     ? (true as const)

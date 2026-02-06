@@ -26,7 +26,7 @@ static inline const char *RCTFunctionDescriptorFromType(RCTFunctionType type)
     default:
       return "async";
   }
-};
+}
 
 @protocol RCTBridgeMethod <NSObject>
 

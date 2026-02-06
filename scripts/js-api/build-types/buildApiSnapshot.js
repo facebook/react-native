@@ -23,21 +23,21 @@ const {
   // $FlowFixMe[cannot-resolve-module]
 } = require('@microsoft/api-extractor');
 const {promises: fs} = require('fs');
-const glob = require('glob');
 const {diff} = require('jest-diff');
 const path = require('path');
 const prettier = require('prettier');
 const osTempDir = require('temp-dir');
+const {globSync} = require('tinyglobby');
 const {styleText} = require('util');
 
-const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
+const inputFilesPostTransforms: ReadonlyArray<PluginObj<unknown>> = [
   require('./transforms/typescript/renameDefaultExportedIdentifiers'),
   require('./transforms/typescript/stripUnstableApis'),
 ];
 
 const postTransforms = (
   options: BuildApiSnapshotOptions,
-): $ReadOnlyArray<PluginObj<mixed>> => [
+): ReadonlyArray<PluginObj<unknown>> => [
   require('./transforms/typescript/simplifyTypes'),
   require('./transforms/typescript/sortProperties'),
   require('./transforms/typescript/sortUnions'),
@@ -48,7 +48,7 @@ const postTransforms = (
   ),
 ];
 
-type BuildApiSnapshotOptions = $ReadOnly<{
+type BuildApiSnapshotOptions = Readonly<{
   validate: boolean,
   debugVersionAnnotations: boolean,
 }>;
@@ -146,7 +146,7 @@ async function validateSnapshots(
     };
 
     // $FlowFixMe[prop-missing]
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     const diffResult = diff(prevSnapshot, newSnapshot, options);
     const rerunCommand = isGitRepo() ? 'yarn build-types' : 'js1 build-js-api';
     console.error(
@@ -163,12 +163,11 @@ async function validateSnapshots(
 }
 
 async function findPackagesWithTypedef() {
-  const packagesWithGeneratedTypes = glob
-    .sync(`${PACKAGES_DIR}/**/types_generated`, {nodir: false})
-    .map(typesPath =>
-      path.relative(PACKAGES_DIR, typesPath).split('/').slice(0, -1).join('/'),
-    );
-
+  const packagesWithGeneratedTypes = globSync('**/types_generated', {
+    cwd: PACKAGES_DIR,
+    onlyDirectories: true,
+    expandDirectories: false,
+  }).map(typesPath => path.dirname(typesPath));
   const packagesWithNames = await Promise.all(
     packagesWithGeneratedTypes.map(async pkg => {
       const packageJsonContent = await fs.readFile(
@@ -189,7 +188,7 @@ async function findPackagesWithTypedef() {
 
 async function preparePackagesInTempDir(
   tempDirectory: string,
-  packages: $ReadOnlyArray<{directory: string, name: string}>,
+  packages: ReadonlyArray<{directory: string, name: string}>,
 ) {
   await generateConfigFiles(tempDirectory);
 
@@ -202,7 +201,11 @@ async function preparePackagesInTempDir(
     }),
   );
 
-  const typeDefs = glob.sync(`${tempDirectory}/**/*.d.ts`);
+  const typeDefs = globSync('**/*.d.ts', {
+    cwd: tempDirectory,
+    onlyFiles: true,
+    absolute: true,
+  });
   await Promise.all(
     typeDefs.map(async file => {
       const source = await fs.readFile(file, 'utf-8');
@@ -221,9 +224,13 @@ async function preparePackagesInTempDir(
  */
 async function rewriteLocalImports(
   tempDirectory: string,
-  packages: $ReadOnlyArray<{directory: string, name: string}>,
+  packages: ReadonlyArray<{directory: string, name: string}>,
 ) {
-  const definitions = glob.sync(`${tempDirectory}/**/*.d.ts`);
+  const definitions = globSync('**/*.d.ts', {
+    cwd: tempDirectory,
+    onlyFiles: true,
+    absolute: true,
+  });
 
   await Promise.all(
     definitions.map(async file => {
@@ -262,13 +269,13 @@ async function getProcessedSnapshotResult(
     postTransforms(options),
   );
 
-  return prettier
-    .format(transformedRollup, {
+  return (
+    await prettier.format(transformedRollup, {
       parser: 'typescript',
       semi: false,
       trailingComma: 'all',
     })
-    .trimEnd();
+  ).trimEnd();
 }
 
 async function generateConfigFiles(tempDirectory: string) {
@@ -324,7 +331,7 @@ async function copyDirectory(src: string, dest: string) {
 }
 
 async function createTempDir(dirName: string): Promise<string> {
-  // $FlowExpectedError[incompatible-call] temp-dir is typed as a default export
+  // $FlowExpectedError[incompatible-type] temp-dir is typed as a default export
   const tempDir = path.join(osTempDir, dirName);
 
   await fs.mkdir(tempDir, {recursive: true});

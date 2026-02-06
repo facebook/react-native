@@ -27,7 +27,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 const boxSize = 12;
 const padding = 8;
 const leftToRightTimingConfig = (useNativeDriver: boolean) => ({

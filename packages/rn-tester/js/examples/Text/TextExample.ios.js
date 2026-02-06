@@ -83,7 +83,7 @@ class TextAlignRTLExample extends React.Component<
   }
 }
 
-class Entity extends React.Component<$FlowFixMeProps> {
+class Entity extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <Text style={{fontWeight: '500', color: '#527fe4'}}>
@@ -93,7 +93,7 @@ class Entity extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
+class AttributeToggler extends React.Component<{...}, $FlowFixMe> {
   state: any | {fontSize: number, fontWeight: string} = {
     fontWeight: 'bold',
     fontSize: 15,
@@ -145,7 +145,7 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{}>;
+type AdjustingFontSizeProps = Readonly<{}>;
 
 type AdjustingFontSizeState = {
   dynamicText: string,
@@ -269,7 +269,7 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
-class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
+class TextBaseLineLayoutExample extends React.Component<{}, unknown> {
   render(): React.Node {
     const texts = [];
     for (let i = 9; i >= 0; i--) {
@@ -393,7 +393,7 @@ class TextRenderInfoExample extends React.Component<
   {
     fontSize: number,
     numberOfTextBlocks: number,
-    textMetrics: $ReadOnly<{
+    textMetrics: Readonly<{
       ascender: number,
       capHeight: number,
       descender: number,
@@ -409,7 +409,7 @@ class TextRenderInfoExample extends React.Component<
   state: {
     fontSize: number,
     numberOfTextBlocks: number,
-    textMetrics: $ReadOnly<{
+    textMetrics: Readonly<{
       ascender: number,
       capHeight: number,
       descender: number,
@@ -506,7 +506,7 @@ class TextRenderInfoExample extends React.Component<
 class TextWithCapBaseBox extends React.Component<
   {children: string, style?: any},
   {
-    textMetrics: $ReadOnly<{
+    textMetrics: Readonly<{
       ascender: number,
       capHeight: number,
       descender: number,
@@ -520,7 +520,7 @@ class TextWithCapBaseBox extends React.Component<
   },
 > {
   state: {
-    textMetrics: $ReadOnly<{
+    textMetrics: Readonly<{
       ascender: number,
       capHeight: number,
       descender: number,
@@ -577,42 +577,23 @@ const examples = [
     description:
       ('Shows system font families including system-ui/ui-sans-serif, ui-serif, ui-monospace, and ui-rounded': string),
     render: function (): React.Node {
+      const baseTextStyle = {fontSize: 20};
       return (
-        <View testID={'ios-font-families'}>
-          <Text
-            style={{
-              fontFamily: 'system-ui',
-              fontSize: 32,
-              marginBottom: 20,
-            }}>
-            `fontFamily: system-ui` (same as `ui-sans-serif`)
+        <View testID={'ios-font-families'} style={{gap: 10}}>
+          <Text style={{...baseTextStyle, fontFamily: 'system-ui'}}>
+            system-ui (same as ui-sans-serif)
           </Text>
-          <Text
-            style={{
-              fontFamily: 'ui-sans-serif',
-              fontSize: 32,
-              marginBottom: 20,
-            }}>
-            `fontFamily: ui-sans-serif` (same as `system-ui`)
+          <Text style={{...baseTextStyle, fontFamily: 'ui-sans-serif'}}>
+            ui-sans-serif (same as system-ui)
           </Text>
-          <Text
-            style={{fontFamily: 'ui-serif', fontSize: 32, marginBottom: 20}}>
-            `fontFamily: ui-serif`
+          <Text style={{...baseTextStyle, fontFamily: 'ui-serif'}}>
+            ui-serif
           </Text>
-          <Text
-            style={{
-              fontFamily: 'ui-monospace',
-              fontSize: 32,
-              marginBottom: 20,
-            }}>
-            `fontFamily: ui-monospace`
+          <Text style={{...baseTextStyle, fontFamily: 'ui-monospace'}}>
+            ui-monospace
           </Text>
-          <Text
-            style={{
-              fontFamily: 'ui-rounded',
-              fontSize: 32,
-            }}>
-            `fontFamily: ui-rounded`
+          <Text style={{...baseTextStyle, fontFamily: 'ui-rounded'}}>
+            ui-rounded
           </Text>
         </View>
       );
@@ -767,6 +748,7 @@ const examples = [
             }}>
             Verdana bold
           </Text>
+          <Text style={{fontFamily: 'SystemCondensed'}}>SystemCondensed</Text>
           <Text style={{fontFamily: 'Unknown Font Family'}}>
             Unknown Font Family
           </Text>

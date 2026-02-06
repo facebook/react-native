@@ -64,6 +64,7 @@ jsi::Object NativeIntersectionObserver::observeV2(
 
   auto thresholds = options.thresholds;
   auto rootThresholds = options.rootThresholds;
+  auto rootMargin = options.rootMargin;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   intersectionObserverManager_.observe(
@@ -72,6 +73,7 @@ jsi::Object NativeIntersectionObserver::observeV2(
       shadowNodeFamily,
       thresholds,
       rootThresholds,
+      rootMargin,
       uiManager);
 
   return tokenFromShadowNodeFamily(runtime, shadowNodeFamily);

@@ -17,7 +17,7 @@ add_library(hermes_inspector_modern
 
 target_compile_reactnative_options(hermes_inspector_modern PRIVATE)
 
-if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
         target_compile_options(
                 hermes_inspector_modern
                 PRIVATE
@@ -28,7 +28,7 @@ endif()
 target_include_directories(hermes_inspector_modern PUBLIC ${REACT_COMMON_DIR})
 react_native_android_selector(reactnative reactnative "")
 target_link_libraries(hermes_inspector_modern
-        hermes-engine::libhermes
+        hermes-engine::hermesvm
         jsi
         jsinspector
         ${reactnative})

@@ -38,7 +38,7 @@ public class PopupMenuPackage() : BaseReactPackage(), ViewManagerOnDemandReactPa
 
   override fun createViewManager(
       reactContext: ReactApplicationContext,
-      viewManagerName: String
+      viewManagerName: String,
   ): ViewManager<*, *>? {
     val spec: ModuleSpec? = viewManagersMap.get(viewManagerName)
     return if (spec != null) (spec.getProvider().get() as ViewManager<*, *>) else null

@@ -10,9 +10,9 @@
 
 'use strict';
 
-// $FlowIgnore[cannot-resolve-module]
+// $FlowFixMe[cannot-resolve-module]
 const flowSnaps = require('../../../../src/parsers/flow/modules/__tests__/__snapshots__/module-parser-snapshot-test.js.snap');
-// $FlowIgnore[cannot-resolve-module]
+// $FlowFixMe[cannot-resolve-module]
 const tsSnaps = require('../../../../src/parsers/typescript/modules/__tests__/__snapshots__/typescript-module-parser-snapshot-test.js.snap');
 const flowFixtures = require('../../flow/modules/__test_fixtures__/fixtures.js');
 const tsFixtures = require('../../typescript/modules/__test_fixtures__/fixtures.js');

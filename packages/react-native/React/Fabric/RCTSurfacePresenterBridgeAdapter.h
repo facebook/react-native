@@ -25,7 +25,7 @@ facebook::react::RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
 @interface RCTSurfacePresenterBridgeAdapter : NSObject
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-              contextContainer:(facebook::react::ContextContainer::Shared)contextContainer;
+              contextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer;
 
 /*
  * Returns a stored instance of Surface Presenter which is managed by a bridge.

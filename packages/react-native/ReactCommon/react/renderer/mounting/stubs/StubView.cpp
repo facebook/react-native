@@ -88,6 +88,7 @@ std::vector<StubView> getDebugChildren(
     const StubView& stubView,
     DebugStringConvertibleOptions /*options*/) {
   std::vector<StubView> result;
+  result.reserve(stubView.children.size());
   for (const auto& child : stubView.children) {
     result.push_back(*child);
   }

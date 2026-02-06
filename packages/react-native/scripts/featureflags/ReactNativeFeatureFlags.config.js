@@ -60,6 +60,17 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
+    cdpInteractionMetricsEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-16',
+        description:
+          'Enable emitting of InteractionEntry live metrics to the debugger. Requires `enableBridgelessArchitecture`.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     cxxNativeAnimatedEnabled: {
       defaultValue: false,
       metadata: {
@@ -71,12 +82,23 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    cxxNativeAnimatedRemoveJsSync: {
+    disableEarlyViewCommandExecution: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2025-06-16',
-        description: 'Removes JS sync at end of native animation',
+        dateAdded: '2025-10-07',
+        description: 'Dispatch view commands in mount item order.',
         expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    disableImageViewPreallocationAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-07',
+        description:
+          'Force disable view preallocation for images triggered from createNode off the main thread on Android',
+        expectedReleaseValue: false,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
@@ -92,13 +114,13 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableOldAndroidAttachmentMetricsWorkarounds: {
-      defaultValue: true,
+    disableSubviewClippingAndroid: {
+      defaultValue: false,
       metadata: {
-        dateAdded: '2025-07-02',
+        dateAdded: '2025-11-05',
         description:
-          'Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics',
-        expectedReleaseValue: true,
+          'Force disable subview clipping for ReactViewGroup on Android',
+        expectedReleaseValue: false,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
@@ -114,6 +136,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableViewPreallocationAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-07',
+        description:
+          'Force disable view preallocation triggered from createNode off the main thread on Android',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAccessibilityOrder: {
       defaultValue: false,
       metadata: {
@@ -123,7 +156,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     enableAccumulatedUpdatesInRawPropsAndroid: {
       defaultValue: false,
@@ -131,6 +164,28 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-12-10',
         description:
           'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableAndroidAntialiasedBorderRadiusClipping: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-14',
+        description:
+          'Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableAndroidLinearText: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-09',
+        description:
+          'Enables linear text rendering on Android wherever subpixel text rendering is enabled',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -156,6 +211,16 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
+    },
+    enableClipChildrenForOverflowHidden: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
     },
     enableCppPropsIteratorSetter: {
       defaultValue: false,
@@ -220,6 +285,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableExclusivePropsUpdateAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-11',
+        description:
+          'When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableFabricLogs: {
       defaultValue: false,
       metadata: {
@@ -238,19 +314,8 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
-    enableFixForParentTagDuringReparenting: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-04-22',
-        description:
-          'This feature flag enables a fix for reparenting fix in differentiator',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableFontScaleChangesUpdatingLayout: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-04-07',
         description:
@@ -281,6 +346,39 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableImagePrefetchingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-06-21',
+        description:
+          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableImagePrefetchingJNIBatchingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-11-10',
+        description:
+          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout and batch them together in a single JNI call',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableImagePrefetchingOnUiThreadAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-02',
+        description:
+          'When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableImmediateUpdateModeForContentOffsetChanges: {
       defaultValue: false,
       metadata: {
@@ -292,12 +390,44 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableImperativeFocus: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-13',
+        description:
+          'Enable ref.focus() and ref.blur() for all views, not just TextInput.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableInteropViewManagerClassLookUpOptimizationIOS: {
       defaultValue: false,
       metadata: {
         dateAdded: '2025-06-17',
         description:
           'This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableIntersectionObserverByDefault: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables the IntersectionObserver Web API in React Native.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'canary',
+    },
+    enableKeyEvents: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-17',
+        description:
+          'Enables key up/down/press events to be sent to JS from components',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -356,23 +486,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableNetworkEventReporting: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableNewBackgroundAndBorderDrawables: {
       defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-24',
         description:
-          'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
+          'Enable network event reporting hooks in each native platform through `NetworkReporter` (Web Perf APIs + CDP). This flag should be combined with `fuseboxNetworkInspectionEnabled` to enable Network CDP debugging.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -397,15 +516,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableResourceTimingAPI: {
+    enableSwiftUIBasedFilters: {
       defaultValue: false,
       metadata: {
+        dateAdded: '2025-07-30',
         description:
-          'Enables the reporting of network resource timings through `PerformanceObserver`.',
+          'When enabled, it will use SwiftUI for filter effects like blur on iOS.',
         expectedReleaseValue: true,
-        purpose: 'release',
+        purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     enableViewCulling: {
       defaultValue: false,
@@ -424,6 +544,28 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-07-31',
         description:
           'Enables View Recycling. When enabled, individual ViewManagers must still opt-in.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableViewRecyclingForImage: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-09-04',
+        description:
+          'Enables View Recycling for <Image> via ReactViewGroup/ReactViewManager.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableViewRecyclingForScrollView: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-20',
+        description:
+          'Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -451,6 +593,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableVirtualViewContainerStateExperimental: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-09',
+        description:
+          'Enables the experimental version of `VirtualViewContainerState`.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableVirtualViewDebugFeatures: {
       defaultValue: false,
       metadata: {
@@ -458,28 +611,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables VirtualView debug features such as logging and overlays.',
         expectedReleaseValue: false,
         purpose: 'operational',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableVirtualViewRenderState: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-06-25',
-        description:
-          'Enables reading render state when dispatching VirtualView events.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableVirtualViewWindowFocusDetection: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-06-24',
-        description:
-          'Enables window focus detection for prioritizing VirtualView events.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -494,6 +625,27 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    fixTextClippingAndroid15useBoundsForWidth: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-12-03',
+        description:
+          'Fix text clipping starting in Android 15 due to usage of useBoundsForWidth',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
+    fuseboxAssertSingleHostState: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Enable system assertion validating that Fusebox is configured with a single host. When set, the CDP backend will dynamically disable features (Perf and Network) in the event that multiple hosts are registered (undefined behaviour), and broadcast this over `ReactNativeApplication.systemStateChanged`.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'stable',
+    },
     fuseboxEnabledRelease: {
       defaultValue: false,
       metadata: {
@@ -505,7 +657,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     fuseboxNetworkInspectionEnabled: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-01-31',
         description:
@@ -526,6 +678,39 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    overrideBySynchronousMountPropsAtMountingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-04',
+        description:
+          'Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    perfIssuesEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-10-24',
+        description:
+          'Enable reporting Performance Issues (`detail.devtools.performanceIssue`). Displayed in the V2 Performance Monitor and the "Performance Issues" sub-panel in DevTools.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    perfMonitorV2Enabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-16',
+        description:
+          'Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     preparedTextCacheSize: {
       defaultValue: 200,
       metadata: {
@@ -536,23 +721,33 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    preventShadowTreeCommitExhaustionWithLocking: {
+    preventShadowTreeCommitExhaustion: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2025-07-14',
+        dateAdded: '2025-07-23',
         description:
           'Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
-    releaseImageDataWhenConsumed: {
+    shouldPressibilityUseW3CPointerEventsForHover: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2025-07-10',
         description:
-          'Releases the cached image data when it is consumed by the observers.',
+          'Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    shouldTriggerResponderTransferOnScrollAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-30',
+        description:
+          'Do not emit touchcancel from Android ScrollView, instead native topScroll event will trigger responder transfer and terminate in RN renderer.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -610,27 +805,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    useNativeEqualsInNativeReadableArrayAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-07-15',
-        description:
-          'Use a native implementation of equals in NativeReadableArray.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    useNativeTransformHelperAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-07-15',
-        description: 'Use a native implementation of TransformHelper',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
       metadata: {
@@ -642,34 +816,32 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
-    useOptimizedEventBatchingOnAndroid: {
+    useNestedScrollViewAndroid: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2024-08-29',
+        dateAdded: '2026-01-16',
         description:
-          'Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.',
+          'When enabled, ReactScrollView will extend NestedScrollView instead of ScrollView on Android for improved nested scrolling support.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
-    useRawPropsJsiValue: {
+    useSharedAnimatedBackend: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2024-12-02',
-        description:
-          'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
+        dateAdded: '2025-08-2',
+        description: 'Use shared animation backend in C++ Animated',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
-    useShadowNodeStateOnClone: {
+    useTraitHiddenOnAndroid: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2025-04-16',
-        description:
-          'Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.',
+        dateAdded: '2025-10-9',
+        description: 'Use Trait::hidden on Android',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -696,13 +868,23 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    viewCullingOutsetRatio: {
+      defaultValue: 0,
+      metadata: {
+        dateAdded: '2025-09-18',
+        description:
+          'Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.',
+        expectedReleaseValue: 0,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     virtualViewPrerenderRatio: {
       defaultValue: 5,
       metadata: {
-        dateAdded: '2025-05-30',
         description: 'Initial prerender ratio for VirtualView.',
         expectedReleaseValue: 5,
-        purpose: 'experimentation',
+        purpose: 'operational',
       },
       ossReleaseStage: 'none',
     },
@@ -743,13 +925,25 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableAccessToHostTreeInFabric: {
+    disableMaintainVisibleContentPosition: {
       defaultValue: false,
       metadata: {
+        dateAdded: '2025-08-26',
         description:
-          'Enables access to the host tree in Fabric using DOM-compatible APIs.',
+          'Disable prop maintainVisibleContentPosition in ScrollView',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    externalElementInspectionEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-02-04',
+        description:
+          'Enable the external inspection API for DevTools to communicate with the Inspector overlay.',
         expectedReleaseValue: true,
-        purpose: 'release',
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -771,17 +965,6 @@ const definitions: FeatureFlagDefinitions = {
           'Function used to enable / disabled Layout Animations in React Native.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    reduceDefaultPropsInView: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-5-12',
-        description:
-          'Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

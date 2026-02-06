@@ -19,10 +19,11 @@ on:
 
 jobs:
   create_release:
+    if: github.repository == 'facebook/react-native'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           fetch-depth: 0

@@ -16,13 +16,13 @@ import './setup';
 const consoleError = console.error;
 const consoleWarn = console.warn;
 
-// $FlowIgnore[cannot-write]
+// $FlowFixMe[cannot-write]
 console.error = (...args) => {
   consoleError(...args);
   throw new Error('console.error() was called (see error above)');
 };
 
-// $FlowIgnore[cannot-write]
+// $FlowFixMe[cannot-write]
 console.warn = (...args) => {
   consoleWarn(...args);
   throw new Error('console.warn() was called (see warning above)');

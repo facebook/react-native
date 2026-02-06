@@ -11,6 +11,7 @@
 
 #include "../PerformanceEntryReporter.h"
 
+#include <array>
 #include <variant>
 
 using namespace facebook::react;
@@ -46,13 +47,13 @@ namespace facebook::react {
 [[maybe_unused]] static std::ostream& operator<<(
     std::ostream& os,
     const PerformanceEntry& entry) {
-  static constexpr const char* entryTypeNames[] = {
+  static constexpr auto entryTypeNames = std::to_array<const char*>({
       "PerformanceEntryType::UNDEFINED",
       "PerformanceEntryType::MARK",
       "PerformanceEntryType::MEASURE",
       "PerformanceEntryType::EVENT",
       "PerformanceEntryType::RESOURCE",
-  };
+  });
 
   return std::visit(
       [&](const auto& entryDetails) -> std::ostream& {

@@ -45,9 +45,9 @@ type UnsafeNativeEventObject = Object;
  * can theoretically listen to `RCTDeviceEventEmitter` (although discouraged).
  */
 export default class NativeEventEmitter<
-  TEventToArgsMap: $ReadOnly<
-    Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>>,
+  TEventToArgsMap: Readonly<
+    Record<string, ReadonlyArray<UnsafeNativeEventObject>>,
+  > = Readonly<Record<string, ReadonlyArray<UnsafeNativeEventObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   _nativeModule: ?NativeModule;
@@ -83,10 +83,10 @@ export default class NativeEventEmitter<
     }
   }
 
-  addListener<TEvent: $Keys<TEventToArgsMap>>(
+  addListener<TEvent: keyof TEventToArgsMap>(
     eventType: TEvent,
-    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
-    context?: mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => unknown,
+    context?: unknown,
   ): EventSubscription {
     this._nativeModule?.addListener(eventType);
     let subscription: ?EventSubscription = RCTDeviceEventEmitter.addListener(
@@ -107,7 +107,7 @@ export default class NativeEventEmitter<
     };
   }
 
-  emit<TEvent: $Keys<TEventToArgsMap>>(
+  emit<TEvent: keyof TEventToArgsMap>(
     eventType: TEvent,
     ...args: TEventToArgsMap[TEvent]
   ): void {
@@ -116,9 +116,7 @@ export default class NativeEventEmitter<
     RCTDeviceEventEmitter.emit(eventType, ...args);
   }
 
-  removeAllListeners<TEvent: $Keys<TEventToArgsMap>>(
-    eventType?: ?TEvent,
-  ): void {
+  removeAllListeners<TEvent: keyof TEventToArgsMap>(eventType?: ?TEvent): void {
     invariant(
       eventType != null,
       '`NativeEventEmitter.removeAllListener()` requires a non-null argument.',
@@ -127,7 +125,7 @@ export default class NativeEventEmitter<
     RCTDeviceEventEmitter.removeAllListeners(eventType);
   }
 
-  listenerCount<TEvent: $Keys<TEventToArgsMap>>(eventType: TEvent): number {
+  listenerCount<TEvent: keyof TEventToArgsMap>(eventType: TEvent): number {
     return RCTDeviceEventEmitter.listenerCount(eventType);
   }
 }

@@ -29,7 +29,10 @@ TEST(ShadowNodeFamilyTest, sealObjectCorrectly) {
   auto eventDispatcher = EventDispatcher::Shared{};
   auto componentDescriptorRegistry =
       componentDescriptorProviderRegistry.createComponentDescriptorRegistry(
-          ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
+          ComponentDescriptorParameters{
+              .eventDispatcher = eventDispatcher,
+              .contextContainer = nullptr,
+              .flavor = nullptr});
 
   componentDescriptorProviderRegistry.add(
       concreteComponentDescriptorProvider<ViewComponentDescriptor>());

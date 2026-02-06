@@ -38,7 +38,8 @@ internal class ReactTextScrollWatcher(private val editText: ReactEditText) : Scr
               0, // can't get content width
               0, // can't get content height
               editText.width,
-              editText.height)
+              editText.height,
+          )
 
       eventDispatcher?.dispatchEvent(event)
 

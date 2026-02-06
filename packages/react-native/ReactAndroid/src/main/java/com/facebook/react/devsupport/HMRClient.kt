@@ -35,7 +35,7 @@ public interface HMRClient : JavaScriptModule {
       host: String?,
       port: Int,
       isEnabled: Boolean,
-      scheme: String?
+      scheme: String?,
   )
 
   /** Registers an additional JS bundle with HMRClient. */

@@ -50,6 +50,7 @@
     </queries>
 
     <application
+        android:usesCleartextTraffic="${usesCleartextTraffic}"
         android:name=".RNTesterApplication"
         android:allowBackup="true"
         android:banner="@drawable/tv_banner"

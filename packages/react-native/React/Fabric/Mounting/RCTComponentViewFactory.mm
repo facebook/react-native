@@ -132,18 +132,18 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 
   // Fallback 1: Call provider function for component view class.
   Class<RCTComponentViewProtocol> klass = RCTComponentViewClassWithName(name.c_str());
-  if (klass) {
+  if (klass != nullptr) {
     [self registerComponentViewClass:klass];
     return;
   }
 
   // Fallback 2: Ask the provider and check in the dictionary provided
-  if (self.thirdPartyFabricComponentsProvider) {
+  if (self.thirdPartyFabricComponentsProvider != nullptr) {
     // Test whether a provider has been passed to avoid potentially expensive conversions
     // between C++ and ObjC strings.
     NSString *objcName = [NSString stringWithCString:name.c_str() encoding:NSUTF8StringEncoding];
     klass = self.thirdPartyFabricComponentsProvider.thirdPartyFabricComponents[objcName];
-    if (klass) {
+    if (klass != nullptr) {
       [self registerComponentViewClass:klass];
       return;
     }
@@ -152,20 +152,13 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   // Fallback 3: Try to use Paper Interop.
   // TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
   if (RCTFabricInteropLayerEnabled() && [RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
-    RCTLogNewArchitectureValidation(
-        RCTNotAllowedInBridgeless,
-        self,
-        [NSString
-            stringWithFormat:
-                @"Legacy ViewManagers should be migrated to Fabric ComponentViews in the new architecture to reduce risk. Component using interop layer: %@",
-                componentNameString]);
-
     auto flavor = std::make_shared<const std::string>(name);
     auto componentName = ComponentName{flavor->c_str()};
     auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
     auto constructor = [RCTLegacyViewManagerInteropComponentView componentDescriptorProvider].constructor;
 
-    auto provider = ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor};
+    auto provider = ComponentDescriptorProvider{
+        .handle = componentHandle, .name = componentName, .flavor = flavor, .constructor = constructor};
 
     _providerRegistry.add(provider);
     _componentViewClasses[componentHandle] =
@@ -179,7 +172,8 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   auto componentName = ComponentName{flavor->c_str()};
   auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
   auto constructor = [RCTUnimplementedViewComponentView componentDescriptorProvider].constructor;
-  auto provider = ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor};
+  auto provider = ComponentDescriptorProvider{
+      .handle = componentHandle, .name = componentName, .flavor = flavor, .constructor = constructor};
 
   _providerRegistry.add(provider);
   _componentViewClasses[componentHandle] =

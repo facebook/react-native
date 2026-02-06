@@ -26,7 +26,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
-import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -42,6 +41,8 @@ import java.util.Map;
  * hierarchy that is then mapped to a native view hierarchy.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class UIImplementation {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
@@ -728,9 +729,7 @@ public class UIImplementation {
       return;
     }
 
-    while (node.getNativeKind() == NativeKind.NONE) {
-      node = node.getParent();
-    }
+    // While loop removed due to NativeKind removal
     mOperationsQueue.enqueueSetJSResponder(node.getReactTag(), reactTag, blockNativeResponder);
   }
 
@@ -778,13 +777,6 @@ public class UIImplementation {
   public void onCatalystInstanceDestroyed() {
     mViewOperationsEnabled = false;
     mViewManagers.invalidate();
-  }
-
-  // NOTE: When converted to Kotlin this method should be `internal` due to
-  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
-  public void setViewHierarchyUpdateDebugListener(
-      @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
-    mOperationsQueue.setViewHierarchyUpdateDebugListener(listener);
   }
 
   protected final void removeShadowNode(ReactShadowNode nodeToRemove) {

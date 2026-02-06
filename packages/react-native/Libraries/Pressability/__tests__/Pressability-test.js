@@ -26,7 +26,7 @@ const itif = (condition: boolean) => {
 };
 
 // TODO: Move this util to a shared location.
-function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
+function getMock<TArguments: ReadonlyArray<unknown>, TReturn>(
   fn: (...args: TArguments) => TReturn,
 ): JestMockFn<TArguments, TReturn> {
   if (!jest.isMockFunction(fn)) {
@@ -170,7 +170,7 @@ const createMockMouseEvent = (registrationName: string) => {
 const createMockPressEvent = (
   nameOrOverrides:
     | string
-    | $ReadOnly<{
+    | Readonly<{
         registrationName: string,
         pageX: number,
         pageY: number,
@@ -349,7 +349,109 @@ describe('Pressability', () => {
     });
   });
 
-  // TODO: onHoverOut tests
+  describe('onHoverOut', () => {
+    let originalPlatform;
+
+    beforeEach(() => {
+      originalPlatform = Platform.OS;
+      /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+       * Platform.flow.js */
+      Platform.OS = 'web';
+      // $FlowExpectedError[prop-missing]
+      HoverState.isHoverEnabled.mockReturnValue(true);
+    });
+
+    afterEach(() => {
+      /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+       * Platform.flow.js */
+      Platform.OS = originalPlatform;
+    });
+
+    it('is ignored on unsupported platforms`', () => {
+      /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+       * Platform.flow.js */
+      Platform.OS = 'ios';
+      const {handlers} = createMockPressability();
+      expect(handlers.onMouseLeave).toBeUndefined();
+    });
+
+    it('is called after `onMouseLeave`, and after onHoverIn', () => {
+      const {config, handlers} = createMockPressability();
+      invariant(
+        typeof handlers.onMouseEnter === 'function',
+        'Expected to find "onMouseEnter" function',
+      );
+      // $FlowExpectedError[not-a-function]
+      handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
+      invariant(
+        typeof handlers.onMouseLeave === 'function',
+        'Expected to find "onMouseLeave" function',
+      );
+      // $FlowExpectedError[not-a-function]
+      handlers.onMouseLeave(createMockMouseEvent('onMouseLeave'));
+      expect(config.onHoverOut).toBeCalled();
+    });
+
+    it('is called with no delay by default', () => {
+      const {config, handlers} = createMockPressability({
+        delayHoverOut: null,
+      });
+      invariant(
+        typeof handlers.onMouseEnter === 'function',
+        'Expected to find "onMouseEnter" function',
+      );
+      // $FlowExpectedError[not-a-function]
+      handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
+      invariant(
+        typeof handlers.onMouseLeave === 'function',
+        'Expected to find "onMouseLeave" function',
+      );
+      // $FlowExpectedError[not-a-function]
+      handlers.onMouseLeave(createMockMouseEvent('onMouseLeave'));
+      expect(config.onHoverOut).toBeCalled();
+    });
+
+    it('is called after a configured delay', () => {
+      const {config, handlers} = createMockPressability({
+        delayHoverOut: 500,
+      });
+      invariant(
+        typeof handlers.onMouseEnter === 'function',
+        'Expected to find "onMouseEnter" function',
+      );
+      // $FlowExpectedError[not-a-function]
+      handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
+      invariant(
+        typeof handlers.onMouseLeave === 'function',
+        'Expected to find "onMouseLeave" function',
+      );
+      // $FlowExpectedError[not-a-function]
+      handlers.onMouseLeave(createMockMouseEvent('onMouseLeave'));
+      jest.advanceTimersByTime(499);
+      expect(config.onHoverOut).not.toBeCalled();
+      jest.advanceTimersByTime(1);
+      expect(config.onHoverOut).toBeCalled();
+    });
+
+    it('is called synchronously if delay is 0ms', () => {
+      const {config, handlers} = createMockPressability({
+        delayHoverOut: 0,
+      });
+      invariant(
+        typeof handlers.onMouseEnter === 'function',
+        'Expected to find "onMouseEnter" function',
+      );
+      // $FlowExpectedError[not-a-function]
+      handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
+      invariant(
+        typeof handlers.onMouseLeave === 'function',
+        'Expected to find "onMouseLeave" function',
+      );
+      // $FlowExpectedError[not-a-function]
+      handlers.onMouseLeave(createMockMouseEvent('onMouseLeave'));
+      expect(config.onHoverOut).toBeCalled();
+    });
+  });
 
   describe('onLongPress', () => {
     it('is called if pressed for 500ms', () => {

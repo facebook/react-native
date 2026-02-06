@@ -48,6 +48,7 @@ const SUPPORTED_STYLES: {[string]: true} = {
   borderStartStartRadius: true,
   elevation: true,
   opacity: true,
+  filter: true,
   transform: true,
   zIndex: true,
   /* ios styles */

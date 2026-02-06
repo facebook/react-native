@@ -43,7 +43,8 @@ internal object TurboModuleInteropUtils {
       if (methodNames.contains(methodName)) {
         throw ParsingException(
             moduleName,
-            "Module exports two methods to JavaScript with the same name: \"$methodName")
+            "Module exports two methods to JavaScript with the same name: \"$methodName",
+        )
       }
 
       methodNames.add(methodName)
@@ -55,12 +56,15 @@ internal object TurboModuleInteropUtils {
         if (returnType != MutableMap::class.java) {
           throw ParsingException(moduleName, "getConstants must return a Map")
         }
-      } else if ((annotation != null) &&
-          ((annotation.isBlockingSynchronousMethod && returnType == Void.TYPE) ||
-              (!annotation.isBlockingSynchronousMethod && returnType != Void.TYPE))) {
+      } else if (
+          (annotation != null) &&
+              ((annotation.isBlockingSynchronousMethod && returnType == Void.TYPE) ||
+                  (!annotation.isBlockingSynchronousMethod && returnType != Void.TYPE))
+      ) {
         throw ParsingException(
             moduleName,
-            "TurboModule system assumes returnType == void iff the method is synchronous.")
+            "TurboModule system assumes returnType == void iff the method is synchronous.",
+        )
       }
 
       methodDescriptors.add(
@@ -68,7 +72,9 @@ internal object TurboModuleInteropUtils {
               methodName,
               createJniSignature(moduleName, methodName, paramClasses, returnType),
               createJSIReturnKind(moduleName, methodName, paramClasses, returnType),
-              getJsArgCount(moduleName, methodName, paramClasses)))
+              getJsArgCount(moduleName, methodName, paramClasses),
+          )
+      )
     }
 
     return methodDescriptors
@@ -90,7 +96,7 @@ internal object TurboModuleInteropUtils {
       moduleName: String,
       methodName: String,
       paramClasses: Array<Class<*>>,
-      returnClass: Class<*>
+      returnClass: Class<*>,
   ): String {
     val jniSignature = StringBuilder("(")
     for (paramClass in paramClasses) {
@@ -104,7 +110,7 @@ internal object TurboModuleInteropUtils {
   private fun convertParamClassToJniType(
       moduleName: String,
       methodName: String,
-      paramClass: Class<*>
+      paramClass: Class<*>,
   ): String {
     if (paramClass == Boolean::class.javaPrimitiveType) {
       return "Z"
@@ -122,29 +128,32 @@ internal object TurboModuleInteropUtils {
       return "F"
     }
 
-    if (paramClass == Boolean::class.javaObjectType ||
-        paramClass == Int::class.javaObjectType ||
-        paramClass == Double::class.javaObjectType ||
-        paramClass == Float::class.javaObjectType ||
-        paramClass == String::class.java ||
-        paramClass == Callback::class.java ||
-        paramClass == Promise::class.java ||
-        paramClass == ReadableMap::class.java ||
-        paramClass == ReadableArray::class.java ||
-        paramClass == Dynamic::class.java) {
+    if (
+        paramClass == Boolean::class.javaObjectType ||
+            paramClass == Int::class.javaObjectType ||
+            paramClass == Double::class.javaObjectType ||
+            paramClass == Float::class.javaObjectType ||
+            paramClass == String::class.java ||
+            paramClass == Callback::class.java ||
+            paramClass == Promise::class.java ||
+            paramClass == ReadableMap::class.java ||
+            paramClass == ReadableArray::class.java ||
+            paramClass == Dynamic::class.java
+    ) {
       return convertClassToJniType(paramClass)
     }
 
     throw ParsingException(
         moduleName,
         methodName,
-        "Unable to parse JNI signature. Detected unsupported parameter class: ${paramClass.canonicalName}")
+        "Unable to parse JNI signature. Detected unsupported parameter class: ${paramClass.canonicalName}",
+    )
   }
 
   private fun convertReturnClassToJniType(
       moduleName: String,
       methodName: String,
-      returnClass: Class<*>
+      returnClass: Class<*>,
   ): String {
     if (returnClass == Boolean::class.javaPrimitiveType) {
       return "Z"
@@ -166,21 +175,24 @@ internal object TurboModuleInteropUtils {
       return "V"
     }
 
-    if (returnClass == Boolean::class.javaObjectType ||
-        returnClass == Integer::class.javaObjectType ||
-        returnClass == Double::class.javaObjectType ||
-        returnClass == Float::class.javaObjectType ||
-        returnClass == String::class.java ||
-        returnClass == WritableMap::class.java ||
-        returnClass == WritableArray::class.java ||
-        returnClass == MutableMap::class.java) {
+    if (
+        returnClass == Boolean::class.javaObjectType ||
+            returnClass == Integer::class.javaObjectType ||
+            returnClass == Double::class.javaObjectType ||
+            returnClass == Float::class.javaObjectType ||
+            returnClass == String::class.java ||
+            returnClass == WritableMap::class.java ||
+            returnClass == WritableArray::class.java ||
+            returnClass == MutableMap::class.java
+    ) {
       return convertClassToJniType(returnClass)
     }
 
     throw ParsingException(
         moduleName,
         methodName,
-        "Unable to parse JNI signature. Detected unsupported return class: ${returnClass.canonicalName}")
+        "Unable to parse JNI signature. Detected unsupported return class: ${returnClass.canonicalName}",
+    )
   }
 
   private fun convertClassToJniType(cls: Class<*>): String {
@@ -192,7 +204,7 @@ internal object TurboModuleInteropUtils {
   private fun getJsArgCount(
       moduleName: String,
       methodName: String,
-      paramClasses: Array<Class<*>>
+      paramClasses: Array<Class<*>>,
   ): Int {
     var i = 0
     while (i < paramClasses.size) {
@@ -201,7 +213,8 @@ internal object TurboModuleInteropUtils {
           throw ParsingException(
               moduleName,
               methodName,
-              "Unable to parse JavaScript arg count. Promises must be used as last parameter only.")
+              "Unable to parse JavaScript arg count. Promises must be used as last parameter only.",
+          )
         }
 
         return paramClasses.size - 1
@@ -216,7 +229,7 @@ internal object TurboModuleInteropUtils {
       moduleName: String,
       methodName: String,
       paramClasses: Array<Class<*>>,
-      returnClass: Class<*>
+      returnClass: Class<*>,
   ): String {
     var i = 0
     while (i < paramClasses.size) {
@@ -225,7 +238,8 @@ internal object TurboModuleInteropUtils {
           throw ParsingException(
               moduleName,
               methodName,
-              "Unable to parse JSI return kind. Promises must be used as last parameter only.")
+              "Unable to parse JSI return kind. Promises must be used as last parameter only.",
+          )
         }
 
         return "PromiseKind"
@@ -233,17 +247,21 @@ internal object TurboModuleInteropUtils {
       i += 1
     }
 
-    if (returnClass == Boolean::class.javaPrimitiveType ||
-        returnClass == Boolean::class.javaObjectType) {
+    if (
+        returnClass == Boolean::class.javaPrimitiveType ||
+            returnClass == Boolean::class.javaObjectType
+    ) {
       return "BooleanKind"
     }
 
-    if (returnClass == Double::class.javaPrimitiveType ||
-        returnClass == Double::class.javaObjectType ||
-        returnClass == Float::class.javaPrimitiveType ||
-        returnClass == Float::class.javaObjectType ||
-        returnClass == Int::class.javaPrimitiveType ||
-        returnClass == Int::class.javaObjectType) {
+    if (
+        returnClass == Double::class.javaPrimitiveType ||
+            returnClass == Double::class.javaObjectType ||
+            returnClass == Float::class.javaPrimitiveType ||
+            returnClass == Float::class.javaObjectType ||
+            returnClass == Int::class.javaPrimitiveType ||
+            returnClass == Int::class.javaObjectType
+    ) {
       return "NumberKind"
     }
 
@@ -266,28 +284,31 @@ internal object TurboModuleInteropUtils {
     throw ParsingException(
         moduleName,
         methodName,
-        "Unable to parse JSI return kind. Detected unsupported return class: ${returnClass.canonicalName}")
+        "Unable to parse JSI return kind. Detected unsupported return class: ${returnClass.canonicalName}",
+    )
   }
 
   internal class MethodDescriptor(
       @field:DoNotStrip @JvmField val methodName: String,
       @field:DoNotStrip @JvmField val jniSignature: String,
       @field:DoNotStrip @JvmField val jsiReturnKind: String,
-      @field:DoNotStrip @JvmField val jsArgCount: Int
+      @field:DoNotStrip @JvmField val jsArgCount: Int,
   )
 
   private class ParsingException : RuntimeException {
     constructor(
         moduleName: String,
-        message: String
+        message: String,
     ) : super(
-        ("Unable to parse @ReactMethod annotations from native module: ${moduleName}. Details: ${message}"))
+        ("Unable to parse @ReactMethod annotations from native module: ${moduleName}. Details: ${message}")
+    )
 
     constructor(
         moduleName: String,
         methodName: String,
-        message: String
+        message: String,
     ) : super(
-        ("Unable to parse @ReactMethod annotation from native module method: ${moduleName}.${methodName}(). Details: ${message}"))
+        ("Unable to parse @ReactMethod annotation from native module method: ${moduleName}.${methodName}(). Details: ${message}")
+    )
   }
 }

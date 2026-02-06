@@ -33,10 +33,10 @@ let isInterceptorEnabled = false;
 
 /**
  * A network interceptor which monkey-patches RCTWebSocketModule methods
- * to gather all websocket network requests/responses, in order to show
- * their information in the React Native inspector development tool.
+ * to gather all websocket network events.
+ *
+ * @deprecated Since React Native 0.84
  */
-
 const WebSocketInterceptor = {
   /**
    * Invoked when RCTWebSocketModule.close(...) is called.
@@ -232,6 +232,8 @@ const WebSocketInterceptor = {
 
   _arrayBufferToString(data: string): ArrayBuffer | string {
     const value = base64.toByteArray(data).buffer;
+    /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+     * roll out. See https://fburl.com/workplace/5whu3i34. */
     if (value === undefined || value === null) {
       return '(no value)';
     }

@@ -202,7 +202,8 @@ public class SampleLegacyModule(private val context: ReactApplicationContext) :
     log(
         "getValue",
         mapOf("1-numberArg" to numberArg, "2-stringArg" to stringArg, "3-mapArg" to mapArg),
-        map)
+        map,
+    )
     return map
   }
 
@@ -234,7 +235,10 @@ public class SampleLegacyModule(private val context: ReactApplicationContext) :
   public fun getValueWithPromise(error: Boolean, promise: Promise?) {
     if (error) {
       promise?.reject(
-          "code 1", "intentional promise rejection", Throwable("promise intentionally rejected"))
+          "code 1",
+          "intentional promise rejection",
+          Throwable("promise intentionally rejected"),
+      )
     } else {
       promise?.resolve("result")
     }

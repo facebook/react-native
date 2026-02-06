@@ -17,6 +17,7 @@ import android.view.View
  *
  * @param <T> the view handled by this manager
  */
+@Suppress("DEPRECATION")
 public abstract class SimpleViewManager<T : View> : BaseViewManager<T, LayoutShadowNode>() {
 
   public override fun createShadowNodeInstance(): LayoutShadowNode {

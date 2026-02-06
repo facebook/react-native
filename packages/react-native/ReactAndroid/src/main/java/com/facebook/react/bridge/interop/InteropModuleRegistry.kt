@@ -37,7 +37,7 @@ internal class InteropModuleRegistry {
 
   fun <T : JavaScriptModule?> registerInteropModule(
       interopModuleInterface: Class<T>,
-      interopModule: Any
+      interopModule: Any,
   ) {
     if (checkReactFeatureFlagsConditions()) {
       supportedModules[interopModuleInterface] = interopModule

@@ -10,34 +10,28 @@
 
 import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
-import type {
-  Category,
-  ComponentStack,
-  ComponentStackType,
-  ExtendedExceptionData,
-  Message,
-} from './parseLogBoxLog';
+import type {Stack} from './LogBoxSymbolication';
+import type {Category, ExtendedExceptionData, Message} from './parseLogBoxLog';
 
 import DebuggerSessionObserver from '../../../src/private/devsupport/rndevtools/FuseboxSessionObserver';
+import toExtendedError from '../../../src/private/utilities/toExtendedError';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
 import LogBoxLog from './LogBoxLog';
 import {parseLogBoxException} from './parseLogBoxLog';
 import * as React from 'react';
 
 export type LogBoxLogs = Set<LogBoxLog>;
-export type LogData = $ReadOnly<{
+export type LogData = Readonly<{
   level: LogLevel,
   message: Message,
   category: Category,
-  componentStack: ComponentStack,
-  componentStackType: ComponentStackType | null,
+  componentStack: Stack,
   stack?: string,
 }>;
 
 export type Observer = (
-  $ReadOnly<{
+  Readonly<{
     logs: LogBoxLogs,
     isDisabled: boolean,
     selectedLogIndex: number,
@@ -46,7 +40,7 @@ export type Observer = (
 
 export type IgnorePattern = string | RegExp;
 
-export type Subscription = $ReadOnly<{
+export type Subscription = Readonly<{
   unsubscribe: () => void,
 }>;
 
@@ -62,7 +56,7 @@ export type WarningInfo = {
 
 export type WarningFilter = (format: string) => WarningInfo;
 
-type AppInfo = $ReadOnly<{
+type AppInfo = Readonly<{
   appVersion: string,
   engine: string,
   onPress?: ?() => void,
@@ -238,11 +232,10 @@ export function addLog(log: LogData): void {
           stack,
           category: log.category,
           componentStack: log.componentStack,
-          componentStackType: log.componentStackType || 'legacy',
         }),
       );
-    } catch (error) {
-      reportLogBoxError(error);
+    } catch (error: unknown) {
+      reportLogBoxError(toExtendedError(error));
     }
   });
 }
@@ -253,8 +246,8 @@ export function addException(error: ExtendedExceptionData): void {
   setImmediate(() => {
     try {
       appendNewLog(new LogBoxLog(parseLogBoxException(error)));
-    } catch (loggingError) {
-      reportLogBoxError(loggingError);
+    } catch (loggingError: unknown) {
+      reportLogBoxError(toExtendedError(loggingError));
     }
   });
 }
@@ -351,12 +344,12 @@ export function checkWarningFilter(format: string): WarningInfo {
   return warningFilter(format);
 }
 
-export function getIgnorePatterns(): $ReadOnlyArray<IgnorePattern> {
+export function getIgnorePatterns(): ReadonlyArray<IgnorePattern> {
   return Array.from(ignorePatterns);
 }
 
 export function addIgnorePatterns(
-  patterns: $ReadOnlyArray<IgnorePattern>,
+  patterns: ReadonlyArray<IgnorePattern>,
 ): void {
   const existingSize = ignorePatterns.size;
   // The same pattern may be added multiple times, but adding a new pattern
@@ -413,8 +406,23 @@ export function observe(observer: Observer): Subscription {
   };
 }
 
-type LogBoxStateSubscriptionProps = $ReadOnly<{}>;
-type LogBoxStateSubscriptionState = $ReadOnly<{
+/**
+ * Same as observe(), but doesn't call notify observer sync at the time of subscription.
+ * Expected to be used only in LogBoxStateSubscription.
+ */
+function observeNext(observer: Observer): Subscription {
+  const subscription = {observer};
+  observers.add(subscription);
+
+  return {
+    unsubscribe(): void {
+      observers.delete(subscription);
+    },
+  };
+}
+
+type LogBoxStateSubscriptionProps = Readonly<{}>;
+type LogBoxStateSubscriptionState = Readonly<{
   logs: LogBoxLogs,
   isDisabled: boolean,
   hasError: boolean,
@@ -422,8 +430,8 @@ type LogBoxStateSubscriptionState = $ReadOnly<{
 }>;
 
 type SubscribedComponent = React.ComponentType<
-  $ReadOnly<{
-    logs: $ReadOnlyArray<LogBoxLog>,
+  Readonly<{
+    logs: ReadonlyArray<LogBoxLog>,
     isDisabled: boolean,
     selectedLogIndex: number,
   }>,
@@ -443,17 +451,16 @@ export function withSubscription(
     componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       reportLogBoxError(err, errorInfo.componentStack);
     }
 
     _subscription: ?Subscription;
+    _updateStateOnMountTimeoutId: ?TimeoutID;
 
     state: LogBoxStateSubscriptionState = {
-      logs: new Set(),
-      isDisabled: false,
       hasError: false,
-      selectedLogIndex: -1,
+      ...getNextState(),
     };
 
     render(): React.Node {
@@ -473,12 +480,25 @@ export function withSubscription(
     }
 
     componentDidMount(): void {
-      this._subscription = observe(data => {
+      this._subscription = observeNext(data => {
         this.setState(data);
       });
+
+      /**
+       * This should cover the case when the state changes in between the first render and mount effect.
+       * We defer the state update to next task to avoid cascading update.
+       */
+      this._updateStateOnMountTimeoutId = setTimeout(() => {
+        this._updateStateOnMountTimeoutId = null;
+        this.setState(getNextState());
+      }, 0);
     }
 
     componentWillUnmount(): void {
+      if (this._updateStateOnMountTimeoutId != null) {
+        clearTimeout(this._updateStateOnMountTimeoutId);
+      }
+
       if (this._subscription != null) {
         this._subscription.unsubscribe();
       }
@@ -493,6 +513,10 @@ function showFuseboxWarningsMigrationMessageOnce() {
     return;
   }
   hasShownFuseboxWarningsMigrationMessage = true;
+
+  const NativeDevSettings =
+    require('../../NativeModules/specs/NativeDevSettings').default;
+
   appendNewLog(
     new LogBoxLog({
       level: 'warn',

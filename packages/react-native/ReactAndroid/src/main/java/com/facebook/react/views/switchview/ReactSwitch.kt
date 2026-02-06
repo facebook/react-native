@@ -49,7 +49,7 @@ internal class ReactSwitch(context: Context) : SwitchCompat(context) {
     if (color == null) {
       drawable.clearColorFilter()
     } else {
-      drawable.setColorFilter(PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY))
+      drawable.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY)
     }
   }
 

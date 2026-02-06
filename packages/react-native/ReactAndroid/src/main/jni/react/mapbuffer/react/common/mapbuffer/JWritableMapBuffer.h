@@ -14,8 +14,7 @@ namespace facebook::react {
 
 class JWritableMapBuffer : public jni::JavaClass<JWritableMapBuffer> {
  public:
-  static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;";
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;";
 
   MapBuffer getMapBuffer();
 };

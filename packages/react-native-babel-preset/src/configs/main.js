@@ -35,18 +35,40 @@ function isFirstParty(fileName) {
   );
 }
 
+// Called by Babel whenever caller information changes between transform calls
+// for a given config. If the return value changes, Babel re-evaluates
+// getPreset, which is otherwise cached based on `options`. This must be pure,
+// and should be cheap.
+function getTransformProfile(caller) {
+  return caller?.unstable_transformProfile ?? 'default';
+}
+
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
-// For Static Hermes testing (experimental), the hermes-canary transformProfile
-// is used to enable regenerator (and some related lowering passes) because SH
-// requires more Babel lowering than Hermes temporarily.
-const getPreset = (src, options) => {
+const getPreset = (src, options, babel) => {
   const transformProfile =
-    (options && options.unstable_transformProfile) || 'default';
-  const isHermesStable = transformProfile === 'hermes-stable';
-  const isHermesCanary = transformProfile === 'hermes-canary';
-  const isHermes = isHermesStable || isHermesCanary;
+    options?.unstable_transformProfile ?? babel?.caller(getTransformProfile);
+
+  // Hermes V1 (aka Static Hermes) uses more optimised profiles.
+  // There is currently no difference between stable and canary, but canary
+  // may in future be used to test features in pre-prod Hermes versions.
+  const isHermesV1 =
+    transformProfile === 'hermes-stable' ||
+    transformProfile === 'hermes-canary';
+
+  // We enable regenerator in dev builds for the time being because
+  // Hermes V1 doesn't yet fully support debugging native generators.
+  // (e.g. - it's not possible to inspect local variables when paused in a
+  // generator).
+  //
+  // Use native generators in release mode because it has already yielded perf
+  // wins. The next release of Hermes will close this gap, so this won't
+  // be permanent.
+  const enableRegenerator = isHermesV1 && options.dev;
+
+  // Preserve class syntax and related if we're using Hermes V1.
+  const preserveClasses = isHermesV1;
 
   const isNull = src == null;
   const hasClass = isNull || src.indexOf('class') !== -1;
@@ -86,52 +108,24 @@ const getPreset = (src, options) => {
     );
   }
 
-  if (hasClass) {
+  if (hasClass && !preserveClasses) {
     extraPlugins.push([require('@babel/plugin-transform-classes')]);
   }
 
-  if (!isHermes && (isNull || src.includes('=>'))) {
-    extraPlugins.push([require('@babel/plugin-transform-arrow-functions')]);
-  }
-
-  if (!isHermes) {
-    extraPlugins.push([require('@babel/plugin-transform-computed-properties')]);
-    extraPlugins.push([require('@babel/plugin-transform-parameters')]);
-    extraPlugins.push([
-      require('@babel/plugin-transform-shorthand-properties'),
-    ]);
+  extraPlugins.push([
+    require('@babel/plugin-transform-named-capturing-groups-regex'),
+  ]);
+  // Needed for regenerator
+  if (enableRegenerator) {
     extraPlugins.push([
       require('@babel/plugin-transform-optional-catch-binding'),
     ]);
-    extraPlugins.push([require('@babel/plugin-transform-function-name')]);
-    extraPlugins.push([require('@babel/plugin-transform-literals')]);
-    extraPlugins.push([require('@babel/plugin-transform-numeric-separator')]);
-    extraPlugins.push([require('@babel/plugin-transform-sticky-regex')]);
-  } else {
-    extraPlugins.push([
-      require('@babel/plugin-transform-named-capturing-groups-regex'),
-    ]);
-    // Needed for regenerator for hermes-canary
-    if (isHermesCanary) {
-      extraPlugins.push([
-        require('@babel/plugin-transform-optional-catch-binding'),
-      ]);
-    }
   }
+
   extraPlugins.push([
     require('@babel/plugin-transform-destructuring'),
     {useBuiltIns: true},
   ]);
-  if (!isHermes && (isNull || hasClass || src.indexOf('...') !== -1)) {
-    extraPlugins.push(
-      [require('@babel/plugin-transform-spread')],
-      [
-        require('@babel/plugin-transform-object-rest-spread'),
-        // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
-        {loose: true, useBuiltIns: true},
-      ],
-    );
-  }
   if (isNull || src.indexOf('async') !== -1) {
     extraPlugins.push([
       require('@babel/plugin-transform-async-generator-functions'),
@@ -145,31 +139,17 @@ const getPreset = (src, options) => {
   ) {
     extraPlugins.push([require('@babel/plugin-transform-react-display-name')]);
   }
-  // Check !isHermesStable because this is needed for regenerator for
-  // hermes-canary
-  if (!isHermesStable && (isNull || src.indexOf('?.') !== -1)) {
+  // This is also needed for regenerator
+  if (enableRegenerator && (isNull || src.indexOf('?.') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-optional-chaining'),
       {loose: true},
     ]);
   }
-  // Check !isHermesStable because this is needed for regenerator for
-  // hermes-canary
-  if (!isHermesStable && (isNull || src.indexOf('??') !== -1)) {
+  // This is also needed for regenerator
+  if (enableRegenerator && (isNull || src.indexOf('??') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-nullish-coalescing-operator'),
-      {loose: true},
-    ]);
-  }
-  if (
-    !isHermes &&
-    (isNull ||
-      src.indexOf('??=') !== -1 ||
-      src.indexOf('||=') !== -1 ||
-      src.indexOf('&&=') !== -1)
-  ) {
-    extraPlugins.push([
-      require('@babel/plugin-transform-logical-assignment-operators'),
       {loose: true},
     ]);
   }
@@ -183,16 +163,15 @@ const getPreset = (src, options) => {
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-self')]);
   }
 
-  if (isHermesCanary) {
-    const hasForOf =
-      isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1);
-    if (hasForOf) {
-      // Needed for regenerator
-      extraPlugins.push([
-        require('@babel/plugin-transform-for-of'),
-        {loose: true},
-      ]);
-    }
+  if (
+    enableRegenerator &&
+    (isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1))
+  ) {
+    // Needed for regenerator
+    extraPlugins.push([
+      require('@babel/plugin-transform-for-of'),
+      {loose: true},
+    ]);
   }
 
   if (!options || options.enableBabelRuntime !== false) {
@@ -203,11 +182,11 @@ const getPreset = (src, options) => {
       require('@babel/plugin-transform-runtime'),
       {
         helpers: true,
-        regenerator: !isHermesStable,
+        regenerator: enableRegenerator,
         ...(isVersion && {version: options.enableBabelRuntime}),
       },
     ]);
-  } else if (isHermesCanary) {
+  } else if (enableRegenerator) {
     extraPlugins.push([require('@babel/plugin-transform-regenerator')]);
   }
 
@@ -232,7 +211,9 @@ const getPreset = (src, options) => {
           ],
           [require('babel-plugin-transform-flow-enums')],
           [require('@babel/plugin-transform-block-scoping')],
-          [require('@babel/plugin-transform-class-properties'), {loose}],
+          ...(preserveClasses
+            ? []
+            : [[require('@babel/plugin-transform-class-properties'), {loose}]]),
           [require('@babel/plugin-transform-private-methods'), {loose}],
           [
             require('@babel/plugin-transform-private-property-in-object'),
@@ -279,14 +260,14 @@ const getPreset = (src, options) => {
   };
 };
 
-module.exports = options => {
+module.exports = (options, babel) => {
   if (options.withDevTools == null) {
     const env = process.env.BABEL_ENV || process.env.NODE_ENV;
     if (!env || env === 'development') {
-      return getPreset(null, {...options, dev: true});
+      return getPreset(null, {...options, dev: true}, babel);
     }
   }
-  return getPreset(null, options);
+  return getPreset(null, options, babel);
 };
 
 module.exports.getPreset = getPreset;

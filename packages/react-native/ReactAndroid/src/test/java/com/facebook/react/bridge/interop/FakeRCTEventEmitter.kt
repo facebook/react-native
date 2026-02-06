@@ -24,6 +24,6 @@ class FakeRCTEventEmitter : RCTEventEmitter {
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
-      changedIndices: WritableArray
+      changedIndices: WritableArray,
   ) = Unit
 }

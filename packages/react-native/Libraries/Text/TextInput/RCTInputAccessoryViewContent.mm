@@ -7,6 +7,8 @@
 
 #import <React/RCTInputAccessoryViewContent.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/UIView+React.h>
 
 @implementation RCTInputAccessoryViewContent {
@@ -72,3 +74,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

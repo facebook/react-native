@@ -7,7 +7,7 @@
 
 #import "RCTSurfaceRootShadowView.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import "RCTI18nUtil.h"
 #import "RCTShadowView+Layout.h"
@@ -92,7 +92,7 @@
 
 @end
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 
 @implementation RCTSurfaceRootShadowView
 - (void)setMinimumSize:(CGSize)size maximumSize:(CGSize)maximumSize
@@ -105,4 +105,4 @@
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

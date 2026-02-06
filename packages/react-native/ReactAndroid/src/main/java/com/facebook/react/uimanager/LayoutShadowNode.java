@@ -38,6 +38,8 @@ import com.facebook.yoga.YogaWrap;
  * explored, namely using the VirtualText class in JS and setting the correct set of validAttributes
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class LayoutShadowNode extends ReactShadowNodeImpl {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(

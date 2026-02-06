@@ -40,7 +40,8 @@ abstract class PrepareBoostTask : DefaultTask() {
           "CMakeLists.txt",
           "boost_${boostVersion.get()}/boost/**/*.hpp",
           "boost/boost/**/*.hpp",
-          "asm/**/*.S")
+          "asm/**/*.S",
+      )
       it.includeEmptyDirs = false
       it.into(outputDir)
     }

@@ -44,7 +44,7 @@ ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
 UIManager::UIManager(
     const RuntimeExecutor& runtimeExecutor,
-    ContextContainer::Shared contextContainer)
+    std::shared_ptr<const ContextContainer> contextContainer)
     : runtimeExecutor_(runtimeExecutor),
       shadowTreeRegistry_(),
       contextContainer_(std::move(contextContainer)),
@@ -70,10 +70,12 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
+  PropsParserContext propsParserContext{surfaceId, *contextContainer_};
 
   auto family = componentDescriptor.createFamily(
-      {tag, surfaceId, std::move(instanceHandle)});
+      {.tag = tag,
+       .surfaceId = surfaceId,
+       .instanceHandle = std::move(instanceHandle)});
   const auto props = componentDescriptor.cloneProps(
       propsParserContext, nullptr, std::move(rawProps));
   const auto state = componentDescriptor.createInitialState(props, family);
@@ -111,7 +113,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
 
   PropsParserContext propsParserContext{
-      shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
+      shadowNode.getFamily().getSurfaceId(), *contextContainer_};
 
   auto& componentDescriptor = shadowNode.getComponentDescriptor();
   auto& family = shadowNode.getFamily();
@@ -203,6 +205,10 @@ void UIManager::completeSurface(
       // after we commit a specific one.
       lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(
           surfaceId, shadowTree.getCurrentRevision().rootShadowNode);
+
+      if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+        animationBackend_->clearRegistry(surfaceId);
+      }
     }
   });
 }
@@ -429,8 +435,8 @@ void UIManager::setNativeProps_DEPRECATED(
   if (family.nativeProps_DEPRECATED) {
     // Values in `rawProps` patch (take precedence over)
     // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
-    // and `rawProps` contain key 'A'. Value from `rawProps` overrides what was
-    // previously in `nativeProps_DEPRECATED`.
+    // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
+    // was previously in `nativeProps_DEPRECATED`.
     family.nativeProps_DEPRECATED =
         std::make_unique<folly::dynamic>(mergeDynamicProps(
             *family.nativeProps_DEPRECATED,
@@ -455,14 +461,14 @@ void UIManager::setNativeProps_DEPRECATED(
                         componentDescriptorRegistry_->at(
                             shadowNode->getComponentHandle());
                     PropsParserContext propsParserContext{
-                        family.getSurfaceId(), *contextContainer_.get()};
+                        family.getSurfaceId(), *contextContainer_};
                     auto props = componentDescriptor.cloneProps(
                         propsParserContext,
                         getShadowNodeInSubtree(*shadowNode, ancestorShadowNode)
                             ->getProps(),
                         RawProps(rawProps));
 
-                    return oldShadowNode.clone({/* .props = */ props});
+                    return oldShadowNode.clone({/* .props = */ .props = props});
                   });
 
               return std::static_pointer_cast<RootShadowNode>(rootNode);
@@ -516,14 +522,14 @@ std::shared_ptr<const ShadowNode> UIManager::findShadowNodeByTag_DEPRECATED(
   auto shadowNode = std::shared_ptr<const ShadowNode>{};
 
   shadowTreeRegistry_.enumerate([&](const ShadowTree& shadowTree, bool& stop) {
-    const RootShadowNode* rootShadowNode;
+    const RootShadowNode* rootShadowNode = nullptr;
     // The public interface of `ShadowTree` discourages accessing a stored
     // pointer to a root node because of the possible data race.
     // To work around this, we ask for a commit and immediately cancel it
     // returning `nullptr` instead of a new shadow tree.
-    // We don't want to add a way to access a stored pointer to a root node
-    // because this `findShadowNodeByTag` is deprecated. It is only added
-    // to make migration to the new architecture easier.
+    // We don't want to add a way to access a stored pointer to a root
+    // node because this `findShadowNodeByTag` is deprecated. It is only
+    // added to make migration to the new architecture easier.
     shadowTree.tryCommit(
         [&](const RootShadowNode& oldRootShadowNode) {
           rootShadowNode = &oldRootShadowNode;
@@ -678,6 +684,16 @@ void UIManager::setNativeAnimatedDelegate(
   nativeAnimatedDelegate_ = delegate;
 }
 
+void UIManager::unstable_setAnimationBackend(
+    std::shared_ptr<UIManagerAnimationBackend> animationBackend) {
+  animationBackend_ = animationBackend;
+}
+
+std::weak_ptr<UIManagerAnimationBackend>
+UIManager::unstable_getAnimationBackend() {
+  return animationBackend_;
+}
+
 void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
@@ -686,8 +702,10 @@ void UIManager::animationTick() const {
     });
   }
 
-  if (auto nativeAnimatedDelegate = nativeAnimatedDelegate_.lock()) {
-    nativeAnimatedDelegate->runAnimationFrame();
+  if (!ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    if (auto nativeAnimatedDelegate = nativeAnimatedDelegate_.lock()) {
+      nativeAnimatedDelegate->runAnimationFrame();
+    }
   }
 }
 

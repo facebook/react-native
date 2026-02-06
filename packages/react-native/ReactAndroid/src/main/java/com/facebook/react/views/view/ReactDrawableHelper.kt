@@ -31,18 +31,20 @@ public object ReactDrawableHelper {
   @JvmStatic
   public fun createDrawableFromJSDescription(
       context: Context,
-      drawableDescriptionDict: ReadableMap
+      drawableDescriptionDict: ReadableMap,
   ): Drawable? {
     val type = drawableDescriptionDict.getString("type")
     if ("ThemeAttrAndroid" == type) {
       val attr =
           drawableDescriptionDict.getString("attribute")
               ?: throw JSApplicationIllegalArgumentException(
-                  "JS description missing 'attribute' field")
+                  "JS description missing 'attribute' field"
+              )
       val attrId = getAttrId(context, attr)
       if (!context.theme.resolveAttribute(attrId, resolveOutValue, true)) {
         throw JSApplicationIllegalArgumentException(
-            "Attribute $attr with id $attrId couldn't be resolved into a drawable")
+            "Attribute $attr with id $attrId couldn't be resolved into a drawable"
+        )
       }
       val drawable = getDefaultThemeDrawable(context)
       return setRadius(drawableDescriptionDict, drawable)
@@ -69,7 +71,7 @@ public object ReactDrawableHelper {
 
   private fun getRippleDrawable(
       context: Context,
-      drawableDescriptionDict: ReadableMap
+      drawableDescriptionDict: ReadableMap,
   ): RippleDrawable {
     val color = getColor(context, drawableDescriptionDict)
     val mask = getMask(drawableDescriptionDict)
@@ -87,23 +89,33 @@ public object ReactDrawableHelper {
   }
 
   private fun getColor(context: Context, drawableDescriptionDict: ReadableMap): Int =
-      if (drawableDescriptionDict.hasKey(ViewProps.COLOR) &&
-          !drawableDescriptionDict.isNull(ViewProps.COLOR)) {
+      if (
+          drawableDescriptionDict.hasKey(ViewProps.COLOR) &&
+              !drawableDescriptionDict.isNull(ViewProps.COLOR)
+      ) {
         drawableDescriptionDict.getInt(ViewProps.COLOR)
       } else {
-        if (context.theme.resolveAttribute(
-            android.R.attr.colorControlHighlight, resolveOutValue, true)) {
+        if (
+            context.theme.resolveAttribute(
+                android.R.attr.colorControlHighlight,
+                resolveOutValue,
+                true,
+            )
+        ) {
           context.resources.getColor(resolveOutValue.resourceId, context.theme)
         } else {
           throw JSApplicationIllegalArgumentException(
-              "Attribute colorControlHighlight couldn't be resolved into a drawable")
+              "Attribute colorControlHighlight couldn't be resolved into a drawable"
+          )
         }
       }
 
   private fun getMask(drawableDescriptionDict: ReadableMap): Drawable? {
-    if (!drawableDescriptionDict.hasKey("borderless") ||
-        drawableDescriptionDict.isNull("borderless") ||
-        !drawableDescriptionDict.getBoolean("borderless")) {
+    if (
+        !drawableDescriptionDict.hasKey("borderless") ||
+            drawableDescriptionDict.isNull("borderless") ||
+            !drawableDescriptionDict.getBoolean("borderless")
+    ) {
       return ColorDrawable(Color.WHITE)
     }
     return null

@@ -22,11 +22,11 @@ class FakeShadowTreeDelegate : public ShadowTreeDelegate {
       const RootShadowNode::Unshared& newRootShadowNode,
       const ShadowTree::CommitOptions& /*commitOptions*/) const override {
     return newRootShadowNode;
-  };
+  }
 
   void shadowTreeDidFinishTransaction(
       std::shared_ptr<const MountingCoordinator> mountingCoordinator,
-      bool mountSynchronously) const override {};
+      bool /*mountSynchronously*/) const override {}
 };
 
 class LazyShadowTreeRevisionConsistencyManagerTest : public ::testing::Test {

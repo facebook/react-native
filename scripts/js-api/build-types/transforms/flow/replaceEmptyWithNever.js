@@ -16,7 +16,7 @@ const {transformAST} = require('hermes-transform/dist/transform/transformAST');
 
 const visitors: TransformVisitor = context => ({
   EmptyTypeAnnotation(node): void {
-    // $FlowExpectedError[incompatible-call] - GenericTypeAnnotation is not assignable to EmptyTypeAnnotation
+    // $FlowExpectedError[incompatible-type] - GenericTypeAnnotation is not assignable to EmptyTypeAnnotation
     context.replaceNode(node, {
       type: 'GenericTypeAnnotation',
       id: {

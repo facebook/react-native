@@ -17,18 +17,15 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  public:
   LayoutAnimationDriver(
       RuntimeExecutor runtimeExecutor,
-      ContextContainer::Shared& contextContainer,
-      LayoutAnimationStatusDelegate* delegate)
-      : LayoutAnimationKeyFrameManager(
-            runtimeExecutor,
-            contextContainer,
-            delegate) {}
+      std::shared_ptr<const ContextContainer> &contextContainer,
+      LayoutAnimationStatusDelegate *delegate)
+      : LayoutAnimationKeyFrameManager(runtimeExecutor, contextContainer, delegate)
+  {
+  }
 
  protected:
-  virtual void animationMutationsForFrame(
-      SurfaceId surfaceId,
-      ShadowViewMutation::List& mutationsList,
-      uint64_t now) const override;
+  virtual void animationMutationsForFrame(SurfaceId surfaceId, ShadowViewMutation::List &mutationsList, uint64_t now)
+      const override;
 };
 
 } // namespace facebook::react

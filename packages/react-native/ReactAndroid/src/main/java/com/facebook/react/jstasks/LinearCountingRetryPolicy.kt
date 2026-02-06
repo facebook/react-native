@@ -9,7 +9,7 @@ package com.facebook.react.jstasks
 
 public class LinearCountingRetryPolicy(
     private val retryAttempts: Int,
-    private val delayBetweenAttemptsInMs: Int
+    private val delayBetweenAttemptsInMs: Int,
 ) : HeadlessJsTaskRetryPolicy {
 
   public override fun canRetry(): Boolean = retryAttempts > 0

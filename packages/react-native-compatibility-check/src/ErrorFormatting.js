@@ -20,6 +20,8 @@ import type {
 } from './DiffResults';
 import type {CompleteTypeAnnotation} from '@react-native/codegen/src/CodegenSchema';
 
+import {parseValidUnionType} from '@react-native/codegen/src/generators/Utils';
+
 function indentedLineStart(indent: number): string {
   return '\n' + '  '.repeat(indent);
 }
@@ -30,6 +32,7 @@ export function formatErrorMessage(
 ): string {
   switch (error.type) {
     case 'PropertyComparisonError':
+      const propertyPreviousError = error.previousError;
       const formattedProperties = error.mismatchedProperties.map(
         individualPropertyError =>
           indentedLineStart(indent + 1) +
@@ -40,7 +43,14 @@ export function formatErrorMessage(
               formatErrorMessage(individualPropertyError.fault, indent + 2)
             : ''),
       );
-      return error.message + formattedProperties.join('');
+      return (
+        (propertyPreviousError != null
+          ? formatErrorMessage(propertyPreviousError, indent) +
+            indentedLineStart(indent + 1)
+          : '') +
+        error.message +
+        formattedProperties.join('')
+      );
     case 'PositionalComparisonError':
       const formattedPositionalChanges = error.erroneousItems.map(
         ([index, type]) =>
@@ -52,6 +62,7 @@ export function formatErrorMessage(
       );
       return error.message + formattedPositionalChanges.join('');
     case 'TypeAnnotationComparisonError':
+    case 'TypeInformationComparisonError':
       const previousError = error.previousError;
 
       return (
@@ -67,18 +78,6 @@ export function formatErrorMessage(
             '' +
             formatErrorMessage(previousError, indent + 2)
           : '')
-      );
-    case 'TypeInformationComparisonError':
-      // I'm not sure that this error type is possible with the codegen
-
-      return (
-        error.message +
-        indentedLineStart(indent + 1) +
-        '-- new: ' +
-        formatTypeAnnotation(error.newerType) +
-        indentedLineStart(indent + 1) +
-        '-- old: ' +
-        formatTypeAnnotation(error.olderType)
       );
     case 'MemberComparisonError':
       const formattedMembers = error.mismatchedMembers.map(
@@ -173,6 +172,8 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
       return 'int';
     case 'NumberLiteralTypeAnnotation':
       return annotation.value.toString();
+    case 'BooleanLiteralTypeAnnotation':
+      return annotation.value.toString();
     case 'ObjectTypeAnnotation':
       return (
         '{' +
@@ -194,25 +195,72 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
         annotation.value.includes(' ')
         ? `'${annotation.value}'`
         : annotation.value;
-    case 'StringLiteralUnionTypeAnnotation':
-      return (
-        '(' +
-        annotation.types
-          .map(stringLit => formatTypeAnnotation(stringLit))
-          .join(' | ') +
-        ')'
-      );
+    case 'UnionTypeAnnotation':
+      let validUnionType;
+      try {
+        validUnionType = parseValidUnionType(annotation);
+      } catch (_e: mixed) {
+        // parseValidUnionType throws for unsupported union types
+        return 'Union<mixed>';
+      }
+      switch (validUnionType) {
+        case 'boolean':
+          if (
+            annotation.types.every(
+              ({type}) => type === 'BooleanLiteralTypeAnnotation',
+            )
+          ) {
+            return (
+              '(' +
+              // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+              (annotation.types: ReadonlyArray<CompleteTypeAnnotation>)
+                .map(boolLit => formatTypeAnnotation(boolLit))
+                .join(' | ') +
+              ')'
+            );
+          }
+          return `Union<boolean>`;
+        case 'number':
+          if (
+            annotation.types.every(
+              ({type}) => type === 'NumberLiteralTypeAnnotation',
+            )
+          ) {
+            return (
+              '(' +
+              // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+              (annotation.types: ReadonlyArray<CompleteTypeAnnotation>)
+                .map(numLit => formatTypeAnnotation(numLit))
+                .join(' | ') +
+              ')'
+            );
+          }
+          return `Union<number>`;
+        case 'object':
+          return `Union<Object>`;
+        case 'string':
+          if (
+            annotation.types.every(
+              ({type}) => type === 'StringLiteralTypeAnnotation',
+            )
+          ) {
+            return (
+              '(' +
+              // @lint-ignore-every FLOW_INCOMPATIBLE_TYPE_ARG
+              (annotation.types: ReadonlyArray<CompleteTypeAnnotation>)
+                .map(stringLit => formatTypeAnnotation(stringLit))
+                .join(' | ') +
+              ')'
+            );
+          }
+          // Unions of strings and string literals are treated as just strings
+          return `Union<string>`;
+        default:
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
+      }
     case 'StringTypeAnnotation':
       return 'string';
-    case 'UnionTypeAnnotation': {
-      const shortHandType =
-        annotation.memberType === 'StringTypeAnnotation'
-          ? 'string'
-          : annotation.memberType === 'ObjectTypeAnnotation'
-            ? 'Object'
-            : 'number';
-      return `Union<${shortHandType}>`;
-    }
     case 'PromiseTypeAnnotation':
       return 'Promise<' + formatTypeAnnotation(annotation.elementType) + '>';
     case 'EventEmitterTypeAnnotation':
@@ -275,7 +323,7 @@ export function formatNativeSpecErrorStore(
 export function formatDiffSet(summary: DiffSummary): FormattedDiffSummary {
   const summaryStatus = summary.status;
   if (summaryStatus === 'ok' || summaryStatus === 'patchable') {
-    // $FlowFixMe I don't think we can ever get in this branch
+    // $FlowFixMe[incompatible-type] I don't think we can ever get in this branch
     return summary;
   }
   const hasteModules = Object.keys(summary.incompatibilityReport);
@@ -290,7 +338,7 @@ export function formatDiffSet(summary: DiffSummary): FormattedDiffSummary {
       // nested errors
       formattedIncompat.incompatibleSpecs = incompat.incompatibleSpecs.reduce(
         (
-          formattedModuleErrors: $ReadOnlyArray<FormattedErrorStore>,
+          formattedModuleErrors: ReadonlyArray<FormattedErrorStore>,
           specErrorStore,
         ) =>
           formattedModuleErrors.concat(

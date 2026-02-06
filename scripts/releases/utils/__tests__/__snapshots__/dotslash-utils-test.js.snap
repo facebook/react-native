@@ -1,0 +1,102 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`processDotSlashFileInPlace comments, multiple platforms, providers + replacement: contents after processing 1`] = `
+"#!/usr/bin/env dotslash
+// Top-level comment
+{
+  \\"name\\": \\"test\\",
+  \\"platforms\\": {
+    // Comment on linux-x86_64
+    \\"linux-x86_64\\": {
+      \\"size\\": 0,
+      \\"hash\\": \\"sha256\\",
+      \\"digest\\": \\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\\",
+      \\"providers\\": [
+        {
+            \\"url\\": \\"https://example.com/replaced/test-linux-x86_64.tar.gz\\"
+        }
+    ],
+      \\"format\\": \\"tar.gz\\",
+      \\"path\\": \\"bar\\"
+    },
+    // Comment on macos-aarch64
+    \\"macos-aarch64\\": {
+      \\"size\\": 0,
+      \\"hash\\": \\"sha256\\",
+      \\"digest\\": \\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\\",
+      \\"providers\\": [
+        {
+            \\"url\\": \\"https://primary.example.com/foo-mac.zip\\",
+            \\"weight\\": 3
+        },
+        {
+            \\"url\\": \\"https://mirror1.example.com/foo-mac.zip\\",
+            \\"weight\\": 1
+        },
+        {
+            \\"url\\": \\"https://example.com/added/test-macos-aarch64.zip\\"
+        }
+    ],
+      \\"format\\": \\"zip\\",
+      \\"path\\": \\"bar\\",
+    }
+  }
+}"
+`;
+
+exports[`processDotSlashFileInPlace comments, multiple platforms, providers + replacement: transformProviders calls 1`] = `
+Array [
+  Array [
+    Array [
+      Object {
+        "url": "https://primary.example.com/foo-linux.tar.gz",
+        "weight": 3,
+      },
+      Object {
+        "url": "https://mirror1.example.com/foo-linux.tar.gz",
+        "weight": 1,
+      },
+      Object {
+        "url": "https://mirror2.example.com/foo-linux.tar.gz",
+        "weight": 1,
+      },
+      Object {
+        "url": "https://mirror3.example.com/foo-linux.tar.gz",
+        "weight": 1,
+      },
+    ],
+    "test-linux-x86_64.tar.gz",
+    Object {
+      "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash": "sha256",
+      "size": 0,
+    },
+  ],
+  Array [
+    Array [
+      Object {
+        "url": "https://primary.example.com/foo-mac.zip",
+        "weight": 3,
+      },
+      Object {
+        "url": "https://mirror1.example.com/foo-mac.zip",
+        "weight": 1,
+      },
+    ],
+    "test-macos-aarch64.zip",
+    Object {
+      "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash": "sha256",
+      "size": 0,
+    },
+  ],
+]
+`;
+
+exports[`validateDotSlashArtifactData blake3 failure on digest mismatch 1`] = `"blake3 mismatch: expected 2623f14eac39a9cc7b211cda9c52bcb9949ccd63aed4040a6a1a9f5f9b9431fa, got af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"`;
+
+exports[`validateDotSlashArtifactData blake3 failure on size mismatch 1`] = `"size mismatch: expected 1, got 0"`;
+
+exports[`validateDotSlashArtifactData sha256 failure on digest mismatch 1`] = `"sha256 mismatch: expected 558b2587b199594ac439b9464e14ea72429bf6998c4fbfa941c1cf89244c0b3e, got e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"`;
+
+exports[`validateDotSlashArtifactData sha256 failure on size mismatch 1`] = `"size mismatch: expected 1, got 0"`;

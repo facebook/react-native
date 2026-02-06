@@ -33,7 +33,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     def setup
         CodegenUtils.set_react_codegen_discovery_done(false)
-        CodegenUtils.set_react_codegen_podspec_generated(false)
         Pod::Config.reset()
         @base_path = "~/app/ios"
         Pathname.pwd!(@base_path)
@@ -62,8 +61,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         # Assert
         assert_false(CodegenUtils.react_codegen_discovery_done())
-        assert_equal(Pod::UI.collected_messages, [])
-        assert_equal(Pod::UI.collected_warns, [])
+        assert_equal([], Pod::UI.collected_messages)
+        assert_equal([], Pod::UI.collected_warns)
     end
 
     def testUseReactCodegenDiscovery_whenDiscoveryDone_doNothing
@@ -75,8 +74,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         # Assert
         assert_true(CodegenUtils.react_codegen_discovery_done())
-        assert_equal(Pod::UI.collected_messages, ["Skipping use_react_native_codegen_discovery."])
-        assert_equal(Pod::UI.collected_warns, [])
+        assert_equal(["Skipping use_react_native_codegen_discovery."], Pod::UI.collected_messages)
+        assert_equal([], Pod::UI.collected_warns)
     end
 
     def testUseReactCodegenDiscovery_whenAppPathUndefined_abort
@@ -89,16 +88,16 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         # Assert
         assert_false(CodegenUtils.react_codegen_discovery_done())
-        assert_equal(Pod::UI.collected_messages, [])
-        assert_equal(Pod::UI.collected_warns, [
+        assert_equal([], Pod::UI.collected_messages)
+        assert_equal([
             'Error: app_path is required for use_react_native_codegen_discovery.',
             'If you are calling use_react_native_codegen_discovery! in your Podfile, please remove the call and pass `app_path` and/or `config_file_dir` to `use_react_native!`.'
-        ])
+        ], Pod::UI.collected_warns)
     end
 
-    # ============================= #
+    # =========================== #
     # Test - CleanUpCodegenFolder #
-    # ============================= #
+    # =========================== #
 
     def testCleanUpCodegenFolder_whenCleanupDone_doNothing
         # Arrange
@@ -110,9 +109,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.clean_up_build_folder(rn_path, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [])
-        assert_equal(CodegenUtils.cleanup_done(), true)
+        assert_equal(0, FileUtils::FileUtilsStorage.rmrf_invocation_count)
+        assert_equal([], FileUtils::FileUtilsStorage.rmrf_paths)
+        assert_equal(true, CodegenUtils.cleanup_done())
     end
 
     def testCleanUpCodegenFolder_whenFolderDoesNotExists_markAsCleanupDone
@@ -125,10 +124,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.clean_up_build_folder(rn_path, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [])
-        assert_equal(DirMock.glob_invocation, [])
-        assert_equal(CodegenUtils.cleanup_done(), true)
+        assert_equal(0, FileUtils::FileUtilsStorage.rmrf_invocation_count)
+        assert_equal([], FileUtils::FileUtilsStorage.rmrf_paths)
+        assert_equal([], DirMock.glob_invocation)
+        assert_equal(true, CodegenUtils.cleanup_done())
     end
 
     def testCleanUpCodegenFolder_whenFolderExists_deleteItAndSetCleanupDone
@@ -137,29 +136,33 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen_dir = "build/generated/ios"
         codegen_path = "#{@base_path}/#{codegen_dir}"
         globs = [
-            "/MyModuleSpecs/MyModule.h",
-            "#{codegen_path}/MyModuleSpecs/MyModule.mm",
-            "#{codegen_path}/react/components/MyComponent/ShadowNode.h",
-            "#{codegen_path}/react/components/MyComponent/ShadowNode.mm",
+            codegen_path
         ]
         rn_path = '../node_modules/react-native'
 
         DirMock.mocked_existing_dirs(codegen_path)
         DirMock.mocked_existing_globs(globs, "#{codegen_path}/*")
 
+        original_define_singleton_method = CodegenUtils.method(:assert_codegen_folder_is_empty)
+        CodegenUtils.define_singleton_method(:assert_codegen_folder_is_empty) do |*args, **kwargs|
+            # no-op
+        end
+
         # Act
         CodegenUtils.clean_up_build_folder(rn_path, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(DirMock.exist_invocation_params, [codegen_path, codegen_path])
-        assert_equal(DirMock.glob_invocation, ["#{codegen_path}/*", "#{codegen_path}/*"])
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 3)
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [
-            globs,
+        assert_equal([codegen_path], DirMock.exist_invocation_params)
+        assert_equal(3, FileUtils::FileUtilsStorage.rmrf_invocation_count)
+        assert_equal([
+            *globs,
             "#{rn_path}/React/Fabric/RCTThirdPartyFabricComponentsProvider.h",
             "#{rn_path}/React/Fabric/RCTThirdPartyFabricComponentsProvider.mm",
-        ])
-        assert_equal(CodegenUtils.cleanup_done(), true)
+        ], FileUtils::FileUtilsStorage.rmrf_paths)
+        assert_equal(true, CodegenUtils.cleanup_done())
+    ensure
+        # Restore original method so other tests are not affected
+        CodegenUtils.define_singleton_method(:assert_codegen_folder_is_empty, original_define_singleton_method)
     end
 
     # ===================================== #
@@ -175,7 +178,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.assert_codegen_folder_is_empty(codegen_path, dir_manager: DirMock)
 
         # Assert
-        assert_equal(Pod::UI.collected_warns, [])
+        assert_equal([], Pod::UI.collected_warns)
     end
 
     def test_assertCodegenFolderIsEmpty_whenItExistsAndIsEmpty_doesNotAbort
@@ -189,7 +192,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.assert_codegen_folder_is_empty(codegen_path, dir_manager: DirMock)
 
         # Assert
-        assert_equal(Pod::UI.collected_warns, [])
+        assert_equal([], Pod::UI.collected_warns)
     end
 
     def test_assertCodegenFolderIsEmpty_whenItIsNotEmpty_itAborts
@@ -205,9 +208,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
         }
 
         # Assert
-        assert_equal(Pod::UI.collected_warns, [
+        assert_equal([
             "Unable to remove the content of ~/app/ios/./build/generated/ios folder. Please run rm -rf ~/app/ios/./build/generated/ios and try again."
-        ])
+        ], Pod::UI.collected_warns)
     end
 
     private

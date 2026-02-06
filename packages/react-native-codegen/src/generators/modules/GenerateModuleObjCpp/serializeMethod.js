@@ -25,7 +25,7 @@ const {
   wrapNullable,
 } = require('../../../parsers/parsers-commons');
 const {wrapOptional} = require('../../TypeUtils/Objective-C');
-const {capitalize} = require('../../Utils');
+const {capitalize, parseValidUnionType} = require('../../Utils');
 const {getNamespacedStructName} = require('./Utils');
 const invariant = require('invariant');
 
@@ -33,13 +33,13 @@ const ProtocolMethodTemplate = ({
   returnObjCType,
   methodName,
   params,
-}: $ReadOnly<{
+}: Readonly<{
   returnObjCType: string,
   methodName: string,
   params: string,
 }>) => `- (${returnObjCType})${methodName}${params};`;
 
-export type StructParameterRecord = $ReadOnly<{
+export type StructParameterRecord = Readonly<{
   paramIndex: number,
   structName: string,
 }>;
@@ -53,11 +53,11 @@ type ReturnJSType =
   | 'NumberKind'
   | 'StringKind';
 
-export type MethodSerializationOutput = $ReadOnly<{
+export type MethodSerializationOutput = Readonly<{
   methodName: string,
   protocolMethod: string,
   selector: string,
-  structParamRecords: $ReadOnlyArray<StructParameterRecord>,
+  structParamRecords: ReadonlyArray<StructParameterRecord>,
   returnJSType: ReturnJSType,
   argCount: number,
 }>;
@@ -67,7 +67,7 @@ function serializeMethod(
   property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnlyArray<MethodSerializationOutput> {
+): ReadonlyArray<MethodSerializationOutput> {
   const {name: methodName, typeAnnotation: nullableTypeAnnotation} = property;
   const [propertyTypeAnnotation] = unwrapNullable(nullableTypeAnnotation);
   const {params} = propertyTypeAnnotation;
@@ -186,7 +186,7 @@ function getParamObjCType(
   structName: string,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnly<{objCType: string, isStruct: boolean}> {
+): Readonly<{objCType: string, isStruct: boolean}> {
   const {name: paramName, typeAnnotation: nullableTypeAnnotation} = param;
   const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
   const isRequired = !param.optional && !nullable;
@@ -259,8 +259,9 @@ function getParamObjCType(
       return notStruct(wrapOptional('NSString *', !nullable));
     case 'StringLiteralTypeAnnotation':
       return notStruct(wrapOptional('NSString *', !nullable));
-    case 'StringLiteralUnionTypeAnnotation':
-      return notStruct(wrapOptional('NSString *', !nullable));
+    case 'UnionTypeAnnotation':
+      // TODO(T247151345): Implement proper heterogeneous union support. This is unsafe.
+      return notStruct(wrapOptional('NSObject *', !nullable));
     case 'NumberTypeAnnotation':
       return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'NumberLiteralTypeAnnotation':
@@ -272,6 +273,8 @@ function getParamObjCType(
     case 'Int32TypeAnnotation':
       return notStruct(isRequired ? 'NSInteger' : 'NSNumber *');
     case 'BooleanTypeAnnotation':
+      return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
+    case 'BooleanLiteralTypeAnnotation':
       return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -340,10 +343,6 @@ function getReturnObjCType(
       // TODO: Can NSString * returns not be _Nullable?
       // In the legacy codegen, we don't surround NSSTring * with _Nullable
       return wrapOptional('NSString *', isRequired);
-    case 'StringLiteralUnionTypeAnnotation':
-      // TODO: Can NSString * returns not be _Nullable?
-      // In the legacy codegen, we don't surround NSSTring * with _Nullable
-      return wrapOptional('NSString *', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
     case 'NumberLiteralTypeAnnotation':
@@ -355,6 +354,8 @@ function getReturnObjCType(
     case 'Int32TypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
     case 'BooleanTypeAnnotation':
+      return wrapOptional('NSNumber *', isRequired);
+    case 'BooleanLiteralTypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
@@ -368,19 +369,21 @@ function getReturnObjCType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
           return wrapOptional('NSNumber *', isRequired);
-        case 'ObjectTypeAnnotation':
+        case 'number':
+          return wrapOptional('NSNumber *', isRequired);
+        case 'object':
           return wrapOptional('NSDictionary *', isRequired);
-        case 'StringTypeAnnotation':
+        case 'string':
           // TODO: Can NSString * returns not be _Nullable?
           // In the legacy codegen, we don't surround NSSTring * with _Nullable
           return wrapOptional('NSString *', isRequired);
         default:
-          throw new Error(
-            `Unsupported union return type for ${methodName}, found: ${typeAnnotation.memberType}"`,
-          );
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member type`);
       }
     case 'GenericObjectTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
@@ -414,8 +417,6 @@ function getReturnJSType(
       return 'StringKind';
     case 'StringLiteralTypeAnnotation':
       return 'StringKind';
-    case 'StringLiteralUnionTypeAnnotation':
-      return 'StringKind';
     case 'NumberTypeAnnotation':
       return 'NumberKind';
     case 'NumberLiteralTypeAnnotation':
@@ -427,6 +428,8 @@ function getReturnJSType(
     case 'Int32TypeAnnotation':
       return 'NumberKind';
     case 'BooleanTypeAnnotation':
+      return 'BooleanKind';
+    case 'BooleanLiteralTypeAnnotation':
       return 'BooleanKind';
     case 'GenericObjectTypeAnnotation':
       return 'ObjectKind';
@@ -442,17 +445,19 @@ function getReturnJSType(
           );
       }
     case 'UnionTypeAnnotation':
-      switch (typeAnnotation.memberType) {
-        case 'NumberTypeAnnotation':
+      const validUnionType = parseValidUnionType(typeAnnotation);
+      switch (validUnionType) {
+        case 'boolean':
+          return 'BooleanKind';
+        case 'number':
           return 'NumberKind';
-        case 'ObjectTypeAnnotation':
+        case 'object':
           return 'ObjectKind';
-        case 'StringTypeAnnotation':
+        case 'string':
           return 'StringKind';
         default:
-          throw new Error(
-            `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
-          );
+          (validUnionType: empty);
+          throw new Error(`Unsupported union member types`);
       }
     default:
       (typeAnnotation.type: 'MixedTypeAnnotation');
@@ -467,7 +472,7 @@ function serializeConstantsProtocolMethods(
   property: NativeModulePropertyShape,
   structCollector: StructCollector,
   resolveAlias: AliasResolver,
-): $ReadOnlyArray<MethodSerializationOutput> {
+): ReadonlyArray<MethodSerializationOutput> {
   const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
   if (propertyTypeAnnotation.params.length !== 0) {
     throw new Error(
@@ -508,7 +513,7 @@ function serializeConstantsProtocolMethods(
     "Unable to generate C++ struct from module's getConstants() method return type.",
   );
 
-  const returnObjCType = `facebook::react::ModuleConstants<JS::${hasteModuleName}::Constants::Builder>`;
+  const returnObjCType = `facebook::react::ModuleConstants<JS::${hasteModuleName}::Constants>`;
 
   // $FlowFixMe[missing-type-arg]
   return ['constantsToExport', 'getConstants'].map<MethodSerializationOutput>(

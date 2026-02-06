@@ -13,6 +13,7 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
+#include <limits>
 #include <string>
 
 namespace facebook::react {
@@ -21,15 +22,12 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
  public:
   BaseTextInputProps() = default;
   BaseTextInputProps(
-      const PropsParserContext& context,
-      const BaseTextInputProps& sourceProps,
-      const RawProps& rawProps);
+      const PropsParserContext &context,
+      const BaseTextInputProps &sourceProps,
+      const RawProps &rawProps);
 
-  void setProp(
-      const PropsParserContext& context,
-      RawPropsPropNameHash hash,
-      const char* propName,
-      const RawValue& value);
+  void
+  setProp(const PropsParserContext &context, RawPropsPropNameHash hash, const char *propName, const RawValue &value);
 
   SubmitBehavior getNonDefaultSubmitBehavior() const;
 
@@ -60,7 +58,7 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
   // TODO: Rename to `tintColor` and make universal.
   SharedColor underlineColorAndroid{};
 
-  int maxLength{};
+  int maxLength = std::numeric_limits<int>::max();
 
   /*
    * "Private" (only used by TextInput.js) props

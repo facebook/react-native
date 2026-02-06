@@ -5,6 +5,11 @@
 
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
+if(UNIX AND NOT APPLE)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+  set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -latomic")
+  set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
+endif()
 
 project(fantom_tester)
 
@@ -13,12 +18,11 @@ include_directories(${REACT_ANDROID_DIR}/hermes-engine/build/prefab-headers)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
 include(Deps)
 
-find_library(LIB_HERMES libhermes
-  NAMES hermes
-  HINTS ${REACT_ANDROID_DIR}/hermes-engine/build/hermes/API/hermes
+find_library(LIB_HERMES hermesvm
+  HINTS ${REACT_ANDROID_DIR}/hermes-engine/build/hermes/lib
   REQUIRED)
-add_library(hermes-engine::libhermes INTERFACE IMPORTED)
-set_target_properties(hermes-engine::libhermes PROPERTIES
+add_library(hermes-engine::hermesvm INTERFACE IMPORTED)
+set_target_properties(hermes-engine::hermesvm PROPERTIES
   INTERFACE_LINK_LIBRARIES ${LIB_HERMES})
 find_package(OpenSSL REQUIRED)
 
@@ -68,7 +72,10 @@ add_react_common_subdir(react/nativemodule/intersectionobserver)
 add_react_common_subdir(react/nativemodule/microtasks)
 add_react_common_subdir(react/nativemodule/mutationobserver)
 add_react_common_subdir(react/nativemodule/webperformance)
+add_react_common_subdir(react/performance/cdpmetrics)
 add_react_common_subdir(react/performance/timeline)
+add_react_common_subdir(react/renderer/animated)
+add_react_common_subdir(react/renderer/animationbackend)
 add_react_common_subdir(react/renderer/attributedstring)
 add_react_common_subdir(react/renderer/bridging)
 add_react_common_subdir(react/renderer/componentregistry)
@@ -117,7 +124,6 @@ add_react_cxx_platform_subdir(react/io)
 add_react_cxx_platform_subdir(react/logging)
 add_react_cxx_platform_subdir(react/nativemodule)
 add_react_cxx_platform_subdir(react/profiling)
-add_react_cxx_platform_subdir(react/renderer/animated)
 add_react_cxx_platform_subdir(react/renderer/scheduler)
 add_react_cxx_platform_subdir(react/renderer/uimanager)
 add_react_cxx_platform_subdir(react/runtime)
@@ -145,7 +151,7 @@ target_link_libraries(fantom_tester
     glog
 
     # hermes
-    hermes-engine::libhermes
+    hermes-engine::hermesvm
 
     # codegen
     react_codegen_rncore
@@ -182,6 +188,7 @@ target_link_libraries(fantom_tester
     react_nativemodule_microtasks
     react_nativemodule_mutationobserver
     react_nativemodule_webperformance
+    react_performance_cdpmetrics
     react_performance_timeline
     react_renderer_attributedstring
     react_renderer_componentregistry
@@ -224,7 +231,8 @@ target_link_libraries(fantom_tester
     react_cxx_platform_react_io
     react_cxx_platform_react_logging
     react_cxx_platform_react_profiling
-    react_cxx_platform_react_renderer_animated
+    react_renderer_animated
+    react_renderer_animationbackend
     react_cxx_platform_react_renderer_scheduler
     react_cxx_platform_react_runtime
     react_cxx_platform_react_threading

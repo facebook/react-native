@@ -42,6 +42,8 @@ import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan
 import com.facebook.react.views.text.internal.span.ReactClickableSpan
 import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan
+import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan
+import com.facebook.react.views.text.internal.span.ReactLinkSpan
 import com.facebook.react.views.text.internal.span.ReactOpacitySpan
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
 import com.facebook.react.views.text.internal.span.ReactTagSpan
@@ -130,8 +132,8 @@ internal object TextLayoutManager {
     }
 
     return TextAttributeProps.getLayoutDirection(
-        textAttributes.getString(TextAttributeProps.TA_KEY_LAYOUT_DIRECTION.toInt())) ==
-        LayoutDirection.RTL
+        textAttributes.getString(TextAttributeProps.TA_KEY_LAYOUT_DIRECTION.toInt())
+    ) == LayoutDirection.RTL
   }
 
   private fun getTextAlignmentAttr(attributedString: MapBuffer): String? {
@@ -169,7 +171,7 @@ internal object TextLayoutManager {
   private fun getTextAlignment(
       attributedString: MapBuffer,
       spanned: Spannable,
-      alignmentAttr: String?
+      alignmentAttr: String?,
   ): Layout.Alignment {
     // Android will align text based on the script, so normal and opposite alignment needs to be
     // swapped when the directions of paragraph and script don't match.
@@ -218,7 +220,8 @@ internal object TextLayoutManager {
       context: Context,
       fragments: MapBuffer,
       sb: SpannableStringBuilder,
-      ops: MutableList<SetSpanOperation>
+      ops: MutableList<SetSpanOperation>,
+      outputReactTags: IntArray?,
   ) {
     for (i in 0 until fragments.count) {
       val fragment = fragments.getMapBuffer(i)
@@ -228,7 +231,8 @@ internal object TextLayoutManager {
           TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES))
 
       sb.append(
-          TextTransform.apply(fragment.getString(FR_KEY_STRING), textAttributes.mTextTransform))
+          TextTransform.apply(fragment.getString(FR_KEY_STRING), textAttributes.textTransform)
+      )
 
       val end = sb.length
       val reactTag =
@@ -240,74 +244,100 @@ internal object TextLayoutManager {
             SetSpanOperation(
                 sb.length - 1,
                 sb.length,
-                TextInlineViewPlaceholderSpan(reactTag, width.toInt(), height.toInt())))
+                TextInlineViewPlaceholderSpan(reactTag, width.toInt(), height.toInt()),
+            )
+        )
       } else if (end >= start) {
         val roleIsLink =
-            if (textAttributes.mRole != null)
-                (textAttributes.mRole == ReactAccessibilityDelegate.Role.LINK)
+            if (textAttributes.role != null)
+                (textAttributes.role == ReactAccessibilityDelegate.Role.LINK)
             else
-                (textAttributes.mAccessibilityRole ==
+                (textAttributes.accessibilityRole ==
                     ReactAccessibilityDelegate.AccessibilityRole.LINK)
         if (roleIsLink) {
-          ops.add(SetSpanOperation(start, end, ReactClickableSpan(reactTag)))
+          if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
+            ops.add(SetSpanOperation(start, end, ReactLinkSpan(i)))
+          } else {
+            ops.add(SetSpanOperation(start, end, ReactClickableSpan(reactTag)))
+          }
         }
-        if (textAttributes.mIsColorSet) {
-          ops.add(SetSpanOperation(start, end, ReactForegroundColorSpan(textAttributes.mColor)))
+        if (textAttributes.isColorSet) {
+          textAttributes.color
+              ?.let { ReactForegroundColorSpan(it) }
+              ?.let { SetSpanOperation(start, end, it) }
+              ?.let { ops.add(it) }
         }
-        if (textAttributes.mIsBackgroundColorSet) {
-          ops.add(
-              SetSpanOperation(
-                  start, end, ReactBackgroundColorSpan(textAttributes.mBackgroundColor)))
+        if (textAttributes.isBackgroundColorSet) {
+          textAttributes.backgroundColor
+              ?.let { ReactBackgroundColorSpan(it) }
+              ?.let { SetSpanOperation(start, end, it) }
+              ?.let { ops.add(it) }
         }
         if (!textAttributes.opacity.isNaN()) {
           ops.add(SetSpanOperation(start, end, ReactOpacitySpan(textAttributes.opacity)))
         }
         if (!textAttributes.letterSpacing.isNaN()) {
           ops.add(
-              SetSpanOperation(start, end, CustomLetterSpacingSpan(textAttributes.letterSpacing)))
+              SetSpanOperation(start, end, CustomLetterSpacingSpan(textAttributes.letterSpacing))
+          )
         }
-        ops.add(SetSpanOperation(start, end, ReactAbsoluteSizeSpan(textAttributes.mFontSize)))
-        if (textAttributes.mFontStyle != ReactConstants.UNSET ||
-            textAttributes.mFontWeight != ReactConstants.UNSET ||
-            textAttributes.mFontFamily != null) {
+        ops.add(SetSpanOperation(start, end, ReactAbsoluteSizeSpan(textAttributes.fontSize)))
+        if (
+            textAttributes.fontStyle != ReactConstants.UNSET ||
+                textAttributes.fontWeight != ReactConstants.UNSET ||
+                textAttributes.fontFamily != null
+        ) {
           ops.add(
               SetSpanOperation(
                   start,
                   end,
                   CustomStyleSpan(
-                      textAttributes.mFontStyle,
-                      textAttributes.mFontWeight,
-                      textAttributes.mFontFeatureSettings,
-                      textAttributes.mFontFamily,
-                      context.assets)))
+                      textAttributes.fontStyle,
+                      textAttributes.fontWeight,
+                      textAttributes.fontFeatureSettings,
+                      textAttributes.fontFamily,
+                      context.assets,
+                  ),
+              )
+          )
         }
-        if (textAttributes.mIsUnderlineTextDecorationSet) {
+        if (textAttributes.isUnderlineTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactUnderlineSpan()))
         }
-        if (textAttributes.mIsLineThroughTextDecorationSet) {
+        if (textAttributes.isLineThroughTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactStrikethroughSpan()))
         }
-        if ((textAttributes.mTextShadowOffsetDx != 0f ||
-            textAttributes.mTextShadowOffsetDy != 0f ||
-            textAttributes.mTextShadowRadius != 0f) &&
-            Color.alpha(textAttributes.mTextShadowColor) != 0) {
+        if (
+            (textAttributes.textShadowOffsetDx != 0f ||
+                textAttributes.textShadowOffsetDy != 0f ||
+                textAttributes.textShadowRadius != 0f) &&
+                Color.alpha(textAttributes.textShadowColor) != 0
+        ) {
           ops.add(
               SetSpanOperation(
                   start,
                   end,
                   ShadowStyleSpan(
-                      textAttributes.mTextShadowOffsetDx,
-                      textAttributes.mTextShadowOffsetDy,
-                      textAttributes.mTextShadowRadius,
-                      textAttributes.mTextShadowColor)))
+                      textAttributes.textShadowOffsetDx,
+                      textAttributes.textShadowOffsetDy,
+                      textAttributes.textShadowRadius,
+                      textAttributes.textShadowColor,
+                  ),
+              )
+          )
         }
-        if (!textAttributes.effectiveLineHeight.isNaN()) {
-          ops.add(
-              SetSpanOperation(
-                  start, end, CustomLineHeightSpan(textAttributes.effectiveLineHeight)))
+        if (!textAttributes.lineHeight.isNaN()) {
+          ops.add(SetSpanOperation(start, end, CustomLineHeightSpan(textAttributes.lineHeight)))
         }
 
-        ops.add(SetSpanOperation(start, end, ReactTagSpan(reactTag)))
+        if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
+          ops.add(SetSpanOperation(start, end, ReactFragmentIndexSpan(i)))
+          if (outputReactTags != null) {
+            outputReactTags[i] = reactTag
+          }
+        } else {
+          ops.add(SetSpanOperation(start, end, ReactTagSpan(reactTag)))
+        }
       }
     }
   }
@@ -318,12 +348,13 @@ internal object TextLayoutManager {
       val reactTag: Int,
       val isAttachment: Boolean,
       val width: Double,
-      val height: Double
+      val height: Double,
   )
 
   private fun buildSpannableFromFragmentsOptimized(
       context: Context,
-      fragments: MapBuffer
+      fragments: MapBuffer,
+      outputReactTags: IntArray?,
   ): Spannable {
     val text = StringBuilder()
     val parsedFragments = ArrayList<FragmentAttributes>(fragments.count)
@@ -357,13 +388,15 @@ internal object TextLayoutManager {
                     fragment.getDouble(FR_KEY_HEIGHT)
                   } else {
                     Double.NaN
-                  }))
+                  },
+          )
+      )
     }
 
     val spannable = SpannableString(text)
 
     var start = 0
-    for (fragment in parsedFragments) {
+    for ((i, fragment) in parsedFragments.withIndex()) {
       val end = start + fragment.length
       val spanFlags =
           if (start == 0) Spannable.SPAN_INCLUSIVE_INCLUSIVE else Spannable.SPAN_EXCLUSIVE_INCLUSIVE
@@ -373,10 +406,12 @@ internal object TextLayoutManager {
             TextInlineViewPlaceholderSpan(
                 fragment.reactTag,
                 PixelUtil.toPixelFromSP(fragment.width).toInt(),
-                PixelUtil.toPixelFromSP(fragment.height).toInt()),
+                PixelUtil.toPixelFromSP(fragment.height).toInt(),
+            ),
             start,
             end,
-            spanFlags)
+            spanFlags,
+        )
       } else {
         val roleIsLink =
             if (fragment.props.role != null)
@@ -386,16 +421,29 @@ internal object TextLayoutManager {
                     ReactAccessibilityDelegate.AccessibilityRole.LINK)
 
         if (roleIsLink) {
-          spannable.setSpan(ReactClickableSpan(fragment.reactTag), start, end, spanFlags)
+          if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
+            spannable.setSpan(ReactLinkSpan(i), start, end, spanFlags)
+          } else {
+            spannable.setSpan(ReactClickableSpan(fragment.reactTag), start, end, spanFlags)
+          }
         }
 
         if (fragment.props.isColorSet) {
-          spannable.setSpan(ReactForegroundColorSpan(fragment.props.color), start, end, spanFlags)
+          spannable.setSpan(
+              fragment.props.color?.let { ReactForegroundColorSpan(it) },
+              start,
+              end,
+              spanFlags,
+          )
         }
 
         if (fragment.props.isBackgroundColorSet) {
           spannable.setSpan(
-              ReactBackgroundColorSpan(fragment.props.backgroundColor), start, end, spanFlags)
+              fragment.props.backgroundColor?.let { ReactBackgroundColorSpan(it) },
+              start,
+              end,
+              spanFlags,
+          )
         }
 
         if (!fragment.props.opacity.isNaN()) {
@@ -404,25 +452,32 @@ internal object TextLayoutManager {
 
         if (!fragment.props.letterSpacing.isNaN()) {
           spannable.setSpan(
-              CustomLetterSpacingSpan(fragment.props.letterSpacing), start, end, spanFlags)
+              CustomLetterSpacingSpan(fragment.props.letterSpacing),
+              start,
+              end,
+              spanFlags,
+          )
         }
 
-        // TODO: Should this be using effectiveFontSize instead of fontSize?
-        spannable.setSpan(ReactAbsoluteSizeSpan(fragment.props.mFontSize), start, end, spanFlags)
+        spannable.setSpan(ReactAbsoluteSizeSpan(fragment.props.fontSize), start, end, spanFlags)
 
-        if (fragment.props.fontStyle != ReactConstants.UNSET ||
-            fragment.props.fontWeight != ReactConstants.UNSET ||
-            fragment.props.fontFamily != null) {
+        if (
+            fragment.props.fontStyle != ReactConstants.UNSET ||
+                fragment.props.fontWeight != ReactConstants.UNSET ||
+                fragment.props.fontFamily != null
+        ) {
           spannable.setSpan(
               CustomStyleSpan(
                   fragment.props.fontStyle,
                   fragment.props.fontWeight,
                   fragment.props.fontFeatureSettings,
                   fragment.props.fontFamily,
-                  context.assets),
+                  context.assets,
+              ),
               start,
               end,
-              spanFlags)
+              spanFlags,
+          )
         }
 
         if (fragment.props.isUnderlineTextDecorationSet) {
@@ -433,27 +488,37 @@ internal object TextLayoutManager {
           spannable.setSpan(ReactStrikethroughSpan(), start, end, spanFlags)
         }
 
-        if ((fragment.props.textShadowOffsetDx != 0f ||
-            fragment.props.textShadowOffsetDy != 0f ||
-            fragment.props.textShadowRadius != 0f) &&
-            Color.alpha(fragment.props.textShadowColor) != 0) {
+        if (
+            (fragment.props.textShadowOffsetDx != 0f ||
+                fragment.props.textShadowOffsetDy != 0f ||
+                fragment.props.textShadowRadius != 0f) &&
+                Color.alpha(fragment.props.textShadowColor) != 0
+        ) {
           spannable.setSpan(
               ShadowStyleSpan(
                   fragment.props.textShadowOffsetDx,
                   fragment.props.textShadowOffsetDy,
                   fragment.props.textShadowRadius,
-                  fragment.props.textShadowColor),
+                  fragment.props.textShadowColor,
+              ),
               start,
               end,
-              spanFlags)
+              spanFlags,
+          )
         }
 
-        if (!fragment.props.effectiveLineHeight.isNaN()) {
-          spannable.setSpan(
-              CustomLineHeightSpan(fragment.props.effectiveLineHeight), start, end, spanFlags)
+        if (!fragment.props.lineHeight.isNaN()) {
+          spannable.setSpan(CustomLineHeightSpan(fragment.props.lineHeight), start, end, spanFlags)
         }
 
-        spannable.setSpan(ReactTagSpan(fragment.reactTag), start, end, spanFlags)
+        if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
+          spannable.setSpan(ReactFragmentIndexSpan(i), start, end, spanFlags)
+          if (outputReactTags != null) {
+            outputReactTags[i] = fragment.reactTag
+          }
+        } else {
+          spannable.setSpan(ReactTagSpan(fragment.reactTag), start, end, spanFlags)
+        }
       }
 
       start = end
@@ -465,7 +530,7 @@ internal object TextLayoutManager {
   fun getOrCreateSpannableForText(
       context: Context,
       attributedString: MapBuffer,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?
+      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
   ): Spannable {
     var text: Spannable?
     if (attributedString.contains(AS_KEY_CACHE_ID)) {
@@ -474,7 +539,11 @@ internal object TextLayoutManager {
     } else {
       text =
           createSpannableFromAttributedString(
-              context, attributedString, reactTextViewManagerCallback)
+              context,
+              attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
+              reactTextViewManagerCallback,
+              null,
+          )
     }
 
     return text
@@ -482,13 +551,12 @@ internal object TextLayoutManager {
 
   private fun createSpannableFromAttributedString(
       context: Context,
-      attributedString: MapBuffer,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?
+      fragments: MapBuffer,
+      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
+      outputReactTags: IntArray?,
   ): Spannable {
     if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
-      val spannable =
-          buildSpannableFromFragmentsOptimized(
-              context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS))
+      val spannable = buildSpannableFromFragmentsOptimized(context, fragments, outputReactTags)
 
       reactTextViewManagerCallback?.onPostProcessSpannable(spannable)
       return spannable
@@ -500,7 +568,7 @@ internal object TextLayoutManager {
       // a new spannable will be wiped out
       val ops: MutableList<SetSpanOperation> = ArrayList()
 
-      buildSpannableFromFragments(context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS), sb, ops)
+      buildSpannableFromFragments(context, fragments, sb, ops, outputReactTags)
 
       // TODO T31905686: add support for inline Images
       // While setting the Spans on the final text, we also check whether any of them are images.
@@ -529,28 +597,112 @@ internal object TextLayoutManager {
       justificationMode: Int,
       ellipsizeMode: TextUtils.TruncateAt?,
       maxNumberOfLines: Int,
-      paint: TextPaint
+      paint: TextPaint,
   ): Layout {
     // If our text is boring, and fully fits in the available space, we can represent the text
     // layout as a BoringLayout
-    if (boring != null &&
-        (widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || boring.width <= floor(width))) {
+    if (
+        boring != null &&
+            (widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || boring.width <= floor(width))
+    ) {
       val layoutWidth =
           if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) floor(width).toInt()
           else boring.width
       return BoringLayout.make(
-          text, paint, layoutWidth, alignment, 1f, 0f, boring, includeFontPadding)
+          text,
+          paint,
+          layoutWidth,
+          alignment,
+          1f,
+          0f,
+          boring,
+          includeFontPadding,
+      )
     }
 
-    val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
+    // Pre-Android 15: Use existing advance-based logic
+    if (
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
+            !ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
+    ) {
+      val desiredWidth = ceil(Layout.getDesiredWidth(text, paint)).toInt()
+
+      val layoutWidth =
+          when (widthYogaMeasureMode) {
+            YogaMeasureMode.EXACTLY -> floor(width).toInt()
+            YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
+            else -> desiredWidth
+          }
+      return buildLayout(
+          text,
+          layoutWidth,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency,
+          alignment,
+          justificationMode,
+          ellipsizeMode,
+          maxNumberOfLines,
+          paint,
+      )
+    }
+
+    // Android 15+: Need to account for visual bounds
+    // Step 1: Create unconstrained layout to get visual bounds width
+    val unconstrainedLayout =
+        buildLayout(
+            text,
+            Int.MAX_VALUE / 2,
+            includeFontPadding,
+            textBreakStrategy,
+            hyphenationFrequency,
+            alignment,
+            justificationMode,
+            null,
+            ReactConstants.UNSET,
+            paint,
+        )
+
+    // Calculate visual bounds width from unconstrained layout
+    var desiredVisualWidth = 0f
+    for (i in 0 until unconstrainedLayout.lineCount) {
+      val lineWidth = unconstrainedLayout.getLineRight(i) - unconstrainedLayout.getLineLeft(i)
+      desiredVisualWidth = max(desiredVisualWidth, lineWidth)
+    }
 
     val layoutWidth =
         when (widthYogaMeasureMode) {
-          YogaMeasureMode.EXACTLY -> floor(width).toInt()
-          YogaMeasureMode.AT_MOST -> min(desiredWidth, floor(width).toInt())
-          else -> desiredWidth
+          YogaMeasureMode.AT_MOST -> min(ceil(desiredVisualWidth).toInt(), floor(width).toInt())
+          else -> ceil(desiredVisualWidth).toInt()
         }
 
+    // Step 2: Create final layout with correct width
+    return buildLayout(
+        text,
+        layoutWidth,
+        includeFontPadding,
+        textBreakStrategy,
+        hyphenationFrequency,
+        alignment,
+        justificationMode,
+        ellipsizeMode,
+        maxNumberOfLines,
+        paint,
+    )
+  }
+
+  private fun buildLayout(
+      text: Spannable,
+      layoutWidth: Int,
+      includeFontPadding: Boolean,
+      textBreakStrategy: Int,
+      hyphenationFrequency: Int,
+      alignment: Layout.Alignment,
+      justificationMode: Int,
+      ellipsizeMode: TextUtils.TruncateAt?,
+      maxNumberOfLines: Int,
+      paint: TextPaint,
+  ): Layout {
     val builder =
         StaticLayout.Builder.obtain(text, 0, text.length, paint, layoutWidth)
             .setAlignment(alignment)
@@ -571,6 +723,13 @@ internal object TextLayoutManager {
       builder.setUseLineSpacingFromFallbacks(true)
     }
 
+    if (
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM &&
+            ReactNativeFeatureFlags.fixTextClippingAndroid15useBoundsForWidth()
+    ) {
+      builder.setUseBoundsForWidth(true)
+    }
+
     return builder.build()
   }
 
@@ -581,26 +740,31 @@ internal object TextLayoutManager {
   private fun updateTextPaint(
       paint: TextPaint,
       baseTextAttributes: TextAttributeProps,
-      context: Context
+      context: Context,
   ) {
-    if (baseTextAttributes.effectiveFontSize != ReactConstants.UNSET) {
-      paint.textSize = baseTextAttributes.effectiveFontSize.toFloat()
+    if (baseTextAttributes.fontSize != ReactConstants.UNSET) {
+      paint.textSize = baseTextAttributes.fontSize.toFloat()
     }
 
-    if (baseTextAttributes.fontStyle != ReactConstants.UNSET ||
-        baseTextAttributes.fontWeight != ReactConstants.UNSET ||
-        baseTextAttributes.fontFamily != null) {
+    if (
+        baseTextAttributes.fontStyle != ReactConstants.UNSET ||
+            baseTextAttributes.fontWeight != ReactConstants.UNSET ||
+            baseTextAttributes.fontFamily != null
+    ) {
       val typeface =
           ReactTypefaceUtils.applyStyles(
               null,
               baseTextAttributes.fontStyle,
               baseTextAttributes.fontWeight,
               baseTextAttributes.fontFamily,
-              context.assets)
+              context.assets,
+          )
       paint.setTypeface(typeface)
 
-      if (baseTextAttributes.fontStyle != ReactConstants.UNSET &&
-          baseTextAttributes.fontStyle != typeface.style) {
+      if (
+          baseTextAttributes.fontStyle != ReactConstants.UNSET &&
+              baseTextAttributes.fontStyle != typeface.style
+      ) {
         // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/widget/TextView.java;l=2536;drc=d262a68a1e0c3b640274b094a7f1e3a5b75563e9
         val missingStyle = baseTextAttributes.fontStyle and typeface.style.inv()
         paint.isFakeBoldText = missingStyle and Typeface.BOLD != 0
@@ -615,7 +779,7 @@ internal object TextLayoutManager {
    */
   private fun scratchPaintWithAttributes(
       baseTextAttributes: TextAttributeProps,
-      context: Context
+      context: Context,
   ): TextPaint {
     val paint = checkNotNull(textPaintInstance.get())
     paint.setTypeface(null)
@@ -628,7 +792,7 @@ internal object TextLayoutManager {
 
   private fun newPaintWithAttributes(
       baseTextAttributes: TextAttributeProps,
-      context: Context
+      context: Context,
   ): TextPaint {
     val paint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
     updateTextPaint(paint, baseTextAttributes, context)
@@ -643,7 +807,7 @@ internal object TextLayoutManager {
       widthYogaMeasureMode: YogaMeasureMode,
       height: Float,
       heightYogaMeasureMode: YogaMeasureMode,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?
+      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
   ): Layout {
     val text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback)
 
@@ -664,7 +828,8 @@ internal object TextLayoutManager {
         width,
         widthYogaMeasureMode,
         height,
-        heightYogaMeasureMode)
+        heightYogaMeasureMode,
+    )
   }
 
   private fun createLayout(
@@ -675,20 +840,22 @@ internal object TextLayoutManager {
       width: Float,
       widthYogaMeasureMode: YogaMeasureMode,
       height: Float,
-      heightYogaMeasureMode: YogaMeasureMode
+      heightYogaMeasureMode: YogaMeasureMode,
   ): Layout {
     val boring = isBoring(text, paint)
 
     val textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(PA_KEY_TEXT_BREAK_STRATEGY))
+            paragraphAttributes.getString(PA_KEY_TEXT_BREAK_STRATEGY)
+        )
     val includeFontPadding =
         if (paragraphAttributes.contains(PA_KEY_INCLUDE_FONT_PADDING))
             paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
         else DEFAULT_INCLUDE_FONT_PADDING
     val hyphenationFrequency =
         TextAttributeProps.getHyphenationFrequency(
-            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY))
+            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY)
+        )
     val adjustFontSizeToFit =
         if (paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT))
             paragraphAttributes.getBoolean(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)
@@ -700,7 +867,8 @@ internal object TextLayoutManager {
     val ellipsizeMode =
         if (paragraphAttributes.contains(PA_KEY_ELLIPSIZE_MODE))
             TextAttributeProps.getEllipsizeMode(
-                paragraphAttributes.getString(PA_KEY_ELLIPSIZE_MODE))
+                paragraphAttributes.getString(PA_KEY_ELLIPSIZE_MODE)
+            )
         else null
 
     // T226571629: textAlign should be moved to ParagraphAttributes
@@ -727,7 +895,8 @@ internal object TextLayoutManager {
           hyphenationFrequency,
           alignment,
           justificationMode,
-          paint)
+          paint,
+      )
     }
 
     return createLayout(
@@ -742,7 +911,8 @@ internal object TextLayoutManager {
         justificationMode,
         ellipsizeMode,
         maximumNumberOfLines,
-        paint)
+        paint,
+    )
   }
 
   @JvmStatic
@@ -754,9 +924,17 @@ internal object TextLayoutManager {
       widthYogaMeasureMode: YogaMeasureMode,
       height: Float,
       heightYogaMeasureMode: YogaMeasureMode,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?
+      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
   ): PreparedLayout {
-    val text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback)
+    val fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS)
+    val reactTags = IntArray(fragments.count)
+    val text =
+        createSpannableFromAttributedString(
+            context,
+            fragments,
+            reactTextViewManagerCallback,
+            reactTags,
+        )
     val baseTextAttributes =
         TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
     val layout =
@@ -768,7 +946,8 @@ internal object TextLayoutManager {
             width,
             widthYogaMeasureMode,
             height,
-            heightYogaMeasureMode)
+            heightYogaMeasureMode,
+        )
 
     val maximumNumberOfLines =
         if (paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES))
@@ -777,9 +956,14 @@ internal object TextLayoutManager {
 
     val verticalOffset =
         getVerticalOffset(
-            layout, paragraphAttributes, height, heightYogaMeasureMode, maximumNumberOfLines)
+            layout,
+            paragraphAttributes,
+            height,
+            heightYogaMeasureMode,
+            maximumNumberOfLines,
+        )
 
-    return PreparedLayout(layout, maximumNumberOfLines, verticalOffset)
+    return PreparedLayout(layout, maximumNumberOfLines, verticalOffset, reactTags)
   }
 
   @JvmStatic
@@ -796,23 +980,10 @@ internal object TextLayoutManager {
       hyphenationFrequency: Int,
       alignment: Layout.Alignment,
       justificationMode: Int,
-      paint: TextPaint
+      paint: TextPaint,
   ): Unit {
     var boring = isBoring(text, paint)
-    var layout =
-        createLayout(
-            text,
-            boring,
-            width,
-            widthYogaMeasureMode,
-            includeFontPadding,
-            textBreakStrategy,
-            hyphenationFrequency,
-            alignment,
-            justificationMode,
-            null,
-            ReactConstants.UNSET,
-            paint)
+    var layout: Layout
 
     // Minimum font size is 4pts to match the iOS implementation.
     val minimumFontSize =
@@ -825,18 +996,20 @@ internal object TextLayoutManager {
       currentFontSize = max(currentFontSize, span.size).toInt()
     }
 
-    val initialFontSize = currentFontSize
-    while (currentFontSize > minimumFontSize &&
-        ((maximumNumberOfLines != ReactConstants.UNSET &&
-            maximumNumberOfLines != 0 &&
-            layout.lineCount > maximumNumberOfLines) ||
-            (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.height > height) ||
-            (text.length == 1 && layout.getLineWidth(0) > width))) {
-      // TODO: We could probably use a smarter algorithm here. This will require 0(n)
-      // measurements based on the number of points the font size needs to be reduced by.
-      currentFontSize -= max(1, 1.dpToPx().toInt())
+    var intervalStart = minimumFontSize
+    var intervalEnd = currentFontSize
+    var previousFontSize = currentFontSize
 
-      val ratio = currentFontSize.toFloat() / initialFontSize.toFloat()
+    // `true` instead of `intervalStart != intervalEnd` so that the last iteration where both are at
+    // the same size goes through and updates all relevant objects with the final font size
+    while (true) {
+      // Always use the point closer to the end of the interval, this way at the end when
+      // end - start == 1, we land at current = end instead of current = start. In the first case
+      // one measurement may be enough if intervalEnd is small enough to fit. In the second case
+      // we always end up doing two measurements to check whether intervalEnd would fit.
+      val currentFontSize = (intervalStart + intervalEnd + 1) / 2
+
+      val ratio = currentFontSize.toFloat() / previousFontSize.toFloat()
       paint.textSize = max((paint.textSize * ratio).toInt(), minimumFontSize).toFloat()
 
       val sizeSpans = text.getSpans(0, text.length, ReactAbsoluteSizeSpan::class.java)
@@ -845,7 +1018,8 @@ internal object TextLayoutManager {
             ReactAbsoluteSizeSpan(max((span.size * ratio).toInt(), minimumFontSize)),
             text.getSpanStart(span),
             text.getSpanEnd(span),
-            text.getSpanFlags(span))
+            text.getSpanFlags(span),
+        )
         text.removeSpan(span)
       }
       if (boring != null) {
@@ -864,7 +1038,36 @@ internal object TextLayoutManager {
               justificationMode,
               null,
               ReactConstants.UNSET,
-              paint)
+              paint,
+          )
+
+      if (intervalStart == intervalEnd) {
+        // everything is updated at this point
+        break
+      }
+
+      val singleLineTextExceedsWidth = text.length == 1 && layout.getLineWidth(0) > width
+      val exceedsHeight =
+          heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.height > height
+      val exceedsMaximumNumberOfLines =
+          maximumNumberOfLines != ReactConstants.UNSET &&
+              maximumNumberOfLines != 0 &&
+              layout.lineCount > maximumNumberOfLines
+
+      if (
+          currentFontSize > minimumFontSize &&
+              (exceedsMaximumNumberOfLines || exceedsHeight || singleLineTextExceedsWidth)
+      ) {
+        // Text doesn't fit the constraints. If intervalEnd - intervalStart == 1, it's known that
+        // the correct font size is intervalStart. Set intervalEnd to match intervalStart and do one
+        // more iteration to update layout correctly.
+        intervalEnd = if (intervalEnd - intervalStart == 1) intervalStart else currentFontSize
+      } else {
+        // Text fits the constraints
+        intervalStart = currentFontSize
+      }
+
+      previousFontSize = currentFontSize
     }
   }
 
@@ -878,7 +1081,7 @@ internal object TextLayoutManager {
       height: Float,
       heightYogaMeasureMode: YogaMeasureMode,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
-      attachmentsPositions: FloatArray?
+      attachmentsPositions: FloatArray?,
   ): Long {
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     val layout =
@@ -890,7 +1093,8 @@ internal object TextLayoutManager {
             widthYogaMeasureMode,
             height,
             heightYogaMeasureMode,
-            reactTextViewManagerCallback)
+            reactTextViewManagerCallback,
+        )
 
     val maximumNumberOfLines =
         if (paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES))
@@ -914,7 +1118,14 @@ internal object TextLayoutManager {
       while (i < text.length) {
         lastAttachmentFoundInSpan =
             nextAttachmentMetrics(
-                layout, text, calculatedWidth, calculatedLineCount, i, 0f, metrics)
+                layout,
+                text,
+                calculatedWidth,
+                calculatedLineCount,
+                i,
+                0f,
+                metrics,
+            )
         if (metrics.wasFound) {
           attachmentsPositions[attachmentIndex] = metrics.top.pxToDp()
           attachmentsPositions[attachmentIndex + 1] = metrics.left.pxToDp()
@@ -936,7 +1147,7 @@ internal object TextLayoutManager {
       width: Float,
       widthYogaMeasureMode: YogaMeasureMode,
       height: Float,
-      heightYogaMeasureMode: YogaMeasureMode
+      heightYogaMeasureMode: YogaMeasureMode,
   ): FloatArray {
     val layout = preparedLayout.layout
     val text = layout.text as Spanned
@@ -965,7 +1176,8 @@ internal object TextLayoutManager {
                 calculatedLineCount,
                 i,
                 preparedLayout.verticalOffset,
-                metrics)
+                metrics,
+            )
         if (metrics.wasFound) {
           retList.add(metrics.top.pxToDp())
           retList.add(metrics.left.pxToDp())
@@ -988,7 +1200,7 @@ internal object TextLayoutManager {
       paragraphAttributes: ReadableMapBuffer,
       height: Float,
       heightMeasureMode: YogaMeasureMode,
-      maximumNumberOfLines: Int
+      maximumNumberOfLines: Int,
   ): Float {
     val textAlignVertical =
         if (paragraphAttributes.contains(PA_KEY_TEXT_ALIGN_VERTICAL))
@@ -1029,7 +1241,7 @@ internal object TextLayoutManager {
       text: Spanned,
       width: Float,
       widthYogaMeasureMode: YogaMeasureMode,
-      calculatedLineCount: Int
+      calculatedLineCount: Int,
   ): Float {
     // Our layout must be created at a physical pixel boundary, so may be sized smaller by a
     // subpixel compared to the assigned layout width.
@@ -1044,7 +1256,7 @@ internal object TextLayoutManager {
       layout: Layout,
       height: Float,
       heightYogaMeasureMode: YogaMeasureMode,
-      calculatedLineCount: Int
+      calculatedLineCount: Int,
   ): Float {
     var calculatedHeight = height
     if (heightYogaMeasureMode != YogaMeasureMode.EXACTLY) {
@@ -1065,7 +1277,7 @@ internal object TextLayoutManager {
       calculatedLineCount: Int,
       i: Int,
       verticalOffset: Float,
-      metrics: AttachmentMetrics
+      metrics: AttachmentMetrics,
   ): Int {
     // Calculate the positions of the attachments (views) that will be rendered inside the
     // Spanned Text. The following logic is only executed when a text contains views inside.
@@ -1095,58 +1307,22 @@ internal object TextLayoutManager {
     } else {
       val placeholderWidth = placeholder.width.toFloat()
       val placeholderHeight = placeholder.height.toFloat()
+
       // Calculate if the direction of the placeholder character is Right-To-Left.
       val isRtlChar = layout.isRtlCharAt(start)
       val isRtlParagraph = layout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT
-      var placeholderLeftPosition: Float
-      // There's a bug on Samsung devices where calling getPrimaryHorizontal on
-      // the last offset in the layout will result in an endless loop. Work around
-      // this bug by avoiding getPrimaryHorizontal in that case.
-      if (!ReactNativeFeatureFlags.disableOldAndroidAttachmentMetricsWorkarounds() &&
-          start == text.length - 1) {
-        val endsWithNewLine = text.length > 0 && text[layout.getLineEnd(line) - 1] == '\n'
-        val lineWidth = if (endsWithNewLine) layout.getLineMax(line) else layout.getLineWidth(line)
-        placeholderLeftPosition =
-            if (isRtlParagraph // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
-            // incorrect
-            // values when the paragraph is RTL and `setSingleLine(true)`.
-            )
-                ( // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
-                // incorrect
-                // values when the paragraph is RTL and `setSingleLine(true)`.
-                calculatedWidth - lineWidth)
-            else (layout.getLineRight(line) - placeholderWidth)
-      } else {
-        // The direction of the paragraph may not be exactly the direction the string is
-        // heading
-        // in at the
-        // position of the placeholder. So, if the direction of the character is the same
-        // as the
-        // paragraph
-        // use primary, secondary otherwise.
-        val characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar
-        placeholderLeftPosition =
-            if (characterAndParagraphDirectionMatch) layout.getPrimaryHorizontal(start)
-            else layout.getSecondaryHorizontal(start)
-        if (!ReactNativeFeatureFlags.disableOldAndroidAttachmentMetricsWorkarounds() &&
-            isRtlParagraph &&
-            !isRtlChar) {
-          // Adjust `placeholderLeftPosition` to work around an Android bug.
-          // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
-          // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
-          // `getLineRight` return incorrect values. Their return values seem to be off
-          // by the same number of pixels so subtracting these values cancels out the
-          // error.
-          //
-          // The result is equivalent to bugless versions of
-          // `getPrimaryHorizontal`/`getSecondaryHorizontal`.
-          placeholderLeftPosition =
-              calculatedWidth - (layout.getLineRight(line) - placeholderLeftPosition)
-        }
-        if (isRtlChar) {
-          placeholderLeftPosition -= placeholderWidth
-        }
+
+      // The direction of the paragraph may not be exactly the direction the string is heading in at
+      // the position of the placeholder. So, if the direction of the character is the same as the
+      // paragraph use primary, secondary otherwise.
+      val characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar
+      var placeholderLeftPosition =
+          if (characterAndParagraphDirectionMatch) layout.getPrimaryHorizontal(start)
+          else layout.getSecondaryHorizontal(start)
+      if (isRtlChar) {
+        placeholderLeftPosition -= placeholderWidth
       }
+
       // Vertically align the inline view to the baseline of the line of text.
       val placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight
 
@@ -1172,7 +1348,7 @@ internal object TextLayoutManager {
       paragraphAttributes: MapBuffer,
       width: Float,
       height: Float,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?
+      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
   ): WritableArray {
     val layout =
         createLayoutForMeasurement(
@@ -1183,7 +1359,8 @@ internal object TextLayoutManager {
             YogaMeasureMode.EXACTLY,
             height,
             YogaMeasureMode.EXACTLY,
-            reactTextViewManagerCallback)
+            reactTextViewManagerCallback,
+        )
     return FontMetricsUtil.getFontMetrics(layout.text, layout, context)
   }
 

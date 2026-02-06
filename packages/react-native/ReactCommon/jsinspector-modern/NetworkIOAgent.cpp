@@ -11,7 +11,7 @@
 #include "Base64.h"
 #include "Utf8.h"
 
-#include <jsinspector-modern/network/NetworkReporter.h>
+#include <jsinspector-modern/network/NetworkHandler.h>
 
 #include <sstream>
 #include <tuple>
@@ -22,6 +22,7 @@ namespace facebook::react::jsinspector_modern {
 
 static constexpr long DEFAULT_BYTES_PER_READ =
     1048576; // 1MB (Chrome v112 default)
+static constexpr unsigned long MAX_BYTES_PER_READ = 10485760; // 10MB
 
 // https://github.com/chromium/chromium/blob/128.0.6593.1/content/browser/devtools/devtools_io_context.cc#L71-L73
 static constexpr std::array kTextMIMETypePrefixes{
@@ -59,7 +60,7 @@ class Stream : public NetworkRequestListener,
   Stream(const Stream& other) = delete;
   Stream& operator=(const Stream& other) = delete;
   Stream(Stream&& other) = default;
-  Stream& operator=(Stream&& other) = default;
+  Stream& operator=(Stream&& other) noexcept = default;
 
   /**
    * Factory method to create a Stream with a callback for the initial result
@@ -72,9 +73,9 @@ class Stream : public NetworkRequestListener,
    */
   static std::shared_ptr<Stream> create(
       VoidExecutor executor,
-      StreamInitCallback initCb) {
+      const StreamInitCallback& initCb) {
     std::shared_ptr<Stream> stream{new Stream(initCb)};
-    stream->setExecutor(executor);
+    stream->setExecutor(std::move(executor));
     return stream;
   }
 
@@ -87,8 +88,7 @@ class Stream : public NetworkRequestListener,
    * with the result of the read, or an error string.
    */
   void read(long maxBytesToRead, const IOReadCallback& callback) {
-    pendingReadRequests_.emplace_back(
-        std::make_tuple(maxBytesToRead, callback));
+    pendingReadRequests_.emplace_back(maxBytesToRead, callback);
     processPending();
   }
 
@@ -137,8 +137,10 @@ class Stream : public NetworkRequestListener,
     // called with it.
     if (initCb_) {
       auto cb = std::move(initCb_);
-      (*cb)(
-          InitStreamResult{httpStatusCode, headers, this->shared_from_this()});
+      (*cb)(InitStreamResult{
+          .httpStatusCode = httpStatusCode,
+          .headers = headers,
+          .stream = this->shared_from_this()});
     }
   }
 
@@ -257,6 +259,13 @@ class Stream : public NetworkRequestListener,
 };
 } // namespace
 
+NetworkIOAgent::~NetworkIOAgent() {
+  if (networkAgentId_) {
+    NetworkHandler::getInstance().disableAgent(*networkAgentId_);
+    networkAgentId_ = std::nullopt;
+  }
+}
+
 bool NetworkIOAgent::handleRequest(
     const cdp::PreparsedRequest& req,
     LoadNetworkResourceDelegate& delegate) {
@@ -272,21 +281,23 @@ bool NetworkIOAgent::handleRequest(
   }
 
   if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
-    auto& networkReporter = NetworkReporter::getInstance();
+    auto& networkHandler = NetworkHandler::getInstance();
 
     // @cdp Network.enable support is experimental.
     if (req.method == "Network.enable") {
-      networkReporter.setFrontendChannel(frontendChannel_);
-      networkReporter.enableDebugging();
-      frontendChannel_(cdp::jsonResult(req.id));
-      return true;
+      networkAgentId_ = networkHandler.enableAgent(frontendChannel_);
+      // NOTE: Domain enable/disable responses are sent by HostAgent.
+      return false;
     }
 
     // @cdp Network.disable support is experimental.
     if (req.method == "Network.disable") {
-      networkReporter.disableDebugging();
-      frontendChannel_(cdp::jsonResult(req.id));
-      return true;
+      if (networkAgentId_) {
+        networkHandler.disableAgent(*networkAgentId_);
+        networkAgentId_ = std::nullopt;
+      }
+      // NOTE: Domain enable/disable responses are sent by HostAgent.
+      return false;
     }
 
     // @cdp Network.getResponseBody support is experimental.
@@ -307,17 +318,19 @@ void NetworkIOAgent::handleLoadNetworkResource(
   LoadNetworkResourceRequest params;
 
   if (!req.params.isObject()) {
-    frontendChannel_(cdp::jsonError(
-        req.id,
-        cdp::ErrorCode::InvalidParams,
-        "Invalid params: not an object."));
+    frontendChannel_(
+        cdp::jsonError(
+            req.id,
+            cdp::ErrorCode::InvalidParams,
+            "Invalid params: not an object."));
     return;
   }
   if ((req.params.count("url") == 0u) || !req.params.at("url").isString()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InvalidParams,
-        "Invalid params: url is missing or not a string."));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InvalidParams,
+            "Invalid params: url is missing or not a string."));
     return;
   } else {
     params.url = req.params.at("url").asString();
@@ -390,32 +403,44 @@ void NetworkIOAgent::handleLoadNetworkResource(
 void NetworkIOAgent::handleIoRead(const cdp::PreparsedRequest& req) {
   long long requestId = req.id;
   if (!req.params.isObject()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InvalidParams,
-        "Invalid params: not an object."));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InvalidParams,
+            "Invalid params: not an object."));
     return;
   }
   if ((req.params.count("handle") == 0u) ||
       !req.params.at("handle").isString()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InvalidParams,
-        "Invalid params: handle is missing or not a string."));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InvalidParams,
+            "Invalid params: handle is missing or not a string."));
     return;
   }
-  std::optional<unsigned long> size = std::nullopt;
+  std::optional<int64_t> size = std::nullopt;
   if ((req.params.count("size") != 0u) && req.params.at("size").isInt()) {
     size = req.params.at("size").asInt();
+
+    if (size > MAX_BYTES_PER_READ) {
+      frontendChannel_(
+          cdp::jsonError(
+              requestId,
+              cdp::ErrorCode::InvalidParams,
+              "Invalid params: size cannot be greater than 10MB."));
+      return;
+    }
   }
 
   auto streamId = req.params.at("handle").asString();
   auto it = streams_->find(streamId);
   if (it == streams_->end()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InternalError,
-        "Stream not found with handle " + streamId));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InternalError,
+            "Stream not found with handle " + streamId));
     return;
   } else {
     it->second->read(
@@ -427,8 +452,9 @@ void NetworkIOAgent::handleIoRead(const cdp::PreparsedRequest& req) {
           if (auto* error = std::get_if<IOReadError>(&resultOrError)) {
             // NB: Chrome DevTools calls IO.close after a read error, so any
             // continuing download or retained data is cleaned up at that point.
-            frontendChannel(cdp::jsonError(
-                requestId, cdp::ErrorCode::InternalError, *error));
+            frontendChannel(
+                cdp::jsonError(
+                    requestId, cdp::ErrorCode::InternalError, *error));
           } else if (auto* result = std::get_if<IOReadResult>(&resultOrError)) {
             frontendChannel(cdp::jsonResult(requestId, result->toDynamic()));
           } else {
@@ -442,28 +468,31 @@ void NetworkIOAgent::handleIoRead(const cdp::PreparsedRequest& req) {
 void NetworkIOAgent::handleIoClose(const cdp::PreparsedRequest& req) {
   long long requestId = req.id;
   if (!req.params.isObject()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InvalidParams,
-        "Invalid params: not an object."));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InvalidParams,
+            "Invalid params: not an object."));
     return;
   }
   if ((req.params.count("handle") == 0u) ||
       !req.params.at("handle").isString()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InvalidParams,
-        "Invalid params: handle is missing or not a string."));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InvalidParams,
+            "Invalid params: handle is missing or not a string."));
     return;
   }
   auto streamId = req.params.at("handle").asString();
 
   auto it = streams_->find(streamId);
   if (it == streams_->end()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InternalError,
-        "Stream not found: " + streamId));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InternalError,
+            "Stream not found: " + streamId));
   } else {
     it->second->cancel();
     streams_->erase(it->first);
@@ -474,39 +503,43 @@ void NetworkIOAgent::handleIoClose(const cdp::PreparsedRequest& req) {
 void NetworkIOAgent::handleGetResponseBody(const cdp::PreparsedRequest& req) {
   long long requestId = req.id;
   if (!req.params.isObject()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InvalidParams,
-        "Invalid params: not an object."));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InvalidParams,
+            "Invalid params: not an object."));
     return;
   }
   if ((req.params.count("requestId") == 0u) ||
       !req.params.at("requestId").isString()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InvalidParams,
-        "Invalid params: requestId is missing or not a string."));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InvalidParams,
+            "Invalid params: requestId is missing or not a string."));
     return;
   }
 
-  auto& networkReporter = NetworkReporter::getInstance();
+  auto& networkHandler = NetworkHandler::getInstance();
 
-  if (!networkReporter.isDebuggingEnabled()) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InvalidRequest,
-        "Invalid request: The \"Network\" domain is not enabled."));
+  if (!networkHandler.isEnabled()) {
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InvalidRequest,
+            "Invalid request: The \"Network\" domain is not enabled."));
     return;
   }
 
   auto storedResponse =
-      networkReporter.getResponseBody(req.params.at("requestId").asString());
+      networkHandler.getResponseBody(req.params.at("requestId").asString());
 
   if (!storedResponse) {
-    frontendChannel_(cdp::jsonError(
-        requestId,
-        cdp::ErrorCode::InternalError,
-        "Internal error: Could not retrieve response body for the given requestId."));
+    frontendChannel_(
+        cdp::jsonError(
+            requestId,
+            cdp::ErrorCode::InternalError,
+            "Internal error: Could not retrieve response body for the given requestId."));
     return;
   }
 

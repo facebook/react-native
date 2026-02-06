@@ -136,13 +136,7 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
         rawProps.keyIndexToValueIndex_[keyIndex] = valueIndex;
 
         auto value = object.getProperty(runtime, nameValue);
-        RawValue rawValue;
-        if (useRawPropsJsiValue_) {
-          rawValue = RawValue(runtime, std::move(value));
-        } else {
-          rawValue = RawValue(jsi::dynamicFromValue(runtime, value));
-        }
-        rawProps.values_.push_back(std::move(rawValue));
+        rawProps.values_.emplace_back(runtime, std::move(value));
         valueIndex++;
       }
 
@@ -164,7 +158,7 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
         }
 
         rawProps.keyIndexToValueIndex_[keyIndex] = valueIndex;
-        rawProps.values_.push_back(RawValue{pair.second});
+        rawProps.values_.emplace_back(pair.second);
         valueIndex++;
       }
       break;

@@ -41,7 +41,7 @@ const ModuleDeclarationTemplate = ({
   structDeclarations,
   eventEmitters,
   protocolMethods,
-}: $ReadOnly<{
+}: Readonly<{
   hasteModuleName: string,
   structDeclarations: string,
   eventEmitters: string,
@@ -122,7 +122,7 @@ const HeaderFileTemplate = ({
   moduleDeclarations,
   structInlineMethods,
   assumeNonnull,
-}: $ReadOnly<{
+}: Readonly<{
   headerFileName: string,
   moduleDeclarations: string,
   structInlineMethods: string,
@@ -177,7 +177,7 @@ const HeaderFileTemplate = ({
 const SourceFileTemplate = ({
   headerFileName,
   moduleImplementations,
-}: $ReadOnly<{
+}: Readonly<{
   headerFileName: string,
   moduleImplementations: string,
 }>) => `/**

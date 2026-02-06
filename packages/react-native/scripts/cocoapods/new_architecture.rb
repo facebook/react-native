@@ -8,6 +8,8 @@ require 'json'
 require_relative "./utils.rb"
 require_relative "./helpers.rb"
 require_relative "./jsengine.rb"
+require_relative "./rndependencies.rb"
+require_relative "./rncore.rb"
 
 
 class NewArchitectureHelper
@@ -85,6 +87,7 @@ class NewArchitectureHelper
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-FabricImage", "React_FabricImage", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", "ReactCommon", ["react/nativemodule/core"]))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-runtimeexecutor", "React_runtimeexecutor", ["platform/ios"]))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-NativeModulesApple", "React_NativeModulesApple", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-RCTFabric", "RCTFabric", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-utils", "React_utils", []))
@@ -132,9 +135,13 @@ class NewArchitectureHelper
 
         depend_on_js_engine(spec)
         add_rn_third_party_dependencies(spec)
-        add_rncore_dependency(spec)
 
         spec.pod_target_xcconfig = current_config
+
+        # add_rncore_dependency must be called after setting pod_target_xcconfig
+        # because it reads and modifies the xcconfig. If called before, its changes
+        # would be overwritten by the assignment above.
+        add_rncore_dependency(spec)
     end
 
     def self.extract_react_native_version(react_native_path, file_manager: File, json_parser: JSON)
@@ -153,7 +160,7 @@ class NewArchitectureHelper
     end
 
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == '0' ? false : true
+        return true
     end
 
     def self.set_RCTNewArchEnabled_in_info_plist(installer, new_arch_enabled)
@@ -161,8 +168,7 @@ class NewArchitectureHelper
             .map{ |t| t.user_project }
             .uniq{ |p| p.path }
             .map{ |p| p.path }
-
-        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle", "build/", "DerivedData/"]
+        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle", "build/", "DerivedData/", ".xcframework", ".framework", "watchkitapp", "today-extention"]
         projectPaths.each do |projectPath|
             projectFolderPath = File.dirname(projectPath)
             infoPlistFiles = `find #{projectFolderPath} -name "Info.plist"`
@@ -179,7 +185,12 @@ class NewArchitectureHelper
                 next if should_skip
 
                 # Read the file as a plist
-                info_plist = Xcodeproj::Plist.read_from_path(infoPlistFile)
+                begin
+                    info_plist = Xcodeproj::Plist.read_from_path(infoPlistFile)
+                rescue StandardError => e
+                    Pod::UI.warn("Failed to read Info.plist at #{infoPlistFile}: #{e.message}")
+                    next
+                end
                 # Check if it contains the RCTNewArchEnabled key
                 if info_plist["RCTNewArchEnabled"] and info_plist["RCTNewArchEnabled"] == new_arch_enabled
                     next

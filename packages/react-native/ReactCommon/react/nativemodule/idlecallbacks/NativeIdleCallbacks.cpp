@@ -28,7 +28,7 @@ namespace {
 
 class IdleTaskRef : public jsi::NativeState {
  public:
-  IdleTaskRef(std::shared_ptr<Task> task) : task(std::move(task)) {}
+  explicit IdleTaskRef(std::shared_ptr<Task> task) : task(std::move(task)) {}
 
   std::shared_ptr<Task> task;
 };

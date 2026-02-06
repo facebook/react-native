@@ -64,14 +64,17 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
     const ShadowView& object,
     DebugStringConvertibleOptions options) {
   return {
-      {"surfaceId", getDebugDescription(object.surfaceId, options)},
-      {"tag", getDebugDescription(object.tag, options)},
-      {"traits", getDebugDescription(object.traits, options)},
-      {"componentName", object.componentName},
-      {"props", getDebugDescription(object.props, options)},
-      {"eventEmitter", getDebugDescription(object.eventEmitter, options)},
-      {"layoutMetrics", getDebugDescription(object.layoutMetrics, options)},
-      {"state", getDebugDescription(object.state, options)},
+      {.name = "surfaceId",
+       .value = getDebugDescription(object.surfaceId, options)},
+      {.name = "tag", .value = getDebugDescription(object.tag, options)},
+      {.name = "traits", .value = getDebugDescription(object.traits, options)},
+      {.name = "componentName", .value = object.componentName},
+      {.name = "props", .value = getDebugDescription(object.props, options)},
+      {.name = "eventEmitter",
+       .value = getDebugDescription(object.eventEmitter, options)},
+      {.name = "layoutMetrics",
+       .value = getDebugDescription(object.layoutMetrics, options)},
+      {.name = "state", .value = getDebugDescription(object.state, options)},
   };
 }
 

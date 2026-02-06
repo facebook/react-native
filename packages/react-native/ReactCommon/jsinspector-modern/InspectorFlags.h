@@ -17,7 +17,13 @@ namespace facebook::react::jsinspector_modern {
  */
 class InspectorFlags {
  public:
-  static InspectorFlags& getInstance();
+  static InspectorFlags &getInstance();
+
+  /**
+   * Flag determining if the inspector backend should strictly assert that only
+   * a single host is registered.
+   */
+  bool getAssertSingleHostState() const;
 
   /**
    * Flag determining if the modern CDP backend should be enabled.
@@ -36,6 +42,11 @@ class InspectorFlags {
   bool getNetworkInspectionEnabled() const;
 
   /**
+   * Flag determining if the V2 in-app Performance Monitor is enabled.
+   */
+  bool getPerfIssuesEnabled() const;
+
+  /**
    * Forcibly disable the main `getFuseboxEnabled()` flag. This should ONLY be
    * used by `ReactInstanceIntegrationTest`.
    */
@@ -49,22 +60,24 @@ class InspectorFlags {
 
  private:
   struct Values {
+    bool assertSingleHostState;
     bool fuseboxEnabled;
     bool isProfilingBuild;
     bool networkInspectionEnabled;
-    bool operator==(const Values&) const = default;
+    bool perfIssuesEnabled;
+    bool operator==(const Values &) const = default;
   };
 
   InspectorFlags() = default;
-  InspectorFlags(const InspectorFlags&) = delete;
-  InspectorFlags& operator=(const InspectorFlags&) = default;
+  InspectorFlags(const InspectorFlags &) = delete;
+  InspectorFlags &operator=(const InspectorFlags &) = default;
   ~InspectorFlags() = default;
 
   mutable std::optional<Values> cachedValues_;
   mutable bool inconsistentFlagsStateLogged_{false};
   bool fuseboxDisabledForTest_{false};
 
-  const Values& loadFlagsAndAssertUnchanged() const;
+  const Values &loadFlagsAndAssertUnchanged() const;
 };
 
 } // namespace facebook::react::jsinspector_modern

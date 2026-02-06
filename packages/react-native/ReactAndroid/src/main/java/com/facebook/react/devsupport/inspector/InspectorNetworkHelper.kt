@@ -66,7 +66,7 @@ internal object InspectorNetworkHelper {
               response.body().use { responseBody ->
                 if (responseBody != null) {
                   val inputStream = responseBody.byteStream()
-                  val chunkSize = 1024
+                  val chunkSize = 8 * 1024 // 8Kb
                   val buffer = ByteArray(chunkSize)
                   var bytesRead: Int
 
@@ -83,6 +83,7 @@ internal object InspectorNetworkHelper {
               listener.onError(e.message)
             }
           }
-        })
+        }
+    )
   }
 }

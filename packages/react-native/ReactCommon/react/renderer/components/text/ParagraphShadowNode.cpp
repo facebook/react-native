@@ -35,6 +35,7 @@
 namespace facebook::react {
 using Content = ParagraphShadowNode::Content;
 
+// NOLINTNEXTLINE(facebook-hte-CArray, modernize-avoid-c-arrays)
 const char ParagraphComponentName[] = "Paragraph";
 
 void ParagraphShadowNode::initialize() noexcept {
@@ -156,11 +157,12 @@ void ParagraphShadowNode::updateStateIfNeeded(
     return;
   }
 
-  setStateData(ParagraphStateT{
-      content.attributedString,
-      content.paragraphAttributes,
-      textLayoutManager_,
-      layout});
+  setStateData(
+      ParagraphStateT{
+          content.attributedString,
+          content.paragraphAttributes,
+          textLayoutManager_,
+          layout});
 }
 
 void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
@@ -173,10 +175,11 @@ void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
     return;
   }
 
-  setStateData(ParagraphState{
-      content.attributedString,
-      content.paragraphAttributes,
-      textLayoutManager_});
+  setStateData(
+      ParagraphState{
+          content.attributedString,
+          content.paragraphAttributes,
+          textLayoutManager_});
 }
 
 MeasuredPreparedLayout* ParagraphShadowNode::findUsableLayout() {
@@ -247,12 +250,13 @@ Size ParagraphShadowNode::measureContent(
       auto measurement = tme.measurePreparedLayout(
           preparedLayout, textLayoutContext, layoutConstraints);
 
-      measuredLayouts_.push_back(MeasuredPreparedLayout{
-          .layoutConstraints = layoutConstraints,
-          .measurement = measurement,
-          // PreparedLayout is not trivially copyable on all platforms
-          // NOLINTNEXTLINE(performance-move-const-arg)
-          .preparedLayout = std::move(preparedLayout)});
+      measuredLayouts_.push_back(
+          MeasuredPreparedLayout{
+              .layoutConstraints = layoutConstraints,
+              .measurement = measurement,
+              // PreparedLayout is not trivially copyable on all platforms
+              // NOLINTNEXTLINE(performance-move-const-arg)
+              .preparedLayout = std::move(preparedLayout)});
       assert_valid_size(measurement.size, layoutConstraints);
       return measurement.size;
     }

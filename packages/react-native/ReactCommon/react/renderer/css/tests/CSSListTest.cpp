@@ -35,8 +35,9 @@ TEST(CSSList, single_value) {
 
   auto whitespaceValue =
       parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>(" 20 ");
-  EXPECT_TRUE(std::holds_alternative<CSSCommaSeparatedList<CSSNumber>>(
-      whitespaceValue));
+  EXPECT_TRUE(
+      std::holds_alternative<CSSCommaSeparatedList<CSSNumber>>(
+          whitespaceValue));
   EXPECT_EQ(
       std::get<CSSCommaSeparatedList<CSSNumber>>(whitespaceValue).size(), 1);
   EXPECT_EQ(
@@ -63,8 +64,9 @@ TEST(CSSList, multiple_comma_values) {
 
   auto whitespaceValue =
       parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>(" 20 , 30 , 40 ");
-  EXPECT_TRUE(std::holds_alternative<CSSCommaSeparatedList<CSSNumber>>(
-      whitespaceValue));
+  EXPECT_TRUE(
+      std::holds_alternative<CSSCommaSeparatedList<CSSNumber>>(
+          whitespaceValue));
   EXPECT_EQ(
       std::get<CSSCommaSeparatedList<CSSNumber>>(whitespaceValue).size(), 3);
   EXPECT_EQ(
@@ -78,8 +80,9 @@ TEST(CSSList, multiple_comma_values) {
 TEST(CSSList, multiple_space_values) {
   auto simpleValue =
       parseCSSProperty<CSSWhitespaceSeparatedList<CSSNumber>>("20 30 40");
-  EXPECT_TRUE(std::holds_alternative<CSSWhitespaceSeparatedList<CSSNumber>>(
-      simpleValue));
+  EXPECT_TRUE(
+      std::holds_alternative<CSSWhitespaceSeparatedList<CSSNumber>>(
+          simpleValue));
   EXPECT_EQ(
       std::get<CSSWhitespaceSeparatedList<CSSNumber>>(simpleValue).size(), 3);
   EXPECT_EQ(
@@ -94,8 +97,9 @@ TEST(CSSList, multiple_space_values) {
 
   auto whitespaceValue =
       parseCSSProperty<CSSWhitespaceSeparatedList<CSSNumber>>(" 20 \n 30  40 ");
-  EXPECT_TRUE(std::holds_alternative<CSSWhitespaceSeparatedList<CSSNumber>>(
-      whitespaceValue));
+  EXPECT_TRUE(
+      std::holds_alternative<CSSWhitespaceSeparatedList<CSSNumber>>(
+          whitespaceValue));
   EXPECT_EQ(
       std::get<CSSWhitespaceSeparatedList<CSSNumber>>(whitespaceValue).size(),
       3);

@@ -48,7 +48,7 @@ export type SwitchPropsIOS = {
   tintColor?: ?ColorValue,
 };
 
-type SwitchChangeEventData = $ReadOnly<{
+type SwitchChangeEventData = Readonly<{
   target: number,
   value: boolean,
 }>;
@@ -82,7 +82,7 @@ type SwitchPropsBase = {
       color of the background exposed by the shrunken track, use
        [`ios_backgroundColor`](https://reactnative.dev/docs/switch#ios_backgroundColor).
      */
-  trackColor?: ?$ReadOnly<{
+  trackColor?: ?Readonly<{
     false?: ?ColorValue,
     true?: ?ColorValue,
   }>,
@@ -109,7 +109,7 @@ type SwitchPropsBase = {
   onValueChange?: ?(value: boolean) => Promise<void> | void,
 };
 
-export type SwitchProps = $ReadOnly<{
+export type SwitchProps = Readonly<{
   ...ViewProps,
   ...SwitchPropsIOS,
   ...SwitchPropsBase,
@@ -215,7 +215,7 @@ const Switch: component(
       native.value != null && native.value !== jsValue;
     if (
       shouldUpdateNativeSwitch &&
-      // $FlowIssue[method-unbinding]
+      // $FlowFixMe[method-unbinding]
       nativeSwitchRef.current?.setNativeProps != null
     ) {
       if (Platform.OS === 'android') {
@@ -264,7 +264,7 @@ const Switch: component(
       disabled,
       onTintColor: trackColorForTrue,
       style: StyleSheet.compose(
-        {height: 31, width: 51},
+        {alignSelf: 'flex-start' as const},
         StyleSheet.compose(
           style,
           ios_backgroundColor == null

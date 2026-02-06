@@ -30,7 +30,8 @@ class ImageRequestParams {
       Float fadeDuration,
       bool progressiveRenderingEnabled,
       ImageSource loadingIndicatorSource,
-      std::string analyticTag)
+      std::string analyticTag,
+      Size size)
       : blurRadius(blurRadius),
         defaultSource(std::move(defaultSource)),
         resizeMode(resizeMode),
@@ -42,7 +43,10 @@ class ImageRequestParams {
         fadeDuration(fadeDuration),
         progressiveRenderingEnabled(progressiveRenderingEnabled),
         loadingIndicatorSource(std::move(loadingIndicatorSource)),
-        analyticTag(std::move(analyticTag)) {}
+        analyticTag(std::move(analyticTag)),
+        size(size)
+  {
+  }
 
   Float blurRadius{};
   ImageSource defaultSource{};
@@ -56,8 +60,10 @@ class ImageRequestParams {
   bool progressiveRenderingEnabled{};
   ImageSource loadingIndicatorSource{};
   std::string analyticTag{};
+  Size size{};
 
-  bool operator==(const ImageRequestParams& rhs) const {
+  bool operator==(const ImageRequestParams &rhs) const
+  {
     return std::tie(
                this->blurRadius,
                this->defaultSource,
@@ -70,7 +76,8 @@ class ImageRequestParams {
                this->fadeDuration,
                this->progressiveRenderingEnabled,
                this->loadingIndicatorSource,
-               this->analyticTag) ==
+               this->analyticTag,
+               this->size) ==
         std::tie(
                rhs.blurRadius,
                rhs.defaultSource,
@@ -83,12 +90,20 @@ class ImageRequestParams {
                rhs.fadeDuration,
                rhs.progressiveRenderingEnabled,
                rhs.loadingIndicatorSource,
-               rhs.analyticTag);
+               rhs.analyticTag,
+               rhs.size);
   }
 
-  bool operator!=(const ImageRequestParams& rhs) const {
+  bool operator!=(const ImageRequestParams &rhs) const
+  {
     return !(*this == rhs);
   }
+};
+
+struct ImageRequestItem {
+  ImageSource imageSource;
+  ImageRequestParams imageRequestParams;
+  Tag tag{};
 };
 
 } // namespace facebook::react

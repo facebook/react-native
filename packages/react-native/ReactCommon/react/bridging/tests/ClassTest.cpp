@@ -7,33 +7,38 @@
 
 #include "BridgingTest.h"
 
+#include <utility>
+
 namespace facebook::react {
 
 using namespace std::literals;
 
 struct TestClass {
-  TestClass(std::shared_ptr<CallInvoker> invoker) : invoker_(invoker) {}
+  explicit TestClass(std::shared_ptr<CallInvoker> invoker)
+      : invoker_(std::move(invoker)) {}
 
-  double add(jsi::Runtime&, int a, float b) {
+  double add(jsi::Runtime& /*unused*/, int a, float b) {
     return a + b;
   }
 
-  jsi::Object getObject(jsi::Runtime&, jsi::Object obj) {
+  jsi::Object getObject(jsi::Runtime& /*unused*/, jsi::Object obj) {
     return obj;
   }
 
   AsyncPromise<std::string> getPromise(jsi::Runtime& rt, std::string result) {
     auto promise = AsyncPromise<std::string>(rt, invoker_);
-    promise.resolve(result);
+    promise.resolve(std::move(result));
     return promise;
   }
 
-  std::string
-  callFunc(jsi::Runtime&, SyncCallback<std::string(int)> func, int num) {
+  std::string callFunc(
+      jsi::Runtime& /*unused*/,
+      SyncCallback<std::string(int)> func,
+      int num) {
     return func(num);
   }
 
-  void callAsync(jsi::Runtime&, AsyncCallback<> callback) {
+  void callAsync(jsi::Runtime& /*unused*/, const AsyncCallback<>& callback) {
     callback();
   }
 
@@ -51,11 +56,12 @@ TEST_F(BridgingTest, callFromJsTest) {
 
   auto object = jsi::Object(rt);
 
-  EXPECT_TRUE(jsi::Object::strictEquals(
-      rt,
-      object,
-      bridging::callFromJs<jsi::Object>(
-          rt, &TestClass::getObject, invoker, &instance, object)));
+  EXPECT_TRUE(
+      jsi::Object::strictEquals(
+          rt,
+          object,
+          bridging::callFromJs<jsi::Object>(
+              rt, &TestClass::getObject, invoker, &instance, object)));
 
   auto promise = bridging::callFromJs<jsi::Object>(
       rt,
@@ -69,7 +75,8 @@ TEST_F(BridgingTest, callFromJsTest) {
   then.callWithThis(
       rt,
       promise,
-      bridging::toJs(rt, [&](std::string res) { result = res; }, invoker));
+      bridging::toJs(
+          rt, [&](std::string res) { result = std::move(res); }, invoker));
 
   flushQueue();
   EXPECT_EQ("hi"s, result);

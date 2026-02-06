@@ -29,7 +29,7 @@ public interface UIManager : PerformanceCounter {
       moduleName: String,
       initialProps: WritableMap?,
       widthMeasureSpec: Int,
-      heightMeasureSpec: Int
+      heightMeasureSpec: Int,
   ): Int
 
   /**
@@ -49,7 +49,7 @@ public interface UIManager : PerformanceCounter {
       widthMeasureSpec: Int,
       heightMeasureSpec: Int,
       offsetX: Int,
-      offsetY: Int
+      offsetY: Int,
   )
 
   /**

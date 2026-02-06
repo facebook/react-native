@@ -94,6 +94,7 @@ interface PlatformWindowsOSStatic extends PlatformStatic {
 
 interface PlatformWebStatic extends PlatformStatic {
   OS: 'web';
+  Version: string;
 }
 
 export type Platform =

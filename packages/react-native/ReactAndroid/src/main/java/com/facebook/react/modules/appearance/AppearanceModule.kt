@@ -10,6 +10,7 @@ package com.facebook.react.modules.appearance
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import com.facebook.fbreact.specs.NativeAppearanceSpec
+import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.buildReadableMap
@@ -22,18 +23,47 @@ public class AppearanceModule
 @JvmOverloads
 constructor(
     reactContext: ReactApplicationContext,
-    private val overrideColorScheme: OverrideColorScheme? = null
+    private val overrideColorScheme: OverrideColorScheme? = null,
 ) : NativeAppearanceSpec(reactContext) {
 
   private var lastEmittedColorScheme: String? = null
 
+  private val schemeChangeListener: () -> Unit = {
+    val activity = reactApplicationContext.getCurrentActivity()
+    onConfigurationChanged(activity ?: reactApplicationContext)
+  }
+
+  init {
+    // Register as a listener for color scheme changes if override is provided
+    overrideColorScheme?.addSchemeChangeListener(schemeChangeListener)
+  }
+
   /** Optional override to the current color scheme */
-  public fun interface OverrideColorScheme {
+  public interface OverrideColorScheme {
     /**
      * Color scheme will use the return value instead of the current system configuration. Available
      * scheme: {light, dark}
      */
     public fun getScheme(): String
+
+    /**
+     * Register a listener to be notified when the color scheme changes. The listener will be
+     * invoked whenever the underlying theme preference changes.
+     *
+     * Default implementation does nothing. Override this method if you want to support dynamic
+     * color scheme updates.
+     */
+    public fun addSchemeChangeListener(listener: () -> Unit) {
+      // no-op
+    }
+
+    /**
+     * Unregisters a previously added color scheme change listener. Default implementation is a
+     * no-op; override to remove the listener from your source.
+     */
+    public fun removeSchemeChangeListener(listener: () -> Unit) {
+      // no-op
+    }
   }
 
   private fun colorSchemeForCurrentConfiguration(context: Context): String {
@@ -84,12 +114,29 @@ constructor(
   /** Sends an event to the JS instance that the preferred color scheme has changed. */
   public fun emitAppearanceChanged(colorScheme: String) {
     val appearancePreferences = buildReadableMap { put("colorScheme", colorScheme) }
+
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     reactApplicationContext?.emitDeviceEvent(APPEARANCE_CHANGED_EVENT_NAME, appearancePreferences)
+
+    // Invalidate platform color cache on native side
+    invalidatePlatformColorCache()
+  }
+
+  public fun invalidatePlatformColorCache() {
+    // call into static invalidatePlatformColorCache?.run() method
+    Companion.invalidatePlatformColorCache?.run()
+  }
+
+  public override fun invalidate() {
+    overrideColorScheme?.removeSchemeChangeListener(schemeChangeListener)
+    invalidatePlatformColorCache()
+    super.invalidate()
   }
 
   public companion object {
     public const val NAME: String = NativeAppearanceSpec.NAME
     private const val APPEARANCE_CHANGED_EVENT_NAME = "appearanceChanged"
+
+    @DoNotStrip private var invalidatePlatformColorCache: Runnable? = null
   }
 }

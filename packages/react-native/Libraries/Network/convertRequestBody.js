@@ -36,7 +36,7 @@ function convertRequestBody(body: RequestBody): Object {
     return {formData: body.getParts()};
   }
   if (body instanceof ArrayBuffer || ArrayBuffer.isView(body)) {
-    /* $FlowFixMe[incompatible-call] : no way to assert that 'body' is indeed
+    /* $FlowFixMe[incompatible-type] : no way to assert that 'body' is indeed
      * an ArrayBufferView */
     return {base64: binaryToBase64(body)};
   }

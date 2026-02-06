@@ -17,6 +17,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.hardware.SensorManager
 import android.os.Build
@@ -51,7 +52,10 @@ import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener
 import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
 import com.facebook.react.devsupport.StackTraceHelper.convertJavaStackTrace
 import com.facebook.react.devsupport.StackTraceHelper.convertJsStackTrace
+import com.facebook.react.devsupport.inspector.TracingState
+import com.facebook.react.devsupport.inspector.TracingStateProvider
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
+import com.facebook.react.devsupport.interfaces.DebuggerFrontendPanelName
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevOptionHandler
@@ -64,9 +68,15 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.devsupport.interfaces.StackFrame
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorOverlayManager
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.RequestHandler
+import com.facebook.react.views.common.UiModeUtils
+import com.facebook.react.views.text.DefaultStyleValuesUtil
 import java.io.File
 import java.net.MalformedURLException
 import java.net.URL
@@ -75,7 +85,7 @@ import java.util.Locale
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
     public val reactInstanceDevHelper: ReactInstanceDevHelper,
-    @get:JvmName("getJSAppBundleName") public val jsAppBundleName: String?,
+    @get:JvmName("getJSAppBundleName") public var jsAppBundleName: String?,
     enableOnCreate: Boolean,
     public override val redBoxHandler: RedBoxHandler?,
     private val devBundleDownloadListener: DevBundleDownloadListener?,
@@ -83,7 +93,7 @@ public abstract class DevSupportManagerBase(
     private val customPackagerCommandHandlers: Map<String, RequestHandler>?,
     private val surfaceDelegateFactory: SurfaceDelegateFactory?,
     public var devLoadingViewManager: DevLoadingViewManager?,
-    private var pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
+    private var pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
 ) : DevSupportManager {
 
   public interface CallbackWithBundleLoader {
@@ -104,7 +114,8 @@ public abstract class DevSupportManagerBase(
             override fun onInternalSettingsChanged() {
               this@DevSupportManagerBase.reloadSettings()
             }
-          })
+          },
+      )
 
   override val currentActivity: Activity?
     get() = reactInstanceDevHelper.currentActivity
@@ -119,6 +130,28 @@ public abstract class DevSupportManagerBase(
     set(isDevSupportEnabled) {
       this.isDevSupportEnabled = isDevSupportEnabled
       reloadSettings()
+    }
+
+  final override var shakeGestureEnabled: Boolean = true
+    get() = field
+    set(value) {
+      if (field == value) {
+        return
+      }
+
+      if (value) {
+        startShakeDetector()
+      } else {
+        stopShakeDetector()
+      }
+
+      field = value
+    }
+
+  override var bundleFilePath: String? = null
+    get() = field
+    set(value) {
+      field = value
     }
 
   override val sourceMapUrl: String
@@ -175,6 +208,13 @@ public abstract class DevSupportManagerBase(
           null
         }
 
+  private var perfMonitorOverlayManager: PerfMonitorOverlayManager? = null
+  private var perfMonitorInitialized = false
+  private var tracingStateProvider: TracingStateProvider? = null
+
+  public override var keyboardShortcutsEnabled: Boolean = true
+  public override var devMenuEnabled: Boolean = true
+
   init {
     // We store JS bundle loaded from dev server in a single destination in app's data dir.
     // In case when someone schedule 2 subsequent reloads it may happen that JS thread will
@@ -199,7 +239,19 @@ public abstract class DevSupportManagerBase(
                   return@Supplier null
                 }
                 context
-              })
+              }
+          )
+    }
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
+            ReactNativeFeatureFlags.perfMonitorV2Enabled() &&
+            reactInstanceDevHelper is PerfMonitorDevHelper
+    ) {
+      perfMonitorOverlayManager =
+          PerfMonitorOverlayManager(
+              reactInstanceDevHelper,
+              { openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString()) },
+          )
     }
   }
 
@@ -277,7 +329,7 @@ public abstract class DevSupportManagerBase(
       message: String?,
       stack: Array<StackFrame>,
       errorCookie: Int,
-      errorType: ErrorType
+      errorType: ErrorType,
   ) {
     UiThreadUtil.runOnUiThread {
       // Keep a copy of the latest error to be shown by the RedBoxSurface
@@ -301,7 +353,12 @@ public abstract class DevSupportManagerBase(
   }
 
   override fun showDevOptionsDialog() {
-    if (devOptionsDialog != null || !isDevSupportEnabled || ActivityManager.isUserAMonkey()) {
+    if (
+        devOptionsDialog != null ||
+            !isDevSupportEnabled ||
+            !devMenuEnabled ||
+            ActivityManager.isUserAMonkey()
+    ) {
       return
     }
     val options = LinkedHashMap<String, DevOptionHandler>()
@@ -311,7 +368,8 @@ public abstract class DevSupportManagerBase(
         Toast.makeText(
                 applicationContext,
                 applicationContext.getString(R.string.catalyst_hot_reloading_auto_disable),
-                Toast.LENGTH_LONG)
+                Toast.LENGTH_LONG,
+            )
             .show()
         devSettings.isHotModuleReplacementEnabled = false
       }
@@ -324,11 +382,71 @@ public abstract class DevSupportManagerBase(
       val debuggerItemString =
           applicationContext.getString(
               if (isConnected) R.string.catalyst_debug_open
-              else R.string.catalyst_debug_open_disabled)
+              else R.string.catalyst_debug_open_disabled
+          )
       if (!isConnected) {
         disabledItemKeys.add(debuggerItemString)
       }
       options[debuggerItemString] = DevOptionHandler { this.openDebugger() }
+    }
+
+    if (ReactNativeFeatureFlags.perfMonitorV2Enabled()) {
+      val isConnected = isPackagerConnected
+      val tracingState = tracingStateProvider?.getTracingState() ?: TracingState.DISABLED
+
+      val analyzePerformanceItemString =
+          when (tracingState) {
+            TracingState.ENABLED_IN_BACKGROUND_MODE ->
+                applicationContext.getString(R.string.catalyst_performance_background)
+            TracingState.ENABLED_IN_CDP_MODE ->
+                applicationContext.getString(R.string.catalyst_performance_cdp)
+            TracingState.DISABLED ->
+                applicationContext.getString(R.string.catalyst_performance_disabled)
+          }
+
+      if (!isConnected || tracingState == TracingState.ENABLED_IN_CDP_MODE) {
+        disabledItemKeys.add(analyzePerformanceItemString)
+      }
+
+      options[analyzePerformanceItemString] =
+          when (tracingState) {
+            TracingState.ENABLED_IN_BACKGROUND_MODE ->
+                DevOptionHandler {
+                  UiThreadUtil.runOnUiThread {
+                    if (reactInstanceDevHelper is PerfMonitorDevHelper) {
+                      reactInstanceDevHelper.inspectorTarget?.let { target ->
+                        if (!target.pauseAndAnalyzeBackgroundTrace()) {
+                          openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString())
+                        }
+                      }
+                    }
+                  }
+                }
+            TracingState.DISABLED ->
+                DevOptionHandler {
+                  if (reactInstanceDevHelper is PerfMonitorDevHelper)
+                      reactInstanceDevHelper.inspectorTarget?.resumeBackgroundTrace()
+                }
+            TracingState.ENABLED_IN_CDP_MODE -> DevOptionHandler {}
+          }
+    }
+
+    if (ReactNativeFeatureFlags.perfMonitorV2Enabled()) {
+      val isConnected = isPackagerConnected
+
+      val togglePerfMonitorItemString =
+          if (perfMonitorOverlayManager?.isEnabled == true)
+              applicationContext.getString(R.string.catalyst_performance_disable)
+          else applicationContext.getString(R.string.catalyst_performance_enable)
+
+      if (!isConnected) {
+        disabledItemKeys.add(togglePerfMonitorItemString)
+      }
+
+      options[togglePerfMonitorItemString] =
+          if (perfMonitorOverlayManager?.isEnabled == true)
+              DevOptionHandler { perfMonitorOverlayManager?.disable() }
+          else DevOptionHandler { perfMonitorOverlayManager?.enable() }
     }
 
     options[applicationContext.getString(R.string.catalyst_change_bundle_location)] =
@@ -337,7 +455,8 @@ public abstract class DevSupportManagerBase(
           if (context == null || context.isFinishing) {
             FLog.e(
                 ReactConstants.TAG,
-                "Unable to launch change bundle location because react activity is not available")
+                "Unable to launch change bundle location because react activity is not available",
+            )
             return@DevOptionHandler
           }
 
@@ -373,33 +492,37 @@ public abstract class DevSupportManagerBase(
         Toast.makeText(
                 applicationContext,
                 applicationContext.getString(R.string.catalyst_hot_reloading_auto_enable),
-                Toast.LENGTH_LONG)
+                Toast.LENGTH_LONG,
+            )
             .show()
         devSettings.isJSDevModeEnabled = true
         handleReloadJS()
       }
     }
 
-    val fpsDebugLabel =
-        if (devSettings.isFpsDebugEnabled)
-            applicationContext.getString(R.string.catalyst_perf_monitor_stop)
-        else applicationContext.getString(R.string.catalyst_perf_monitor)
-    options[fpsDebugLabel] = DevOptionHandler {
-      if (!devSettings.isFpsDebugEnabled) {
-        // Request overlay permission if needed when "Show Perf Monitor" option is selected
-        val context: Context? = reactInstanceDevHelper.currentActivity
-        if (context == null) {
-          FLog.e(ReactConstants.TAG, "Unable to get reference to react activity")
-        } else {
-          requestPermission(context)
+    // Do not show legacy performance overlay if V2 is enabled
+    if (!ReactNativeFeatureFlags.perfMonitorV2Enabled()) {
+      val fpsDebugLabel =
+          if (devSettings.isFpsDebugEnabled)
+              applicationContext.getString(R.string.catalyst_perf_monitor_stop)
+          else applicationContext.getString(R.string.catalyst_perf_monitor)
+      options[fpsDebugLabel] = DevOptionHandler {
+        if (!devSettings.isFpsDebugEnabled) {
+          // Request overlay permission if needed when "Show Perf Monitor" option is selected
+          val context: Context? = reactInstanceDevHelper.currentActivity
+          if (context == null) {
+            FLog.e(ReactConstants.TAG, "Unable to get reference to react activity")
+          } else {
+            requestPermission(context)
+          }
         }
+        devSettings.isFpsDebugEnabled = !devSettings.isFpsDebugEnabled
       }
-      devSettings.isFpsDebugEnabled = !devSettings.isFpsDebugEnabled
-    }
-    options[applicationContext.getString(R.string.catalyst_settings)] = DevOptionHandler {
-      val intent = Intent(applicationContext, DevSettingsActivity::class.java)
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      applicationContext.startActivity(intent)
+      options[applicationContext.getString(R.string.catalyst_settings)] = DevOptionHandler {
+        val intent = Intent(applicationContext, DevSettingsActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        applicationContext.startActivity(intent)
+      }
     }
 
     if (customDevOptions.isNotEmpty()) {
@@ -411,7 +534,8 @@ public abstract class DevSupportManagerBase(
     if (context == null || context.isFinishing) {
       FLog.e(
           ReactConstants.TAG,
-          "Unable to launch dev options menu because react activity " + "isn't available")
+          "Unable to launch dev options menu because react activity " + "isn't available",
+      )
       return
     }
 
@@ -419,7 +543,7 @@ public abstract class DevSupportManagerBase(
     header.orientation = LinearLayout.VERTICAL
 
     TextView(context).apply {
-      text = context.getString(R.string.catalyst_dev_menu_header, uniqueTag)
+      text = context.getString(R.string.catalyst_dev_menu_header)
       setPadding(0, 50, 0, 0)
       gravity = Gravity.CENTER
       textSize = 16f
@@ -442,14 +566,28 @@ public abstract class DevSupportManagerBase(
     val adapter: ListAdapter =
         object :
             ArrayAdapter<String?>(
-                context, android.R.layout.simple_list_item_1, options.keys.toTypedArray<String>()) {
+                context,
+                android.R.layout.simple_list_item_1,
+                options.keys.toTypedArray<String>(),
+            ) {
           override fun areAllItemsEnabled(): Boolean = false
 
           override fun isEnabled(position: Int): Boolean =
               !disabledItemKeys.contains(getItem(position))
 
           override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
-              super.getView(position, convertView, parent).apply { isEnabled = isEnabled(position) }
+              super.getView(position, convertView, parent).apply {
+                isEnabled = isEnabled(position)
+                if (this is TextView) {
+                  setTextColor(
+                      if (isEnabled) {
+                        safeGetDefaultTextColor(context)
+                      } else {
+                        safeGetTextColorSecondary(context)
+                      }
+                  )
+                }
+              }
         }
 
     devOptionsDialog =
@@ -464,11 +602,40 @@ public abstract class DevSupportManagerBase(
 
     devOptionsDialog?.show()
 
+    // Prior to Android 12, the list view in AlertDialogs did not match
+    // their content size.
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+      devOptionsDialog?.getListView()?.let { listView ->
+        val displayMetrics = context.resources.displayMetrics
+        val maxHeight = (displayMetrics.heightPixels * 0.7).toInt()
+
+        val layoutParams =
+            listView.layoutParams
+                ?: ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
+        layoutParams.height = maxHeight
+        listView.layoutParams = layoutParams
+      }
+    }
+
     val reactContext = currentReactContext
     reactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)?.emit("RCTDevMenuShown", null)
   }
 
   override fun onNewReactContextCreated(reactContext: ReactContext) {
+    if (!perfMonitorInitialized && reactInstanceDevHelper is PerfMonitorDevHelper) {
+      perfMonitorOverlayManager?.let { manager ->
+        reactInstanceDevHelper.inspectorTarget?.addPerfMonitorListener(manager)
+      }
+      if (isPackagerConnected) {
+        perfMonitorOverlayManager?.enable()
+        perfMonitorOverlayManager?.startBackgroundTrace()
+      }
+      perfMonitorInitialized = true
+    }
+
     resetCurrentContext(reactContext)
   }
 
@@ -574,14 +741,18 @@ public abstract class DevSupportManagerBase(
     val port = if (parsedURL.port != -1) parsedURL.port else parsedURL.defaultPort
     devLoadingViewManager?.showMessage(
         applicationContext.getString(
-            R.string.catalyst_loading_from_url, parsedURL.host + ":" + port))
+            R.string.catalyst_loading_from_url,
+            parsedURL.host + ":" + port,
+        )
+    )
     devLoadingViewVisible = true
   }
 
   @UiThread
   protected fun showDevLoadingViewForRemoteJSEnabled() {
     devLoadingViewManager?.showMessage(
-        applicationContext.getString(R.string.catalyst_debug_connecting))
+        applicationContext.getString(R.string.catalyst_debug_connecting)
+    )
     devLoadingViewVisible = true
   }
 
@@ -593,7 +764,7 @@ public abstract class DevSupportManagerBase(
 
   public fun fetchSplitBundleAndCreateBundleLoader(
       bundlePath: String,
-      callback: CallbackWithBundleLoader
+      callback: CallbackWithBundleLoader,
   ) {
     val bundleUrl = devServerHelper.getDevServerSplitBundleURL(bundlePath)
     // The bundle path may contain the '/' character, which is not allowed in file names.
@@ -612,7 +783,9 @@ public abstract class DevSupportManagerBase(
 
               val bundleLoader =
                   JSBundleLoader.createCachedSplitBundleFromNetworkLoader(
-                      bundleUrl, bundleFile.absolutePath)
+                      bundleUrl,
+                      bundleFile.absolutePath,
+                  )
               callback.onSuccess(bundleLoader)
             }
 
@@ -629,7 +802,8 @@ public abstract class DevSupportManagerBase(
           },
           bundleFile,
           bundleUrl,
-          null)
+          null,
+      )
     }
   }
 
@@ -658,7 +832,7 @@ public abstract class DevSupportManagerBase(
       message: String?,
       stack: Array<StackFrame>,
       errorCookie: Int,
-      errorType: ErrorType
+      errorType: ErrorType,
   ) {
     lastErrorTitle = message
     lastErrorStack = stack
@@ -697,7 +871,8 @@ public abstract class DevSupportManagerBase(
         },
         jsBundleDownloadedFile,
         bundleURL,
-        bundleInfo)
+        bundleInfo,
+    )
   }
 
   private fun reportBundleLoadingFailure(cause: Exception) {
@@ -750,6 +925,17 @@ public abstract class DevSupportManagerBase(
     }
   }
 
+  private fun startShakeDetector() {
+    val sensorManager = applicationContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    shakeDetector.start(sensorManager)
+    isShakeDetectorStarted = true
+  }
+
+  private fun stopShakeDetector() {
+    shakeDetector.stop()
+    isShakeDetectorStarted = false
+  }
+
   private fun reload() {
     UiThreadUtil.assertOnUiThread()
 
@@ -759,11 +945,8 @@ public abstract class DevSupportManagerBase(
       debugOverlayController?.setFpsDebugViewVisible(devSettings.isFpsDebugEnabled)
 
       // start shake gesture detector
-      if (!isShakeDetectorStarted) {
-        val sensorManager =
-            applicationContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        shakeDetector.start(sensorManager)
-        isShakeDetectorStarted = true
+      if (!isShakeDetectorStarted && shakeGestureEnabled) {
+        startShakeDetector()
       }
 
       // register reload app broadcast receiver
@@ -784,10 +967,14 @@ public abstract class DevSupportManagerBase(
           object : PackagerCommandListener {
             override fun onPackagerConnected() {
               isPackagerConnected = true
+              perfMonitorOverlayManager?.enable()
+              perfMonitorOverlayManager?.startBackgroundTrace()
             }
 
             override fun onPackagerDisconnected() {
               isPackagerConnected = false
+              perfMonitorOverlayManager?.disable()
+              perfMonitorOverlayManager?.stopBackgroundTrace()
             }
 
             override fun onPackagerReloadCommand() {
@@ -805,15 +992,15 @@ public abstract class DevSupportManagerBase(
             override fun customCommandHandlers(): Map<String, RequestHandler>? {
               return customPackagerCommandHandlers
             }
-          })
+          },
+      )
     } else {
       // hide FPS debug overlay
       debugOverlayController?.setFpsDebugViewVisible(false)
 
       // stop shake gesture detector
       if (isShakeDetectorStarted) {
-        shakeDetector.stop()
-        isShakeDetectorStarted = false
+        stopShakeDetector()
       }
 
       // unregister app reload broadcast receiver
@@ -822,14 +1009,11 @@ public abstract class DevSupportManagerBase(
         isReceiverRegistered = false
       }
 
-      // hide redbox dialog
       hideRedboxDialog()
-
-      // hide dev options dialog
       hideDevOptionsDialog()
-
-      // hide loading view
       devLoadingViewManager?.hide()
+      perfMonitorOverlayManager?.disable()
+
       devServerHelper.closePackagerConnection()
     }
   }
@@ -854,28 +1038,45 @@ public abstract class DevSupportManagerBase(
       context: Context,
       receiver: BroadcastReceiver,
       filter: IntentFilter,
-      exported: Boolean
+      exported: Boolean,
   ) {
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-        context.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+    if (
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            context.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    ) {
       context.registerReceiver(
           receiver,
           filter,
-          if (exported) Context.RECEIVER_EXPORTED else Context.RECEIVER_NOT_EXPORTED)
+          if (exported) Context.RECEIVER_EXPORTED else Context.RECEIVER_NOT_EXPORTED,
+      )
     } else {
       context.registerReceiver(receiver, filter)
     }
   }
 
-  override fun openDebugger() {
+  private fun safeGetDefaultTextColor(context: Context): ColorStateList {
+    return DefaultStyleValuesUtil.getDefaultTextColor(context)
+        ?: if (UiModeUtils.isDarkMode(context)) ColorStateList.valueOf(android.graphics.Color.WHITE)
+        else ColorStateList.valueOf(android.graphics.Color.BLACK)
+  }
+
+  private fun safeGetTextColorSecondary(context: Context): ColorStateList {
+    return DefaultStyleValuesUtil.getTextColorSecondary(context)
+        ?: ColorStateList.valueOf(android.graphics.Color.GRAY)
+  }
+
+  override fun openDebugger(panel: String?) {
     devServerHelper.openDebugger(
-        currentReactContext, applicationContext.getString(R.string.catalyst_open_debugger_error))
+        currentReactContext,
+        applicationContext.getString(R.string.catalyst_open_debugger_error),
+        panel,
+    )
   }
 
   override fun showPausedInDebuggerOverlay(
       message: String,
-      listener: PausedInDebuggerOverlayCommandListener
+      listener: PausedInDebuggerOverlayCommandListener,
   ) {
     pausedInDebuggerOverlayManager?.showPausedInDebuggerOverlay(message, listener)
   }
@@ -886,6 +1087,14 @@ public abstract class DevSupportManagerBase(
 
   override fun setAdditionalOptionForPackager(name: String, value: String) {
     devSettings.packagerConnectionSettings.setAdditionalOptionForPackager(name, value)
+  }
+
+  /**
+   * Sets the background tracing state provider for bridgeless architecture. This is called
+   * internally by the ReactHost implementation.
+   */
+  internal fun setTracingStateProvider(provider: TracingStateProvider?) {
+    tracingStateProvider = provider
   }
 
   public companion object {

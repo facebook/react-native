@@ -127,6 +127,8 @@ export {default as Switch} from './Libraries/Components/Switch/Switch';
 
 export type {TextProps} from './Libraries/Text/Text';
 export {default as Text} from './Libraries/Text/Text';
+export type {NativeTextProps as unstable_NativeTextProps} from './Libraries/Text/TextNativeComponent';
+export {NativeText as unstable_NativeText} from './Libraries/Text/TextNativeComponent';
 export {default as unstable_TextAncestorContext} from './Libraries/Text/TextAncestorContext';
 
 export type {
@@ -180,10 +182,12 @@ export type {
   ViewPropsIOS,
 } from './Libraries/Components/View/ViewPropTypes';
 export {default as View} from './Libraries/Components/View/View';
+export {default as unstable_NativeView} from './Libraries/Components/View/ViewNativeComponent';
 
 export type {
   ListRenderItemInfo,
   ListRenderItem,
+  ListViewToken,
   Separators,
   VirtualizedListProps,
 } from './Libraries/Lists/VirtualizedList';
@@ -311,10 +315,11 @@ export {default as LogBox} from './Libraries/LogBox/LogBox';
 
 export {default as NativeAppEventEmitter} from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 
+export * as NativeComponentRegistry from './Libraries/NativeComponent/NativeComponentRegistry';
+
 export {default as NativeDialogManagerAndroid} from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 
 export type {
-  EventSubscription,
   EmitterSubscription,
   NativeEventSubscription,
 } from './Libraries/EventEmitter/NativeEventEmitter';
@@ -358,6 +363,8 @@ export {default as processColor} from './Libraries/StyleSheet/processColor';
 export {default as registerCallableModule} from './Libraries/Core/registerCallableModule';
 export {default as requireNativeComponent} from './Libraries/ReactNative/requireNativeComponent';
 
+export {default as ReactNativeVersion} from './Libraries/Core/ReactNativeVersion';
+
 export type {RootTag} from './Libraries/ReactNative/RootTag';
 export {RootTagContext} from './Libraries/ReactNative/RootTag';
 
@@ -400,6 +407,11 @@ export * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistr
 export {default as UIManager} from './Libraries/ReactNative/UIManager';
 export {unstable_batchedUpdates} from './Libraries/ReactNative/RendererProxy';
 export {default as useAnimatedValue} from './Libraries/Animated/useAnimatedValue';
+export type {
+  PressabilityConfig,
+  EventHandlers as PressabilityEventHandlers,
+} from './Libraries/Pressability/Pressability';
+export {default as usePressability} from './Libraries/Pressability/usePressability';
 export {default as useColorScheme} from './Libraries/Utilities/useColorScheme';
 export {default as useWindowDimensions} from './Libraries/Utilities/useWindowDimensions';
 export {default as UTFSequence} from './Libraries/UTFSequence';
@@ -412,6 +424,9 @@ export type {
   BlurEvent,
   FocusEvent,
   GestureResponderEvent,
+  KeyDownEvent,
+  KeyEvent,
+  KeyUpEvent,
   LayoutChangeEvent,
   LayoutRectangle,
   MouseEvent,
@@ -446,6 +461,12 @@ export type {
   PublicRootInstance,
   PublicTextInstance,
 } from './Libraries/ReactPrivate/ReactNativePrivateInterface';
+
+export type {
+  EventSubscription,
+  IEventEmitter,
+} from './Libraries/vendor/emitter/EventEmitter';
+export {default as EventEmitter} from './Libraries/vendor/emitter/EventEmitter';
 
 export {
   default as unstable_VirtualView,

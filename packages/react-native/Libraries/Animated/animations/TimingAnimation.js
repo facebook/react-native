@@ -18,12 +18,12 @@ import type {AnimationConfig, EndCallback} from './Animation';
 import AnimatedColor from '../nodes/AnimatedColor';
 import Animation from './Animation';
 
-export type TimingAnimationConfig = $ReadOnly<{
+export type TimingAnimationConfig = Readonly<{
   ...AnimationConfig,
   toValue:
     | number
     | AnimatedValue
-    | $ReadOnly<{
+    | Readonly<{
         x: number,
         y: number,
         ...
@@ -38,7 +38,7 @@ export type TimingAnimationConfig = $ReadOnly<{
   ...
 }>;
 
-export type TimingAnimationConfigSingle = $ReadOnly<{
+export type TimingAnimationConfigSingle = Readonly<{
   ...AnimationConfig,
   toValue: number,
   easing?: (value: number) => number,
@@ -49,6 +49,8 @@ export type TimingAnimationConfigSingle = $ReadOnly<{
 
 let _easeInOut;
 function easeInOut() {
+  /* $FlowFixMe[constant-condition] Error discovered during Constant Condition
+   * roll out. See https://fburl.com/workplace/1v97vimq. */
   if (!_easeInOut) {
     const Easing = require('../Easing').default;
     _easeInOut = Easing.inOut(Easing.ease);
@@ -78,9 +80,9 @@ export default class TimingAnimation extends Animation {
     this._platformConfig = config.platformConfig;
   }
 
-  __getNativeAnimationConfig(): $ReadOnly<{
+  __getNativeAnimationConfig(): Readonly<{
     type: 'frames',
-    frames: $ReadOnlyArray<number>,
+    frames: ReadonlyArray<number>,
     toValue: number,
     iterations: number,
     platformConfig: ?PlatformConfig,

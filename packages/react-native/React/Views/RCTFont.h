@@ -17,8 +17,10 @@ typedef CGFloat RCTFontWeight;
  * provide a different base font, use this override. The font weight supplied to your
  * handler will be one of "ultralight", "thin", "light", "regular", "medium",
  * "semibold", "extrabold", "bold", "heavy", or "black".
+ *
+ * @deprecated Use RCTSetDefaultFontResolver
  */
-RCT_EXTERN void RCTSetDefaultFontHandler(RCTFontHandler handler);
+RCT_EXTERN void RCTSetDefaultFontHandler(RCTFontHandler handler) __attribute__((deprecated));
 RCT_EXTERN BOOL RCTHasFontHandlerSet(void);
 RCT_EXTERN RCTFontWeight RCTGetFontWeight(UIFont *font);
 

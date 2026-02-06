@@ -19,6 +19,7 @@ import com.facebook.react.uimanager.ThemedReactContext
  * Manages Images embedded in Text nodes using Fresco. Since they are used only as a virtual nodes
  * any type of native view operation will throw an [IllegalStateException].
  */
+@Suppress("DEPRECATION")
 @ReactModule(name = FrescoBasedReactTextInlineImageViewManager.REACT_CLASS)
 internal class FrescoBasedReactTextInlineImageViewManager
 @JvmOverloads
@@ -27,7 +28,7 @@ constructor(
         @JvmSuppressWildcards
         AbstractDraweeControllerBuilder<*, ImageRequest, *, *>? =
         null,
-    private val callerContext: Any? = null
+    private val callerContext: Any? = null,
 ) : BaseViewManager<View, FrescoBasedReactTextInlineImageShadowNode>() {
 
   override fun getName(): String = REACT_CLASS
@@ -38,7 +39,9 @@ constructor(
 
   override fun createShadowNodeInstance(): FrescoBasedReactTextInlineImageShadowNode =
       FrescoBasedReactTextInlineImageShadowNode(
-          draweeControllerBuilder ?: Fresco.newDraweeControllerBuilder(), callerContext)
+          draweeControllerBuilder ?: Fresco.newDraweeControllerBuilder(),
+          callerContext,
+      )
 
   override fun getShadowNodeClass(): Class<FrescoBasedReactTextInlineImageShadowNode> =
       FrescoBasedReactTextInlineImageShadowNode::class.java

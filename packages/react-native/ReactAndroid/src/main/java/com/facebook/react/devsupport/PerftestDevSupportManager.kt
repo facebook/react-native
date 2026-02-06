@@ -23,7 +23,8 @@ internal class PerftestDevSupportManager(
           applicationContext,
           object : DevInternalSettings.Listener {
             override fun onInternalSettingsChanged() = Unit
-          })
+          },
+      )
 
   private val devServerHelper: DevServerHelper =
       DevServerHelper(devSettings, applicationContext, devSettings.packagerConnectionSettings)

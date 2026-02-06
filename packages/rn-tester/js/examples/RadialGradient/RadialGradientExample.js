@@ -17,7 +17,7 @@ import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {Platform, PlatformColor, StyleSheet, View} from 'react-native';
 
-type Props = $ReadOnly<{
+type Props = Readonly<{
   style: ViewStyleProp,
   testID?: string,
   children?: React.Node,

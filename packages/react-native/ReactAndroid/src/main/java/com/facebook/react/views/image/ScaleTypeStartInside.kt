@@ -22,7 +22,7 @@ internal class ScaleTypeStartInside : AbstractScaleType() {
       focusX: Float,
       focusY: Float,
       scaleX: Float,
-      scaleY: Float
+      scaleY: Float,
   ) {
     val scale = min(scaleX, scaleY).coerceAtMost(1.0f)
     val dx = parentRect.left.toFloat()
@@ -31,9 +31,7 @@ internal class ScaleTypeStartInside : AbstractScaleType() {
     outTransform.postTranslate(Math.round(dx).toFloat(), Math.round(dy).toFloat())
   }
 
-  override fun toString(): String {
-    return "start_inside"
-  }
+  override fun toString(): String = "start_inside"
 
   companion object {
     val INSTANCE: ScalingUtils.ScaleType = ScaleTypeStartInside()

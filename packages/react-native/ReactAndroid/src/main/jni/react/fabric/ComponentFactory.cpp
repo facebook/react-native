@@ -16,7 +16,7 @@ using namespace facebook::jsi;
 namespace facebook::react {
 
 jni::local_ref<ComponentFactory::jhybriddata> ComponentFactory::initHybrid(
-    jni::alias_ref<jclass>) {
+    jni::alias_ref<jclass> /*unused*/) {
   return makeCxxInstance();
 }
 

@@ -20,8 +20,8 @@ import com.facebook.react.bridge.JavaScriptModuleRegistry
 import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
 import com.facebook.react.bridge.UIManager
-import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
@@ -31,6 +31,8 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcherProvider
+import com.facebook.react.uimanager.events.RCTEventEmitter
+import java.lang.IllegalArgumentException
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -46,6 +48,12 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
     ReactApplicationContext(context), EventDispatcherProvider {
   private val sourceURLRef = AtomicReference<String>()
   private val TAG: String = this.javaClass.simpleName
+
+  val devSupportManager: DevSupportManager
+    get() = reactHost.devSupportManager
+
+  val defaultHardwareBackBtnHandler: DefaultHardwareBackBtnHandler
+    get() = reactHost.defaultBackButtonHandler
 
   init {
     if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
@@ -65,27 +73,34 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   override fun getFabricUIManager(): UIManager? = reactHost.uiManager
 
   @OptIn(FrameworkAPI::class)
+  @Deprecated(
+      "This method is deprecated in the New Architecture. You should not be invoking directly as we're going to remove it in the future."
+  )
   override fun getCatalystInstance(): CatalystInstance {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       throw UnsupportedOperationException(
-          "CatalystInstance is not supported when Bridgeless mode is enabled.")
+          "CatalystInstance is not supported when Bridgeless mode is enabled."
+      )
     }
     Log.w(
         TAG,
         "[WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of" +
-            " the new architecture is not encouraged usage.")
+            " the new architecture is not encouraged usage.",
+    )
     return BridgelessCatalystInstance(reactHost)
   }
 
   @Deprecated(
-      "This API has been deprecated due to naming consideration, please use hasActiveReactInstance() instead")
+      "This API has been deprecated due to naming consideration, please use hasActiveReactInstance() instead"
+  )
   override fun hasActiveCatalystInstance(): Boolean = hasActiveReactInstance()
 
   @Deprecated("DO NOT USE, this method will be removed in the near future.")
   override fun isBridgeless(): Boolean = true
 
   @Deprecated(
-      "This API has been deprecated due to naming consideration, please use hasReactInstance() instead")
+      "This API has been deprecated due to naming consideration, please use hasReactInstance() instead"
+  )
   override fun hasCatalystInstance(): Boolean = false
 
   override fun hasActiveReactInstance(): Boolean = reactHost.isInstanceInitialized
@@ -94,29 +109,36 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
 
   override fun destroy() = Unit
 
-  val devSupportManager: DevSupportManager
-    get() = reactHost.devSupportManager
-
   override fun registerSegment(segmentId: Int, path: String, callback: Callback) {
     reactHost.registerSegment(segmentId, path, callback)
   }
 
   private class BridgelessJSModuleInvocationHandler(
       private val reactHost: ReactHostImpl,
-      private val jsModuleInterface: Class<out JavaScriptModule>
+      private val jsModuleInterface: Class<out JavaScriptModule>,
   ) : InvocationHandler {
-    override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any? {
-      val jsArgs: NativeArray =
-          if (args != null) Arguments.fromJavaArgs(args) else WritableNativeArray()
+    override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
+      val jsArgs: NativeArray = Arguments.fromJavaArgs(args)
       reactHost.callFunctionOnModule(
-          JavaScriptModuleRegistry.getJSModuleName(jsModuleInterface), method.name, jsArgs)
+          JavaScriptModuleRegistry.getJSModuleName(jsModuleInterface),
+          method.name,
+          jsArgs,
+      )
       return null
     }
   }
 
   override fun <T : JavaScriptModule> getJSModule(jsInterface: Class<T>): T? {
-    mInteropModuleRegistry?.getInteropModule(jsInterface)?.let {
-      return it
+    mInteropModuleRegistry?.getInteropModule(jsInterface)?.let { interopModule ->
+      if (jsInterface == RCTEventEmitter::class.java) {
+        logSoftException(
+            TAG,
+            IllegalArgumentException(
+                "getJSModule(RCTEventEmitter) is not recommended in the new architecture and will stop working with interop disabled. Please use UIManagerHelper.getEventDispatcher or UIManagerHelper.getEventDispatcherForReactTag instead"
+            ),
+        )
+      }
+      return interopModule
     }
 
     // TODO T189052462: ReactContext caches JavaScriptModule instances
@@ -124,15 +146,19 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
         Proxy.newProxyInstance(
             jsInterface.classLoader,
             arrayOf<Class<*>>(jsInterface),
-            BridgelessJSModuleInvocationHandler(reactHost, jsInterface)) as JavaScriptModule
-    @Suppress("UNCHECKED_CAST")
+            BridgelessJSModuleInvocationHandler(reactHost, jsInterface),
+        ) as JavaScriptModule
+    @Suppress("UNCHECKED_CAST", "KotlinGenericsCast")
     return interfaceProxy as? T
   }
 
   /** Shortcut RCTDeviceEventEmitter.emit since it's frequently used */
   override fun emitDeviceEvent(eventName: String, args: Any?) {
     reactHost.callFunctionOnModule(
-        "RCTDeviceEventEmitter", "emit", Arguments.fromJavaArgs(arrayOf(eventName, args)))
+        "RCTDeviceEventEmitter",
+        "emit",
+        Arguments.fromJavaArgs(arrayOf(eventName, args)),
+    )
   }
 
   override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
@@ -155,7 +181,4 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   }
 
   override fun getJSCallInvokerHolder(): CallInvokerHolder? = reactHost.jsCallInvokerHolder
-
-  val defaultHardwareBackBtnHandler: DefaultHardwareBackBtnHandler
-    get() = reactHost.defaultBackButtonHandler
 }

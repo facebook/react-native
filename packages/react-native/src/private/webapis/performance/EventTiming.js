@@ -9,9 +9,9 @@
  */
 
 // flowlint unsafe-getters-setters:off
-
 import type {
   DOMHighResTimeStamp,
+  PerformanceEntryInit,
   PerformanceEntryJSON,
 } from './PerformanceEntry';
 
@@ -29,25 +29,20 @@ export type PerformanceEventTimingJSON = {
   ...
 };
 
+export interface PerformanceEventTimingInit extends PerformanceEntryInit {
+  +processingStart?: DOMHighResTimeStamp;
+  +processingEnd?: DOMHighResTimeStamp;
+  +interactionId?: number;
+}
+
 export class PerformanceEventTiming extends PerformanceEntry {
   #processingStart: DOMHighResTimeStamp;
   #processingEnd: DOMHighResTimeStamp;
   #interactionId: number;
 
-  constructor(init: {
-    name: string,
-    startTime?: DOMHighResTimeStamp,
-    duration?: DOMHighResTimeStamp,
-    processingStart?: DOMHighResTimeStamp,
-    processingEnd?: DOMHighResTimeStamp,
-    interactionId?: number,
-  }) {
-    super({
-      name: init.name,
-      entryType: 'event',
-      startTime: init.startTime ?? 0,
-      duration: init.duration ?? 0,
-    });
+  constructor(init: PerformanceEventTimingInit) {
+    super('event', init);
+
     this.#processingStart = init.processingStart ?? 0;
     this.#processingEnd = init.processingEnd ?? 0;
     this.#interactionId = init.interactionId ?? 0;
@@ -75,6 +70,18 @@ export class PerformanceEventTiming extends PerformanceEntry {
   }
 }
 
+export const PerformanceEventTiming_public: typeof PerformanceEventTiming =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceEventTiming() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceEventTiming': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceEventTiming_public.prototype = PerformanceEventTiming.prototype;
+
 type EventCountsForEachCallbackType =
   | (() => void)
   | ((value: number) => void)
@@ -93,7 +100,7 @@ function getCachedEventCounts(): Map<string, number> {
   );
   cachedEventCounts = eventCounts;
 
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   global.queueMicrotask(() => {
     // To be consistent with the calls to the API from the same task,
     // but also not to refetch the data from native too often,
@@ -139,3 +146,15 @@ export class EventCounts {
     return getCachedEventCounts().values();
   }
 }
+
+export const EventCounts_public: typeof EventCounts =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function EventCounts() {
+    throw new TypeError(
+      "Failed to construct 'EventCounts': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+EventCounts_public.prototype = EventCounts.prototype;

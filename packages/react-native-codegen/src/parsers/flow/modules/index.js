@@ -35,6 +35,7 @@ const {
 } = require('../../parsers-commons');
 const {
   emitArrayType,
+  emitBooleanLiteral,
   emitCommonTypes,
   emitDictionary,
   emitFunction,
@@ -99,7 +100,8 @@ function translateTypeAnnotation(
           );
         }
         case 'Array':
-        case '$ReadOnlyArray': {
+        case '$ReadOnlyArray':
+        case 'ReadonlyArray': {
           return emitArrayType(
             hasteModuleName,
             typeAnnotation,
@@ -112,7 +114,8 @@ function translateTypeAnnotation(
             translateTypeAnnotation,
           );
         }
-        case '$ReadOnly': {
+        case '$ReadOnly':
+        case 'Readonly': {
           assertGenericTypeAnnotationHasExactlyOneTypeParameter(
             hasteModuleName,
             typeAnnotation,
@@ -222,7 +225,7 @@ function translateTypeAnnotation(
 
       return typeAliasResolution(
         typeResolutionStatus,
-        /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */
         objectTypeAnnotation,
         aliasMap,
@@ -244,10 +247,24 @@ function translateTypeAnnotation(
       );
     }
     case 'UnionTypeAnnotation': {
-      return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
+      return emitUnion(
+        nullable,
+        hasteModuleName,
+        typeAnnotation,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        translateTypeAnnotation,
+        parser,
+      );
     }
     case 'NumberLiteralTypeAnnotation': {
       return emitNumberLiteral(nullable, typeAnnotation.value);
+    }
+    case 'BooleanLiteralTypeAnnotation': {
+      return emitBooleanLiteral(nullable, typeAnnotation.value);
     }
     case 'StringLiteralTypeAnnotation': {
       return wrapNullable(nullable, {

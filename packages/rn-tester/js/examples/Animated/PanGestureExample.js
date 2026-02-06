@@ -22,7 +22,7 @@ import {
   View,
 } from 'react-native';
 
-function TextBox({children}: $ReadOnly<{children: React.Node}>): React.Node {
+function TextBox({children}: Readonly<{children: React.Node}>): React.Node {
   // Prevent touch from being hijacked by Text
   return (
     <View pointerEvents="none">
@@ -34,8 +34,8 @@ function TextBox({children}: $ReadOnly<{children: React.Node}>): React.Node {
 function AnimatedEventExample({
   containerPageXY,
   useNativeDriver,
-}: $ReadOnly<{
-  containerPageXY: $ReadOnly<{x: number, y: number}>,
+}: Readonly<{
+  containerPageXY: Readonly<{x: number, y: number}>,
   useNativeDriver: boolean,
 }>): React.Node {
   const boxRef = useRef<?React.ElementRef<typeof Animated.View>>();
@@ -128,7 +128,7 @@ function AnimatedEventExample({
 
 function PanResponderExample({
   useNativeDriver,
-}: $ReadOnly<{useNativeDriver: boolean}>): React.Node {
+}: Readonly<{useNativeDriver: boolean}>): React.Node {
   const finalOffsetXY = useRef(
     new Animated.ValueXY({x: 0, y: 0}, {useNativeDriver}),
   ).current;

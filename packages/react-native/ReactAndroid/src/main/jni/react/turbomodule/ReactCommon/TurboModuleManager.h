@@ -24,14 +24,11 @@ namespace facebook::react {
 
 class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
  public:
-  static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/internal/turbomodule/core/TurboModuleManager;";
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/internal/turbomodule/core/TurboModuleManager;";
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject> /* unused */,
-      jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
       jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
-      jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
-          nativeMethodCallInvokerHolder,
+      jni::alias_ref<NativeMethodCallInvokerHolder::javaobject> nativeMethodCallInvokerHolder,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
   static void registerNatives();
 
@@ -42,8 +39,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
   jni::global_ref<TurboModuleManagerDelegate::javaobject> delegate_;
 
-  using ModuleCache =
-      std::unordered_map<std::string, std::shared_ptr<TurboModule>>;
+  using ModuleCache = std::unordered_map<std::string, std::shared_ptr<TurboModule>>;
 
   /**
    * TODO(T48018690):
@@ -55,28 +51,21 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   ModuleCache legacyModuleCache_;
 
   explicit TurboModuleManager(
-      RuntimeExecutor runtimeExecutor,
       std::shared_ptr<CallInvoker> jsCallInvoker,
       std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 
-  static void installJSIBindings(
+  static void installJSBindings(jsi::Runtime &runtime, jni::alias_ref<jhybridobject> javaPart);
+  static void dispatchJSBindingInstall(
       jni::alias_ref<jhybridobject> javaPart,
-      bool shouldCreateLegacyModules);
+      jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor);
 
-  static TurboModuleProviderFunctionType createTurboModuleProvider(
-      jni::alias_ref<jhybridobject> javaPart,
-      jsi::Runtime* runtime);
-  std::shared_ptr<TurboModule> getTurboModule(
-      jni::alias_ref<jhybridobject> javaPart,
-      const std::string& name,
-      jsi::Runtime& runtime);
+  static TurboModuleProviderFunctionTypeWithRuntime createTurboModuleProvider(jni::alias_ref<jhybridobject> javaPart);
+  std::shared_ptr<TurboModule>
+  getTurboModule(jni::alias_ref<jhybridobject> javaPart, const std::string &name, jsi::Runtime &runtime);
 
-  static TurboModuleProviderFunctionType createLegacyModuleProvider(
-      jni::alias_ref<jhybridobject> javaPart);
-  std::shared_ptr<TurboModule> getLegacyModule(
-      jni::alias_ref<jhybridobject> javaPart,
-      const std::string& name);
+  static TurboModuleProviderFunctionTypeWithRuntime createLegacyModuleProvider(jni::alias_ref<jhybridobject> javaPart);
+  std::shared_ptr<TurboModule> getLegacyModule(jni::alias_ref<jhybridobject> javaPart, const std::string &name);
 };
 
 } // namespace facebook::react

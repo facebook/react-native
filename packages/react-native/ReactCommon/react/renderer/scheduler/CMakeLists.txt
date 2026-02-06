@@ -19,7 +19,9 @@ target_link_libraries(react_renderer_scheduler
         jsi
         react_debug
         react_featureflags
+        react_performance_cdpmetrics
         react_performance_timeline
+        react_renderer_animationbackend
         react_renderer_componentregistry
         react_renderer_core
         react_renderer_debug

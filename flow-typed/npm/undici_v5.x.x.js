@@ -15,7 +15,7 @@ declare interface undici$Agent$Options {
 }
 
 declare module 'undici' {
-  declare export type RequestOptions = $ReadOnly<{
+  declare export type RequestOptions = Readonly<{
     dispatcher?: Dispatcher,
     method?: string,
     headers?: HeadersInit,

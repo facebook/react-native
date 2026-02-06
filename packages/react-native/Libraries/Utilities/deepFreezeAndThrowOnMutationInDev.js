@@ -27,12 +27,14 @@
  * Freezing the object and adding the throw mechanism is expensive and will
  * only be used in DEV.
  */
-function deepFreezeAndThrowOnMutationInDev<T: {...} | Array<mixed>>(
+function deepFreezeAndThrowOnMutationInDev<T: {...} | Array<unknown>>(
   object: T,
 ): T {
   if (__DEV__) {
     if (
       typeof object !== 'object' ||
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       object === null ||
       Object.isFrozen(object) ||
       Object.isSealed(object)
@@ -41,7 +43,7 @@ function deepFreezeAndThrowOnMutationInDev<T: {...} | Array<mixed>>(
     }
 
     // $FlowFixMe[not-an-object] `object` can be an array, but Object.keys works with arrays too
-    const keys = Object.keys((object: {...} | Array<mixed>));
+    const keys = Object.keys((object: {...} | Array<unknown>));
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -83,7 +85,7 @@ function throwOnImmutableMutation(key: empty, value) {
   );
 }
 
-function identity(value: mixed) {
+function identity(value: unknown) {
   return value;
 }
 

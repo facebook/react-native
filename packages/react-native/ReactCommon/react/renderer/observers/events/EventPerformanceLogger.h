@@ -24,30 +24,26 @@ class EventPerformanceLogger : public EventLogger,
                                public RuntimeSchedulerEventTimingDelegate,
                                public UIManagerMountHook {
  public:
-  explicit EventPerformanceLogger(
-      std::weak_ptr<PerformanceEntryReporter> performanceEntryReporter);
+  explicit EventPerformanceLogger(std::weak_ptr<PerformanceEntryReporter> performanceEntryReporter);
 
 #pragma mark - EventLogger
 
   EventTag onEventStart(
       std::string_view name,
       SharedEventTarget target,
-      std::optional<HighResTimeStamp> eventStartTimeStamp =
-          std::nullopt) override;
+      std::optional<HighResTimeStamp> eventStartTimeStamp = std::nullopt) override;
   void onEventProcessingStart(EventTag tag) override;
   void onEventProcessingEnd(EventTag tag) override;
 
 #pragma mark - RuntimeSchedulerEventTimingDelegate
 
   void dispatchPendingEventTimingEntries(
-      const std::unordered_set<SurfaceId>&
-          surfaceIdsWithPendingRenderingUpdates) override;
+      HighResTimeStamp taskEndTime,
+      const std::unordered_set<SurfaceId> &surfaceIdsWithPendingRenderingUpdates) override;
 
 #pragma mark - UIManagerMountHook
 
-  void shadowTreeDidMount(
-      const RootShadowNode::Shared& rootShadowNode,
-      HighResTimeStamp mountTime) noexcept override;
+  void shadowTreeDidMount(const RootShadowNode::Shared &rootShadowNode, HighResTimeStamp mountTime) noexcept override;
 
  private:
   struct EventEntry {
@@ -56,6 +52,7 @@ class EventPerformanceLogger : public EventLogger,
     HighResTimeStamp startTime;
     std::optional<HighResTimeStamp> processingStartTime;
     std::optional<HighResTimeStamp> processingEndTime;
+    std::optional<HighResTimeStamp> taskEndTime;
 
     bool isWaitingForMount{false};
 
@@ -63,7 +60,8 @@ class EventPerformanceLogger : public EventLogger,
     // (T141358175)
     PerformanceEntryInteractionId interactionId{0};
 
-    bool isWaitingForDispatch() {
+    bool isWaitingForDispatch()
+    {
       return !processingEndTime.has_value();
     }
   };

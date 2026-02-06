@@ -53,7 +53,7 @@ const instanceHandleToTargetMap: WeakMap<interface {}, ReactNativeElement> =
   new WeakMap();
 
 function getTargetFromInstanceHandle(
-  instanceHandle: mixed,
+  instanceHandle: unknown,
 ): ?ReactNativeElement {
   // $FlowExpectedError[incompatible-type] instanceHandle is typed as mixed but we know it's an object and we need it to be to use it as a key in a WeakMap.
   const key: interface {} = instanceHandle;
@@ -61,7 +61,7 @@ function getTargetFromInstanceHandle(
 }
 
 function setTargetForInstanceHandle(
-  instanceHandle: mixed,
+  instanceHandle: unknown,
   target: ReactNativeElement,
 ): void {
   // $FlowExpectedError[incompatible-type] instanceHandle is typed as mixed but we know it's an object and we need it to be to use it as a key in a WeakMap.
@@ -175,6 +175,7 @@ export function observe({
     targetShadowNode: targetNativeNodeReference,
     thresholds: registeredObserver.observer.thresholds,
     rootThresholds: registeredObserver.observer.rnRootThresholds,
+    rootMargin: registeredObserver.observer.rootMargin,
   });
   targetToTokenMap.set(target, token);
 

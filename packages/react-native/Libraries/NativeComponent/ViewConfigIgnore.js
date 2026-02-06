@@ -43,7 +43,7 @@ export function ConditionallyIgnoredEventHandlers<
   return undefined;
 }
 
-export function isIgnored(value: mixed): boolean {
+export function isIgnored(value: unknown): boolean {
   if (typeof value === 'object' && value != null) {
     return ignoredViewConfigProps.has(value);
   }

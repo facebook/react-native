@@ -24,7 +24,7 @@ internal object SoftAssertions {
    * throw.
    */
   @JvmStatic
-  fun assertUnreachable(message: String): Unit {
+  fun assertUnreachable(message: String) {
     ReactSoftExceptionLogger.logSoftException(SOFT_ASSERTIONS, AssertionException(message))
   }
 
@@ -34,7 +34,7 @@ internal object SoftAssertions {
    * throw.
    */
   @JvmStatic
-  fun assertCondition(condition: Boolean, message: String): Unit {
+  fun assertCondition(condition: Boolean, message: String) {
     if (!condition) {
       ReactSoftExceptionLogger.logSoftException(SOFT_ASSERTIONS, AssertionException(message))
     }
@@ -48,7 +48,9 @@ internal object SoftAssertions {
   fun <T> assertNotNull(instance: T?): T? {
     if (instance == null) {
       ReactSoftExceptionLogger.logSoftException(
-          SOFT_ASSERTIONS, AssertionException("Expected object to not be null!"))
+          SOFT_ASSERTIONS,
+          AssertionException("Expected object to not be null!"),
+      )
     }
     return instance
   }

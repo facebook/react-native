@@ -16,7 +16,7 @@ import RCTActionSheetManager from './NativeActionSheetManager';
 const processColor = require('../StyleSheet/processColor').default;
 const invariant = require('invariant');
 
-export type ActionSheetIOSOptions = $ReadOnly<{
+export type ActionSheetIOSOptions = Readonly<{
   title?: ?string,
   message?: ?string,
   options: Array<string>,
@@ -30,7 +30,7 @@ export type ActionSheetIOSOptions = $ReadOnly<{
   disabledButtonIndices?: Array<number>,
 }>;
 
-export type ShareActionSheetIOSOptions = $ReadOnly<{
+export type ShareActionSheetIOSOptions = Readonly<{
   message?: ?string,
   url?: ?string,
   subject?: ?string,
@@ -42,7 +42,7 @@ export type ShareActionSheetIOSOptions = $ReadOnly<{
   userInterfaceStyle?: ?string,
 }>;
 
-export type ShareActionSheetError = $ReadOnly<{
+export type ShareActionSheetError = Readonly<{
   domain: string,
   code: string,
   userInfo?: ?Object,
@@ -77,6 +77,8 @@ const ActionSheetIOS = {
     callback: (buttonIndex: number) => void,
   ) {
     invariant(
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       typeof options === 'object' && options !== null,
       'Options must be a valid object',
     );
@@ -121,11 +123,11 @@ const ActionSheetIOS = {
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         tintColor: processedTintColor,
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         cancelButtonTintColor: processedCancelButtonTintColor,
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         disabledButtonTintColor: processedDisabledButtonTintColor,
         destructiveButtonIndices,
       },
@@ -162,6 +164,8 @@ const ActionSheetIOS = {
     successCallback: Function | ((success: boolean, method: ?string) => void),
   ) {
     invariant(
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       typeof options === 'object' && options !== null,
       'Options must be a valid object',
     );

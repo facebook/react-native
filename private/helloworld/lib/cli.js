@@ -70,7 +70,6 @@ export function observe(result: ExecaPromiseMetaized): TaskResult<{}, string> {
     };
   });
 
-  // $FlowFixMe
   return obs;
 }
 

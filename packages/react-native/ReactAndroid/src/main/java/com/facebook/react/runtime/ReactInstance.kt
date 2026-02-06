@@ -7,6 +7,7 @@
 
 package com.facebook.react.runtime
 
+import android.annotation.SuppressLint
 import android.content.res.AssetManager
 import android.view.View
 import com.facebook.common.logging.FLog
@@ -43,6 +44,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
 import com.facebook.react.devsupport.StackTraceHelper
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.fabric.AnimationBackendChoreographer
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.fabric.FabricUIManagerBinding
@@ -76,7 +78,6 @@ import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
 import kotlin.collections.Collection
-import kotlin.jvm.JvmStatic
 
 /**
  * A replacement for [com.facebook.react.bridge.CatalystInstance] responsible for creating and
@@ -93,7 +94,7 @@ internal class ReactInstance(
     devSupportManager: DevSupportManager,
     exceptionHandler: QueueThreadExceptionHandler,
     useDevSupport: Boolean,
-    reactHostInspectorTarget: ReactHostInspectorTarget?
+    reactHostInspectorTarget: ReactHostInspectorTarget?,
 ) {
   @Suppress("NoHungarianNotation") @DoNotStrip private val mHybridData: HybridData
 
@@ -105,6 +106,13 @@ internal class ReactInstance(
   val fabricUIManager: FabricUIManager
   val javaScriptContextHolder: JavaScriptContextHolder
 
+  val nativeModules: Collection<NativeModule>
+    get() = turboModuleManager.modules
+
+  val eventDispatcher: EventDispatcher
+    /** @return The [EventDispatcher] used by [FabricUIManager] to emit UI events to JS. */
+    get() = fabricUIManager.eventDispatcher
+
   init {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.initialize")
 
@@ -115,7 +123,8 @@ internal class ReactInstance(
     val spec =
         ReactQueueConfigurationSpec(
             MessageQueueThreadSpec.newBackgroundThreadSpec("v_native"),
-            MessageQueueThreadSpec.newBackgroundThreadSpec("v_js"))
+            MessageQueueThreadSpec.newBackgroundThreadSpec("v_js"),
+        )
     reactQueueConfiguration = ReactQueueConfigurationImpl.create(spec, exceptionHandler)
     FLog.d(TAG, "Calling initializeMessageQueueThreads()")
     context.initializeMessageQueueThreads(reactQueueConfiguration)
@@ -125,10 +134,14 @@ internal class ReactInstance(
     ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance())
     devSupportManager.startInspector()
 
-    val jsTimerExecutor = createJSTimerExecutor()
+    val jsTimerExecutor = JSTimerExecutor()
     javaTimerManager =
         JavaTimerManager(
-            context, jsTimerExecutor, ReactChoreographer.getInstance(), devSupportManager)
+            context,
+            jsTimerExecutor,
+            ReactChoreographer.getInstance(),
+            devSupportManager,
+        )
 
     // Notify JS if profiling is enabled
     val isProfiling =
@@ -146,7 +159,8 @@ internal class ReactInstance(
             ReactJsExceptionHandlerImpl(exceptionHandler),
             delegate.bindingsInstaller,
             isProfiling,
-            reactHostInspectorTarget)
+            reactHostInspectorTarget,
+        )
 
     javaScriptContextHolder = JavaScriptContextHolder(getJavaScriptContext())
 
@@ -155,7 +169,8 @@ internal class ReactInstance(
 
     val reactPackages: MutableList<ReactPackage> = ArrayList<ReactPackage>()
     reactPackages.add(
-        CoreReactPackage(context.devSupportManager, context.defaultHardwareBackBtnHandler))
+        CoreReactPackage(context.devSupportManager, context.defaultHardwareBackBtnHandler)
+    )
     if (useDevSupport) {
       reactPackages.add(DebugCorePackage())
     }
@@ -173,8 +188,8 @@ internal class ReactInstance(
             unbufferedRuntimeExecutor,
             turboModuleManagerDelegate,
             getJSCallInvokerHolder(),
-            getNativeMethodCallInvokerHolder())
-
+            getNativeMethodCallInvokerHolder(),
+        )
     Systrace.endSection(Systrace.TRACE_TAG_REACT)
 
     // Set up Fabric
@@ -196,7 +211,8 @@ internal class ReactInstance(
               }
               return viewManagerNames.toTypedArray<String>()
             }
-        })
+        },
+    )
 
     // Initialize function for JS's UIManager.getViewManagerConfig()
     // It should come after getTurboModuleManagerDelegate as it relies on react packages being
@@ -232,7 +248,8 @@ internal class ReactInstance(
               constants["LazyViewManagersEnabled"] = true
             }
             Arguments.makeNativeMap(constants)
-          })
+          },
+      )
     }
 
     val eventBeatManager = EventBeatManager()
@@ -242,13 +259,17 @@ internal class ReactInstance(
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
 
+    val animationBackendChoreographer = AnimationBackendChoreographer(context)
+
     val binding = FabricUIManagerBinding()
     binding.register(
         getBufferedRuntimeExecutor(),
         getRuntimeScheduler(),
         fabricUIManager,
         eventBeatManager,
-        componentFactory)
+        componentFactory,
+        animationBackendChoreographer,
+    )
 
     // Initialize the FabricUIManager
     fabricUIManager.initialize()
@@ -277,7 +298,8 @@ internal class ReactInstance(
       try {
         val exceptionsManager =
             checkNotNull(
-                getNativeModule<NativeExceptionsManagerSpec>(NativeExceptionsManagerSpec.NAME))
+                getNativeModule<NativeExceptionsManagerSpec>(NativeExceptionsManagerSpec.NAME)
+            )
         exceptionsManager.reportException(data)
       } catch (e: Exception) {
         // Sometimes (e.g: always with the default exception manager) the native module exceptions
@@ -295,9 +317,9 @@ internal class ReactInstance(
           override fun loadScriptFromFile(
               fileName: String,
               sourceURL: String,
-              loadSynchronously: Boolean
+              loadSynchronously: Boolean,
           ) {
-            context.setSourceURL(sourceURL)
+            context.sourceURL = sourceURL
             loadJSBundleFromFile(fileName, sourceURL)
           }
 
@@ -308,16 +330,17 @@ internal class ReactInstance(
           override fun loadScriptFromAssets(
               assetManager: AssetManager,
               assetURL: String,
-              loadSynchronously: Boolean
+              loadSynchronously: Boolean,
           ) {
-            context.setSourceURL(assetURL)
+            context.sourceURL = assetURL
             loadJSBundleFromAssets(assetManager, assetURL)
           }
 
           override fun setSourceURLs(deviceURL: String, remoteURL: String) {
-            context.setSourceURL(deviceURL)
+            context.sourceURL = deviceURL
           }
-        })
+        }
+    )
     Systrace.endSection(Systrace.TRACE_TAG_REACT)
   }
 
@@ -329,9 +352,6 @@ internal class ReactInstance(
     return false
   }
 
-  val nativeModules: Collection<NativeModule>
-    get() = turboModuleManager.modules
-
   fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
     val annotation = nativeModuleInterface.getAnnotation(ReactModule::class.java)
     if (annotation != null) {
@@ -340,6 +360,7 @@ internal class ReactInstance(
     return null
   }
 
+  @SuppressLint("KotlinGenericsCast")
   fun <T : NativeModule> getNativeModule(nativeModuleName: String): T? {
     synchronized(turboModuleManager) {
       @Suppress("UNCHECKED_CAST")
@@ -379,7 +400,9 @@ internal class ReactInstance(
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           IllegalViewOperationException(
-              "surfaceView's is NOT equal to View.NO_ID before calling startSurface."))
+              "surfaceView's is NOT equal to View.NO_ID before calling startSurface."
+          ),
+      )
       view.id = View.NO_ID
     }
     if (surface.isRunning) {
@@ -420,7 +443,7 @@ internal class ReactInstance(
       jReactExceptionsManager: ReactJsExceptionHandler,
       jBindingsInstaller: BindingsInstaller?,
       isProfiling: Boolean,
-      reactHostInspectorTarget: ReactHostInspectorTarget?
+      reactHostInspectorTarget: ReactHostInspectorTarget?,
   ): HybridData
 
   private external fun loadJSBundleFromFile(fileName: String, sourceURL: String)
@@ -454,13 +477,11 @@ internal class ReactInstance(
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           ReactNoCrashSoftException(
-              "Native method handleMemoryPressureJs is called earlier than librninstance.so got ready."))
+              "Native method handleMemoryPressureJs is called earlier than librninstance.so got ready."
+          ),
+      )
     }
   }
-
-  val eventDispatcher: EventDispatcher
-    /** @return The [EventDispatcher] used by [FabricUIManager] to emit UI events to JS. */
-    get() = fabricUIManager.eventDispatcher
 
   fun registerSegment(segmentId: Int, path: String) {
     registerSegmentNative(segmentId, path)
@@ -468,7 +489,7 @@ internal class ReactInstance(
 
   private class BridgelessViewManagerResolver(
       private val reactPackages: List<ReactPackage>,
-      private val context: BridgelessReactContext
+      private val context: BridgelessReactContext,
   ) : ViewManagerResolver {
     private val lazyViewManagerMap: MutableMap<String, ViewManager<*, *>> = HashMap()
 
@@ -553,7 +574,8 @@ internal class ReactInstance(
             if (names == null) {
               RNLog.w(
                   context,
-                  "The ReactPackage called: `${reactPackage.javaClass.simpleName}` is returning null for getViewManagerNames(). This is violating the signature of the method. That method should be updated to return an empty collection.")
+                  "The ReactPackage called: `${reactPackage.javaClass.simpleName}` is returning null for getViewManagerNames(). This is violating the signature of the method. That method should be updated to return an empty collection.",
+              )
             } else {
               uniqueNames.addAll(names)
             }
@@ -572,7 +594,7 @@ internal class ReactInstance(
 
     private fun createConstants(
         viewManagers: List<ViewManager<in Nothing, in Nothing>>,
-        customDirectEvents: MutableMap<String, Any>?
+        customDirectEvents: MutableMap<String, Any>?,
     ): MutableMap<String, Any> {
       ReactMarker.logMarker(ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START)
       SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "CreateUIManagerConstants")
@@ -580,7 +602,10 @@ internal class ReactInstance(
           .flush()
       try {
         return UIManagerModuleConstantsHelper.createConstants(
-            viewManagers, null, customDirectEvents)
+            viewManagers,
+            null,
+            customDirectEvents,
+        )
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT)
         ReactMarker.logMarker(ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END)
@@ -589,23 +614,28 @@ internal class ReactInstance(
 
     private fun getConstantsForViewManager(
         viewManager: ViewManager<*, *>,
-        customDirectEvents: MutableMap<String, Any>
+        customDirectEvents: MutableMap<String, Any>,
     ): NativeMap {
       SystraceMessage.beginSection(
-              Systrace.TRACE_TAG_REACT, "ReactInstance.getConstantsForViewManager")
+              Systrace.TRACE_TAG_REACT,
+              "ReactInstance.getConstantsForViewManager",
+          )
           .arg("ViewManager", viewManager.name)
           .arg("Lazy", true)
           .flush()
       try {
         val viewManagerConstants: Map<String, Any> =
             UIManagerModuleConstantsHelper.createConstantsForViewManager(
-                viewManager, null, null, null, customDirectEvents)
+                viewManager,
+                null,
+                null,
+                null,
+                customDirectEvents,
+            )
         return Arguments.makeNativeMap(viewManagerConstants)
       } finally {
         SystraceMessage.endSection(Systrace.TRACE_TAG_REACT).flush()
       }
     }
-
-    @JvmStatic @DoNotStrip private external fun createJSTimerExecutor(): JSTimerExecutor
   }
 }

@@ -19,7 +19,7 @@ import okio.Sink
 
 internal class ProgressRequestBody(
     private val requestBody: RequestBody,
-    private val progressListener: ProgressListener
+    private val progressListener: ProgressListener,
 ) : RequestBody() {
   private var contentLength = 0L
 
@@ -75,6 +75,12 @@ internal class ProgressRequestBody(
             val contentLength = contentLength()
             progressListener.onProgress(bytesWritten, contentLength, bytesWritten == contentLength)
           }
-        })
+        }
+    )
+  }
+
+  fun getBodyPreview(): String {
+    // TODO: Safely implement request body previews
+    return "[Preview unavailable]"
   }
 }

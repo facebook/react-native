@@ -7,6 +7,7 @@
 
 #include "FabricUIManagerBinding.h"
 
+#include "AndroidAnimationChoreographer.h"
 #include "AndroidEventBeat.h"
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
@@ -24,11 +25,13 @@
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/imagemanager/ImageFetcher.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
+#include <string_view>
 
 namespace facebook::react {
 
@@ -50,6 +53,10 @@ void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
 
 void FabricUIManagerBinding::driveCxxAnimations() {
   getScheduler()->animationTick();
+}
+
+void FabricUIManagerBinding::driveAnimationBackend(jdouble frameTimeMs) {
+  animationChoreographer_->onAnimationFrame(AnimationTimestamp{frameTimeMs});
 }
 
 void FabricUIManagerBinding::drainPreallocateViewsQueue() {
@@ -166,33 +173,38 @@ void FabricUIManagerBinding::startSurface(
     return;
   }
 
+  SurfaceHandler* surfaceHandler = nullptr;
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    auto [it, _] = surfaceHandlerRegistry_.try_emplace(
+        surfaceId,
+        std::in_place_index<0>,
+        moduleName->toStdString(),
+        surfaceId);
+    surfaceHandler = &std::get<SurfaceHandler>(it->second);
+  }
+
+  surfaceHandler->setContextContainer(scheduler->getContextContainer());
+  if (initialProps != nullptr) {
+    surfaceHandler->setProps(initialProps->consume());
+  }
+
   auto layoutContext = LayoutContext{};
   layoutContext.pointScaleFactor = pointScaleFactor_;
+  surfaceHandler->constraintLayout({}, layoutContext);
 
-  auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
-  surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler.setProps(initialProps->consume());
-  }
-  surfaceHandler.constraintLayout({}, layoutContext);
-
-  scheduler->registerSurface(surfaceHandler);
+  scheduler->registerSurface(*surfaceHandler);
 
   auto mountingManager = getMountingManager("startSurface");
   if (mountingManager != nullptr) {
     mountingManager->onSurfaceStart(surfaceId);
   }
 
-  surfaceHandler.start();
+  surfaceHandler->start();
 
   if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
-    surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+    surfaceHandler->getMountingCoordinator()->setMountingOverrideDelegate(
         animationDriver_);
-  }
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
 
@@ -320,14 +332,16 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
     return;
   }
 
-  auto minimumSize =
-      Size{minWidth / pointScaleFactor_, minHeight / pointScaleFactor_};
-  auto maximumSize =
-      Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
+  auto minimumSize = Size{
+      .width = minWidth / pointScaleFactor_,
+      .height = minHeight / pointScaleFactor_};
+  auto maximumSize = Size{
+      .width = maxWidth / pointScaleFactor_,
+      .height = maxHeight / pointScaleFactor_};
 
   LayoutContext context;
   context.viewportOffset =
-      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
+      Point{.x = offsetX / pointScaleFactor_, .y = offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL != 0;
   LayoutConstraints constraints = {};
@@ -336,30 +350,35 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
   constraints.layoutDirection =
       isRTL != 0 ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
-  auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
-  surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler.setProps(initialProps->consume());
+  SurfaceHandler* surfaceHandler = nullptr;
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    auto [it, _] = surfaceHandlerRegistry_.try_emplace(
+        surfaceId,
+        std::in_place_index<0>,
+        moduleName->toStdString(),
+        surfaceId);
+    surfaceHandler = &std::get<SurfaceHandler>(it->second);
   }
-  surfaceHandler.constraintLayout(constraints, context);
 
-  scheduler->registerSurface(surfaceHandler);
+  surfaceHandler->setContextContainer(scheduler->getContextContainer());
+  if (initialProps != nullptr) {
+    surfaceHandler->setProps(initialProps->consume());
+  }
+  surfaceHandler->constraintLayout(constraints, context);
+
+  scheduler->registerSurface(*surfaceHandler);
 
   auto mountingManager = getMountingManager("startSurfaceWithConstraints");
   if (mountingManager != nullptr) {
     mountingManager->onSurfaceStart(surfaceId);
   }
 
-  surfaceHandler.start();
+  surfaceHandler->start();
 
   if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
-    surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+    surfaceHandler->getMountingCoordinator()->setMountingOverrideDelegate(
         animationDriver_);
-  }
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
 
@@ -461,21 +480,23 @@ void FabricUIManagerBinding::setConstraints(
     return;
   }
 
-  auto minimumSize =
-      Size{minWidth / pointScaleFactor_, minHeight / pointScaleFactor_};
-  auto maximumSize =
-      Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
+  auto minimumSize = Size{
+      .width = minWidth / pointScaleFactor_,
+      .height = minHeight / pointScaleFactor_};
+  auto maximumSize = Size{
+      .width = maxWidth / pointScaleFactor_,
+      .height = maxHeight / pointScaleFactor_};
 
   LayoutContext context;
   context.viewportOffset =
-      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
+      Point{.x = offsetX / pointScaleFactor_, .y = offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL != 0;
   LayoutConstraints constraints = {};
   constraints.minimumSize = minimumSize;
   constraints.maximumSize = maximumSize;
-  constraints.layoutDirection =
-      isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
+  constraints.layoutDirection = (isRTL != 0u) ? LayoutDirection::RightToLeft
+                                              : LayoutDirection::LeftToRight;
 
   {
     std::shared_lock lock(surfaceHandlerRegistryMutex_);
@@ -516,7 +537,7 @@ void FabricUIManagerBinding::installFabricUIManager(
   mountingManager_ =
       std::make_shared<FabricMountingManager>(globalJavaUiManager);
 
-  ContextContainer::Shared contextContainer =
+  std::shared_ptr<const ContextContainer> contextContainer =
       std::make_shared<ContextContainer>();
 
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
@@ -529,7 +550,7 @@ void FabricUIManagerBinding::installFabricUIManager(
           runtimeScheduler->scheduleWork(std::move(callback));
         };
     contextContainer->insert(
-        "RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
+        RuntimeSchedulerKey, std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
   }
 
   EventBeat::Factory eventBeatFactory =
@@ -555,6 +576,11 @@ void FabricUIManagerBinding::installFabricUIManager(
   toolbox.runtimeExecutor = runtimeExecutor;
 
   toolbox.eventBeatFactory = eventBeatFactory;
+
+  react_native_assert(
+      animationChoreographer_ != nullptr &&
+      "AnimationChoreographer is nullptr");
+  toolbox.animationChoreographer = animationChoreographer_;
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
@@ -626,6 +652,19 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
   if (!mountingManager) {
     return;
   }
+
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    auto weakImageFetcher =
+        scheduler_->getContextContainer()->find<std::weak_ptr<ImageFetcher>>(
+            ImageFetcherKey);
+    auto imageFetcher = weakImageFetcher.has_value()
+        ? weakImageFetcher.value().lock()
+        : nullptr;
+    if (imageFetcher != nullptr) {
+      imageFetcher->flushImageRequests();
+    }
+  }
+
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
     auto mountingTransaction = mountingCoordinator->pullTransaction(
         /* willPerformAsynchronously = */ true);
@@ -658,6 +697,17 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
 
 void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {
+  using namespace std::literals::string_view_literals;
+
+  if (ReactNativeFeatureFlags::disableViewPreallocationAndroid()) {
+    return;
+  }
+
+  if (ReactNativeFeatureFlags::disableImageViewPreallocationAndroid() &&
+      std::string_view(shadowNode.getComponentName()) == "Image"sv) {
+    return;
+  }
+
   auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;
@@ -758,6 +808,9 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "driveCxxAnimations", FabricUIManagerBinding::driveCxxAnimations),
       makeNativeMethod(
+          "driveAnimationBackend",
+          FabricUIManagerBinding::driveAnimationBackend),
+      makeNativeMethod(
           "drainPreallocateViewsQueue",
           FabricUIManagerBinding::drainPreallocateViewsQueue),
       makeNativeMethod("reportMount", FabricUIManagerBinding::reportMount),
@@ -776,7 +829,17 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "getRelativeAncestorList",
           FabricUIManagerBinding::getRelativeAncestorList),
+      makeNativeMethod(
+          "setAnimationBackendChoreographer",
+          FabricUIManagerBinding::setAnimationBackendChoreographer),
   });
+}
+
+void FabricUIManagerBinding::setAnimationBackendChoreographer(
+    jni::alias_ref<JAnimationBackendChoreographer::javaobject>
+        animationBackendChoreographer) {
+  animationChoreographer_ = std::make_shared<AndroidAnimationChoreographer>(
+      animationBackendChoreographer);
 }
 
 } // namespace facebook::react

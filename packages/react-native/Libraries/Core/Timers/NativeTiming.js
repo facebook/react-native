@@ -6,6 +6,7 @@
  *
  * @flow strict
  * @format
+ * @deprecated
  */
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeTiming';

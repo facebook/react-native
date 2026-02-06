@@ -7,6 +7,8 @@
 
 #import "RCTWrapperViewControllerHostingView.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/UIView+React.h>
 
 #pragma mark - UIViewController+Children
@@ -131,3 +133,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

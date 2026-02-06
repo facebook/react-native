@@ -14,12 +14,10 @@ import {schemaDiffExporter} from '../DiffResults.js';
 import {
   addedEnumMessage,
   addedPropertiesMessage,
-  addedUnionMessage,
   buildSchemaDiff,
   hasUpdatesTypes,
   removedEnumMessage,
   removedPropertiesMessage,
-  removedUnionMessage,
   summarizeDiffSet,
   tooOptionalPropertiesMessage,
   typeNullableChangeMessage,
@@ -296,13 +294,24 @@ describe('buildSchemaDiff', () => {
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.objectContaining({
-                  '0': expect.objectContaining({
+                incompatibleChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    errorCode: 'removedProps',
                     errorInformation: expect.objectContaining({
-                      message: removedPropertiesMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              previousError: expect.objectContaining({
+                                message: removedPropertiesMessage,
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
-                }),
+                ]),
               }),
             }),
           ]),
@@ -324,13 +333,24 @@ describe('buildSchemaDiff', () => {
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.objectContaining({
-                  '0': expect.objectContaining({
+                incompatibleChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    errorCode: 'optionalProps',
                     errorInformation: expect.objectContaining({
-                      message: tooOptionalPropertiesMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              previousError: expect.objectContaining({
+                                message: tooOptionalPropertiesMessage,
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
-                }),
+                ]),
               }),
             }),
           ]),
@@ -355,13 +375,24 @@ describe('buildSchemaDiff', () => {
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.objectContaining({
-                  '0': expect.objectContaining({
+                incompatibleChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    errorCode: 'nullableOfNonNull',
                     errorInformation: expect.objectContaining({
-                      message: typeNullableChangeMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              previousError: expect.objectContaining({
+                                message: typeNullableChangeMessage,
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
-                }),
+                ]),
               }),
             }),
           ]),
@@ -383,13 +414,24 @@ describe('buildSchemaDiff', () => {
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.objectContaining({
-                  '0': expect.objectContaining({
+                incompatibleChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    errorCode: 'optionalProps',
                     errorInformation: expect.objectContaining({
-                      message: tooOptionalPropertiesMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              previousError: expect.objectContaining({
+                                message: tooOptionalPropertiesMessage,
+                              }),
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
-                }),
+                ]),
               }),
             }),
           ]),
@@ -449,9 +491,19 @@ describe('buildSchemaDiff', () => {
                   changeInformation: expect.objectContaining({
                     incompatibleChanges: expect.arrayContaining([
                       expect.objectContaining({
-                        errorCode: 'addedEnumCases',
+                        errorCode: 'addedMemberCases',
                         errorInformation: expect.objectContaining({
-                          message: addedEnumMessage,
+                          mismatchedProperties: expect.arrayContaining([
+                            expect.objectContaining({
+                              fault: expect.objectContaining({
+                                previousError: expect.objectContaining({
+                                  previousError: expect.objectContaining({
+                                    message: addedEnumMessage,
+                                  }),
+                                }),
+                              }),
+                            }),
+                          ]),
                         }),
                       }),
                     ]),
@@ -577,9 +629,25 @@ describe('buildSchemaDiff', () => {
                   changeInformation: expect.objectContaining({
                     incompatibleChanges: expect.arrayContaining([
                       expect.objectContaining({
-                        errorCode: 'removedEnumCases',
+                        errorCode: 'removedMemberCases',
                         errorInformation: expect.objectContaining({
-                          message: removedEnumMessage,
+                          mismatchedProperties: expect.arrayContaining([
+                            expect.objectContaining({
+                              fault: expect.objectContaining({
+                                previousError: expect.objectContaining({
+                                  mismatchedProperties: expect.arrayContaining([
+                                    expect.objectContaining({
+                                      fault: expect.objectContaining({
+                                        previousError: expect.objectContaining({
+                                          message: removedEnumMessage,
+                                        }),
+                                      }),
+                                    }),
+                                  ]),
+                                }),
+                              }),
+                            }),
+                          ]),
                         }),
                       }),
                     ]),
@@ -887,14 +955,44 @@ describe('buildSchemaDiff', () => {
     ).toEqual(
       expect.objectContaining({
         framework: 'ReactNative',
+        name: 'NativeModule',
         status: expect.objectContaining({
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.arrayContaining([
+                objectTypeChanges: expect.arrayContaining([
                   expect.objectContaining({
-                    errorInformation: expect.objectContaining({
-                      message: addedUnionMessage,
+                    propertyChange: expect.objectContaining({
+                      nestedPropertyChanges: expect.arrayContaining([
+                        [
+                          'exampleFunction',
+                          expect.objectContaining({
+                            status: 'functionChange',
+                            functionChangeLog: expect.objectContaining({
+                              parameterTypes: expect.objectContaining({
+                                nestedChanges: expect.arrayContaining([
+                                  [
+                                    0,
+                                    0,
+                                    expect.objectContaining({
+                                      status: 'members',
+                                      memberLog: expect.objectContaining({
+                                        memberKind: 'union',
+                                        addedMembers: expect.arrayContaining([
+                                          expect.objectContaining({
+                                            type: 'StringLiteralTypeAnnotation',
+                                            value: 'd',
+                                          }),
+                                        ]),
+                                      }),
+                                    }),
+                                  ],
+                                ]),
+                              }),
+                            }),
+                          }),
+                        ],
+                      ]),
                     }),
                   }),
                 ]),
@@ -912,18 +1010,48 @@ describe('buildSchemaDiff', () => {
       ),
     ).toEqual(
       expect.objectContaining({
+        framework: 'ReactNative',
+        name: 'NativeModule',
         status: expect.objectContaining({
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                newTypes: expect.not.arrayContaining([expect.anything()]),
-                deprecatedTypes: expect.not.arrayContaining([
-                  expect.anything(),
+                objectTypeChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    propertyChange: expect.objectContaining({
+                      nestedPropertyChanges: expect.arrayContaining([
+                        [
+                          'exampleFunction',
+                          expect.objectContaining({
+                            status: 'functionChange',
+                            functionChangeLog: expect.objectContaining({
+                              parameterTypes: expect.objectContaining({
+                                nestedChanges: expect.arrayContaining([
+                                  [
+                                    0,
+                                    0,
+                                    expect.objectContaining({
+                                      status: 'members',
+                                      memberLog: expect.objectContaining({
+                                        memberKind: 'union',
+                                        missingMembers: expect.arrayContaining([
+                                          expect.objectContaining({
+                                            type: 'StringLiteralTypeAnnotation',
+                                            value: 'd',
+                                          }),
+                                        ]),
+                                      }),
+                                    }),
+                                  ],
+                                ]),
+                              }),
+                            }),
+                          }),
+                        ],
+                      ]),
+                    }),
+                  }),
                 ]),
-                incompatibleChanges: expect.not.arrayContaining([
-                  expect.anything(),
-                ]),
-                objectTypeChanges: expect.any(Object),
               }),
             }),
           ]),
@@ -943,18 +1071,53 @@ describe('buildSchemaDiff', () => {
       ),
     ).toEqual(
       expect.objectContaining({
+        framework: 'ReactNative',
+        name: 'NativeModule',
         status: expect.objectContaining({
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                newTypes: expect.not.arrayContaining([expect.anything()]),
-                deprecatedTypes: expect.not.arrayContaining([
-                  expect.anything(),
+                objectTypeChanges: expect.arrayContaining([
+                  expect.objectContaining({
+                    propertyChange: expect.objectContaining({
+                      nestedPropertyChanges: expect.arrayContaining([
+                        [
+                          'getConstants',
+                          expect.objectContaining({
+                            status: 'functionChange',
+                            functionChangeLog: expect.objectContaining({
+                              returnType: expect.objectContaining({
+                                status: 'properties',
+                                propertyLog: expect.objectContaining({
+                                  nestedPropertyChanges: expect.arrayContaining(
+                                    [
+                                      [
+                                        'exampleConstant',
+                                        expect.objectContaining({
+                                          status: 'members',
+                                          memberLog: expect.objectContaining({
+                                            memberKind: 'union',
+                                            addedMembers:
+                                              expect.arrayContaining([
+                                                expect.objectContaining({
+                                                  type: 'StringLiteralTypeAnnotation',
+                                                  value: 'd',
+                                                }),
+                                              ]),
+                                          }),
+                                        }),
+                                      ],
+                                    ],
+                                  ),
+                                }),
+                              }),
+                            }),
+                          }),
+                        ],
+                      ]),
+                    }),
+                  }),
                 ]),
-                incompatibleChanges: expect.not.arrayContaining([
-                  expect.anything(),
-                ]),
-                objectTypeChanges: expect.any(Object),
               }),
             }),
           ]),
@@ -975,14 +1138,49 @@ describe('buildSchemaDiff', () => {
     ).toEqual(
       expect.objectContaining({
         framework: 'ReactNative',
+        name: 'NativeModule',
         status: expect.objectContaining({
           incompatibleSpecs: expect.arrayContaining([
             expect.objectContaining({
               changeInformation: expect.objectContaining({
-                incompatibleChanges: expect.arrayContaining([
+                objectTypeChanges: expect.arrayContaining([
                   expect.objectContaining({
-                    errorInformation: expect.objectContaining({
-                      message: removedUnionMessage,
+                    propertyChange: expect.objectContaining({
+                      nestedPropertyChanges: expect.arrayContaining([
+                        [
+                          'getConstants',
+                          expect.objectContaining({
+                            status: 'functionChange',
+                            functionChangeLog: expect.objectContaining({
+                              returnType: expect.objectContaining({
+                                status: 'properties',
+                                propertyLog: expect.objectContaining({
+                                  nestedPropertyChanges: expect.arrayContaining(
+                                    [
+                                      [
+                                        'exampleConstant',
+                                        expect.objectContaining({
+                                          status: 'members',
+                                          memberLog: expect.objectContaining({
+                                            memberKind: 'union',
+                                            missingMembers:
+                                              expect.arrayContaining([
+                                                expect.objectContaining({
+                                                  type: 'StringLiteralTypeAnnotation',
+                                                  value: 'd',
+                                                }),
+                                              ]),
+                                          }),
+                                        }),
+                                      ],
+                                    ],
+                                  ),
+                                }),
+                              }),
+                            }),
+                          }),
+                        ],
+                      ]),
                     }),
                   }),
                 ]),
@@ -1330,17 +1528,34 @@ describe('buildSchemaDiff', () => {
         ).toEqual(
           expect.objectContaining({
             framework: 'ReactNative',
+            name: 'NativeComponent',
             status: expect.objectContaining({
               incompatibleSpecs: expect.arrayContaining([
                 expect.objectContaining({
                   changeInformation: expect.objectContaining({
-                    incompatibleChanges: expect.objectContaining({
-                      '0': expect.objectContaining({
-                        errorInformation: expect.objectContaining({
-                          message: addedUnionMessage,
+                    objectTypeChanges: expect.arrayContaining([
+                      expect.objectContaining({
+                        propertyChange: expect.objectContaining({
+                          nestedPropertyChanges: expect.arrayContaining([
+                            [
+                              'size',
+                              expect.objectContaining({
+                                status: 'members',
+                                memberLog: expect.objectContaining({
+                                  memberKind: 'union',
+                                  addedMembers: expect.arrayContaining([
+                                    expect.objectContaining({
+                                      type: 'StringLiteralTypeAnnotation',
+                                      value: 'huge',
+                                    }),
+                                  ]),
+                                }),
+                              }),
+                            ],
+                          ]),
                         }),
                       }),
-                    }),
+                    ]),
                   }),
                 }),
               ]),
@@ -1373,17 +1588,34 @@ describe('buildSchemaDiff', () => {
         ).toEqual(
           expect.objectContaining({
             framework: 'ReactNative',
+            name: 'NativeComponent',
             status: expect.objectContaining({
               incompatibleSpecs: expect.arrayContaining([
                 expect.objectContaining({
                   changeInformation: expect.objectContaining({
-                    incompatibleChanges: expect.objectContaining({
-                      '0': expect.objectContaining({
-                        errorInformation: expect.objectContaining({
-                          message: addedUnionMessage,
+                    objectTypeChanges: expect.arrayContaining([
+                      expect.objectContaining({
+                        propertyChange: expect.objectContaining({
+                          nestedPropertyChanges: expect.arrayContaining([
+                            [
+                              'sizes',
+                              expect.objectContaining({
+                                status: 'members',
+                                memberLog: expect.objectContaining({
+                                  memberKind: 'union',
+                                  addedMembers: expect.arrayContaining([
+                                    expect.objectContaining({
+                                      type: 'StringLiteralTypeAnnotation',
+                                      value: 'huge',
+                                    }),
+                                  ]),
+                                }),
+                              }),
+                            ],
+                          ]),
                         }),
                       }),
-                    }),
+                    ]),
                   }),
                 }),
               ]),
@@ -1451,8 +1683,17 @@ describe('RN NativeModule getConstants type diffing', () => {
               changeInformation: expect.objectContaining({
                 incompatibleChanges: expect.arrayContaining([
                   expect.objectContaining({
+                    errorCode: 'addedProps',
                     errorInformation: expect.objectContaining({
-                      message: addedPropertiesMessage,
+                      mismatchedProperties: expect.arrayContaining([
+                        expect.objectContaining({
+                          fault: expect.objectContaining({
+                            previousError: expect.objectContaining({
+                              message: addedPropertiesMessage,
+                            }),
+                          }),
+                        }),
+                      ]),
                     }),
                   }),
                 ]),

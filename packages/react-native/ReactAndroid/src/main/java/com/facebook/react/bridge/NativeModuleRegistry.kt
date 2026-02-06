@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.bridge
 
 import com.facebook.react.bridge.ReactMarker.logMarker
@@ -19,9 +21,13 @@ import com.facebook.systrace.Systrace.endSection
 
 /** A set of Java APIs to expose to a particular JavaScript instance. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 public class NativeModuleRegistry(
     private val reactApplicationContext: ReactApplicationContext,
-    private val modules: MutableMap<String, ModuleHolder>
+    private val modules: MutableMap<String, ModuleHolder>,
 ) {
   /** Private getters for combining NativeModuleRegistry's */
   private val moduleMap: Map<String, ModuleHolder>
@@ -30,27 +36,14 @@ public class NativeModuleRegistry(
   @JvmName("getJavaModules") // This is needed because this method is accessed by JNI
   internal fun getJavaModules(jsInstance: JSInstance): List<JavaModuleWrapper> = buildList {
     for ((_, value) in modules) {
-      if (!value.isCxxModule) {
-        add(JavaModuleWrapper(jsInstance, value))
-      }
+      add(JavaModuleWrapper(jsInstance, value))
     }
   }
 
-  @get:JvmName(
-      "getCxxModules") // This is needed till there are Java Consumer of this API inside React
-  // Native
-  internal val cxxModules: List<ModuleHolder>
-    get() = buildList {
-      for ((_, value) in modules) {
-        if (value.isCxxModule) {
-          add(value)
-        }
-      }
-    }
-
   /** Adds any new modules to the current module registry */
   @JvmName(
-      "registerModules") // This is needed till there are Java Consumer of this API inside React
+      "registerModules"
+  ) // This is needed till there are Java Consumer of this API inside React
   // Native
   internal fun registerModules(newRegister: NativeModuleRegistry) {
     check(reactApplicationContext == newRegister.reactApplicationContext) {
@@ -67,7 +60,8 @@ public class NativeModuleRegistry(
   }
 
   @JvmName(
-      "notifyJSInstanceDestroy") // This is needed till there are Java Consumer of this API inside
+      "notifyJSInstanceDestroy"
+  ) // This is needed till there are Java Consumer of this API inside
   // React Native
   internal fun notifyJSInstanceDestroy() {
     reactApplicationContext.assertOnNativeModulesQueueThread()
@@ -86,7 +80,8 @@ public class NativeModuleRegistry(
   internal fun notifyJSInstanceInitialized() {
     reactApplicationContext.assertOnNativeModulesQueueThread(
         "From version React Native v0.44, " +
-            "native modules are explicitly not initialized on the UI thread.")
+            "native modules are explicitly not initialized on the UI thread."
+    )
     logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_START)
     beginSection(Systrace.TRACE_TAG_REACT, "NativeModuleRegistry_notifyJSInstanceInitialized")
     try {
@@ -96,21 +91,6 @@ public class NativeModuleRegistry(
     } finally {
       endSection(Systrace.TRACE_TAG_REACT)
       logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_END)
-    }
-  }
-
-  public fun onBatchComplete() {
-    // The only native module that uses the onBatchComplete is the UI Manager. Hence, instead of
-    // iterating over all the modules for find this one instance, and then calling it, we
-    // short-circuit
-    // the search, and simply call OnBatchComplete on the UI Manager.
-    // With Fabric, UIManager would no longer be a NativeModule, so this call would simply go away
-    assertLegacyArchitecture(
-        "NativeModuleRegistry.onBatchComplete()", LegacyArchitectureLogLevel.WARNING)
-    modules["UIManager"]?.let {
-      if (it.hasInstance()) {
-        (it.module as OnBatchCompleteListener).onBatchComplete()
-      }
     }
   }
 
@@ -150,7 +130,9 @@ public class NativeModuleRegistry(
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "NativeModuleRegistry", logLevel = LegacyArchitectureLogLevel.ERROR)
+          "NativeModuleRegistry",
+          logLevel = LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

@@ -33,7 +33,7 @@ function findCommunityCli(startDir /*: string */ = process.cwd()) {
   // With isolated node_modules (eg pnpm), we won't be able to find
   // `@react-native-community/cli` starting from the `react-native` directory.
   // Instead, we should use the project root, which we assume to be the cwd.
-  const options = {paths: [startDir]};
+  const options /*: {paths?: Array<string>, ...} */ = {paths: [startDir]};
   const rncli = require.resolve('@react-native-community/cli', options);
   // $FlowFixMe[unsupported-syntax]
   return require(rncli);

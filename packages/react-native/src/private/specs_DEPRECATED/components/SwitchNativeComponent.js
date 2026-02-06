@@ -21,12 +21,12 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type NativeSwitchChangeEvent = $ReadOnly<{
+type NativeSwitchChangeEvent = Readonly<{
   value: boolean,
   target: Int32,
 }>;
 
-type SwitchNativeProps = $ReadOnly<{
+type SwitchNativeProps = Readonly<{
   ...ViewProps,
 
   // Props
@@ -58,4 +58,5 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 export default (codegenNativeComponent<SwitchNativeProps>('Switch', {
   paperComponentName: 'RCTSwitch',
   excludedPlatforms: ['android'],
+  interfaceOnly: true,
 }): ComponentType);

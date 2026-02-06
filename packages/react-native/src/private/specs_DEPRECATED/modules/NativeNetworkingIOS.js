@@ -23,6 +23,7 @@ export interface Spec extends TurboModule {
       incrementalUpdates: boolean,
       timeout: number,
       withCredentials: boolean,
+      +unstable_devToolsRequestId?: string,
     },
     callback: (requestId: number) => void,
   ) => void;

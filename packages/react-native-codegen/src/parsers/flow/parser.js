@@ -18,10 +18,10 @@ import type {
   NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
+  NativeModuleUnionTypeAnnotationMemberType,
   Nullable,
   PropTypeAnnotation,
   SchemaType,
-  UnionTypeAnnotationMemberType,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {
@@ -111,7 +111,7 @@ class FlowParser implements Parser {
 
   remapUnionTypeAnnotationMemberNames(
     membersTypes: $FlowFixMe[],
-  ): UnionTypeAnnotationMemberType[] {
+  ): NativeModuleUnionTypeAnnotationMemberType[] {
     const remapLiteral = (item: $FlowFixMe) => {
       return item.type
         .replace('NumberLiteralTypeAnnotation', 'NumberTypeAnnotation')
@@ -119,12 +119,6 @@ class FlowParser implements Parser {
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];
-  }
-
-  getStringLiteralUnionTypeAnnotationStringLiterals(
-    membersTypes: $FlowFixMe[],
-  ): string[] {
-    return membersTypes.map((item: $FlowFixMe) => item.value);
   }
 
   parseFile(filename: string): SchemaType {
@@ -158,7 +152,7 @@ class FlowParser implements Parser {
 
   getFunctionTypeAnnotationParameters(
     functionTypeAnnotation: $FlowFixMe,
-  ): $ReadOnlyArray<$FlowFixMe> {
+  ): ReadonlyArray<$FlowFixMe> {
     return functionTypeAnnotation.params;
   }
 
@@ -187,8 +181,8 @@ class FlowParser implements Parser {
       typeAnnotation.type === 'EnumStringBody'
         ? 'StringTypeAnnotation'
         : typeAnnotation.type === 'EnumNumberBody'
-        ? 'NumberTypeAnnotation'
-        : null;
+          ? 'NumberTypeAnnotation'
+          : null;
     if (!enumMembersType) {
       throw new Error(
         `Unknown enum type annotation type. Got: ${typeAnnotation.type}. Expected: EnumStringBody or EnumNumberBody.`,
@@ -233,7 +227,7 @@ class FlowParser implements Parser {
 
   parseEnumMembers(
     typeAnnotation: $FlowFixMe,
-  ): $ReadOnlyArray<NativeModuleEnumMember> {
+  ): ReadonlyArray<NativeModuleEnumMember> {
     return typeAnnotation.members.map(member => {
       const value =
         typeof member.init?.value === 'number'
@@ -242,14 +236,14 @@ class FlowParser implements Parser {
               value: member.init.value,
             }
           : typeof member.init?.value === 'string'
-          ? {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.init.value,
-            }
-          : {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.id.name,
-            };
+            ? {
+                type: 'StringLiteralTypeAnnotation',
+                value: member.init.value,
+              }
+            : {
+                type: 'StringLiteralTypeAnnotation',
+                value: member.id.name,
+              };
 
       return {
         name: member.id.name,
@@ -377,7 +371,7 @@ class FlowParser implements Parser {
     return annotatedElement.right.properties;
   }
 
-  bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe> {
+  bodyProperties(typeAlias: $FlowFixMe): ReadonlyArray<$FlowFixMe> {
     return typeAlias.body.properties;
   }
 
@@ -495,9 +489,9 @@ class FlowParser implements Parser {
   }
 
   removeKnownExtends(
-    typeDefinition: $ReadOnlyArray<PropAST>,
+    typeDefinition: ReadonlyArray<PropAST>,
     types: TypeDeclarationMap,
-  ): $ReadOnlyArray<PropAST> {
+  ): ReadonlyArray<PropAST> {
     return typeDefinition.filter(
       prop =>
         prop.type !== 'ObjectTypeSpreadProperty' ||
@@ -506,9 +500,9 @@ class FlowParser implements Parser {
   }
 
   getExtendsProps(
-    typeDefinition: $ReadOnlyArray<PropAST>,
+    typeDefinition: ReadonlyArray<PropAST>,
     types: TypeDeclarationMap,
-  ): $ReadOnlyArray<ExtendsPropsShape> {
+  ): ReadonlyArray<ExtendsPropsShape> {
     return typeDefinition
       .filter(prop => prop.type === 'ObjectTypeSpreadProperty')
       .map(prop => this.extendsForProp(prop, types, this))
@@ -516,11 +510,11 @@ class FlowParser implements Parser {
   }
 
   getProps(
-    typeDefinition: $ReadOnlyArray<PropAST>,
+    typeDefinition: ReadonlyArray<PropAST>,
     types: TypeDeclarationMap,
   ): {
-    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
-    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+    props: ReadonlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: ReadonlyArray<ExtendsPropsShape>,
   } {
     const nonExtendsProps = this.removeKnownExtends(typeDefinition, types);
     const props = flattenProperties(nonExtendsProps, types, this)

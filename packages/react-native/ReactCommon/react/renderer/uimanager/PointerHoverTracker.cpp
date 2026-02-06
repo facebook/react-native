@@ -93,7 +93,7 @@ std::tuple<EventPath, EventPath> PointerHoverTracker::diffEventPath(
   for (auto nodeIt = myIt; nodeIt != myEventPath.rend(); nodeIt++) {
     const auto& latestNode = getLatestNode(*nodeIt, uiManager);
     if (latestNode != nullptr) {
-      removed.push_back(*latestNode);
+      removed.emplace_back(*latestNode);
     }
   }
 
@@ -101,7 +101,7 @@ std::tuple<EventPath, EventPath> PointerHoverTracker::diffEventPath(
   for (auto nodeIt = otherIt; nodeIt != otherEventPath.rend(); nodeIt++) {
     const auto& latestNode = other.getLatestNode(*nodeIt, uiManager);
     if (latestNode != nullptr) {
-      added.push_back(*latestNode);
+      added.emplace_back(*latestNode);
     }
   }
 

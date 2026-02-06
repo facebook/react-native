@@ -8,9 +8,10 @@
 #pragma once
 
 #include <memory>
-#include <mutex>
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/performance/cdpmetrics/CdpMetricsReporter.h>
+#include <react/performance/cdpmetrics/CdpPerfIssuesReporter.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -36,29 +37,25 @@ namespace facebook::react {
 class Scheduler final : public UIManagerDelegate {
  public:
   Scheduler(
-      const SchedulerToolbox& schedulerToolbox,
-      UIManagerAnimationDelegate* animationDelegate,
-      SchedulerDelegate* delegate);
+      const SchedulerToolbox &schedulerToolbox,
+      UIManagerAnimationDelegate *animationDelegate,
+      SchedulerDelegate *delegate);
   ~Scheduler() override;
 
 #pragma mark - Surface Management
 
   /*
    * Registers and unregisters a `SurfaceHandler` object in the `Scheduler`.
-   * All registered `SurfaceHandler` objects must be unregistered
-   * (with the same `Scheduler`) before their deallocation.
    */
-  void registerSurface(const SurfaceHandler& surfaceHandler) const noexcept;
-  void unregisterSurface(const SurfaceHandler& surfaceHandler) const noexcept;
+  void registerSurface(const SurfaceHandler &surfaceHandler) const noexcept;
+  void unregisterSurface(const SurfaceHandler &surfaceHandler) const noexcept;
 
   /*
    * This is broken. Please do not use.
    * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
    * there is no any guarantees about their lifetime.
    */
-  const ComponentDescriptor*
-  findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
-      ComponentHandle handle) const;
+  const ComponentDescriptor *findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(ComponentHandle handle) const;
 
 #pragma mark - Delegate
 
@@ -67,8 +64,8 @@ class Scheduler final : public UIManagerDelegate {
    * If you requesting a ComponentDescriptor and unsure that it's there, you are
    * doing something wrong.
    */
-  void setDelegate(SchedulerDelegate* delegate);
-  SchedulerDelegate* getDelegate() const;
+  void setDelegate(SchedulerDelegate *delegate);
+  SchedulerDelegate *getDelegate() const;
 
 #pragma mark - UIManagerAnimationDelegate
   // This is not needed on iOS or any platform that has a "pull" instead of
@@ -82,31 +79,26 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidFinishTransaction(
       std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) override;
-  void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) override;
+  void uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) override;
   void uiManagerDidDispatchCommand(
-      const std::shared_ptr<const ShadowNode>& shadowNode,
-      const std::string& commandName,
-      const folly::dynamic& args) override;
+      const std::shared_ptr<const ShadowNode> &shadowNode,
+      const std::string &commandName,
+      const folly::dynamic &args) override;
   void uiManagerDidSendAccessibilityEvent(
-      const std::shared_ptr<const ShadowNode>& shadowNode,
-      const std::string& eventType) override;
+      const std::shared_ptr<const ShadowNode> &shadowNode,
+      const std::string &eventType) override;
   void uiManagerDidSetIsJSResponder(
-      const std::shared_ptr<const ShadowNode>& shadowNode,
+      const std::shared_ptr<const ShadowNode> &shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) override;
-  void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
-      Tag tag,
-      const folly::dynamic& props) override;
-  void uiManagerDidUpdateShadowTree(
-      const std::unordered_map<Tag, folly::dynamic>& tagToProps) override;
-  void uiManagerShouldAddEventListener(
-      std::shared_ptr<const EventListener> listener) final;
-  void uiManagerShouldRemoveEventListener(
-      const std::shared_ptr<const EventListener>& listener) final;
-  void uiManagerDidStartSurface(const ShadowTree& shadowTree) override;
+  void uiManagerShouldSynchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic &props) override;
+  void uiManagerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override;
+  void uiManagerShouldAddEventListener(std::shared_ptr<const EventListener> listener) final;
+  void uiManagerShouldRemoveEventListener(const std::shared_ptr<const EventListener> &listener) final;
+  void uiManagerDidStartSurface(const ShadowTree &shadowTree) override;
 
 #pragma mark - ContextContainer
-  ContextContainer::Shared getContextContainer() const;
+  std::shared_ptr<const ContextContainer> getContextContainer() const;
 
 #pragma mark - UIManager
   std::shared_ptr<UIManager> getUIManager() const;
@@ -115,17 +107,15 @@ class Scheduler final : public UIManagerDelegate {
 
 #pragma mark - Event listeners
   void addEventListener(std::shared_ptr<const EventListener> listener);
-  void removeEventListener(
-      const std::shared_ptr<const EventListener>& listener);
+  void removeEventListener(const std::shared_ptr<const EventListener> &listener);
 
 #pragma mark - Surface start callback
-  void uiManagerShouldSetOnSurfaceStartCallback(
-      OnSurfaceStartCallback&& callback) override;
+  void uiManagerShouldSetOnSurfaceStartCallback(OnSurfaceStartCallback &&callback) override;
 
  private:
   friend class SurfaceHandler;
 
-  SchedulerDelegate* delegate_;
+  SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
@@ -142,15 +132,17 @@ class Scheduler final : public UIManagerDelegate {
   std::shared_ptr<std::optional<const EventDispatcher>> eventDispatcher_;
 
   std::shared_ptr<PerformanceEntryReporter> performanceEntryReporter_;
+  std::optional<CdpMetricsReporter> cdpMetricsReporter_;
+  std::optional<CdpPerfIssuesReporter> cdpPerfIssuesReporter_;
   std::shared_ptr<EventPerformanceLogger> eventPerformanceLogger_;
 
   /**
    * Hold onto ContextContainer. See SchedulerToolbox.
    * Must not be nullptr.
    */
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 
-  RuntimeScheduler* runtimeScheduler_{nullptr};
+  RuntimeScheduler *runtimeScheduler_{nullptr};
 
   mutable std::shared_mutex onSurfaceStartCallbackMutex_;
   OnSurfaceStartCallback onSurfaceStartCallback_;

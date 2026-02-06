@@ -1,0 +1,59 @@
+// swift-tools-version: 6.1
+// The swift-tools-version declares the minimum version of Swift required to build this package.
+
+import PackageDescription
+
+let package = Package(
+    name: "React-GeneratedCode",
+    platforms: [.iOS(.v15), .macCatalyst(SupportedPlatform.MacCatalystVersion.v13)],
+    products: [
+        // Products define the executables and libraries a package produces, making them visible to other packages.
+        .library(
+            name: "ReactCodegen",
+            targets: ["ReactCodegen"]),
+        .library(
+            name: "ReactAppDependencyProvider",
+            targets: ["ReactAppDependencyProvider"]),
+    ],
+    dependencies: [
+      .package(name: "React", path: "{reactNativePath}")
+    ],
+    targets: [
+        // Targets are the basic building blocks of a package, defining a module or a test suite.
+        // Targets can depend on other targets in this package and products from dependencies.
+        .target(
+            name: "ReactCodegen",
+            dependencies: ["React"],
+            path: "ReactCodegen",
+            exclude: ["ReactCodegen.podspec"],
+            publicHeadersPath: ".",
+            cSettings: [
+              .headerSearchPath("headers")
+            ],
+            cxxSettings: [
+              .headerSearchPath("headers"),
+              .unsafeFlags(["-std=c++20"]),
+            ],
+            linkerSettings: [
+              .linkedFramework("Foundation")
+            ]
+        ),
+        .target(
+          name: "ReactAppDependencyProvider",
+          dependencies: ["ReactCodegen"],
+          path: "ReactAppDependencyProvider",
+          exclude: ["ReactAppDependencyProvider.podspec"],
+          publicHeadersPath: ".",
+          cSettings: [
+            .headerSearchPath("headers"),
+          ],
+          cxxSettings: [
+            .headerSearchPath("headers"),
+            .unsafeFlags(["-std=c++20"]),
+          ],
+          linkerSettings: [
+            .linkedFramework("Foundation")
+          ]
+        )
+    ]
+)

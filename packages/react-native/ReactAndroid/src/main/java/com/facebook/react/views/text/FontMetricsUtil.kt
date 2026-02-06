@@ -34,12 +34,20 @@ internal object FontMetricsUtil {
 
     val capHeightBounds = Rect()
     paintCopy.getTextBounds(
-        CAP_HEIGHT_MEASUREMENT_TEXT, 0, CAP_HEIGHT_MEASUREMENT_TEXT.length, capHeightBounds)
+        CAP_HEIGHT_MEASUREMENT_TEXT,
+        0,
+        CAP_HEIGHT_MEASUREMENT_TEXT.length,
+        capHeightBounds,
+    )
     val capHeight = capHeightBounds.height() / AMPLIFICATION_FACTOR / dm.density
 
     val xHeightBounds = Rect()
     paintCopy.getTextBounds(
-        X_HEIGHT_MEASUREMENT_TEXT, 0, X_HEIGHT_MEASUREMENT_TEXT.length, xHeightBounds)
+        X_HEIGHT_MEASUREMENT_TEXT,
+        0,
+        X_HEIGHT_MEASUREMENT_TEXT.length,
+        xHeightBounds,
+    )
     val xHeight = xHeightBounds.height() / AMPLIFICATION_FACTOR / dm.density
 
     for (i in 0 until layout.lineCount) {

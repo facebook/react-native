@@ -65,7 +65,6 @@ const addLogs = (logs: Array<string>, options: void | {flush: boolean}) => {
       },
       category: message,
       componentStack: [],
-      componentStackType: null,
     });
     if (options == null || options.flush !== false) {
       jest.runOnlyPendingTimers();
@@ -671,7 +670,7 @@ describe('LogBoxData', () => {
     LogBoxData.reportLogBoxError(
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       new Error('Simulated Error'),
       '    in Component (file.js:1)',
     );
@@ -686,7 +685,7 @@ describe('LogBoxData', () => {
   it('reportLogBoxError creates a native redbox without a componentStack', () => {
     /* $FlowFixMe[class-object-subtyping] added when improving typing for this
      * parameters */
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     LogBoxData.reportLogBoxError(new Error('Simulated Error'));
 
     const receivedError = ExceptionsManager.handleException.mock.calls[0][0];
@@ -699,7 +698,7 @@ describe('LogBoxData', () => {
   it('reportLogBoxError creates an error message that is also ignored', () => {
     /* $FlowFixMe[class-object-subtyping] added when improving typing for this
      * parameters */
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     LogBoxData.reportLogBoxError(new Error('Simulated Error'));
 
     const receivedErrorMessage =

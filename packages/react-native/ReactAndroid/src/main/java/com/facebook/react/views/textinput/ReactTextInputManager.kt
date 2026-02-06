@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.textinput
 
 import android.annotation.SuppressLint
@@ -93,7 +95,9 @@ public open class ReactTextInputManager public constructor() :
     // overridden on the first RN commit.
     editText.layoutParams =
         ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+        )
     return editText
   }
 
@@ -116,15 +120,21 @@ public open class ReactTextInputManager public constructor() :
                     "phasedRegistrationNames" to
                         mapOf(
                             "bubbled" to "onSubmitEditing",
-                            "captured" to "onSubmitEditingCapture")),
+                            "captured" to "onSubmitEditingCapture",
+                        )
+                ),
             "topEndEditing" to
                 mapOf(
                     "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onEndEditing", "captured" to "onEndEditingCapture")),
+                        mapOf("bubbled" to "onEndEditing", "captured" to "onEndEditingCapture")
+                ),
             "topKeyPress" to
                 mapOf(
                     "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onKeyPress", "captured" to "onKeyPressCapture"))))
+                        mapOf("bubbled" to "onKeyPress", "captured" to "onKeyPressCapture")
+                ),
+        )
+    )
     return eventTypeConstants
   }
 
@@ -132,7 +142,8 @@ public open class ReactTextInputManager public constructor() :
     val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
     val eventTypeConstants = baseEventTypeConstants ?: mutableMapOf()
     eventTypeConstants.putAll(
-        mapOf(getJSEventName(ScrollEventType.SCROLL) to mapOf("registrationName" to "onScroll")))
+        mapOf(getJSEventName(ScrollEventType.SCROLL) to mapOf("registrationName" to "onScroll"))
+    )
     return eventTypeConstants
   }
 
@@ -152,7 +163,7 @@ public open class ReactTextInputManager public constructor() :
   override fun receiveCommand(
       reactEditText: ReactEditText,
       commandId: String,
-      args: ReadableArray?
+      args: ReadableArray?,
   ) {
     when (commandId) {
       "focus",
@@ -182,7 +193,17 @@ public open class ReactTextInputManager public constructor() :
     val sb = SpannableStringBuilder()
     sb.append(text)
     return ReactTextUpdate(
-        sb, mostRecentEventCount, false, 0f, 0f, 0f, 0f, Gravity.NO_GRAVITY, 0, 0)
+        sb,
+        mostRecentEventCount,
+        false,
+        0f,
+        0f,
+        0f,
+        0f,
+        Gravity.NO_GRAVITY,
+        0,
+        0,
+    )
   }
 
   override fun updateExtraData(view: ReactEditText, extraData: Any) {
@@ -192,15 +213,18 @@ public open class ReactTextInputManager public constructor() :
       val paddingTop = extraData.paddingTop.toInt()
       val paddingRight = extraData.paddingRight.toInt()
       val paddingBottom = extraData.paddingBottom.toInt()
-      if (paddingLeft != UNSET ||
-          paddingTop != UNSET ||
-          paddingRight != UNSET ||
-          paddingBottom != UNSET) {
+      if (
+          paddingLeft != UNSET ||
+              paddingTop != UNSET ||
+              paddingRight != UNSET ||
+              paddingBottom != UNSET
+      ) {
         view.setPadding(
             if (paddingLeft != UNSET) paddingLeft else view.paddingLeft,
             if (paddingTop != UNSET) paddingTop else view.paddingTop,
             if (paddingRight != UNSET) paddingRight else view.paddingRight,
-            if (paddingBottom != UNSET) paddingBottom else view.paddingBottom)
+            if (paddingBottom != UNSET) paddingBottom else view.paddingBottom,
+        )
       }
 
       @Suppress("DEPRECATION")
@@ -482,8 +506,10 @@ public open class ReactTextInputManager public constructor() :
 
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public fun setCaretHidden(view: ReactEditText, caretHidden: Boolean) {
-    if (view.stagedInputType == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS &&
-        shouldHideCursorForEmailTextInput()) {
+    if (
+        view.stagedInputType == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS &&
+            shouldHideCursorForEmailTextInput()
+    ) {
       return
     }
     view.isCursorVisible = !caretHidden
@@ -512,7 +538,9 @@ public open class ReactTextInputManager public constructor() :
             TAG,
             IllegalStateException(
                 "Could not get default text color from View Context: " +
-                    (if (c != null) c.javaClass.canonicalName else "null")))
+                    (if (c != null) c.javaClass.canonicalName else "null")
+            ),
+        )
       }
     } else {
       view.setTextColor(color)
@@ -676,7 +704,8 @@ public open class ReactTextInputManager public constructor() :
               true -> InputType.TYPE_TEXT_FLAG_AUTO_CORRECT
               false -> InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
               else -> 0
-            })
+            },
+    )
   }
 
   @ReactProp(name = "multiline", defaultBoolean = false)
@@ -684,7 +713,8 @@ public open class ReactTextInputManager public constructor() :
     updateStagedInputTypeFlag(
         view = view,
         flagsToUnset = if (multiline) 0 else InputType.TYPE_TEXT_FLAG_MULTI_LINE,
-        flagsToSet = if (multiline) InputType.TYPE_TEXT_FLAG_MULTI_LINE else 0)
+        flagsToSet = if (multiline) InputType.TYPE_TEXT_FLAG_MULTI_LINE else 0,
+    )
   }
 
   @ReactProp(name = "secureTextEntry", defaultBoolean = false)
@@ -697,7 +727,8 @@ public open class ReactTextInputManager public constructor() :
             } else {
               InputType.TYPE_NUMBER_VARIATION_PASSWORD or InputType.TYPE_TEXT_VARIATION_PASSWORD
             },
-        flagsToSet = if (password) InputType.TYPE_TEXT_VARIATION_PASSWORD else 0)
+        flagsToSet = if (password) InputType.TYPE_TEXT_VARIATION_PASSWORD else 0,
+    )
     checkPasswordType(view)
   }
 
@@ -765,7 +796,7 @@ public open class ReactTextInputManager public constructor() :
   @ReactProp(name = "acceptDragAndDropTypes")
   public fun setAcceptDragAndDropTypes(
       view: ReactEditText,
-      acceptDragAndDropTypes: ReadableArray?
+      acceptDragAndDropTypes: ReadableArray?,
   ) {
     if (acceptDragAndDropTypes == null) {
       view.dragAndDropFilter = null
@@ -795,8 +826,10 @@ public open class ReactTextInputManager public constructor() :
               ViewProps.BORDER_TOP_LEFT_RADIUS,
               ViewProps.BORDER_TOP_RIGHT_RADIUS,
               ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-              ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+          ],
+      defaultFloat = Float.NaN,
+  )
   public fun setBorderRadius(view: ReactEditText, index: Int, borderRadius: Float) {
     val radius =
         if (borderRadius.isNaN()) {
@@ -851,8 +884,10 @@ public open class ReactTextInputManager public constructor() :
               ViewProps.BORDER_LEFT_WIDTH,
               ViewProps.BORDER_RIGHT_WIDTH,
               ViewProps.BORDER_TOP_WIDTH,
-              ViewProps.BORDER_BOTTOM_WIDTH],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_BOTTOM_WIDTH,
+          ],
+      defaultFloat = Float.NaN,
+  )
   public fun setBorderWidth(view: ReactEditText, index: Int, width: Float) {
     setBorderWidth(view, LogicalEdge.entries[index], width)
   }
@@ -864,8 +899,10 @@ public open class ReactTextInputManager public constructor() :
               "borderLeftColor",
               "borderRightColor",
               "borderTopColor",
-              "borderBottomColor"],
-      customType = "Color")
+              "borderBottomColor",
+          ],
+      customType = "Color",
+  )
   public fun setBorderColor(view: ReactEditText, index: Int, color: Int?) {
     setBorderColor(view, LogicalEdge.ALL, color)
   }
@@ -895,7 +932,8 @@ public open class ReactTextInputManager public constructor() :
       } else {
         eventDispatcher?.dispatchEvent(BlurEvent(surfaceId, editText.id))
         eventDispatcher?.dispatchEvent(
-            ReactTextInputEndEditingEvent(surfaceId, editText.id, editText.text.toString()))
+            ReactTextInputEndEditingEvent(surfaceId, editText.id, editText.text.toString())
+        )
       }
     }
 
@@ -917,7 +955,11 @@ public open class ReactTextInputManager public constructor() :
           val eventDispatcher = getEventDispatcher(reactContext, editText)
           eventDispatcher?.dispatchEvent(
               ReactTextInputSubmitEditingEvent(
-                  reactContext.surfaceId, editText.id, editText.text.toString()))
+                  reactContext.surfaceId,
+                  editText.id,
+                  editText.text.toString(),
+              )
+          )
         }
 
         if (shouldBlur) {
@@ -951,7 +993,9 @@ public open class ReactTextInputManager public constructor() :
                   "none" to 0,
                   "characters" to InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
                   "words" to InputType.TYPE_TEXT_FLAG_CAP_WORDS,
-                  "sentences" to InputType.TYPE_TEXT_FLAG_CAP_SENTENCES))
+                  "sentences" to InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
+              )
+      )
 
   override fun setPadding(view: ReactEditText, left: Int, top: Int, right: Int, bottom: Int) {
     view.setPadding(left, top, right, bottom)
@@ -960,7 +1004,7 @@ public open class ReactTextInputManager public constructor() :
   override fun updateState(
       view: ReactEditText,
       props: ReactStylesDiffMap,
-      stateWrapper: StateWrapper
+      stateWrapper: StateWrapper,
   ): Any? {
     if (ReactEditText.DEBUG_MODE) {
       FLog.e(TAG, "updateState: [${view.id}]")
@@ -988,7 +1032,7 @@ public open class ReactTextInputManager public constructor() :
   public fun getReactTextUpdate(
       view: ReactEditText,
       props: ReactStylesDiffMap,
-      state: MapBuffer
+      state: MapBuffer,
   ): Any? {
     // If native wants to update the state wrapper but the state data hasn't actually
     // changed, the MapBuffer may be empty
@@ -1001,11 +1045,15 @@ public open class ReactTextInputManager public constructor() :
 
     val spanned =
         TextLayoutManager.getOrCreateSpannableForText(
-            view.context, attributedString, reactTextViewManagerCallback)
+            view.context,
+            attributedString,
+            reactTextViewManagerCallback,
+        )
 
     val textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY.toInt()))
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY.toInt())
+        )
     val currentJustificationMode =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
           0
@@ -1017,9 +1065,13 @@ public open class ReactTextInputManager public constructor() :
         spanned,
         state.getInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT.toInt()),
         TextAttributeProps.getTextAlignment(
-            props, TextLayoutManager.isRTL(attributedString), view.gravityHorizontal),
+            props,
+            TextLayoutManager.isRTL(attributedString),
+            view.gravityHorizontal,
+        ),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode))
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode),
+    )
   }
 
   public companion object {
@@ -1112,11 +1164,16 @@ public open class ReactTextInputManager public constructor() :
 
     // Sets the correct password type, since numeric and text passwords have different types
     private fun checkPasswordType(view: ReactEditText) {
-      if ((view.stagedInputType and INPUT_TYPE_KEYBOARD_NUMBERED) != 0 &&
-          (view.stagedInputType and InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
+      if (
+          (view.stagedInputType and INPUT_TYPE_KEYBOARD_NUMBERED) != 0 &&
+              (view.stagedInputType and InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0
+      ) {
         // Text input type is numbered password, remove text password variation, add numeric one
         updateStagedInputTypeFlag(
-            view, InputType.TYPE_TEXT_VARIATION_PASSWORD, InputType.TYPE_NUMBER_VARIATION_PASSWORD)
+            view,
+            InputType.TYPE_TEXT_VARIATION_PASSWORD,
+            InputType.TYPE_NUMBER_VARIATION_PASSWORD,
+        )
       }
     }
 
@@ -1126,7 +1183,7 @@ public open class ReactTextInputManager public constructor() :
 
     private fun getEventDispatcher(
         reactContext: ReactContext,
-        editText: ReactEditText
+        editText: ReactEditText,
     ): EventDispatcher? = UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.id)
   }
 }

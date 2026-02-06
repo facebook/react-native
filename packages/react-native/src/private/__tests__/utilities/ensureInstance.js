@@ -8,9 +8,9 @@
  * @format
  */
 
-export default function ensureInstance<T>(value: mixed, Class: Class<T>): T {
+export default function ensureInstance<T>(value: unknown, Class: Class<T>): T {
   if (!(value instanceof Class)) {
-    // $FlowIssue[incompatible-use]
+    // $FlowFixMe[incompatible-use]
     const className = Class.name;
     throw new Error(
       `Expected instance of ${className} but got ${String(value)}`,

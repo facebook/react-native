@@ -9,7 +9,7 @@ require_relative './helpers.rb'
 def run_codegen!(
   app_path,
   config_file_dir,
-  new_arch_enabled: false,
+  new_arch_enabled: true,
   disable_codegen: false,
   react_native_path: "../node_modules/react-native",
   fabric_enabled: false,

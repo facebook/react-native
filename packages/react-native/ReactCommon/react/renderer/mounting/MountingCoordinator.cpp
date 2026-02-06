@@ -68,17 +68,6 @@ bool MountingCoordinator::waitForTransaction(
       lock, timeout, [this]() { return lastRevision_.has_value(); });
 }
 
-void MountingCoordinator::updateBaseRevision(
-    const ShadowTreeRevision& baseRevision) const {
-  std::scoped_lock lock(mutex_);
-  baseRevision_ = baseRevision;
-}
-
-void MountingCoordinator::resetLatestRevision() const {
-  std::scoped_lock lock(mutex_);
-  lastRevision_.reset();
-}
-
 std::optional<MountingTransaction> MountingCoordinator::pullTransaction(
     bool willPerformAsynchronously) const {
   TraceSection section("MountingCoordinator::pullTransaction");

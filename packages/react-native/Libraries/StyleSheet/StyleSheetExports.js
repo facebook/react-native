@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -13,24 +13,12 @@
 import type {____Styles_Internal} from './StyleSheetTypes';
 
 import composeStyles from '../../src/private/styles/composeStyles';
+import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import flatten from './flattenStyle';
 
-const ReactNativeStyleAttributes =
-  require('../Components/View/ReactNativeStyleAttributes').default;
-const PixelRatio = require('../Utilities/PixelRatio').default;
+let _hairlineWidth: ?number;
 
-let hairlineWidth: number = PixelRatio.roundToNearestPixel(0.4);
-if (hairlineWidth === 0) {
-  hairlineWidth = 1 / PixelRatio.get();
-}
-
-const absoluteFill: {
-  +bottom: 0,
-  +left: 0,
-  +position: 'absolute',
-  +right: 0,
-  +top: 0,
-} = {
+const absoluteFill = {
   position: 'absolute',
   left: 0,
   right: 0,
@@ -101,14 +89,25 @@ export default {
    *
    * A line with hairline width may not be visible if your simulator is downscaled.
    */
-  hairlineWidth,
+  // $FlowFixMe[unsafe-getters-setters] - Lazily import dependencies.
+  get hairlineWidth(): number {
+    if (_hairlineWidth == null) {
+      const PixelRatio = require('../Utilities/PixelRatio').default;
+
+      _hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+      if (_hairlineWidth === 0) {
+        _hairlineWidth = 1 / PixelRatio.get();
+      }
+    }
+    return _hairlineWidth;
+  },
 
   /**
    * A very common pattern is to create overlays with position absolute and zero positioning,
    * so `absoluteFill` can be used for convenience and to reduce duplication of these repeated
    * styles.
    */
-  absoluteFill: (absoluteFill: any), // TODO: This should be updated after we fix downstream Flow sites.
+  absoluteFill,
 
   /**
    * Sometimes you may want `absoluteFill` but with a couple tweaks - `absoluteFillObject` can be
@@ -165,7 +164,7 @@ export default {
    */
   setStyleAttributePreprocessor(
     property: string,
-    process: (nextProp: mixed) => mixed,
+    process: (nextProp: unknown) => unknown,
   ) {
     let value;
 
@@ -194,7 +193,7 @@ export default {
    * An identity function for creating style sheets.
    */
   // $FlowFixMe[unsupported-variance-annotation]
-  create<+S: ____Styles_Internal>(obj: S): $ReadOnly<S> {
+  create<+S: ____Styles_Internal>(obj: S): Readonly<S> {
     // TODO: This should return S as the return type. But first,
     // we need to codemod all the callsites that are typing this
     // return value as a number (even though it was opaque).

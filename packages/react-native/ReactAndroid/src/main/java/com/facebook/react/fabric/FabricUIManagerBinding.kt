@@ -46,13 +46,13 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       offsetX: Float,
       offsetY: Float,
       isRTL: Boolean,
-      doLeftAndRightSwapInRTL: Boolean
+      doLeftAndRightSwapInRTL: Boolean,
   )
 
   external fun startSurfaceWithSurfaceHandler(
       surfaceId: Int,
       surfaceHandler: SurfaceHandlerBinding,
-      isMountable: Boolean
+      isMountable: Boolean,
   )
 
   external fun findNextFocusableElement(parentTag: Int, focusedTag: Int, direction: Int): Int
@@ -74,14 +74,20 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       offsetX: Float,
       offsetY: Float,
       isRTL: Boolean,
-      doLeftAndRightSwapInRTL: Boolean
+      doLeftAndRightSwapInRTL: Boolean,
   )
 
   external fun driveCxxAnimations()
 
+  external fun driveAnimationBackend(frameTimeMs: Double)
+
   external fun drainPreallocateViewsQueue()
 
   external fun reportMount(surfaceId: Int)
+
+  external fun setAnimationBackendChoreographer(
+      animationBackendChoreographer: AnimationBackendChoreographer
+  )
 
   fun register(
       runtimeExecutor: RuntimeExecutor,
@@ -89,10 +95,21 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       fabricUIManager: FabricUIManager,
       eventBeatManager: EventBeatManager,
       componentFactory: ComponentFactory,
+      animationBackendChoreographer: AnimationBackendChoreographer,
   ) {
     fabricUIManager.setBinding(this)
+    animationBackendChoreographer.frameCallback = AnimationFrameCallback { frameTimeMs: Double ->
+      driveAnimationBackend(frameTimeMs)
+    }
+    setAnimationBackendChoreographer(animationBackendChoreographer)
+
     installFabricUIManager(
-        runtimeExecutor, runtimeScheduler, fabricUIManager, eventBeatManager, componentFactory)
+        runtimeExecutor,
+        runtimeScheduler,
+        fabricUIManager,
+        eventBeatManager,
+        componentFactory,
+    )
     setPixelDensity(getDisplayMetricDensity())
   }
 

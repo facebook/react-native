@@ -24,14 +24,14 @@ static NSString *getServerHost(NSURL *bundleURL)
 {
   NSNumber *port = @8081;
   NSString *portStr = [[[NSProcessInfo processInfo] environment] objectForKey:@"RCT_METRO_PORT"];
-  if (portStr && [portStr length] > 0) {
+  if ((portStr != nullptr) && [portStr length] > 0) {
     port = [NSNumber numberWithInt:[portStr intValue]];
   }
-  if ([bundleURL port]) {
+  if ([bundleURL port] != nullptr) {
     port = [bundleURL port];
   }
   NSString *host = [bundleURL host];
-  if (!host) {
+  if (host == nullptr) {
     host = @"localhost";
   }
 
@@ -186,7 +186,7 @@ static void sendEventToAllConnections(NSString *event)
 
   NSString *key = [inspectorURL absoluteString];
   id<RCTInspectorPackagerConnectionProtocol> connection = socketConnections[key];
-  if (!connection || !connection.isConnected) {
+  if ((connection == nullptr) || !connection.isConnected) {
     connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
 
     socketConnections[key] = connection;

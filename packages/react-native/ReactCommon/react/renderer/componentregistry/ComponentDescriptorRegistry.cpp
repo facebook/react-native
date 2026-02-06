@@ -23,19 +23,19 @@ namespace facebook::react {
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
     ComponentDescriptorParameters parameters,
     const ComponentDescriptorProviderRegistry& providerRegistry,
-    ContextContainer::Shared contextContainer)
+    std::shared_ptr<const ContextContainer> contextContainer)
     : parameters_(std::move(parameters)),
       providerRegistry_(providerRegistry),
       contextContainer_(std::move(contextContainer)) {}
 
 void ComponentDescriptorRegistry::add(
-    ComponentDescriptorProvider componentDescriptorProvider) const {
+    const ComponentDescriptorProvider& componentDescriptorProvider) const {
   std::unique_lock lock(mutex_);
 
   auto componentDescriptor = componentDescriptorProvider.constructor(
-      {parameters_.eventDispatcher,
-       parameters_.contextContainer,
-       componentDescriptorProvider.flavor});
+      {.eventDispatcher = parameters_.eventDispatcher,
+       .contextContainer = parameters_.contextContainer,
+       .flavor = componentDescriptorProvider.flavor});
   react_native_assert(
       componentDescriptor->getComponentHandle() ==
       componentDescriptorProvider.handle);

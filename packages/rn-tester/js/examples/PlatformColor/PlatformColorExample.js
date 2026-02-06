@@ -14,11 +14,14 @@ import type {ColorValue} from 'react-native';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {
+  Appearance,
+  Button,
   DynamicColorIOS,
   Platform,
   PlatformColor,
   StyleSheet,
   View,
+  useColorScheme,
 } from 'react-native';
 
 function PlatformColorsExample() {
@@ -315,6 +318,48 @@ function VariantColorsExample() {
   );
 }
 
+function ReactsToAppearanceChangesExample() {
+  const theme = useColorScheme();
+  const key = Platform.select({
+    android: theme ?? '',
+    default: undefined,
+  });
+
+  return (
+    // using a key here forces the component to unmount and remount
+    // which is necessary to trigger the appearance change
+    <View style={styles.column} key={key}>
+      <View style={styles.row}>
+        <RNTesterText style={styles.labelCell}>
+          {Platform.select({
+            ios: "DynamicColorIOS({light: 'red', dark: 'blue'})",
+            android: "PlatformColor('?attr/colorAccent')",
+            default: 'Unexpected Platform.OS: ' + Platform.OS,
+          })}
+        </RNTesterText>
+        <View
+          style={{
+            ...styles.colorCell,
+            backgroundColor:
+              Platform.OS === 'ios'
+                ? DynamicColorIOS({light: 'red', dark: 'blue'})
+                : Platform.OS === 'android'
+                  ? PlatformColor('?attr/colorAccent')
+                  : 'red',
+          }}
+        />
+      </View>
+      <View style={styles.separator} />
+      <Button
+        title="Change Appearance"
+        onPress={() => {
+          Appearance.setColorScheme(theme === 'dark' ? 'light' : 'dark');
+        }}
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   column: {flex: 1, flexDirection: 'column'},
   row: {flex: 0.75, flexDirection: 'row'},
@@ -326,6 +371,7 @@ const styles = StyleSheet.create({
     }),
   },
   colorCell: {flex: 0.25, alignItems: 'stretch'},
+  separator: {height: 8},
 });
 
 exports.title = 'PlatformColor';
@@ -356,6 +402,12 @@ exports.examples = [
     title: 'Variant Colors',
     render(): React.MixedElement {
       return <VariantColorsExample />;
+    },
+  },
+  {
+    title: 'Reacts to Appearance Changes',
+    render(): React.MixedElement {
+      return <ReactsToAppearanceChangesExample />;
     },
   },
 ] as Array<RNTesterModuleExample>;

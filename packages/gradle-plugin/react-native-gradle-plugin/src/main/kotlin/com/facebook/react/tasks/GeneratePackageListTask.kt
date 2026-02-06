@@ -34,22 +34,23 @@ abstract class GeneratePackageListTask : DefaultTask() {
         JsonUtils.fromAutolinkingConfigJson(autolinkInputFile.get().asFile)
             ?: error(
                 """
-        RNGP - Autolinking: Could not parse autolinking config file:
-        ${autolinkInputFile.get().asFile.absolutePath}
-        
-        The file is either missing or not containing valid JSON so the build won't succeed. 
-      """
-                    .trimIndent())
+                   RNGP - Autolinking: Could not parse autolinking config file:
+                   ${autolinkInputFile.get().asFile.absolutePath}
+                   
+                   The file is either missing or not containing valid JSON so the build won't succeed. 
+                 """
+                    .trimIndent()
+            )
 
     val packageName =
         model.project?.android?.packageName
             ?: error(
-                "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field.")
+                "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field."
+            )
 
     val androidPackages = filterAndroidPackages(model)
-    val packageImports = composePackageImports(packageName, androidPackages)
     val packageClassInstance = composePackageInstance(packageName, androidPackages)
-    val generatedFileContents = composeFileContent(packageImports, packageClassInstance)
+    val generatedFileContents = composeFileContent(packageClassInstance)
 
     val outputDir = generatedOutputDirectory.get().asFile
     outputDir.mkdirs()
@@ -59,34 +60,49 @@ abstract class GeneratePackageListTask : DefaultTask() {
     }
   }
 
-  internal fun composePackageImports(
-      packageName: String,
-      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>
-  ) =
-      packages.entries.joinToString("\n") { (name, dep) ->
-        val packageImportPath =
-            requireNotNull(dep.packageImportPath) {
-              "RNGP - Autolinking: Missing `packageImportPath` in `config` for dependency $name. This is required to generate the autolinking package list."
-            }
-        "// $name\n${interpolateDynamicValues(packageImportPath, packageName)}"
-      }
+  /**
+   * Extracts the fully qualified class name from an import statement. E.g., "import
+   * com.foo.bar.MyClass;" -> "com.foo.bar.MyClass"
+   */
+  internal fun extractFqcnFromImport(importStatement: String): String? {
+    val match = Regex("import\\s+([\\w.]+)\\s*;").find(importStatement)
+    return match?.groupValues?.get(1)
+  }
 
   internal fun composePackageInstance(
       packageName: String,
-      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>
-  ) =
-      if (packages.isEmpty()) {
-        ""
-      } else {
-        ",\n      " +
-            packages.entries.joinToString(",\n      ") { (name, dep) ->
-              val packageInstance =
-                  requireNotNull(dep.packageInstance) {
-                    "RNGP - Autolinking: Missing `packageInstance` in `config` for dependency $name. This is required to generate the autolinking package list."
-                  }
-              interpolateDynamicValues(packageInstance, packageName)
-            }
-      }
+      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>,
+  ): String {
+    if (packages.isEmpty()) {
+      return ""
+    }
+
+    val instances =
+        packages.entries.map { (name, dep) ->
+          val packageInstance =
+              requireNotNull(dep.packageInstance) {
+                "RNGP - Autolinking: Missing `packageInstance` in `config` for dependency $name. This is required to generate the autolinking package list."
+              }
+          val packageImportPath = dep.packageImportPath
+          val interpolated = interpolateDynamicValues(packageInstance, packageName)
+
+          // Use FQCN to avoid class name collisions between different packages
+          val fqcn = extractFqcnFromImport(interpolateDynamicValues(packageImportPath, packageName))
+          val fqcnInstance =
+              if (fqcn != null) {
+                val className = fqcn.substringAfterLast('.')
+                // Replace the short class name with FQCN in the instance
+                interpolated.replace(Regex("\\b${Regex.escape(className)}\\b")) { fqcn }
+              } else {
+                interpolated
+              }
+
+          // Add comment with package name before each instance
+          "// $name\n      $fqcnInstance"
+        }
+
+    return ",\n      " + instances.joinToString(",\n      ")
+  }
 
   internal fun filterAndroidPackages(
       model: ModelAutolinkingConfigJson?
@@ -99,10 +115,8 @@ abstract class GeneratePackageListTask : DefaultTask() {
         .associate { it.name to checkNotNull(it.platforms?.android) }
   }
 
-  internal fun composeFileContent(packageImports: String, packageClassInstance: String): String =
-      generatedFileContentsTemplate
-          .replace("{{ packageImports }}", packageImports)
-          .replace("{{ packageClassInstances }}", packageClassInstance)
+  internal fun composeFileContent(packageClassInstance: String): String =
+      generatedFileContentsTemplate.replace("{{ packageClassInstances }}", packageClassInstance)
 
   companion object {
     const val GENERATED_FILENAME = "com/facebook/react/PackageList.java"
@@ -134,69 +148,67 @@ abstract class GeneratePackageListTask : DefaultTask() {
     // language=java
     val generatedFileContentsTemplate =
         """
-            package com.facebook.react;
-            
-            import android.app.Application;
-            import android.content.Context;
-            import android.content.res.Resources;
-            
-            import com.facebook.react.ReactPackage;
-            import com.facebook.react.shell.MainPackageConfig;
-            import com.facebook.react.shell.MainReactPackage;
-            import java.util.Arrays;
-            import java.util.ArrayList;
-            
-            {{ packageImports }}
-            
-            @SuppressWarnings("deprecation")
-            public class PackageList {
-              private Application application;
-              private ReactNativeHost reactNativeHost;
-              private MainPackageConfig mConfig;
-            
-              public PackageList(ReactNativeHost reactNativeHost) {
-                this(reactNativeHost, null);
-              }
-            
-              public PackageList(Application application) {
-                this(application, null);
-              }
-            
-              public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
-                this.reactNativeHost = reactNativeHost;
-                mConfig = config;
-              }
-            
-              public PackageList(Application application, MainPackageConfig config) {
-                this.reactNativeHost = null;
-                this.application = application;
-                mConfig = config;
-              }
-            
-              private ReactNativeHost getReactNativeHost() {
-                return this.reactNativeHost;
-              }
-            
-              private Resources getResources() {
-                return this.getApplication().getResources();
-              }
-            
-              private Application getApplication() {
-                if (this.reactNativeHost == null) return this.application;
-                return this.reactNativeHost.getApplication();
-              }
-            
-              private Context getApplicationContext() {
-                return this.getApplication().getApplicationContext();
-              }
-            
-              public ArrayList<ReactPackage> getPackages() {
-                return new ArrayList<>(Arrays.<ReactPackage>asList(
-                  new MainReactPackage(mConfig){{ packageClassInstances }}
-                ));
-              }
-            }
-            """
+        package com.facebook.react;
+
+        import android.app.Application;
+        import android.content.Context;
+        import android.content.res.Resources;
+
+        import com.facebook.react.ReactPackage;
+        import com.facebook.react.shell.MainPackageConfig;
+        import com.facebook.react.shell.MainReactPackage;
+        import java.util.Arrays;
+        import java.util.ArrayList;
+
+        @SuppressWarnings("deprecation")
+        public class PackageList {
+          private Application application;
+          private ReactNativeHost reactNativeHost;
+          private MainPackageConfig mConfig;
+
+          public PackageList(ReactNativeHost reactNativeHost) {
+            this(reactNativeHost, null);
+          }
+
+          public PackageList(Application application) {
+            this(application, null);
+          }
+
+          public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
+            this.reactNativeHost = reactNativeHost;
+            mConfig = config;
+          }
+
+          public PackageList(Application application, MainPackageConfig config) {
+            this.reactNativeHost = null;
+            this.application = application;
+            mConfig = config;
+          }
+
+          private ReactNativeHost getReactNativeHost() {
+            return this.reactNativeHost;
+          }
+
+          private Resources getResources() {
+            return this.getApplication().getResources();
+          }
+
+          private Application getApplication() {
+            if (this.reactNativeHost == null) return this.application;
+            return this.reactNativeHost.getApplication();
+          }
+
+          private Context getApplicationContext() {
+            return this.getApplication().getApplicationContext();
+          }
+
+          public ArrayList<ReactPackage> getPackages() {
+            return new ArrayList<>(Arrays.<ReactPackage>asList(
+              new MainReactPackage(mConfig){{ packageClassInstances }}
+            ));
+          }
+        }
+        """
             .trimIndent()
   }
 }

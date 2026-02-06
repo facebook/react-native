@@ -187,7 +187,7 @@ TEST_P(
         3,
         [&](jsi::Runtime& /*unused*/,
             const jsi::Value& /*unused*/,
-            const jsi::Value* arguments,
+            const jsi::Value* /*arguments*/,
             size_t /*unused*/) -> jsi::Value {
           microtaskPosition = nextOperationPosition;
           nextOperationPosition++;
@@ -728,7 +728,7 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccessAndResumes) {
   // the test would be flaky in a multithreaded environment.
   stubQueue_->waitForTasks(2);
 
-  // Normal priority task immediatelly yield in favour of the sync task.
+  // Normal priority task immediately yield in favour of the sync task.
   stubQueue_->tick();
 
   EXPECT_EQ(stubQueue_->size(), 1);
@@ -906,7 +906,7 @@ TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
         [this, &didRunSynchronousTask, &didRunSubsequentTask](
-            jsi::Runtime& runtime) {
+            jsi::Runtime& /*runtime*/) {
           didRunSynchronousTask = true;
 
           auto callback = createHostFunctionFromLambda(
@@ -994,7 +994,7 @@ TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
         [this, &didRunSynchronousTask, &didRunSubsequentTask](
-            jsi::Runtime& runtime) {
+            jsi::Runtime& /*runtime*/) {
           didRunSynchronousTask = true;
 
           auto callback = createHostFunctionFromLambda(

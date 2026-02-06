@@ -27,11 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSurfacePresenter : NSObject
 
-- (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
+- (instancetype)initWithContextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer
                          runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
               bridgelessBindingsExecutor:(std::optional<facebook::react::RuntimeExecutor>)bridgelessBindingsExecutor;
 
-@property (nonatomic) facebook::react::ContextContainer::Shared contextContainer;
+@property (nonatomic) std::shared_ptr<const facebook::react::ContextContainer> contextContainer;
 @property (nonatomic) facebook::react::RuntimeExecutor runtimeExecutor;
 
 /*

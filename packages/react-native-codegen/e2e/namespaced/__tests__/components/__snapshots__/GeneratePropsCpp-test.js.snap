@@ -717,7 +717,7 @@ InterfaceOnlyNativeComponentViewProps::InterfaceOnlyNativeComponentViewProps(
     const InterfaceOnlyNativeComponentViewProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    title(convertRawProp(context, rawProps, \\"title\\", sourceProps.title, {\\"\\"})) {}
+    title(convertRawProp(context, rawProps, \\"title\\", sourceProps.title, {std::string{\\"\\"}})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName InterfaceOnlyNativeComponentViewProps::getDiffPropsImplementationTarget() const {
@@ -1060,7 +1060,7 @@ StringPropNativeComponentViewProps::StringPropNativeComponentViewProps(
     const StringPropNativeComponentViewProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    placeholder(convertRawProp(context, rawProps, \\"placeholder\\", sourceProps.placeholder, {\\"\\"})),
+    placeholder(convertRawProp(context, rawProps, \\"placeholder\\", sourceProps.placeholder, {std::string{\\"\\"}})),
     defaultValue(convertRawProp(context, rawProps, \\"defaultValue\\", sourceProps.defaultValue, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE

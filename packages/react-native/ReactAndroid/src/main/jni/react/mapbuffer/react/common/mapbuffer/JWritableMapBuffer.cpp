@@ -38,7 +38,7 @@ MapBuffer JWritableMapBuffer::getMapBuffer() {
 
     if (value->isInstanceOf(booleanClass)) {
       auto element = jni::static_ref_cast<jni::JBoolean>(value);
-      builder.putBool(key, element->value());
+      builder.putBool(key, element->value() != 0u);
     } else if (value->isInstanceOf(integerClass)) {
       auto element = jni::static_ref_cast<jni::JInteger>(value);
       builder.putInt(key, element->value());

@@ -52,7 +52,7 @@ describe('setVersion', () => {
 
   beforeAll(() => {
     jest.mock('fs', () => {
-      // $FlowIgnore[underconstrained-implicit-instantiation]
+      // $FlowFixMe[underconstrained-implicit-instantiation]
       const originalFs = jest.requireActual('fs');
 
       return {

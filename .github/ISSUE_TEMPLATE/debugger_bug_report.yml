@@ -1,6 +1,6 @@
 name: 🔍 Debugger - Bug Report
 description: Report a bug with React Native DevTools and the New Debugger
-labels: ["Needs: Triage :mag:", "Debugger"]
+labels: ["Needs: Triage :mag:", "Debugging"]
 
 body:
   - type: markdown

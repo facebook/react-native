@@ -169,7 +169,7 @@ describe('XMLHttpRequest', function () {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(4);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     xhr.__didCompleteResponse(requestId, 'Generic error');
 
     expect(xhr.readyState).toBe(xhr.DONE);
@@ -191,7 +191,7 @@ describe('XMLHttpRequest', function () {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(5);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     xhr.__didCompleteResponse(requestId, null);
 
     expect(xhr.readyState).toBe(xhr.DONE);

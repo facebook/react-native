@@ -10,7 +10,7 @@
 
 # Print commands before executing them (useful for troubleshooting)
 set -x -e
-DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
+DEST="$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
 
 # Enables iOS devices to get the IP address of the machine running Metro
 if [[ ! "$SKIP_BUNDLING_METRO_IP" && "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
@@ -59,7 +59,7 @@ esac
 # Path to react-native folder inside node_modules
 REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Most projects have their project root, one level up from their Xcode project dir (the "ios" directory)
-PROJECT_ROOT=${PROJECT_ROOT:-"$PROJECT_DIR/.."}
+PROJECT_ROOT="${PROJECT_ROOT:-"$PROJECT_DIR/.."}"
 
 cd "$PROJECT_ROOT" || exit
 

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <memory>
 #include <unordered_set>
@@ -25,12 +25,12 @@ namespace facebook::react {
 
 class NativeModule;
 
-struct ModuleConfig {
+struct [[deprecated("This API will be removed along with the legacy architecture.")]] ModuleConfig {
   size_t index;
   folly::dynamic config;
 };
 
-class RN_EXPORT ModuleRegistry {
+class RN_EXPORT [[deprecated("This API will be removed along with the legacy architecture.")]] ModuleRegistry {
  public:
   // not implemented:
   // onBatchComplete: see
@@ -39,31 +39,20 @@ class RN_EXPORT ModuleRegistry {
   // notifyCatalystInstanceInitialized: this is really only used by view-related
   // code notifyCatalystInstanceDestroy: use RAII instead
 
-  using ModuleNotFoundCallback = std::function<bool(const std::string& name)>;
+  using ModuleNotFoundCallback = std::function<bool(const std::string &name)>;
 
-  ModuleRegistry(
-      std::vector<std::unique_ptr<NativeModule>> modules,
-      ModuleNotFoundCallback callback = nullptr);
+  ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules, ModuleNotFoundCallback callback = nullptr);
   void registerModules(std::vector<std::unique_ptr<NativeModule>> modules);
 
   std::vector<std::string> moduleNames();
 
-  std::optional<ModuleConfig> getConfig(const std::string& name);
+  std::optional<ModuleConfig> getConfig(const std::string &name);
 
-  void callNativeMethod(
-      unsigned int moduleId,
-      unsigned int methodId,
-      folly::dynamic&& params,
-      int callId);
-  MethodCallResult callSerializableNativeHook(
-      unsigned int moduleId,
-      unsigned int methodId,
-      folly::dynamic&& args);
+  void callNativeMethod(unsigned int moduleId, unsigned int methodId, folly::dynamic &&params, int callId);
+  MethodCallResult callSerializableNativeHook(unsigned int moduleId, unsigned int methodId, folly::dynamic &&params);
 
   std::string getModuleName(unsigned int moduleId);
-  std::string getModuleSyncMethodName(
-      unsigned int moduleId,
-      unsigned int methodName);
+  std::string getModuleSyncMethodName(unsigned int moduleId, unsigned int methodId);
 
  private:
   // This is always populated
@@ -71,7 +60,7 @@ class RN_EXPORT ModuleRegistry {
 
   // This is used to extend the population of modulesByName_ if registerModules
   // is called after moduleNames
-  void updateModuleNamesFromIndex(size_t size);
+  void updateModuleNamesFromIndex(size_t index);
 
   // This is only populated if moduleNames() is called.  Values are indices into
   // modules_.
@@ -91,4 +80,4 @@ class RN_EXPORT ModuleRegistry {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

@@ -24,7 +24,7 @@ declare var global: {
     +env: {
       +NODE_ENV: 'development' | 'production',
     },
-    +argv?: $ReadOnlyArray<string>,
+    +argv?: ReadonlyArray<string>,
   },
 
   // setUpPerformance

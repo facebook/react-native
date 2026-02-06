@@ -39,7 +39,6 @@ describe('inspector proxy device message middleware', () => {
     const createCustomMessageHandler = jest.fn().mockImplementation(() => null);
     const {server} = await createServer({
       logger: undefined,
-      projectRoot: '',
       unstable_customInspectorMessageHandler: createCustomMessageHandler,
     });
 
@@ -83,7 +82,6 @@ describe('inspector proxy device message middleware', () => {
     const createCustomMessageHandler = jest.fn().mockImplementation(() => null);
     const {server} = await createServer({
       logger: undefined,
-      projectRoot: '',
       unstable_customInspectorMessageHandler: createCustomMessageHandler,
     });
     const {serverBaseUrl, serverBaseWsUrl} = serverRefUrls(server);
@@ -108,7 +106,7 @@ describe('inspector proxy device message middleware', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });
@@ -169,7 +167,6 @@ describe('inspector proxy device message middleware', () => {
 
     const {server} = await createServer({
       logger: undefined,
-      projectRoot: '',
       unstable_customInspectorMessageHandler: createCustomMessageHandler,
     });
 
@@ -205,6 +202,7 @@ describe('inspector proxy device message middleware', () => {
           event: 'wrappedEvent',
           payload: {
             pageId: page.id,
+            sessionId: expect.any(String),
             wrappedEvent: JSON.stringify({id: 1}),
           },
         }),
@@ -231,7 +229,6 @@ describe('inspector proxy device message middleware', () => {
     const handleDeviceMessage = jest.fn();
     const {server} = await createServer({
       logger: undefined,
-      projectRoot: '',
       unstable_customInspectorMessageHandler: () => ({
         handleDeviceMessage,
         handleDebuggerMessage() {},
@@ -264,7 +261,6 @@ describe('inspector proxy device message middleware', () => {
     const handleDeviceMessage = jest.fn();
     const {server} = await createServer({
       logger: undefined,
-      projectRoot: '',
       unstable_customInspectorMessageHandler: () => ({
         handleDeviceMessage,
         handleDebuggerMessage() {},
@@ -304,7 +300,6 @@ describe('inspector proxy device message middleware', () => {
     const handleDebuggerMessage = jest.fn();
     const {server} = await createServer({
       logger: undefined,
-      projectRoot: '',
       unstable_customInspectorMessageHandler: () => ({
         handleDeviceMessage() {},
         handleDebuggerMessage,
@@ -341,7 +336,6 @@ describe('inspector proxy device message middleware', () => {
     const handleDebuggerMessage = jest.fn();
     const {server} = await createServer({
       logger: undefined,
-      projectRoot: '',
       unstable_customInspectorMessageHandler: () => ({
         handleDeviceMessage() {},
         handleDebuggerMessage,
@@ -368,7 +362,11 @@ describe('inspector proxy device message middleware', () => {
       await until(() =>
         expect(device.wrappedEvent).toBeCalledWith({
           event: 'wrappedEvent',
-          payload: {pageId: page.id, wrappedEvent: JSON.stringify({id: 1337})},
+          payload: {
+            pageId: page.id,
+            sessionId: expect.any(String),
+            wrappedEvent: JSON.stringify({id: 1337}),
+          },
         }),
       );
       // Ensure the first message was not received by the device

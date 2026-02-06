@@ -184,7 +184,7 @@ function normalizeInputEventName(name: string) {
 
 // Replicates the behavior of viewConfig in RCTComponentData.m
 function getValidAttributesForEvents(
-  events: $ReadOnlyArray<EventTypeShape>,
+  events: ReadonlyArray<EventTypeShape>,
   imports: Set<string>,
 ) {
   imports.add(
@@ -317,7 +317,9 @@ function buildViewConfig(
       return directEvents;
     }, []);
 
-  const properties = [
+  const properties: Array<
+    BabelNodeObjectMethod | BabelNodeObjectProperty | BabelNodeSpreadElement,
+  > = [
     t.objectProperty(
       t.identifier('uiViewClassName'),
       t.stringLiteral(componentName),

@@ -7,10 +7,12 @@
 
 #include "JRuntimeExecutor.h"
 
+#include <utility>
+
 namespace facebook::react {
 
 JRuntimeExecutor::JRuntimeExecutor(RuntimeExecutor runtimeExecutor)
-    : runtimeExecutor_(runtimeExecutor) {}
+    : runtimeExecutor_(std::move(runtimeExecutor)) {}
 
 RuntimeExecutor JRuntimeExecutor::get() {
   return runtimeExecutor_;

@@ -35,9 +35,9 @@ jsi::Value createPromiseAsJSIValue(
       2,
       [func = std::move(func)](
           jsi::Runtime& rt2,
-          const jsi::Value& thisVal,
+          const jsi::Value& /*thisVal*/,
           const jsi::Value* args,
-          size_t count) {
+          size_t /*count*/) {
         jsi::Function resolve = args[0].getObject(rt2).getFunction(rt2);
         jsi::Function reject = args[1].getObject(rt2).getFunction(rt2);
         auto wrapper = std::make_shared<Promise>(

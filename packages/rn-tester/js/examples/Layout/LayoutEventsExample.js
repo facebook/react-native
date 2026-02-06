@@ -20,7 +20,7 @@ import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {Image, LayoutAnimation, StyleSheet, View} from 'react-native';
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 type State = {
   containerStyle?: {width: number},
   extraText?: string,

@@ -42,12 +42,14 @@ const TextImpl: component(
   ref: forwardedRef,
   accessible,
   accessibilityLabel,
+  accessibilityRole,
   accessibilityState,
   allowFontScaling,
   'aria-busy': ariaBusy,
   'aria-checked': ariaChecked,
   'aria-disabled': ariaDisabled,
   'aria-expanded': ariaExpanded,
+  'aria-hidden': ariaHidden,
   'aria-label': ariaLabel,
   'aria-selected': ariaSelected,
   children,
@@ -67,6 +69,7 @@ const TextImpl: component(
   onResponderTerminationRequest,
   onStartShouldSetResponder,
   pressRetentionOffset,
+  role,
   selectable,
   selectionColor,
   suppressHighlighting,
@@ -76,8 +79,10 @@ const TextImpl: component(
   ref?: React.RefSetter<TextForwardRef>,
   ...TextProps,
 }) => {
+  const processedProps = restProps as {
+    ...NativeTextProps,
+  };
   const _accessibilityLabel = ariaLabel ?? accessibilityLabel;
-
   let _accessibilityState: ?TextProps['accessibilityState'] =
     accessibilityState;
   if (
@@ -109,11 +114,48 @@ const TextImpl: component(
   const _accessibilityStateDisabled = _accessibilityState?.disabled;
   const _disabled = disabled ?? _accessibilityStateDisabled;
 
+  // If the disabled prop and accessibilityState.disabled are out of sync but not both in
+  // falsy states we need to update the accessibilityState object to use the disabled prop.
+  if (
+    _disabled !== _accessibilityStateDisabled &&
+    ((_disabled != null && _disabled !== false) ||
+      (_accessibilityStateDisabled != null &&
+        _accessibilityStateDisabled !== false))
+  ) {
+    if (_accessibilityState == null) {
+      _accessibilityState = {disabled};
+    } else {
+      _accessibilityState.disabled = _disabled;
+    }
+  }
+
+  if (ariaHidden !== undefined) {
+    processedProps.accessibilityElementsHidden = ariaHidden;
+    if (ariaHidden === true) {
+      processedProps.importantForAccessibility = 'no-hide-descendants';
+    }
+  }
+
+  const _accessible = Platform.select({
+    ios: accessible !== false,
+    android:
+      accessible == null ? onPress != null || onLongPress != null : accessible,
+    default: accessible,
+  });
+
   const isPressable =
     (onPress != null ||
       onLongPress != null ||
       onStartShouldSetResponder != null) &&
     _disabled !== true;
+
+  const shouldUseLinkRole =
+    isPressable && accessibilityRole == null && role == null;
+
+  const _accessibilityRole =
+    accessibilityRole ?? (shouldUseLinkRole ? 'link' : undefined);
+
+  const _role = shouldUseLinkRole ? undefined : role;
 
   // TODO: Move this processing to the view configuration.
   const _selectionColor =
@@ -144,8 +186,8 @@ const TextImpl: component(
     if (typeof processedStyle.fontWeight === 'number') {
       overrides = overrides || ({}: {...TextStyleInternal});
       overrides.fontWeight =
-        // $FlowFixMe[incompatible-cast]
-        (processedStyle.fontWeight.toString(): TextStyleInternal['fontWeight']);
+        // $FlowFixMe[incompatible-type]
+        (String(processedStyle.fontWeight): TextStyleInternal['fontWeight']);
     }
 
     if (processedStyle.userSelect != null) {
@@ -169,132 +211,86 @@ const TextImpl: component(
 
   const _nativeID = id ?? nativeID;
 
+  if (_accessibilityLabel !== undefined) {
+    processedProps.accessibilityLabel = _accessibilityLabel;
+  }
+  if (_accessibilityRole !== undefined) {
+    processedProps.accessibilityRole = _accessibilityRole;
+  }
+  if (_accessibilityState !== undefined) {
+    processedProps.accessibilityState = _accessibilityState;
+  }
+  if (_nativeID !== undefined) {
+    processedProps.nativeID = _nativeID;
+  }
+  if (_numberOfLines !== undefined) {
+    processedProps.numberOfLines = _numberOfLines;
+  }
+  if (_selectable !== undefined) {
+    processedProps.selectable = _selectable;
+  }
+  if (_style !== undefined) {
+    processedProps.style = _style;
+  }
+  if (_selectionColor !== undefined) {
+    processedProps.selectionColor = _selectionColor;
+  }
+  if (_role !== undefined) {
+    processedProps.role = _role;
+  }
+
+  let textPressabilityProps: ?TextPressabilityProps;
+  if (isPressable) {
+    textPressabilityProps = {
+      onLongPress,
+      onPress,
+      onPressIn,
+      onPressOut,
+      onResponderGrant,
+      onResponderMove,
+      onResponderRelease,
+      onResponderTerminate,
+      onResponderTerminationRequest,
+      onStartShouldSetResponder,
+      pressRetentionOffset,
+      suppressHighlighting,
+    };
+  }
+
   const hasTextAncestor = useContext(TextAncestorContext);
   if (hasTextAncestor) {
+    processedProps.disabled = disabled;
+    processedProps.children = children;
     if (isPressable) {
       return (
         <NativePressableVirtualText
           ref={forwardedRef}
-          textProps={{
-            ...restProps,
-            accessibilityLabel: _accessibilityLabel,
-            accessibilityState: _accessibilityState,
-            nativeID: _nativeID,
-            numberOfLines: _numberOfLines,
-            selectable: _selectable,
-            selectionColor: _selectionColor,
-            style: _style,
-            disabled: disabled,
-            children,
-          }}
-          textPressabilityProps={{
-            onLongPress,
-            onPress,
-            onPressIn,
-            onPressOut,
-            onResponderGrant,
-            onResponderMove,
-            onResponderRelease,
-            onResponderTerminate,
-            onResponderTerminationRequest,
-            onStartShouldSetResponder,
-            pressRetentionOffset,
-            suppressHighlighting,
-          }}
+          textProps={processedProps}
+          textPressabilityProps={textPressabilityProps ?? {}}
         />
       );
     }
-
-    return (
-      <NativeVirtualText
-        {...restProps}
-        accessibilityLabel={_accessibilityLabel}
-        accessibilityState={_accessibilityState}
-        nativeID={_nativeID}
-        numberOfLines={_numberOfLines}
-        ref={forwardedRef}
-        selectable={_selectable}
-        selectionColor={_selectionColor}
-        style={_style}
-        disabled={disabled}>
-        {children}
-      </NativeVirtualText>
-    );
+    return <NativeVirtualText {...processedProps} ref={forwardedRef} />;
   }
-
-  // If the disabled prop and accessibilityState.disabled are out of sync but not both in
-  // falsy states we need to update the accessibilityState object to use the disabled prop.
-  if (
-    _disabled !== _accessibilityStateDisabled &&
-    ((_disabled != null && _disabled !== false) ||
-      (_accessibilityStateDisabled != null &&
-        _accessibilityStateDisabled !== false))
-  ) {
-    _accessibilityState = {..._accessibilityState, disabled: _disabled};
-  }
-
-  const _accessible = Platform.select({
-    ios: accessible !== false,
-    android:
-      accessible == null ? onPress != null || onLongPress != null : accessible,
-    default: accessible,
-  });
 
   let nativeText = null;
+
+  processedProps.accessible = _accessible;
+  processedProps.allowFontScaling = allowFontScaling !== false;
+  processedProps.disabled = _disabled;
+  processedProps.ellipsizeMode = ellipsizeMode ?? 'tail';
+  processedProps.children = children;
+
   if (isPressable) {
     nativeText = (
       <NativePressableText
         ref={forwardedRef}
-        textProps={{
-          ...restProps,
-          accessibilityLabel: _accessibilityLabel,
-          accessibilityState: _accessibilityState,
-          accessible: _accessible,
-          allowFontScaling: allowFontScaling !== false,
-          disabled: _disabled,
-          ellipsizeMode: ellipsizeMode ?? 'tail',
-          nativeID: _nativeID,
-          numberOfLines: _numberOfLines,
-          selectable: _selectable,
-          selectionColor: _selectionColor,
-          style: _style,
-          children,
-        }}
-        textPressabilityProps={{
-          onLongPress,
-          onPress,
-          onPressIn,
-          onPressOut,
-          onResponderGrant,
-          onResponderMove,
-          onResponderRelease,
-          onResponderTerminate,
-          onResponderTerminationRequest,
-          onStartShouldSetResponder,
-          pressRetentionOffset,
-          suppressHighlighting,
-        }}
+        textProps={processedProps}
+        textPressabilityProps={textPressabilityProps ?? {}}
       />
     );
   } else {
-    nativeText = (
-      <NativeText
-        {...restProps}
-        accessibilityLabel={_accessibilityLabel}
-        accessibilityState={_accessibilityState}
-        accessible={_accessible}
-        allowFontScaling={allowFontScaling !== false}
-        disabled={_disabled}
-        ellipsizeMode={ellipsizeMode ?? 'tail'}
-        nativeID={_nativeID}
-        numberOfLines={_numberOfLines}
-        ref={forwardedRef}
-        selectable={_selectable}
-        selectionColor={_selectionColor}
-        style={_style}>
-        {children}
-      </NativeText>
-    );
+    nativeText = <NativeText {...processedProps} ref={forwardedRef} />;
   }
 
   if (children == null) {
@@ -327,11 +323,11 @@ const TextImpl: component(
 
 TextImpl.displayName = 'Text';
 
-type TextPressabilityProps = $ReadOnly<{
-  onLongPress?: ?(event: GestureResponderEvent) => mixed,
-  onPress?: ?(event: GestureResponderEvent) => mixed,
-  onPressIn?: ?(event: GestureResponderEvent) => mixed,
-  onPressOut?: ?(event: GestureResponderEvent) => mixed,
+type TextPressabilityProps = Readonly<{
+  onLongPress?: ?(event: GestureResponderEvent) => unknown,
+  onPress?: ?(event: GestureResponderEvent) => unknown,
+  onPressIn?: ?(event: GestureResponderEvent) => unknown,
+  onPressOut?: ?(event: GestureResponderEvent) => unknown,
   onResponderGrant?: ?(event: GestureResponderEvent) => void,
   onResponderMove?: ?(event: GestureResponderEvent) => void,
   onResponderRelease?: ?(event: GestureResponderEvent) => void,
@@ -461,7 +457,7 @@ function useTextPressability({
   );
 }
 
-type NativePressableTextProps = $ReadOnly<{
+type NativePressableTextProps = Readonly<{
   textProps: NativeTextProps,
   textPressabilityProps: TextPressabilityProps,
 }>;

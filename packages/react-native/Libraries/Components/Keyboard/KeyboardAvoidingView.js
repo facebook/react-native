@@ -26,7 +26,7 @@ import Keyboard from './Keyboard';
 import * as React from 'react';
 import {createRef} from 'react';
 
-export type KeyboardAvoidingViewProps = $ReadOnly<{
+export type KeyboardAvoidingViewProps = Readonly<{
   ...ViewProps,
 
   /**

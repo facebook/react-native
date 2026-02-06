@@ -9,7 +9,7 @@
 
 #include <fbjni/fbjni.h>
 #include <memory>
-#include <mutex>
+#include <utility>
 
 using namespace facebook;
 
@@ -20,8 +20,8 @@ static constexpr auto kBlobModuleJavaDescriptor =
 
 BlobCollector::BlobCollector(
     jni::global_ref<jobject> blobModule,
-    const std::string& blobId)
-    : blobModule_(blobModule), blobId_(blobId) {}
+    std::string blobId)
+    : blobModule_(std::move(blobModule)), blobId_(std::move(blobId)) {}
 
 BlobCollector::~BlobCollector() {
   jni::ThreadScope::WithClassLoader([&] {
@@ -41,7 +41,7 @@ size_t BlobCollector::getBlobLength() {
 }
 
 void BlobCollector::nativeInstall(
-    jni::alias_ref<jclass>,
+    jni::alias_ref<jclass> /*unused*/,
     jni::alias_ref<jobject> blobModule,
     jlong jsContextNativePointer) {
   auto& runtime = *((jsi::Runtime*)jsContextNativePointer);
@@ -55,9 +55,9 @@ void BlobCollector::nativeInstall(
           1,
           [blobModuleRef](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
-              size_t count) {
+              size_t /*count*/) {
             auto blobId = args[0].asString(rt).utf8(rt);
             auto blobCollector =
                 std::make_shared<BlobCollector>(blobModuleRef, blobId);

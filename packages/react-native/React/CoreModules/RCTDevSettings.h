@@ -11,6 +11,14 @@
 #import <React/RCTEventEmitter.h>
 #import <React/RCTInitializing.h>
 
+@class RCTPackagerClientResponder;
+typedef uint32_t RCTHandlerToken;
+typedef void (^RCTNotificationHandler)(NSDictionary<NSString *, id> *);
+typedef void (^RCTRequestHandler)(NSDictionary<NSString *, id> *, RCTPackagerClientResponder *);
+typedef void (^RCTConnectedHandler)(void);
+
+@class RCTPackagerConnection;
+
 @protocol RCTPackagerClientMethod;
 
 /**
@@ -66,6 +74,11 @@
 @property (nonatomic, assign, setter=setHotLoadingEnabled:) BOOL isHotLoadingEnabled;
 
 /**
+ * Whether shake gesture is enabled.
+ */
+@property (nonatomic, assign) BOOL isShakeGestureEnabled;
+
+/**
  * Enables starting of profiling sampler on launch
  */
 @property (nonatomic, assign) BOOL startSamplingProfilerOnLaunch;
@@ -79,6 +92,10 @@
  * Whether the performance monitor is visible.
  */
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
+
+#if RCT_DEV
+@property (nonatomic, readonly) RCTPackagerConnection *packagerConnection;
+#endif
 
 /**
  * Toggle the element inspector.
@@ -97,7 +114,30 @@
 
 #if RCT_DEV_MENU
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler
-    forPackagerMethod:(NSString *)name __deprecated_msg("Use RCTPackagerConnection directly instead");
+    forPackagerMethod:(NSString *)name __deprecated_msg("Use addRequestHandler or addNotificationHandler instead");
+#endif
+
+#if RCT_DEV
+/**
+ * Registers a handler for a notification broadcast from the packager. An
+ * example is "reload" - an instruction to reload from the packager.
+ * If multiple notification handlers are registered for the same method, they
+ * will all be invoked sequentially.
+ */
+- (RCTHandlerToken)addNotificationHandler:(RCTNotificationHandler)handler
+                                    queue:(dispatch_queue_t)queue
+                                forMethod:(NSString *)method;
+
+/**
+ * Registers a handler for a request from the packager. An example is
+ * pokeSamplingProfiler; it asks for profile data from the client.
+ * Only one handler can be registered for a given method; calling this
+ * displaces any previous request handler registered for that method.
+ */
+- (RCTHandlerToken)addRequestHandler:(RCTRequestHandler)handler
+                               queue:(dispatch_queue_t)queue
+                           forMethod:(NSString *)method;
+
 #endif
 
 @end

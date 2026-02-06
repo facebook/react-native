@@ -106,8 +106,7 @@ TEST(parseMethodCalls, NullReturn) {
 }
 
 TEST(parseMethodCalls, MapReturn) {
-  auto jsText =
-      "[[0],[0],[[{\"foo\": \"hello\", \"bar\": 4.0, \"baz\": true}]]]";
+  auto jsText = R"([[0],[0],[[{"foo": "hello", "bar": 4.0, "baz": true}]]])";
   auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   EXPECT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];

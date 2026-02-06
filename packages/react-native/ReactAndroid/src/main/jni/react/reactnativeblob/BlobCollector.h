@@ -12,21 +12,17 @@
 
 namespace facebook::react {
 
-class BlobCollector : public jni::HybridClass<BlobCollector>,
-                      public jsi::HostObject {
+class BlobCollector : public jni::HybridClass<BlobCollector>, public jsi::HostObject {
  public:
-  BlobCollector(jni::global_ref<jobject> blobModule, const std::string& blobId);
+  BlobCollector(jni::global_ref<jobject> blobModule, std::string blobId);
   ~BlobCollector();
 
   size_t getBlobLength();
 
-  static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/modules/blob/BlobCollector;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/modules/blob/BlobCollector;";
 
-  static void nativeInstall(
-      jni::alias_ref<jclass>,
-      jni::alias_ref<jobject> blobModule,
-      jlong jsContextNativePointer);
+  static void
+  nativeInstall(jni::alias_ref<jclass> /*unused*/, jni::alias_ref<jobject> blobModule, jlong jsContextNativePointer);
 
   static void registerNatives();
 

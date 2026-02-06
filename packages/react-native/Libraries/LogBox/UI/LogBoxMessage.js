@@ -29,7 +29,7 @@ type Range = {
   upperBound: number,
 };
 
-function getLinkRanges(string: string): $ReadOnlyArray<Range> {
+function getLinkRanges(string: string): ReadonlyArray<Range> {
   const regex = /https?:\/\/[^\s$.?#].[^\s]*/gi;
   const matches = [];
 
@@ -101,7 +101,7 @@ function TappableLinks(props: {
 }
 
 const cleanContent = (content: string) =>
-  content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
+  content.replace(/^(TransformError |Error: )/g, '');
 
 function LogBoxMessage(props: Props): React.Node {
   const {content, substitutions}: Message = props.message;

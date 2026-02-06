@@ -1273,7 +1273,7 @@ const EVENT_PROPS: SchemaType = {
                       typeAnnotation: {
                         type: 'ArrayTypeAnnotation',
                         elementType: {
-                          type: 'StringLiteralUnionTypeAnnotation',
+                          type: 'UnionTypeAnnotation',
                           types: [
                             {
                               type: 'StringLiteralTypeAnnotation',
@@ -1383,7 +1383,7 @@ const EVENT_PROPS: SchemaType = {
                       name: 'orientation',
                       optional: false,
                       typeAnnotation: {
-                        type: 'StringLiteralUnionTypeAnnotation',
+                        type: 'UnionTypeAnnotation',
                         types: [
                           {
                             type: 'StringLiteralTypeAnnotation',
@@ -1916,6 +1916,1853 @@ const EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
   },
 };
 
+const ALL_PROP: SchemaType = {
+  modules: {
+    AllPropsNativeComponent: {
+      type: 'Component',
+      components: {
+        AllProp: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'stringPropNoDefault',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'booleanPropNoDefault',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'floatPropNoDefault',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'stringProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: '',
+              },
+            },
+            {
+              name: 'booleanProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: false,
+              },
+            },
+            {
+              name: 'floatProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 0.0,
+              },
+            },
+            {
+              name: 'intProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32TypeAnnotation',
+                default: 0,
+              },
+            },
+            {
+              name: 'stringUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: 'user_default',
+              },
+            },
+            {
+              name: 'booleanUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: true,
+              },
+            },
+            {
+              name: 'floatUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 3.14,
+              },
+            },
+            {
+              name: 'intUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32TypeAnnotation',
+                default: 9999,
+              },
+            },
+            {
+              name: 'stringEnumProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringEnumTypeAnnotation',
+                default: 'option1',
+                options: ['option1'],
+              },
+            },
+            {
+              name: 'intEnumProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32EnumTypeAnnotation',
+                default: 0,
+                options: [0],
+              },
+            },
+            {
+              name: 'objectArrayProp',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'array',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'StringTypeAnnotation',
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'objectPrimitiveRequiredProp',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'string',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: 'defaultString',
+                    },
+                  },
+                  {
+                    name: 'boolean',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: false,
+                    },
+                  },
+                  {
+                    name: 'float',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 3.14,
+                    },
+                  },
+                  {
+                    name: 'stringNoDefault',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: null,
+                    },
+                  },
+                  {
+                    name: 'booleanNoDefault',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: null,
+                    },
+                  },
+                  {
+                    name: 'floatNoDefault',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: null,
+                    },
+                  },
+                  {
+                    name: 'image',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ReservedPropTypeAnnotation',
+                      name: 'ImageSourcePrimitive',
+                    },
+                  },
+                  {
+                    name: 'color',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ReservedPropTypeAnnotation',
+                      name: 'ColorPrimitive',
+                    },
+                  },
+                  {
+                    name: 'point',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ReservedPropTypeAnnotation',
+                      name: 'PointPrimitive',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'nestedPropA',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'nestedPropB',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'nestedPropC',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'StringTypeAnnotation',
+                            default: '',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'nestedArrayAsProperty',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'arrayProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'ObjectTypeAnnotation',
+                        properties: [
+                          {
+                            name: 'stringProp',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'StringTypeAnnotation',
+                              default: '',
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const ALL_PROP_WITH_OPTIONAL_GEN: SchemaType = {
+  modules: {
+    AllPropsNativeComponent: {
+      type: 'Component',
+      components: {
+        AllPropWithOptionalGen: {
+          generateOptionalProperties: true,
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'stringPropNoDefault',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'booleanPropNoDefault',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'floatPropNoDefault',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'stringProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: '',
+              },
+            },
+            {
+              name: 'booleanProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: false,
+              },
+            },
+            {
+              name: 'floatProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 0.0,
+              },
+            },
+            {
+              name: 'intProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32TypeAnnotation',
+                default: 0,
+              },
+            },
+            {
+              name: 'stringUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: 'user_default',
+              },
+            },
+            {
+              name: 'booleanUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: true,
+              },
+            },
+            {
+              name: 'floatUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 3.14,
+              },
+            },
+            {
+              name: 'intUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32TypeAnnotation',
+                default: 9999,
+              },
+            },
+            {
+              name: 'stringEnumProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringEnumTypeAnnotation',
+                default: 'option1',
+                options: ['option1'],
+              },
+            },
+            {
+              name: 'intEnumProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32EnumTypeAnnotation',
+                default: 0,
+                options: [0],
+              },
+            },
+            {
+              name: 'objectArrayProp',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'array',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'StringTypeAnnotation',
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'objectPrimitiveRequiredProp',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'string',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: 'defaultString',
+                    },
+                  },
+                  {
+                    name: 'boolean',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: false,
+                    },
+                  },
+                  {
+                    name: 'float',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 3.14,
+                    },
+                  },
+                  {
+                    name: 'stringNoDefault',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: null,
+                    },
+                  },
+                  {
+                    name: 'booleanNoDefault',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: null,
+                    },
+                  },
+                  {
+                    name: 'floatNoDefault',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: null,
+                    },
+                  },
+                  {
+                    name: 'image',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ReservedPropTypeAnnotation',
+                      name: 'ImageSourcePrimitive',
+                    },
+                  },
+                  {
+                    name: 'color',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ReservedPropTypeAnnotation',
+                      name: 'ColorPrimitive',
+                    },
+                  },
+                  {
+                    name: 'point',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ReservedPropTypeAnnotation',
+                      name: 'PointPrimitive',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'nestedPropA',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'nestedPropB',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'nestedPropC',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'StringTypeAnnotation',
+                            default: '',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'nestedArrayAsProperty',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'arrayProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'ObjectTypeAnnotation',
+                        properties: [
+                          {
+                            name: 'stringProp',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'StringTypeAnnotation',
+                              default: '',
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const ALL_PROP_WITH_OPTIONAL_OBJECT_GEN: SchemaType = {
+  modules: {
+    AllPropsNativeComponent: {
+      type: 'Component',
+      components: {
+        AllPropWithOptionalObjectGen: {
+          generateOptionalProperties: true,
+          generateOptionalObjectProperties: true,
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'stringPropNoDefault',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'booleanPropNoDefault',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'floatPropNoDefault',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: null,
+              },
+            },
+            {
+              name: 'stringProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: '',
+              },
+            },
+            {
+              name: 'booleanProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: false,
+              },
+            },
+            {
+              name: 'floatProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 0.0,
+              },
+            },
+            {
+              name: 'intProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32TypeAnnotation',
+                default: 0,
+              },
+            },
+            {
+              name: 'stringUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: 'user_default',
+              },
+            },
+            {
+              name: 'booleanUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: true,
+              },
+            },
+            {
+              name: 'floatUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: 3.14,
+              },
+            },
+            {
+              name: 'intUserDefaultProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32TypeAnnotation',
+                default: 9999,
+              },
+            },
+            {
+              name: 'stringEnumProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringEnumTypeAnnotation',
+                default: 'option1',
+                options: ['option1'],
+              },
+            },
+            {
+              name: 'intEnumProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32EnumTypeAnnotation',
+                default: 0,
+                options: [0],
+              },
+            },
+            {
+              name: 'objectArrayProp',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'array',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'StringTypeAnnotation',
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'objectPrimitiveRequiredProp',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'string',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: 'defaultString',
+                    },
+                  },
+                  {
+                    name: 'boolean',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: false,
+                    },
+                  },
+                  {
+                    name: 'float',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 3.14,
+                    },
+                  },
+                  {
+                    name: 'stringNoDefault',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: null,
+                    },
+                  },
+                  {
+                    name: 'booleanNoDefault',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: null,
+                    },
+                  },
+                  {
+                    name: 'floatNoDefault',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: null,
+                    },
+                  },
+                  {
+                    name: 'image',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ReservedPropTypeAnnotation',
+                      name: 'ImageSourcePrimitive',
+                    },
+                  },
+                  {
+                    name: 'color',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ReservedPropTypeAnnotation',
+                      name: 'ColorPrimitive',
+                    },
+                  },
+                  {
+                    name: 'point',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'ReservedPropTypeAnnotation',
+                      name: 'PointPrimitive',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'nestedPropA',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'nestedPropB',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'nestedPropC',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'StringTypeAnnotation',
+                            default: '',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'nestedArrayAsProperty',
+              optional: false,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'arrayProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'ObjectTypeAnnotation',
+                        properties: [
+                          {
+                            name: 'stringProp',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'StringTypeAnnotation',
+                              default: '',
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const ARRAY_PROPS_WITH_OPTIONAL_GEN: SchemaType = {
+  modules: {
+    Slider: {
+      type: 'Component',
+      components: {
+        ArrayPropsWithOptionalGenNativeComponent: {
+          generateOptionalProperties: true,
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'names',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'StringTypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'disableds',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'BooleanTypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'progress',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'Int32TypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'radii',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'FloatTypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'colors',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'ColorPrimitive',
+                },
+              },
+            },
+            {
+              name: 'srcs',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'ImageSourcePrimitive',
+                },
+              },
+            },
+            {
+              name: 'points',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'PointPrimitive',
+                },
+              },
+            },
+            {
+              name: 'dimensions',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'DimensionPrimitive',
+                },
+              },
+            },
+            {
+              name: 'sizes',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'StringEnumTypeAnnotation',
+                  default: 'small',
+                  options: ['small', 'large'],
+                },
+              },
+            },
+            {
+              name: 'object',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'stringProp',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'StringTypeAnnotation',
+                        default: '',
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'array',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      // This needs to stay the same as the object above
+                      // to confirm that the structs are generated
+                      // with unique non-colliding names
+                      name: 'object',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ObjectTypeAnnotation',
+                          properties: [
+                            {
+                              name: 'stringProp',
+                              optional: true,
+                              typeAnnotation: {
+                                type: 'StringTypeAnnotation',
+                                default: '',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'arrayOfArrayOfObject',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ArrayTypeAnnotation',
+                  elementType: {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        name: 'stringProp',
+                        optional: true,
+                        typeAnnotation: {
+                          type: 'StringTypeAnnotation',
+                          default: '',
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              name: 'arrayOfMixed',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'MixedTypeAnnotation',
+                },
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const ARRAY_PROPS_WITH_OPTIONAL_OBJECT_GEN: SchemaType = {
+  modules: {
+    Slider: {
+      type: 'Component',
+      components: {
+        ArrayPropsWithOptionalObjectGenNativeComponent: {
+          generateOptionalProperties: true,
+          generateOptionalObjectProperties: true,
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'names',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'StringTypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'disableds',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'BooleanTypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'progress',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'Int32TypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'radii',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'FloatTypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'colors',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'ColorPrimitive',
+                },
+              },
+            },
+            {
+              name: 'srcs',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'ImageSourcePrimitive',
+                },
+              },
+            },
+            {
+              name: 'points',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'PointPrimitive',
+                },
+              },
+            },
+            {
+              name: 'dimensions',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'DimensionPrimitive',
+                },
+              },
+            },
+            {
+              name: 'sizes',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'StringEnumTypeAnnotation',
+                  default: 'small',
+                  options: ['small', 'large'],
+                },
+              },
+            },
+            {
+              name: 'object',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'stringProp',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'StringTypeAnnotation',
+                        default: '',
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'array',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      // This needs to stay the same as the object above
+                      // to confirm that the structs are generated
+                      // with unique non-colliding names
+                      name: 'object',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ObjectTypeAnnotation',
+                          properties: [
+                            {
+                              name: 'stringProp',
+                              optional: true,
+                              typeAnnotation: {
+                                type: 'StringTypeAnnotation',
+                                default: '',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'arrayOfArrayOfObject',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ArrayTypeAnnotation',
+                  elementType: {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        name: 'stringProp',
+                        optional: true,
+                        typeAnnotation: {
+                          type: 'StringTypeAnnotation',
+                          default: '',
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              name: 'arrayOfMixed',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'MixedTypeAnnotation',
+                },
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_GEN: SchemaType = {
+  modules: {
+    Slider: {
+      type: 'Component',
+      components: {
+        ArrayPropsOptionalGenNativeComponent: {
+          generateOptionalProperties: true,
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'nativePrimitives',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'colors',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ReservedPropTypeAnnotation',
+                          name: 'ColorPrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'srcs',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ReservedPropTypeAnnotation',
+                          name: 'ImageSourcePrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'points',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ReservedPropTypeAnnotation',
+                          name: 'PointPrimitive',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_OBJECT_GEN: SchemaType = {
+  modules: {
+    Slider: {
+      type: 'Component',
+      components: {
+        ArrayPropsOptionalObjectGenNativeComponent: {
+          generateOptionalProperties: true,
+          generateOptionalObjectProperties: true,
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'nativePrimitives',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'colors',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ReservedPropTypeAnnotation',
+                          name: 'ColorPrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'srcs',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ReservedPropTypeAnnotation',
+                          name: 'ImageSourcePrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'points',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ReservedPropTypeAnnotation',
+                          name: 'PointPrimitive',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const OBJECT_PROPS_WITH_OPTIONAL_GEN: SchemaType = {
+  modules: {
+    ObjectPropsNativeComponent: {
+      type: 'Component',
+      components: {
+        ObjectPropsWithOptionalGen: {
+          generateOptionalProperties: true,
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'objectProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'stringProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: '',
+                    },
+                  },
+                  {
+                    name: 'booleanProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: false,
+                    },
+                  },
+                  {
+                    name: 'floatProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 0.0,
+                    },
+                  },
+                  {
+                    name: 'intProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                      default: 0,
+                    },
+                  },
+                  {
+                    name: 'stringUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: 'user_default',
+                    },
+                  },
+                  {
+                    name: 'booleanUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: true,
+                    },
+                  },
+                  {
+                    name: 'floatUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 3.14,
+                    },
+                  },
+                  {
+                    name: 'intUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                      default: 9999,
+                    },
+                  },
+                  {
+                    name: 'stringEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringEnumTypeAnnotation',
+                      default: 'option1',
+                      options: ['option1'],
+                    },
+                  },
+                  {
+                    name: 'intEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32EnumTypeAnnotation',
+                      default: 0,
+                      options: [0],
+                    },
+                  },
+                  {
+                    name: 'objectArrayProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'array',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'StringTypeAnnotation',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'objectPrimitiveRequiredProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'image',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ReservedPropTypeAnnotation',
+                            name: 'ImageSourcePrimitive',
+                          },
+                        },
+                        {
+                          name: 'color',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ReservedPropTypeAnnotation',
+                            name: 'ColorPrimitive',
+                          },
+                        },
+                        {
+                          name: 'point',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ReservedPropTypeAnnotation',
+                            name: 'PointPrimitive',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedPropA',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'nestedPropB',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                name: 'nestedPropC',
+                                optional: true,
+                                typeAnnotation: {
+                                  type: 'StringTypeAnnotation',
+                                  default: '',
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedArrayAsProperty',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'arrayProp',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: [
+                                {
+                                  name: 'stringProp',
+                                  optional: false,
+                                  typeAnnotation: {
+                                    type: 'StringTypeAnnotation',
+                                    default: '',
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const OBJECT_PROPS_WITH_OPTIONAL_OBJECT_GEN: SchemaType = {
+  modules: {
+    ObjectPropsNativeComponent: {
+      type: 'Component',
+      components: {
+        ObjectPropsWithOptionalObjectGen: {
+          generateOptionalProperties: true,
+          generateOptionalObjectProperties: true,
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'objectProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'stringProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: '',
+                    },
+                  },
+                  {
+                    name: 'booleanProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: false,
+                    },
+                  },
+                  {
+                    name: 'floatProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 0.0,
+                    },
+                  },
+                  {
+                    name: 'intProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                      default: 0,
+                    },
+                  },
+                  {
+                    name: 'stringUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: 'user_default',
+                    },
+                  },
+                  {
+                    name: 'booleanUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: true,
+                    },
+                  },
+                  {
+                    name: 'floatUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 3.14,
+                    },
+                  },
+                  {
+                    name: 'intUserDefaultProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                      default: 9999,
+                    },
+                  },
+                  {
+                    name: 'stringEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringEnumTypeAnnotation',
+                      default: 'option1',
+                      options: ['option1'],
+                    },
+                  },
+                  {
+                    name: 'intEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32EnumTypeAnnotation',
+                      default: 0,
+                      options: [0],
+                    },
+                  },
+                  {
+                    name: 'objectArrayProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'array',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'StringTypeAnnotation',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'objectPrimitiveRequiredProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'image',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ReservedPropTypeAnnotation',
+                            name: 'ImageSourcePrimitive',
+                          },
+                        },
+                        {
+                          name: 'color',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ReservedPropTypeAnnotation',
+                            name: 'ColorPrimitive',
+                          },
+                        },
+                        {
+                          name: 'point',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ReservedPropTypeAnnotation',
+                            name: 'PointPrimitive',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedPropA',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'nestedPropB',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                name: 'nestedPropC',
+                                optional: true,
+                                typeAnnotation: {
+                                  type: 'StringTypeAnnotation',
+                                  default: '',
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedArrayAsProperty',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'arrayProp',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: [
+                                {
+                                  name: 'stringProp',
+                                  optional: false,
+                                  typeAnnotation: {
+                                    type: 'StringTypeAnnotation',
+                                    default: '',
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 module.exports = {
   NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
@@ -1946,4 +3793,13 @@ module.exports = {
   EXCLUDE_ANDROID,
   EXCLUDE_ANDROID_IOS,
   EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES,
+  ALL_PROP,
+  ALL_PROP_WITH_OPTIONAL_GEN,
+  ALL_PROP_WITH_OPTIONAL_OBJECT_GEN,
+  ARRAY_PROPS_WITH_OPTIONAL_GEN,
+  ARRAY_PROPS_WITH_OPTIONAL_OBJECT_GEN,
+  ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_GEN,
+  ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_OBJECT_GEN,
+  OBJECT_PROPS_WITH_OPTIONAL_GEN,
+  OBJECT_PROPS_WITH_OPTIONAL_OBJECT_GEN,
 };

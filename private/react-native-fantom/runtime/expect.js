@@ -14,7 +14,7 @@ import deepEqual from 'deep-equal';
 import {diff} from 'jest-diff';
 import {format, plugins} from 'pretty-format';
 
-const stringify = (data: mixed): string =>
+const stringify = (data: unknown): string =>
   format(data, {min: true, plugins: [plugins.ReactElement]});
 
 class ErrorWithCustomBlame extends Error {
@@ -23,6 +23,15 @@ class ErrorWithCustomBlame extends Error {
   #ignoredFrameCount: number = 5;
   #cachedProcessedStack: ?string;
   #customStack: ?string;
+
+  constructor(message?: string, options?: {cause?: unknown, ...}) {
+    super(message, options);
+
+    // The Error constructor forces an own `stack` property that shadows our
+    // getter, so deleting it restores that behavior.
+    // $FlowExpectedError[incompatible-type]
+    delete this.stack;
+  }
 
   blameToPreviousFrame(): this {
     this.#cachedProcessedStack = null;
@@ -34,6 +43,10 @@ class ErrorWithCustomBlame extends Error {
   get stack(): string {
     if (this.#cachedProcessedStack == null) {
       const originalStack = this.#customStack ?? super.stack;
+      // Calling `super.stack` forces an own `stack` property that shadows our
+      // getter, so deleting it restores that behavior.
+      // $FlowExpectedError[incompatible-type]
+      delete this.stack;
 
       const lines = originalStack.split('\n');
       const index = lines.findIndex(line =>
@@ -63,10 +76,10 @@ class ErrorWithCustomBlame extends Error {
 }
 
 class Expect {
-  #received: mixed;
+  #received: unknown;
   #isNot: boolean = false;
 
-  constructor(received: mixed) {
+  constructor(received: unknown) {
     this.#received = received;
   }
 
@@ -76,7 +89,7 @@ class Expect {
     return this;
   }
 
-  toEqual(expected: mixed): void {
+  toEqual(expected: unknown): void {
     const pass = deepEqual(this.#received, expected, {strict: true});
     if (!this.#isExpectedResult(pass)) {
       throw new ErrorWithCustomBlame(
@@ -91,12 +104,12 @@ class Expect {
     }
   }
 
-  toStrictEqual(expected: mixed): void {
-    let expectedType: mixed =
+  toStrictEqual(expected: unknown): void {
+    let expectedType: unknown =
       typeof expected === 'object' && expected !== null
         ? Object.getPrototypeOf(expected)
         : null;
-    let receivedType: mixed =
+    let receivedType: unknown =
       typeof this.#received === 'object' && this.#received !== null
         ? Object.getPrototypeOf(this.#received)
         : null;
@@ -116,7 +129,7 @@ class Expect {
     }
   }
 
-  toBe(expected: mixed): void {
+  toBe(expected: unknown): void {
     const pass = this.#received === expected;
     if (!this.#isExpectedResult(pass)) {
       throw new ErrorWithCustomBlame(
@@ -125,7 +138,7 @@ class Expect {
     }
   }
 
-  toBeInstanceOf(expected: Class<mixed>): void {
+  toBeInstanceOf(expected: Class<unknown>): void {
     const pass = this.#received instanceof expected;
     if (!this.#isExpectedResult(pass)) {
       throw new ErrorWithCustomBlame(
@@ -251,8 +264,8 @@ class Expect {
     }
   }
 
-  toBeCalledWith: (...args: Array<mixed>) => void;
-  toHaveBeenCalledWith(...args: Array<mixed>): void {
+  toBeCalledWith: (...args: Array<unknown>) => void;
+  toHaveBeenCalledWith(...args: Array<unknown>): void {
     const mock = this.#requireMock();
     const pass = mock.calls.some(callArgs =>
       deepEqual(callArgs, args, {strict: true}),
@@ -266,8 +279,8 @@ class Expect {
     }
   }
 
-  lastCalledWith: (...args: Array<mixed>) => void;
-  toHaveBeenLastCalledWith(...args: mixed[]): void {
+  lastCalledWith: (...args: Array<unknown>) => void;
+  toHaveBeenLastCalledWith(...args: unknown[]): void {
     const mock = this.#requireMock();
     if (mock.calls.length === 0) {
       if (this.#isNot) {
@@ -287,8 +300,8 @@ class Expect {
     }
   }
 
-  nthCalledWith: (index: number, ...args: mixed[]) => void;
-  toHaveBeenNthCalledWith(index: number, ...args: mixed[]): void {
+  nthCalledWith: (index: number, ...args: unknown[]) => void;
+  toHaveBeenNthCalledWith(index: number, ...args: unknown[]): void {
     if (index < 1) {
       throw new ErrorWithCustomBlame(
         `Expected index to be positive number, got ${index}.`,
@@ -392,7 +405,7 @@ class Expect {
     }
   }
 
-  toContain(item: mixed): void {
+  toContain(item: unknown): void {
     if (typeof this.#received === 'string') {
       if (typeof item !== 'string') {
         throw new ErrorWithCustomBlame(
@@ -423,7 +436,7 @@ class Expect {
     }
   }
 
-  toContainEqual(item: mixed): void {
+  toContainEqual(item: unknown): void {
     if (typeof this.#received === 'string') {
       if (typeof item !== 'string') {
         throw new ErrorWithCustomBlame(
@@ -523,7 +536,7 @@ class Expect {
     return this.#isNot ? ' not' : '';
   }
 
-  #requireMock(): JestMockFn<Array<mixed>, mixed>['mock'] {
+  #requireMock(): JestMockFn<Array<unknown>, unknown>['mock'] {
     try {
       return ensureMockFunction(this.#received).mock;
     } catch (error) {
@@ -553,6 +566,6 @@ Expect.prototype.lastCalledWith = Expect.prototype.toHaveBeenLastCalledWith;
 // $FlowExpectedError[method-unbinding]
 Expect.prototype.nthCalledWith = Expect.prototype.toHaveBeenNthCalledWith;
 
-const expect: mixed => Expect = (received: mixed) => new Expect(received);
+const expect: unknown => Expect = (received: unknown) => new Expect(received);
 
 export default expect;

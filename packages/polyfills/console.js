@@ -571,6 +571,11 @@ function consoleAssertPolyfill(expression, label) {
 
 function stub() {}
 
+// https://developer.chrome.com/docs/devtools/console/api#createtask
+function consoleCreateTaskStub() {
+  return {run: cb => cb()};
+}
+
 if (global.nativeLoggingHook) {
   const originalConsole = global.console;
   // Preserve the original `console` as `originalConsole`
@@ -587,6 +592,7 @@ if (global.nativeLoggingHook) {
     timeStamp: stub,
     count: stub,
     countReset: stub,
+    createTask: consoleCreateTaskStub,
     ...(originalConsole ?? {}),
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
@@ -705,6 +711,7 @@ if (global.nativeLoggingHook) {
     time: stub,
     timeEnd: stub,
     timeStamp: stub,
+    createTask: consoleCreateTaskStub,
   };
 
   Object.defineProperty(console, '_isPolyfilled', {

@@ -17,14 +17,6 @@ These scripts form the modern build setup for JavaScript ([Flow](https://flow.or
 - **When does the build run?**
   - Packages are built in CI workflows — both for integration/E2E tests, and before publishing to npm.
 
-#### Limitations/quirks
-
-> [!Note]
-> **🚧 Work in progress!** This is not the final state for our monorepo build tooling. Unfortunately, our solution options are narrow due to integration requirements with Meta's codebase.
-
-- Running `yarn build` will mutate `package.json` files in place, resulting in a dirty Git working copy.
-- We make use of "wrapper files" (`.js` → `.js.flow`) for each package entry point, to enable running from source with zero config. To validate these, package entry points must be explicitly defined via `"exports"`.
-
 ## Usage
 
 **💡 Reminder**: 99% of the time, there is no need to use `yarn build`, as all packages will run from source during development.
@@ -43,9 +35,6 @@ yarn clean
 ```
 
 Once built, developing in the monorepo should continue to work — now using the compiled version of each package.
-
-> [!Warning]
-> **Build changes should not be committed**. Currently, `yarn build` will make changes to each `package.json` file, which should not be committed. This is validated in CI.
 
 ## Configuration
 
@@ -77,6 +66,7 @@ packages/
 
 Notes:
 
+- We make use of "wrapper files" (`.js` → `.js.flow`) for each package entry point, to enable running from source with zero config. To validate these, package entry points must be explicitly defined via `"exports"`.
 - To minimize complexity, prefer only a single entry of `{".": "src/index.js"}` in `"exports"` for new packages.
 
 ## Build behavior
@@ -85,8 +75,7 @@ Running `yarn build` will compile each package following the below steps, depend
 
 - Create a `dist/` directory, replicating each source file under `src/`:
   - For every `@flow` file, strip Flow annotations using [flow-api-extractor](https://www.npmjs.com/package/flow-api-translator).
-  - For every entry point in `"exports"`, remove the `.js` wrapper file and compile from the `.flow.js` source.
-- Rewrite each package `"exports"` target to map to the `dist/` directory location.
+  - For each entry point in `"exports"`, remove the `.js` wrapper file and compile from the `.flow.js` source.
 - If configured, emit a Flow (`.js.flow`) or TypeScript (`.d.ts`) type definition file per source file, using [flow-api-extractor](https://www.npmjs.com/package/flow-api-translator).
 
 Together, this might look like the following:
@@ -99,7 +88,7 @@ packages/
       index.js.flow  # Flow definition file
       index.d.ts     # TypeScript definition file
       [other transformed files]
-    package.json     # "src/index.js" export rewritten to "dist/index.js"
+    package.json     # "publishConfig" will override exports to "dist/" on publish
 ```
 
 **Link**: [Example `dist/` output on npm](https://www.npmjs.com/package/@react-native/dev-middleware/v/0.76.5?activeTab=code).

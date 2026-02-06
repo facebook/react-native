@@ -16,12 +16,12 @@ import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {Platform, Switch, View} from 'react-native';
 
-type OnOffIndicatorProps = $ReadOnly<{on: boolean, testID: string}>;
+type OnOffIndicatorProps = Readonly<{on: boolean, testID: string}>;
 function OnOffIndicator({on, testID}: OnOffIndicatorProps) {
   return <RNTesterText testID={testID}>{on ? 'On' : 'Off'}</RNTesterText>;
 }
 
-type ExampleRowProps = $ReadOnly<{children: React.Node}>;
+type ExampleRowProps = Readonly<{children: React.Node}>;
 function ExampleRow({children}: ExampleRowProps) {
   return (
     <View
@@ -36,7 +36,7 @@ function ExampleRow({children}: ExampleRowProps) {
   );
 }
 
-type SimpleSwitchExampleState = $ReadOnly<{
+type SimpleSwitchExampleState = Readonly<{
   trueSwitchIsOn: boolean,
   falseSwitchIsOn: boolean,
 }>;
@@ -125,7 +125,7 @@ class DisabledSwitchExample extends React.Component<
   }
 }
 
-class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
+class ColorSwitchExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {colorFalseSwitchIsOn: boolean, colorTrueSwitchIsOn: boolean} = {
     colorTrueSwitchIsOn: true,
     colorFalseSwitchIsOn: false,
@@ -160,7 +160,7 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
+class EventSwitchExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {eventSwitchIsOn: boolean, eventSwitchRegressionIsOn: boolean} =
     {
       eventSwitchIsOn: false,
@@ -213,7 +213,7 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
+class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMe> {
   state: any | {iosBackgroundColor: string} = {
     iosBackgroundColor: '#ffa500',
   };
@@ -235,7 +235,7 @@ class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
+class OnChangeExample extends React.Component<{...}, $FlowFixMe> {
   render(): React.Node {
     return (
       <View>
@@ -252,7 +252,7 @@ class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
 
 class ContainerBackgroundColorStyleExample extends React.Component<
   {...},
-  $FlowFixMeState,
+  $FlowFixMe,
 > {
   render(): React.Node {
     return (

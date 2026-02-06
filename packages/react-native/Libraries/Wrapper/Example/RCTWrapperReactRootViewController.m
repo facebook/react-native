@@ -7,6 +7,8 @@
 
 #import "RCTWrapperReactRootViewController.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <RCTWrapper/RCTWrapper.h>
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
@@ -44,3 +46,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

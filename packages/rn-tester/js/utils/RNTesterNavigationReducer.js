@@ -45,7 +45,7 @@ const getUpdatedRecentlyUsed = ({
   if (existingKeys.includes(key)) {
     existingKeys = existingKeys.filter(k => k !== key);
   }
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   existingKeys.unshift(key);
 
   updatedRecentlyUsed[exampleType] = existingKeys.slice(0, 5);
@@ -55,7 +55,7 @@ const getUpdatedRecentlyUsed = ({
 
 export const RNTesterNavigationReducer = (
   state: RNTesterNavigationState,
-  action: {type: $Keys<typeof RNTesterNavigationActionsType>, data?: any},
+  action: {type: keyof typeof RNTesterNavigationActionsType, data?: any},
 ): RNTesterNavigationState => {
   const {
     data: {

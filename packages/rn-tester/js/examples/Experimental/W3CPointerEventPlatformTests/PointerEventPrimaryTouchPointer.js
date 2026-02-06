@@ -128,7 +128,7 @@ function PointerEventPrimaryTouchPointerTestCase(
   );
 }
 
-type Props = $ReadOnly<{}>;
+type Props = Readonly<{}>;
 export default function PointerEventPrimaryTouchPointer(
   props: Props,
 ): React.MixedElement {

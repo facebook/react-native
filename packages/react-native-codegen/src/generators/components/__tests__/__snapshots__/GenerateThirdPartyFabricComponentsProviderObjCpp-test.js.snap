@@ -83,6 +83,24 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
 
     {\\"MultiFileIncludedNativeComponent\\", MultiFileIncludedNativeComponentCls}, // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
+
+    {\\"AllProp\\", AllPropCls}, // ALL_PROP
+
+    {\\"AllPropWithOptionalGen\\", AllPropWithOptionalGenCls}, // ALL_PROP_WITH_OPTIONAL_GEN
+
+    {\\"AllPropWithOptionalObjectGen\\", AllPropWithOptionalObjectGenCls}, // ALL_PROP_WITH_OPTIONAL_OBJECT_GEN
+
+    {\\"ArrayPropsWithOptionalGenNativeComponent\\", ArrayPropsWithOptionalGenNativeComponentCls}, // ARRAY_PROPS_WITH_OPTIONAL_GEN
+
+    {\\"ArrayPropsWithOptionalObjectGenNativeComponent\\", ArrayPropsWithOptionalObjectGenNativeComponentCls}, // ARRAY_PROPS_WITH_OPTIONAL_OBJECT_GEN
+
+    {\\"ArrayPropsOptionalGenNativeComponent\\", ArrayPropsOptionalGenNativeComponentCls}, // ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_GEN
+
+    {\\"ArrayPropsOptionalObjectGenNativeComponent\\", ArrayPropsOptionalObjectGenNativeComponentCls}, // ARRAY_PROPS_WITH_NESTED_OBJECT_WITH_OPTIONAL_OBJECT_GEN
+
+    {\\"ObjectPropsWithOptionalGen\\", ObjectPropsWithOptionalGenCls}, // OBJECT_PROPS_WITH_OPTIONAL_GEN
+
+    {\\"ObjectPropsWithOptionalObjectGen\\", ObjectPropsWithOptionalObjectGenCls}, // OBJECT_PROPS_WITH_OPTIONAL_OBJECT_GEN
     #endif
     #endif
   };

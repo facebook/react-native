@@ -21,9 +21,11 @@ class AppSettings {
 
   static std::string defaultBundlePath;
 
+  static std::optional<unsigned int> inspectorPort;
+
   static std::optional<folly::dynamic> dynamicFeatureFlags;
 
-  static void init(int argc, char* argv[]);
+  static void init(int argc, char *argv[]);
 
  private:
   static void initInternal();

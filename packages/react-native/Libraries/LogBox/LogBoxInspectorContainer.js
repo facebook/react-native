@@ -16,8 +16,8 @@ import * as LogBoxData from './Data/LogBoxData';
 import LogBoxInspector from './UI/LogBoxInspector';
 import * as React from 'react';
 
-type Props = $ReadOnly<{
-  logs: $ReadOnlyArray<LogBoxLog>,
+type Props = Readonly<{
+  logs: ReadonlyArray<LogBoxLog>,
   selectedLogIndex: number,
   isDisabled?: ?boolean,
 }>;

@@ -19,6 +19,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /** Tests for [BaseJavaModule] and [JavaModuleWrapper] */
+@Suppress("DEPRECATION")
 @Config(shadows = [ShadowSoLoader::class, ShadowNativeLoader::class])
 @RunWith(RobolectricTestRunner::class)
 class BaseJavaModuleTest {
@@ -43,7 +44,7 @@ class BaseJavaModuleTest {
   private fun findMethod(mname: String, methods: List<JavaModuleWrapper.MethodDescriptor>): Int =
       methods.indexOfFirst({ it.name === mname })
 
-  @Test(expected = NativeArgumentsParseException::class)
+  @Test(expected = JSApplicationCausedNativeException::class)
   fun testCallMethodWithoutEnoughArgs() {
     val methodId = findMethod("regularMethod", methods)
     whenever(arguments.size()).thenReturn(1)

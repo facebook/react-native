@@ -18,11 +18,10 @@ namespace facebook::react::jsinspector_modern {
 /**
  * Internals of InspectorPackagerConnection.
  */
-class InspectorPackagerConnection::Impl
-    : public IWebSocketDelegate,
-      public IPageStatusListener,
-      // Used to generate `weak_ptr`s we can pass around.
-      public std::enable_shared_from_this<InspectorPackagerConnection::Impl> {
+class InspectorPackagerConnection::Impl : public IWebSocketDelegate,
+                                          public IPageStatusListener,
+                                          // Used to generate `weak_ptr`s we can pass around.
+                                          public std::enable_shared_from_this<InspectorPackagerConnection::Impl> {
  public:
   using SessionId = uint32_t;
 
@@ -39,8 +38,7 @@ class InspectorPackagerConnection::Impl
   bool isConnected() const;
   void connect();
   void closeQuietly();
-  void sendEventToAllConnections(std::string event);
-  std::unique_ptr<ILocalConnection> removeConnectionForPage(std::string pageId);
+  void sendEventToAllConnections(const std::string &event);
 
   /**
    * Send a message to the packager as soon as possible. This method is safe
@@ -51,41 +49,66 @@ class InspectorPackagerConnection::Impl
   void scheduleSendToPackager(
       folly::dynamic message,
       SessionId sourceSessionId,
-      std::string sourcePageId);
+      const std::string &sourcePageId,
+      const std::string &sourceProxySessionId);
 
  private:
   struct Session {
     std::unique_ptr<ILocalConnection> localConnection;
     SessionId sessionId;
+    std::string proxySessionId; // Session ID assigned by the proxy
   };
   class RemoteConnection;
+  using PageSessions = std::unordered_map<std::string /* proxySessionId */, Session>;
+  using InspectorSessionsByPage = std::unordered_map<std::string /* pageId */, PageSessions>;
 
   Impl(
       std::string url,
       std::string deviceName,
       std::string appName,
       std::unique_ptr<InspectorPackagerConnectionDelegate> delegate);
-  Impl(const Impl&) = delete;
-  Impl& operator=(const Impl&) = delete;
+  Impl(const Impl &) = delete;
+  Impl &operator=(const Impl &) = delete;
 
-  void handleDisconnect(folly::const_dynamic_view payload);
-  void handleConnect(folly::const_dynamic_view payload);
-  void handleWrappedEvent(folly::const_dynamic_view wrappedEvent);
-  void handleProxyMessage(folly::const_dynamic_view message);
+  void handleDisconnect(const folly::const_dynamic_view &payload);
+  void handleConnect(const folly::const_dynamic_view &payload);
+  void handleWrappedEvent(const folly::const_dynamic_view &payload);
+  void handleProxyMessage(const folly::const_dynamic_view &message);
+
+  /**
+   * Finds the page and session and referenced by the given message payload.
+   * Returns a pair of valid (dereferenceable) iterators if found, or nullopt otherwise.
+   * Supports both legacy single-session mode (proxySessionId == missing or empty) and multi-session mode
+   * (proxySessionId == some unique identifier assigned by the proxy).
+   */
+  std::optional<std::pair<InspectorSessionsByPage::iterator, PageSessions::iterator>> findPageAndSession(
+      const folly::const_dynamic_view &payload,
+      std::string_view caller);
+
+  /**
+   * Given a pair of (dereferenceable) iterators as returned by findPageAndSession, disconnects the
+   * given session. Invalidates the session iterator and may invalidate the page iterator. Returns
+   * the page iterator if still valid, or the corresponding end() iterator otherwise - this is
+   * useful when disconnecting multiple sessions in a loop.
+   */
+  InspectorSessionsByPage::iterator disconnectSession(
+      std::pair<InspectorSessionsByPage::iterator, PageSessions::iterator> sessionIterators);
+
+  /**
+   * Switch to legacy single-session mode.
+   */
+  void disconnectNonLegacySessions(const std::string &pageId);
+
   folly::dynamic pages();
   void reconnect();
   void closeAllConnections();
   void disposeWebSocket();
-  void sendToPackager(folly::dynamic message);
+  void sendToPackager(const folly::dynamic &message);
 
-  void abort(
-      std::optional<int> posixCode,
-      const std::string& message,
-      const std::string& cause);
+  void abort(std::optional<int> posixCode, const std::string &message, const std::string &cause);
 
   // IWebSocketDelegate methods
-  virtual void didFailWithError(std::optional<int> posixCode, std::string error)
-      override;
+  virtual void didFailWithError(std::optional<int> posixCode, std::string error) override;
   virtual void didReceiveMessage(std::string_view message) override;
   virtual void didOpen() override;
   virtual void didClose() override;
@@ -98,7 +121,9 @@ class InspectorPackagerConnection::Impl
   const std::string appName_;
   const std::unique_ptr<InspectorPackagerConnectionDelegate> delegate_;
 
-  std::unordered_map<std::string, Session> inspectorSessions_;
+  // Nested map: pageId → (proxySessionId → Session)
+  // Supports multiple concurrent debugger sessions per page
+  InspectorSessionsByPage inspectorSessionsByPage_;
   std::unique_ptr<IWebSocket> webSocket_;
   bool connected_{false};
   bool closed_{false};
@@ -110,23 +135,23 @@ class InspectorPackagerConnection::Impl
   SessionId nextSessionId_{1};
 };
 
-class InspectorPackagerConnection::Impl::RemoteConnection
-    : public IRemoteConnection {
+class InspectorPackagerConnection::Impl::RemoteConnection : public IRemoteConnection {
  public:
   RemoteConnection(
       std::weak_ptr<InspectorPackagerConnection::Impl> owningPackagerConnection,
       std::string pageId,
-      SessionId sessionId);
+      SessionId sessionId,
+      std::string proxySessionId);
 
   // IRemoteConnection methods
   void onMessage(std::string message) override;
   void onDisconnect() override;
 
  private:
-  const std::weak_ptr<InspectorPackagerConnection::Impl>
-      owningPackagerConnection_;
+  const std::weak_ptr<InspectorPackagerConnection::Impl> owningPackagerConnection_;
   const std::string pageId_;
   const SessionId sessionId_;
+  const std::string proxySessionId_;
 };
 
 } // namespace facebook::react::jsinspector_modern

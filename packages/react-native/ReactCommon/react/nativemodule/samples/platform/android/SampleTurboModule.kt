@@ -179,7 +179,10 @@ public class SampleTurboModule(private val context: ReactApplicationContext) :
   override fun getValueWithPromise(error: Boolean, promise: Promise) {
     if (error) {
       promise?.reject(
-          "code 1", "intentional promise rejection", Throwable("promise intentionally rejected"))
+          "code 1",
+          "intentional promise rejection",
+          Throwable("promise intentionally rejected"),
+      )
     } else {
       promise?.resolve("result")
     }
@@ -238,7 +241,8 @@ public class SampleTurboModule(private val context: ReactApplicationContext) :
                 } else {
                   promise.resolve(null)
                 }
-              })
+              },
+          )
           .launch("image/*")
     } else {
       promise.reject("error", "Unable to obtain an image uri without current activity")

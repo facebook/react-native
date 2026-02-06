@@ -14,7 +14,7 @@ using namespace facebook::jni;
 namespace facebook::react {
 
 jboolean JDynamicNative::isNullNative() {
-  return payload_.isNull();
+  return static_cast<jboolean>(payload_.isNull());
 }
 
 jni::local_ref<ReadableType> JDynamicNative::getTypeNative() {
@@ -26,7 +26,7 @@ jni::local_ref<jstring> JDynamicNative::asString() {
 }
 
 jboolean JDynamicNative::asBoolean() {
-  return payload_.asBool();
+  return static_cast<jboolean>(payload_.asBool());
 }
 
 jdouble JDynamicNative::asDouble() {
@@ -34,13 +34,16 @@ jdouble JDynamicNative::asDouble() {
 }
 
 jni::local_ref<ReadableArray> JDynamicNative::asArray() {
-  return jni::adopt_local(reinterpret_cast<ReadableArray::javaobject>(
-      ReadableNativeArray::newObjectCxxArgs(payload_).release()));
+  return jni::adopt_local(
+      reinterpret_cast<ReadableArray::javaobject>(
+          ReadableNativeArray::newObjectCxxArgs(payload_).release()));
 }
 
 jni::local_ref<ReadableMap> JDynamicNative::asMap() {
-  return jni::adopt_local(reinterpret_cast<ReadableMap::javaobject>(
-      ReadableNativeMap::createWithContents(std::move(payload_)).release()));
+  return jni::adopt_local(
+      reinterpret_cast<ReadableMap::javaobject>(
+          ReadableNativeMap::createWithContents(std::move(payload_))
+              .release()));
 }
 
 } // namespace facebook::react

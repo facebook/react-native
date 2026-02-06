@@ -10,21 +10,25 @@
 
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
 import type {PageDescription} from '../inspector-proxy/types';
-import type {BrowserLauncher} from '../types/BrowserLauncher';
+import type {
+  BrowserLauncher,
+  DebuggerShellPreparationResult,
+} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
+import type {ReadonlyURL} from '../types/ReadonlyURL';
 import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
-import url from 'url';
+import {createHash} from 'crypto';
 
 const LEGACY_SYNTHETIC_PAGE_TITLE =
   'React Native Experimental (Improved Chrome Reloads)';
 
-type Options = $ReadOnly<{
-  serverBaseUrl: string,
+type Options = Readonly<{
+  serverBaseUrl: ReadonlyURL,
   logger?: Logger,
   browserLauncher: BrowserLauncher,
   eventReporter?: EventReporter,
@@ -48,6 +52,19 @@ export default function openDebuggerMiddleware({
   experiments,
   inspectorProxy,
 }: Options): NextHandleFunction {
+  let shellPreparationPromise: Promise<DebuggerShellPreparationResult>;
+  if (experiments.enableStandaloneFuseboxShell) {
+    shellPreparationPromise =
+      browserLauncher?.unstable_prepareFuseboxShell?.() ??
+      Promise.resolve({code: 'not_implemented'});
+    shellPreparationPromise = shellPreparationPromise.then(result => {
+      eventReporter?.logEvent({
+        type: 'fusebox_shell_preparation_attempt',
+        result,
+      });
+      return result;
+    });
+  }
   return async (
     req: IncomingMessage,
     res: ServerResponse,
@@ -57,7 +74,8 @@ export default function openDebuggerMiddleware({
       req.method === 'POST' ||
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
-      const paresedUrl = url.parse(req.url, true);
+      const {searchParams} = new URL(req.url, 'http://example.com');
+
       const query: {
         /** @deprecated Will only match legacy Hermes targets */
         appId?: string,
@@ -66,11 +84,14 @@ export default function openDebuggerMiddleware({
         launchId?: string,
         telemetryInfo?: string,
         target?: string,
+        panel?: string,
         ...
-      } = paresedUrl.query;
+      } = Object.fromEntries(searchParams);
 
       const targets = inspectorProxy
-        .getPageDescriptions({requestorRelativeBaseUrl: new URL(serverBaseUrl)})
+        .getPageDescriptions({
+          requestorRelativeBaseUrl: serverBaseUrl,
+        })
         .filter(app => {
           const betterReloadingSupport =
             app.title === LEGACY_SYNTHETIC_PAGE_TITLE ||
@@ -144,23 +165,43 @@ export default function openDebuggerMiddleware({
             const frontendUrl = getDevToolsFrontendUrl(
               experiments,
               target.webSocketDebuggerUrl,
-              serverBaseUrl,
+              new URL(serverBaseUrl),
               {
                 launchId: query.launchId,
                 telemetryInfo: query.telemetryInfo,
                 appId: target.appId,
                 useFuseboxEntryPoint,
+                panel: query.panel,
               },
             );
-            if (
-              useFuseboxEntryPoint &&
-              experiments.enableStandaloneFuseboxShell
-            ) {
-              const windowKey = [
-                serverBaseUrl,
-                target.webSocketDebuggerUrl,
-                target.appId,
-              ].join('-');
+            let shouldUseStandaloneFuseboxShell =
+              useFuseboxEntryPoint && experiments.enableStandaloneFuseboxShell;
+            if (shouldUseStandaloneFuseboxShell) {
+              const shellPreparationResult = await shellPreparationPromise;
+              switch (shellPreparationResult.code) {
+                case 'success':
+                case 'not_implemented':
+                  break;
+                case 'platform_not_supported':
+                case 'possible_corruption':
+                case 'likely_offline':
+                case 'unexpected_error':
+                  shouldUseStandaloneFuseboxShell = false;
+                  break;
+                default:
+                  (shellPreparationResult.code: empty);
+              }
+            }
+            if (shouldUseStandaloneFuseboxShell) {
+              const windowKey = createHash('sha256')
+                .update(
+                  [
+                    serverBaseUrl,
+                    target.webSocketDebuggerUrl,
+                    target.appId,
+                  ].join('-'),
+                )
+                .digest('hex');
               if (!browserLauncher.unstable_showFuseboxShell) {
                 throw new Error(
                   'Fusebox shell is not supported by the current browser launcher',
@@ -182,7 +223,7 @@ export default function openDebuggerMiddleware({
               Location: getDevToolsFrontendUrl(
                 experiments,
                 target.webSocketDebuggerUrl,
-                serverBaseUrl,
+                new URL(serverBaseUrl),
                 {
                   relative: true,
                   launchId: query.launchId,

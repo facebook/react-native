@@ -11,7 +11,7 @@
 
 let _inGuard = 0;
 
-type ErrorHandler = (error: mixed, isFatal: boolean) => void;
+type ErrorHandler = (error: unknown, isFatal: boolean) => void;
 type Fn<Args, Return> = (...Args) => Return;
 
 /**
@@ -22,7 +22,7 @@ type Fn<Args, Return> = (...Args) => Return;
 let _globalHandler: ErrorHandler =
   global.RN$useAlwaysAvailableJSErrorHandling === true
     ? global.RN$handleException
-    : (e: mixed, isFatal: boolean) => {
+    : (e: unknown, isFatal: boolean) => {
         throw e;
       };
 
@@ -41,16 +41,20 @@ const ErrorUtils = {
   getGlobalHandler(): ErrorHandler {
     return _globalHandler;
   },
-  reportError(error: mixed): void {
+  reportError(error: unknown): void {
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     _globalHandler && _globalHandler(error, false);
   },
-  reportFatalError(error: mixed): void {
+  reportFatalError(error: unknown): void {
     // NOTE: This has an untyped call site in Metro.
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     _globalHandler && _globalHandler(error, true);
   },
-  applyWithGuard<TArgs: $ReadOnlyArray<mixed>, TOut>(
+  applyWithGuard<TArgs: ReadonlyArray<unknown>, TOut>(
     fun: Fn<TArgs, TOut>,
-    context?: ?mixed,
+    context?: ?unknown,
     args?: ?TArgs,
     // Unused, but some code synced from www sets it to null.
     unused_onError?: null,
@@ -59,7 +63,7 @@ const ErrorUtils = {
   ): ?TOut {
     try {
       _inGuard++;
-      /* $FlowFixMe[incompatible-call] : TODO T48204745 (1) apply(context,
+      /* $FlowFixMe[incompatible-type] : TODO T48204745 (1) apply(context,
        * null) is fine. (2) array -> rest array should work */
       /* $FlowFixMe[incompatible-type] : TODO T48204745 (1) apply(context,
        * null) is fine. (2) array -> rest array should work */
@@ -71,13 +75,13 @@ const ErrorUtils = {
     }
     return null;
   },
-  applyWithGuardIfNeeded<TArgs: $ReadOnlyArray<mixed>, TOut>(
+  applyWithGuardIfNeeded<TArgs: ReadonlyArray<unknown>, TOut>(
     fun: Fn<TArgs, TOut>,
-    context?: ?mixed,
+    context?: ?unknown,
     args?: ?TArgs,
   ): ?TOut {
     if (ErrorUtils.inGuard()) {
-      /* $FlowFixMe[incompatible-call] : TODO T48204745 (1) apply(context,
+      /* $FlowFixMe[incompatible-type] : TODO T48204745 (1) apply(context,
        * null) is fine. (2) array -> rest array should work */
       /* $FlowFixMe[incompatible-type] : TODO T48204745 (1) apply(context,
        * null) is fine. (2) array -> rest array should work */
@@ -90,10 +94,10 @@ const ErrorUtils = {
   inGuard(): boolean {
     return !!_inGuard;
   },
-  guard<TArgs: $ReadOnlyArray<mixed>, TOut>(
+  guard<TArgs: ReadonlyArray<unknown>, TOut>(
     fun: Fn<TArgs, TOut>,
     name?: ?string,
-    context?: ?mixed,
+    context?: ?unknown,
   ): ?(...TArgs) => ?TOut {
     // TODO: (moti) T48204753 Make sure this warning is never hit and remove it - types
     // should be sufficient.

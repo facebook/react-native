@@ -18,12 +18,13 @@ const {
   getTypeScriptCompilerOptions,
 } = require('./config');
 const babel = require('@babel/core');
+const {spawn} = require('child_process');
 const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
-const glob = require('glob');
 const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
+const {globSync} = require('tinyglobby');
 const ts = require('typescript');
 const {parseArgs, styleText} = require('util');
 
@@ -35,7 +36,7 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 const config = {
   allowPositionals: true,
   options: {
-    validate: {type: 'boolean'},
+    prepack: {type: 'boolean'},
     help: {type: 'boolean'},
   },
 };
@@ -43,8 +44,8 @@ const config = {
 async function build() {
   const {
     positionals: packageNames,
-    values: {validate, help},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    values: {prepack, help},
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
@@ -58,18 +59,17 @@ async function build() {
   a package list is provided, builds only those specified.
 
   Options:
-    --validate        Validate that no build artifacts have been accidentally
-                      committed.
+    --prepack         Run the ./prepack.js script after building, applying
+                      package.json "publishConfig" changes to the working copy.
+                      (This is usually run later in CI before npm publish).
     `);
     process.exitCode = 0;
     return;
   }
 
-  if (!validate) {
-    console.log(
-      '\n' + styleText(['bold', 'inverse'], 'Building packages') + '\n',
-    );
-  }
+  console.log(
+    '\n' + styleText(['bold', 'inverse'], 'Building packages') + '\n',
+  );
 
   const packagesToBuild = packageNames.length
     ? packageNames.filter(packageName => packageName in buildConfig.packages)
@@ -77,41 +77,26 @@ async function build() {
 
   let ok = true;
   for (const packageName of packagesToBuild) {
-    if (validate) {
-      ok &&= await checkPackage(packageName);
-    } else {
-      await buildPackage(packageName);
-    }
+    await buildPackage(packageName, prepack);
   }
 
   process.exitCode = ok ? 0 : 1;
 }
 
-async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
-  const artifacts = await exportedBuildArtifacts(packageName);
-  if (artifacts.length > 0) {
-    console.log(
-      `${styleText('bgRed', packageName)}: has been built and the ${styleText('bold', 'build artifacts')} committed to the repository. This will break Flow checks.`,
-    );
-    return false;
-  }
-  return true;
-}
-
-async function buildPackage(packageName /*: string */) {
+async function buildPackage(packageName /*: string */, prepack /*: boolean */) {
   try {
     const {emitTypeScriptDefs} = getBuildOptions(packageName);
     const entryPoints = await getEntryPoints(packageName);
 
-    const files = glob
-      .sync(path.resolve(PACKAGES_DIR, packageName, SRC_DIR, '**/*'), {
-        nodir: true,
-      })
-      .filter(
-        file =>
-          !entryPoints.has(file) &&
-          !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
-      );
+    const files = globSync('**/*', {
+      cwd: path.resolve(PACKAGES_DIR, packageName, SRC_DIR),
+      onlyFiles: true,
+      absolute: true,
+    }).filter(
+      file =>
+        !entryPoints.has(file) &&
+        !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
+    );
 
     process.stdout.write(
       `${packageName} ${styleText('dim', '.').repeat(72 - packageName.length)} `,
@@ -136,8 +121,23 @@ async function buildPackage(packageName /*: string */) {
       validateTypeScriptDefs(packageName);
     }
 
-    // Rewrite package.json "exports" field (src -> dist)
-    await rewritePackageExports(packageName);
+    // Run prepack script if configured
+    if (prepack) {
+      await new Promise((resolve, reject) => {
+        const child = spawn('npm', ['run', 'prepack'], {
+          cwd: path.resolve(PACKAGES_DIR, packageName),
+          stdio: ['ignore', 'ignore', 'inherit'],
+        });
+        child.on('close', code => {
+          if (code !== 0) {
+            reject(new Error(`prepack script exited with code ${code}`));
+          } else {
+            resolve();
+          }
+        });
+        child.on('error', reject);
+      });
+    }
 
     process.stdout.write(
       styleText(['reset', 'inverse', 'bold', 'green'], ' DONE '),
@@ -187,9 +187,9 @@ async function buildFile(
   const prettierConfig = {parser: 'babel'};
 
   // Transform source file using Babel
-  const transformed = prettier.format(
+  const transformed = await prettier.format(
     (await babel.transformFileAsync(file, getBabelConfig(packageName))).code,
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     prettierConfig,
   );
@@ -227,33 +227,6 @@ type PackageJson = {
   exports?: {[subpath: string]: string | mixed},
 };
 */
-
-function isStringOnly(entries /*: mixed */) /*: entries is string */ {
-  return typeof entries === 'string';
-}
-
-async function exportedBuildArtifacts(
-  packageName /*: string */,
-) /*: Promise<string[]> */ {
-  const packagePath = path.resolve(PACKAGES_DIR, packageName, 'package.json');
-  const pkg /*: PackageJson */ = JSON.parse(
-    await fs.readFile(packagePath, 'utf8'),
-  );
-  if (pkg.exports == null) {
-    throw new Error(
-      packageName +
-        ' does not define an "exports" field in its package.json. As part ' +
-        'of the build setup, this field must be used in order to rewrite ' +
-        'paths to built files in production.',
-    );
-  }
-
-  return Object.values(pkg.exports)
-    .filter(isStringOnly)
-    .filter(filepath =>
-      path.dirname(filepath).split(path.sep).includes(BUILD_DIR),
-    );
-}
 
 /**
  * Get the set of Flow entry points to build.
@@ -330,18 +303,15 @@ async function getEntryPoints(
         continue;
       }
 
-      // Normalize to original path if previously rewritten
-      const original = normalizeExportsTarget(target);
-
-      if (original.endsWith('.flow.js')) {
+      if (target.endsWith('.flow.js')) {
         throw new Error(
-          `Package ${packageName} defines exports["${subpath}"] = "${original}". ` +
+          `Package ${packageName} defines exports["${subpath}"] = "${target}". ` +
             'Expecting a .js wrapper file. See other monorepo packages for examples.',
         );
       }
 
       // Our special case for wrapper files that need to be stripped
-      const resolvedTarget = path.resolve(PACKAGES_DIR, packageName, original);
+      const resolvedTarget = path.resolve(PACKAGES_DIR, packageName, target);
       const resolvedFlowTarget = resolvedTarget.replace(/\.js$/, '.flow.js');
 
       try {
@@ -383,55 +353,12 @@ function getBuildPath(file /*: string */) /*: string */ {
   );
 }
 
-async function rewritePackageExports(packageName /*: string */) {
-  const packageJsonPath = path.join(PACKAGES_DIR, packageName, 'package.json');
-  const pkg = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
-
-  pkg.exports = rewriteExportsField(pkg.exports);
-
-  if (pkg.main != null) {
-    pkg.main = rewriteExportsTarget(pkg.main);
-  }
-
-  await fs.writeFile(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n');
-}
-
-/*::
-type ExportsField = {
-  [subpath: string]: ExportsField | string,
-} | string;
-*/
-
-function rewriteExportsField(
-  exportsField /*: ExportsField */,
-) /*: ExportsField */ {
-  if (typeof exportsField === 'string') {
-    return rewriteExportsTarget(exportsField);
-  }
-
-  for (const key in exportsField) {
-    if (typeof exportsField[key] === 'string') {
-      exportsField[key] = rewriteExportsTarget(exportsField[key]);
-    } else if (typeof exportsField[key] === 'object') {
-      exportsField[key] = rewriteExportsField(exportsField[key]);
-    }
-  }
-
-  return exportsField;
-}
-
-function rewriteExportsTarget(target /*: string */) /*: string */ {
-  return target.replace('./' + SRC_DIR + '/', './' + BUILD_DIR + '/');
-}
-
-function normalizeExportsTarget(target /*: string */) /*: string */ {
-  return target.replace('./' + BUILD_DIR + '/', './' + SRC_DIR + '/');
-}
-
 function validateTypeScriptDefs(packageName /*: string */) {
-  const files = glob.sync(
-    path.resolve(PACKAGES_DIR, packageName, BUILD_DIR, '**/*.d.ts'),
-  );
+  const files = globSync('**/*.d.ts', {
+    cwd: path.resolve(PACKAGES_DIR, packageName, BUILD_DIR),
+    absolute: true,
+    onlyFiles: true,
+  });
   const compilerOptions = {
     ...getTypeScriptCompilerOptions(packageName),
     noEmit: true,
@@ -458,7 +385,7 @@ function validateTypeScriptDefs(packageName /*: string */) {
           '\n',
         );
         console.log(
-          // $FlowIssue[incompatible-use] Type refined above
+          // $FlowFixMe[incompatible-use] Type refined above
           `${diagnostic.file.fileName} (${line + 1},${
             character + 1
           }): ${message}`,

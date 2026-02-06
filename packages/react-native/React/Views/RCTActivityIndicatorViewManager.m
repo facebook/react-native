@@ -7,6 +7,8 @@
 
 #import "RCTActivityIndicatorViewManager.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import "RCTActivityIndicatorView.h"
 #import "RCTConvert.h"
 
@@ -59,3 +61,5 @@ RCT_CUSTOM_VIEW_PROPERTY(animating, BOOL, UIActivityIndicatorView)
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

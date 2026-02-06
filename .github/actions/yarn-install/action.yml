@@ -2,8 +2,6 @@ name: yarn-install
 runs:
   using: composite
   steps:
-    - name: Setup node.js
-      uses: ./.github/actions/setup-node
     - name: Install dependencies
       shell: bash
       run: |

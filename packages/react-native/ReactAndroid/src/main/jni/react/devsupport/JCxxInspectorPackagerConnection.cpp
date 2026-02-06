@@ -22,7 +22,7 @@ JCxxInspectorPackagerConnection::JCxxInspectorPackagerConnection(
 
 local_ref<JCxxInspectorPackagerConnection::jhybriddata>
 JCxxInspectorPackagerConnection::initHybrid(
-    alias_ref<jclass>,
+    alias_ref<jclass> /*unused*/,
     const std::string& url,
     const std::string& deviceName,
     const std::string& packageName,

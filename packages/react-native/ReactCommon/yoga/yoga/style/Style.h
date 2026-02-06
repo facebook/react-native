@@ -673,9 +673,9 @@ class YG_EXPORT Style {
         return computeRightEdge(position_, direction);
       case PhysicalEdge::Bottom:
         return computeBottomEdge(position_);
+      default:
+        fatalWithMessage("Invalid physical edge");
     }
-
-    fatalWithMessage("Invalid physical edge");
   }
 
   Style::Length computeMargin(PhysicalEdge edge, Direction direction) const {
@@ -688,9 +688,9 @@ class YG_EXPORT Style {
         return computeRightEdge(margin_, direction);
       case PhysicalEdge::Bottom:
         return computeBottomEdge(margin_);
+      default:
+        fatalWithMessage("Invalid physical edge");
     }
-
-    fatalWithMessage("Invalid physical edge");
   }
 
   Style::Length computePadding(PhysicalEdge edge, Direction direction) const {
@@ -703,9 +703,9 @@ class YG_EXPORT Style {
         return computeRightEdge(padding_, direction);
       case PhysicalEdge::Bottom:
         return computeBottomEdge(padding_);
+      default:
+        fatalWithMessage("Invalid physical edge");
     }
-
-    fatalWithMessage("Invalid physical edge");
   }
 
   Style::Length computeBorder(PhysicalEdge edge, Direction direction) const {
@@ -718,9 +718,9 @@ class YG_EXPORT Style {
         return computeRightEdge(border_, direction);
       case PhysicalEdge::Bottom:
         return computeBottomEdge(border_);
+      default:
+        fatalWithMessage("Invalid physical edge");
     }
-
-    fatalWithMessage("Invalid physical edge");
   }
 
   Direction direction_ : bitCount<Direction>() = Direction::Inherit;

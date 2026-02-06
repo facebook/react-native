@@ -23,9 +23,6 @@ namespace facebook::react {
  *   value: value
  * })
  */
-void defineReadOnlyGlobal(
-    jsi::Runtime& runtime,
-    const std::string& propName,
-    jsi::Value&& value);
+void defineReadOnlyGlobal(jsi::Runtime &runtime, const std::string &propName, jsi::Value &&value);
 
 } // namespace facebook::react
