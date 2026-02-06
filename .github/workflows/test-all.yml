@@ -38,6 +38,7 @@ jobs:
     if: github.repository == 'facebook/react-native'
     outputs:
       debugger_shell: ${{ steps.filter.outputs.debugger_shell }}
+      any_code_change: ${{ steps.filter.outputs.any_code_change || github.event_name != 'pull_request' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -46,12 +47,16 @@ jobs:
         id: filter
         with:
           filters: |
+            any_code_change:
+              - '!**/__docs__/**'
+              - '!**/*.md'
             debugger_shell:
               - 'packages/debugger-shell/**'
               - 'scripts/debugger-shell/**'
 
   prebuild_apple_dependencies:
-    if: github.repository == 'facebook/react-native'
+    needs: check_code_changes
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -77,6 +82,8 @@ jobs:
 
   test_ios_rntester_dynamic_frameworks:
     runs-on: macos-15-large
+    needs: check_code_changes
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -297,7 +304,8 @@ jobs:
 
   run_fantom_tests:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type]
+    needs: [set_release_type, check_code_changes]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
@@ -316,7 +324,8 @@ jobs:
 
   build_android:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type]
+    needs: [set_release_type, check_code_changes]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
@@ -518,7 +527,8 @@ jobs:
 
   test_js:
     runs-on: ubuntu-latest
-    needs: lint
+    needs: [check_code_changes, lint]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -533,7 +543,8 @@ jobs:
 
   build_js_types:
     runs-on: ubuntu-latest
-    needs: lint
+    needs: [check_code_changes, lint]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
