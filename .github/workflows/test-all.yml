@@ -304,7 +304,7 @@ jobs:
 
   run_fantom_tests:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type, check_code_changes]
+    needs: [set_release_type, check_code_changes, lint]
     if: needs.check_code_changes.outputs.any_code_change == 'true'
     container:
       image: reactnativecommunity/react-native-android:latest
