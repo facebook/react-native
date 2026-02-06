@@ -411,22 +411,7 @@
                           }
                         }];
 
-  // Account for stroke width in baseline calculation
-  __block CGFloat strokeWidth = 0;
-  [attributedText enumerateAttribute:@"RCTTextStrokeWidth"
-                             inRange:NSMakeRange(0, attributedText.length)
-                             options:0
-                          usingBlock:^(id value, NSRange range, BOOL *stop) {
-    if (value && [value isKindOfClass:[NSNumber class]]) {
-      CGFloat width = [value floatValue];
-      if (width > 0) {
-        strokeWidth = MAX(strokeWidth, width);
-        *stop = YES;
-      }
-    }
-  }];
-
-  return size.height + maximumDescender + strokeWidth;
+  return size.height + maximumDescender;
 }
 
 static YGSize RCTTextShadowViewMeasure(
@@ -474,7 +459,6 @@ static YGSize RCTTextShadowViewMeasure(
 
   if (strokeWidth > 0) {
     size.width += strokeWidth;
-    size.height += strokeWidth;
   }
 
   size = (CGSize){
