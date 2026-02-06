@@ -76,8 +76,9 @@ inline void updateTransformProps(
       serializeTransformAxis(operation, "perspective", 0, resultTranslateArray);
       return;
     case TransformOperationType::Arbitrary: {
-      operationName = "matrix";
-      resultTranslateArray[operationName] = transform;
+      folly::dynamic result = folly::dynamic::object();
+      result["matrix"] = transform;
+      resultTranslateArray.push_back(std::move(result));
       return;
     }
     case TransformOperationType::Identity:
