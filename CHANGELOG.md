@@ -583,10 +583,20 @@ None
 
 ## v0.81.6
 
-### Other
+### Fixed
 
-- Backout #46896 - Attempt to fix #50274 ([a23dd04dd2](https://github.com/facebook/react-native/commit/a23dd04dd215450047269a230c920e939c7f2fe6) by [@robhogan](https://github.com/robhogan))
-- Sync React 19.1.4 into React Native ([b935c53875](https://github.com/facebook/react-native/commit/b935c53875147f38d1c5579871d966a6890032ca) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **Assets**: Handle `unstable_path` query param in asset URLs ([42986f27a0](https://github.com/facebook/react-native/commit/42986f27a0285e501f71cf5cedacedefdc44c74e) by [@tido64](https://github.com/tido64))
+- **Codegen**: Update `generate-artifacts-executor` script to account for optional output path ([716303362a](https://github.com/facebook/react-native/commit/716303362aead08310e2101f15a319b64a602026) by [@kitten](https://github.com/kitten))
+
+#### Android specific
+
+- **Legacy Architecture**: Fix legacy architecture Android freeze on metro refresh ([e7ed0b1347](https://github.com/facebook/react-native/commit/e7ed0b13475cc6b80ee421d679740feba4f71a9a) by [@robhogan](https://github.com/robhogan))
+
+#### iOS specific
+
+- **Codegen**: Fix outputs when iOS artifacts generator is run from Xcode script phase ([c0290329cd](https://github.com/facebook/react-native/commit/c0290329cdb1771ec087c8552049a287c67259c6) by [@kitten](https://github.com/kitten))
+- **Events**: Raised the maximum number of pointers tracked at the same time to 17 ([58bd51e7e2](https://github.com/facebook/react-native/commit/58bd51e7e23cbd1f5f0f360587610c9fc70c0d76) by [@j-piasecki](https://github.com/j-piasecki))
+
 
 ## v0.81.5
 
