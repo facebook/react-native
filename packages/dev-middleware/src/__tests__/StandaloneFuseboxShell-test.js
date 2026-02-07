@@ -109,9 +109,6 @@ describe('enableStandaloneFuseboxShell experiment', () => {
           // Ensure the request was handled properly
           expect(response.statusCode).toBe(200);
 
-          // Ensure the debugger preparation function was called
-          expect(unstable_prepareFuseboxShell).toHaveBeenCalled();
-
           // Ensure the debugger was launched using the standalone shell API
           expect(unstable_showFuseboxShell).toHaveBeenCalledWith(
             expect.any(String),
@@ -138,6 +135,9 @@ describe('enableStandaloneFuseboxShell experiment', () => {
             expect.any(String),
             firstWindowKey,
           );
+
+          // Ensure the debugger preparation function was called, just one time, during middleware initialization
+          expect(unstable_prepareFuseboxShell).toHaveBeenCalledTimes(1);
 
           // No fallback needed
           expect(launchDebuggerAppWindow).not.toHaveBeenCalled();
