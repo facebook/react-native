@@ -9091,10 +9091,11 @@ __DEV__ &&
           pushHostContext(workInProgress);
           break;
         case 4:
-          pushHostContainer(
-            workInProgress,
-            workInProgress.stateNode.containerInfo
-          );
+          var _containerInfo = workInProgress.stateNode.containerInfo;
+          if (_containerInfo._isPortal) {
+            _containerInfo.surfaceId = requiredContext(rootInstanceStackCursor.current).containerTag;
+          }
+          pushHostContainer(workInProgress, _containerInfo);
           break;
         case 10:
           pushProvider(
@@ -9426,11 +9427,15 @@ __DEV__ &&
           return null;
         case 13:
           return updateSuspenseComponent(current, workInProgress, renderLanes);
-        case 4:
+        case 4: {
+          var _containerInfo2 = workInProgress.stateNode.containerInfo;
+          if (_containerInfo2._isPortal) {
+            _containerInfo2.surfaceId = requiredContext(rootInstanceStackCursor.current).containerTag;
+          }
           return (
             pushHostContainer(
               workInProgress,
-              workInProgress.stateNode.containerInfo
+              _containerInfo2
             ),
             (returnFiber = workInProgress.pendingProps),
             null === current
@@ -9448,6 +9453,7 @@ __DEV__ &&
                 ),
             workInProgress.child
           );
+        }
         case 11:
           return updateForwardRef(
             current,
@@ -10056,7 +10062,7 @@ __DEV__ &&
               node: createNode(
                 renderLanes,
                 _type2.uiViewClassName,
-                current.containerTag,
+                current.surfaceId || current.containerTag,
                 keepChildren,
                 workInProgress
               ),
@@ -15902,7 +15908,7 @@ __DEV__ &&
         node: createNode(
           hostContext,
           "RCTRawText",
-          rootContainerInstance.containerTag,
+          rootContainerInstance.surfaceId || rootContainerInstance.containerTag,
           { text: text },
           internalInstanceHandle
         )
@@ -15961,7 +15967,11 @@ __DEV__ &&
       };
     }
     function replaceContainerChildren(container, newChildren) {
-      completeRoot(container.containerTag, newChildren);
+      if (container._isPortal) {
+        mountPortalChildren(container.containerTag, newChildren);
+      } else {
+        completeRoot(container.containerTag, newChildren);
+      }
     }
     function nativeOnUncaughtError(error, errorInfo) {
       !1 !==
@@ -18701,6 +18711,7 @@ __DEV__ &&
       appendChildNode = _nativeFabricUIManage.appendChild,
       appendChildNodeToSet = _nativeFabricUIManage.appendChildToSet,
       completeRoot = _nativeFabricUIManage.completeRoot,
+      mountPortalChildren = _nativeFabricUIManage.mountPortalChildren,
       registerEventHandler = _nativeFabricUIManage.registerEventHandler,
       FabricDiscretePriority =
         _nativeFabricUIManage.unstable_DiscreteEventPriority,
@@ -18925,9 +18936,14 @@ __DEV__ &&
       return injectInternals(internals);
     })();
     exports.createPortal = function (children, containerTag) {
+      var portalContainer = {
+        containerTag: containerTag,
+        publicInstance: null,
+        _isPortal: true
+      };
       return createPortal$1(
         children,
-        containerTag,
+        portalContainer,
         null,
         2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null
       );

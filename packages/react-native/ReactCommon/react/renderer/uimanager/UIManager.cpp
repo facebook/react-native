@@ -21,6 +21,7 @@
 
 #include <glog/logging.h>
 
+#include <unordered_set>
 #include <utility>
 
 namespace {
@@ -182,6 +183,20 @@ void UIManager::appendChild(
   componentDescriptor.appendChild(parentShadowNode, childShadowNode);
 }
 
+static std::shared_ptr<const ShadowNode> findShadowNodeByTagRecursively(
+    std::shared_ptr<const ShadowNode> parentShadowNode,
+    Tag tag);
+
+void UIManager::mountPortalChildren(
+    Tag targetTag,
+    const ShadowNode::UnsharedListOfShared& portalChildren) {
+  if (portalChildren->empty()) {
+    activePortals_.erase(targetTag);
+  } else {
+    activePortals_[targetTag] = portalChildren;
+  }
+}
+
 void UIManager::completeSurface(
     SurfaceId surfaceId,
     const ShadowNode::UnsharedListOfShared& rootChildren,
@@ -191,12 +206,54 @@ void UIManager::completeSurface(
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
     auto result = shadowTree.commit(
         [&](const RootShadowNode& oldRootShadowNode) {
-          return std::make_shared<RootShadowNode>(
+          auto newRoot = std::make_shared<RootShadowNode>(
               oldRootShadowNode,
               ShadowNodeFragment{
                   .props = ShadowNodeFragment::propsPlaceholder(),
                   .children = rootChildren,
               });
+
+          // Apply any active portal children
+          for (const auto& [targetTag, portalChildren] : activePortals_) {
+            auto targetNode = findShadowNodeByTagRecursively(
+                std::static_pointer_cast<const ShadowNode>(newRoot),
+                targetTag);
+
+            if (targetNode) {
+              auto clonedRoot = newRoot->cloneTree(
+                  targetNode->getFamily(),
+                  [&](const ShadowNode& oldNode) {
+                    auto existingChildren = oldNode.getChildren();
+
+                    std::unordered_set<Tag> portalTags;
+                    for (const auto& child : *portalChildren) {
+                      portalTags.insert(child->getTag());
+                    }
+
+                    // Copy existing children, excluding any portal children
+                    // that are already present (from a previous commit)
+                    auto mergedChildren = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
+                    mergedChildren->reserve(existingChildren.size() + portalChildren->size());
+                    for (const auto& child : existingChildren) {
+                      if (portalTags.find(child->getTag()) == portalTags.end()) {
+                        mergedChildren->push_back(child);
+                      }
+                    }
+
+                    // Append portal children
+                    for (const auto& child : *portalChildren) {
+                      mergedChildren->push_back(child);
+                    }
+
+                    return oldNode.clone({.children = mergedChildren});
+                  });
+              if (clonedRoot) {
+                newRoot = std::static_pointer_cast<RootShadowNode>(clonedRoot);
+              }
+            }
+          }
+
+          return newRoot;
         },
         commitOptions);
 
@@ -271,6 +328,7 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
 
   // Stop any ongoing animations.
   stopSurfaceForAnimationDelegate(surfaceId);
+
 
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.

@@ -154,6 +154,10 @@ class UIManager final : public ShadowTreeDelegate {
       const ShadowNode::UnsharedListOfShared &rootChildren,
       ShadowTree::CommitOptions commitOptions);
 
+  void mountPortalChildren(
+      Tag targetTag,
+      const ShadowNode::UnsharedListOfShared &portalChildren);
+
   void setIsJSResponder(
       const std::shared_ptr<const ShadowNode> &shadowNode,
       bool isJSResponder,
@@ -249,6 +253,8 @@ class UIManager final : public ShadowTreeDelegate {
   std::unique_ptr<LazyShadowTreeRevisionConsistencyManager> lazyShadowTreeRevisionConsistencyManager_;
 
   std::shared_ptr<UIManagerAnimationBackend> animationBackend_;
+
+  std::unordered_map<Tag, ShadowNode::UnsharedListOfShared> activePortals_;
 };
 
 } // namespace facebook::react

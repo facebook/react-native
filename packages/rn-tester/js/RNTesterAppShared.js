@@ -8,318 +8,189 @@
  * @format
  */
 
-import type {RNTesterModuleInfo, ScreenTypes} from './types/RNTesterTypes';
 
-import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
-import RNTesterModuleContainer from './components/RNTesterModuleContainer';
-import RNTesterModuleList from './components/RNTesterModuleList';
-import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
-import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
-import RNTTitleBar from './components/RNTTitleBar';
-import {title as PlaygroundTitle} from './examples/Playground/PlaygroundExample';
-import RNTesterList from './utils/RNTesterList';
-import {
-  RNTesterNavigationActionsType,
-  RNTesterNavigationReducer,
-} from './utils/RNTesterNavigationReducer';
-import {
-  Screens,
-  getExamplesListWithRecentlyUsed,
-  initialNavigationState,
-} from './utils/testerStateUtils';
 import * as React from 'react';
-import {useCallback, useEffect, useMemo, useReducer} from 'react';
-import {
-  BackHandler,
-  Button,
-  Linking,
-  NativeComponentRegistry,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  View,
-  useColorScheme,
-  useWindowDimensions,
-} from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, findNodeHandle, Button } from 'react-native';
+import { createPortal } from 'react-native/Libraries/ReactNative/RendererProxy';
 
-// In Bridgeless mode, in dev, enable static view config validator
-if (global.RN$Bridgeless === true && __DEV__) {
-  NativeComponentRegistry.setRuntimeConfigProvider(() => {
-    return {
-      native: false,
-      verify: true,
+const ThemeContext = React.createContext < string > ('none');
+
+const PortaledContent = ({ handleUnmount }) => {
+  const theme = React.useContext(ThemeContext);
+  console.log('PortaledContent', theme);
+  React.useEffect(() => {
+    console.log('PortaledContent', theme);
+    return () => {
+      console.log('PortaledContent unmounted');
     };
-  });
-}
-
-// RNTester App currently uses in memory storage for storing navigation state
-
-type BackButton = ({onBack: () => void}) => React.Node;
-
-const RNTesterApp = ({
-  testList,
-  customBackButton,
-}: {
-  testList?: {
-    components?: Array<RNTesterModuleInfo>,
-    apis?: Array<RNTesterModuleInfo>,
-  },
-  customBackButton?: BackButton,
-}): React.Node => {
-  const [state, dispatch] = useReducer(
-    RNTesterNavigationReducer,
-    initialNavigationState,
+  }, [theme]);
+  return (
+    <View style={styles.portaledBox}>
+      <Text style={styles.portaledText}>
+        I was rendered through a React Portal!
+      </Text>
+      <Text style={styles.portaledDetail}>
+        ThemeContext value: "{theme}" (proves context is preserved)
+      </Text>
+      <Button
+        title="Unmount Portal"
+        onPress={() => {
+          console.log('Button pressed');
+          handleUnmount();
+        }}
+      />
+    </View>
   );
-  const colorScheme = useColorScheme();
+};
 
-  const {
-    activeModuleKey,
-    activeModuleTitle,
-    activeModuleExampleKey,
-    screen,
-    recentlyUsed,
-    hadDeepLink,
-  } = state;
+const PortalDemo = () => {
+  const [showPortal, setShowPortal] = useState(false);
+  const [targetTag, setTargetTag] = useState < number | null > (null);
+  const [status, setStatus] = useState < string > ('Tap "Mount Portal" to begin');
+  const targetRef = React.useRef < React.ElementRef < typeof View > | null > (null);
 
-  const isScreenTiny = useWindowDimensions().height < 600;
-
-  const examplesList = useMemo(
-    () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),
-    [recentlyUsed, testList],
-  );
-
-  const handleBackPress = useCallback(() => {
-    if (activeModuleKey != null) {
-      dispatch({type: RNTesterNavigationActionsType.BACK_BUTTON_PRESS});
+  const handleMount = useCallback(() => {
+    const node = targetRef.current;
+    if (node == null) {
+      setStatus('ERROR: target ref is null');
+      return;
     }
-  }, [dispatch, activeModuleKey]);
+    const tag = findNodeHandle(node);
+    if (tag == null) {
+      setStatus('ERROR: findNodeHandle returned null');
+      return;
+    }
+    setTargetTag(tag);
+    setShowPortal(true);
+    setStatus(`Portal mounted into native tag ${tag}`);
+  }, []);
 
-  // Setup hardware back button press listener
-  useEffect(() => {
-    const handleHardwareBackPress = () => {
-      if (activeModuleKey) {
-        handleBackPress();
-        return true;
-      }
-      return false;
-    };
-
-    const subscription = BackHandler.addEventListener(
-      'hardwareBackPress',
-      handleHardwareBackPress,
-    );
-    return () => subscription.remove();
-  }, [activeModuleKey, handleBackPress]);
-
-  const handleModuleCardPress = useCallback(
-    ({exampleType, key, title}: any) => {
-      dispatch({
-        type: RNTesterNavigationActionsType.MODULE_CARD_PRESS,
-        data: {exampleType, key, title},
-      });
-    },
-    [dispatch],
-  );
-
-  const handleModuleExampleCardPress = useCallback(
-    (exampleName: string) => {
-      dispatch({
-        type: RNTesterNavigationActionsType.EXAMPLE_CARD_PRESS,
-        data: {key: exampleName},
-      });
-    },
-    [dispatch],
-  );
-
-  const handleNavBarPress = useCallback(
-    (args: {screen: ScreenTypes}) => {
-      if (args.screen === 'playgrounds') {
-        dispatch({
-          type: RNTesterNavigationActionsType.NAVBAR_OPEN_MODULE_PRESS,
-          data: {
-            key: 'PlaygroundExample',
-            title: PlaygroundTitle,
-            screen: args.screen,
-          },
-        });
-      } else {
-        dispatch({
-          type: RNTesterNavigationActionsType.NAVBAR_PRESS,
-          data: {screen: args.screen},
-        });
-      }
-    },
-    [dispatch],
-  );
-
-  // Setup Linking event subscription
-  const handleOpenUrlRequest = useCallback(
-    ({url}: {url: string, ...}) => {
-      // Supported URL pattern(s):
-      // *  rntester://example/<moduleKey>
-      // *  rntester://example/<moduleKey>/<exampleKey>
-      const match =
-        /^rntester(-legacy)?:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
-          url,
-        );
-      if (!match) {
-        console.warn(
-          `handleOpenUrlRequest: Received unsupported URL: '${url}'`,
-        );
-        return;
-      }
-
-      const rawModuleKey = match[2];
-      const exampleKey = match[3];
-
-      // For tooling compatibility, allow all these variants for each module key:
-      const validModuleKeys = [
-        rawModuleKey,
-        `${rawModuleKey}Index`,
-        `${rawModuleKey}Example`,
-        // $FlowFixMe[invalid-computed-prop]
-      ].filter(k => RNTesterList.Modules[k] != null);
-      if (validModuleKeys.length !== 1) {
-        if (validModuleKeys.length === 0) {
-          console.error(
-            `handleOpenUrlRequest: Unable to find requested module with key: '${rawModuleKey}'`,
-          );
-        } else {
-          console.error(
-            `handleOpenUrlRequest: Found multiple matching module with key: '${rawModuleKey}', unable to resolve`,
-          );
-        }
-        return;
-      }
-
-      const resolvedModuleKey = validModuleKeys[0];
-      // $FlowFixMe[invalid-computed-prop]
-      const exampleModule = RNTesterList.Modules[resolvedModuleKey];
-
-      if (exampleKey != null) {
-        const validExampleKeys = exampleModule.examples.filter(
-          e => e.name === exampleKey,
-        );
-        if (validExampleKeys.length !== 1) {
-          if (validExampleKeys.length === 0) {
-            console.error(
-              `handleOpenUrlRequest: Unable to find requested example with key: '${exampleKey}' within module: '${resolvedModuleKey}'`,
-            );
-          } else {
-            console.error(
-              `handleOpenUrlRequest: Found multiple matching example with key: '${exampleKey}' within module: '${resolvedModuleKey}', unable to resolve`,
-            );
-          }
-          return;
-        }
-      }
-
-      console.log(
-        `handleOpenUrlRequest: Opening module: '${resolvedModuleKey}', example: '${
-          exampleKey || 'null'
-        }'`,
-      );
-
-      dispatch({
-        type: RNTesterNavigationActionsType.EXAMPLE_OPEN_URL_REQUEST,
-        data: {
-          key: resolvedModuleKey,
-          title: exampleModule.title || resolvedModuleKey,
-          exampleKey,
-        },
-      });
-    },
-    [dispatch],
-  );
-  useEffect(() => {
-    // Initial deeplink
-    Linking.getInitialURL()
-      .then(url => url != null && handleOpenUrlRequest({url: url}))
-      .catch(_ => {});
-    const subscription = Linking.addEventListener('url', handleOpenUrlRequest);
-    return () => subscription.remove();
-  }, [handleOpenUrlRequest]);
-
-  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
-
-  if (examplesList === null) {
-    return null;
-  }
-
-  const activeModule =
-    // $FlowFixMe[invalid-computed-prop]
-    activeModuleKey != null ? RNTesterList.Modules[activeModuleKey] : null;
-  const activeModuleExample =
-    activeModuleExampleKey != null
-      ? activeModule?.examples.find(e => e.name === activeModuleExampleKey)
-      : null;
-  const title =
-    activeModuleTitle != null
-      ? activeModuleTitle
-      : screen === Screens.COMPONENTS
-        ? 'Components'
-        : 'APIs';
-
-  const BackButtonComponent: ?BackButton = customBackButton
-    ? customBackButton
-    : Platform.OS === 'ios'
-      ? ({onBack}) => (
-          <Button title="Back" onPress={onBack} color={theme.LinkColor} />
-        )
-      : null;
-
-  const activeExampleList =
-    screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;
-
-  // Hide chrome if we don't have much screen space and are showing UI for tests
-  const shouldHideChrome = isScreenTiny && hadDeepLink;
+  const handleUnmount = useCallback(() => {
+    setShowPortal(false);
+    setTargetTag(null);
+    setStatus('Portal unmounted');
+  }, []);
 
   return (
-    <RNTesterThemeContext.Provider value={theme}>
-      {Platform.OS === 'android' ? (
-        <StatusBar
-          barStyle="dark-content"
-          backgroundColor={theme.GroupedBackgroundColor}
-        />
-      ) : null}
-      {!shouldHideChrome && (
-        <RNTTitleBar
-          title={title}
-          theme={theme}
-          documentationURL={activeModule?.documentationURL}>
-          {activeModule && BackButtonComponent ? (
-            <BackButtonComponent onBack={handleBackPress} />
-          ) : undefined}
-        </RNTTitleBar>
-      )}
-      <View
-        style={StyleSheet.compose(styles.container, {
-          backgroundColor: theme.GroupedBackgroundColor,
-        })}>
-        {activeModule != null ? (
-          <RNTesterModuleContainer
-            module={activeModule}
-            example={activeModuleExample}
-            onExampleCardPress={handleModuleExampleCardPress}
-          />
-        ) : (
-          <RNTesterModuleList
-            sections={activeExampleList}
-            handleModuleCardPress={handleModuleCardPress}
-          />
-        )}
-      </View>
-      {!shouldHideChrome && (
-        <View style={styles.bottomNavbar}>
-          <RNTesterNavBar
-            screen={screen || Screens.COMPONENTS}
-            isExamplePageOpen={!!activeModule}
-            handleNavBarPress={handleNavBarPress}
-          />
+    <ThemeContext.Provider value="dark-blue">
+      <View style={styles.demoContainer}>
+        <Text style={styles.demoTitle}>Portal Demo</Text>
+        <Text style={styles.demoSubtitle}>
+          Portals content from the source tree into a separate target View
+        </Text>
+
+        {/* Controls */}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[styles.button, showPortal && styles.buttonDisabled]}
+            onPress={handleMount}
+            disabled={showPortal}>
+            <Text style={styles.buttonText}>Mount Portal</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, !showPortal && styles.buttonDisabled]}
+            onPress={handleUnmount}
+            disabled={!showPortal}>
+            <Text style={styles.buttonText}>Unmount Portal</Text>
+          </TouchableOpacity>
         </View>
-      )}
-      <ReportFullyDrawnView />
-    </RNTesterThemeContext.Provider>
+
+        {/* Status */}
+        <View style={styles.statusBox}>
+          <Text style={styles.statusText}>{status}</Text>
+        </View>
+
+        {/* Source: where the portal is declared in the React tree */}
+        <View style={styles.sourceBox}>
+          <Text style={styles.boxLabel}>Source (React tree location)</Text>
+          <Text style={styles.sourceNote}>
+            The portal element lives here in the React tree, but its children
+            render into the target View below.
+          </Text>
+          {showPortal && targetTag != null
+            ? createPortal(<PortaledContent handleUnmount={handleUnmount} />, targetTag)
+            : null}
+        </View>
+
+        {/* Target: where the portal content actually appears */}
+        <View
+          ref={targetRef}
+          style={styles.targetBox}
+          collapsable={false}>
+          <Text style={styles.boxLabel}>
+            Target (native container, tag: {targetTag ?? '?'})
+          </Text>
+          {/* Portal children will appear here natively */}
+        </View>
+      </View>
+    </ThemeContext.Provider>
+  );
+};
+
+// -------------------------------------------------------------------
+// Same-root portal test: portal to the app's own root tag
+// -------------------------------------------------------------------
+const SameRootPortalTest = () => {
+  const [show, setShow] = useState(false);
+  const [rootTag, setRootTag] = useState < number | null > (null);
+  const rootRef = React.useRef < React.ElementRef < typeof View > | null > (null);
+
+  const handleToggle = useCallback(() => {
+    if (!show) {
+      const node = rootRef.current;
+      const tag = node ? findNodeHandle(node) : null;
+      if (tag != null) {
+        setRootTag(tag);
+        setShow(true);
+      }
+    } else {
+      setShow(false);
+      setRootTag(null);
+    }
+  }, [show]);
+
+  return (
+    <View style={styles.testSection}>
+      <Text style={styles.testTitle}>Same-Container Portal Test</Text>
+      <TouchableOpacity style={styles.button} onPress={handleToggle}>
+        <Text style={styles.buttonText}>
+          {show ? 'Hide' : 'Show'} Overlay
+        </Text>
+      </TouchableOpacity>
+
+      <View ref={rootRef} style={styles.overlayTarget} collapsable={false}>
+        <Text style={styles.overlayTargetText}>
+          Overlay will appear on top of this view
+        </Text>
+        {show && rootTag != null
+          ? createPortal(
+            <View style={styles.overlay}>
+              <Text style={styles.overlayText}>
+                Portal overlay (tag: {rootTag})
+              </Text>
+            </View>,
+            rootTag,
+          )
+          : null}
+      </View>
+    </View>
+  );
+};
+
+const RNTesterApp = (): React.Node => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>React Portals - Fixed</Text>
+      <Text style={styles.subtitle}>
+        containerInfo now wraps containerTag in {'{ containerTag, publicInstance }'}
+      </Text>
+
+      <View style={styles.scrollArea}>
+        <PortalDemo />
+        <SameRootPortalTest />
+      </View>
+    </View>
   );
 };
 
@@ -328,11 +199,156 @@ export default RNTesterApp;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#1a1a2e',
+    paddingTop: 60,
   },
-  bottomNavbar: {
-    height: navBarHeight,
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4ecca3',
+    textAlign: 'center',
+    marginBottom: 4,
   },
-  hidden: {
-    display: 'none',
+  subtitle: {
+    fontSize: 13,
+    color: '#a0a0b0',
+    textAlign: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 20,
+  },
+  scrollArea: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  demoContainer: {
+    backgroundColor: '#16213e',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
+  },
+  demoTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  demoSubtitle: {
+    fontSize: 12,
+    color: '#888',
+    marginBottom: 12,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 12,
+  },
+  button: {
+    backgroundColor: '#4ecca3',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 6,
+  },
+  buttonDisabled: {
+    backgroundColor: '#2a4a3a',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 13,
+  },
+  statusBox: {
+    backgroundColor: '#0f3460',
+    padding: 10,
+    borderRadius: 4,
+    marginBottom: 12,
+  },
+  statusText: {
+    color: '#f0c040',
+    fontSize: 12,
+    fontFamily: 'monospace',
+  },
+  sourceBox: {
+    borderWidth: 1,
+    borderColor: '#e94560',
+    borderStyle: 'dashed',
+    borderRadius: 6,
+    padding: 12,
+    marginBottom: 10,
+  },
+  boxLabel: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#888',
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  sourceNote: {
+    fontSize: 12,
+    color: '#ccc',
+  },
+  targetBox: {
+    borderWidth: 2,
+    borderColor: '#4ecca3',
+    borderRadius: 6,
+    padding: 12,
+    minHeight: 80,
+  },
+  portaledBox: {
+    backgroundColor: '#4ecca3',
+    padding: 12,
+    borderRadius: 4,
+    marginTop: 6,
+    backgroundColor: "red"
+  },
+  portaledText: {
+    color: '#1a1a2e',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  portaledDetail: {
+    color: '#16213e',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  testSection: {
+    backgroundColor: '#16213e',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
+  },
+  testTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 10,
+  },
+  overlayTarget: {
+    marginTop: 10,
+    backgroundColor: '#0f3460',
+    borderRadius: 6,
+    padding: 20,
+    minHeight: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlayTargetText: {
+    color: '#666',
+    fontSize: 13,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(78, 204, 163, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+  },
+  overlayText: {
+    color: '#1a1a2e',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

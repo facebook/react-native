@@ -471,6 +471,28 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "mountPortalChildren") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto targetTag = static_cast<Tag>(arguments[0].asNumber());
+          auto shadowNodeList =
+              shadowNodeListFromValue(runtime, arguments[1]);
+          uiManager->mountPortalChildren(targetTag, shadowNodeList);
+
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "registerEventHandler") {
     auto paramCount = 1;
     return jsi::Function::createFromHostFunction(
