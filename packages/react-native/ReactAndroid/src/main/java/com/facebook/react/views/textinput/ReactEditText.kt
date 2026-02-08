@@ -14,7 +14,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -86,7 +85,6 @@ import com.facebook.react.views.text.internal.span.ReactSpan
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
 import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan
-import com.facebook.react.views.text.internal.span.TextInlineImageSpan
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.max
 import kotlin.math.min
@@ -119,7 +117,6 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   private var listeners: CopyOnWriteArrayList<TextWatcher>?
 
   public var stagedInputType: Int
-  protected var containsImages: Boolean = false
   public var submitBehavior: String? = null
   public var dragAndDropFilter: List<String>? = null
 
@@ -639,13 +636,13 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
   public fun incrementAndGetEventCounter(): Int = ++nativeEventCount
 
-  public fun maybeSetTextFromJS(reactTextUpdate: ReactTextUpdate) {
+  internal fun maybeSetTextFromJS(reactTextUpdate: ReactTextUpdate) {
     isSettingTextFromJS = true
     maybeSetText(reactTextUpdate)
     isSettingTextFromJS = false
   }
 
-  public fun maybeSetTextFromState(reactTextUpdate: ReactTextUpdate) {
+  internal fun maybeSetTextFromState(reactTextUpdate: ReactTextUpdate) {
     isSettingTextFromState = true
     maybeSetText(reactTextUpdate)
     isSettingTextFromState = false
@@ -678,9 +675,6 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
     manageSpans(spannableStringBuilder)
     stripStyleEquivalentSpans(spannableStringBuilder)
-
-    @Suppress("DEPRECATION")
-    containsImages = reactTextUpdate.containsImages()
 
     // When we update text, we trigger onChangeText code that will
     // try to update state if the wrapper is available. Temporarily disable
@@ -921,54 +915,6 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
         }
   }
 
-  override fun verifyDrawable(drawable: Drawable): Boolean {
-    if (containsImages) {
-      val text: Spanned? = text
-      val spans = checkNotNull(text).getSpans(0, text.length, TextInlineImageSpan::class.java)
-      for (span in spans) {
-        if (span.drawable === drawable) {
-          return true
-        }
-      }
-    }
-    return super.verifyDrawable(drawable)
-  }
-
-  override fun invalidateDrawable(drawable: Drawable) {
-    if (containsImages) {
-      val text: Spanned? = text
-      val spans = checkNotNull(text).getSpans(0, text.length, TextInlineImageSpan::class.java)
-      for (span in spans) {
-        if (span.drawable === drawable) {
-          invalidate()
-        }
-      }
-    }
-    super.invalidateDrawable(drawable)
-  }
-
-  public override fun onDetachedFromWindow() {
-    super.onDetachedFromWindow()
-    if (containsImages) {
-      val text: Spanned? = text
-      val spans = checkNotNull(text).getSpans(0, text.length, TextInlineImageSpan::class.java)
-      for (span in spans) {
-        span.onDetachedFromWindow()
-      }
-    }
-  }
-
-  override fun onStartTemporaryDetach() {
-    super.onStartTemporaryDetach()
-    if (containsImages) {
-      val text: Spanned? = text
-      val spans = checkNotNull(text).getSpans(0, text.length, TextInlineImageSpan::class.java)
-      for (span in spans) {
-        span.onStartTemporaryDetach()
-      }
-    }
-  }
-
   public override fun onConfigurationChanged(newConfig: Configuration) {
     super.onConfigurationChanged(newConfig)
 
@@ -994,30 +940,11 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     // Restore the selection since `setTextIsSelectable` changed it.
     maybeSetSelection(selectionStart, selectionEnd)
 
-    if (containsImages) {
-      val text: Spanned? = text
-      val spans = checkNotNull(text).getSpans(0, text.length, TextInlineImageSpan::class.java)
-      for (span in spans) {
-        span.onAttachedToWindow()
-      }
-    }
-
     if (autoFocus && !didAttachToWindow) {
       requestFocusProgrammatically()
     }
 
     didAttachToWindow = true
-  }
-
-  override fun onFinishTemporaryDetach() {
-    super.onFinishTemporaryDetach()
-    if (containsImages) {
-      val text: Spanned? = text
-      val spans = checkNotNull(text).getSpans(0, text.length, TextInlineImageSpan::class.java)
-      for (span in spans) {
-        span.onFinishTemporaryDetach()
-      }
-    }
   }
 
   override fun setBackgroundColor(color: Int) {

@@ -9,6 +9,7 @@ package com.facebook.react.views.text
 
 import android.os.Build
 import android.text.Spannable
+import android.text.Spanned
 import com.facebook.react.R
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.mapbuffer.MapBuffer
@@ -20,7 +21,6 @@ import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
-import com.facebook.react.views.text.internal.span.TextInlineImageSpan
 import java.util.HashMap
 
 /**
@@ -75,17 +75,13 @@ public constructor(
   override fun updateExtraData(view: ReactTextView, extraData: Any) {
     SystraceSection("ReactTextViewManager.updateExtraData").use { s ->
       val update = extraData as ReactTextUpdate
-      val spannable: Spannable = update.text
-      @Suppress("DEPRECATION")
-      if (update.containsImages()) {
-        TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view)
-      }
+      val spanned: Spanned = update.text
       view.setText(update)
 
       // If this text view contains any clickable spans, set a view tag and reset the accessibility
       // delegate so that these can be picked up by the accessibility system.
       val accessibilityLinks: ReactTextViewAccessibilityDelegate.AccessibilityLinks =
-          ReactTextViewAccessibilityDelegate.AccessibilityLinks(spannable)
+          ReactTextViewAccessibilityDelegate.AccessibilityLinks(spanned)
       view.setTag(
           R.id.accessibility_links,
           if (accessibilityLinks.size() > 0) accessibilityLinks else null,
@@ -159,7 +155,6 @@ public constructor(
     return ReactTextUpdate(
         spanned,
         -1, // UNUSED FOR TEXT
-        false, // TODO add this into local Data
         TextLayoutManager.getTextGravity(attributedString, spanned),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode),

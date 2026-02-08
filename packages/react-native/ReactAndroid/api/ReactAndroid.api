@@ -6133,44 +6133,17 @@ public final class com/facebook/react/views/text/ReactTextShadowNode : com/faceb
 	public final fun setShouldNotifyOnTextLayout (Z)V
 }
 
-public final class com/facebook/react/views/text/ReactTextUpdate {
-	public static final field Companion Lcom/facebook/react/views/text/ReactTextUpdate$Companion;
-	public fun <init> (Landroid/text/Spannable;IZFFFFI)V
-	public fun <init> (Landroid/text/Spannable;IZFFFFIII)V
-	public fun <init> (Landroid/text/Spannable;IZIII)V
-	public static final fun buildReactTextUpdateFromState (Landroid/text/Spannable;IIII)Lcom/facebook/react/views/text/ReactTextUpdate;
-	public final fun containsImages ()Z
-	public final fun getContainsImages ()Z
-	public final fun getJsEventCounter ()I
-	public final fun getJustificationMode ()I
-	public final fun getPaddingBottom ()F
-	public final fun getPaddingLeft ()F
-	public final fun getPaddingRight ()F
-	public final fun getPaddingTop ()F
-	public final fun getText ()Landroid/text/Spannable;
-	public final fun getTextAlign ()I
-	public final fun getTextBreakStrategy ()I
-}
-
-public final class com/facebook/react/views/text/ReactTextUpdate$Companion {
-	public final fun buildReactTextUpdateFromState (Landroid/text/Spannable;IIII)Lcom/facebook/react/views/text/ReactTextUpdate;
-}
-
 public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/widget/AppCompatTextView, com/facebook/react/uimanager/ReactCompoundView {
 	public fun <init> (Landroid/content/Context;)V
 	protected fun dispatchHoverEvent (Landroid/view/MotionEvent;)Z
 	public fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun getSpanned ()Landroid/text/Spannable;
 	public fun hasOverlappingRendering ()Z
-	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun onAttachedToWindow ()V
-	public fun onDetachedFromWindow ()V
 	protected fun onDraw (Landroid/graphics/Canvas;)V
-	public fun onFinishTemporaryDetach ()V
 	public final fun onFocusChanged (ZILandroid/graphics/Rect;)V
 	protected fun onLayout (ZIIII)V
 	protected fun onMeasure (II)V
-	public fun onStartTemporaryDetach ()V
 	public fun reactTagForTouch (FF)I
 	public fun setAdjustFontSizeToFit (Z)V
 	public fun setBackgroundColor (I)V
@@ -6193,7 +6166,6 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun setText (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun setTextIsSelectable (Z)V
 	public fun updateView ()V
-	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
 }
 
 public final class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/views/text/ReactTextAnchorViewManager, com/facebook/react/uimanager/IViewManagerWithChildren, com/facebook/react/views/text/ReactTextViewManagerCallback {
@@ -6344,7 +6316,6 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public final fun canUpdateWithEventCount (I)Z
 	protected final fun finalize ()V
 	public final fun getBorderColor (I)I
-	protected final fun getContainsImages ()Z
 	public final fun getDisableFullscreenUI ()Z
 	public final fun getDragAndDropFilter ()Ljava/util/List;
 	protected final fun getNativeEventCount ()I
@@ -6354,27 +6325,21 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public final fun getSubmitBehavior ()Ljava/lang/String;
 	protected final fun hideSoftKeyboard ()V
 	public final fun incrementAndGetEventCounter ()I
-	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isLayoutRequested ()Z
 	protected final fun isSettingTextFromJS ()Z
 	protected final fun isSettingTextFromState ()Z
 	public final fun maybeSetSelection (III)V
-	public final fun maybeSetTextFromJS (Lcom/facebook/react/views/text/ReactTextUpdate;)V
-	public final fun maybeSetTextFromState (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public final fun maybeUpdateTypeface ()V
 	public fun onAttachedToWindow ()V
 	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
 	public fun onCreateInputConnection (Landroid/view/inputmethod/EditorInfo;)Landroid/view/inputmethod/InputConnection;
-	public fun onDetachedFromWindow ()V
 	public fun onDragEvent (Landroid/view/DragEvent;)Z
 	public fun onDraw (Landroid/graphics/Canvas;)V
-	public fun onFinishTemporaryDetach ()V
 	protected fun onFocusChanged (ZILandroid/graphics/Rect;)V
 	public fun onKeyUp (ILandroid/view/KeyEvent;)Z
 	protected fun onLayout (ZIIII)V
 	protected fun onScrollChanged (IIII)V
 	protected fun onSelectionChanged (II)V
-	public fun onStartTemporaryDetach ()V
 	public fun onTextContextMenuItem (I)Z
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun removeTextChangedListener (Landroid/text/TextWatcher;)V
@@ -6387,7 +6352,6 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public final fun setBorderRadius (FI)V
 	public final fun setBorderStyle (Ljava/lang/String;)V
 	public final fun setBorderWidth (IF)V
-	protected final fun setContainsImages (Z)V
 	public final fun setContentSizeWatcher (Lcom/facebook/react/views/textinput/ContentSizeWatcher;)V
 	public final fun setContextMenuHidden (Z)V
 	public final fun setDisableFullscreenUI (Z)V
@@ -6418,7 +6382,6 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public final fun shouldBlurOnReturn ()Z
 	public final fun shouldSubmitOnReturn ()Z
 	protected final fun showSoftKeyboard ()Z
-	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
 }
 
 public final class com/facebook/react/views/textinput/ReactEditText$Companion {
