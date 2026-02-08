@@ -191,17 +191,17 @@ void UIManager::mountPortalChildren(
     Tag targetTag,
     const ShadowNode::UnsharedListOfShared& portalChildren) {
   if (portalChildren->empty()) {
-    auto it = activePortals_.find(targetTag);
-    if (it != activePortals_.end()) {
+    auto it = portalChildren_.find(targetTag);
+    if (it != portalChildren_.end()) {
       std::unordered_set<Tag> tags;
       for (const auto& child : *(it->second)) {
         tags.insert(child->getTag());
       }
       pendingPortalRemovals_[targetTag] = std::move(tags);
-      activePortals_.erase(it);
+      portalChildren_.erase(it);
     }
   } else {
-    activePortals_[targetTag] = portalChildren;
+    portalChildren_[targetTag] = portalChildren;
     pendingPortalRemovals_.erase(targetTag);
   }
 }
@@ -222,8 +222,8 @@ void UIManager::completeSurface(
                   .children = rootChildren,
               });
 
-          // Apply any active portal children
-          for (const auto& [targetTag, portalChildren] : activePortals_) {
+          // Append portal children to the target node
+          for (const auto& [targetTag, portalChildren] : portalChildren_) {
             auto targetNode = findShadowNodeByTagRecursively(
                 std::static_pointer_cast<const ShadowNode>(newRoot),
                 targetTag);
@@ -239,8 +239,6 @@ void UIManager::completeSurface(
                       portalTags.insert(child->getTag());
                     }
 
-                    // Copy existing children, excluding any portal children
-                    // that are already present (from a previous commit)
                     auto mergedChildren = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
                     mergedChildren->reserve(existingChildren.size() + portalChildren->size());
                     for (const auto& child : existingChildren) {
@@ -262,6 +260,7 @@ void UIManager::completeSurface(
             }
           }
 
+          // Remove unmounted portal children
           for (const auto& [targetTag, tagsToRemove] : pendingPortalRemovals_) {
             auto targetNode = findShadowNodeByTagRecursively(
                 std::static_pointer_cast<const ShadowNode>(newRoot),
@@ -272,19 +271,16 @@ void UIManager::completeSurface(
                   targetNode->getFamily(),
                   [&](const ShadowNode& oldNode) {
                     auto existingChildren = oldNode.getChildren();
-                    auto newChildren = std::make_shared<
-                        std::vector<std::shared_ptr<const ShadowNode>>>();
+                    auto newChildren = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
                     for (const auto& child : existingChildren) {
-                      if (tagsToRemove.find(child->getTag()) ==
-                          tagsToRemove.end()) {
+                      if (tagsToRemove.find(child->getTag()) == tagsToRemove.end()) {
                         newChildren->push_back(child);
                       }
                     }
                     return oldNode.clone({.children = newChildren});
                   });
               if (clonedRoot) {
-                newRoot =
-                    std::static_pointer_cast<RootShadowNode>(clonedRoot);
+                newRoot = std::static_pointer_cast<RootShadowNode>(clonedRoot);
               }
             }
           }

@@ -254,8 +254,10 @@ class UIManager final : public ShadowTreeDelegate {
 
   std::shared_ptr<UIManagerAnimationBackend> animationBackend_;
 
-  std::unordered_map<Tag, ShadowNode::UnsharedListOfShared> activePortals_;
+  // Portal children that are active and need to be committed
+  std::unordered_map<Tag, ShadowNode::UnsharedListOfShared> portalChildren_;
 
+  // Portal children that are pending removal and need to be removed on the next commit
   std::unordered_map<Tag, std::unordered_set<Tag>> pendingPortalRemovals_;
 };
 
