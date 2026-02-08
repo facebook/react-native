@@ -255,6 +255,8 @@ class UIManager final : public ShadowTreeDelegate {
   std::shared_ptr<UIManagerAnimationBackend> animationBackend_;
 
   std::unordered_map<Tag, ShadowNode::UnsharedListOfShared> activePortals_;
+
+  std::unordered_map<Tag, std::unordered_set<Tag>> pendingPortalRemovals_;
 };
 
 } // namespace facebook::react

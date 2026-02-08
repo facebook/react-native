@@ -191,9 +191,18 @@ void UIManager::mountPortalChildren(
     Tag targetTag,
     const ShadowNode::UnsharedListOfShared& portalChildren) {
   if (portalChildren->empty()) {
-    activePortals_.erase(targetTag);
+    auto it = activePortals_.find(targetTag);
+    if (it != activePortals_.end()) {
+      std::unordered_set<Tag> tags;
+      for (const auto& child : *(it->second)) {
+        tags.insert(child->getTag());
+      }
+      pendingPortalRemovals_[targetTag] = std::move(tags);
+      activePortals_.erase(it);
+    }
   } else {
     activePortals_[targetTag] = portalChildren;
+    pendingPortalRemovals_.erase(targetTag);
   }
 }
 
@@ -252,6 +261,34 @@ void UIManager::completeSurface(
               }
             }
           }
+
+          for (const auto& [targetTag, tagsToRemove] : pendingPortalRemovals_) {
+            auto targetNode = findShadowNodeByTagRecursively(
+                std::static_pointer_cast<const ShadowNode>(newRoot),
+                targetTag);
+
+            if (targetNode) {
+              auto clonedRoot = newRoot->cloneTree(
+                  targetNode->getFamily(),
+                  [&](const ShadowNode& oldNode) {
+                    auto existingChildren = oldNode.getChildren();
+                    auto newChildren = std::make_shared<
+                        std::vector<std::shared_ptr<const ShadowNode>>>();
+                    for (const auto& child : existingChildren) {
+                      if (tagsToRemove.find(child->getTag()) ==
+                          tagsToRemove.end()) {
+                        newChildren->push_back(child);
+                      }
+                    }
+                    return oldNode.clone({.children = newChildren});
+                  });
+              if (clonedRoot) {
+                newRoot =
+                    std::static_pointer_cast<RootShadowNode>(clonedRoot);
+              }
+            }
+          }
+          pendingPortalRemovals_.clear();
 
           return newRoot;
         },
