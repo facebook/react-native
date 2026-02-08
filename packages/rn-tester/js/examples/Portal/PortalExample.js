@@ -11,8 +11,8 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
-import {useState, useCallback} from 'react';
-import {View, Text, StyleSheet, Button, findNodeHandle} from 'react-native';
+import {useCallback, useState} from 'react';
+import {Button, StyleSheet, Text, View, findNodeHandle} from 'react-native';
 import {createPortal} from 'react-native/Libraries/ReactNative/RendererProxy';
 
 function PortalBasicExample(): React.Node {
@@ -69,6 +69,11 @@ function PortalBasicExample(): React.Node {
 
 const ThemeContext = React.createContext<string>('light');
 
+function ContextReader(): React.Node {
+  const theme = React.useContext(ThemeContext);
+  return <Text style={styles.portalText}>Theme: {theme}</Text>;
+}
+
 function PortalContextExample(): React.Node {
   const [showPortal, setShowPortal] = useState(false);
   const [targetTag, setTargetTag] = useState<number | null>(null);
@@ -86,11 +91,6 @@ function PortalContextExample(): React.Node {
       setTargetTag(null);
     }
   }, [showPortal]);
-
-  const ContextReader = () => {
-    const theme = React.useContext(ThemeContext);
-    return <Text style={styles.portalText}>Theme: {theme}</Text>;
-  };
 
   return (
     <ThemeContext.Provider value="dark">
