@@ -1053,11 +1053,11 @@ public class FabricUIManager
   }
 
   /**
-   * receiveEvent API that emits an event to C++. If `canCoalesceEvent` is true, that signals that
-   * C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
+   * receiveEvent API that emits an event to C++. If {@code canCoalesceEvent} is true, that signals
+   * that C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
    * emitting.
    *
-   * <p>`customCoalesceKey` is currently unused.
+   * <p>{@code customCoalesceKey} is currently unused.
    *
    * @param surfaceId
    * @param reactTag
