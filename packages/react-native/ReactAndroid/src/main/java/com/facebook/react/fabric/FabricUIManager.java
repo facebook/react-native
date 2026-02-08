@@ -820,6 +820,7 @@ public class FabricUIManager
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
   }
 
+  @SuppressLint("NotInvokedPrivateMethod")
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
