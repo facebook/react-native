@@ -10,16 +10,16 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type { HostInstance } from 'react-native';
+import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
-import { View } from 'react-native';
-import { createPortal } from 'react-native/Libraries/ReactNative/RendererProxy';
+import {View} from 'react-native';
+import {createPortal} from 'react-native/Libraries/ReactNative/RendererProxy';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
-function getTargetTag(ref: { current: HostInstance | null }): number {
+function getTargetTag(ref: {current: HostInstance | null}): number {
   const element = ensureInstance(ref.current, ReactNativeElement);
   return element.__nativeTag;
 }
@@ -28,9 +28,9 @@ describe('Portal', () => {
   test('renders children into target view', () => {
     const root = Fantom.createRoot();
     let targetTag: ?number = null;
-    const targetRef = React.createRef < HostInstance > ();
+    const targetRef = React.createRef<HostInstance>();
 
-    function TestComponent({ showPortal }: { showPortal: boolean }) {
+    function TestComponent({showPortal}: {showPortal: boolean}) {
       React.useLayoutEffect(() => {
         if (targetRef.current) {
           targetTag = getTargetTag(targetRef);
@@ -41,10 +41,7 @@ describe('Portal', () => {
         <View nativeID="root">
           <View>
             {showPortal && targetTag != null
-              ? createPortal(
-                <View nativeID="portaled-child" />,
-                targetTag,
-              )
+              ? createPortal(<View nativeID="portaled-child" />, targetTag)
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -67,13 +64,13 @@ describe('Portal', () => {
     // Portal child should appear inside the target view
     expect(root.getRenderedOutput().toJSON()).toEqual({
       type: 'View',
-      props: { nativeID: 'root' },
+      props: {nativeID: 'root'},
       children: [
         {
           type: 'View',
-          props: { nativeID: 'target' },
+          props: {nativeID: 'target'},
           children: [
-            { type: 'View', props: { nativeID: 'portaled-child' }, children: [] },
+            {type: 'View', props: {nativeID: 'portaled-child'}, children: []},
           ],
         },
       ],
@@ -83,9 +80,9 @@ describe('Portal', () => {
   test('unmounts portal children from target view', () => {
     const root = Fantom.createRoot();
     let targetTag: ?number = null;
-    const targetRef = React.createRef < HostInstance > ();
+    const targetRef = React.createRef<HostInstance>();
 
-    function TestComponent({ showPortal }: { showPortal: boolean }) {
+    function TestComponent({showPortal}: {showPortal: boolean}) {
       React.useLayoutEffect(() => {
         if (targetRef.current) {
           targetTag = getTargetTag(targetRef);
@@ -96,10 +93,7 @@ describe('Portal', () => {
         <View nativeID="root">
           <View>
             {showPortal && targetTag != null
-              ? createPortal(
-                <View nativeID="portaled-child" />,
-                targetTag,
-              )
+              ? createPortal(<View nativeID="portaled-child" />, targetTag)
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -120,13 +114,13 @@ describe('Portal', () => {
 
     expect(root.getRenderedOutput().toJSON()).toEqual({
       type: 'View',
-      props: { nativeID: 'root' },
+      props: {nativeID: 'root'},
       children: [
         {
           type: 'View',
-          props: { nativeID: 'target' },
+          props: {nativeID: 'target'},
           children: [
-            { type: 'View', props: { nativeID: 'portaled-child' }, children: [] },
+            {type: 'View', props: {nativeID: 'portaled-child'}, children: []},
           ],
         },
       ],
@@ -140,10 +134,8 @@ describe('Portal', () => {
     // Portal child should be removed from target view
     expect(root.getRenderedOutput().toJSON()).toEqual({
       type: 'View',
-      props: { nativeID: 'root' },
-      children: [
-        { type: 'View', props: { nativeID: 'target' }, children: [] },
-      ],
+      props: {nativeID: 'root'},
+      children: [{type: 'View', props: {nativeID: 'target'}, children: []}],
     });
   });
 
@@ -151,15 +143,15 @@ describe('Portal', () => {
     const root = Fantom.createRoot();
     let targetTag: ?number = null;
     let capturedTheme: ?string = null;
-    const targetRef = React.createRef < HostInstance > ();
-    const ThemeContext = React.createContext < string > ('light');
+    const targetRef = React.createRef<HostInstance>();
+    const ThemeContext = React.createContext<string>('light');
 
     function ContextReader() {
       capturedTheme = React.useContext(ThemeContext);
       return <View nativeID="context-child" />;
     }
 
-    function TestComponent({ showPortal }: { showPortal: boolean }) {
+    function TestComponent({showPortal}: {showPortal: boolean}) {
       React.useLayoutEffect(() => {
         if (targetRef.current) {
           targetTag = getTargetTag(targetRef);
@@ -194,7 +186,7 @@ describe('Portal', () => {
   test('does not duplicate portal children on re-render and updates content', () => {
     const root = Fantom.createRoot();
     let targetTag: ?number = null;
-    const targetRef = React.createRef < HostInstance > ();
+    const targetRef = React.createRef<HostInstance>();
 
     function TestComponent({
       showPortal,
@@ -214,9 +206,9 @@ describe('Portal', () => {
           <View>
             {showPortal && targetTag != null
               ? createPortal(
-                <View nativeID={'portaled-' + counter} />,
-                targetTag,
-              )
+                  <View nativeID={'portaled-' + counter} />,
+                  targetTag,
+                )
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -236,16 +228,16 @@ describe('Portal', () => {
 
     expect(root.getRenderedOutput().toJSON()).toEqual({
       type: 'View',
-      props: { nativeID: 'root' },
+      props: {nativeID: 'root'},
       children: [
         {
           type: 'View',
-          props: { nativeID: 'target' },
+          props: {nativeID: 'target'},
           children: [
-            { type: 'View', props: { nativeID: 'portaled-0' }, children: [] },
+            {type: 'View', props: {nativeID: 'portaled-0'}, children: []},
           ],
         },
-        { type: 'View', props: { nativeID: 'counter-0' }, children: [] },
+        {type: 'View', props: {nativeID: 'counter-0'}, children: []},
       ],
     });
 
@@ -256,16 +248,16 @@ describe('Portal', () => {
 
     expect(root.getRenderedOutput().toJSON()).toEqual({
       type: 'View',
-      props: { nativeID: 'root' },
+      props: {nativeID: 'root'},
       children: [
         {
           type: 'View',
-          props: { nativeID: 'target' },
+          props: {nativeID: 'target'},
           children: [
-            { type: 'View', props: { nativeID: 'portaled-1' }, children: [] },
+            {type: 'View', props: {nativeID: 'portaled-1'}, children: []},
           ],
         },
-        { type: 'View', props: { nativeID: 'counter-1' }, children: [] },
+        {type: 'View', props: {nativeID: 'counter-1'}, children: []},
       ],
     });
 
@@ -276,16 +268,16 @@ describe('Portal', () => {
 
     expect(root.getRenderedOutput().toJSON()).toEqual({
       type: 'View',
-      props: { nativeID: 'root' },
+      props: {nativeID: 'root'},
       children: [
         {
           type: 'View',
-          props: { nativeID: 'target' },
+          props: {nativeID: 'target'},
           children: [
-            { type: 'View', props: { nativeID: 'portaled-2' }, children: [] },
+            {type: 'View', props: {nativeID: 'portaled-2'}, children: []},
           ],
         },
-        { type: 'View', props: { nativeID: 'counter-2' }, children: [] },
+        {type: 'View', props: {nativeID: 'counter-2'}, children: []},
       ],
     });
   });
@@ -293,9 +285,9 @@ describe('Portal', () => {
   test('mount and unmount cycle works multiple times', () => {
     const root = Fantom.createRoot();
     let targetTag: ?number = null;
-    const targetRef = React.createRef < HostInstance > ();
+    const targetRef = React.createRef<HostInstance>();
 
-    function TestComponent({ showPortal }: { showPortal: boolean }) {
+    function TestComponent({showPortal}: {showPortal: boolean}) {
       React.useLayoutEffect(() => {
         if (targetRef.current) {
           targetTag = getTargetTag(targetRef);
@@ -306,10 +298,7 @@ describe('Portal', () => {
         <View nativeID="root">
           <View>
             {showPortal && targetTag != null
-              ? createPortal(
-                <View nativeID="portaled-child" />,
-                targetTag,
-              )
+              ? createPortal(<View nativeID="portaled-child" />, targetTag)
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -323,13 +312,13 @@ describe('Portal', () => {
 
     const withPortal = {
       type: 'View',
-      props: { nativeID: 'root' },
+      props: {nativeID: 'root'},
       children: [
         {
           type: 'View',
-          props: { nativeID: 'target' },
+          props: {nativeID: 'target'},
           children: [
-            { type: 'View', props: { nativeID: 'portaled-child' }, children: [] },
+            {type: 'View', props: {nativeID: 'portaled-child'}, children: []},
           ],
         },
       ],
@@ -337,10 +326,8 @@ describe('Portal', () => {
 
     const withoutPortal = {
       type: 'View',
-      props: { nativeID: 'root' },
-      children: [
-        { type: 'View', props: { nativeID: 'target' }, children: [] },
-      ],
+      props: {nativeID: 'root'},
+      children: [{type: 'View', props: {nativeID: 'target'}, children: []}],
     };
 
     // mount
