@@ -58,7 +58,6 @@ import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
 import com.facebook.react.views.text.PreparedLayoutTextViewManager
 import com.facebook.react.views.text.ReactTextViewManager
-import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager
 import com.facebook.react.views.textinput.ReactTextInputManager
 import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
 import com.facebook.react.views.view.ReactViewManager
@@ -146,7 +145,6 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactSafeAreaViewManager(),
           SwipeRefreshLayoutManager(),
           // Native equivalents
-          FrescoBasedReactTextInlineImageViewManager(),
           ReactImageManager(),
           ReactModalHostManager(),
           ReactTextInputManager(),
@@ -183,8 +181,6 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactSwitchManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactSwitchManager() },
           SwipeRefreshLayoutManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { SwipeRefreshLayoutManager() },
-          FrescoBasedReactTextInlineImageViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { FrescoBasedReactTextInlineImageViewManager() },
           ReactImageManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactImageManager() },
           ReactModalHostManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactModalHostManager() },
