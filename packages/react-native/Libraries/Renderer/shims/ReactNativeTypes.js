@@ -204,7 +204,7 @@ export type ReactFabricType = {
     children: React.Node,
     containerTag: number,
     key?: ?string,
-  ): React$Portal,
+  ): React.MixedElement,
   ...
 };
 
