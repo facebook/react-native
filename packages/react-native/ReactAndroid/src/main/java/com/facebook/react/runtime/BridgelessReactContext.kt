@@ -49,6 +49,12 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   private val sourceURLRef = AtomicReference<String>()
   private val TAG: String = this.javaClass.simpleName
 
+  val devSupportManager: DevSupportManager
+    get() = reactHost.devSupportManager
+
+  val defaultHardwareBackBtnHandler: DefaultHardwareBackBtnHandler
+    get() = reactHost.defaultBackButtonHandler
+
   init {
     if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       initializeInteropModules()
@@ -103,9 +109,6 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
 
   override fun destroy() = Unit
 
-  val devSupportManager: DevSupportManager
-    get() = reactHost.devSupportManager
-
   override fun registerSegment(segmentId: Int, path: String, callback: Callback) {
     reactHost.registerSegment(segmentId, path, callback)
   }
@@ -145,7 +148,7 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
             arrayOf<Class<*>>(jsInterface),
             BridgelessJSModuleInvocationHandler(reactHost, jsInterface),
         ) as JavaScriptModule
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "KotlinGenericsCast")
     return interfaceProxy as? T
   }
 
@@ -178,7 +181,4 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   }
 
   override fun getJSCallInvokerHolder(): CallInvokerHolder? = reactHost.jsCallInvokerHolder
-
-  val defaultHardwareBackBtnHandler: DefaultHardwareBackBtnHandler
-    get() = reactHost.defaultBackButtonHandler
 }

@@ -344,7 +344,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
           if (mFabricUIManager != null) {
             mFabricUIManager.invalidate();
           }
-          boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
+          mPendingJSCalls.getAndSet(0);
 
           getReactQueueConfiguration()
               .getJSQueueThread()

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c2e44ee4f139a99b8179f750b416ed2f>>
+ * @generated SignedSource<<c14e7e11bfb4404e2e8f94e551e1bb4d>>
  */
 
 /**
@@ -52,6 +52,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableAndroidTextMeasurementOptimizations(): Boolean
 
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
+
+  @DoNotStrip public fun enableClipChildrenForOverflowHidden(): Boolean
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 

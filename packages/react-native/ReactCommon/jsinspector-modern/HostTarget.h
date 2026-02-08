@@ -182,19 +182,6 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
   }
 
   /**
-   * [Experimental] Will be called at the CDP session initialization to get the
-   * trace recording that may have been stashed by the Host from the previous
-   * background session.
-   *
-   * \return the HostTracingProfile if there is one that needs to be
-   * displayed, otherwise std::nullopt.
-   */
-  virtual std::optional<tracing::HostTracingProfile> unstable_getHostTracingProfileThatWillBeEmittedOnInitialization()
-  {
-    return std::nullopt;
-  }
-
-  /**
    * An optional delegate that will be used by HostTarget to notify about tracing-related events.
    */
   virtual HostTargetTracingDelegate *getTracingDelegate()
@@ -255,6 +242,12 @@ class HostTargetController final {
    * Stops previously started trace recording.
    */
   tracing::HostTracingProfile stopTracing();
+
+  /**
+   * If there is a stashed background trace, emit it to all eligible sessions.
+   * \return true if an eligible session is found (even if there was no stashed background trace).
+   */
+  bool maybeEmitStashedBackgroundTrace();
 
  private:
   HostTarget &target_;
@@ -352,18 +345,13 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
   tracing::HostTracingProfile stopTracing();
 
   /**
-   * Returns whether there is an active session with the Fusebox client, i.e.
-   * with Chrome DevTools Frontend fork for React Native.
+   * Stops previously started trace recording and:
+   *  - If there is an active CDP session with ReactNativeApplication domain
+   *    enabled, emits the trace and returns true.
+   *  - Otherwise, stashes the captured trace, that will be emitted when a CDP
+   *    session enables ReactNativeApplication. Returns false.
    */
-  bool hasActiveSessionWithFuseboxClient() const;
-
-  /**
-   * Emits the HostTracingProfile for the first active session with the Fusebox
-   * client.
-   *
-   * @see \c hasActiveFrontendSession
-   */
-  void emitTracingProfileForFirstFuseboxClient(tracing::HostTracingProfile tracingProfile) const;
+  bool stopAndMaybeEmitBackgroundTrace();
 
   /**
    * An endpoint for the Host to report frame timings that will be recorded if and only if there is currently an active
@@ -404,6 +392,11 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
    */
   std::unique_ptr<HostTargetTraceRecording> traceRecording_{nullptr};
   /**
+   * Previously recorded HostTracingProfile that will be emitted when CDP session is created
+   * and enables ReactNativeApplication. Once emitted, the value will be cleared.
+   */
+  std::optional<tracing::HostTracingProfile> stashedTracingProfile_;
+  /**
    * Protects the state inside traceRecording_.
    *
    * Calls to tracing subsystem could happen from different threads, depending on the mode (Background or CDP) and
@@ -428,6 +421,12 @@ class JSINSPECTOR_EXPORT HostTarget : public EnableExecutorFromThis<HostTarget> 
    * \ref HostTargetDelegate::unstable_onPerfMonitorUpdate.
    */
   void installPerfIssuesBinding();
+
+  /**
+   * If there is a stashed background trace, emit it to the first eligible session.
+   * \return true if an eligible session is found (even if there was no stashed background trace).
+   */
+  bool maybeEmitStashedBackgroundTrace();
 
   // Necessary to allow HostAgent to access HostTarget's internals in a
   // controlled way (i.e. only HostTargetController gets friend access, while

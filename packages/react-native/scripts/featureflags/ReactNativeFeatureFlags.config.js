@@ -212,6 +212,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    enableClipChildrenForOverflowHidden: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
     enableCppPropsIteratorSetter: {
       defaultValue: false,
       metadata: {
@@ -922,6 +932,17 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Disable prop maintainVisibleContentPosition in ScrollView',
         expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    externalElementInspectionEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-02-04',
+        description:
+          'Enable the external inspection API for DevTools to communicate with the Inspector overlay.',
+        expectedReleaseValue: true,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',

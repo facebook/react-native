@@ -13,6 +13,7 @@ import type {BrowserLauncher} from './types/BrowserLauncher';
 import type {EventReporter, ReportableEvent} from './types/EventReporter';
 import type {Experiments, ExperimentsConfig} from './types/Experiments';
 import type {Logger} from './types/Logger';
+import type {ReadonlyURL} from './types/ReadonlyURL';
 import type {NextHandleFunction} from 'connect';
 
 import InspectorProxy from './inspector-proxy/InspectorProxy';
@@ -28,7 +29,7 @@ type Options = Readonly<{
    * The base URL to the dev server, as reachable from the machine on which
    * dev-middleware is hosted. Typically `http://localhost:${metroPort}`.
    */
-  serverBaseUrl: string,
+  serverBaseUrl: string | ReadonlyURL,
 
   logger?: Logger,
 
@@ -85,6 +86,8 @@ export default function createDevMiddleware({
   unstable_customInspectorMessageHandler,
   unstable_trackInspectorProxyEventLoopPerf = false,
 }: Options): DevMiddlewareAPI {
+  const normalizedServerBaseUrl: ReadonlyURL = new URL(serverBaseUrl);
+
   const experiments = getExperiments(experimentConfig);
   const eventReporter = createWrappedEventReporter(
     unstable_eventReporter,
@@ -93,7 +96,7 @@ export default function createDevMiddleware({
   );
 
   const inspectorProxy = new InspectorProxy(
-    serverBaseUrl,
+    normalizedServerBaseUrl,
     eventReporter,
     experiments,
     logger,
@@ -105,7 +108,7 @@ export default function createDevMiddleware({
     .use(
       '/open-debugger',
       openDebuggerMiddleware({
-        serverBaseUrl,
+        serverBaseUrl: normalizedServerBaseUrl,
         inspectorProxy,
         browserLauncher: unstable_browserLauncher,
         eventReporter,

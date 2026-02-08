@@ -11,6 +11,7 @@
 import type {DebuggerSessionIDs, EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
+import type {ReadonlyURL} from '../types/ReadonlyURL';
 import type {CreateCustomMessageHandlerFn} from './CustomMessageHandler';
 import type {DeviceOptions} from './Device';
 import type {
@@ -63,7 +64,7 @@ const INTERNAL_ERROR_MESSAGES = {
 };
 
 export type GetPageDescriptionsConfig = {
-  requestorRelativeBaseUrl: URL,
+  requestorRelativeBaseUrl: ReadonlyURL,
   logNoPagesForConnectedDevice?: boolean,
 };
 
@@ -82,7 +83,7 @@ export interface InspectorProxyQueries {
  */
 export default class InspectorProxy implements InspectorProxyQueries {
   // The base URL to the dev server from the dev-middleware host.
-  #serverBaseUrl: URL;
+  #serverBaseUrl: ReadonlyURL;
 
   // Maps device ID to Device instance.
   #devices: Map<string, Device>;
@@ -104,14 +105,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
   #eventLoopPerfTracker: EventLoopPerfTracker;
 
   constructor(
-    serverBaseUrl: string,
+    serverBaseUrl: ReadonlyURL,
     eventReporter: ?EventReporter,
     experiments: Experiments,
     logger?: Logger,
     customMessageHandler: ?CreateCustomMessageHandlerFn,
     trackEventLoopPerf?: boolean = false,
   ) {
-    this.#serverBaseUrl = new URL(serverBaseUrl);
+    this.#serverBaseUrl = serverBaseUrl;
     this.#devices = new Map();
     this.#eventReporter = eventReporter;
     this.#experiments = experiments;
@@ -244,7 +245,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     deviceId: string,
     device: Device,
     page: Page,
-    requestorRelativeBaseUrl: URL,
+    requestorRelativeBaseUrl: ReadonlyURL,
   ): PageDescription {
     const {host, protocol} = requestorRelativeBaseUrl;
     const webSocketScheme = protocol === 'https:' ? 'wss' : 'ws';
@@ -254,7 +255,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     const devtoolsFrontendUrl = getDevToolsFrontendUrl(
       this.#experiments,
       webSocketDebuggerUrl,
-      this.#serverBaseUrl.origin,
+      new URL(this.#serverBaseUrl),
       {
         relative: true,
         useFuseboxEntryPoint: page.capabilities.prefersFuseboxFrontend,

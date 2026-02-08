@@ -101,7 +101,8 @@ export type PropertiesComparisonResult = {
   nestedPropertyChanges?: Array<[string, ComparisonResult]>,
   ...
 };
-export type MembersComparisonResult = {
+export type EnumMembersComparisonResult = {
+  memberKind: 'enum',
   addedMembers?: Array<NativeModuleEnumMember>,
   missingMembers?: Array<NativeModuleEnumMember>,
   errorMembers?: Array<{
@@ -110,6 +111,7 @@ export type MembersComparisonResult = {
   }>,
 };
 export type UnionMembersComparisonResult = {
+  memberKind: 'union',
   addedMembers?: Array<CompleteTypeAnnotation>,
   missingMembers?: Array<CompleteTypeAnnotation>,
   errorMembers?: Array<{
@@ -117,6 +119,9 @@ export type UnionMembersComparisonResult = {
     fault?: TypeComparisonError,
   }>,
 };
+export type MembersComparisonResult =
+  | EnumMembersComparisonResult
+  | UnionMembersComparisonResult;
 export type NullableComparisonResult = {
   /* Four possible cases of change:
      void goes to T?   :: typeRefined !optionsReduced
@@ -135,12 +140,31 @@ export type NullableComparisonResult = {
 export type ComparisonResult =
   | {status: 'matching'}
   | {status: 'skipped'}
-  | {status: 'nullableChange', nullableLog: NullableComparisonResult}
-  | {status: 'properties', propertyLog: PropertiesComparisonResult}
-  | {status: 'members', memberLog: MembersComparisonResult}
-  | {status: 'unionMembers', memberLog: UnionMembersComparisonResult}
-  | {status: 'functionChange', functionChangeLog: FunctionComparisonResult}
-  | {status: 'positionalTypeChange', changeLog: PositionalComparisonResult}
+  | {
+      status: 'nullableChange',
+      nullableLog: NullableComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
+  | {
+      status: 'properties',
+      propertyLog: PropertiesComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
+  | {
+      status: 'members',
+      memberLog: MembersComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
+  | {
+      status: 'functionChange',
+      functionChangeLog: FunctionComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
+  | {
+      status: 'positionalTypeChange',
+      changeLog: PositionalComparisonResult,
+      errorLog?: TypeComparisonError,
+    }
   | {status: 'error', errorLog: TypeComparisonError};
 
 export function isPropertyLogEmpty(
@@ -157,12 +181,6 @@ export function isPropertyLogEmpty(
 }
 
 export function isMemberLogEmpty(result: MembersComparisonResult): boolean {
-  return !(result.addedMembers || result.missingMembers || result.errorMembers);
-}
-
-export function isUnionMemberLogEmpty(
-  result: UnionMembersComparisonResult,
-): boolean {
   return !(result.addedMembers || result.missingMembers || result.errorMembers);
 }
 

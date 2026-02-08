@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a79ecc0c8081ff170ad17a559095e1b1>>
+ * @generated SignedSource<<78fb92f68ec0a93d0041ed381f76728e>>
  */
 
 /**
@@ -684,6 +684,11 @@ class ReactNestedScrollView extends NestedScrollView
 
   @Override
   public boolean dispatchGenericMotionEvent(MotionEvent ev) {
+    // Ignore generic motion events (joystick, mouse wheel, trackpad) if scrolling is disabled
+    if (!mScrollEnabled) {
+      return false;
+    }
+
     // We do not dispatch the motion event if its children are not supposed to receive it
     if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
       return false;

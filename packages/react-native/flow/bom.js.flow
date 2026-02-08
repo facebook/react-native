@@ -609,12 +609,13 @@ declare class AbortController {
 }
 
 declare class AbortSignal extends EventTarget {
-  abort(reason?: $FlowFixMe): AbortSignal;
+  static abort(reason?: $FlowFixMe): AbortSignal;
+  static any(signals: Iterable<AbortSignal>): AbortSignal;
   +aborted: boolean;
   onabort: (event: Event) => unknown;
   +reason: $FlowFixMe;
   throwIfAborted(): void;
-  timeout(time: number): AbortSignal;
+  static timeout(time: number): AbortSignal;
 }
 
 declare function fetch(

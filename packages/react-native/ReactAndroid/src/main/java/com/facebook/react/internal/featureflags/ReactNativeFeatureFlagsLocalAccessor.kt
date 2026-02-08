@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f83c3d5107d900273c09061d6822f83d>>
+ * @generated SignedSource<<377c50a9a022344cba12a1ad6c23b68d>>
  */
 
 /**
@@ -39,6 +39,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableAndroidLinearTextCache: Boolean? = null
   private var enableAndroidTextMeasurementOptimizationsCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
+  private var enableClipChildrenForOverflowHiddenCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
   private var enableDestroyShadowTreeRevisionAsyncCache: Boolean? = null
@@ -249,6 +250,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableBridgelessArchitecture()
       accessedFeatureFlags.add("enableBridgelessArchitecture")
       enableBridgelessArchitectureCache = cached
+    }
+    return cached
+  }
+
+  override fun enableClipChildrenForOverflowHidden(): Boolean {
+    var cached = enableClipChildrenForOverflowHiddenCache
+    if (cached == null) {
+      cached = currentProvider.enableClipChildrenForOverflowHidden()
+      accessedFeatureFlags.add("enableClipChildrenForOverflowHidden")
+      enableClipChildrenForOverflowHiddenCache = cached
     }
     return cached
   }

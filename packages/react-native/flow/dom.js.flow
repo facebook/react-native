@@ -5948,12 +5948,19 @@ declare class Comment extends CharacterData {
   text: string;
 }
 
+interface StringLike {
+  toString(): string;
+}
+
 declare class URL {
   static canParse(url: string, base?: string): boolean;
   static createObjectURL(blob: Blob): string;
   static createObjectURL(mediaSource: MediaSource): string;
   static revokeObjectURL(url: string): void;
-  constructor(url: string, base?: string | URL): void;
+  constructor(
+    url: string | URL | StringLike,
+    base?: string | URL | StringLike,
+  ): void;
   hash: string;
   host: string;
   hostname: string;

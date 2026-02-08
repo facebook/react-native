@@ -32,6 +32,7 @@ export function formatErrorMessage(
 ): string {
   switch (error.type) {
     case 'PropertyComparisonError':
+      const propertyPreviousError = error.previousError;
       const formattedProperties = error.mismatchedProperties.map(
         individualPropertyError =>
           indentedLineStart(indent + 1) +
@@ -42,7 +43,14 @@ export function formatErrorMessage(
               formatErrorMessage(individualPropertyError.fault, indent + 2)
             : ''),
       );
-      return error.message + formattedProperties.join('');
+      return (
+        (propertyPreviousError != null
+          ? formatErrorMessage(propertyPreviousError, indent) +
+            indentedLineStart(indent + 1)
+          : '') +
+        error.message +
+        formattedProperties.join('')
+      );
     case 'PositionalComparisonError':
       const formattedPositionalChanges = error.erroneousItems.map(
         ([index, type]) =>
@@ -188,7 +196,13 @@ function formatTypeAnnotation(annotation: CompleteTypeAnnotation): string {
         ? `'${annotation.value}'`
         : annotation.value;
     case 'UnionTypeAnnotation':
-      const validUnionType = parseValidUnionType(annotation);
+      let validUnionType;
+      try {
+        validUnionType = parseValidUnionType(annotation);
+      } catch (_e: mixed) {
+        // parseValidUnionType throws for unsupported union types
+        return 'Union<mixed>';
+      }
       switch (validUnionType) {
         case 'boolean':
           if (

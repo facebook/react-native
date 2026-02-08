@@ -33,8 +33,30 @@ jobs:
 
           echo "Should I run E2E tests? ${{ inputs.run-e2e-tests }}"
 
-  prebuild_apple_dependencies:
+  check_code_changes:
+    runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
+    outputs:
+      debugger_shell: ${{ steps.filter.outputs.debugger_shell }}
+      any_code_change: ${{ steps.filter.outputs.any_code_change || github.event_name != 'pull_request' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Check for code changes
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
+        id: filter
+        with:
+          filters: |
+            any_code_change:
+              - '!**/__docs__/**'
+              - '!**/*.md'
+            debugger_shell:
+              - 'packages/debugger-shell/**'
+              - 'scripts/debugger-shell/**'
+
+  prebuild_apple_dependencies:
+    needs: check_code_changes
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -60,6 +82,8 @@ jobs:
 
   test_ios_rntester_dynamic_frameworks:
     runs-on: macos-15-large
+    needs: check_code_changes
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -280,7 +304,8 @@ jobs:
 
   run_fantom_tests:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type]
+    needs: [set_release_type, check_code_changes, lint]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
@@ -299,7 +324,8 @@ jobs:
 
   build_android:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type]
+    needs: [set_release_type, check_code_changes]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
@@ -469,9 +495,40 @@ jobs:
           flavor: ${{ matrix.flavor }}
           use-frameworks: ${{ matrix.use_frameworks }}
 
-  test_js:
+  lint:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Lint file structure
+        shell: bash
+        run: ./.github/workflow-scripts/lint_files.sh
+      - name: Run shellcheck
+        shell: bash
+        run: ./.github/workflow-scripts/analyze_scripts.sh
+      - name: Prettier
+        shell: bash
+        run: yarn run format-check
+      - name: markdownlint
+        shell: bash
+        run: yarn run lint-markdown
+      - name: ESLint
+        shell: bash
+        run: ./.github/workflow-scripts/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+      - name: Flow
+        shell: bash
+        run: yarn flow-check
+      - name: TypeScript
+        shell: bash
+        run: yarn test-typescript
+
+  test_js:
+    runs-on: ubuntu-latest
+    needs: [check_code_changes, lint]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -484,18 +541,41 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-  lint:
+  build_js_types:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    needs: [check_code_changes, lint]
+    if: needs.check_code_changes.outputs.any_code_change == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Run all the linters
-        uses: ./.github/actions/lint
-        with:
-          github-token: ${{ env.GH_TOKEN }}
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Build react-native package types
+        shell: bash
+        run: yarn build-types --skip-snapshot
+      - name: Validate generated types
+        shell: bash
+        run: yarn test-generated-typescript
+
+  build_debugger_shell:
+    runs-on: ubuntu-latest
+    needs: check_code_changes
+    if: needs.check_code_changes.outputs.debugger_shell == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Build packages
+        shell: bash
+        run: yarn build
+      - name: Verify debugger-shell build
+        shell: bash
+        run: node scripts/debugger-shell/build-binary.js
 
   # This job should help with the E2E flakyness.
   # In case E2E tests fails, it launches a new retry-workflow workflow, passing the current run_id as input.

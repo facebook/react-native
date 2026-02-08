@@ -19,6 +19,7 @@ export type {
   CreateCustomMessageHandlerFn,
 } from './inspector-proxy/CustomMessageHandler';
 export type {Logger} from './types/Logger';
+export type {ReadonlyURL} from './types/ReadonlyURL';
 
 export {default as unstable_DefaultBrowserLauncher} from './utils/DefaultBrowserLauncher';
 export {default as createDevMiddleware} from './createDevMiddleware';

@@ -7,6 +7,7 @@
 
 package com.facebook.react.runtime
 
+import android.annotation.SuppressLint
 import android.content.res.AssetManager
 import android.view.View
 import com.facebook.common.logging.FLog
@@ -104,6 +105,13 @@ internal class ReactInstance(
   val reactQueueConfiguration: ReactQueueConfiguration
   val fabricUIManager: FabricUIManager
   val javaScriptContextHolder: JavaScriptContextHolder
+
+  val nativeModules: Collection<NativeModule>
+    get() = turboModuleManager.modules
+
+  val eventDispatcher: EventDispatcher
+    /** @return The [EventDispatcher] used by [FabricUIManager] to emit UI events to JS. */
+    get() = fabricUIManager.eventDispatcher
 
   init {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.initialize")
@@ -344,9 +352,6 @@ internal class ReactInstance(
     return false
   }
 
-  val nativeModules: Collection<NativeModule>
-    get() = turboModuleManager.modules
-
   fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
     val annotation = nativeModuleInterface.getAnnotation(ReactModule::class.java)
     if (annotation != null) {
@@ -355,6 +360,7 @@ internal class ReactInstance(
     return null
   }
 
+  @SuppressLint("KotlinGenericsCast")
   fun <T : NativeModule> getNativeModule(nativeModuleName: String): T? {
     synchronized(turboModuleManager) {
       @Suppress("UNCHECKED_CAST")
@@ -476,10 +482,6 @@ internal class ReactInstance(
       )
     }
   }
-
-  val eventDispatcher: EventDispatcher
-    /** @return The [EventDispatcher] used by [FabricUIManager] to emit UI events to JS. */
-    get() = fabricUIManager.eventDispatcher
 
   fun registerSegment(segmentId: Int, path: String) {
     registerSegmentNative(segmentId, path)
