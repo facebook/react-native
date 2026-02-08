@@ -224,6 +224,8 @@ void UIManager::completeSurface(
 
           // Append portal children to the target node
           for (const auto& [targetTag, portalChildren] : portalChildren_) {
+            const auto& localPortalChildren = portalChildren;
+
             auto targetNode = findShadowNodeByTagRecursively(
                 std::static_pointer_cast<const ShadowNode>(newRoot),
                 targetTag);
@@ -235,12 +237,12 @@ void UIManager::completeSurface(
                     auto existingChildren = oldNode.getChildren();
 
                     std::unordered_set<Tag> portalTags;
-                    for (const auto& child : *portalChildren) {
+                    for (const auto& child : *localPortalChildren) {
                       portalTags.insert(child->getTag());
                     }
 
                     auto mergedChildren = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
-                    mergedChildren->reserve(existingChildren.size() + portalChildren->size());
+                    mergedChildren->reserve(existingChildren.size() + localPortalChildren->size());
                     for (const auto& child : existingChildren) {
                       if (portalTags.find(child->getTag()) == portalTags.end()) {
                         mergedChildren->push_back(child);
@@ -248,7 +250,7 @@ void UIManager::completeSurface(
                     }
 
                     // Append portal children
-                    for (const auto& child : *portalChildren) {
+                    for (const auto& child : *localPortalChildren) {
                       mergedChildren->push_back(child);
                     }
 
@@ -262,6 +264,8 @@ void UIManager::completeSurface(
 
           // Remove unmounted portal children
           for (const auto& [targetTag, tagsToRemove] : pendingPortalRemovals_) {
+            const auto& localTagsToRemove = tagsToRemove;
+
             auto targetNode = findShadowNodeByTagRecursively(
                 std::static_pointer_cast<const ShadowNode>(newRoot),
                 targetTag);
@@ -273,7 +277,7 @@ void UIManager::completeSurface(
                     auto existingChildren = oldNode.getChildren();
                     auto newChildren = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
                     for (const auto& child : existingChildren) {
-                      if (tagsToRemove.find(child->getTag()) == tagsToRemove.end()) {
+                      if (localTagsToRemove.find(child->getTag()) == localTagsToRemove.end()) {
                         newChildren->push_back(child);
                       }
                     }
