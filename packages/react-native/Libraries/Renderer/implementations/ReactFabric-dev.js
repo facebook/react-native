@@ -15969,6 +15969,9 @@ __DEV__ &&
     function replaceContainerChildren(container, newChildren) {
       if (container._isPortal) {
         mountPortalChildren(container.containerTag, newChildren);
+        if (newChildren.length === 0) {
+          portalContainerCache.delete(container.containerTag);
+        }
       } else {
         completeRoot(container.containerTag, newChildren);
       }
@@ -18935,12 +18938,17 @@ __DEV__ &&
       internals.getCurrentFiber = getCurrentFiberForDevTools;
       return injectInternals(internals);
     })();
+    var portalContainerCache = new Map();
     exports.createPortal = function (children, containerTag) {
-      var portalContainer = {
-        containerTag: containerTag,
-        publicInstance: null,
-        _isPortal: true
-      };
+      var portalContainer = portalContainerCache.get(containerTag);
+      if (!portalContainer) {
+        portalContainer = {
+          containerTag: containerTag,
+          publicInstance: null,
+          _isPortal: true
+        };
+        portalContainerCache.set(containerTag, portalContainer);
+      }
       return createPortal$1(
         children,
         portalContainer,
