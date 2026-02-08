@@ -8,17 +8,17 @@
  * @format
  */
 
-import type { RNTesterModuleExample } from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
-import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Button, findNodeHandle } from 'react-native';
-import { createPortal } from 'react-native/Libraries/ReactNative/RendererProxy';
+import {useState, useCallback} from 'react';
+import {View, Text, StyleSheet, Button, findNodeHandle} from 'react-native';
+import {createPortal} from 'react-native/Libraries/ReactNative/RendererProxy';
 
 function PortalBasicExample(): React.Node {
   const [showPortal, setShowPortal] = useState(false);
-  const [targetTag, setTargetTag] = useState < number | null > (null);
-  const targetRef = React.useRef < React.ElementRef < typeof View > | null > (null);
+  const [targetTag, setTargetTag] = useState<number | null>(null);
+  const targetRef = React.useRef<React.ElementRef<typeof View> | null>(null);
 
   const handleMount = useCallback(() => {
     const tag = findNodeHandle(targetRef.current);
@@ -51,12 +51,12 @@ function PortalBasicExample(): React.Node {
       <View style={styles.sourceBox}>
         {showPortal && targetTag != null
           ? createPortal(
-            <View style={styles.portalContent}>
-              <Text style={styles.portalText}>Portaled content</Text>
-              <Button title="Unmount" onPress={handleUnmount} />
-            </View>,
-            targetTag,
-          )
+              <View style={styles.portalContent}>
+                <Text style={styles.portalText}>Portaled content</Text>
+                <Button title="Unmount" onPress={handleUnmount} />
+              </View>,
+              targetTag,
+            )
           : null}
       </View>
 
@@ -67,12 +67,12 @@ function PortalBasicExample(): React.Node {
   );
 }
 
-const ThemeContext = React.createContext < string > ('light');
+const ThemeContext = React.createContext<string>('light');
 
 function PortalContextExample(): React.Node {
   const [showPortal, setShowPortal] = useState(false);
-  const [targetTag, setTargetTag] = useState < number | null > (null);
-  const targetRef = React.useRef < React.ElementRef < typeof View > | null > (null);
+  const [targetTag, setTargetTag] = useState<number | null>(null);
+  const targetRef = React.useRef<React.ElementRef<typeof View> | null>(null);
 
   const handleToggle = useCallback(() => {
     if (!showPortal) {
@@ -102,11 +102,11 @@ function PortalContextExample(): React.Node {
         <View style={styles.sourceBox}>
           {showPortal && targetTag != null
             ? createPortal(
-              <View style={styles.portalContent}>
-                <ContextReader />
-              </View>,
-              targetTag,
-            )
+                <View style={styles.portalContent}>
+                  <ContextReader />
+                </View>,
+                targetTag,
+              )
             : null}
         </View>
         <View ref={targetRef} style={styles.targetBox} collapsable={false}>
@@ -119,8 +119,8 @@ function PortalContextExample(): React.Node {
 
 function PortalOverlayExample(): React.Node {
   const [show, setShow] = useState(false);
-  const [tag, setTag] = useState < number | null > (null);
-  const ref = React.useRef < React.ElementRef < typeof View > | null > (null);
+  const [tag, setTag] = useState<number | null>(null);
+  const ref = React.useRef<React.ElementRef<typeof View> | null>(null);
 
   const handleToggle = useCallback(() => {
     if (!show) {
@@ -145,11 +145,11 @@ function PortalOverlayExample(): React.Node {
         <Text>Content underneath</Text>
         {show && tag != null
           ? createPortal(
-            <View style={styles.overlay}>
-              <Text style={styles.overlayText}>Portal Overlay</Text>
-            </View>,
-            tag,
-          )
+              <View style={styles.overlay}>
+                <Text style={styles.overlayText}>Portal Overlay</Text>
+              </View>,
+              tag,
+            )
           : null}
       </View>
     </View>

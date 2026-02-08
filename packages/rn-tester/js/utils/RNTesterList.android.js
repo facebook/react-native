@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type { RNTesterModule, RNTesterModuleInfo } from '../types/RNTesterTypes';
+import type {RNTesterModule, RNTesterModuleInfo} from '../types/RNTesterTypes';
 
 import * as RNTesterListFbInternal from './RNTesterListFbInternal';
 
@@ -377,25 +377,25 @@ const APIs: Array<RNTesterModuleInfo> = ([
   // $FlowExpectedError[cannot-resolve-name]
   ...(typeof IntersectionObserver === 'function'
     ? [
-      {
-        key: 'IntersectionObserver',
-        category: 'UI',
-        module: require('../examples/IntersectionObserver/IntersectionObserverIndex'),
-      },
-    ]
+        {
+          key: 'IntersectionObserver',
+          category: 'UI',
+          module: require('../examples/IntersectionObserver/IntersectionObserverIndex'),
+        },
+      ]
     : []),
   // Basic check to detect the availability of the modern Performance API.
   ...(typeof performance.getEntries === 'function'
     ? [
-      {
-        key: 'PerformanceApiExample',
-        category: 'Basic',
-        module: require('../examples/Performance/PerformanceApiExample'),
-      },
-    ]
+        {
+          key: 'PerformanceApiExample',
+          category: 'Basic',
+          module: require('../examples/Performance/PerformanceApiExample'),
+        },
+      ]
     : []),
   ...RNTesterListFbInternal.APIs,
-]: Array<? RNTesterModuleInfo >).filter(Boolean);
+]: Array<?RNTesterModuleInfo>).filter(Boolean);
 
 const Playgrounds: Array<RNTesterModuleInfo> = [
   {
@@ -404,7 +404,7 @@ const Playgrounds: Array<RNTesterModuleInfo> = [
   },
 ];
 
-const Modules: { [key: string]: RNTesterModule } = {};
+const Modules: {[key: string]: RNTesterModule} = {};
 
 [...APIs, ...Components, ...Playgrounds].forEach(Example => {
   Modules[Example.key] = Example.module;
