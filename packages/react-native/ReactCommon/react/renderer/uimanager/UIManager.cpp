@@ -362,7 +362,6 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   // Stop any ongoing animations.
   stopSurfaceForAnimationDelegate(surfaceId);
 
-
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
