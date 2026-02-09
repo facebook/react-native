@@ -10,10 +10,9 @@
 
 #if defined(HERMES_ENABLE_DEBUGGER)
 
-namespace facebook::hermes::inspector_modern::chrome {
-
 #if !defined(HERMES_V1_ENABLED)
 
+namespace facebook::hermes::inspector_modern::chrome {
 namespace {
 
 ConnectionDemux& demux() {
