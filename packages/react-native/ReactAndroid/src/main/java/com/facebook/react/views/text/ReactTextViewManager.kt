@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.text
 
 import android.os.Build
@@ -25,6 +27,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.IViewManagerWithChildren
+import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.ReactStylesDiffMap
@@ -41,7 +44,6 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorH
 import java.util.HashMap
 
 /** View manager for `<Text>` nodes. */
-@Suppress("DEPRECATION")
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
 @OptIn(UnstableReactNativeAPI::class)
 public class ReactTextViewManager
@@ -49,7 +51,7 @@ public class ReactTextViewManager
 public constructor(
     protected var reactTextViewManagerCallback: ReactTextViewManagerCallback? = null
 ) :
-    BaseViewManager<ReactTextView, ReactTextShadowNode>(),
+    BaseViewManager<ReactTextView, LayoutShadowNode>(),
     IViewManagerWithChildren,
     ReactTextViewManagerCallback {
   init {
@@ -108,14 +110,13 @@ public constructor(
     }
   }
 
-  override fun createShadowNodeInstance(): ReactTextShadowNode =
-      ReactTextShadowNode(reactTextViewManagerCallback)
+  override fun createShadowNodeInstance(): LayoutShadowNode = LayoutShadowNode()
 
   public fun createShadowNodeInstance(
       reactTextViewManagerCallback: ReactTextViewManagerCallback?
-  ): ReactTextShadowNode = ReactTextShadowNode(reactTextViewManagerCallback)
+  ): LayoutShadowNode = LayoutShadowNode()
 
-  override fun getShadowNodeClass(): Class<ReactTextShadowNode> = ReactTextShadowNode::class.java
+  override fun getShadowNodeClass(): Class<LayoutShadowNode> = LayoutShadowNode::class.java
 
   override fun onAfterUpdateTransaction(view: ReactTextView) {
     super.onAfterUpdateTransaction(view)

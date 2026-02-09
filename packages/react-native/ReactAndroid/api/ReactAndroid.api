@@ -6061,49 +6061,6 @@ public final class com/facebook/react/views/text/DefaultStyleValuesUtil {
 	public static final fun getTextColorSecondary (Landroid/content/Context;)Landroid/content/res/ColorStateList;
 }
 
-public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : com/facebook/react/uimanager/LayoutShadowNode {
-	public static final field Companion Lcom/facebook/react/views/text/ReactBaseTextShadowNode$Companion;
-	public static final field DEFAULT_TEXT_SHADOW_COLOR I
-	public static final field PROP_SHADOW_COLOR Ljava/lang/String;
-	public static final field PROP_SHADOW_OFFSET Ljava/lang/String;
-	public static final field PROP_SHADOW_OFFSET_HEIGHT Ljava/lang/String;
-	public static final field PROP_SHADOW_OFFSET_WIDTH Ljava/lang/String;
-	public static final field PROP_SHADOW_RADIUS Ljava/lang/String;
-	public static final field PROP_TEXT_TRANSFORM Ljava/lang/String;
-	public fun <init> ()V
-	public fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
-	public synthetic fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	protected final fun getReactTextViewManagerCallback ()Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
-	public final fun setAccessibilityRole (Ljava/lang/String;)V
-	public final fun setAdjustFontSizeToFit (Z)V
-	public final fun setAllowFontScaling (Z)V
-	public final fun setBackgroundColor (Ljava/lang/Integer;)V
-	public final fun setColor (Ljava/lang/Integer;)V
-	public final fun setFontFamily (Ljava/lang/String;)V
-	public final fun setFontSize (F)V
-	public final fun setFontStyle (Ljava/lang/String;)V
-	public final fun setFontVariant (Lcom/facebook/react/bridge/ReadableArray;)V
-	public final fun setFontWeight (Ljava/lang/String;)V
-	public final fun setIncludeFontPadding (Z)V
-	public final fun setLetterSpacing (F)V
-	public final fun setLineHeight (F)V
-	public final fun setMaxFontSizeMultiplier (F)V
-	public final fun setMinimumFontScale (F)V
-	public final fun setNumberOfLines (I)V
-	protected final fun setReactTextViewManagerCallback (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
-	public final fun setRole (Ljava/lang/String;)V
-	public final fun setTextAlign (Ljava/lang/String;)V
-	public fun setTextBreakStrategy (Ljava/lang/String;)V
-	public final fun setTextDecorationLine (Ljava/lang/String;)V
-	public final fun setTextShadowColor (I)V
-	public final fun setTextShadowOffset (Lcom/facebook/react/bridge/ReadableMap;)V
-	public final fun setTextShadowRadius (F)V
-	public final fun setTextTransform (Ljava/lang/String;)V
-}
-
-public final class com/facebook/react/views/text/ReactBaseTextShadowNode$Companion {
-}
-
 public final class com/facebook/react/views/text/ReactFontManager {
 	public static final field Companion Lcom/facebook/react/views/text/ReactFontManager$Companion;
 	public synthetic fun <init> (Lcom/facebook/react/common/assets/ReactFontManager;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -6118,19 +6075,6 @@ public final class com/facebook/react/views/text/ReactFontManager {
 
 public final class com/facebook/react/views/text/ReactFontManager$Companion {
 	public final fun getInstance ()Lcom/facebook/react/views/text/ReactFontManager;
-}
-
-public final class com/facebook/react/views/text/ReactTextShadowNode : com/facebook/react/views/text/ReactBaseTextShadowNode {
-	public fun <init> ()V
-	public fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
-	public synthetic fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun calculateLayoutOnChildren ()Ljava/lang/Iterable;
-	public fun hoistNativeChildren ()Z
-	public fun isVirtualAnchor ()Z
-	public fun markUpdated ()V
-	public fun onBeforeLayout (Lcom/facebook/react/uimanager/NativeViewHierarchyOptimizer;)V
-	public fun onCollectExtraUpdates (Lcom/facebook/react/uimanager/UIViewOperationQueue;)V
-	public final fun setShouldNotifyOnTextLayout (Z)V
 }
 
 public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/widget/AppCompatTextView, com/facebook/react/uimanager/ReactCompoundView {
@@ -6174,9 +6118,9 @@ public final class com/facebook/react/views/text/ReactTextViewManager : com/face
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
 	public synthetic fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/LayoutShadowNode;
 	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
-	public fun createShadowNodeInstance ()Lcom/facebook/react/views/text/ReactTextShadowNode;
-	public final fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactTextShadowNode;
+	public final fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/uimanager/LayoutShadowNode;
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/text/ReactTextView;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
@@ -6416,9 +6360,9 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public fun <init> ()V
 	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
 	protected fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/textinput/ReactEditText;)V
+	public fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/LayoutShadowNode;
 	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
-	public fun createShadowNodeInstance ()Lcom/facebook/react/views/text/ReactBaseTextShadowNode;
-	public final fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactBaseTextShadowNode;
+	public final fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/uimanager/LayoutShadowNode;
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/textinput/ReactEditText;
 	public fun getCommandsMap ()Ljava/util/Map;
