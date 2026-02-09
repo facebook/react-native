@@ -1,4 +1,4 @@
-name: Validate API snapshot changes
+name: Analyze API Changes
 
 on:
   pull_request_target:
@@ -8,7 +8,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  api-changes:
+  api_changes:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
     steps:
