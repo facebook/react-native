@@ -39,7 +39,7 @@ declare module 'yargs' {
     ...
   }>;
 
-  declare type CommonModuleObject = {|
+  declare type CommonCommandModule = {|
     command?: string | Array<string>,
     aliases?: Array<string> | string,
     builder?:
@@ -48,25 +48,25 @@ declare module 'yargs' {
     handler?: ((argv: Argv) => void) | ((argv: Argv) => Promise<void>),
   |};
 
-  declare type ModuleObjectDesc = {|
-    ...CommonModuleObject,
+  declare type CommandModuleDesc = {|
+    ...CommonCommandModule,
     desc?: string | false,
   |};
 
-  declare type ModuleObjectDescribe = {|
-    ...CommonModuleObject,
+  declare type CommandModuleDescribe = {|
+    ...CommonCommandModule,
     describe?: string | false,
   |};
 
-  declare type ModuleObjectDescription = {|
-    ...CommonModuleObject,
+  declare type CommandModuleDescription = {|
+    ...CommonCommandModule,
     description?: string | false,
   |};
 
-  declare type ModuleObject =
-    | ModuleObjectDesc
-    | ModuleObjectDescribe
-    | ModuleObjectDescription;
+  declare type CommandModule =
+    | CommandModuleDesc
+    | CommandModuleDescribe
+    | CommandModuleDescription;
 
   declare type MiddleWareCallback = (
     argv: Argv,
@@ -101,9 +101,9 @@ declare module 'yargs' {
     command(
       cmd: string | Array<string>,
       desc: string | false,
-      module: ModuleObject,
+      module: CommandModule,
     ): this;
-    command(module: ModuleObject): this;
+    command(module: CommandModule): this;
 
     commands(
       cmd: string | Array<string>,
@@ -116,9 +116,9 @@ declare module 'yargs' {
     commands(
       cmd: string | Array<string>,
       desc: string | false,
-      module: ModuleObject,
+      module: CommandModule,
     ): this;
-    commands(module: ModuleObject): this;
+    commands(module: CommandModule): this;
 
     commandDir(
       directory: string,
@@ -337,8 +337,8 @@ declare module 'yargs' {
     usage(
       message: string,
       desc?: string,
-      builder: CommonModuleObject['builder'],
-      handler: CommonModuleObject['handler'],
+      builder: CommonCommandModule['builder'],
+      handler: CommonCommandModule['handler'],
     ): this;
 
     version(): this;
