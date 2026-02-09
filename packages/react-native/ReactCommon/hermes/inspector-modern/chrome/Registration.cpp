@@ -36,6 +36,8 @@ void disableDebugging(DebugSessionToken session) {
 
 #else
 
+using DebugSessionToken = int;
+
 DebugSessionToken enableDebugging(
     std::unique_ptr<RuntimeAdapter>,
     const std::string&) {
