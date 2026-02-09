@@ -310,7 +310,7 @@ val downloadBoost by
 val prepareBoost by
     tasks.registering(PrepareBoostTask::class) {
       dependsOn(if (boostPathOverride != null) emptyList() else listOf(downloadBoost))
-      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoostDest))
+      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(resources.gzip(downloadBoostDest)))
       boostThirdPartyJniPath.set(project.file("src/main/jni/third-party/boost"))
       boostVersion.set(BOOST_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "boost"))
