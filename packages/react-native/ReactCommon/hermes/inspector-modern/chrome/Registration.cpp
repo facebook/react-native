@@ -41,6 +41,9 @@ void disableDebugging(DebugSessionToken session) {
 
 namespace facebook::hermes::inspector_modern {
 class RuntimeAdapter {
+  // Backwards compatibility definition fallback for libraries that are compiled
+  // without `HERMES_V1_ENABLED` but are linked against React Native with
+  // `HERMES_V1_ENABLED` which doesn't provide this symbol.
  public:
   virtual ~RuntimeAdapter() = 0;
   virtual HermesRuntime& getRuntime() = 0;
@@ -50,12 +53,6 @@ class RuntimeAdapter {
 namespace chrome {
 
 using DebugSessionToken = int;
-
-/**
- * RuntimeAdapter encapsulates a HermesRuntime object. The underlying Hermes
- * runtime object should stay alive for at least as long as the RuntimeAdapter
- * is alive.
- */
 
 DebugSessionToken enableDebugging(
     std::unique_ptr<RuntimeAdapter>,
