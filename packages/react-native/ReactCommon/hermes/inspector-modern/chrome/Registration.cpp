@@ -34,9 +34,27 @@ void disableDebugging(DebugSessionToken session) {
   demux().disableDebugging(session);
 }
 
+} // namespace facebook::hermes::inspector_modern::chrome
+
 #else
 
+namespace facebook::hermes::inspector_modern {
+class RuntimeAdapter {
+ public:
+  virtual ~RuntimeAdapter() = 0;
+  virtual HermesRuntime& getRuntime() = 0;
+  virtual void tickleJs();
+};
+
+namespace chrome {
+
 using DebugSessionToken = int;
+
+/**
+ * RuntimeAdapter encapsulates a HermesRuntime object. The underlying Hermes
+ * runtime object should stay alive for at least as long as the RuntimeAdapter
+ * is alive.
+ */
 
 DebugSessionToken enableDebugging(
     std::unique_ptr<RuntimeAdapter>,
@@ -53,8 +71,10 @@ void disableDebugging(DebugSessionToken) {
   // `HERMES_V1_ENABLED` which doesn't provide this symbol.
 }
 
-#endif // !defined(HERMES_V1_ENABLED)
+} // namespace chrome
 
-} // namespace facebook::hermes::inspector_modern::chrome
+} // namespace facebook::hermes::inspector_modern
+
+#endif // !defined(HERMES_V1_ENABLED)
 
 #endif // defined(HERMES_ENABLE_DEBUGGER)
