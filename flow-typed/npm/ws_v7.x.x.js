@@ -339,6 +339,7 @@ declare class ws$WebSocket extends events$EventEmitter {
 }
 
 declare module 'ws' {
+  declare export type Server = ws$WebSocketServer;
   declare module.exports: typeof ws$WebSocket;
 }
 
