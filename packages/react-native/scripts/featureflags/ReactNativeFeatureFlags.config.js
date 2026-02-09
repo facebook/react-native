@@ -937,7 +937,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     externalElementInspectionEnabled: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2026-02-04',
         description:

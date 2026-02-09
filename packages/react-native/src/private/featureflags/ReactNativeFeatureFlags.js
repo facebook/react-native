@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c3eeb5a098c4f8f0738ee377e81679cb>>
+ * @generated SignedSource<<4680a90fe6a071f6352de95fc1ca01ba>>
  * @flow strict
  * @noformat
  */
@@ -155,7 +155,7 @@ export const disableMaintainVisibleContentPosition: Getter<boolean> = createJava
 /**
  * Enable the external inspection API for DevTools to communicate with the Inspector overlay.
  */
-export const externalElementInspectionEnabled: Getter<boolean> = createJavaScriptFlagGetter('externalElementInspectionEnabled', false);
+export const externalElementInspectionEnabled: Getter<boolean> = createJavaScriptFlagGetter('externalElementInspectionEnabled', true);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
