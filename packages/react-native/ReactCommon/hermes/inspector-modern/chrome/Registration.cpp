@@ -10,6 +10,8 @@
 
 #if defined(HERMES_ENABLE_DEBUGGER)
 
+#include <hermes/hermes.h>
+
 #if !defined(HERMES_V1_ENABLED)
 
 namespace facebook::hermes::inspector_modern::chrome {
