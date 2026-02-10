@@ -23,11 +23,15 @@ export type ImageSourceHeaders = {
  * A function which returns the appropriate value for image source
  * by resolving the `source`, `src` and `srcSet` props.
  */
-export function getImageSourcesFromImageProps(
-  imageProps: ImageProps,
-):
+export function getImageSourcesFromImageProps(imageProps: ImageProps):
   | ?ResolvedAssetSource
-  | ReadonlyArray<{uri: string, headers: ImageSourceHeaders, ...}> {
+  | ReadonlyArray<{
+      +uri: string,
+      +headers: ImageSourceHeaders,
+      +width: ?number,
+      +height: ?number,
+      ...
+    }> {
   let source = resolveAssetSource(imageProps.source);
 
   let sources;
