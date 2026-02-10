@@ -227,6 +227,23 @@
 - **Touch Handling**: Respect `cancelsTouchesInView` when canceling touches in `RCTSurfaceTouchHandler` ([5634e8a601](https://github.com/facebook/react-native/commit/5634e8a601caf0faa174bac3511929de767609ac) by [@intmain](https://github.com/intmain))
 - **View**: Fix duplicate shadow bug during component recycling by cleaning up visual layers in prepareForRecycle ([7dcedf1def](https://github.com/facebook/react-native/commit/7dcedf1def880163ab7ca07b2575a8153029a925) by Atharv Soni)
 
+## v0.83.2
+
+### Added
+
+#### Android specific
+- **Gradle:** Expose `oscompat` headers via prefab ([b4da323c8e](https://github.com/facebook/react-native/commit/b4da323c8ec5ab7fe0171196dbe8ea50db49b96e) by [@war-in](https://github.com/war-in))
+
+### Fixed
+
+- **Appearance**: Fix color scheme in appearance state after setting it to unspecified ([08d1764530](https://github.com/facebook/react-native/commit/08d176453095db99300aa77632603ab42c57e152) by [@ismarbesic](https://github.com/ismarbesic))
+- **Assets**: Handle `unstable_path` query param in asset URLs ([42986f27a0](https://github.com/facebook/react-native/commit/42986f27a0285e501f71cf5cedacedefdc44c74e) by [@tido64](https://github.com/tido64))
+- **Networking**: Fix incorrect `fetch()` response URL after redirect (https://github.com/facebook/react-native/issues/55248) ([fbe6a686e6](https://github.com/facebook/react-native/commit/fbe6a686e65e70dd61700413084ddc54c0b86765) by [@MarkCSmith](https://github.com/MarkCSmith))
+
+#### Android specific
+
+- **Text**: Fix text clipping on Android 15+ due to useBoundsForWidth change ([8347cc4b50](https://github.com/facebook/react-native/commit/8347cc4b50ca9229b638d0823d3148fed50b9a61) by [@chrfalch](https://github.com/chrfalch))
+
 ## v0.83.1
 
 ### Fixed
@@ -580,6 +597,23 @@ None
 ### Security
 
 - **Network:** Fixed vulnerability on undici and on-headers ([dd00c9055a](https://github.com/facebook/react-native/commit/dd00c9055a8f0c9ceac1716385a8a9874f7a4c2e) by [@cipolleschi](https://github.com/cipolleschi))
+
+## v0.81.6
+
+### Fixed
+
+- **Assets**: Handle `unstable_path` query param in asset URLs ([42986f27a0](https://github.com/facebook/react-native/commit/42986f27a0285e501f71cf5cedacedefdc44c74e) by [@tido64](https://github.com/tido64))
+- **Codegen**: Update `generate-artifacts-executor` script to account for optional output path ([716303362a](https://github.com/facebook/react-native/commit/716303362aead08310e2101f15a319b64a602026) by [@kitten](https://github.com/kitten))
+
+#### Android specific
+
+- **Legacy Architecture**: Fix legacy architecture Android freeze on metro refresh ([e7ed0b1347](https://github.com/facebook/react-native/commit/e7ed0b13475cc6b80ee421d679740feba4f71a9a) by [@robhogan](https://github.com/robhogan))
+
+#### iOS specific
+
+- **Codegen**: Fix outputs when iOS artifacts generator is run from Xcode script phase ([c0290329cd](https://github.com/facebook/react-native/commit/c0290329cdb1771ec087c8552049a287c67259c6) by [@kitten](https://github.com/kitten))
+- **Events**: Raised the maximum number of pointers tracked at the same time to 17 ([58bd51e7e2](https://github.com/facebook/react-native/commit/58bd51e7e23cbd1f5f0f360587610c9fc70c0d76) by [@j-piasecki](https://github.com/j-piasecki))
+
 
 ## v0.81.5
 

@@ -1,5 +1,9 @@
 name: diff-js-api-changes
 description: Check for breaking changes in the public React Native JS API
+outputs:
+  message:
+    description: Formatted markdown message describing API changes, or empty if no changes
+    value: ${{ steps.format_output.outputs.message }}
 runs:
   using: composite
   steps:
@@ -35,3 +39,35 @@ runs:
           $SCRATCH_DIR/ReactNativeApi-before.d.ts \
           $SCRATCH_DIR/ReactNativeApi-after.d.ts \
           > $SCRATCH_DIR/output.json
+
+    - name: Format output message
+      id: format_output
+      shell: bash
+      env:
+        SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-changes
+      run: |
+        if [ ! -f "$SCRATCH_DIR/output.json" ]; then
+          echo "message=" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        RESULT=$(cat $SCRATCH_DIR/output.json | jq -r '.result // empty')
+        if [ -z "$RESULT" ] || [ "$RESULT" = "NON_BREAKING" ]; then
+          echo "message=" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Use delimiter for multiline output
+        {
+          echo "message<<EOF"
+          echo "> [!WARNING]"
+          echo "> **JavaScript API change detected**"
+          echo ">"
+          echo "> This PR commits an update to \`ReactNativeApi.d.ts\`, indicating a change to React Native's public JavaScript API."
+          echo ">"
+          echo "> - Please include a **clear changelog message**."
+          echo "> - This change will be subject to additional review."
+          echo ">"
+          echo "> This change was flagged as: \`${RESULT}\`"
+          echo "EOF"
+        } >> $GITHUB_OUTPUT

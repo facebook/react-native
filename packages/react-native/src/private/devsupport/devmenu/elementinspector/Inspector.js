@@ -47,18 +47,29 @@ export type InspectedElement = Readonly<{
 }>;
 export type ElementsHierarchy = InspectorData['hierarchy'];
 
+type ExternalInspection = {
+  externalInspectingEnabled: boolean,
+  +reportToExternalInspection: (viewData: TouchedViewDataAtPoint) => void,
+};
+
 type Props = {
   inspectedViewRef: InspectedViewRef,
   onRequestRerenderApp: () => void,
   reactDevToolsAgent?: ReactDevToolsAgent,
+  devMenuInspectorOpen: boolean,
+  externalInspection: ExternalInspection,
 };
 
 function Inspector({
   inspectedViewRef,
   onRequestRerenderApp,
   reactDevToolsAgent,
+  devMenuInspectorOpen,
+  externalInspection,
 }: Props): React.Node {
-  const [inspecting, setInspecting] = useState<boolean>(true);
+  const [inspectingEnabled, setInspectingEnabled] = useState<boolean>(true);
+  const {externalInspectingEnabled, reportToExternalInspection} =
+    externalInspection;
 
   const [panelPosition, setPanelPosition] = useState<PanelPosition>('bottom');
   const [inspectedElement, setInspectedElement] =
@@ -66,6 +77,9 @@ function Inspector({
   const [selectionIndex, setSelectionIndex] = useState<?number>(null);
   const [elementsHierarchy, setElementsHierarchy] =
     useState<?ElementsHierarchy>(null);
+
+  // Derive inspecting state: external inspection forces it on, otherwise use local state
+  const isInspecting = externalInspectingEnabled || inspectingEnabled;
 
   const setSelection = (i: number) => {
     const hierarchyItem = elementsHierarchy?.[i];
@@ -98,6 +112,11 @@ function Inspector({
         touchedViewTag,
         closestInstance,
       } = viewData;
+
+      // Report to external inspection if in external inspection mode
+      if (externalInspectingEnabled) {
+        reportToExternalInspection(viewData);
+      }
 
       // Sync the touched view with React DevTools.
       // Note: This is Paper only. To support Fabric,
@@ -138,7 +157,7 @@ function Inspector({
   };
 
   const handleSetInspecting = (enabled: boolean) => {
-    setInspecting(enabled);
+    setInspectingEnabled(enabled);
     setInspectedElement(null);
   };
 
@@ -154,26 +173,29 @@ function Inspector({
 
   return (
     <View style={styles.container} pointerEvents="box-none">
-      {inspecting && (
+      {isInspecting && (
         <InspectorOverlay
           inspected={inspectedElement}
           onTouchPoint={onTouchPoint}
+          externalInspectionActive={externalInspectingEnabled}
         />
       )}
 
-      <SafeAreaView style={[styles.panelContainer, panelContainerStyle]}>
-        <InspectorPanel
-          devtoolsIsOpen={!!reactDevToolsAgent}
-          inspecting={inspecting}
-          setInspecting={handleSetInspecting}
-          inspected={inspectedElement}
-          hierarchy={elementsHierarchy}
-          selection={selectionIndex}
-          setSelection={setSelection}
-          touchTargeting={PressabilityDebug.isEnabled()}
-          setTouchTargeting={setTouchTargeting}
-        />
-      </SafeAreaView>
+      {!externalInspectingEnabled && (
+        <SafeAreaView style={[styles.panelContainer, panelContainerStyle]}>
+          <InspectorPanel
+            devtoolsIsOpen={!!reactDevToolsAgent}
+            inspecting={inspectingEnabled}
+            setInspecting={handleSetInspecting}
+            inspected={inspectedElement}
+            hierarchy={elementsHierarchy}
+            selection={selectionIndex}
+            setSelection={setSelection}
+            touchTargeting={PressabilityDebug.isEnabled()}
+            setTouchTargeting={setTouchTargeting}
+          />
+        </SafeAreaView>
+      )}
     </View>
   );
 }

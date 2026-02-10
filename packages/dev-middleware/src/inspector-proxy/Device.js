@@ -10,6 +10,7 @@
 
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
+import type {ReadonlyURL} from '../types/ReadonlyURL';
 import type {
   CDPClientMessage,
   CDPRequest,
@@ -63,7 +64,7 @@ type DebuggerConnection = {
   pageId: string,
   userAgent: string | null,
   customHandler: ?CustomMessageHandler,
-  debuggerRelativeBaseUrl: URL,
+  debuggerRelativeBaseUrl: ReadonlyURL,
   // Session ID assigned by the proxy for multi-debugger support
   sessionId: string,
 };
@@ -77,8 +78,8 @@ export type DeviceOptions = Readonly<{
   socket: WS,
   eventReporter: ?EventReporter,
   createMessageMiddleware: ?CreateCustomMessageHandlerFn,
-  deviceRelativeBaseUrl: URL,
-  serverRelativeBaseUrl: URL,
+  deviceRelativeBaseUrl: ReadonlyURL,
+  serverRelativeBaseUrl: ReadonlyURL,
   isProfilingBuild: boolean,
   experiments: Experiments,
 }>;
@@ -129,10 +130,10 @@ export default class Device {
 
   // A base HTTP(S) URL to this server, reachable from the device. Derived from
   // the http request that created the connection.
-  #deviceRelativeBaseUrl: URL;
+  #deviceRelativeBaseUrl: ReadonlyURL;
 
   // A base HTTP(S) URL to the server, relative to this server.
-  #serverRelativeBaseUrl: URL;
+  #serverRelativeBaseUrl: ReadonlyURL;
 
   // Logging reporting batches of cdp messages
   #cdpDebugLogging: CdpDebugLogging;
@@ -339,7 +340,7 @@ export default class Device {
       debuggerRelativeBaseUrl,
       userAgent,
     }: Readonly<{
-      debuggerRelativeBaseUrl: URL,
+      debuggerRelativeBaseUrl: ReadonlyURL,
       userAgent: string | null,
     }>,
   ) {

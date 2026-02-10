@@ -617,6 +617,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return appProperties != null ? appProperties.getString("surfaceID") : null;
   }
 
+  @Override
   public AtomicInteger getState() {
     return mState;
   }

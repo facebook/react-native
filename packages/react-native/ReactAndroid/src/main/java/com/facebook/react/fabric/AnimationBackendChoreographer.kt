@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric
 
+import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.GuardedFrameCallback
@@ -17,6 +18,7 @@ internal fun interface AnimationFrameCallback {
   fun onAnimationFrame(frameTimeMs: Double)
 }
 
+@DoNotStripAny
 internal class AnimationBackendChoreographer(
     reactApplicationContext: ReactApplicationContext,
 ) {

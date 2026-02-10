@@ -57,7 +57,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   YogaNodeJNIBase(YogaConfig config) {
-    this(YogaNative.jni_YGNodeNewWithConfigJNI(((YogaConfigJNIBase) config).mNativePointer));
+    this(YogaNative.jni_YGNodeNewWithConfigJNI(((YogaConfigJNIBase) config).nativePointer));
     mConfig = config; // makes sure the YogaConfig is not garbage collected
   }
 

@@ -2716,7 +2716,25 @@ type http$requestOptions = {
   ...
 };
 
+type http$createServerOptions = Readonly<{
+  ...net$createServerOptions,
+  connectionsCheckingInterval?: number,
+  headersTimeout?: number,
+  insecureHTTPParser?: boolean,
+  IncomingMessage?: Class<http$IncomingMessage<net$Socket>>,
+  joinDuplicateHeaders?: boolean,
+  keepAliveTimeout?: number,
+  maxHeaderSize?: number,
+  requestTimeout?: number,
+  requireHostHeader?: boolean,
+  rejectNonStandardBodyWrites?: boolean,
+  ServerResponse?: Class<http$ServerResponse>,
+  uniqueHeaders?: ReadonlyArray<string | ReadonlyArray<string>>,
+}>;
+
 declare module 'http' {
+  export type ServerOptions = http$createServerOptions;
+
   declare class Server extends http$Server {}
   declare class Agent extends http$Agent<net$Socket> {
     createConnection(
@@ -2728,6 +2746,13 @@ declare module 'http' {
   declare class IncomingMessage extends http$IncomingMessage<net$Socket> {}
   declare class ServerResponse extends http$ServerResponse {}
 
+  declare function createServer(
+    options: http$createServerOptions,
+    requestListener?: (
+      request: IncomingMessage,
+      response: ServerResponse,
+    ) => void,
+  ): Server;
   declare function createServer(
     requestListener?: (
       request: IncomingMessage,
@@ -2758,6 +2783,11 @@ declare module 'http' {
   declare var globalAgent: Agent;
 }
 
+type https$createServerOptions = Readonly<{
+  ...http$createServerOptions,
+  ...tls$createServerOptions,
+}>;
+
 type https$requestOptions = {
   ...requestOptions,
   agent?: boolean | http$Agent<tls$TLSSocket>,
@@ -2769,6 +2799,8 @@ type https$requestOptions = {
 };
 
 declare module 'https' {
+  export type ServerOptions = https$createServerOptions;
+
   declare class Server extends https$Server {}
   declare class Agent extends http$Agent<tls$TLSSocket> {
     createConnection(
@@ -2785,7 +2817,7 @@ declare module 'https' {
   declare class ServerResponse extends http$ServerResponse {}
 
   declare function createServer(
-    options: Object,
+    options: https$createServerOptions,
     requestListener?: (
       request: IncomingMessage,
       response: ServerResponse,
@@ -2903,7 +2935,18 @@ type net$connectOptions = {
   ...
 };
 
+type net$createServerOptions = Readonly<{
+  allowHalfOpen?: boolean,
+  highWaterMark?: number,
+  keepAlive?: boolean,
+  keepAliveInitialDelay?: number,
+  noDelay?: boolean,
+  pauseOnConnect?: boolean,
+}>;
+
 declare module 'net' {
+  export type ServerOptions = net$createServerOptions;
+
   declare class Server extends net$Server {}
   declare class Socket extends net$Socket {}
 
@@ -2913,13 +2956,10 @@ declare module 'net' {
 
   declare type connectionListener = (socket: Socket) => any;
   declare function createServer(
-    options?:
-      | {
-          allowHalfOpen?: boolean,
-          pauseOnConnect?: boolean,
-          ...
-        }
-      | connectionListener,
+    options: net$createServerOptions,
+    connectionListener?: connectionListener,
+  ): Server;
+  declare function createServer(
     connectionListener?: connectionListener,
   ): Server;
 
@@ -3947,6 +3987,58 @@ type tls$connectOptions = {
   ...
 };
 
+type tls$SecureContext = interface {};
+
+type tls$createServerOptions = Readonly<{
+  ALPNProtocols?: ReadonlyArray<string> | Uint8Array,
+  ca?: string | Buffer | ReadonlyArray<string | Buffer>,
+  cert?: string | Buffer | ReadonlyArray<string | Buffer>,
+  ciphers?: string,
+  clientCertEngine?: string,
+  crl?: string | Buffer | ReadonlyArray<string | Buffer>,
+  dhparam?: string | Buffer,
+  ecdhCurve?: string,
+  enableTrace?: boolean,
+  handshakeTimeout?: number,
+  honorCipherOrder?: boolean,
+  key?:
+    | string
+    | Buffer
+    | ReadonlyArray<
+        | string
+        | Buffer
+        | Readonly<{pem: string | Buffer, passphrase?: string, ...}>,
+      >,
+  maxVersion?: 'TLSv1.3' | 'TLSv1.2' | 'TLSv1.1' | 'TLSv1',
+  minVersion?: 'TLSv1.3' | 'TLSv1.2' | 'TLSv1.1' | 'TLSv1',
+  passphrase?: string,
+  pfx?:
+    | string
+    | Buffer
+    | ReadonlyArray<
+        | string
+        | Buffer
+        | Readonly<{buf: string | Buffer, passphrase?: string, ...}>,
+      >,
+  privateKeyIdentifier?: string,
+  privateKeyEngine?: string,
+  pskCallback?: (socket: tls$TLSSocket, identity: string) => Buffer | null,
+  pskIdentityHint?: string,
+  rejectUnauthorized?: boolean,
+  requestCert?: boolean,
+  secureContext?: tls$SecureContext,
+  secureOptions?: number,
+  secureProtocol?: string,
+  sessionIdContext?: string,
+  sessionTimeout?: number,
+  sigalgs?: string,
+  SNICallback?: (
+    servername: string,
+    callback: (err: Error | null, ctx?: tls$SecureContext) => void,
+  ) => void,
+  ticketKeys?: Buffer,
+}>;
+
 type tls$Certificate$Subject = {
   C?: string,
   ST?: string,
@@ -4019,6 +4111,8 @@ declare class tls$Server extends net$Server {
 }
 
 declare module 'tls' {
+  export type ServerOptions = tls$createServerOptions;
+
   declare var CLIENT_RENEG_LIMIT: number;
   declare var CLIENT_RENEG_WINDOW: number;
   declare var SLAB_BUFFER_SIZE: number;
@@ -4035,12 +4129,15 @@ declare module 'tls' {
   ): Error | void;
   declare function parseCertString(s: string): Object;
   declare function createSecureContext(details: Object): Object;
-  declare var SecureContext: Object;
+  declare var SecureContext: tls$SecureContext;
   declare var TLSSocket: typeof tls$TLSSocket;
   declare var Server: typeof tls$Server;
   declare function createServer(
-    options: Object,
-    secureConnectionListener?: Function,
+    options: tls$createServerOptions,
+    secureConnectionListener?: (socket: tls$TLSSocket) => void,
+  ): tls$Server;
+  declare function createServer(
+    secureConnectionListener?: (socket: tls$TLSSocket) => void,
   ): tls$Server;
   declare function connect(
     options: tls$connectOptions,

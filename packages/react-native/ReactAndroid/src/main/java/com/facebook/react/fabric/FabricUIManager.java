@@ -117,7 +117,9 @@ public class FabricUIManager
 
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
+  @SuppressLint("ClownyBooleanExpression")
   public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
+
   public @Nullable DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   private static final DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener FABRIC_PERF_LOGGER =
@@ -818,6 +820,7 @@ public class FabricUIManager
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
   }
 
+  @SuppressLint("NotInvokedPrivateMethod")
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
@@ -1050,11 +1053,11 @@ public class FabricUIManager
   }
 
   /**
-   * receiveEvent API that emits an event to C++. If `canCoalesceEvent` is true, that signals that
-   * C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
+   * receiveEvent API that emits an event to C++. If {@code canCoalesceEvent} is true, that signals
+   * that C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
    * emitting.
    *
-   * <p>`customCoalesceKey` is currently unused.
+   * <p>{@code customCoalesceKey} is currently unused.
    *
    * @param surfaceId
    * @param reactTag

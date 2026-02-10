@@ -56,59 +56,37 @@ public abstract class YogaNode : YogaProps {
 
   public abstract fun markLayoutSeen()
 
-  abstract override fun getStyleDirection(): YogaDirection
+  abstract override val styleDirection: YogaDirection
 
   abstract override fun setDirection(direction: YogaDirection)
 
-  abstract override fun getFlexDirection(): YogaFlexDirection
+  abstract override var flexDirection: YogaFlexDirection
 
-  abstract override fun setFlexDirection(flexDirection: YogaFlexDirection)
+  abstract override var justifyContent: YogaJustify
 
-  abstract override fun getJustifyContent(): YogaJustify
+  abstract override var alignItems: YogaAlign
 
-  abstract override fun setJustifyContent(justifyContent: YogaJustify)
+  abstract override var alignSelf: YogaAlign
 
-  abstract override fun getAlignItems(): YogaAlign
+  abstract override var alignContent: YogaAlign
 
-  abstract override fun setAlignItems(alignItems: YogaAlign)
+  abstract override var positionType: YogaPositionType
 
-  abstract override fun getAlignSelf(): YogaAlign
+  abstract override var boxSizing: YogaBoxSizing
 
-  abstract override fun setAlignSelf(alignSelf: YogaAlign)
-
-  abstract override fun getAlignContent(): YogaAlign
-
-  abstract override fun setAlignContent(alignContent: YogaAlign)
-
-  abstract override fun getPositionType(): YogaPositionType
-
-  abstract override fun setPositionType(positionType: YogaPositionType)
-
-  abstract override fun getBoxSizing(): YogaBoxSizing?
-
-  abstract override fun setBoxSizing(boxSizing: YogaBoxSizing?)
-
-  abstract override fun getWrap(): YogaWrap
-
-  abstract override fun setWrap(wrap: YogaWrap)
+  abstract override var wrap: YogaWrap
 
   public abstract var overflow: YogaOverflow?
 
   public abstract var display: YogaDisplay?
 
-  abstract override fun getFlex(): Float
+  abstract override var flex: Float
 
-  abstract override fun setFlex(flex: Float)
+  abstract override var flexGrow: Float
 
-  abstract override fun getFlexGrow(): Float
+  abstract override var flexShrink: Float
 
-  abstract override fun setFlexGrow(flexGrow: Float)
-
-  abstract override fun getFlexShrink(): Float
-
-  abstract override fun setFlexShrink(flexShrink: Float)
-
-  abstract override fun getFlexBasis(): YogaValue
+  abstract override val flexBasis: YogaValue
 
   abstract override fun setFlexBasis(flexBasis: Float)
 
@@ -138,7 +116,7 @@ public abstract class YogaNode : YogaProps {
 
   abstract override fun getBorder(edge: YogaEdge): Float
 
-  abstract override fun setBorder(edge: YogaEdge, border: Float)
+  abstract override fun setBorder(edge: YogaEdge, value: Float)
 
   abstract override fun getPosition(edge: YogaEdge): YogaValue
 
@@ -148,7 +126,7 @@ public abstract class YogaNode : YogaProps {
 
   public abstract fun setPositionAuto(edge: YogaEdge)
 
-  abstract override fun getWidth(): YogaValue
+  abstract override val width: YogaValue
 
   abstract override fun setWidth(width: Float)
 
@@ -162,7 +140,7 @@ public abstract class YogaNode : YogaProps {
 
   abstract override fun setWidthStretch()
 
-  abstract override fun getHeight(): YogaValue
+  abstract override val height: YogaValue
 
   abstract override fun setHeight(height: Float)
 
@@ -176,7 +154,7 @@ public abstract class YogaNode : YogaProps {
 
   abstract override fun setHeightStretch()
 
-  abstract override fun getMinWidth(): YogaValue
+  abstract override val minWidth: YogaValue
 
   abstract override fun setMinWidth(minWidth: Float)
 
@@ -188,7 +166,7 @@ public abstract class YogaNode : YogaProps {
 
   abstract override fun setMinWidthStretch()
 
-  abstract override fun getMinHeight(): YogaValue
+  abstract override val minHeight: YogaValue
 
   abstract override fun setMinHeight(minHeight: Float)
 
@@ -200,7 +178,7 @@ public abstract class YogaNode : YogaProps {
 
   abstract override fun setMinHeightStretch()
 
-  abstract override fun getMaxWidth(): YogaValue
+  abstract override val maxWidth: YogaValue
 
   abstract override fun setMaxWidth(maxWidth: Float)
 
@@ -212,9 +190,9 @@ public abstract class YogaNode : YogaProps {
 
   abstract override fun setMaxWidthStretch()
 
-  abstract override fun getMaxHeight(): YogaValue
+  abstract override val maxHeight: YogaValue
 
-  abstract override fun setMaxHeight(maxheight: Float)
+  abstract override fun setMaxHeight(maxHeight: Float)
 
   abstract override fun setMaxHeightPercent(percent: Float)
 
@@ -224,9 +202,7 @@ public abstract class YogaNode : YogaProps {
 
   abstract override fun setMaxHeightStretch()
 
-  abstract override fun getAspectRatio(): Float
-
-  abstract override fun setAspectRatio(aspectRatio: Float)
+  abstract override var aspectRatio: Float
 
   public abstract fun getGap(gutter: YogaGutter): YogaValue
 
@@ -252,7 +228,7 @@ public abstract class YogaNode : YogaProps {
 
   abstract override fun setMeasureFunction(measureFunction: YogaMeasureFunction)
 
-  abstract override fun setBaselineFunction(baselineFunction: YogaBaselineFunction)
+  abstract override fun setBaselineFunction(yogaBaselineFunction: YogaBaselineFunction)
 
   public abstract val isMeasureDefined: Boolean
 
