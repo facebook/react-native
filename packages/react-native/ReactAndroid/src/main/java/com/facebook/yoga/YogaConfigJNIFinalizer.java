@@ -22,10 +22,10 @@ public class YogaConfigJNIFinalizer extends YogaConfigJNIBase {
    }
 
   public void freeNatives() {
-    if (mNativePointer != 0) {
-      long nativePointer = mNativePointer;
-      mNativePointer = 0;
-      YogaNative.jni_YGConfigFreeJNI(nativePointer);
+    if (nativePointer != 0) {
+      long pointer = nativePointer;
+      nativePointer = 0;
+      YogaNative.jni_YGConfigFreeJNI(pointer);
     }
   }
 }
