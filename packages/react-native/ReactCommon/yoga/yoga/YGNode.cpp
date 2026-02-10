@@ -177,6 +177,7 @@ void YGNodeRemoveChild(
     if (owner == childOwner) {
       excludedChild->setLayout({}); // layout is no longer valid
       excludedChild->setOwner(nullptr);
+      excludedChild->setDirty(true); // invalidate cache
     }
     owner->markDirtyAndPropagate();
   }
@@ -198,6 +199,7 @@ void YGNodeRemoveAllChildren(const YGNodeRef ownerRef) {
       yoga::Node* oldChild = owner->getChild(i);
       oldChild->setLayout({}); // layout is no longer valid
       oldChild->setOwner(nullptr);
+      oldChild->setDirty(true); // invalidate cache
     }
     owner->clearChildren();
     owner->markDirtyAndPropagate();
