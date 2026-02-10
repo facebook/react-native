@@ -416,9 +416,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     String moduleName = getNameFromAnnotation(nativeModuleInterface);
-    return getTurboModuleRegistry() != null && getTurboModuleRegistry().hasModule(moduleName)
-        ? true
-        : mNativeModuleRegistry.hasModule(moduleName);
+    return (getTurboModuleRegistry() != null && getTurboModuleRegistry().hasModule(moduleName))
+        || mNativeModuleRegistry.hasModule(moduleName);
   }
 
   @Override
