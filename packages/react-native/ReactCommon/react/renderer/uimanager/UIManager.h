@@ -11,6 +11,7 @@
 #include <jsi/jsi.h>
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <map>
 #include <shared_mutex>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
@@ -154,9 +155,10 @@ class UIManager final : public ShadowTreeDelegate {
       const ShadowNode::UnsharedListOfShared &rootChildren,
       ShadowTree::CommitOptions commitOptions);
 
-  void mountPortalChildren(
+  void updatePortalChildren(
       Tag targetTag,
-      const ShadowNode::UnsharedListOfShared &portalChildren);
+      const ShadowNode::UnsharedListOfShared &oldChildren,
+      const ShadowNode::UnsharedListOfShared &newChildren);
 
   void setIsJSResponder(
       const std::shared_ptr<const ShadowNode> &shadowNode,
@@ -254,8 +256,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   std::shared_ptr<UIManagerAnimationBackend> animationBackend_;
 
-  // Portal children that are active and need to be committed
-  std::unordered_map<Tag, ShadowNode::UnsharedListOfShared> portalChildren_;
+  std::unordered_map<Tag, std::vector<std::shared_ptr<const ShadowNode>>> portalChildren_;
 
   // Portal children that are pending removal and need to be removed on the next commit
   std::unordered_map<Tag, std::unordered_set<Tag>> pendingPortalRemovals_;

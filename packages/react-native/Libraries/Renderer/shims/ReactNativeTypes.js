@@ -202,7 +202,7 @@ export type ReactFabricType = {
   getPublicInstanceFromRootTag(rootTag: number): PublicRootInstance | null,
   createPortal(
     children: React.Node,
-    containerTag: number,
+    target: HostInstance,
     key?: ?string,
   ): React.MixedElement,
   ...

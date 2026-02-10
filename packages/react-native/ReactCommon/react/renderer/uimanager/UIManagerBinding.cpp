@@ -471,8 +471,8 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "mountPortalChildren") {
-    auto paramCount = 2;
+  if (methodName == "updatePortalChildren") {
+    auto paramCount = 3;
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
@@ -485,9 +485,12 @@ jsi::Value UIManagerBinding::get(
           validateArgumentCount(runtime, methodName, paramCount, count);
 
           auto targetTag = static_cast<Tag>(arguments[0].asNumber());
-          auto shadowNodeList =
-              shadowNodeListFromValue(runtime, arguments[1]);
-          uiManager->mountPortalChildren(targetTag, shadowNodeList);
+          auto oldChildren = arguments[1].isNull()
+              ? nullptr
+              : shadowNodeListFromValue(runtime, arguments[1]);
+          auto newChildren =
+              shadowNodeListFromValue(runtime, arguments[2]);
+          uiManager->updatePortalChildren(targetTag, oldChildren, newChildren);
 
           return jsi::Value::undefined();
         });

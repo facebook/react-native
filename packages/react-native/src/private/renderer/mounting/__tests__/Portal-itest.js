@@ -12,36 +12,22 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {View} from 'react-native';
 import {createPortal} from 'react-native/Libraries/ReactNative/RendererProxy';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
-
-function getTargetTag(ref: {current: HostInstance | null}): number {
-  const element = ensureInstance(ref.current, ReactNativeElement);
-  return element.__nativeTag;
-}
 
 describe('Portal', () => {
   test('renders children into target view', () => {
     const root = Fantom.createRoot();
-    let targetTag: ?number = null;
     const targetRef = React.createRef<HostInstance>();
 
     function TestComponent({showPortal}: {showPortal: boolean}) {
-      React.useLayoutEffect(() => {
-        if (targetRef.current) {
-          targetTag = getTargetTag(targetRef);
-        }
-      }, []);
-
       return (
         <View nativeID="root">
           <View>
-            {showPortal && targetTag != null
-              ? createPortal(<View nativeID="portaled-child" />, targetTag)
+            {showPortal
+              ? createPortal(<View nativeID="portaled-child" />, targetRef.current)
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -49,12 +35,12 @@ describe('Portal', () => {
       );
     }
 
-    // Initial render to get the target tag
+    // Initial render to populate the ref
     Fantom.runTask(() => {
       root.render(<TestComponent showPortal={false} />);
     });
 
-    expect(targetTag).not.toBeNull();
+    expect(targetRef.current).not.toBeNull();
 
     // Mount portal
     Fantom.runTask(() => {
@@ -79,21 +65,14 @@ describe('Portal', () => {
 
   test('unmounts portal children from target view', () => {
     const root = Fantom.createRoot();
-    let targetTag: ?number = null;
     const targetRef = React.createRef<HostInstance>();
 
     function TestComponent({showPortal}: {showPortal: boolean}) {
-      React.useLayoutEffect(() => {
-        if (targetRef.current) {
-          targetTag = getTargetTag(targetRef);
-        }
-      }, []);
-
       return (
         <View nativeID="root">
           <View>
-            {showPortal && targetTag != null
-              ? createPortal(<View nativeID="portaled-child" />, targetTag)
+            {showPortal
+              ? createPortal(<View nativeID="portaled-child" />, targetRef.current)
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -101,11 +80,12 @@ describe('Portal', () => {
       );
     }
 
+    // Initial render to populate ref
     Fantom.runTask(() => {
       root.render(<TestComponent showPortal={false} />);
     });
 
-    expect(targetTag).not.toBeNull();
+    expect(targetRef.current).not.toBeNull();
 
     // Mount portal
     Fantom.runTask(() => {
@@ -141,7 +121,6 @@ describe('Portal', () => {
 
   test('preserves React context through portals', () => {
     const root = Fantom.createRoot();
-    let targetTag: ?number = null;
     let capturedTheme: ?string = null;
     const targetRef = React.createRef<HostInstance>();
     const ThemeContext = React.createContext<string>('light');
@@ -152,18 +131,12 @@ describe('Portal', () => {
     }
 
     function TestComponent({showPortal}: {showPortal: boolean}) {
-      React.useLayoutEffect(() => {
-        if (targetRef.current) {
-          targetTag = getTargetTag(targetRef);
-        }
-      }, []);
-
       return (
         <ThemeContext.Provider value="dark">
           <View nativeID="root">
             <View>
-              {showPortal && targetTag != null
-                ? createPortal(<ContextReader />, targetTag)
+              {showPortal
+                ? createPortal(<ContextReader />, targetRef.current)
                 : null}
             </View>
             <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -172,6 +145,7 @@ describe('Portal', () => {
       );
     }
 
+    // Initial render to populate ref
     Fantom.runTask(() => {
       root.render(<TestComponent showPortal={false} />);
     });
@@ -185,7 +159,6 @@ describe('Portal', () => {
 
   test('does not duplicate portal children on re-render and updates content', () => {
     const root = Fantom.createRoot();
-    let targetTag: ?number = null;
     const targetRef = React.createRef<HostInstance>();
 
     function TestComponent({
@@ -195,19 +168,13 @@ describe('Portal', () => {
       showPortal: boolean,
       counter: number,
     }) {
-      React.useLayoutEffect(() => {
-        if (targetRef.current) {
-          targetTag = getTargetTag(targetRef);
-        }
-      }, []);
-
       return (
         <View nativeID="root">
           <View>
-            {showPortal && targetTag != null
+            {showPortal
               ? createPortal(
                   <View nativeID={'portaled-' + counter} />,
-                  targetTag,
+                  targetRef.current,
                 )
               : null}
           </View>
@@ -217,6 +184,7 @@ describe('Portal', () => {
       );
     }
 
+    // Initial render to populate ref
     Fantom.runTask(() => {
       root.render(<TestComponent showPortal={false} counter={0} />);
     });
@@ -284,21 +252,14 @@ describe('Portal', () => {
 
   test('mount and unmount cycle works multiple times', () => {
     const root = Fantom.createRoot();
-    let targetTag: ?number = null;
     const targetRef = React.createRef<HostInstance>();
 
     function TestComponent({showPortal}: {showPortal: boolean}) {
-      React.useLayoutEffect(() => {
-        if (targetRef.current) {
-          targetTag = getTargetTag(targetRef);
-        }
-      }, []);
-
       return (
         <View nativeID="root">
           <View>
-            {showPortal && targetTag != null
-              ? createPortal(<View nativeID="portaled-child" />, targetTag)
+            {showPortal
+              ? createPortal(<View nativeID="portaled-child" />, targetRef.current)
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -306,6 +267,7 @@ describe('Portal', () => {
       );
     }
 
+    // Initial render to populate ref
     Fantom.runTask(() => {
       root.render(<TestComponent showPortal={false} />);
     });
@@ -353,5 +315,238 @@ describe('Portal', () => {
       root.render(<TestComponent showPortal={false} />);
     });
     expect(root.getRenderedOutput().toJSON()).toEqual(withoutPortal);
+  });
+
+  test('multiple portals to same target', () => {
+    const root = Fantom.createRoot();
+    const targetRef = React.createRef<HostInstance>();
+
+    function TestComponent({
+      showPortal1,
+      showPortal2,
+    }: {
+      showPortal1: boolean,
+      showPortal2: boolean,
+    }) {
+      return (
+        <View nativeID="root">
+          <View>
+            {showPortal1
+              ? createPortal(
+                  <View nativeID="portal-child-1" />,
+                  targetRef.current,
+                )
+              : null}
+            {showPortal2
+              ? createPortal(
+                  <View nativeID="portal-child-2" />,
+                  targetRef.current,
+                )
+              : null}
+          </View>
+          <View ref={targetRef} nativeID="target" collapsable={false} />
+        </View>
+      );
+    }
+
+    // Initial render to populate ref
+    Fantom.runTask(() => {
+      root.render(
+        <TestComponent showPortal1={false} showPortal2={false} />,
+      );
+    });
+
+    expect(targetRef.current).not.toBeNull();
+
+    // Mount both unkeyed portals
+    Fantom.runTask(() => {
+      root.render(<TestComponent showPortal1={true} showPortal2={true} />);
+    });
+
+    expect(root.getRenderedOutput().toJSON()).toEqual({
+      type: 'View',
+      props: {nativeID: 'root'},
+      children: [
+        {
+          type: 'View',
+          props: {nativeID: 'target'},
+          children: [
+            {type: 'View', props: {nativeID: 'portal-child-1'}, children: []},
+            {type: 'View', props: {nativeID: 'portal-child-2'}, children: []},
+          ],
+        },
+      ],
+    });
+  });
+
+  test('selective unmount of portals', () => {
+    const root = Fantom.createRoot();
+    const targetRef = React.createRef<HostInstance>();
+
+    function TestComponent({
+      showPortal1,
+      showPortal2,
+    }: {
+      showPortal1: boolean,
+      showPortal2: boolean,
+    }) {
+      return (
+        <View nativeID="root">
+          <View>
+            {showPortal1
+              ? createPortal(
+                  <View nativeID="portal-child-1" />,
+                  targetRef.current,
+                )
+              : null}
+            {showPortal2
+              ? createPortal(
+                  <View nativeID="portal-child-2" />,
+                  targetRef.current,
+                )
+              : null}
+          </View>
+          <View ref={targetRef} nativeID="target" collapsable={false} />
+        </View>
+      );
+    }
+
+    // Initial render to populate ref
+    Fantom.runTask(() => {
+      root.render(
+        <TestComponent showPortal1={false} showPortal2={false} />,
+      );
+    });
+
+    // Mount both
+    Fantom.runTask(() => {
+      root.render(<TestComponent showPortal1={true} showPortal2={true} />);
+    });
+
+    expect(root.getRenderedOutput().toJSON()).toEqual({
+      type: 'View',
+      props: {nativeID: 'root'},
+      children: [
+        {
+          type: 'View',
+          props: {nativeID: 'target'},
+          children: [
+            {type: 'View', props: {nativeID: 'portal-child-1'}, children: []},
+            {type: 'View', props: {nativeID: 'portal-child-2'}, children: []},
+          ],
+        },
+      ],
+    });
+
+    // Unmount portal 2, portal 1 survives
+    Fantom.runTask(() => {
+      root.render(<TestComponent showPortal1={true} showPortal2={false} />);
+    });
+
+    expect(root.getRenderedOutput().toJSON()).toEqual({
+      type: 'View',
+      props: {nativeID: 'root'},
+      children: [
+        {
+          type: 'View',
+          props: {nativeID: 'target'},
+          children: [
+            {type: 'View', props: {nativeID: 'portal-child-1'}, children: []},
+          ],
+        },
+      ],
+    });
+
+    // Unmount portal 1 too
+    Fantom.runTask(() => {
+      root.render(
+        <TestComponent showPortal1={false} showPortal2={false} />,
+      );
+    });
+
+    expect(root.getRenderedOutput().toJSON()).toEqual({
+      type: 'View',
+      props: {nativeID: 'root'},
+      children: [{type: 'View', props: {nativeID: 'target'}, children: []}],
+    });
+  });
+
+  test('remove first portal in list, second survives', () => {
+    const root = Fantom.createRoot();
+    const targetRef = React.createRef<HostInstance>();
+
+    function TestComponent({
+      showPortal1,
+      showPortal2,
+    }: {
+      showPortal1: boolean,
+      showPortal2: boolean,
+    }) {
+      return (
+        <View nativeID="root">
+          <View>
+            {showPortal1
+              ? createPortal(
+                  <View nativeID="portal-child-1" />,
+                  targetRef.current,
+                )
+              : null}
+            {showPortal2
+              ? createPortal(
+                  <View nativeID="portal-child-2" />,
+                  targetRef.current,
+                )
+              : null}
+          </View>
+          <View ref={targetRef} nativeID="target" collapsable={false} />
+        </View>
+      );
+    }
+
+    // Initial render to populate ref
+    Fantom.runTask(() => {
+      root.render(
+        <TestComponent showPortal1={false} showPortal2={false} />,
+      );
+    });
+
+    // Mount both
+    Fantom.runTask(() => {
+      root.render(<TestComponent showPortal1={true} showPortal2={true} />);
+    });
+
+    expect(root.getRenderedOutput().toJSON()).toEqual({
+      type: 'View',
+      props: {nativeID: 'root'},
+      children: [
+        {
+          type: 'View',
+          props: {nativeID: 'target'},
+          children: [
+            {type: 'View', props: {nativeID: 'portal-child-1'}, children: []},
+            {type: 'View', props: {nativeID: 'portal-child-2'}, children: []},
+          ],
+        },
+      ],
+    });
+
+    // Remove first portal (index 0), second survives
+    Fantom.runTask(() => {
+      root.render(<TestComponent showPortal1={false} showPortal2={true} />);
+    });
+
+    expect(root.getRenderedOutput().toJSON()).toEqual({
+      type: 'View',
+      props: {nativeID: 'root'},
+      children: [
+        {
+          type: 'View',
+          props: {nativeID: 'target'},
+          children: [
+            {type: 'View', props: {nativeID: 'portal-child-2'}, children: []},
+          ],
+        },
+      ],
+    });
   });
 });

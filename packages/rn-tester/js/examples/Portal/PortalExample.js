@@ -8,56 +8,70 @@
  * @format
  */
 
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type { RNTesterModuleExample } from '../../types/RNTesterTypes';
 
 import * as React from 'react';
-import {useCallback, useState} from 'react';
-import {Button, StyleSheet, Text, View, findNodeHandle} from 'react-native';
-import {createPortal} from 'react-native/Libraries/ReactNative/RendererProxy';
+import { useCallback, useState, useEffect } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { createPortal } from 'react-native/Libraries/ReactNative/RendererProxy';
 
+function CustomComponent() {
+  const [count, setCount] = useState(0);
+  return <Button title={'Test ' + count} onPress={() => setCount(c => c + 1)} />
+}
 function PortalBasicExample(): React.Node {
-  const [showPortal, setShowPortal] = useState(false);
-  const [targetTag, setTargetTag] = useState<number | null>(null);
-  const targetRef = React.useRef<React.ElementRef<typeof View> | null>(null);
+  const [portals, setPortals] = useState({ a: false, b: false, c: false });
+  const [count, setCount] = useState(0);
+  const targetRef = React.useRef < React.ElementRef < typeof View > | null > (null);
 
-  const handleMount = useCallback(() => {
-    const tag = findNodeHandle(targetRef.current);
-    if (tag != null) {
-      setTargetTag(tag);
-      setShowPortal(true);
-    }
-  }, []);
+  const toggle = useCallback(
+    (id: string) => {
+      if (!portals[id] && targetRef.current == null) {
+        return;
+      }
+      setPortals(prev => ({ ...prev, [id]: !prev[id] }));
+    },
+    [portals],
+  );
 
-  const handleUnmount = useCallback(() => {
-    setShowPortal(false);
-    setTargetTag(null);
-  }, []);
+  const colors = { a: '#e94560', b: '#4ecca3', c: '#3498db' };
 
   return (
     <View style={styles.container}>
       <View style={styles.buttonRow}>
-        <Button
-          title="Mount Portal"
-          onPress={handleMount}
-          disabled={showPortal}
-        />
-        <Button
-          title="Unmount Portal"
-          onPress={handleUnmount}
-          disabled={!showPortal}
-        />
+        {['a', 'b', 'c'].map(id => (
+          <Button
+            key={id}
+            title={portals[id] ? `Hide ${id.toUpperCase()}` : `Show ${id.toUpperCase()}`}
+            onPress={() => toggle(id)}
+          />
+        ))}
       </View>
 
+      <Button
+        title={`Update State (${count})`}
+        onPress={() => setCount(c => c + 1)}
+      />
+
       <View style={styles.sourceBox}>
-        {showPortal && targetTag != null
-          ? createPortal(
-              <View style={styles.portalContent}>
-                <Text style={styles.portalText}>Portaled content</Text>
-                <Button title="Unmount" onPress={handleUnmount} />
+        {['a', 'b', 'c'].map(id =>
+          portals[id]
+            ? createPortal(
+              <View
+                key={id}
+                style={[
+                  styles.portalContent,
+                  { backgroundColor: colors[id], marginTop: 4 },
+                ]}>
+                <Text style={styles.portalText}>
+                  Portal {id.toUpperCase()} (count: {count})
+                </Text>
+                <CustomComponent />
               </View>,
-              targetTag,
+              targetRef.current,
             )
-          : null}
+            : null,
+        )}
       </View>
 
       <View ref={targetRef} style={styles.targetBox} collapsable={false}>
@@ -67,7 +81,7 @@ function PortalBasicExample(): React.Node {
   );
 }
 
-const ThemeContext = React.createContext<string>('light');
+const ThemeContext = React.createContext('light');
 
 function ContextReader(): React.Node {
   const theme = React.useContext(ThemeContext);
@@ -76,19 +90,15 @@ function ContextReader(): React.Node {
 
 function PortalContextExample(): React.Node {
   const [showPortal, setShowPortal] = useState(false);
-  const [targetTag, setTargetTag] = useState<number | null>(null);
-  const targetRef = React.useRef<React.ElementRef<typeof View> | null>(null);
+  const targetRef = React.useRef < React.ElementRef < typeof View > | null > (null);
 
   const handleToggle = useCallback(() => {
     if (!showPortal) {
-      const tag = findNodeHandle(targetRef.current);
-      if (tag != null) {
-        setTargetTag(tag);
+      if (targetRef.current != null) {
         setShowPortal(true);
       }
     } else {
       setShowPortal(false);
-      setTargetTag(null);
     }
   }, [showPortal]);
 
@@ -100,13 +110,13 @@ function PortalContextExample(): React.Node {
           onPress={handleToggle}
         />
         <View style={styles.sourceBox}>
-          {showPortal && targetTag != null
+          {showPortal
             ? createPortal(
-                <View style={styles.portalContent}>
-                  <ContextReader />
-                </View>,
-                targetTag,
-              )
+              <View style={styles.portalContent}>
+                <ContextReader />
+              </View>,
+              targetRef.current,
+            )
             : null}
         </View>
         <View ref={targetRef} style={styles.targetBox} collapsable={false}>
@@ -119,19 +129,15 @@ function PortalContextExample(): React.Node {
 
 function PortalOverlayExample(): React.Node {
   const [show, setShow] = useState(false);
-  const [tag, setTag] = useState<number | null>(null);
-  const ref = React.useRef<React.ElementRef<typeof View> | null>(null);
+  const ref = React.useRef < React.ElementRef < typeof View > | null > (null);
 
   const handleToggle = useCallback(() => {
     if (!show) {
-      const t = findNodeHandle(ref.current);
-      if (t != null) {
-        setTag(t);
+      if (ref.current != null) {
         setShow(true);
       }
     } else {
       setShow(false);
-      setTag(null);
     }
   }, [show]);
 
@@ -143,13 +149,13 @@ function PortalOverlayExample(): React.Node {
       />
       <View ref={ref} style={styles.overlayTarget} collapsable={false}>
         <Text>Content underneath</Text>
-        {show && tag != null
+        {show
           ? createPortal(
-              <View style={styles.overlay}>
-                <Text style={styles.overlayText}>Portal Overlay</Text>
-              </View>,
-              tag,
-            )
+            <View style={styles.overlay}>
+              <Text style={styles.overlayText}>Portal Overlay</Text>
+            </View>,
+            ref.current,
+          )
           : null}
       </View>
     </View>
@@ -226,8 +232,9 @@ export const category = 'UI';
 export const description = 'Render children into a different native view.';
 export const examples: Array<RNTesterModuleExample> = [
   {
-    title: 'Basic Portal',
-    description: 'Mount and unmount a portal into a target view.',
+    title: 'Multiple Portals',
+    description:
+      'Multiple unkeyed portals into the same target view with state updates.',
     render(): React.Node {
       return <PortalBasicExample />;
     },

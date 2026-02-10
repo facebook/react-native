@@ -187,22 +187,75 @@ static std::shared_ptr<const ShadowNode> findShadowNodeByTagRecursively(
     std::shared_ptr<const ShadowNode> parentShadowNode,
     Tag tag);
 
-void UIManager::mountPortalChildren(
+void UIManager::updatePortalChildren(
     Tag targetTag,
-    const ShadowNode::UnsharedListOfShared& portalChildren) {
-  if (portalChildren->empty()) {
+    const ShadowNode::UnsharedListOfShared& oldChildren,
+    const ShadowNode::UnsharedListOfShared& newChildren) {
+  bool hasOld = oldChildren != nullptr && !oldChildren->empty();
+  bool hasNew = !newChildren->empty();
+
+    // Update portal case. Replace in-place
+    if (hasOld && hasNew) {
+    std::unordered_set<Tag> oldTags;
+    for (const auto& child : *oldChildren) {
+      oldTags.insert(child->getTag());
+    }
+
+    auto& vec = portalChildren_[targetTag];
+    size_t insertPos = vec.size();
+    for (size_t i = 0; i < vec.size(); i++) {
+      if (oldTags.count(vec[i]->getTag()) > 0) {
+        insertPos = i;
+        break;
+      }
+    }
+    vec.erase(std::remove_if(vec.begin(), vec.end(),
+          [&](const std::shared_ptr<const ShadowNode>& node) {
+            return oldTags.count(node->getTag()) > 0;
+          }), vec.end());
+    if (insertPos > vec.size()) {
+      insertPos = vec.size();
+    }
+    for (size_t i = 0; i < newChildren->size(); i++) {
+      vec.insert(vec.begin() + static_cast<ptrdiff_t>(insertPos + i), (*newChildren)[i]);
+    }
+  } 
+  // Unmount portal case.
+  else if (hasOld) {
+    std::unordered_set<Tag> oldTags;
+    for (const auto& child : *oldChildren) {
+      oldTags.insert(child->getTag());
+    }
+    pendingPortalRemovals_[targetTag].insert(oldTags.begin(), oldTags.end());
     auto it = portalChildren_.find(targetTag);
     if (it != portalChildren_.end()) {
-      std::unordered_set<Tag> tags;
-      for (const auto& child : *(it->second)) {
-        tags.insert(child->getTag());
+      auto& vec = it->second;
+      vec.erase(
+          std::remove_if(vec.begin(), vec.end(),
+              [&](const std::shared_ptr<const ShadowNode>& node) {
+                return oldTags.count(node->getTag()) > 0;
+              }),
+          vec.end());
+      if (vec.empty()) {
+        portalChildren_.erase(it);
       }
-      pendingPortalRemovals_[targetTag] = std::move(tags);
-      portalChildren_.erase(it);
     }
-  } else {
-    portalChildren_[targetTag] = portalChildren;
-    pendingPortalRemovals_.erase(targetTag);
+  }
+  // Mount portal case.
+  else if (hasNew) {
+    auto& vec = portalChildren_[targetTag];
+    for (const auto& child : *newChildren) {
+      vec.push_back(child);
+    }
+    auto removalIt = pendingPortalRemovals_.find(targetTag);
+    if (removalIt != pendingPortalRemovals_.end()) {
+      for (const auto& child : *newChildren) {
+        removalIt->second.erase(child->getTag());
+      }
+      if (removalIt->second.empty()) {
+        pendingPortalRemovals_.erase(removalIt);
+      }
+    }
   }
 }
 
@@ -223,26 +276,29 @@ void UIManager::completeSurface(
               });
 
           // Append portal children to the target node
-          for (const auto& [targetTag, portalChildren] : portalChildren_) {
-            const auto& localPortalChildren = portalChildren;
+          for (const auto& [targetTag, portalVec] : portalChildren_) {
+            if (portalVec.empty()) {
+              continue;
+            }
 
             auto targetNode = findShadowNodeByTagRecursively(
                 std::static_pointer_cast<const ShadowNode>(newRoot),
                 targetTag);
 
             if (targetNode) {
+              const auto& localPortalVec = portalVec;
               auto clonedRoot = newRoot->cloneTree(
                   targetNode->getFamily(),
                   [&](const ShadowNode& oldNode) {
                     auto existingChildren = oldNode.getChildren();
 
                     std::unordered_set<Tag> portalTags;
-                    for (const auto& child : *localPortalChildren) {
+                    for (const auto& child : localPortalVec) {
                       portalTags.insert(child->getTag());
                     }
 
                     auto mergedChildren = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
-                    mergedChildren->reserve(existingChildren.size() + localPortalChildren->size());
+                    mergedChildren->reserve(existingChildren.size() + localPortalVec.size());
                     for (const auto& child : existingChildren) {
                       if (portalTags.find(child->getTag()) == portalTags.end()) {
                         mergedChildren->push_back(child);
@@ -250,8 +306,9 @@ void UIManager::completeSurface(
                     }
 
                     // Append portal children
-                    for (const auto& child : *localPortalChildren) {
-                      mergedChildren->push_back(child);
+                    for (const auto& child : localPortalVec) {
+                      // cloned so layout positions are recalculated when siblings are added/removed
+                      mergedChildren->push_back(child->clone({}));
                     }
 
                     return oldNode.clone({.children = mergedChildren});
@@ -288,13 +345,14 @@ void UIManager::completeSurface(
               }
             }
           }
-          pendingPortalRemovals_.clear();
-
           return newRoot;
         },
         commitOptions);
 
     if (result == ShadowTree::CommitStatus::Succeeded) {
+      // Clear pending removals only on success. if the commit failed,
+      // keep them so they're applied on the next successful commit.
+      pendingPortalRemovals_.clear();
       // It's safe to update the visible revision of the shadow tree immediately
       // after we commit a specific one.
       lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(

@@ -10932,13 +10932,15 @@ __DEV__ &&
       finishedWork,
       pendingChildren
     ) {
+      var stateNode = portal;
       portal = portal.containerInfo;
       try {
         runWithFiberInDEV(
           finishedWork,
           replaceContainerChildren,
           portal,
-          pendingChildren
+          pendingChildren,
+          stateNode
         );
       } catch (error) {
         captureCommitPhaseError(finishedWork, finishedWork.return, error);
@@ -15966,12 +15968,11 @@ __DEV__ &&
         canonical: instance.canonical
       };
     }
-    function replaceContainerChildren(container, newChildren) {
-      if (container._isPortal) {
-        mountPortalChildren(container.containerTag, newChildren);
-        if (newChildren.length === 0) {
-          portalContainerCache.delete(container.containerTag);
-        }
+    function replaceContainerChildren(container, newChildren, portalStateNode) {
+      if (container._isPortal && portalStateNode) {
+        var oldChildren = portalStateNode._committedChildren || null;
+        updatePortalChildren(container.containerTag, oldChildren, newChildren);
+        portalStateNode._committedChildren = newChildren;
       } else {
         completeRoot(container.containerTag, newChildren);
       }
@@ -18714,7 +18715,7 @@ __DEV__ &&
       appendChildNode = _nativeFabricUIManage.appendChild,
       appendChildNodeToSet = _nativeFabricUIManage.appendChildToSet,
       completeRoot = _nativeFabricUIManage.completeRoot,
-      mountPortalChildren = _nativeFabricUIManage.mountPortalChildren,
+      updatePortalChildren = _nativeFabricUIManage.updatePortalChildren,
       registerEventHandler = _nativeFabricUIManage.registerEventHandler,
       FabricDiscretePriority =
         _nativeFabricUIManage.unstable_DiscreteEventPriority,
@@ -18938,23 +18939,21 @@ __DEV__ &&
       internals.getCurrentFiber = getCurrentFiberForDevTools;
       return injectInternals(internals);
     })();
-    var portalContainerCache = new Map();
-    exports.createPortal = function (children, containerTag) {
-      var portalContainer = portalContainerCache.get(containerTag);
+    var portalContainerCache = new WeakMap();
+    exports.createPortal = function (children, target) {
+      var key = 2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null;
+
+      var portalContainer = portalContainerCache.get(target);
       if (!portalContainer) {
+        var tag = findNodeHandle(target);
         portalContainer = {
-          containerTag: containerTag,
+          containerTag: tag,
           publicInstance: null,
           _isPortal: true
         };
-        portalContainerCache.set(containerTag, portalContainer);
+        portalContainerCache.set(target, portalContainer);
       }
-      return createPortal$1(
-        children,
-        portalContainer,
-        null,
-        2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null
-      );
+      return createPortal$1(children, portalContainer, null, key);
     };
     exports.dispatchCommand = function (handle, command, args) {
       var nativeTag =
