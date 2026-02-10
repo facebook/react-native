@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d3f35de8808eb703debde85df332df8>>
+ * @generated SignedSource<<17ced46048bb3bdff5023a2a2aa03e9c>>
  * @flow strict
  * @noformat
  */
@@ -161,7 +161,7 @@ export const externalElementInspectionEnabled: Getter<boolean> = createJavaScrip
 /**
  * Fix image dimensions not being passed through when src is used
  */
-export const fixImageSrcDimensionPropagation: Getter<boolean> = createJavaScriptFlagGetter('fixImageSrcDimensionPropagation', false);
+export const fixImageSrcDimensionPropagation: Getter<boolean> = createJavaScriptFlagGetter('fixImageSrcDimensionPropagation', true);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
