@@ -425,6 +425,21 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
   }
 }
 
+class IncorrectModuleRegistryCallArgumentValueParserError extends ParserError {
+  constructor(
+    nativeModuleName: string,
+    flowArgument: $FlowFixMe,
+    methodName: string,
+    value: string,
+  ) {
+    super(
+      nativeModuleName,
+      flowArgument,
+      `Please call TurboModuleRegistry.${methodName}<Spec>() with a safe module name. Module names must only contain alphanumeric characters and underscores (matching /^[a-zA-Z_][a-zA-Z0-9_]*$/). Got '${value.replace(/[^\x20-\x7e]/g, '?')}'`,
+    );
+  }
+}
+
 module.exports = {
   ParserError,
   MissingTypeParameterGenericParserError,
@@ -452,4 +467,5 @@ module.exports = {
   IncorrectModuleRegistryCallTypeParameterParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
+  IncorrectModuleRegistryCallArgumentValueParserError,
 };

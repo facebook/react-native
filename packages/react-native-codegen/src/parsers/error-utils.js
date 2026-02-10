@@ -17,6 +17,7 @@ import type {Parser} from './parser';
 
 const {
   IncorrectModuleRegistryCallArgumentTypeParserError,
+  IncorrectModuleRegistryCallArgumentValueParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
   MisnamedModuleInterfaceParserError,
@@ -307,6 +308,16 @@ function throwIfIncorrectModuleRegistryCallArgument(
       callExpressionArg,
       methodName,
       type,
+    );
+  }
+
+  const value = callExpressionArg.value;
+  if (typeof value !== 'string' || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(value)) {
+    throw new IncorrectModuleRegistryCallArgumentValueParserError(
+      nativeModuleName,
+      callExpressionArg,
+      methodName,
+      String(value),
     );
   }
 }
