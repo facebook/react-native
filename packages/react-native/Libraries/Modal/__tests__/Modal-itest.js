@@ -28,6 +28,14 @@ const DEFAULT_MODAL_CHILD_VIEW = (
 );
 
 describe('<Modal>', () => {
+  afterEach(() => {
+    // Flush any remaining tasks that may have been scheduled during the
+    // render (e.g. passive effects from AppContainer in __DEV__ mode).
+    // This prevents flaky "MessageQueue is not empty" failures from the
+    // global afterEach validation hook.
+    Fantom.runWorkLoop();
+  });
+
   describe('props', () => {
     it('renders a Modal with the default values when no props are passed', () => {
       const root = Fantom.createRoot();
