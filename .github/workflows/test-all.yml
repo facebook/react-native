@@ -309,6 +309,9 @@ jobs:
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
+        # Set the encoding to resolve a known character encoding issue with decompressing tar.gz files in containers
+        # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127
+        LC_ALL: C.UTF8
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
@@ -329,6 +332,9 @@ jobs:
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
+        # Set the encoding to resolve a known character encoding issue with decompressing tar.gz files in containers
+        # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127
+        LC_ALL: C.UTF8
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
