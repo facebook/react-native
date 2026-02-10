@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c3eeb5a098c4f8f0738ee377e81679cb>>
+ * @generated SignedSource<<74be115abbbca41e60f21dc044b3a1bd>>
  * @flow strict
  * @noformat
  */
@@ -36,6 +36,8 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   externalElementInspectionEnabled: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
+  reduceDefaultPropsInImage: Getter<boolean>,
+  reduceDefaultPropsInText: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
@@ -166,6 +168,16 @@ export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaSc
  * Function used to enable / disabled Layout Animations in React Native.
  */
 export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGetter('isLayoutAnimationEnabled', true);
+
+/**
+ * Optimize how default props are processed in Image to avoid unnecessary keys.
+ */
+export const reduceDefaultPropsInImage: Getter<boolean> = createJavaScriptFlagGetter('reduceDefaultPropsInImage', false);
+
+/**
+ * Optimize how default props are processed in Text to avoid unnecessary keys.
+ */
+export const reduceDefaultPropsInText: Getter<boolean> = createJavaScriptFlagGetter('reduceDefaultPropsInText', false);
 
 /**
  * Enables use of AnimatedObject for animating transform values.
