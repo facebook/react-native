@@ -90,7 +90,12 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     lineHeight: 18,
     fontWeight: '400',
-    fontFamily: Platform.select({android: 'monospace', ios: 'Menlo'}),
+    fontFamily: Platform.select({
+      android: 'monospace',
+      ios: 'Menlo',
+      macos: 'Menlo',
+      windows: 'Consolas',
+    }),
   },
   location: {
     color: LogBoxStyle.getTextColor(0.8),
