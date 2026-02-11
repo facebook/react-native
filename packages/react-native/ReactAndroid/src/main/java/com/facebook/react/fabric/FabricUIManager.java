@@ -841,6 +841,7 @@ public class FabricUIManager
             isLayoutable));
   }
 
+  @SuppressLint("NotInvokedPrivateMethod") // Called from C++ via JNI
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
@@ -874,6 +875,7 @@ public class FabricUIManager
    * to enforce execution order using {@link ReactChoreographer.CallbackType}. This method should
    * only be called as the result of a new tree being committed.
    */
+  @SuppressLint("NotInvokedPrivateMethod") // Called from C++ via JNI (Binding.cpp)
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
