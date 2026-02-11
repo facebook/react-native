@@ -409,9 +409,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                 NSRange truncatedRange =
                     [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:attachmentGlyphRange.location];
 
-                // Mark attachment as clipped if it falls outside the laid-out glyph range
-                // or if it lies in a truncated portion of the last visible line.
+                // Attachment on a line that did not fit (e.g. on the 4th line when the container is limited to 3 lines)
                 BOOL isOutsideVisibleRange = !NSLocationInRange(attachmentGlyphRange.location, visibleGlyphRange);
+                // Attachment in the ellipsis range of the last visible line (line truncated with "..." and the attachment falls in that portion)
                 BOOL isInTruncatedRange = truncatedRange.location != NSNotFound &&
                     attachmentGlyphRange.location >= truncatedRange.location;
 
