@@ -157,26 +157,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     updateView(); // call after changing ellipsizeLocation in particular
   }
 
-  private static WritableMap inlineViewJson(
-      int visibility, int index, int left, int top, int right, int bottom) {
-    WritableMap json = Arguments.createMap();
-    if (visibility == View.GONE) {
-      json.putString("visibility", "gone");
-      json.putInt("index", index);
-    } else if (visibility == View.VISIBLE) {
-      json.putString("visibility", "visible");
-      json.putInt("index", index);
-      json.putDouble("left", PixelUtil.toDIPFromPixel(left));
-      json.putDouble("top", PixelUtil.toDIPFromPixel(top));
-      json.putDouble("right", PixelUtil.toDIPFromPixel(right));
-      json.putDouble("bottom", PixelUtil.toDIPFromPixel(bottom));
-    } else {
-      json.putString("visibility", "unknown");
-      json.putInt("index", index);
-    }
-    return json;
-  }
-
   private ReactContext getReactContext() {
     Context context = getContext();
     return (context instanceof TintContextWrapper)
@@ -554,6 +534,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mShouldAdjustSpannableFontSize = true;
   }
 
+  @Override
   public void setLetterSpacing(float letterSpacing) {
     if (Float.isNaN(letterSpacing)) {
       return;
