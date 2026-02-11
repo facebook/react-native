@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.84.0-rc.5
+
+### Fixed
+
+#### iOS specific
+
+- Fix Hermes builds for Mac Catalyst (https://github.com/facebook/hermes/pull/1885, https://github.com/facebook/hermes/pull/1888 by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.84.0-rc.4
 
 ### Fixed
