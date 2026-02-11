@@ -590,16 +590,21 @@ public object BackgroundStyleApplicator {
       paddingBoxPath.setFillType(Path.FillType.INVERSE_WINDING)
       canvas.drawPath(paddingBoxPath, maskPaint)
     } else {
-      // Create an inverse path: outer rect minus the rounded rect (using even-odd fill rule)
-      val inversePath = Path()
-      inversePath.addRect(0f, 0f, view.width.toFloat(), view.height.toFloat(), Path.Direction.CW)
-      inversePath.addPath(paddingBoxPath)
-      inversePath.setFillType(Path.FillType.EVEN_ODD)
-
-      // Use DST_OUT to remove content where the mask is drawn (outside the rounded rect)
-      maskPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+      // API < 28: Use a nested saveLayer with DST_IN compositing to mask content to the
+      // padding box path. EVEN_ODD fill + DST_OUT has rendering bugs on API 24's hardware
+      // renderer, so we avoid that technique. Instead, draw the mask shape into a separate
+      // layer; when restored with DST_IN, content is preserved only where the mask is opaque.
+      val dstInPaint = Paint()
+      dstInPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+      val maskSave =
+          canvas.saveLayer(0f, 0f, view.width.toFloat(), view.height.toFloat(), dstInPaint)
+      // Clear the layer to ensure it starts fully transparent. On API 24, saveLayer may not
+      // initialize the buffer to transparent, causing DST_IN to see non-zero alpha everywhere.
+      canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+      maskPaint.xfermode = null
       maskPaint.color = Color.BLACK
-      canvas.drawPath(inversePath, maskPaint)
+      canvas.drawPath(paddingBoxPath, maskPaint)
+      canvas.restoreToCount(maskSave)
     }
 
     // Restore the layer
