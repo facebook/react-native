@@ -8,6 +8,7 @@
 #include "SessionState.h"
 
 #include <jsinspector-modern/RuntimeTarget.h>
+#include <jsinspector-modern/RuntimeTargetGlobalStateObserver.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 
 #include <utility>
@@ -15,21 +16,6 @@
 using namespace facebook::jsi;
 
 namespace facebook::react::jsinspector_modern {
-
-namespace {
-
-void emitSessionStatusChangeForObserverWithValue(
-    jsi::Runtime& runtime,
-    const jsi::Value& value) {
-  auto globalObj = runtime.global();
-  auto observer =
-      globalObj.getPropertyAsObject(runtime, "__DEBUGGER_SESSION_OBSERVER__");
-  auto onSessionStatusChange =
-      observer.getPropertyAsFunction(runtime, "onSessionStatusChange");
-  onSessionStatusChange.call(runtime, value);
-}
-
-} // namespace
 
 std::shared_ptr<RuntimeTarget> RuntimeTarget::create(
     const ExecutionContextDescription& executionContextDescription,
@@ -144,7 +130,11 @@ void RuntimeTarget::installBindingHandler(const std::string& bindingName) {
 void RuntimeTarget::emitDebuggerSessionCreated() {
   jsExecutor_([selfExecutor = executorFromThis()](jsi::Runtime& runtime) {
     try {
-      emitSessionStatusChangeForObserverWithValue(runtime, jsi::Value(true));
+      emitGlobalStateObserverChange(
+          runtime,
+          "__DEBUGGER_SESSION_OBSERVER__",
+          "onSessionStatusChange",
+          true);
     } catch (jsi::JSError&) {
       // Suppress any errors, they should not be visible to the user
       // and should not affect runtime.
@@ -155,7 +145,11 @@ void RuntimeTarget::emitDebuggerSessionCreated() {
 void RuntimeTarget::emitDebuggerSessionDestroyed() {
   jsExecutor_([selfExecutor = executorFromThis()](jsi::Runtime& runtime) {
     try {
-      emitSessionStatusChangeForObserverWithValue(runtime, jsi::Value(false));
+      emitGlobalStateObserverChange(
+          runtime,
+          "__DEBUGGER_SESSION_OBSERVER__",
+          "onSessionStatusChange",
+          false);
     } catch (jsi::JSError&) {
       // Suppress any errors, they should not be visible to the user
       // and should not affect runtime.

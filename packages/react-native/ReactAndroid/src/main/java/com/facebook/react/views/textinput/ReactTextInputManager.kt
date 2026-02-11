@@ -66,14 +66,12 @@ import com.facebook.react.views.scroll.ScrollEventType.Companion.getJSEventName
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColor
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHighlight
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHint
-import com.facebook.react.views.text.ReactBaseTextShadowNode
 import com.facebook.react.views.text.ReactTextUpdate
 import com.facebook.react.views.text.ReactTextUpdate.Companion.buildReactTextUpdateFromState
 import com.facebook.react.views.text.ReactTextViewManagerCallback
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontVariant
 import com.facebook.react.views.text.TextAttributeProps
 import com.facebook.react.views.text.TextLayoutManager
-import com.facebook.react.views.text.internal.span.TextInlineImageSpan.Companion.possiblyUpdateInlineImageSpans
 import java.util.LinkedList
 
 /** Manages instances of TextInput. */
@@ -101,14 +99,13 @@ public open class ReactTextInputManager public constructor() :
     return editText
   }
 
-  override fun createShadowNodeInstance(): ReactBaseTextShadowNode = ReactTextInputShadowNode()
+  override fun createShadowNodeInstance(): LayoutShadowNode = LayoutShadowNode()
 
   public fun createShadowNodeInstance(
       reactTextViewManagerCallback: ReactTextViewManagerCallback?
-  ): ReactBaseTextShadowNode = ReactTextInputShadowNode(reactTextViewManagerCallback)
+  ): LayoutShadowNode = LayoutShadowNode()
 
-  override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
-      ReactTextInputShadowNode::class.java
+  override fun getShadowNodeClass(): Class<out LayoutShadowNode> = LayoutShadowNode::class.java
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
     val baseEventTypeConstants = super.getExportedCustomBubblingEventTypeConstants()
@@ -195,11 +192,6 @@ public open class ReactTextInputManager public constructor() :
     return ReactTextUpdate(
         sb,
         mostRecentEventCount,
-        false,
-        0f,
-        0f,
-        0f,
-        0f,
         Gravity.NO_GRAVITY,
         0,
         0,
@@ -208,31 +200,6 @@ public open class ReactTextInputManager public constructor() :
 
   override fun updateExtraData(view: ReactEditText, extraData: Any) {
     if (extraData is ReactTextUpdate) {
-      // TODO T58784068: delete this block of code, these are always unset in Fabric
-      val paddingLeft = extraData.paddingLeft.toInt()
-      val paddingTop = extraData.paddingTop.toInt()
-      val paddingRight = extraData.paddingRight.toInt()
-      val paddingBottom = extraData.paddingBottom.toInt()
-      if (
-          paddingLeft != UNSET ||
-              paddingTop != UNSET ||
-              paddingRight != UNSET ||
-              paddingBottom != UNSET
-      ) {
-        view.setPadding(
-            if (paddingLeft != UNSET) paddingLeft else view.paddingLeft,
-            if (paddingTop != UNSET) paddingTop else view.paddingTop,
-            if (paddingRight != UNSET) paddingRight else view.paddingRight,
-            if (paddingBottom != UNSET) paddingBottom else view.paddingBottom,
-        )
-      }
-
-      @Suppress("DEPRECATION")
-      if (extraData.containsImages()) {
-        val spannable = extraData.text
-        possiblyUpdateInlineImageSpans(spannable, view)
-      }
-
       // Ensure that selection is handled correctly on text update
       val isCurrentSelectionEmpty = view.selectionStart == view.selectionEnd
       var selectionStart = UNSET
@@ -357,7 +324,7 @@ public open class ReactTextInputManager public constructor() :
   }
 
   // Sets the letter spacing as an absolute point size.
-  // This extra handling, on top of what ReactBaseTextShadowNode already does, is required for the
+  // This extra handling is required for the
   // correct display of spacing in placeholder (hint) text.
   @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0f)
   public fun setLetterSpacing(view: ReactEditText, letterSpacing: Float) {

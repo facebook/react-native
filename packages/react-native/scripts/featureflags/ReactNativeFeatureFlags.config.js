@@ -937,13 +937,23 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     externalElementInspectionEnabled: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2026-02-04',
         description:
           'Enable the external inspection API for DevTools to communicate with the Inspector overlay.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    fixImageSrcDimensionPropagation: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Fix image dimensions not being passed through when src is used',
+        expectedReleaseValue: true,
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },

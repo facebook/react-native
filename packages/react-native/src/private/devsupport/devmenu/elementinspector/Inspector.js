@@ -126,11 +126,6 @@ function Inspector({
         if (closestInstance != null) {
           reactDevToolsAgent.selectNode(closestInstance);
         }
-
-        // Attempt to send viewData to React DevTools.
-        if (reactDevToolsAgent.selectNodeWithViewData) {
-          reactDevToolsAgent.selectNodeWithViewData(viewData);
-        }
       }
 
       setPanelPosition(
