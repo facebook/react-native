@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -102,6 +103,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mSpanned = null;
   }
 
+  @SuppressLint("WrongConstant") // Layout.BREAK_STRATEGY_* and Layout.JUSTIFICATION_MODE_* have
+  // same values as LineBreaker.* but LineBreaker requires API 29+
   /* package */ void recycleView() {
     // Set default field values
     initView();
