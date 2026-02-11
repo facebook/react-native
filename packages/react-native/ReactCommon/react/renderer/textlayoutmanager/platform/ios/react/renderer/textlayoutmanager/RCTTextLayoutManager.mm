@@ -391,6 +391,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   size = (CGSize){ceil(size.width * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor,
                   ceil(size.height * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor};
 
+  NSRange visibleGlyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+
   __block auto attachments = TextMeasurement::Attachments{};
 
   [textStorage
@@ -406,7 +408,14 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                                      actualCharacterRange:NULL];
                 NSRange truncatedRange =
                     [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:attachmentGlyphRange.location];
-                if (truncatedRange.location != NSNotFound && attachmentGlyphRange.location >= truncatedRange.location) {
+
+                // Mark attachment as clipped if it falls outside the laid-out glyph range
+                // or if it lies in a truncated portion of the last visible line.
+                BOOL isOutsideVisibleRange = !NSLocationInRange(attachmentGlyphRange.location, visibleGlyphRange);
+                BOOL isInTruncatedRange = truncatedRange.location != NSNotFound &&
+                    attachmentGlyphRange.location >= truncatedRange.location;
+
+                if (isOutsideVisibleRange || isInTruncatedRange) {
                   attachments.push_back(TextMeasurement::Attachment{.isClipped = true});
                 } else {
                   CGSize attachmentSize = attachment.bounds.size;
