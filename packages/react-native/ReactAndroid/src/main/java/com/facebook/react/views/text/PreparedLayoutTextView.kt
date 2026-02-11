@@ -27,6 +27,7 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
+import com.facebook.react.views.text.internal.span.DrawCommandSpan
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
@@ -119,10 +120,36 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
             selectionColor ?: DefaultStyleValuesUtil.getDefaultTextColorHighlight(context)
       }
 
+      val spanned = text as? Spanned
+      val drawCommandSpans =
+          spanned?.getSpans(0, spanned.length, DrawCommandSpan::class.java) ?: emptyArray()
+
+      if (spanned != null) {
+        for (span in drawCommandSpans) {
+          span.onPreDraw(
+              spanned.getSpanStart(span),
+              spanned.getSpanEnd(span),
+              canvas,
+              layout,
+          )
+        }
+      }
+
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         Api34Utils.draw(layout, canvas, selection?.path, selectionPaint)
       } else {
         layout.draw(canvas, selection?.path, selectionPaint, 0)
+      }
+
+      if (spanned != null) {
+        for (span in drawCommandSpans) {
+          span.onDraw(
+              spanned.getSpanStart(span),
+              spanned.getSpanEnd(span),
+              canvas,
+              layout,
+          )
+        }
       }
     }
   }
