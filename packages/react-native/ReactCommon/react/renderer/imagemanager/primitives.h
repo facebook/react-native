@@ -23,6 +23,7 @@ class ImageSource {
 
   Type type{};
   std::string uri{};
+  bool isForceCached{false};
   std::string bundle{};
   Float scale{3};
   Size size{0};
@@ -55,6 +56,7 @@ class ImageSource {
     }
 
     imageSourceResult["uri"] = uri;
+    imageSourceResult["isForceCached"] = isForceCached;
     imageSourceResult["bundle"] = bundle;
     imageSourceResult["scale"] = scale;
 

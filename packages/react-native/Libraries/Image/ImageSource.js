@@ -24,6 +24,11 @@ export interface ImageURISource {
   +uri?: ?string;
 
   /**
+   * Discord specific prop.
+   */
+  +isForceCached?: ?boolean;
+
+  /**
    * `bundle` is the iOS asset bundle which the image is included in. This
    * will default to [NSBundle mainBundle] if not set.
    * @platform ios
