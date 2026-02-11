@@ -13,6 +13,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.react.uimanager.common.UIManagerType.LEGACY;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
@@ -857,6 +858,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
   }
 
+  @SuppressLint("ClassImplementsFinalize") // Used for memory leak detection during development.
+  // The finalize method only performs an assertion check and doesn't do cleanup,
+  // so the typical finalize() risks (performance, deadlocks) don't apply here.
   @Override
   protected void finalize() throws Throwable {
     super.finalize();
