@@ -339,13 +339,13 @@ static void measureNodeWithMeasureFunc(
 
     Event::publish<Event::MeasureCallbackEnd>(
         node,
-        {innerWidth,
-         unscopedEnum(measureMode(widthSizingMode)),
-         innerHeight,
-         unscopedEnum(measureMode(heightSizingMode)),
-         measuredSize.width,
-         measuredSize.height,
-         reason});
+        {.width = innerWidth,
+         .widthMeasureMode = unscopedEnum(measureMode(widthSizingMode)),
+         .height = innerHeight,
+         .heightMeasureMode = unscopedEnum(measureMode(heightSizingMode)),
+         .measuredWidth = measuredSize.width,
+         .measuredHeight = measuredSize.height,
+         .reason = reason});
 
     node->setLayoutMeasuredDimension(
         boundAxis(
