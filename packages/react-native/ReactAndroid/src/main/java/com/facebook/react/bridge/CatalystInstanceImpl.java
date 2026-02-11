@@ -10,6 +10,7 @@ package com.facebook.react.bridge;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
+import android.annotation.SuppressLint;
 import android.content.res.AssetManager;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -318,6 +319,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniCallJSCallback(callbackID, (NativeArray) arguments);
   }
 
+  @SuppressLint("NotInvokedPrivateMethod") // Called from C++ via JNI
   private native void unregisterFromInspector();
 
   /**
