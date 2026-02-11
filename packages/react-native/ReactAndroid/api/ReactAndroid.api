@@ -3517,7 +3517,6 @@ public class com/facebook/react/uimanager/NativeViewHierarchyManager {
 	public fun findTargetTagForTouch (IFF)I
 	public fun getInstanceHandle (I)J
 	public fun getRootViewNum ()I
-	public fun manageChildren (I[I[Lcom/facebook/react/uimanager/ViewAtIndex;[I)V
 	public fun measure (I[I)V
 	public fun measureInWindow (I[I)V
 	public fun removeRootView (I)V
@@ -3539,7 +3538,6 @@ public class com/facebook/react/uimanager/NativeViewHierarchyOptimizer {
 	public static fun assertNodeSupportedWithoutOptimizer (Lcom/facebook/react/uimanager/ReactShadowNode;)V
 	public fun handleCreateView (Lcom/facebook/react/uimanager/ReactShadowNode;Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	public fun handleForceViewToBeNonLayoutOnly (Lcom/facebook/react/uimanager/ReactShadowNode;)V
-	public fun handleManageChildren (Lcom/facebook/react/uimanager/ReactShadowNode;[I[I[Lcom/facebook/react/uimanager/ViewAtIndex;[I)V
 	public static fun handleRemoveNode (Lcom/facebook/react/uimanager/ReactShadowNode;)V
 	public fun handleSetChildren (Lcom/facebook/react/uimanager/ReactShadowNode;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun handleUpdateLayout (Lcom/facebook/react/uimanager/ReactShadowNode;)V
@@ -4286,7 +4284,6 @@ public class com/facebook/react/uimanager/UIImplementation {
 	public fun getRootViewNum ()I
 	protected fun handleCreateView (Lcom/facebook/react/uimanager/ReactShadowNode;ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	protected fun handleUpdateView (Lcom/facebook/react/uimanager/ReactShadowNode;Ljava/lang/String;Lcom/facebook/react/uimanager/ReactStylesDiffMap;)V
-	public fun manageChildren (ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun measure (ILcom/facebook/react/bridge/Callback;)V
 	public fun measureInWindow (ILcom/facebook/react/bridge/Callback;)V
 	public fun measureLayout (IILcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
@@ -4302,7 +4299,6 @@ public class com/facebook/react/uimanager/UIImplementation {
 	public fun removeRootShadowNode (I)V
 	public fun removeRootView (I)V
 	protected final fun removeShadowNode (Lcom/facebook/react/uimanager/ReactShadowNode;)V
-	public fun replaceExistingNonRootView (II)V
 	public fun resolveRootTagFromReactTag (I)I
 	public final fun resolveShadowNode (I)Lcom/facebook/react/uimanager/ReactShadowNode;
 	protected final fun resolveViewManager (Ljava/lang/String;)Lcom/facebook/react/uimanager/ViewManager;
@@ -4372,7 +4368,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun initialize ()V
 	public fun invalidate ()V
 	public fun invalidateNodeLayout (I)V
-	public fun manageChildren (ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun markActiveTouchForTag (II)V
 	public fun measure (ILcom/facebook/react/bridge/Callback;)V
 	public fun measureInWindow (ILcom/facebook/react/bridge/Callback;)V
@@ -4421,7 +4416,6 @@ public class com/facebook/react/uimanager/UIViewOperationQueue {
 	public fun enqueueDispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun enqueueFindTargetForTouch (IFFLcom/facebook/react/bridge/Callback;)V
 	public fun enqueueLayoutUpdateFinished (Lcom/facebook/react/uimanager/ReactShadowNode;Lcom/facebook/react/uimanager/UIImplementation$LayoutUpdateListener;)V
-	public fun enqueueManageChildren (I[I[Lcom/facebook/react/uimanager/ViewAtIndex;[I)V
 	public fun enqueueMeasure (ILcom/facebook/react/bridge/Callback;)V
 	public fun enqueueMeasureInWindow (ILcom/facebook/react/bridge/Callback;)V
 	public fun enqueueRemoveRootView (I)V
