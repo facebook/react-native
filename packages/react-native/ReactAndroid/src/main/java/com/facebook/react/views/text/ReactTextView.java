@@ -103,8 +103,11 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mSpanned = null;
   }
 
-  @SuppressLint("WrongConstant") // Layout.BREAK_STRATEGY_* and Layout.JUSTIFICATION_MODE_* have
-  // same values as LineBreaker.* but LineBreaker requires API 29+
+  @SuppressLint({
+      "WrongConstant", // Layout.BREAK_STRATEGY_* and Layout.JUSTIFICATION_MODE_* have same values
+      // as LineBreaker.* but LineBreaker requires API 29+
+      "SetLayoutParams" // Intentionally reset LayoutParams when recycling view
+  })
   /* package */ void recycleView() {
     // Set default field values
     initView();
@@ -376,6 +379,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
   }
 
+  @SuppressLint("SetLayoutParams") // Workaround for Android crash when LayoutParams is null
+  // See: https://github.com/facebook/react-native/pull/7011
   public void setText(ReactTextUpdate update) {
     try (SystraceSection s = new SystraceSection("ReactTextView.setText(ReactTextUpdate)")) {
       // Android's TextView crashes when it tries to relayout if LayoutParams are
