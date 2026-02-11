@@ -27,7 +27,10 @@ describe('Portal', () => {
         <View nativeID="root">
           <View>
             {showPortal
-              ? createPortal(<View nativeID="portaled-child" />, targetRef.current)
+              ? createPortal(
+                  <View nativeID="portaled-child" />,
+                  targetRef.current,
+                )
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -72,7 +75,10 @@ describe('Portal', () => {
         <View nativeID="root">
           <View>
             {showPortal
-              ? createPortal(<View nativeID="portaled-child" />, targetRef.current)
+              ? createPortal(
+                  <View nativeID="portaled-child" />,
+                  targetRef.current,
+                )
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -259,7 +265,10 @@ describe('Portal', () => {
         <View nativeID="root">
           <View>
             {showPortal
-              ? createPortal(<View nativeID="portaled-child" />, targetRef.current)
+              ? createPortal(
+                  <View nativeID="portaled-child" />,
+                  targetRef.current,
+                )
               : null}
           </View>
           <View ref={targetRef} nativeID="target" collapsable={false} />
@@ -351,9 +360,7 @@ describe('Portal', () => {
 
     // Initial render to populate ref
     Fantom.runTask(() => {
-      root.render(
-        <TestComponent showPortal1={false} showPortal2={false} />,
-      );
+      root.render(<TestComponent showPortal1={false} showPortal2={false} />);
     });
 
     expect(targetRef.current).not.toBeNull();
@@ -413,9 +420,7 @@ describe('Portal', () => {
 
     // Initial render to populate ref
     Fantom.runTask(() => {
-      root.render(
-        <TestComponent showPortal1={false} showPortal2={false} />,
-      );
+      root.render(<TestComponent showPortal1={false} showPortal2={false} />);
     });
 
     // Mount both
@@ -459,9 +464,7 @@ describe('Portal', () => {
 
     // Unmount portal 1 too
     Fantom.runTask(() => {
-      root.render(
-        <TestComponent showPortal1={false} showPortal2={false} />,
-      );
+      root.render(<TestComponent showPortal1={false} showPortal2={false} />);
     });
 
     expect(root.getRenderedOutput().toJSON()).toEqual({
@@ -505,9 +508,7 @@ describe('Portal', () => {
 
     // Initial render to populate ref
     Fantom.runTask(() => {
-      root.render(
-        <TestComponent showPortal1={false} showPortal2={false} />,
-      );
+      root.render(<TestComponent showPortal1={false} showPortal2={false} />);
     });
 
     // Mount both

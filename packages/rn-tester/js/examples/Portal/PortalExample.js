@@ -8,33 +8,39 @@
  * @format
  */
 
-import type { RNTesterModuleExample } from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
-import { useCallback, useState, useEffect } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { createPortal } from 'react-native/Libraries/ReactNative/RendererProxy';
+import {useCallback, useState, useEffect} from 'react';
+import {Button, StyleSheet, Text, View} from 'react-native';
+import {createPortal} from 'react-native/Libraries/ReactNative/RendererProxy';
 
 function CustomComponent() {
   const [count, setCount] = useState(0);
-  return <Button title={'Test ' + count} onPress={() => setCount(c => c + 1)} />
+  return (
+    <Button title={'Test ' + count} onPress={() => setCount(c => c + 1)} />
+  );
 }
 function PortalBasicExample(): React.Node {
-  const [portals, setPortals] = useState({ a: false, b: false, c: false });
+  const [portals, setPortals] = useState<{[string]: boolean}>({
+    a: false,
+    b: false,
+    c: false,
+  });
   const [count, setCount] = useState(0);
-  const targetRef = React.useRef < React.ElementRef < typeof View > | null > (null);
+  const targetRef = React.useRef<React.ElementRef<typeof View> | null>(null);
 
   const toggle = useCallback(
     (id: string) => {
       if (!portals[id] && targetRef.current == null) {
         return;
       }
-      setPortals(prev => ({ ...prev, [id]: !prev[id] }));
+      setPortals(prev => ({...prev, [id]: !prev[id]}));
     },
     [portals],
   );
 
-  const colors = { a: '#e94560', b: '#4ecca3', c: '#3498db' };
+  const colors: {[string]: string} = {a: '#e94560', b: '#4ecca3', c: '#3498db'};
 
   return (
     <View style={styles.container}>
@@ -42,7 +48,11 @@ function PortalBasicExample(): React.Node {
         {['a', 'b', 'c'].map(id => (
           <Button
             key={id}
-            title={portals[id] ? `Hide ${id.toUpperCase()}` : `Show ${id.toUpperCase()}`}
+            title={
+              portals[id]
+                ? `Hide ${id.toUpperCase()}`
+                : `Show ${id.toUpperCase()}`
+            }
             onPress={() => toggle(id)}
           />
         ))}
@@ -57,19 +67,19 @@ function PortalBasicExample(): React.Node {
         {['a', 'b', 'c'].map(id =>
           portals[id]
             ? createPortal(
-              <View
-                key={id}
-                style={[
-                  styles.portalContent,
-                  { backgroundColor: colors[id], marginTop: 4 },
-                ]}>
-                <Text style={styles.portalText}>
-                  Portal {id.toUpperCase()} (count: {count})
-                </Text>
-                <CustomComponent />
-              </View>,
-              targetRef.current,
-            )
+                <View
+                  key={id}
+                  style={[
+                    styles.portalContent,
+                    {backgroundColor: colors[id], marginTop: 4},
+                  ]}>
+                  <Text style={styles.portalText}>
+                    Portal {id.toUpperCase()} (count: {count})
+                  </Text>
+                  <CustomComponent />
+                </View>,
+                targetRef.current,
+              )
             : null,
         )}
       </View>
@@ -90,7 +100,7 @@ function ContextReader(): React.Node {
 
 function PortalContextExample(): React.Node {
   const [showPortal, setShowPortal] = useState(false);
-  const targetRef = React.useRef < React.ElementRef < typeof View > | null > (null);
+  const targetRef = React.useRef<React.ElementRef<typeof View> | null>(null);
 
   const handleToggle = useCallback(() => {
     if (!showPortal) {
@@ -112,11 +122,11 @@ function PortalContextExample(): React.Node {
         <View style={styles.sourceBox}>
           {showPortal
             ? createPortal(
-              <View style={styles.portalContent}>
-                <ContextReader />
-              </View>,
-              targetRef.current,
-            )
+                <View style={styles.portalContent}>
+                  <ContextReader />
+                </View>,
+                targetRef.current,
+              )
             : null}
         </View>
         <View ref={targetRef} style={styles.targetBox} collapsable={false}>
@@ -129,7 +139,7 @@ function PortalContextExample(): React.Node {
 
 function PortalOverlayExample(): React.Node {
   const [show, setShow] = useState(false);
-  const ref = React.useRef < React.ElementRef < typeof View > | null > (null);
+  const ref = React.useRef<React.ElementRef<typeof View> | null>(null);
 
   const handleToggle = useCallback(() => {
     if (!show) {
@@ -151,11 +161,11 @@ function PortalOverlayExample(): React.Node {
         <Text>Content underneath</Text>
         {show
           ? createPortal(
-            <View style={styles.overlay}>
-              <Text style={styles.overlayText}>Portal Overlay</Text>
-            </View>,
-            ref.current,
-          )
+              <View style={styles.overlay}>
+                <Text style={styles.overlayText}>Portal Overlay</Text>
+              </View>,
+              ref.current,
+            )
           : null}
       </View>
     </View>
