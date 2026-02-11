@@ -22,7 +22,6 @@ import android.widget.ImageView
 import androidx.annotation.ColorInt
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.common.UIManagerType
@@ -541,8 +540,7 @@ public object BackgroundStyleApplicator {
       // On Android 28 and below, use antialiased clipping with Porter-Duff compositing. On newer
       // Android versions, use the standard clipPath.
       if (
-          ReactNativeFeatureFlags.enableAndroidAntialiasedBorderRadiusClipping() &&
-              Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
+          Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
               view.width > 0 &&
               view.height > 0 &&
               drawContent != null

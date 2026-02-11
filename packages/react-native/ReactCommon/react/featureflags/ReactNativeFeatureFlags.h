@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bdc8ad1004183077c5a459efd6b0c8f6>>
+ * @generated SignedSource<<1adbe43da0478a49a4c6576ee9113406>>
  */
 
 /**
@@ -93,11 +93,6 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
-
-  /**
-   * Enable antialiased border radius clipping for Android API 28 and below using manual masking with Porter-Duff compositing
-   */
-  RN_EXPORT static bool enableAndroidAntialiasedBorderRadiusClipping();
 
   /**
    * Enables linear text rendering on Android wherever subpixel text rendering is enabled

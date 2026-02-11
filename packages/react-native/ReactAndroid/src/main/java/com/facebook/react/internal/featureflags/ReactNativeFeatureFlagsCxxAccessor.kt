@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9158cc3ba1ea8ea65140b582a02a5112>>
+ * @generated SignedSource<<fbbdddda936c78918c88ee9bd8238743>>
  */
 
 /**
@@ -31,7 +31,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var disableViewPreallocationAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
-  private var enableAndroidAntialiasedBorderRadiusClippingCache: Boolean? = null
   private var enableAndroidLinearTextCache: Boolean? = null
   private var enableAndroidTextMeasurementOptimizationsCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -195,15 +194,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableAccumulatedUpdatesInRawPropsAndroid()
       enableAccumulatedUpdatesInRawPropsAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableAndroidAntialiasedBorderRadiusClipping(): Boolean {
-    var cached = enableAndroidAntialiasedBorderRadiusClippingCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableAndroidAntialiasedBorderRadiusClipping()
-      enableAndroidAntialiasedBorderRadiusClippingCache = cached
     }
     return cached
   }
