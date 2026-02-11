@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<377c50a9a022344cba12a1ad6c23b68d>>
+ * @generated SignedSource<<ee633c2c40fc07aa6cbb5601dfb36cf6>>
  */
 
 /**
@@ -93,6 +93,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
+  private var updateRuntimeShadowNodeReferencesOnCommitThreadCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -790,6 +791,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.updateRuntimeShadowNodeReferencesOnCommit()
       accessedFeatureFlags.add("updateRuntimeShadowNodeReferencesOnCommit")
       updateRuntimeShadowNodeReferencesOnCommitCache = cached
+    }
+    return cached
+  }
+
+  override fun updateRuntimeShadowNodeReferencesOnCommitThread(): Boolean {
+    var cached = updateRuntimeShadowNodeReferencesOnCommitThreadCache
+    if (cached == null) {
+      cached = currentProvider.updateRuntimeShadowNodeReferencesOnCommitThread()
+      accessedFeatureFlags.add("updateRuntimeShadowNodeReferencesOnCommitThread")
+      updateRuntimeShadowNodeReferencesOnCommitThreadCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f04d7cddd72c435fcce120b71366c81c>>
+ * @generated SignedSource<<049cc0a1aa5ab53ad2ab11c359f49827>>
  */
 
 /**
@@ -443,6 +443,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean = accessor.updateRuntimeShadowNodeReferencesOnCommit()
+
+  /**
+   * When enabled, runtime shadow node references will be updated during the commit only on the allowed thread.
+   */
+  @JvmStatic
+  public fun updateRuntimeShadowNodeReferencesOnCommitThread(): Boolean = accessor.updateRuntimeShadowNodeReferencesOnCommitThread()
 
   /**
    * In Bridgeless mode, use the always available javascript error reporting pipeline.

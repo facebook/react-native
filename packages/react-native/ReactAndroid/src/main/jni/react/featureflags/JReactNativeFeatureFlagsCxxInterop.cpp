@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3c268f88d2df4ad8500e29b91f1fecc0>>
+ * @generated SignedSource<<698b775afb6ad9295c181ea3d12118d3>>
  */
 
 /**
@@ -453,6 +453,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool updateRuntimeShadowNodeReferencesOnCommitThread() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("updateRuntimeShadowNodeReferencesOnCommitThread");
+    return method(javaProvider_);
+  }
+
   bool useAlwaysAvailableJSErrorHandling() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useAlwaysAvailableJSErrorHandling");
@@ -862,6 +868,11 @@ bool JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnComm
   return ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnCommitThread(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommitThread();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
@@ -1150,6 +1161,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "updateRuntimeShadowNodeReferencesOnCommit",
         JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnCommit),
+      makeNativeMethod(
+        "updateRuntimeShadowNodeReferencesOnCommitThread",
+        JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnCommitThread),
       makeNativeMethod(
         "useAlwaysAvailableJSErrorHandling",
         JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling),

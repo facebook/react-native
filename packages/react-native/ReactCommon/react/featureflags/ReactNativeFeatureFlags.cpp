@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fbd62713d66b440e7c18498ccd2a7c0b>>
+ * @generated SignedSource<<88b22330e8486a820eb42b59fb7279e4>>
  */
 
 /**
@@ -300,6 +300,10 @@ bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
 
 bool ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() {
   return getAccessor().updateRuntimeShadowNodeReferencesOnCommit();
+}
+
+bool ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommitThread() {
+  return getAccessor().updateRuntimeShadowNodeReferencesOnCommitThread();
 }
 
 bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {

@@ -50,8 +50,12 @@ void updateMountedFlag(
     newChild->setMounted(true);
     oldChild->setMounted(false);
 
-    if (commitSource == ShadowTreeCommitSource::React &&
-        ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
+    if ((commitSource == ShadowTreeCommitSource::React &&
+         ReactNativeFeatureFlags::
+             updateRuntimeShadowNodeReferencesOnCommit()) ||
+        (ReactNativeFeatureFlags::
+             updateRuntimeShadowNodeReferencesOnCommitThread() &&
+         ShadowNode::getUseRuntimeShadowNodeReferenceUpdateOnThread())) {
       newChild->updateRuntimeShadowNodeReference(newChild);
     }
 
@@ -66,8 +70,12 @@ void updateMountedFlag(
     const auto& newChild = newChildren[index];
     newChild->setMounted(true);
 
-    if (commitSource == ShadowTreeCommitSource::React &&
-        ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
+    if ((commitSource == ShadowTreeCommitSource::React &&
+         ReactNativeFeatureFlags::
+             updateRuntimeShadowNodeReferencesOnCommit()) ||
+        (ReactNativeFeatureFlags::
+             updateRuntimeShadowNodeReferencesOnCommitThread() &&
+         ShadowNode::getUseRuntimeShadowNodeReferenceUpdateOnThread())) {
       newChild->updateRuntimeShadowNodeReference(newChild);
     }
 

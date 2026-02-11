@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c14e7e11bfb4404e2e8f94e551e1bb4d>>
+ * @generated SignedSource<<fa7f50fd466b7cb65b208c0b0aaec704>>
  */
 
 /**
@@ -160,6 +160,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
+
+  @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommitThread(): Boolean
 
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 

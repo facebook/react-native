@@ -785,6 +785,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    updateRuntimeShadowNodeReferencesOnCommitThread: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-02-11',
+        description:
+          'When enabled, runtime shadow node references will be updated during the commit only on the allowed thread.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useAlwaysAvailableJSErrorHandling: {
       defaultValue: false,
       metadata: {

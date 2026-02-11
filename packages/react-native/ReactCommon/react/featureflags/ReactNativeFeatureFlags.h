@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bdc8ad1004183077c5a459efd6b0c8f6>>
+ * @generated SignedSource<<af0f34b904e1e555e18f186fb44ca089>>
  */
 
 /**
@@ -383,6 +383,11 @@ class ReactNativeFeatureFlags {
    * When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.
    */
   RN_EXPORT static bool updateRuntimeShadowNodeReferencesOnCommit();
+
+  /**
+   * When enabled, runtime shadow node references will be updated during the commit only on the allowed thread.
+   */
+  RN_EXPORT static bool updateRuntimeShadowNodeReferencesOnCommitThread();
 
   /**
    * In Bridgeless mode, use the always available javascript error reporting pipeline.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4680a90fe6a071f6352de95fc1ca01ba>>
+ * @generated SignedSource<<80f3fba939ccfd246ed809592ac30fad>>
  * @flow strict
  * @noformat
  */
@@ -115,6 +115,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
+  updateRuntimeShadowNodeReferencesOnCommitThread: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
@@ -462,6 +463,10 @@ export const traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean> = creat
  * When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.
  */
 export const updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean> = createNativeFlagGetter('updateRuntimeShadowNodeReferencesOnCommit', false);
+/**
+ * When enabled, runtime shadow node references will be updated during the commit only on the allowed thread.
+ */
+export const updateRuntimeShadowNodeReferencesOnCommitThread: Getter<boolean> = createNativeFlagGetter('updateRuntimeShadowNodeReferencesOnCommitThread', false);
 /**
  * In Bridgeless mode, use the always available javascript error reporting pipeline.
  */

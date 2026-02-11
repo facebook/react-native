@@ -68,6 +68,8 @@ class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::N
 
   static void setUseRuntimeShadowNodeReferenceUpdateOnThread(bool isEnabled);
 
+  static bool getUseRuntimeShadowNodeReferenceUpdateOnThread();
+
 #pragma mark - Constructors
 
   /*
