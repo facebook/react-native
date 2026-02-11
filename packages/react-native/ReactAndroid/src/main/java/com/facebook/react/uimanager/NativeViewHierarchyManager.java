@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager;
 
+import android.annotation.SuppressLint;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -76,6 +77,9 @@ public class NativeViewHierarchyManager {
   }
 
   private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();
+
+  // Debug mode is intentionally disabled (false). To enable, change to just ReactBuildConfig.DEBUG
+  @SuppressLint("ClownyBooleanExpression")
   private final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
 
   private final SparseArray<View> mTagsToViews;
@@ -248,7 +252,6 @@ public class NativeViewHierarchyManager {
     viewToUpdate.setTag(R.id.view_tag_instance_handle, instanceHandle);
   }
 
-  @Nullable
   public synchronized long getInstanceHandle(int reactTag) {
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
@@ -521,18 +524,6 @@ public class NativeViewHierarchyManager {
     if (pendingDeletionTags.isEmpty()) {
       mPendingDeletionsForTag.remove(tag);
     }
-  }
-
-  private boolean arrayContains(@Nullable int[] array, int ele) {
-    if (array == null) {
-      return false;
-    }
-    for (int curEle : array) {
-      if (curEle == ele) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
@@ -849,18 +840,6 @@ public class NativeViewHierarchyManager {
     }
     ViewManager viewManager = resolveViewManager(reactTag);
     viewManager.receiveCommand(view, commandId, args);
-  }
-
-  /**
-   * @return Themed React context for view with a given {@param reactTag} - it gets the context
-   *     directly from the view using {@link View#getContext}.
-   */
-  private ThemedReactContext getReactContextForView(int reactTag) {
-    View view = mTagsToViews.get(reactTag);
-    if (view == null) {
-      throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);
-    }
-    return (ThemedReactContext) view.getContext();
   }
 
   public synchronized void sendAccessibilityEvent(int tag, int eventType) {
