@@ -11,7 +11,7 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
-import {useCallback, useState, useEffect} from 'react';
+import {useCallback, useState} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 import {createPortal} from 'react-native/Libraries/ReactNative/RendererProxy';
 
