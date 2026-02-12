@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<65ca2267e4bd81dcc21f35bbfc880ba8>>
+ * @generated SignedSource<<fe15bc49fc0e101efb3f7a42f0c3312f>>
  */
 
 /**
@@ -1451,6 +1451,24 @@ double ReactNativeFeatureFlagsAccessor::viewCullingOutsetRatio() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::viewTransitionEnabled() {
+  auto flagValue = viewTransitionEnabled_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(79, "viewTransitionEnabled");
+
+    flagValue = currentProvider_->viewTransitionEnabled();
+    viewTransitionEnabled_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
   auto flagValue = virtualViewPrerenderRatio_.load();
 
@@ -1460,7 +1478,7 @@ double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(79, "virtualViewPrerenderRatio");
+    markFlagAsAccessed(80, "virtualViewPrerenderRatio");
 
     flagValue = currentProvider_->virtualViewPrerenderRatio();
     virtualViewPrerenderRatio_ = flagValue;

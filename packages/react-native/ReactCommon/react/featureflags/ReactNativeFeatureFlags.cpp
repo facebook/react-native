@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<88b22330e8486a820eb42b59fb7279e4>>
+ * @generated SignedSource<<d96b2f1e4083046cfc061317d117e762>>
  */
 
 /**
@@ -340,6 +340,10 @@ bool ReactNativeFeatureFlags::useTurboModules() {
 
 double ReactNativeFeatureFlags::viewCullingOutsetRatio() {
   return getAccessor().viewCullingOutsetRatio();
+}
+
+bool ReactNativeFeatureFlags::viewTransitionEnabled() {
+  return getAccessor().viewTransitionEnabled();
 }
 
 double ReactNativeFeatureFlags::virtualViewPrerenderRatio() {

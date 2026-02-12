@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b98b482f38efbeeab9f8dc6aec9e62ba>>
+ * @generated SignedSource<<1fe995d928d6ea2770936cdd6e2b8320>>
  * @flow strict
  * @noformat
  */
@@ -104,6 +104,7 @@ export interface Spec extends TurboModule {
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
   +viewCullingOutsetRatio?: () => number;
+  +viewTransitionEnabled?: () => boolean;
   +virtualViewPrerenderRatio?: () => number;
 }
 

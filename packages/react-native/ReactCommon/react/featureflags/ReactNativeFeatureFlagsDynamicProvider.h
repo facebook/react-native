@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c4c17217a988345ecea40923a944712b>>
+ * @generated SignedSource<<55247339124401e105501f3d9d3b5b92>>
  */
 
 /**
@@ -754,6 +754,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::viewCullingOutsetRatio();
+  }
+
+  bool viewTransitionEnabled() override {
+    auto value = values_["viewTransitionEnabled"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::viewTransitionEnabled();
   }
 
   double virtualViewPrerenderRatio() override {

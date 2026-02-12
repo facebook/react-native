@@ -890,6 +890,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    viewTransitionEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2026-02-09',
+        description:
+          'Enable the View Transition API for animating transitions between views.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     virtualViewPrerenderRatio: {
       defaultValue: 5,
       metadata: {

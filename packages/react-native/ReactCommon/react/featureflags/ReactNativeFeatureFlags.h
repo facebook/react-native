@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<af0f34b904e1e555e18f186fb44ca089>>
+ * @generated SignedSource<<51a4817654c04c979a33f44e42312dd5>>
  */
 
 /**
@@ -433,6 +433,11 @@ class ReactNativeFeatureFlags {
    * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
    */
   RN_EXPORT static double viewCullingOutsetRatio();
+
+  /**
+   * Enable the View Transition API for animating transitions between views.
+   */
+  RN_EXPORT static bool viewTransitionEnabled();
 
   /**
    * Initial prerender ratio for VirtualView.

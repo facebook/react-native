@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6d1fc28e24576c1a63dceaa8c974cc1f>>
+ * @generated SignedSource<<0db6bbb173a96ab07c80a3fbe43671b3>>
  */
 
 /**
@@ -99,6 +99,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
+  private var viewTransitionEnabledCache: Boolean? = null
   private var virtualViewPrerenderRatioCache: Double? = null
 
   override fun commonTestFlag(): Boolean {
@@ -808,6 +809,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.viewCullingOutsetRatio()
       viewCullingOutsetRatioCache = cached
+    }
+    return cached
+  }
+
+  override fun viewTransitionEnabled(): Boolean {
+    var cached = viewTransitionEnabledCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.viewTransitionEnabled()
+      viewTransitionEnabledCache = cached
     }
     return cached
   }

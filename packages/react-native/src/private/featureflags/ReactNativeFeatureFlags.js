@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f55cb510ee44b95371cf36527fe5ac01>>
+ * @generated SignedSource<<f185f3dcae022c810658c23f4a5dd732>>
  * @flow strict
  * @noformat
  */
@@ -126,6 +126,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
+  viewTransitionEnabled: Getter<boolean>,
   virtualViewPrerenderRatio: Getter<number>,
 }>;
 
@@ -509,6 +510,10 @@ export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurbo
  * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
  */
 export const viewCullingOutsetRatio: Getter<number> = createNativeFlagGetter('viewCullingOutsetRatio', 0);
+/**
+ * Enable the View Transition API for animating transitions between views.
+ */
+export const viewTransitionEnabled: Getter<boolean> = createNativeFlagGetter('viewTransitionEnabled', false);
 /**
  * Initial prerender ratio for VirtualView.
  */

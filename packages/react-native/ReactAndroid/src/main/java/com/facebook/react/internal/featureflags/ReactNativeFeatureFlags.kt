@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<049cc0a1aa5ab53ad2ab11c359f49827>>
+ * @generated SignedSource<<4549fc9a4f431306b7dc70ef3903b8fd>>
  */
 
 /**
@@ -503,6 +503,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun viewCullingOutsetRatio(): Double = accessor.viewCullingOutsetRatio()
+
+  /**
+   * Enable the View Transition API for animating transitions between views.
+   */
+  @JvmStatic
+  public fun viewTransitionEnabled(): Boolean = accessor.viewTransitionEnabled()
 
   /**
    * Initial prerender ratio for VirtualView.
