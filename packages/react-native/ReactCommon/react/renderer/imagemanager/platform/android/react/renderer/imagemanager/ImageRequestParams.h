@@ -26,7 +26,7 @@ class ImageRequestParams {
       Float resizeMultiplier,
       bool shouldNotifyLoadEvents,
       SharedColor overlayColor,
-      SharedColor tintColor,
+      std::optional<SharedColor> tintColor,
       Float fadeDuration,
       bool progressiveRenderingEnabled,
       ImageSource loadingIndicatorSource,
@@ -51,7 +51,7 @@ class ImageRequestParams {
   Float resizeMultiplier{};
   bool shouldNotifyLoadEvents{};
   SharedColor overlayColor{};
-  SharedColor tintColor{};
+  std::optional<SharedColor> tintColor{};
   Float fadeDuration{};
   bool progressiveRenderingEnabled{};
   ImageSource loadingIndicatorSource{};

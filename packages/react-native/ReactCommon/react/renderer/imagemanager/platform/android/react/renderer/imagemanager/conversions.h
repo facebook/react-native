@@ -75,9 +75,11 @@ inline void serializeImageRequestParams(
     builder.putInt(
         IS_KEY_OVERLAY_COLOR, toAndroidRepr(imageRequestParams.overlayColor));
   }
-  if (isColorMeaningful(imageRequestParams.tintColor)) {
-    builder.putInt(
-        IS_KEY_TINT_COLOR, toAndroidRepr(imageRequestParams.tintColor));
+  if (imageRequestParams.tintColor.has_value()) {
+    auto tintColor = imageRequestParams.tintColor.value();
+    if (isColorMeaningful(tintColor)) {
+      builder.putInt(IS_KEY_TINT_COLOR, toAndroidRepr(tintColor));
+    }
   }
   builder.putDouble(IS_KEY_FADE_DURATION, imageRequestParams.fadeDuration);
   builder.putBool(
