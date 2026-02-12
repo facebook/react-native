@@ -12,7 +12,7 @@
 
 const generateSpecsCLIExecutor = require('../generate-specs-cli-executor');
 const {CORE_LIBRARIES_WITH_OUTPUT_FOLDER} = require('./constants');
-const {codegenLog} = require('./utils');
+const {codegenLog, cpSyncRecursiveIfChanged} = require('./utils');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -63,8 +63,7 @@ function generateCode(
   const outputDir =
     reactNativeCoreLibraryOutputPath(libraryName, platform) ?? outputPath;
   fs.mkdirSync(outputDir, {recursive: true});
-  // $FlowFixMe[prop-missing] - `fs.cpSync` is missing in Flow libdefs.
-  fs.cpSync(tmpOutputDir, outputDir, {recursive: true});
+  cpSyncRecursiveIfChanged(tmpOutputDir, outputDir);
   codegenLog(`Generated artifacts: ${outputDir}`);
 }
 
