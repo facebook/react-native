@@ -1012,18 +1012,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
    * especially helpful for views that are recycled so we can retain and restore the original
    * listener upon recycling (onDropViewInstance).
    */
-  private class BaseVMFocusChangeListener<V extends View> implements OnFocusChangeListener {
+  private static class BaseVMFocusChangeListener implements OnFocusChangeListener {
     private @Nullable OnFocusChangeListener mOriginalFocusChangeListener;
 
     public BaseVMFocusChangeListener(@Nullable OnFocusChangeListener originalFocusChangeListener) {
       mOriginalFocusChangeListener = originalFocusChangeListener;
     }
 
-    public void attach(T view) {
+    public void attach(View view) {
       view.setOnFocusChangeListener(this);
     }
 
-    public void detach(T view) {
+    public void detach(View view) {
       view.setOnFocusChangeListener(mOriginalFocusChangeListener);
     }
 
