@@ -230,6 +230,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     maxHeight.recycle();
   }
 
+  @Override
   @ReactProp(name = ViewProps.FLEX, defaultFloat = 0f)
   public void setFlex(float flex) {
     if (isVirtual()) {
@@ -238,6 +239,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     super.setFlex(flex);
   }
 
+  @Override
   @ReactProp(name = ViewProps.FLEX_GROW, defaultFloat = 0f)
   public void setFlexGrow(float flexGrow) {
     if (isVirtual()) {
@@ -309,6 +311,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     gap.recycle();
   }
 
+  @Override
   @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
   public void setFlexShrink(float flexShrink) {
     if (isVirtual()) {

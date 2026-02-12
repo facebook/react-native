@@ -10,7 +10,9 @@ package com.facebook.react.runtime
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
+import com.facebook.soloader.annotation.SoLoaderLibrary
 
+@SoLoaderLibrary("rninstance")
 public abstract class JSRuntimeFactory(
     @Suppress("unused", "NoHungarianNotation", "NotAccessedPrivateField")
     @DoNotStrip
