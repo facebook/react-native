@@ -231,12 +231,6 @@ public class NativeViewHierarchyOptimizer {
     mTagsWithLayoutVisited.clear();
   }
 
-  private NodeIndexPair walkUpUntilNativeKindIsParent(
-      ReactShadowNode node, int indexInNativeChildren) {
-    // Logic removed due to NativeKind removal
-    return new NodeIndexPair(node, indexInNativeChildren);
-  }
-
   private void addNodeToNode(ReactShadowNode parent, ReactShadowNode child, int index) {
     // Logic removed due to NativeKind removal
   }
@@ -288,8 +282,6 @@ public class NativeViewHierarchyOptimizer {
       return;
     }
     mTagsWithLayoutVisited.put(tag, true);
-
-    ReactShadowNode parent = node.getParent();
 
     // We use screenX/screenY (which round to integer pixels) at each node in the hierarchy to
     // emulate what the layout would look like if it were actually built with native views which

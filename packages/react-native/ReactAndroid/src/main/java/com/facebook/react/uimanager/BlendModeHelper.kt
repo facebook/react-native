@@ -7,10 +7,10 @@
 
 package com.facebook.react.uimanager
 
-import android.annotation.TargetApi
 import android.graphics.BlendMode
 import android.os.Build
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.view.children
 import com.facebook.react.R
 
@@ -20,7 +20,7 @@ import com.facebook.react.R
  * This object provides utilities to convert CSS mix-blend-mode string values into Android's
  * [BlendMode] enumeration and to determine when views need isolated layers for proper blending.
  */
-@TargetApi(29)
+@RequiresApi(29)
 internal object BlendModeHelper {
 
   /**

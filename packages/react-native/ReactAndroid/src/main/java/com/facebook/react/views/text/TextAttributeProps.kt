@@ -9,7 +9,6 @@ package com.facebook.react.views.text
 
 import android.os.Build
 import android.text.Layout
-import android.text.TextUtils
 import android.text.TextUtils.TruncateAt
 import android.util.LayoutDirection
 import android.view.Gravity
@@ -238,7 +237,7 @@ public class TextAttributeProps private constructor() {
         }
       }
     }
-    fontFeatureSettings = TextUtils.join(", ", features)
+    fontFeatureSettings = features.joinToString(", ")
   }
 
   private fun setFontWeight(fontWeightString: String?) {

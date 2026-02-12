@@ -240,6 +240,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
   }
 
+  @Override
   public boolean getScrollEnabled() {
     return mScrollEnabled;
   }
@@ -578,7 +579,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   public void addFocusables(ArrayList<View> views, int direction, int focusableMode) {
     if (mPagingEnabled && !mPagedArrowScrolling) {
       // Only add elements within the current page to list of focusables
-      ArrayList<View> candidateViews = new ArrayList<View>();
+      ArrayList<View> candidateViews = new ArrayList<>();
       super.addFocusables(candidateViews, direction, focusableMode);
       for (View candidate : candidateViews) {
         // We must also include the currently focused in the focusables list or focus search will
@@ -1586,24 +1587,25 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   /**
-   * Calls `smoothScrollTo` and updates state.
+   * Calls {@code smoothScrollTo} and updates state.
    *
-   * <p>`smoothScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
-   * scroll view and state. Calling raw `smoothScrollTo` doesn't update state.
+   * <p>{@code smoothScrollTo} changes {@code contentOffset} and we need to keep {@code contentOffset} in sync between
+   * scroll view and state. Calling raw {@code smoothScrollTo} doesn't update state.
    */
+  @Override
   public void reactSmoothScrollTo(int x, int y) {
     ReactScrollViewHelper.smoothScrollTo(this, x, y);
     setPendingContentOffsets(x, y);
   }
 
   /**
-   * Calls `super.scrollTo` and updates state.
+   * Calls {@code super.scrollTo} and updates state.
    *
-   * <p>`super.scrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
+   * <p>{@code super.scrollTo} changes {@code contentOffset} and we need to keep {@code contentOffset} in sync between
    * scroll view and state.
    *
-   * <p>Note that while we can override scrollTo, we *cannot* override `smoothScrollTo` because it
-   * is final. See `reactSmoothScrollTo`.
+   * <p>Note that while we can override scrollTo, we *cannot* override {@code smoothScrollTo} because it
+   * is final. See {@code reactSmoothScrollTo}.
    */
   @Override
   public void scrollTo(int x, int y) {
@@ -1630,7 +1632,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   /**
    * If contentOffset is set before the View has been laid out, store the values and set them when
-   * `onLayout` is called.
+   * {@code onLayout} is called.
    *
    * @param x
    * @param y
@@ -1679,7 +1681,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   /**
    * If we are in the middle of a fling animation from the user removing their finger (OverScroller
-   * is in `FLING_MODE`), recreate the existing fling animation since it was calculated against
+   * is in {@code FLING_MODE}), recreate the existing fling animation since it was calculated against
    * outdated scroll offsets.
    */
   private void recreateFlingAnimation(int scrollX, int maxX) {
@@ -1734,6 +1736,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Nullable
+  @Override
   public StateWrapper getStateWrapper() {
     return mStateWrapper;
   }
