@@ -52,7 +52,13 @@ void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
 }
 
 void FabricUIManagerBinding::driveCxxAnimations() {
-  getScheduler()->animationTick();
+  auto scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR)
+        << "FabricUIManagerBinding::driveCxxAnimations: scheduler disappeared";
+    return;
+  }
+  scheduler->animationTick();
 }
 
 void FabricUIManagerBinding::driveAnimationBackend(jdouble frameTimeMs) {
