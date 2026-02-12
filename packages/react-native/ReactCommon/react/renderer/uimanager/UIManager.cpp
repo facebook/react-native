@@ -634,12 +634,20 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
 
 void UIManager::shadowTreeDidFinishTransaction(
     std::shared_ptr<const MountingCoordinator> mountingCoordinator,
-    bool mountSynchronously) const {
+    bool mountSynchronously,
+    ShadowTreeCommitSource source) const {
   TraceSection s("UIManager::shadowTreeDidFinishTransaction");
+  const auto surfaceId = mountingCoordinator->getSurfaceId();
 
   if (delegate_ != nullptr) {
     delegate_->uiManagerDidFinishTransaction(
         std::move(mountingCoordinator), mountSynchronously);
+  }
+
+  std::shared_lock lock(commitHookMutex_);
+
+  for (auto* commitHook : commitHooks_) {
+    commitHook->shadowTreeDidFinishTransaction(surfaceId, source);
   }
 }
 

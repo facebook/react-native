@@ -59,6 +59,19 @@ struct LayoutContext {
    * If React Native takes up entire screen, it will be {0, 0}.
    */
   Point viewportOffset{};
+
+  /*
+   * Flag indicating whether to calculate and store originFromRoot
+   * for each LayoutableShadowNode during layout. This is typically
+   * enabled when laying out children of ViewTransitionViewShadowNode.
+   */
+  bool includeOriginFromRoot{false};
+
+  /*
+   * Pointer to the root node of the layout tree. Set during layoutTree()
+   * and used by nodes that need to compute their position relative to root.
+   */
+  const LayoutableShadowNode *rootNode{nullptr};
 };
 
 inline bool operator==(const LayoutContext &lhs, const LayoutContext &rhs)
@@ -68,13 +81,17 @@ inline bool operator==(const LayoutContext &lhs, const LayoutContext &rhs)
              lhs.affectedNodes,
              lhs.swapLeftAndRightInRTL,
              lhs.fontSizeMultiplier,
-             lhs.viewportOffset) ==
+             lhs.viewportOffset,
+             lhs.includeOriginFromRoot,
+             lhs.rootNode) ==
       std::tie(
              rhs.pointScaleFactor,
              rhs.affectedNodes,
              rhs.swapLeftAndRightInRTL,
              rhs.fontSizeMultiplier,
-             rhs.viewportOffset);
+             rhs.viewportOffset,
+             rhs.includeOriginFromRoot,
+             rhs.rootNode);
 }
 
 inline bool operator!=(const LayoutContext &lhs, const LayoutContext &rhs)

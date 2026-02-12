@@ -140,7 +140,7 @@ class ShadowTree final {
  private:
   constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
 
-  void mount(ShadowTreeRevision revision, bool mountSynchronously) const;
+  void mount(ShadowTreeRevision revision, bool mountSynchronously, ShadowTreeCommitSource source) const;
 
   void emitLayoutEvents(std::vector<const LayoutableShadowNode *> &affectedLayoutableNodes) const;
 
