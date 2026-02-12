@@ -110,7 +110,11 @@ class HermesJSRuntime : public JSRuntime {
   }
 
   void unstable_initializeOnJsThread() override {
+    // On new arch, we're seeing a crash in release optimized builds here. Adding this as a stopgap measure to prevent
+    // the crash to allow us to more thoroughly test new arch while this is investigated.
+#ifdef HERMES_ENABLE_PROFILING
     runtime_->registerForProfiling();
+#endif
   }
 
  private:
