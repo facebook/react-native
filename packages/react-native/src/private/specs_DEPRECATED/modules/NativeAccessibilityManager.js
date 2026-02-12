@@ -17,6 +17,10 @@ export interface Spec extends TurboModule {
     onSuccess: (isBoldTextEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
+  +getCurrentDifferentiateWithoutColorState?: (
+    onSuccess: (isDifferentiateWithoutColorEnabled: boolean) => void,
+    onError: (error: Object) => void,
+  ) => void;
   +getCurrentGrayscaleState: (
     onSuccess: (isGrayscaleEnabled: boolean) => void,
     onError: (error: Object) => void,
