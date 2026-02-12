@@ -263,10 +263,10 @@ public class JSPointerDispatcher {
   }
 
   private PointerEventState createEventState(int activePointerId, MotionEvent motionEvent) {
-    Map<Integer, float[]> offsetByPointerId = new HashMap<Integer, float[]>();
-    Map<Integer, List<ViewTarget>> hitPathByPointerId = new HashMap<Integer, List<ViewTarget>>();
-    Map<Integer, float[]> eventCoordinatesByPointerId = new HashMap<Integer, float[]>();
-    Map<Integer, float[]> screenCoordinatesByPointerId = new HashMap<Integer, float[]>();
+    Map<Integer, float[]> offsetByPointerId = new HashMap<>();
+    Map<Integer, List<ViewTarget>> hitPathByPointerId = new HashMap<>();
+    Map<Integer, float[]> eventCoordinatesByPointerId = new HashMap<>();
+    Map<Integer, float[]> screenCoordinatesByPointerId = new HashMap<>();
     for (int index = 0; index < motionEvent.getPointerCount(); index++) {
       float[] offsetCoordinates = new float[2];
       float[] eventCoordinates = new float[] {motionEvent.getX(index), motionEvent.getY(index)};
@@ -549,7 +549,7 @@ public class JSPointerDispatcher {
       incrementCoalescingKey();
 
       // Out, Leave events
-      if (lastHitPath.size() > 0) {
+      if (!lastHitPath.isEmpty()) {
         int lastTargetTag = lastHitPath.get(0).getViewId();
         boolean listeningForOut =
             isAnyoneListeningForBubblingEvent(lastHitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
@@ -566,7 +566,7 @@ public class JSPointerDispatcher {
                 EVENT.LEAVE,
                 EVENT.LEAVE_CAPTURE,
                 nonDivergentListeningToLeave);
-        if (leaveViewTargets.size() > 0) {
+        if (!leaveViewTargets.isEmpty()) {
           // We want to dispatch from target -> root, so no need to reverse
           dispatchEventForViewTargets(
               PointerEventHelper.POINTER_LEAVE,
@@ -593,7 +593,7 @@ public class JSPointerDispatcher {
               EVENT.ENTER_CAPTURE,
               nonDivergentListeningToEnter);
 
-      if (enterViewTargets.size() > 0) {
+      if (!enterViewTargets.isEmpty()) {
         // We want to iterate these from root -> target so we need to reverse
         Collections.reverse(enterViewTargets);
         dispatchEventForViewTargets(
@@ -723,14 +723,5 @@ public class JSPointerDispatcher {
         newEventCoords,
         newScreenCoords,
         new HashSet<>(original.getHoveringPointerIds()));
-  }
-
-  private static void debugPrintHitPath(List<ViewTarget> hitPath) {
-    StringBuilder builder = new StringBuilder("hitPath: ");
-    for (ViewTarget viewTarget : hitPath) {
-      builder.append(String.format("%d, ", viewTarget.getViewId()));
-    }
-
-    FLog.d(TAG, builder.toString());
   }
 }

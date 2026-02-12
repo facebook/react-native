@@ -292,6 +292,7 @@ public class ReactScrollView extends ScrollView
     mScrollEnabled = scrollEnabled;
   }
 
+  @Override
   public boolean getScrollEnabled() {
     return mScrollEnabled;
   }
@@ -872,6 +873,7 @@ public class ReactScrollView extends ScrollView
   }
 
   @Nullable
+  @Override
   public StateWrapper getStateWrapper() {
     return mStateWrapper;
   }
@@ -1360,7 +1362,7 @@ public class ReactScrollView extends ScrollView
 
   /**
    * If we are in the middle of a fling animation from the user removing their finger (OverScroller
-   * is in `FLING_MODE`), recreate the existing fling animation since it was calculated against
+   * is in {@code FLING_MODE}), recreate the existing fling animation since it was calculated against
    * outdated scroll offsets.
    */
   private void recreateFlingAnimation(int scrollY) {
@@ -1412,7 +1414,7 @@ public class ReactScrollView extends ScrollView
 
   /**
    * If contentOffset is set before the View has been laid out, store the values and set them when
-   * `onLayout` is called.
+   * {@code onLayout} is called.
    *
    * @param x
    * @param y
@@ -1505,8 +1507,8 @@ public class ReactScrollView extends ScrollView
    * View-flattened away. However, it is possible to pass custom styles into that View.
    *
    * <p>If you are using this feature it is assumed that you have full control over this ScrollView
-   * and that you are **not** overriding the ScrollView content view to pass in a `translateY`
-   * style. `translateY` must never be set from ReactJS while using this feature!
+   * and that you are **not** overriding the ScrollView content view to pass in a {@code translateY}
+   * style. {@code translateY} must never be set from ReactJS while using this feature!
    */
   public void setScrollAwayTopPaddingEnabledUnstable(int topPadding) {
     setScrollAwayTopPaddingEnabledUnstable(topPadding, true);
