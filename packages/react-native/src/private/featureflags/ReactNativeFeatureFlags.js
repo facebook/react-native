@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<17ced46048bb3bdff5023a2a2aa03e9c>>
+ * @generated SignedSource<<f185f3dcae022c810658c23f4a5dd732>>
  * @flow strict
  * @noformat
  */
@@ -116,6 +116,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
+  updateRuntimeShadowNodeReferencesOnCommitThread: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
@@ -125,6 +126,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   viewCullingOutsetRatio: Getter<number>,
+  viewTransitionEnabled: Getter<boolean>,
   virtualViewPrerenderRatio: Getter<number>,
 }>;
 
@@ -469,6 +471,10 @@ export const traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean> = creat
  */
 export const updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean> = createNativeFlagGetter('updateRuntimeShadowNodeReferencesOnCommit', false);
 /**
+ * When enabled, runtime shadow node references will be updated during the commit only on the allowed thread.
+ */
+export const updateRuntimeShadowNodeReferencesOnCommitThread: Getter<boolean> = createNativeFlagGetter('updateRuntimeShadowNodeReferencesOnCommitThread', false);
+/**
  * In Bridgeless mode, use the always available javascript error reporting pipeline.
  */
 export const useAlwaysAvailableJSErrorHandling: Getter<boolean> = createNativeFlagGetter('useAlwaysAvailableJSErrorHandling', false);
@@ -504,6 +510,10 @@ export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurbo
  * Outset the culling context frame with the provided ratio. The culling context frame size will be outset by width * ratio on the left and right, and height * ratio on the top and bottom.
  */
 export const viewCullingOutsetRatio: Getter<number> = createNativeFlagGetter('viewCullingOutsetRatio', 0);
+/**
+ * Enable the View Transition API for animating transitions between views.
+ */
+export const viewTransitionEnabled: Getter<boolean> = createNativeFlagGetter('viewTransitionEnabled', false);
 /**
  * Initial prerender ratio for VirtualView.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8f93f5e6ce460e2337bbdc51bde69558>>
+ * @generated SignedSource<<ec247759261e831159a6f7781bf44998>>
  */
 
 /**
@@ -166,6 +166,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun updateRuntimeShadowNodeReferencesOnCommitThread(): Boolean
+
   @DoNotStrip @JvmStatic public external fun useAlwaysAvailableJSErrorHandling(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
@@ -183,6 +185,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useTurboModules(): Boolean
 
   @DoNotStrip @JvmStatic public external fun viewCullingOutsetRatio(): Double
+
+  @DoNotStrip @JvmStatic public external fun viewTransitionEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun virtualViewPrerenderRatio(): Double
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0301dd1333d9607a0027c0d30ff48140>>
+ * @generated SignedSource<<39413a3a4416946e3ade57074664492d>>
  */
 
 /**
@@ -389,6 +389,11 @@ bool NativeReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit(
   return ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit();
 }
 
+bool NativeReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommitThread(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommitThread();
+}
+
 bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
@@ -432,6 +437,11 @@ bool NativeReactNativeFeatureFlags::useTurboModules(
 double NativeReactNativeFeatureFlags::viewCullingOutsetRatio(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::viewCullingOutsetRatio();
+}
+
+bool NativeReactNativeFeatureFlags::viewTransitionEnabled(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::viewTransitionEnabled();
 }
 
 double NativeReactNativeFeatureFlags::virtualViewPrerenderRatio(

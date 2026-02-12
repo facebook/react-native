@@ -124,10 +124,15 @@ async function buildPackage(packageName /*: string */, prepack /*: boolean */) {
     // Run prepack script if configured
     if (prepack) {
       await new Promise((resolve, reject) => {
-        const child = spawn('npm', ['run', 'prepack'], {
-          cwd: path.resolve(PACKAGES_DIR, packageName),
-          stdio: ['ignore', 'ignore', 'inherit'],
-        });
+        const packagePath = path.resolve(PACKAGES_DIR, packageName);
+        const child = spawn(
+          process.execPath,
+          [path.join(__dirname, 'prepack.js')],
+          {
+            cwd: packagePath,
+            stdio: ['ignore', 'ignore', 'inherit'],
+          },
+        );
         child.on('close', code => {
           if (code !== 0) {
             reject(new Error(`prepack script exited with code ${code}`));

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3c268f88d2df4ad8500e29b91f1fecc0>>
+ * @generated SignedSource<<0460a8b25bfb176e47fb12dc091b1961>>
  */
 
 /**
@@ -453,6 +453,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool updateRuntimeShadowNodeReferencesOnCommitThread() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("updateRuntimeShadowNodeReferencesOnCommitThread");
+    return method(javaProvider_);
+  }
+
   bool useAlwaysAvailableJSErrorHandling() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useAlwaysAvailableJSErrorHandling");
@@ -504,6 +510,12 @@ class ReactNativeFeatureFlagsJavaProvider
   double viewCullingOutsetRatio() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("viewCullingOutsetRatio");
+    return method(javaProvider_);
+  }
+
+  bool viewTransitionEnabled() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("viewTransitionEnabled");
     return method(javaProvider_);
   }
 
@@ -862,6 +874,11 @@ bool JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnComm
   return ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnCommitThread(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommitThread();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
@@ -905,6 +922,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useTurboModules(
 double JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::viewCullingOutsetRatio();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::viewTransitionEnabled(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::viewTransitionEnabled();
 }
 
 double JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio(
@@ -1151,6 +1173,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "updateRuntimeShadowNodeReferencesOnCommit",
         JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnCommit),
       makeNativeMethod(
+        "updateRuntimeShadowNodeReferencesOnCommitThread",
+        JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnCommitThread),
+      makeNativeMethod(
         "useAlwaysAvailableJSErrorHandling",
         JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling),
       makeNativeMethod(
@@ -1177,6 +1202,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "viewCullingOutsetRatio",
         JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio),
+      makeNativeMethod(
+        "viewTransitionEnabled",
+        JReactNativeFeatureFlagsCxxInterop::viewTransitionEnabled),
       makeNativeMethod(
         "virtualViewPrerenderRatio",
         JReactNativeFeatureFlagsCxxInterop::virtualViewPrerenderRatio),

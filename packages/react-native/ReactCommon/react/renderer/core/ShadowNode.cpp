@@ -33,6 +33,10 @@ thread_local bool useRuntimeShadowNodeReferenceUpdateOnThread{false}; // NOLINT
   useRuntimeShadowNodeReferenceUpdateOnThread = isEnabled;
 }
 
+/* static */ bool ShadowNode::getUseRuntimeShadowNodeReferenceUpdateOnThread() {
+  return useRuntimeShadowNodeReferenceUpdateOnThread;
+}
+
 ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
       std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
@@ -339,7 +343,9 @@ void ShadowNode::transferRuntimeShadowNodeReference(
   destinationShadowNode->runtimeShadowNodeReference_ =
       runtimeShadowNodeReference_;
 
-  if (!ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
+  if (!ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() &&
+      !ReactNativeFeatureFlags::
+          updateRuntimeShadowNodeReferencesOnCommitThread()) {
     updateRuntimeShadowNodeReference(destinationShadowNode);
   }
 }
@@ -348,6 +354,8 @@ void ShadowNode::transferRuntimeShadowNodeReference(
     const std::shared_ptr<const ShadowNode>& destinationShadowNode,
     const ShadowNodeFragment& fragment) const {
   if ((ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() ||
+       ReactNativeFeatureFlags::
+           updateRuntimeShadowNodeReferencesOnCommitThread() ||
        useRuntimeShadowNodeReferenceUpdateOnThread) &&
       fragment.runtimeShadowNodeReference) {
     transferRuntimeShadowNodeReference(destinationShadowNode);

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<366f2d2074e2af1d9dd4244ac1454ac0>>
+ * @generated SignedSource<<545708e361d01a42b3aef51ba71d646d>>
  */
 
 /**
@@ -101,6 +101,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool skipActivityIdentityAssertionOnHostPause();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool updateRuntimeShadowNodeReferencesOnCommit();
+  bool updateRuntimeShadowNodeReferencesOnCommitThread();
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
   bool useNativeViewConfigsInBridgelessMode();
@@ -110,6 +111,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useTurboModuleInterop();
   bool useTurboModules();
   double viewCullingOutsetRatio();
+  bool viewTransitionEnabled();
   double virtualViewPrerenderRatio();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
@@ -122,7 +124,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 79> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 81> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -193,6 +195,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
+  std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommitThread_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
@@ -202,6 +205,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
   std::atomic<std::optional<double>> viewCullingOutsetRatio_;
+  std::atomic<std::optional<bool>> viewTransitionEnabled_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;
 };
 

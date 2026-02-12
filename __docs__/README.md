@@ -49,6 +49,7 @@ TODO: Explain the different components of React Native at a high level.
         - [passChildrenWhenCloningPersistedNodes](../packages/react-native/ReactCommon/react/renderer/core/__docs__/passChildrenWhenCloning.md)
       - Layout
       - Mounting
+      - [Animation Backend](../packages/react-native/ReactCommon/react/renderer/animationbackend/__docs__/AnimationBackend.md)
     - Native Modules / TurboModules
     - JS Runtime
       - [Event Loop](../packages/react-native/ReactCommon/react/renderer/runtimescheduler/__docs__/README.md)

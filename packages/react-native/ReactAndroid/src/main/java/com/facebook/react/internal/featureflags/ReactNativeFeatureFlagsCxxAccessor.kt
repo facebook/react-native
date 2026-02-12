@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9158cc3ba1ea8ea65140b582a02a5112>>
+ * @generated SignedSource<<0db6bbb173a96ab07c80a3fbe43671b3>>
  */
 
 /**
@@ -89,6 +89,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
+  private var updateRuntimeShadowNodeReferencesOnCommitThreadCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -98,6 +99,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
+  private var viewTransitionEnabledCache: Boolean? = null
   private var virtualViewPrerenderRatioCache: Double? = null
 
   override fun commonTestFlag(): Boolean {
@@ -721,6 +723,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun updateRuntimeShadowNodeReferencesOnCommitThread(): Boolean {
+    var cached = updateRuntimeShadowNodeReferencesOnCommitThreadCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.updateRuntimeShadowNodeReferencesOnCommitThread()
+      updateRuntimeShadowNodeReferencesOnCommitThreadCache = cached
+    }
+    return cached
+  }
+
   override fun useAlwaysAvailableJSErrorHandling(): Boolean {
     var cached = useAlwaysAvailableJSErrorHandlingCache
     if (cached == null) {
@@ -798,6 +809,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.viewCullingOutsetRatio()
       viewCullingOutsetRatioCache = cached
+    }
+    return cached
+  }
+
+  override fun viewTransitionEnabled(): Boolean {
+    var cached = viewTransitionEnabledCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.viewTransitionEnabled()
+      viewTransitionEnabledCache = cached
     }
     return cached
   }

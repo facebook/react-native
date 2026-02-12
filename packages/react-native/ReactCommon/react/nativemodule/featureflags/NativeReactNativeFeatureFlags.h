@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7226a320306724ab7d4ee9836a5d35a2>>
+ * @generated SignedSource<<6ed865d409cf5df84607ffa599e46fe7>>
  */
 
 /**
@@ -174,6 +174,8 @@ class NativeReactNativeFeatureFlags
 
   bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
 
+  bool updateRuntimeShadowNodeReferencesOnCommitThread(jsi::Runtime& runtime);
+
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
@@ -191,6 +193,8 @@ class NativeReactNativeFeatureFlags
   bool useTurboModules(jsi::Runtime& runtime);
 
   double viewCullingOutsetRatio(jsi::Runtime& runtime);
+
+  bool viewTransitionEnabled(jsi::Runtime& runtime);
 
   double virtualViewPrerenderRatio(jsi::Runtime& runtime);
 };

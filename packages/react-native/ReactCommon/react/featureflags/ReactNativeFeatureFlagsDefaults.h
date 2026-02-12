@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1c98cfbb8e70c8685faafd078002f866>>
+ * @generated SignedSource<<777478fa4d8beba140a30edb68cc34d9>>
  */
 
 /**
@@ -303,6 +303,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool updateRuntimeShadowNodeReferencesOnCommitThread() override {
+    return false;
+  }
+
   bool useAlwaysAvailableJSErrorHandling() override {
     return false;
   }
@@ -337,6 +341,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   double viewCullingOutsetRatio() override {
     return 0.0;
+  }
+
+  bool viewTransitionEnabled() override {
+    return false;
   }
 
   double virtualViewPrerenderRatio() override {

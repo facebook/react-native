@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fbd62713d66b440e7c18498ccd2a7c0b>>
+ * @generated SignedSource<<d96b2f1e4083046cfc061317d117e762>>
  */
 
 /**
@@ -302,6 +302,10 @@ bool ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() {
   return getAccessor().updateRuntimeShadowNodeReferencesOnCommit();
 }
 
+bool ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommitThread() {
+  return getAccessor().updateRuntimeShadowNodeReferencesOnCommitThread();
+}
+
 bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
   return getAccessor().useAlwaysAvailableJSErrorHandling();
 }
@@ -336,6 +340,10 @@ bool ReactNativeFeatureFlags::useTurboModules() {
 
 double ReactNativeFeatureFlags::viewCullingOutsetRatio() {
   return getAccessor().viewCullingOutsetRatio();
+}
+
+bool ReactNativeFeatureFlags::viewTransitionEnabled() {
+  return getAccessor().viewTransitionEnabled();
 }
 
 double ReactNativeFeatureFlags::virtualViewPrerenderRatio() {

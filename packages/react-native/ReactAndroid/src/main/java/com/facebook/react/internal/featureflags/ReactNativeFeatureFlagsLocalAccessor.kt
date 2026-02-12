@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<377c50a9a022344cba12a1ad6c23b68d>>
+ * @generated SignedSource<<b7b29f2e01fd0bd43e6509587c862d31>>
  */
 
 /**
@@ -93,6 +93,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
+  private var updateRuntimeShadowNodeReferencesOnCommitThreadCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -102,6 +103,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
   private var viewCullingOutsetRatioCache: Double? = null
+  private var viewTransitionEnabledCache: Boolean? = null
   private var virtualViewPrerenderRatioCache: Double? = null
 
   override fun commonTestFlag(): Boolean {
@@ -794,6 +796,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun updateRuntimeShadowNodeReferencesOnCommitThread(): Boolean {
+    var cached = updateRuntimeShadowNodeReferencesOnCommitThreadCache
+    if (cached == null) {
+      cached = currentProvider.updateRuntimeShadowNodeReferencesOnCommitThread()
+      accessedFeatureFlags.add("updateRuntimeShadowNodeReferencesOnCommitThread")
+      updateRuntimeShadowNodeReferencesOnCommitThreadCache = cached
+    }
+    return cached
+  }
+
   override fun useAlwaysAvailableJSErrorHandling(): Boolean {
     var cached = useAlwaysAvailableJSErrorHandlingCache
     if (cached == null) {
@@ -880,6 +892,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.viewCullingOutsetRatio()
       accessedFeatureFlags.add("viewCullingOutsetRatio")
       viewCullingOutsetRatioCache = cached
+    }
+    return cached
+  }
+
+  override fun viewTransitionEnabled(): Boolean {
+    var cached = viewTransitionEnabledCache
+    if (cached == null) {
+      cached = currentProvider.viewTransitionEnabled()
+      accessedFeatureFlags.add("viewTransitionEnabled")
+      viewTransitionEnabledCache = cached
     }
     return cached
   }
