@@ -229,6 +229,21 @@ component TextWithLinkRoleExample() {
   );
 }
 
+function TextShadowCSSSyntaxExample(): React.Node {
+  return (
+    <View>
+      <Text
+        style={{
+          fontSize: 20,
+          marginTop: 10,
+          textShadow: '2px 2px 4px red',
+        }}>
+        Demo text shadow (CSS syntax)
+      </Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   link: {
     color: 'teal',
@@ -270,5 +285,11 @@ export default [
     name: 'textWithLinkRole',
     description: 'Shows the a11y behavior of Text with role="link"',
     render: TextWithLinkRoleExample,
+  },
+  {
+    title: 'Text shadow (CSS syntax)',
+    name: 'textShadowCSSSyntax',
+    description: 'Shows the behavior of text shadow using CSS syntax',
+    render: TextShadowCSSSyntaxExample,
   },
 ] as ReadonlyArray<RNTesterModuleExample>;
