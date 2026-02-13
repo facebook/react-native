@@ -99,7 +99,6 @@ class DeviceEventReporter {
         deviceName: this.#metadata.deviceName,
         pageId: metadata.pageId,
         frontendUserAgent: metadata.frontendUserAgent,
-        prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
         connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
       });
       return;
@@ -126,7 +125,6 @@ class DeviceEventReporter {
         deviceName: this.#metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
-        prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
         connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
       });
       return;
@@ -144,7 +142,6 @@ class DeviceEventReporter {
       deviceName: this.#metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
-      prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
       connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
     });
   }
@@ -202,7 +199,6 @@ class DeviceEventReporter {
         deviceName: this.#metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
-        prefersFuseboxFrontend: pendingCommand.metadata.prefersFuseboxFrontend,
         connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
       });
     }
@@ -244,7 +240,6 @@ class DeviceEventReporter {
       deviceName: this.#metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
-      prefersFuseboxFrontend: pendingCommand.metadata.prefersFuseboxFrontend,
       connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
     });
   }

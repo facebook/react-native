@@ -258,7 +258,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
       new URL(this.#serverBaseUrl),
       {
         relative: true,
-        useFuseboxEntryPoint: page.capabilities.prefersFuseboxFrontend,
       },
     );
 

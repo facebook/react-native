@@ -18,7 +18,6 @@ type SuccessResult<Props: {...} | void = {}> = {
 type ErrorResult<ErrorT = unknown, Props: {...} | void = {}> = {
   status: 'error',
   error: ErrorT,
-  prefersFuseboxFrontend?: ?boolean,
   ...Props,
 };
 
