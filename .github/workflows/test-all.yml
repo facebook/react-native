@@ -37,26 +37,60 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
     outputs:
-      debugger_shell: ${{ steps.filter.outputs.debugger_shell }}
-      any_code_change: ${{ steps.filter.outputs.any_code_change || github.event_name != 'pull_request' }}
+      any_code_change: ${{ steps.filter_exclusions.outputs.any_code_change || github.event_name != 'pull_request' }}
+      should_test_android: ${{ steps.filter_exclusions.outputs.should_test_android || github.event_name != 'pull_request' }}
+      should_test_ios: ${{ steps.filter_exclusions.outputs.should_test_ios || github.event_name != 'pull_request' }}
+      debugger_shell: ${{ steps.filter_inclusions.outputs.debugger_shell }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Check for code changes
-        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
-        id: filter
+      - name: Check for code changes (exclusion patterns)
+        uses: dorny/paths-filter@209e61402dbca8aa44f967535da6666b284025ed
+        id: filter_exclusions
         with:
+          predicate-quantifier: every
           filters: |
             any_code_change:
+              - '**'
               - '!**/__docs__/**'
               - '!**/*.md'
+            should_test_android:
+              # Not an isolated iOS change
+              - '**'
+              - '!packages/react-native/React/**'
+              - '!packages/react-native/ReactApple/**'
+              - '!packages/react-native/**/*.m'
+              - '!packages/react-native/**/*.mm'
+              - '!packages/react-native/**/*.podspec'
+              - '!packages/rn-tester/RNTester/**'
+              - '!packages/rn-tester/RNTesterPods*/**'
+              - '!packages/rn-tester/Podfile*'
+            should_test_ios:
+              # Not an isolated Android change
+              - '**'
+              - '!gradle/**'
+              - '!gradle*'
+              - '!packages/gradle-plugin/**'
+              - '!packages/react-native/ReactAndroid/**'
+              - '!packages/react-native/**/*.java'
+              - '!packages/react-native/**/*.kt'
+              - '!packages/react-native/**/*.gradle*'
+              - '!packages/react-native-popup-menu-android/**'
+              - '!packages/rn-tester/android/**'
+      - name: Check for code changes (inclusion patterns)
+        uses: dorny/paths-filter@209e61402dbca8aa44f967535da6666b284025ed
+        id: filter_inclusions
+        with:
+          filters: |
             debugger_shell:
               - 'packages/debugger-shell/**'
               - 'scripts/debugger-shell/**'
 
   prebuild_apple_dependencies:
     needs: check_code_changes
-    if: needs.check_code_changes.outputs.any_code_change == 'true'
+    if: |
+      needs.check_code_changes.outputs.any_code_change == 'true' &&
+      needs.check_code_changes.outputs.should_test_ios == 'true'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -83,7 +117,9 @@ jobs:
   test_ios_rntester_dynamic_frameworks:
     runs-on: macos-15-large
     needs: check_code_changes
-    if: needs.check_code_changes.outputs.any_code_change == 'true'
+    if: |
+      needs.check_code_changes.outputs.any_code_change == 'true' &&
+      needs.check_code_changes.outputs.should_test_ios == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -328,7 +364,9 @@ jobs:
   build_android:
     runs-on: 8-core-ubuntu
     needs: [set_release_type, check_code_changes]
-    if: needs.check_code_changes.outputs.any_code_change == 'true'
+    if: |
+      needs.check_code_changes.outputs.any_code_change == 'true' &&
+      needs.check_code_changes.outputs.should_test_android == 'true'
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
