@@ -24,7 +24,7 @@ export type Experiments = Readonly<{
   enableNetworkInspector: boolean,
 
   /**
-   * Launch the Fusebox frontend in a standalone shell instead of a browser.
+   * Launch the debugger frontend in a standalone shell instead of a browser.
    * When this is enabled, we will use the optional unstable_showFuseboxShell
    * method on the BrowserLauncher, or throw an error if the method is missing.
    *

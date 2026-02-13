@@ -46,7 +46,6 @@ export type ReportableEvent =
       ...
         | SuccessResult<{
             targetDescription: string,
-            prefersFuseboxFrontend: boolean,
             ...DebuggerSessionIDs,
           }>
         | ErrorResult<unknown>
@@ -72,7 +71,6 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
       ...ConnectionUptime,
       frontendUserAgent: string | null,
-      prefersFuseboxFrontend: boolean | null,
       ...
         | SuccessResult<void>
         | CodedErrorResult<

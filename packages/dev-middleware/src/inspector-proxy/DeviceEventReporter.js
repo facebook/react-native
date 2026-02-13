@@ -30,13 +30,11 @@ type DeviceMetadata = Readonly<{
 type RequestMetadata = Readonly<{
   pageId: string | null,
   frontendUserAgent: string | null,
-  prefersFuseboxFrontend: boolean | null,
 }>;
 
 type ResponseMetadata = Readonly<{
   pageId: string | null,
   frontendUserAgent: string | null,
-  prefersFuseboxFrontend: boolean | null,
 }>;
 
 class DeviceEventReporter {

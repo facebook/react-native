@@ -60,8 +60,6 @@ describe('enableStandaloneFuseboxShell experiment', () => {
           capabilities: {
             // Ensure the device target can be found when launching the debugger
             nativePageReloads: true,
-            // Mark as Fusebox
-            prefersFuseboxFrontend: true,
           },
         },
       ]);
