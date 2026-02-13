@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<777478fa4d8beba140a30edb68cc34d9>>
+ * @generated SignedSource<<3e0a2c49ce52691f15ed127568a8bda8>>
  */
 
 /**
@@ -84,10 +84,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableBridgelessArchitecture() override {
-    return false;
-  }
-
-  bool enableClipChildrenForOverflowHidden() override {
     return false;
   }
 

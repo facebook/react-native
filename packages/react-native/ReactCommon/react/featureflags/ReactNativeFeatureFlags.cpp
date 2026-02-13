@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d96b2f1e4083046cfc061317d117e762>>
+ * @generated SignedSource<<e0f2fdab52f83a4bf8156bc4e55e0760>>
  */
 
 /**
@@ -84,10 +84,6 @@ bool ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations() {
 
 bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
   return getAccessor().enableBridgelessArchitecture();
-}
-
-bool ReactNativeFeatureFlags::enableClipChildrenForOverflowHidden() {
-  return getAccessor().enableClipChildrenForOverflowHidden();
 }
 
 bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {

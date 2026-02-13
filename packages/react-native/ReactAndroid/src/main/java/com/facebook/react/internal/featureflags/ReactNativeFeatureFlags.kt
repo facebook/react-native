@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4549fc9a4f431306b7dc70ef3903b8fd>>
+ * @generated SignedSource<<67ef2bd30983c949f41e014297dabd6e>>
  */
 
 /**
@@ -119,12 +119,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableBridgelessArchitecture(): Boolean = accessor.enableBridgelessArchitecture()
-
-  /**
-   * When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent
-   */
-  @JvmStatic
-  public fun enableClipChildrenForOverflowHidden(): Boolean = accessor.enableClipChildrenForOverflowHidden()
 
   /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).

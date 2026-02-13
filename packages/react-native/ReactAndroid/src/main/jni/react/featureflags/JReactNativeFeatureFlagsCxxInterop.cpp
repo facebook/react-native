@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0460a8b25bfb176e47fb12dc091b1961>>
+ * @generated SignedSource<<176845e66b87994db4a9199df21740c0>>
  */
 
 /**
@@ -126,12 +126,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableBridgelessArchitecture() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBridgelessArchitecture");
-    return method(javaProvider_);
-  }
-
-  bool enableClipChildrenForOverflowHidden() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableClipChildrenForOverflowHidden");
     return method(javaProvider_);
   }
 
@@ -604,11 +598,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture(
   return ReactNativeFeatureFlags::enableBridgelessArchitecture();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableClipChildrenForOverflowHidden(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableClipChildrenForOverflowHidden();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
@@ -1010,9 +999,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableBridgelessArchitecture",
         JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture),
-      makeNativeMethod(
-        "enableClipChildrenForOverflowHidden",
-        JReactNativeFeatureFlagsCxxInterop::enableClipChildrenForOverflowHidden),
       makeNativeMethod(
         "enableCppPropsIteratorSetter",
         JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter),

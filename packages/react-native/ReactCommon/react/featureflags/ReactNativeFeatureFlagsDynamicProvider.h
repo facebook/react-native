@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55247339124401e105501f3d9d3b5b92>>
+ * @generated SignedSource<<071d8d1951fa9737eded3cd8a423eb8a>>
  */
 
 /**
@@ -178,15 +178,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableBridgelessArchitecture();
-  }
-
-  bool enableClipChildrenForOverflowHidden() override {
-    auto value = values_["enableClipChildrenForOverflowHidden"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableClipChildrenForOverflowHidden();
   }
 
   bool enableCppPropsIteratorSetter() override {

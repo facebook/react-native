@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f185f3dcae022c810658c23f4a5dd732>>
+ * @generated SignedSource<<1f591f0e6d65b58c811cb57d13f7f764>>
  * @flow strict
  * @noformat
  */
@@ -62,7 +62,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableAndroidLinearText: Getter<boolean>,
   enableAndroidTextMeasurementOptimizations: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
-  enableClipChildrenForOverflowHidden: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
   enableDestroyShadowTreeRevisionAsync: Getter<boolean>,
@@ -254,10 +253,6 @@ export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = create
  * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
  */
 export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', false);
-/**
- * When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent
- */
-export const enableClipChildrenForOverflowHidden: Getter<boolean> = createNativeFlagGetter('enableClipChildrenForOverflowHidden', false);
 /**
  * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
  */

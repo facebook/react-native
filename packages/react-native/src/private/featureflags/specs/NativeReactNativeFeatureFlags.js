@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1fe995d928d6ea2770936cdd6e2b8320>>
+ * @generated SignedSource<<ce704c5fe7d494f0ad8030f743d90e16>>
  * @flow strict
  * @noformat
  */
@@ -40,7 +40,6 @@ export interface Spec extends TurboModule {
   +enableAndroidLinearText?: () => boolean;
   +enableAndroidTextMeasurementOptimizations?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
-  +enableClipChildrenForOverflowHidden?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
   +enableCustomFocusSearchOnClippedElementsAndroid?: () => boolean;
   +enableDestroyShadowTreeRevisionAsync?: () => boolean;

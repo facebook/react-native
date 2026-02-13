@@ -212,16 +212,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
-    enableClipChildrenForOverflowHidden: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableCppPropsIteratorSetter: {
       defaultValue: false,
       metadata: {

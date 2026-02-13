@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<51a4817654c04c979a33f44e42312dd5>>
+ * @generated SignedSource<<c24c659a80be5371844c214a69c149bd>>
  */
 
 /**
@@ -113,11 +113,6 @@ class ReactNativeFeatureFlags {
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
-
-  /**
-   * When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent
-   */
-  RN_EXPORT static bool enableClipChildrenForOverflowHidden();
 
   /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
