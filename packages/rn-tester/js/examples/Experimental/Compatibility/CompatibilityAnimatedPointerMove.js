@@ -12,8 +12,8 @@ import type {RNTesterModuleExample} from '../../../types/RNTesterTypes';
 
 import ToggleNativeDriver from '../../Animated/utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useRef, useState} from 'react';
-import {Animated, StyleSheet, Text} from 'react-native';
+import {useState} from 'react';
+import {Animated, StyleSheet, Text, useAnimatedValue} from 'react-native';
 
 const WIDTH = 200;
 const HEIGHT = 250;
@@ -39,8 +39,8 @@ const styles = StyleSheet.create({
 });
 
 function CompatibilityAnimatedPointerMove(): React.Node {
-  const xCoord = useRef(new Animated.Value(0)).current;
-  const yCoord = useRef(new Animated.Value(0)).current;
+  const xCoord = useAnimatedValue(0);
+  const yCoord = useAnimatedValue(0);
   const [useNativeDriver, setUseNativeDriver] = useState(true);
 
   return (

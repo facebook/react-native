@@ -23,6 +23,7 @@ import {
   StyleSheet,
   Text,
   View,
+  useAnimatedValue,
 } from 'react-native';
 
 type Props = Readonly<{}>;
@@ -87,9 +88,9 @@ function EasingItem({
   item: EasingListItem,
   useNativeDriver: boolean,
 }): React.Node {
-  const opacityAndScale = useRef(new Animated.Value(1));
+  const opacityAndScale = useAnimatedValue(1);
   const animation = useRef(
-    Animated.timing(opacityAndScale.current, {
+    Animated.timing(opacityAndScale, {
       toValue: 1,
       duration: 1200,
       easing: item.easing,
@@ -100,8 +101,8 @@ function EasingItem({
   const animatedStyles = [
     styles.box,
     {
-      opacity: opacityAndScale.current,
-      transform: [{scale: opacityAndScale.current}],
+      opacity: opacityAndScale,
+      transform: [{scale: opacityAndScale}],
     },
   ];
 
@@ -115,7 +116,7 @@ function EasingItem({
         </Text>
         <RNTesterButton
           onPress={() => {
-            opacityAndScale.current.setValue(0);
+            opacityAndScale.setValue(0);
             animation.current.start();
           }}>
           Animate

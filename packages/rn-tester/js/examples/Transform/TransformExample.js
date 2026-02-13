@@ -12,8 +12,15 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {AnimatedNode} from 'react-native/Libraries/Animated/AnimatedExports';
 
 import * as React from 'react';
-import {useEffect, useRef, useState} from 'react';
-import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
+import {useEffect, useState} from 'react';
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  Text,
+  View,
+  useAnimatedValue,
+} from 'react-native';
 
 function AnimateTransformSingleProp() {
   const [theta] = useState(new Animated.Value(45));
@@ -53,7 +60,7 @@ function AnimateTransformSingleProp() {
 }
 
 function TransformOriginExample() {
-  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const rotateAnim = useAnimatedValue(0);
 
   useEffect(() => {
     Animated.loop(
