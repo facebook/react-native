@@ -58,6 +58,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Fabric"
   s.dependency "React-Fabric/bridging"
+  s.dependency "React-FabricComponents"
   s.dependency "React-runtimescheduler"
   add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
