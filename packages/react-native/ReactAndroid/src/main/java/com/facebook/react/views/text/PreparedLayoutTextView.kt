@@ -85,21 +85,17 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     @DoNotStrip get() = preparedLayout?.layout?.text
 
   init {
-    initView()
     // ViewGroup by default says only its children will draw
     setWillNotDraw(false)
   }
 
-  private fun initView() {
-    clickableSpans = emptyList()
-    selection = null
-    preparedLayout = null
-  }
-
   fun recycleView(): Unit {
-    initView()
     BackgroundStyleApplicator.reset(this)
     overflow = Overflow.HIDDEN
+    clickableSpans = emptyList()
+    selection = null
+    selectionColor = null
+    preparedLayout = null
   }
 
   override fun onDraw(canvas: Canvas) {
