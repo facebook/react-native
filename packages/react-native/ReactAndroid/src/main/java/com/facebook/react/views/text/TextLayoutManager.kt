@@ -1195,6 +1195,234 @@ internal object TextLayoutManager {
     return ret
   }
 
+  /**
+   * Returns the bounding rectangles for all text fragments that belong to the specified react tag.
+   * This is useful for getting the visual boundaries of nested <Text> components within a
+   * paragraph.
+   *
+   * @param preparedLayout The prepared text layout containing the layout and react tags
+   * @param targetReactTag The react tag of the TextShadowNode to get rects for
+   * @return A FloatArray containing [x, y, width, height] for each fragment rect, or empty array if
+   *   no fragments match the tag
+   */
+  @JvmStatic
+  fun getFragmentRectsForReactTag(
+      preparedLayout: PreparedLayout,
+      targetReactTag: Int,
+  ): FloatArray {
+    val layout = preparedLayout.layout
+    val text = layout.text as? Spanned ?: return floatArrayOf()
+    val reactTags = preparedLayout.reactTags
+    val verticalOffset = preparedLayout.verticalOffset
+    val maximumNumberOfLines = preparedLayout.maximumNumberOfLines
+
+    val calculatedLineCount = calculateLineCount(layout, maximumNumberOfLines)
+    val retList = ArrayList<Float>()
+
+    // Find all fragments with the matching react tag
+    val fragmentIndexSpans = text.getSpans(0, text.length, ReactFragmentIndexSpan::class.java)
+
+    for (span in fragmentIndexSpans) {
+      val fragmentIndex = span.fragmentIndex
+      if (
+          fragmentIndex >= 0 &&
+              fragmentIndex < reactTags.size &&
+              reactTags[fragmentIndex] == targetReactTag
+      ) {
+        // This fragment belongs to the target TextShadowNode
+        val start = text.getSpanStart(span)
+        val end = text.getSpanEnd(span)
+
+        addRectsForSpanRange(layout, text, start, end, verticalOffset, calculatedLineCount, retList)
+      }
+    }
+
+    val ret = FloatArray(retList.size)
+    for (i in retList.indices) {
+      ret[i] = retList[i]
+    }
+    return ret
+  }
+
+  /**
+   * Returns the bounding rectangles for all text fragments that belong to the specified react tag.
+   * This method works with the legacy ReactTagSpan used when enablePreparedTextLayout is disabled.
+   *
+   * @param layout The Android text layout
+   * @param targetReactTag The react tag of the TextShadowNode to get rects for
+   * @param verticalOffset Vertical offset to apply to the rects
+   * @param maximumNumberOfLines Maximum number of lines to consider
+   * @return A FloatArray containing [x, y, width, height] for each fragment rect, or empty array if
+   *   no fragments match the tag
+   */
+  @JvmStatic
+  fun getFragmentRectsForReactTagFromLayout(
+      layout: Layout,
+      targetReactTag: Int,
+      verticalOffset: Float,
+      maximumNumberOfLines: Int,
+  ): FloatArray {
+    val text = layout.text as? Spanned ?: return floatArrayOf()
+    val calculatedLineCount = calculateLineCount(layout, maximumNumberOfLines)
+    val retList = ArrayList<Float>()
+
+    // Find all ReactTagSpan spans with the matching react tag
+    val tagSpans = text.getSpans(0, text.length, ReactTagSpan::class.java)
+
+    for (span in tagSpans) {
+      if (span.reactTag == targetReactTag) {
+        val start = text.getSpanStart(span)
+        val end = text.getSpanEnd(span)
+
+        addRectsForSpanRange(layout, text, start, end, verticalOffset, calculatedLineCount, retList)
+      }
+    }
+
+    val ret = FloatArray(retList.size)
+    for (i in retList.indices) {
+      ret[i] = retList[i]
+    }
+    return ret
+  }
+
+  /**
+   * Returns the bounding rectangles for all text fragments that belong to the specified react tag
+   * by creating a layout on-demand from the AttributedString. This is used as a fallback when
+   * PreparedLayout is not available (e.g., when enablePreparedTextLayout feature flag is disabled).
+   *
+   * @param context The Android context
+   * @param attributedString The attributed string containing the text fragments
+   * @param paragraphAttributes The paragraph attributes for layout
+   * @param width The layout width constraint
+   * @param height The layout height constraint
+   * @param targetReactTag The react tag of the TextShadowNode to get rects for
+   * @return A FloatArray containing [x, y, width, height] for each fragment rect, or empty array if
+   *   no fragments match the tag
+   */
+  @JvmStatic
+  fun getFragmentRectsFromAttributedString(
+      context: Context,
+      attributedString: ReadableMapBuffer,
+      paragraphAttributes: ReadableMapBuffer,
+      width: Float,
+      height: Float,
+      targetReactTag: Int,
+  ): FloatArray {
+    val fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS)
+    // Pass null for outputReactTags since we'll use ReactTagSpan directly
+    val text =
+        createSpannableFromAttributedString(
+            context,
+            fragments,
+            null, // reactTextViewManagerCallback
+            null, // outputReactTags - this ensures ReactTagSpan is used
+        )
+
+    val baseTextAttributes =
+        TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
+
+    // Width and height from C++ are in DIPs, but createLayout expects pixels
+    // Convert to pixels for correct text wrapping
+    val widthInPx = width.dpToPx()
+    val heightInPx = height.dpToPx()
+
+    val layout =
+        createLayout(
+            text,
+            newPaintWithAttributes(baseTextAttributes, context),
+            attributedString,
+            paragraphAttributes,
+            widthInPx,
+            YogaMeasureMode.EXACTLY,
+            heightInPx,
+            YogaMeasureMode.UNDEFINED,
+        )
+
+    val maximumNumberOfLines =
+        if (paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES))
+            paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
+        else ReactConstants.UNSET
+
+    val verticalOffset =
+        getVerticalOffset(
+            layout,
+            paragraphAttributes,
+            heightInPx,
+            YogaMeasureMode.UNDEFINED,
+            maximumNumberOfLines,
+        )
+
+    return getFragmentRectsForReactTagFromLayout(
+        layout,
+        targetReactTag,
+        verticalOffset,
+        maximumNumberOfLines,
+    )
+  }
+
+  private fun addRectsForSpanRange(
+      layout: Layout,
+      text: Spanned,
+      start: Int,
+      end: Int,
+      verticalOffset: Float,
+      calculatedLineCount: Int,
+      retList: ArrayList<Float>,
+  ) {
+    if (start < 0 || end < 0 || start >= end) {
+      return
+    }
+
+    // Get the bounding rect for this text range
+    // We need to handle multi-line text fragments by getting rects for each line
+    val startLine = layout.getLineForOffset(start)
+    val endLine = layout.getLineForOffset(end - 1)
+
+    for (line in startLine..min(endLine, calculatedLineCount - 1)) {
+      val lineStart = layout.getLineStart(line)
+      val lineEnd = layout.getLineEnd(line)
+
+      // Calculate the portion of this fragment on this line
+      val fragmentStartOnLine = max(start, lineStart)
+      val fragmentEndOnLine = min(end, lineEnd)
+
+      if (fragmentStartOnLine >= fragmentEndOnLine) {
+        continue
+      }
+
+      // Get the horizontal bounds
+      // For the left position, use getPrimaryHorizontal at the fragment start
+      val left = layout.getPrimaryHorizontal(fragmentStartOnLine)
+
+      // For the right position, we need to handle the case where the fragment
+      // ends at a line break. In this case, getPrimaryHorizontal at the end
+      // returns the same as at the start of the next line (or line start).
+      // Instead, we should use the line's right bound or the position just before
+      // the line end character.
+      val right: Float
+      if (fragmentEndOnLine >= lineEnd && lineEnd > lineStart) {
+        // Fragment goes to the end of the line - use the position before the newline
+        // or use getLineRight for the actual right edge of text on this line
+        right = layout.getLineRight(line)
+      } else {
+        right = layout.getPrimaryHorizontal(fragmentEndOnLine)
+      }
+
+      // Get the vertical bounds
+      val top = layout.getLineTop(line) + verticalOffset
+      val bottom = layout.getLineBottom(line) + verticalOffset
+
+      // Ensure left is less than right (RTL text handling)
+      val rectLeft = min(left, right)
+      val rectRight = max(left, right)
+
+      retList.add(rectLeft.pxToDp())
+      retList.add(top.pxToDp())
+      retList.add((rectRight - rectLeft).pxToDp())
+      retList.add((bottom - top).pxToDp())
+    }
+  }
+
   private fun getVerticalOffset(
       layout: Layout,
       paragraphAttributes: ReadableMapBuffer,
