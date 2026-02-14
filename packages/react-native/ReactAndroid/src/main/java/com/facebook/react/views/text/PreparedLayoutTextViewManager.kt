@@ -118,8 +118,9 @@ internal class PreparedLayoutTextViewManager :
 
   @ReactProp(name = "selectable", defaultBoolean = false)
   fun setSelectable(view: PreparedLayoutTextView, isSelectable: Boolean): Unit {
-    // T222052152: Implement fine-grained text selection for PreparedLayoutTextView
-    // view.setTextIsSelectable(isSelectable);
+    check(!isSelectable) {
+      "selectable Text should use SelectableTextViewManager instead of PreparedLayoutViewManager"
+    }
   }
 
   @ReactProp(name = "selectionColor", customType = "Color")

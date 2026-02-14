@@ -6112,7 +6112,7 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun updateView ()V
 }
 
-public final class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/uimanager/IViewManagerWithChildren, com/facebook/react/views/text/ReactTextViewManagerCallback {
+public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/uimanager/IViewManagerWithChildren, com/facebook/react/views/text/ReactTextViewManagerCallback {
 	public static final field Companion Lcom/facebook/react/views/text/ReactTextViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
@@ -6125,11 +6125,14 @@ public final class com/facebook/react/views/text/ReactTextViewManager : com/face
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/text/ReactTextView;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
+	protected final fun getReactTextViewManagerCallback ()Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
 	public fun getShadowNodeClass ()Ljava/lang/Class;
 	public fun needsCustomLayoutForChildren ()Z
 	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
+	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/text/ReactTextView;)V
 	public fun onPostProcessSpannable (Landroid/text/Spannable;)V
 	public synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
+	protected fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/text/ReactTextView;)Lcom/facebook/react/views/text/ReactTextView;
 	public final fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setAdjustFontSizeToFit (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setAndroidHyphenationFrequency (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
@@ -6147,6 +6150,7 @@ public final class com/facebook/react/views/text/ReactTextViewManager : com/face
 	public final fun setOverflow (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public synthetic fun setPadding (Landroid/view/View;IIII)V
 	public fun setPadding (Lcom/facebook/react/views/text/ReactTextView;IIII)V
+	protected final fun setReactTextViewManagerCallback (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
 	public final fun setSelectable (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public final fun setSelectionColor (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Integer;)V
 	public final fun setTextAlignVertical (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
@@ -6155,6 +6159,7 @@ public final class com/facebook/react/views/text/ReactTextViewManager : com/face
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public fun updateState (Lcom/facebook/react/views/text/ReactTextView;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public synthetic fun updateViewAccessibility (Landroid/view/View;)V
+	protected fun updateViewAccessibility (Lcom/facebook/react/views/text/ReactTextView;)V
 }
 
 public final class com/facebook/react/views/text/ReactTextViewManager$Companion {
@@ -6170,6 +6175,9 @@ public final class com/facebook/react/views/text/ReactTypefaceUtils {
 	public static final fun parseFontStyle (Ljava/lang/String;)I
 	public static final fun parseFontVariant (Lcom/facebook/react/bridge/ReadableArray;)Ljava/lang/String;
 	public static final fun parseFontWeight (Ljava/lang/String;)I
+}
+
+public final class com/facebook/react/views/text/SelectableTextViewManager$Companion {
 }
 
 public final class com/facebook/react/views/text/TextAttributeProps {

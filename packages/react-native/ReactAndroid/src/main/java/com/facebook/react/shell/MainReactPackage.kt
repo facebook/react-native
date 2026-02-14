@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.ClassFinder
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.annotations.ReactModuleList
@@ -58,6 +59,7 @@ import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
 import com.facebook.react.views.text.PreparedLayoutTextViewManager
 import com.facebook.react.views.text.ReactTextViewManager
+import com.facebook.react.views.text.SelectableTextViewManager
 import com.facebook.react.views.textinput.ReactTextInputManager
 import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
 import com.facebook.react.views.view.ReactViewManager
@@ -96,6 +98,7 @@ import com.facebook.react.views.view.ReactViewManager
             WebSocketModule::class,
         ]
 )
+@OptIn(UnstableReactNativeAPI::class)
 public class MainReactPackage
 @JvmOverloads
 constructor(private val config: MainPackageConfig? = null) :
@@ -150,6 +153,7 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactTextInputManager(),
           if (ReactNativeFeatureFlags.enablePreparedTextLayout()) PreparedLayoutTextViewManager()
           else ReactTextViewManager(),
+          SelectableTextViewManager(),
           ReactViewManager(),
           ReactUnimplementedViewManager(),
       )
@@ -192,6 +196,8 @@ constructor(private val config: MainPackageConfig? = null) :
                     PreparedLayoutTextViewManager()
                 else ReactTextViewManager()
               },
+          SelectableTextViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec { SelectableTextViewManager() },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
           ReactUnimplementedViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() },

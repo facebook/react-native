@@ -13,6 +13,7 @@ import type {ProcessedColorValue} from '../StyleSheet/processColor';
 import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 import type {TextProps} from './TextProps';
 
+import {enablePreparedTextLayout} from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {createViewConfig} from '../NativeComponent/ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
@@ -90,3 +91,15 @@ export const NativeVirtualText: HostComponent<NativeTextProps> =
          * https://fburl.com/workplace/6291gfvu */
         createViewConfig(virtualTextViewConfig),
       ): any);
+
+export const NativeSelectableText: HostComponent<NativeTextProps> =
+  enablePreparedTextLayout()
+    ? (createReactNativeComponentClass('RCTSelectableText', () =>
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
+        createViewConfig({
+          ...textViewConfig,
+          uiViewClassName: 'RCTSelectableText',
+        }),
+      ): any)
+    : NativeText;

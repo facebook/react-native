@@ -8,13 +8,15 @@
 #pragma once
 
 #include <react/renderer/components/text/BaseParagraphComponentDescriptor.h>
-#include <react/renderer/components/text/ParagraphShadowNode.h>
+#include <react/renderer/components/text/SelectableParagraphShadowNode.h>
 
 namespace facebook::react {
 /*
- * Descriptor for <Paragraph> component.
+ * Descriptor for <SelectableParagraph> component, which may render to a
+ * different native view than <Paragraph>.
  */
-class ParagraphComponentDescriptor final : public BaseParagraphComponentDescriptor<ParagraphShadowNode> {
+class SelectableParagraphComponentDescriptor final
+    : public BaseParagraphComponentDescriptor<SelectableParagraphShadowNode> {
  public:
   using BaseParagraphComponentDescriptor::BaseParagraphComponentDescriptor;
 };
