@@ -11,6 +11,7 @@
 #include <jsi/jsi.h>
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <map>
 #include <shared_mutex>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
@@ -154,6 +155,11 @@ class UIManager final : public ShadowTreeDelegate {
       const ShadowNode::UnsharedListOfShared &rootChildren,
       ShadowTree::CommitOptions commitOptions);
 
+  void updatePortalChildren(
+      Tag targetTag,
+      const ShadowNode::UnsharedListOfShared &oldChildren,
+      const ShadowNode::UnsharedListOfShared &newChildren);
+
   void setIsJSResponder(
       const std::shared_ptr<const ShadowNode> &shadowNode,
       bool isJSResponder,
@@ -249,6 +255,11 @@ class UIManager final : public ShadowTreeDelegate {
   std::unique_ptr<LazyShadowTreeRevisionConsistencyManager> lazyShadowTreeRevisionConsistencyManager_;
 
   std::shared_ptr<UIManagerAnimationBackend> animationBackend_;
+
+  std::unordered_map<Tag, std::vector<std::shared_ptr<const ShadowNode>>> portalChildren_;
+
+  // Portal children that are pending removal and need to be removed on the next commit
+  std::unordered_map<Tag, std::unordered_set<Tag>> pendingPortalRemovals_;
 };
 
 } // namespace facebook::react

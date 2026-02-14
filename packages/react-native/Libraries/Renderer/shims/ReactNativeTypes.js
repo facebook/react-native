@@ -200,6 +200,11 @@ export type ReactFabricType = {
     internalInstanceHandle: InternalInstanceHandle,
   ): PublicInstance | PublicTextInstance | null,
   getPublicInstanceFromRootTag(rootTag: number): PublicRootInstance | null,
+  createPortal(
+    children: React.Node,
+    target: ?PublicInstance,
+    key?: ?string,
+  ): React.MixedElement,
   ...
 };
 

@@ -9091,10 +9091,11 @@ __DEV__ &&
           pushHostContext(workInProgress);
           break;
         case 4:
-          pushHostContainer(
-            workInProgress,
-            workInProgress.stateNode.containerInfo
-          );
+          var _containerInfo = workInProgress.stateNode.containerInfo;
+          if (_containerInfo._isPortal) {
+            _containerInfo.surfaceId = requiredContext(rootInstanceStackCursor.current).containerTag;
+          }
+          pushHostContainer(workInProgress, _containerInfo);
           break;
         case 10:
           pushProvider(
@@ -9426,11 +9427,15 @@ __DEV__ &&
           return null;
         case 13:
           return updateSuspenseComponent(current, workInProgress, renderLanes);
-        case 4:
+        case 4: {
+          var _containerInfo2 = workInProgress.stateNode.containerInfo;
+          if (_containerInfo2._isPortal) {
+            _containerInfo2.surfaceId = requiredContext(rootInstanceStackCursor.current).containerTag;
+          }
           return (
             pushHostContainer(
               workInProgress,
-              workInProgress.stateNode.containerInfo
+              _containerInfo2
             ),
             (returnFiber = workInProgress.pendingProps),
             null === current
@@ -9448,6 +9453,7 @@ __DEV__ &&
                 ),
             workInProgress.child
           );
+        }
         case 11:
           return updateForwardRef(
             current,
@@ -10056,7 +10062,7 @@ __DEV__ &&
               node: createNode(
                 renderLanes,
                 _type2.uiViewClassName,
-                current.containerTag,
+                current.surfaceId || current.containerTag,
                 keepChildren,
                 workInProgress
               ),
@@ -10926,13 +10932,15 @@ __DEV__ &&
       finishedWork,
       pendingChildren
     ) {
+      var stateNode = portal;
       portal = portal.containerInfo;
       try {
         runWithFiberInDEV(
           finishedWork,
           replaceContainerChildren,
           portal,
-          pendingChildren
+          pendingChildren,
+          stateNode
         );
       } catch (error) {
         captureCommitPhaseError(finishedWork, finishedWork.return, error);
@@ -15902,7 +15910,7 @@ __DEV__ &&
         node: createNode(
           hostContext,
           "RCTRawText",
-          rootContainerInstance.containerTag,
+          rootContainerInstance.surfaceId || rootContainerInstance.containerTag,
           { text: text },
           internalInstanceHandle
         )
@@ -15960,8 +15968,14 @@ __DEV__ &&
         canonical: instance.canonical
       };
     }
-    function replaceContainerChildren(container, newChildren) {
-      completeRoot(container.containerTag, newChildren);
+    function replaceContainerChildren(container, newChildren, portalStateNode) {
+      if (container._isPortal && portalStateNode) {
+        var oldChildren = portalStateNode._committedChildren || null;
+        updatePortalChildren(container.containerTag, oldChildren, newChildren);
+        portalStateNode._committedChildren = newChildren;
+      } else {
+        completeRoot(container.containerTag, newChildren);
+      }
     }
     function nativeOnUncaughtError(error, errorInfo) {
       !1 !==
@@ -18701,6 +18715,7 @@ __DEV__ &&
       appendChildNode = _nativeFabricUIManage.appendChild,
       appendChildNodeToSet = _nativeFabricUIManage.appendChildToSet,
       completeRoot = _nativeFabricUIManage.completeRoot,
+      updatePortalChildren = _nativeFabricUIManage.updatePortalChildren,
       registerEventHandler = _nativeFabricUIManage.registerEventHandler,
       FabricDiscretePriority =
         _nativeFabricUIManage.unstable_DiscreteEventPriority,
@@ -18924,13 +18939,21 @@ __DEV__ &&
       internals.getCurrentFiber = getCurrentFiberForDevTools;
       return injectInternals(internals);
     })();
-    exports.createPortal = function (children, containerTag) {
-      return createPortal$1(
-        children,
-        containerTag,
-        null,
-        2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null
-      );
+    var portalContainerCache = new WeakMap();
+    exports.createPortal = function (children, target) {
+      var key = 2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null;
+
+      var portalContainer = portalContainerCache.get(target);
+      if (!portalContainer) {
+        var tag = findNodeHandle(target);
+        portalContainer = {
+          containerTag: tag,
+          publicInstance: null,
+          _isPortal: true
+        };
+        portalContainerCache.set(target, portalContainer);
+      }
+      return createPortal$1(children, portalContainer, null, key);
     };
     exports.dispatchCommand = function (handle, command, args) {
       var nativeTag =

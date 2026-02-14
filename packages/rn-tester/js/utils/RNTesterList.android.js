@@ -73,6 +73,11 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/NewAppScreen/NewAppScreenExample'),
   },
   {
+    key: 'PortalExample',
+    module: require('../examples/Portal/PortalExample'),
+    category: 'UI',
+  },
+  {
     key: 'PressableExample',
     category: 'UI',
     module: require('../examples/Pressable/PressableExample'),

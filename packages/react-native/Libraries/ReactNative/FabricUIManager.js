@@ -43,6 +43,11 @@ export interface Spec {
   +appendChild: (parentNode: Node, child: Node) => Node;
   +appendChildToSet: (childSet: NodeSet, child: Node) => void;
   +completeRoot: (rootTag: RootTag, childSet: NodeSet) => void;
+  +updatePortalChildren: (
+    targetTag: number,
+    oldChildSet: ?NodeSet,
+    newChildSet: NodeSet,
+  ) => void;
   +measure: (
     node: Node | NativeElementReference,
     callback: MeasureOnSuccessCallback,
@@ -114,6 +119,7 @@ const CACHED_PROPERTIES = [
   'appendChild',
   'appendChildToSet',
   'completeRoot',
+  'updatePortalChildren',
   'measure',
   'measureInWindow',
   'measureLayout',

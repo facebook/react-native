@@ -171,6 +171,9 @@ export const getPublicInstanceFromInternalInstanceHandle: ReactFabricType['getPu
 export const getPublicInstanceFromRootTag: ReactFabricType['getPublicInstanceFromRootTag'] =
   getFabricMethod('getPublicInstanceFromRootTag');
 
+export const createPortal: ReactFabricType['createPortal'] =
+  getFabricMethod('createPortal');
+
 export function isProfilingRenderer(): boolean {
   return Boolean(__DEV__);
 }
