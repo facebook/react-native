@@ -63,6 +63,36 @@ if (BlobManager.isAvailable) {
   BlobManager.addNetworkingHandler();
 }
 
+const FORBIDDEN_METHODS: $ReadOnlySet<string> = new Set([
+  'CONNECT',
+  'TRACE',
+  'TRACK',
+]);
+
+const FORBIDDEN_HEADERS: $ReadOnlySet<string> = new Set([
+  'accept-charset',
+  'accept-encoding',
+  'access-control-request-headers',
+  'access-control-request-method',
+  'connection',
+  'content-length',
+  'cookie',
+  'cookie2',
+  'date',
+  'dnt',
+  'expect',
+  'host',
+  'keep-alive',
+  'origin',
+  'referer',
+  'set-cookie',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+  'via',
+]);
+
 const UNSENT = 0;
 const OPENED = 1;
 const HEADERS_RECEIVED = 2;
@@ -509,7 +539,30 @@ class XMLHttpRequest extends EventTarget {
     if (this.readyState !== this.OPENED) {
       throw new Error('Request has not been opened');
     }
-    this._headers[header.toLowerCase()] = String(value);
+    if (!/^[!#$%&'*+\\-.^_`|~A-Za-z0-9]+$/.test(header)) {
+      throw new Error(
+        "Failed to execute 'setRequestHeader' on 'XMLHttpRequest': '" +
+          header +
+          "' is not a valid HTTP header field name.",
+      );
+    }
+    const stringValue = String(value);
+    if (/[\r\n]/.test(stringValue)) {
+      throw new Error(
+        "Failed to execute 'setRequestHeader' on 'XMLHttpRequest': '" +
+          stringValue +
+          "' is not a valid HTTP header field value.",
+      );
+    }
+    const lowerHeader = header.toLowerCase();
+    if (
+      FORBIDDEN_HEADERS.has(lowerHeader) ||
+      lowerHeader.startsWith('proxy-') ||
+      lowerHeader.startsWith('sec-')
+    ) {
+      return;
+    }
+    this._headers[lowerHeader] = stringValue;
   }
 
   /**
@@ -540,7 +593,22 @@ class XMLHttpRequest extends EventTarget {
     if (!url) {
       throw new Error('Cannot load an empty url');
     }
-    this._method = method.toUpperCase();
+    if (!/^[!#$%&'*+\\-.^_`|~A-Za-z0-9]+$/.test(method)) {
+      throw new Error(
+        "Failed to execute 'open' on 'XMLHttpRequest': '" +
+          method +
+          "' is not a valid HTTP method.",
+      );
+    }
+    const upperMethod = method.toUpperCase();
+    if (FORBIDDEN_METHODS.has(upperMethod)) {
+      throw new Error(
+        "Failed to execute 'open' on 'XMLHttpRequest': '" +
+          method +
+          "' HTTP method is unsupported.",
+      );
+    }
+    this._method = upperMethod;
     this._url = url;
     this._aborted = false;
     this.setReadyState(this.OPENED);
