@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1f591f0e6d65b58c811cb57d13f7f764>>
+ * @generated SignedSource<<d160075a63b4d5e2582409f4102fd66d>>
  * @flow strict
  * @noformat
  */
@@ -69,6 +69,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableEagerMainQueueModulesOnIOS: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableExclusivePropsUpdateAndroid: Getter<boolean>,
+  enableFabricCommitBranching: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
@@ -281,6 +282,10 @@ export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGe
  * When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.
  */
 export const enableExclusivePropsUpdateAndroid: Getter<boolean> = createNativeFlagGetter('enableExclusivePropsUpdateAndroid', false);
+/**
+ * Enables Fabric commit branching to fix starvation problems and atomic JS updates.
+ */
+export const enableFabricCommitBranching: Getter<boolean> = createNativeFlagGetter('enableFabricCommitBranching', false);
 /**
  * This feature flag enables logs for Fabric.
  */

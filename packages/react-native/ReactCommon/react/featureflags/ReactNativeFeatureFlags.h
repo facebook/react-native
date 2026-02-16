@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c24c659a80be5371844c214a69c149bd>>
+ * @generated SignedSource<<e9daabfbf719ad178ce1a366a9f82362>>
  */
 
 /**
@@ -148,6 +148,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.
    */
   RN_EXPORT static bool enableExclusivePropsUpdateAndroid();
+
+  /**
+   * Enables Fabric commit branching to fix starvation problems and atomic JS updates.
+   */
+  RN_EXPORT static bool enableFabricCommitBranching();
 
   /**
    * This feature flag enables logs for Fabric.
