@@ -27,6 +27,9 @@ jest.useFakeTimers();
 describe('inspector proxy HTTP API', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
+    unstable_experiments: {
+      enableStandaloneFuseboxShell: false,
+    },
   });
   const autoCleanup = withAbortSignalForEachTest();
   afterEach(() => {
@@ -189,7 +192,9 @@ describe('inspector proxy HTTP API', () => {
             devtoolsFrontendUrl: expect.any(String),
             id: 'device1-page1',
             reactNative: {
-              capabilities: {},
+              capabilities: {
+                supportsMultipleDebuggers: false,
+              },
               logicalDeviceId: 'device1',
             },
             title: 'bar-title',
@@ -204,7 +209,9 @@ describe('inspector proxy HTTP API', () => {
             devtoolsFrontendUrl: expect.any(String),
             id: 'device2-page1',
             reactNative: {
-              capabilities: {},
+              capabilities: {
+                supportsMultipleDebuggers: false,
+              },
               logicalDeviceId: 'device2',
             },
             title: 'bar-title',

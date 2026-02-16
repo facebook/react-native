@@ -39,9 +39,6 @@ type Options = Readonly<{
 /**
  * Open the debugger frontend for a given CDP target.
  *
- * Currently supports React Native DevTools (rn_fusebox.html) and legacy Hermes
- * (rn_inspector.html) targets.
- *
  * @see https://chromedevtools.github.io/devtools-protocol/
  */
 export default function openDebuggerMiddleware({
@@ -65,6 +62,7 @@ export default function openDebuggerMiddleware({
       return result;
     });
   }
+
   return async (
     req: IncomingMessage,
     res: ServerResponse,
@@ -156,9 +154,6 @@ export default function openDebuggerMiddleware({
         return;
       }
 
-      const useFuseboxEntryPoint =
-        target.reactNative.capabilities?.prefersFuseboxFrontend ?? false;
-
       try {
         switch (launchType) {
           case 'launch': {
@@ -170,12 +165,11 @@ export default function openDebuggerMiddleware({
                 launchId: query.launchId,
                 telemetryInfo: query.telemetryInfo,
                 appId: target.appId,
-                useFuseboxEntryPoint,
                 panel: query.panel,
               },
             );
             let shouldUseStandaloneFuseboxShell =
-              useFuseboxEntryPoint && experiments.enableStandaloneFuseboxShell;
+              experiments.enableStandaloneFuseboxShell;
             if (shouldUseStandaloneFuseboxShell) {
               const shellPreparationResult = await shellPreparationPromise;
               switch (shellPreparationResult.code) {
@@ -229,7 +223,6 @@ export default function openDebuggerMiddleware({
                   launchId: query.launchId,
                   telemetryInfo: query.telemetryInfo,
                   appId: target.appId,
-                  useFuseboxEntryPoint,
                 },
               ),
             });
@@ -247,7 +240,7 @@ export default function openDebuggerMiddleware({
           pageId: target.id,
           deviceName: target.deviceName,
           targetDescription: target.description,
-          prefersFuseboxFrontend: useFuseboxEntryPoint,
+          prefersFuseboxFrontend: true,
         });
         return;
       } catch (e) {
@@ -261,7 +254,6 @@ export default function openDebuggerMiddleware({
           launchType,
           status: 'error',
           error: e,
-          prefersFuseboxFrontend: useFuseboxEntryPoint,
         });
         return;
       }

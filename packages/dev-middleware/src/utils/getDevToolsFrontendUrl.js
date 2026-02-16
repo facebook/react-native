@@ -22,8 +22,6 @@ export default function getDevToolsFrontendUrl(
     relative?: boolean,
     launchId?: string,
     telemetryInfo?: string,
-    /** Whether to use the modern `rn_fusebox.html` entry point. */
-    useFuseboxEntryPoint?: boolean,
     appId?: string,
     panel?: string,
   }>,
@@ -35,10 +33,7 @@ export default function getDevToolsFrontendUrl(
 
   const appUrl =
     (options?.relative === true ? '' : devServerUrl.origin) +
-    '/debugger-frontend/' +
-    (options?.useFuseboxEntryPoint === true
-      ? 'rn_fusebox.html'
-      : 'rn_inspector.html');
+    '/debugger-frontend/rn_fusebox.html';
 
   const searchParams = new URLSearchParams([
     [wsParam.key, wsParam.value],

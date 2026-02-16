@@ -127,7 +127,6 @@ interface Page {
   capabilities?: {
     nativePageReloads?: boolean; // Target keeps the socket open across reloads
     nativeSourceCodeFetching?: boolean; // Target supports Network.loadNetworkResource
-    prefersFuseboxFrontend?: boolean; // Target is designed for React Native DevTools
     supportsMultipleDebuggers?: boolean; // Supports concurrent debugger sessions
   };
 }
@@ -248,7 +247,6 @@ interface PageDescription {
     logicalDeviceId: string; // Used for target matching
     capabilities: {
       nativePageReloads?: boolean; // Used for target filtering
-      prefersFuseboxFrontend?: boolean; // Used for frontend selection
     };
   };
 }
