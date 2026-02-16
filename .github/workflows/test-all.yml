@@ -352,6 +352,7 @@ jobs:
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
         ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
+        REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -377,6 +378,7 @@ jobs:
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
         ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
+        REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -433,6 +435,7 @@ jobs:
         # via Gradle: https://github.com/gradle/gradle/issues/23391#issuecomment-1878979127
         LC_ALL: C.UTF8
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -455,6 +458,7 @@ jobs:
       TERM: "dumb"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
       TARGET_ARCHITECTURE: "arm64-v8a"
+      REACT_NATIVE_DOWNLOADS_DIR: /opt/react-native-downloads
     continue-on-error: true
     strategy:
       fail-fast: false
