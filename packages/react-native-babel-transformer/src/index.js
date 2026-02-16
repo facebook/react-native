@@ -233,7 +233,14 @@ const transform /*: BabelTransformer['transform'] */ = ({
 
     return {ast: nullthrows(result.ast), metadata: result.metadata};
   } finally {
-    if (OLD_BABEL_ENV) {
+    // Restore the old process.env.BABEL_ENV
+    if (OLD_BABEL_ENV == null) {
+      // We have to treat this as a special case because writing undefined to
+      // an environment variable coerces it to the string 'undefined'. To
+      // unset it, we must delete it.
+      // See https://github.com/facebook/metro/pull/446
+      delete process.env.BABEL_ENV;
+    } else {
       process.env.BABEL_ENV = OLD_BABEL_ENV;
     }
   }
