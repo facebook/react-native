@@ -48,11 +48,6 @@ declare export const hairlineWidth: number;
 declare export const absoluteFill: AbsoluteFillStyle;
 
 /**
- * @deprecated Use `StyleSheet.absoluteFill`.
- */
-declare export const absoluteFillObject: AbsoluteFillStyle;
-
-/**
  * Combines two styles such that style2 will override any styles in style1.
  * If either style is falsy, the other one is returned without allocating
  * an array, saving allocations and maintaining reference equality for
