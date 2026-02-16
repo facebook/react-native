@@ -23,7 +23,7 @@
 namespace facebook::react {
 
 static_assert(TextLayoutManagerExtended::supportsLineMeasurement());
-static_assert(TextLayoutManagerExtended::supportsPreparedLayout());
+static_assert(TextLayoutManagerExtended::supportsPreparedTextLayout());
 
 namespace {
 
@@ -296,7 +296,7 @@ LinesMeasurements TextLayoutManager::measureLines(
             std::move(doMeasureLines));
 }
 
-TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
+TextLayoutManager::PreparedTextLayout TextLayoutManager::prepareLayout(
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     const TextLayoutContext& layoutContext,
@@ -333,7 +333,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
         auto minimumSize = layoutConstraints.minimumSize;
         auto maximumSize = layoutConstraints.maximumSize;
 
-        return PreparedLayout{jni::make_global(prepareTextLayout(
+        return PreparedTextLayout{jni::make_global(prepareTextLayout(
             fabricUIManager,
             layoutContext.surfaceId,
             attributedStringMB.get(),
@@ -371,15 +371,16 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
 
     const auto& fabricUIManager =
         contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-    return PreparedLayout{jni::make_global(reusePreparedLayoutWithNewReactTags(
-        fabricUIManager, preparedText->get(), javaReactTags.get()))};
+    return PreparedTextLayout{
+        jni::make_global(reusePreparedLayoutWithNewReactTags(
+            fabricUIManager, preparedText->get(), javaReactTags.get()))};
   } else {
-    return PreparedLayout{*preparedText};
+    return PreparedTextLayout{*preparedText};
   }
 }
 
 TextMeasurement TextLayoutManager::measurePreparedLayout(
-    const PreparedLayout& preparedLayout,
+    const PreparedTextLayout& preparedLayout,
     const TextLayoutContext& /*layoutContext*/,
     const LayoutConstraints& layoutConstraints) const {
   const auto& fabricUIManager =
