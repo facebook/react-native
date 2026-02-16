@@ -242,10 +242,7 @@ describe('ShadowTreeBranching', () => {
     ]);
 
     // Commit made from React - it should mount the final React tree
-    // NOTE: The RootView update should not be included here, fixed
-    // in a following diff
     expect(root.takeMountingManagerLogs()).toEqual([
-      'Update {type: "RootView", nativeID: (root)}',
       'Update {type: "View", nativeID: "view"}',
     ]);
   });
