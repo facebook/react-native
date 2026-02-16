@@ -27,6 +27,12 @@ class FakeShadowTreeDelegate : public ShadowTreeDelegate {
   void shadowTreeDidFinishTransaction(
       std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool /*mountSynchronously*/) const override {}
+
+  void shadowTreeDidFinishReactCommit(
+      const ShadowTree& /*shadowTree*/) const override {}
+
+  void shadowTreeDidPromoteReactRevision(
+      const ShadowTree& /*shadowTree*/) const override {}
 };
 
 class LazyShadowTreeRevisionConsistencyManagerTest : public ::testing::Test {
