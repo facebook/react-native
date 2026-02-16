@@ -457,9 +457,6 @@ export default class Device {
       this.#deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
         pageId: debuggerInfo.pageId,
         frontendUserAgent: userAgent,
-        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
-          debuggerInfo.pageId,
-        ),
       });
       let processedReq = debuggerRequest;
 
@@ -680,7 +677,6 @@ export default class Device {
         this.#deviceEventReporter?.logResponse(parsedPayload, 'device', {
           pageId,
           frontendUserAgent: debuggerConnection.userAgent ?? null,
-          prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
         });
       }
 
@@ -760,7 +756,6 @@ export default class Device {
       this.#deviceEventReporter?.logRequest(message, 'proxy', {
         pageId,
         frontendUserAgent: reloadablePageDebugger.userAgent ?? null,
-        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
       this.#sendMessageToDevice({
         event: 'wrappedEvent',
@@ -911,9 +906,6 @@ export default class Device {
       this.#deviceEventReporter?.logRequest(resumeMessage, 'proxy', {
         pageId: debuggerInfo.pageId,
         frontendUserAgent: debuggerInfo.userAgent ?? null,
-        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
-          debuggerInfo.pageId,
-        ),
       });
       this.#sendMessageToDevice({
         event: 'wrappedEvent',
@@ -984,7 +976,6 @@ export default class Device {
         this.#deviceEventReporter?.logResponse(response, 'proxy', {
           pageId,
           frontendUserAgent: debuggerInfo.userAgent ?? null,
-          prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
         });
         return null;
       default:
@@ -1064,7 +1055,6 @@ export default class Device {
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
         pageId,
         frontendUserAgent: debuggerInfo.userAgent ?? null,
-        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
     const sendErrorResponse = (error: string) => {
@@ -1079,7 +1069,6 @@ export default class Device {
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
         pageId,
         frontendUserAgent: debuggerInfo.userAgent ?? null,
-        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
 
@@ -1167,15 +1156,6 @@ export default class Device {
         }),
       );
     }
-  }
-
-  #isPageFuseboxFrontend(pageId: ?string): boolean | null {
-    const page = pageId == null ? null : this.#pages.get(pageId);
-    if (page == null) {
-      return null;
-    }
-
-    return this.#pageHasCapability(page, 'prefersFuseboxFrontend');
   }
 
   dangerouslyGetSocket(): WS {

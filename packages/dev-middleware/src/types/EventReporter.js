@@ -18,7 +18,6 @@ type SuccessResult<Props: {...} | void = {}> = {
 type ErrorResult<ErrorT = unknown, Props: {...} | void = {}> = {
   status: 'error',
   error: ErrorT,
-  prefersFuseboxFrontend?: ?boolean,
   ...Props,
 };
 
@@ -46,7 +45,6 @@ export type ReportableEvent =
       ...
         | SuccessResult<{
             targetDescription: string,
-            prefersFuseboxFrontend: boolean,
             ...DebuggerSessionIDs,
           }>
         | ErrorResult<unknown>
@@ -72,7 +70,6 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
       ...ConnectionUptime,
       frontendUserAgent: string | null,
-      prefersFuseboxFrontend: boolean | null,
       ...
         | SuccessResult<void>
         | CodedErrorResult<

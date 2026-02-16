@@ -240,7 +240,6 @@ export default function openDebuggerMiddleware({
           pageId: target.id,
           deviceName: target.deviceName,
           targetDescription: target.description,
-          prefersFuseboxFrontend: true,
         });
         return;
       } catch (e) {
