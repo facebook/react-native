@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9bb7c6d8837e5b186f3ab1e93c924f5>>
+ * @generated SignedSource<<7fcbdcd23ff873461acc968bd4baee97>>
  */
 
 /**
@@ -99,6 +99,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool shouldPressibilityUseW3CPointerEventsForHover();
   bool shouldTriggerResponderTransferOnScrollAndroid();
   bool skipActivityIdentityAssertionOnHostPause();
+  bool syncAndroidClipToPaddingWithOverflow();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool updateRuntimeShadowNodeReferencesOnCommit();
   bool updateRuntimeShadowNodeReferencesOnCommitThread();
@@ -124,7 +125,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 81> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 82> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -193,6 +194,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> shouldPressibilityUseW3CPointerEventsForHover_;
   std::atomic<std::optional<bool>> shouldTriggerResponderTransferOnScrollAndroid_;
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
+  std::atomic<std::optional<bool>> syncAndroidClipToPaddingWithOverflow_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommitThread_;

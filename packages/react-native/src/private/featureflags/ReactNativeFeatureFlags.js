@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d160075a63b4d5e2582409f4102fd66d>>
+ * @generated SignedSource<<ef8ec22ea923ca388713b335535a80c6>>
  * @flow strict
  * @noformat
  */
@@ -114,6 +114,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
+  syncAndroidClipToPaddingWithOverflow: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommitThread: Getter<boolean>,
@@ -462,6 +463,10 @@ export const shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean> = cr
  * Skip activity identity assertion in ReactHostImpl::onHostPause()
  */
 export const skipActivityIdentityAssertionOnHostPause: Getter<boolean> = createNativeFlagGetter('skipActivityIdentityAssertionOnHostPause', false);
+/**
+ * Sync clipToPadding on Android views with the overflow property
+ */
+export const syncAndroidClipToPaddingWithOverflow: Getter<boolean> = createNativeFlagGetter('syncAndroidClipToPaddingWithOverflow', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

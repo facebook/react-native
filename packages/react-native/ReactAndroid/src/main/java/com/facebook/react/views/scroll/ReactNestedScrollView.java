@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<78fb92f68ec0a93d0041ed381f76728e>>
+ * @generated SignedSource<<fefaf14f0291216b635ea0c356e9929c>>
  */
 
 /**
@@ -785,6 +785,14 @@ class ReactNestedScrollView extends NestedScrollView
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
+  }
+
+  @Override
+  public boolean getClipToPadding() {
+    if (ReactNativeFeatureFlags.syncAndroidClipToPaddingWithOverflow()) {
+      return mOverflow != Overflow.VISIBLE;
+    }
+    return super.getClipToPadding();
   }
 
   @Override

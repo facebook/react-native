@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d3d6ecfc14d5a0c317d968b65455955a>>
+ * @generated SignedSource<<07501a0c5936c8fe26a432d57c541d7e>>
  */
 
 /**
@@ -91,6 +91,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
+  private var syncAndroidClipToPaddingWithOverflowCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitThreadCache: Boolean? = null
@@ -772,6 +773,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.skipActivityIdentityAssertionOnHostPause()
       accessedFeatureFlags.add("skipActivityIdentityAssertionOnHostPause")
       skipActivityIdentityAssertionOnHostPauseCache = cached
+    }
+    return cached
+  }
+
+  override fun syncAndroidClipToPaddingWithOverflow(): Boolean {
+    var cached = syncAndroidClipToPaddingWithOverflowCache
+    if (cached == null) {
+      cached = currentProvider.syncAndroidClipToPaddingWithOverflow()
+      accessedFeatureFlags.add("syncAndroidClipToPaddingWithOverflow")
+      syncAndroidClipToPaddingWithOverflowCache = cached
     }
     return cached
   }

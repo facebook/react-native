@@ -780,6 +780,14 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
+  public boolean getClipToPadding() {
+    if (ReactNativeFeatureFlags.syncAndroidClipToPaddingWithOverflow()) {
+      return mOverflow != Overflow.VISIBLE;
+    }
+    return super.getClipToPadding();
+  }
+
+  @Override
   public void getClippingRect(Rect outClippingRect) {
     outClippingRect.set(Assertions.assertNotNull(mClippingRect));
   }

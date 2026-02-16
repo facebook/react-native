@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<65e8cae8a55213f4b08ec4d896a05c00>>
+ * @generated SignedSource<<9a521f1f6989bb2735ae87d0a0c2f5fe>>
  */
 
 /**
@@ -431,6 +431,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun skipActivityIdentityAssertionOnHostPause(): Boolean = accessor.skipActivityIdentityAssertionOnHostPause()
+
+  /**
+   * Sync clipToPadding on Android views with the overflow property
+   */
+  @JvmStatic
+  public fun syncAndroidClipToPaddingWithOverflow(): Boolean = accessor.syncAndroidClipToPaddingWithOverflow()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
