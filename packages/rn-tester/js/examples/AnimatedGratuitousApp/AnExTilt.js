@@ -10,13 +10,18 @@
 
 'use strict';
 
-import React, {useCallback, useEffect, useRef} from 'react';
-import {Animated, PanResponder, StyleSheet} from 'react-native';
+import React, {useCallback, useEffect} from 'react';
+import {
+  Animated,
+  PanResponder,
+  StyleSheet,
+  useAnimatedValue,
+} from 'react-native';
 
 const AnExTilt = (): React.Node => {
-  const panX = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
-  const burns = useRef(new Animated.Value(1.15)).current;
+  const panX = useAnimatedValue(0);
+  const opacity = useAnimatedValue(1);
+  const burns = useAnimatedValue(1.15);
 
   const tiltPanResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,

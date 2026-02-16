@@ -88,6 +88,7 @@ internal object AgpConfiguratorUtils {
   }
 
   fun configureDevServerLocation(project: Project) {
+    val devServerIp = project.properties["reactNativeDevServerIp"]?.toString() ?: getHostIpAddress()
     val devServerPort =
         project.properties["reactNativeDevServerPort"]?.toString() ?: DEFAULT_DEV_SERVER_PORT
 
@@ -100,7 +101,7 @@ internal object AgpConfiguratorUtils {
                 ext.defaultConfig.resValue(
                     "string",
                     "react_native_dev_server_ip",
-                    getHostIpAddress(),
+                    devServerIp,
                 )
                 ext.defaultConfig.resValue("integer", "react_native_dev_server_port", devServerPort)
               }

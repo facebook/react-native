@@ -37,6 +37,12 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerShouldRenderTransactions:mountingCoordinator];
   }
 
+  void schedulerShouldMergeReactRevision(SurfaceId surfaceId) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerShouldMergeReactRevision:surfaceId];
+  }
+
   void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) override
   {
     // Does nothing.

@@ -18,7 +18,6 @@ import type {AbstractImageAndroid, ImageAndroid} from './ImageTypes.flow';
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
-import TextAncestorContext from '../Text/TextAncestorContext';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import {
   unstable_getImageComponentDecorator,
@@ -31,7 +30,6 @@ import NativeImageLoaderAndroid, {
   type ImageSize,
 } from './NativeImageLoaderAndroid';
 import resolveAssetSource from './resolveAssetSource';
-import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 import * as React from 'react';
 import {use} from 'react';
 
@@ -326,24 +324,12 @@ let BaseImage: AbstractImageAndroid = ({
 
   const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
-  const hasTextAncestor = use(TextAncestorContext);
   const analyticTag = use(ImageAnalyticsTagContext);
   if (analyticTag !== null) {
     nativeProps.internal_analyticTag = analyticTag;
   }
 
-  return hasTextAncestor ? (
-    <TextInlineImageNativeComponent
-      // $FlowFixMe[incompatible-type]
-      style={style_}
-      resizeMode={resizeMode_}
-      headers={headers_}
-      src={sources_}
-      ref={actualRef}
-    />
-  ) : (
-    <ImageViewNativeComponent {...nativeProps} ref={actualRef} />
-  );
+  return <ImageViewNativeComponent {...nativeProps} ref={actualRef} />;
 };
 
 let _BaseImage = BaseImage;

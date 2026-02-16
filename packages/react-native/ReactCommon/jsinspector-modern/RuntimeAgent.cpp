@@ -155,9 +155,15 @@ RuntimeTracingAgent::RuntimeTracingAgent(
   if (state.enabledCategories.contains(tracing::Category::JavaScriptSampling)) {
     targetController_.enableSamplingProfiler();
   }
+  if (state.mode == tracing::Mode::CDP) {
+    targetController_.emitTracingStateChange(true);
+  }
 }
 
 RuntimeTracingAgent::~RuntimeTracingAgent() {
+  if (state_.mode == tracing::Mode::CDP) {
+    targetController_.emitTracingStateChange(false);
+  }
   if (state_.enabledCategories.contains(
           tracing::Category::JavaScriptSampling)) {
     targetController_.disableSamplingProfiler();

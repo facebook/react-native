@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f185f3dcae022c810658c23f4a5dd732>>
+ * @generated SignedSource<<d160075a63b4d5e2582409f4102fd66d>>
  * @flow strict
  * @noformat
  */
@@ -62,7 +62,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableAndroidLinearText: Getter<boolean>,
   enableAndroidTextMeasurementOptimizations: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
-  enableClipChildrenForOverflowHidden: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
   enableDestroyShadowTreeRevisionAsync: Getter<boolean>,
@@ -70,6 +69,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableEagerMainQueueModulesOnIOS: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableExclusivePropsUpdateAndroid: Getter<boolean>,
+  enableFabricCommitBranching: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
@@ -255,10 +255,6 @@ export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = create
  */
 export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', false);
 /**
- * When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent
- */
-export const enableClipChildrenForOverflowHidden: Getter<boolean> = createNativeFlagGetter('enableClipChildrenForOverflowHidden', false);
-/**
  * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
  */
 export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGetter('enableCppPropsIteratorSetter', false);
@@ -286,6 +282,10 @@ export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGe
  * When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.
  */
 export const enableExclusivePropsUpdateAndroid: Getter<boolean> = createNativeFlagGetter('enableExclusivePropsUpdateAndroid', false);
+/**
+ * Enables Fabric commit branching to fix starvation problems and atomic JS updates.
+ */
+export const enableFabricCommitBranching: Getter<boolean> = createNativeFlagGetter('enableFabricCommitBranching', false);
 /**
  * This feature flag enables logs for Fabric.
  */

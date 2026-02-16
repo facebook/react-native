@@ -35,8 +35,8 @@ RootShadowNode::Unshared AnimationBackendCommitHook::shadowTreeWillCommit(
   if (surfaceFamilies.empty()) {
     return newRootShadowNode;
   }
-  return std::static_pointer_cast<RootShadowNode>(
-      newRootShadowNode->cloneMultiple(
+  auto clonedRootShadowNode =
+      std::static_pointer_cast<RootShadowNode>(newRootShadowNode->cloneMultiple(
           surfaceFamilies,
           [&surfaceFamilies, &updates](
               const ShadowNode& shadowNode,
@@ -73,6 +73,12 @@ RootShadowNode::Unshared AnimationBackendCommitHook::shadowTreeWillCommit(
                  .state = shadowNode.getState(),
                  .runtimeShadowNodeReference = true});
           }));
+
+  if (clonedRootShadowNode == nullptr) {
+    return newRootShadowNode;
+  }
+
+  return clonedRootShadowNode;
 }
 
 } // namespace facebook::react

@@ -75,6 +75,8 @@ export * from '../Libraries/Alert/Alert';
 export * from '../Libraries/Animated/Animated';
 export * from '../Libraries/Animated/Easing';
 export * from '../Libraries/Animated/useAnimatedValue';
+export * from '../Libraries/Animated/useAnimatedValueXY';
+export * from '../Libraries/Animated/useAnimatedColor';
 export * from '../Libraries/AppState/AppState';
 export * from '../Libraries/BatchedBridge/NativeModules';
 export * from '../Libraries/Components/AccessibilityInfo/AccessibilityInfo';

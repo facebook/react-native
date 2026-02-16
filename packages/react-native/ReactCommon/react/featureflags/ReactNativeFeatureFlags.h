@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<51a4817654c04c979a33f44e42312dd5>>
+ * @generated SignedSource<<e9daabfbf719ad178ce1a366a9f82362>>
  */
 
 /**
@@ -115,11 +115,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableBridgelessArchitecture();
 
   /**
-   * When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent
-   */
-  RN_EXPORT static bool enableClipChildrenForOverflowHidden();
-
-  /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   RN_EXPORT static bool enableCppPropsIteratorSetter();
@@ -153,6 +148,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.
    */
   RN_EXPORT static bool enableExclusivePropsUpdateAndroid();
+
+  /**
+   * Enables Fabric commit branching to fix starvation problems and atomic JS updates.
+   */
+  RN_EXPORT static bool enableFabricCommitBranching();
 
   /**
    * This feature flag enables logs for Fabric.

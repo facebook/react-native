@@ -11,7 +11,6 @@
 #include <cassert>
 #include <cstring>
 
-#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
 
 namespace facebook::react {
@@ -20,34 +19,29 @@ void RawPropsKey::render(char* buffer, RawPropsPropNameLength* length)
     const noexcept {
   *length = 0;
 
-  // Prefix
+  constexpr size_t maxLength = kPropNameLengthHardCap - 1;
+
+  auto appendSegment = [&](const char* segment) {
+    auto copyLen = std::min(std::strlen(segment), maxLength - *length);
+    std::memcpy(buffer + *length, segment, copyLen);
+    *length += static_cast<RawPropsPropNameLength>(copyLen);
+  };
+
   if (prefix != nullptr) {
-    auto prefixLength =
-        static_cast<RawPropsPropNameLength>(std::strlen(prefix));
-    std::memcpy(buffer, prefix, prefixLength);
-    *length = prefixLength;
+    appendSegment(prefix);
   }
 
-  // Name
-  auto nameLength = static_cast<RawPropsPropNameLength>(std::strlen(name));
-  std::memcpy(buffer + *length, name, nameLength);
-  *length += nameLength;
+  appendSegment(name);
 
-  // Suffix
   if (suffix != nullptr) {
-    auto suffixLength =
-        static_cast<RawPropsPropNameLength>(std::strlen(suffix));
-    std::memcpy(buffer + *length, suffix, suffixLength);
-    *length += suffixLength;
+    appendSegment(suffix);
   }
-  react_native_assert(*length < kPropNameLengthHardCap);
 }
 
 RawPropsKey::operator std::string() const noexcept {
   auto buffer = std::array<char, kPropNameLengthHardCap>();
   RawPropsPropNameLength length = 0;
   render(buffer.data(), &length);
-  react_native_assert(length < kPropNameLengthHardCap);
   return std::string{buffer.data(), length};
 }
 

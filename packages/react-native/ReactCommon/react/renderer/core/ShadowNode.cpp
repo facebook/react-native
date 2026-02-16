@@ -471,7 +471,7 @@ std::shared_ptr<ShadowNode> ShadowNode::cloneMultiple(
     }
   }
 
-  if (childrenCount.empty()) {
+  if (!childrenCount.contains(&this->getFamily())) {
     return nullptr;
   }
 

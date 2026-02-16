@@ -341,6 +341,12 @@ module.exports = {
   get useAnimatedValue() {
     return require('./Libraries/Animated/useAnimatedValue').default;
   },
+  get useAnimatedValueXY() {
+    return require('./Libraries/Animated/useAnimatedValueXY').default;
+  },
+  get useAnimatedColor() {
+    return require('./Libraries/Animated/useAnimatedColor').default;
+  },
   get useColorScheme() {
     return require('./Libraries/Utilities/useColorScheme').default;
   },

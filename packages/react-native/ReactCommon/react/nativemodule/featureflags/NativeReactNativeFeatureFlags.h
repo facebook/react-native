@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6ed865d409cf5df84607ffa599e46fe7>>
+ * @generated SignedSource<<f94047adeaa4498202348fce403f2729>>
  */
 
 /**
@@ -66,8 +66,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
-  bool enableClipChildrenForOverflowHidden(jsi::Runtime& runtime);
-
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
   bool enableCustomFocusSearchOnClippedElementsAndroid(jsi::Runtime& runtime);
@@ -81,6 +79,8 @@ class NativeReactNativeFeatureFlags
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
   bool enableExclusivePropsUpdateAndroid(jsi::Runtime& runtime);
+
+  bool enableFabricCommitBranching(jsi::Runtime& runtime);
 
   bool enableFabricLogs(jsi::Runtime& runtime);
 

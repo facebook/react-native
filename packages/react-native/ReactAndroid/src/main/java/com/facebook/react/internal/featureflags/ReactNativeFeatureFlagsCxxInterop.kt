@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec247759261e831159a6f7781bf44998>>
+ * @generated SignedSource<<b83744bb70330f8c540c448ebc1cad47>>
  */
 
 /**
@@ -58,8 +58,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableBridgelessArchitecture(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableClipChildrenForOverflowHidden(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enableCppPropsIteratorSetter(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean
@@ -73,6 +71,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableExclusivePropsUpdateAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableFabricCommitBranching(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
 

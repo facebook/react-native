@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<777478fa4d8beba140a30edb68cc34d9>>
+ * @generated SignedSource<<3cd7cb9afed3b596d9846a4701234677>>
  */
 
 /**
@@ -87,10 +87,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableClipChildrenForOverflowHidden() override {
-    return false;
-  }
-
   bool enableCppPropsIteratorSetter() override {
     return false;
   }
@@ -116,6 +112,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableExclusivePropsUpdateAndroid() override {
+    return false;
+  }
+
+  bool enableFabricCommitBranching() override {
     return false;
   }
 

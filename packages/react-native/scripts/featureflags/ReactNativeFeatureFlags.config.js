@@ -212,16 +212,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
-    enableClipChildrenForOverflowHidden: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableCppPropsIteratorSetter: {
       defaultValue: false,
       metadata: {
@@ -293,6 +283,16 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, Android will disable Props 1.5 raw value merging when Props 2.0 is available.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableFabricCommitBranching: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables Fabric commit branching to fix starvation problems and atomic JS updates.',
+        expectedReleaseValue: true,
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },

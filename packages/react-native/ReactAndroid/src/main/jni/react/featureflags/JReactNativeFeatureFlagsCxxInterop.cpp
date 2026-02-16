@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0460a8b25bfb176e47fb12dc091b1961>>
+ * @generated SignedSource<<4386581c81476b6f7684a8766642db13>>
  */
 
 /**
@@ -129,12 +129,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool enableClipChildrenForOverflowHidden() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableClipChildrenForOverflowHidden");
-    return method(javaProvider_);
-  }
-
   bool enableCppPropsIteratorSetter() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCppPropsIteratorSetter");
@@ -174,6 +168,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableExclusivePropsUpdateAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableExclusivePropsUpdateAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableFabricCommitBranching() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricCommitBranching");
     return method(javaProvider_);
   }
 
@@ -604,11 +604,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture(
   return ReactNativeFeatureFlags::enableBridgelessArchitecture();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableClipChildrenForOverflowHidden(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableClipChildrenForOverflowHidden();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
@@ -642,6 +637,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment(
 bool JReactNativeFeatureFlagsCxxInterop::enableExclusivePropsUpdateAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableFabricCommitBranching(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFabricCommitBranching();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
@@ -1011,9 +1011,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableBridgelessArchitecture",
         JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture),
       makeNativeMethod(
-        "enableClipChildrenForOverflowHidden",
-        JReactNativeFeatureFlagsCxxInterop::enableClipChildrenForOverflowHidden),
-      makeNativeMethod(
         "enableCppPropsIteratorSetter",
         JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter),
       makeNativeMethod(
@@ -1034,6 +1031,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableExclusivePropsUpdateAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableExclusivePropsUpdateAndroid),
+      makeNativeMethod(
+        "enableFabricCommitBranching",
+        JReactNativeFeatureFlagsCxxInterop::enableFabricCommitBranching),
       makeNativeMethod(
         "enableFabricLogs",
         JReactNativeFeatureFlagsCxxInterop::enableFabricLogs),

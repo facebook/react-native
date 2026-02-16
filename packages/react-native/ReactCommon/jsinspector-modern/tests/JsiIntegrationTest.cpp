@@ -738,6 +738,73 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveColumnBreakpointAfterReload) {
       scriptInfo->value()["params"]["scriptId"]);
 }
 
+TYPED_TEST(JsiIntegrationHermesTest, TwoConnectionsEnableDebugger) {
+  this->connect();
+  auto secondary = this->connectSecondary();
+
+  EXPECT_CALL(
+      this->fromPage(), onMessage(JsonEq(R"({"id": 1, "result": {}})")));
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 2, "result": {}})")));
+
+  this->toPage_->sendMessage(R"({"id": 1, "method": "Debugger.enable"})");
+  secondary.toPage().sendMessage(R"({"id": 2, "method": "Debugger.enable"})");
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, TwoConnectionsDebuggerLifecycle) {
+  this->connect();
+  auto secondary = this->connectSecondary();
+
+  this->expectMessageFromPage(JsonEq(R"({"id": 1, "result": {}})"));
+  this->toPage_->sendMessage(R"({"id": 1, "method": "Debugger.enable"})");
+
+  // Connections: Main (Debugger enabled), Secondary (Debugger disabled)
+  // --> Only the main connection receives Debugger events.
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "script1.js"))));
+  this->eval("1 + 1; //# sourceURL=script1.js");
+
+  // Connections: Main (Debugger enabled), Secondary (Debugger being enabled)
+  // --> The secondary connection receives buffered Debugger events.
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 2, "result": {}})")));
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Debugger.scriptParsed"),
+          AtJsonPtr("/params/url", "script1.js")))));
+  secondary.toPage().sendMessage(R"({"id": 2, "method": "Debugger.enable"})");
+
+  // Connections: Main (Debugger enabled), Secondary (Debugger enabled)
+  // --> Both connections receive Debugger events.
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "script2.js"))));
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Debugger.scriptParsed"),
+          AtJsonPtr("/params/url", "script2.js")))));
+  this->eval("2 + 2; //# sourceURL=script2.js");
+
+  this->expectMessageFromPage(JsonEq(R"({"id": 3, "result": {}})"));
+  this->toPage_->sendMessage(R"({"id": 3, "method": "Debugger.disable"})");
+
+  // Connections: Main (Debugger disabled), Secondary (Debugger enabled)
+  // --> Only the secondary connection receives Debugger events.
+  EXPECT_CALL(
+      secondary.fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Debugger.scriptParsed"),
+          AtJsonPtr("/params/url", "script3.js")))));
+  this->eval("3 + 3; //# sourceURL=script3.js");
+
+  EXPECT_CALL(
+      secondary.fromPage(), onMessage(JsonEq(R"({"id": 4, "result": {}})")));
+  secondary.toPage().sendMessage(R"({"id": 4, "method": "Debugger.disable"})");
+}
+
 TYPED_TEST(JsiIntegrationHermesTest, CDPAgentReentrancyRegressionTest) {
   this->connect();
 

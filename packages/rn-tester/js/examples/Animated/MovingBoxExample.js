@@ -14,8 +14,8 @@ import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useRef, useState} from 'react';
-import {Animated, StyleSheet, Text, View} from 'react-native';
+import {useState} from 'react';
+import {Animated, StyleSheet, Text, View, useAnimatedValue} from 'react-native';
 
 const containerWidth = 200;
 const boxSize = 50;
@@ -59,12 +59,12 @@ const styles = StyleSheet.create({
 type Props = Readonly<{}>;
 
 function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
-  const x = useRef(new Animated.Value(0));
+  const x = useAnimatedValue(0);
   const [update, setUpdate] = useState(0);
   const [boxVisible, setBoxVisible] = useState(true);
 
   const moveTo = (pos: number) => {
-    Animated.timing(x.current, {
+    Animated.timing(x, {
       toValue: pos,
       duration: 1000,
       useNativeDriver,
@@ -76,7 +76,7 @@ function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
   };
   const toggleText = boxVisible ? 'Hide' : 'Show';
   const onReset = () => {
-    x.current.resetAnimation();
+    x.resetAnimation();
     setUpdate(update + 1);
   };
   return (
@@ -85,11 +85,7 @@ function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
         {boxVisible ? (
           <Animated.View
             testID="moving-view"
-            style={[
-              styles.content,
-              styles.box,
-              {transform: [{translateX: x.current}]},
-            ]}
+            style={[styles.content, styles.box, {transform: [{translateX: x}]}]}
           />
         ) : (
           <Text>The box view is not being rendered</Text>

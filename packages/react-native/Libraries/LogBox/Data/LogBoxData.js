@@ -14,6 +14,7 @@ import type {Stack} from './LogBoxSymbolication';
 import type {Category, ExtendedExceptionData, Message} from './parseLogBoxLog';
 
 import DebuggerSessionObserver from '../../../src/private/devsupport/rndevtools/FuseboxSessionObserver';
+import TracingStateObserver from '../../../src/private/devsupport/rndevtools/TracingStateObserver';
 import toExtendedError from '../../../src/private/utilities/toExtendedError';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
@@ -71,6 +72,7 @@ let _isDisabled = false;
 let _selectedIndex = -1;
 let hasShownFuseboxWarningsMigrationMessage = false;
 let hostTargetSessionObserverSubscription = null;
+let tracingStateObserverSubscription = null;
 
 let warningFilter: WarningFilter = function (format) {
   return {
@@ -205,6 +207,20 @@ export function addLog(log: LogData): void {
     );
   }
 
+  if (tracingStateObserverSubscription == null) {
+    tracingStateObserverSubscription = TracingStateObserver.subscribe(
+      isTracing => {
+        if (isTracing) {
+          clear();
+        }
+      },
+    );
+  }
+
+  if (TracingStateObserver.isTracing()) {
+    return;
+  }
+
   // If Host has Fusebox support
   if (log.level === 'warn' && global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
     // And there is no active debugging session
@@ -241,6 +257,10 @@ export function addLog(log: LogData): void {
 }
 
 export function addException(error: ExtendedExceptionData): void {
+  if (TracingStateObserver.isTracing()) {
+    return;
+  }
+
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {

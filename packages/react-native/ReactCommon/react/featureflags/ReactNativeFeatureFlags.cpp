@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d96b2f1e4083046cfc061317d117e762>>
+ * @generated SignedSource<<e9c9a4e487664049d40a1bed5015e8fe>>
  */
 
 /**
@@ -86,10 +86,6 @@ bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
   return getAccessor().enableBridgelessArchitecture();
 }
 
-bool ReactNativeFeatureFlags::enableClipChildrenForOverflowHidden() {
-  return getAccessor().enableClipChildrenForOverflowHidden();
-}
-
 bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
   return getAccessor().enableCppPropsIteratorSetter();
 }
@@ -116,6 +112,10 @@ bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
 
 bool ReactNativeFeatureFlags::enableExclusivePropsUpdateAndroid() {
   return getAccessor().enableExclusivePropsUpdateAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableFabricCommitBranching() {
+  return getAccessor().enableFabricCommitBranching();
 }
 
 bool ReactNativeFeatureFlags::enableFabricLogs() {

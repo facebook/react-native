@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<545708e361d01a42b3aef51ba71d646d>>
+ * @generated SignedSource<<c9bb7c6d8837e5b186f3ab1e93c924f5>>
  */
 
 /**
@@ -47,7 +47,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableAndroidLinearText();
   bool enableAndroidTextMeasurementOptimizations();
   bool enableBridgelessArchitecture();
-  bool enableClipChildrenForOverflowHidden();
   bool enableCppPropsIteratorSetter();
   bool enableCustomFocusSearchOnClippedElementsAndroid();
   bool enableDestroyShadowTreeRevisionAsync();
@@ -55,6 +54,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableEagerMainQueueModulesOnIOS();
   bool enableEagerRootViewAttachment();
   bool enableExclusivePropsUpdateAndroid();
+  bool enableFabricCommitBranching();
   bool enableFabricLogs();
   bool enableFabricRenderer();
   bool enableFontScaleChangesUpdatingLayout();
@@ -141,7 +141,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableAndroidLinearText_;
   std::atomic<std::optional<bool>> enableAndroidTextMeasurementOptimizations_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
-  std::atomic<std::optional<bool>> enableClipChildrenForOverflowHidden_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
   std::atomic<std::optional<bool>> enableCustomFocusSearchOnClippedElementsAndroid_;
   std::atomic<std::optional<bool>> enableDestroyShadowTreeRevisionAsync_;
@@ -149,6 +148,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableEagerMainQueueModulesOnIOS_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
   std::atomic<std::optional<bool>> enableExclusivePropsUpdateAndroid_;
+  std::atomic<std::optional<bool>> enableFabricCommitBranching_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;

@@ -407,6 +407,8 @@ export * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistr
 export {default as UIManager} from './Libraries/ReactNative/UIManager';
 export {unstable_batchedUpdates} from './Libraries/ReactNative/RendererProxy';
 export {default as useAnimatedValue} from './Libraries/Animated/useAnimatedValue';
+export {default as useAnimatedValueXY} from './Libraries/Animated/useAnimatedValueXY';
+export {default as useAnimatedColor} from './Libraries/Animated/useAnimatedColor';
 export type {
   PressabilityConfig,
   EventHandlers as PressabilityEventHandlers,

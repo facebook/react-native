@@ -17,8 +17,8 @@
  *   - Options: {"dev":false,"enableBabelRuntime":"7.25.0"}
  */
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault").default;
 var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard").default;
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault").default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -55,7 +55,6 @@ var _react = _interopRequireWildcard(require("react"));
 var React = _react;
 var _jsxRuntime = require("react/jsx-runtime");
 var _dataUtils = require("./data-utils");
-var _jsxFileName = "/absolute/path/to/input.js";
 var _count = (0, _classPrivateFieldLooseKey2.default)("count");
 var _instances = (0, _classPrivateFieldLooseKey2.default)("instances");
 var _increment = (0, _classPrivateFieldLooseKey2.default)("increment");

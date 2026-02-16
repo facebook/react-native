@@ -414,14 +414,16 @@ public class ReactImageView(
 
     // We store this in a local variable as it's coming from super.getHierarchy()
     val hierarchy = this.hierarchy
-    hierarchy.actualImageScaleType = scaleType
+    hierarchy.setActualImageScaleType(scaleType)
 
-    if (defaultImageDrawable != null) {
-      hierarchy.setPlaceholderImage(defaultImageDrawable, scaleType)
+    val defaultDrawable = defaultImageDrawable
+    if (defaultDrawable != null) {
+      hierarchy.setPlaceholderImage(defaultDrawable, scaleType)
     }
 
-    if (loadingImageDrawable != null) {
-      hierarchy.setPlaceholderImage(loadingImageDrawable, ScalingUtils.ScaleType.CENTER)
+    val loadingDrawable = loadingImageDrawable
+    if (loadingDrawable != null) {
+      hierarchy.setPlaceholderImage(loadingDrawable, ScalingUtils.ScaleType.CENTER)
     }
 
     val roundingParams = hierarchy.roundingParams

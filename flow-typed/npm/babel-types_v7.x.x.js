@@ -786,8 +786,8 @@ declare type BabelNodeExportAllDeclaration = {
   loc: ?BabelNodeSourceLocation,
   type: "ExportAllDeclaration";
   source: BabelNodeStringLiteral;
-  assertions?: Array<BabelNodeImportAttribute>;
   attributes?: Array<BabelNodeImportAttribute>;
+  assertions?: Array<BabelNodeImportAttribute>;
   exportKind?: "type" | "value";
 };
 
@@ -814,8 +814,8 @@ declare type BabelNodeExportNamedDeclaration = {
   declaration?: BabelNodeDeclaration;
   specifiers?: Array<BabelNodeExportSpecifier | BabelNodeExportDefaultSpecifier | BabelNodeExportNamespaceSpecifier>;
   source?: BabelNodeStringLiteral;
-  assertions?: Array<BabelNodeImportAttribute>;
   attributes?: Array<BabelNodeImportAttribute>;
+  assertions?: Array<BabelNodeImportAttribute>;
   exportKind?: "type" | "value";
 };
 
@@ -856,8 +856,8 @@ declare type BabelNodeImportDeclaration = {
   type: "ImportDeclaration";
   specifiers: Array<BabelNodeImportSpecifier | BabelNodeImportDefaultSpecifier | BabelNodeImportNamespaceSpecifier>;
   source: BabelNodeStringLiteral;
-  assertions?: Array<BabelNodeImportAttribute>;
   attributes?: Array<BabelNodeImportAttribute>;
+  assertions?: Array<BabelNodeImportAttribute>;
   importKind?: "type" | "typeof" | "value";
   module?: boolean;
   phase?: "source" | "defer";
@@ -3310,12 +3310,12 @@ declare module "@babel/types" {
   declare export function classBody(body: Array<BabelNodeClassMethod | BabelNodeClassPrivateMethod | BabelNodeClassProperty | BabelNodeClassPrivateProperty | BabelNodeClassAccessorProperty | BabelNodeTSDeclareMethod | BabelNodeTSIndexSignature | BabelNodeStaticBlock>): BabelNodeClassBody;
   declare export function classExpression(id?: BabelNodeIdentifier, superClass?: BabelNodeExpression, body: BabelNodeClassBody, decorators?: Array<BabelNodeDecorator>): BabelNodeClassExpression;
   declare export function classDeclaration(id?: BabelNodeIdentifier, superClass?: BabelNodeExpression, body: BabelNodeClassBody, decorators?: Array<BabelNodeDecorator>): BabelNodeClassDeclaration;
-  declare export function exportAllDeclaration(source: BabelNodeStringLiteral): BabelNodeExportAllDeclaration;
+  declare export function exportAllDeclaration(source: BabelNodeStringLiteral, attributes?: Array<BabelNodeImportAttribute>): BabelNodeExportAllDeclaration;
   declare export function exportDefaultDeclaration(declaration: BabelNodeTSDeclareFunction | BabelNodeFunctionDeclaration | BabelNodeClassDeclaration | BabelNodeExpression): BabelNodeExportDefaultDeclaration;
-  declare export function exportNamedDeclaration(declaration?: BabelNodeDeclaration, specifiers?: Array<BabelNodeExportSpecifier | BabelNodeExportDefaultSpecifier | BabelNodeExportNamespaceSpecifier>, source?: BabelNodeStringLiteral): BabelNodeExportNamedDeclaration;
+  declare export function exportNamedDeclaration(declaration?: BabelNodeDeclaration, specifiers?: Array<BabelNodeExportSpecifier | BabelNodeExportDefaultSpecifier | BabelNodeExportNamespaceSpecifier>, source?: BabelNodeStringLiteral, attributes?: Array<BabelNodeImportAttribute>): BabelNodeExportNamedDeclaration;
   declare export function exportSpecifier(local: BabelNodeIdentifier, exported: BabelNodeIdentifier | BabelNodeStringLiteral): BabelNodeExportSpecifier;
   declare export function forOfStatement(left: BabelNodeVariableDeclaration | BabelNodeLVal, right: BabelNodeExpression, body: BabelNodeStatement, _await?: boolean): BabelNodeForOfStatement;
-  declare export function importDeclaration(specifiers: Array<BabelNodeImportSpecifier | BabelNodeImportDefaultSpecifier | BabelNodeImportNamespaceSpecifier>, source: BabelNodeStringLiteral): BabelNodeImportDeclaration;
+  declare export function importDeclaration(specifiers: Array<BabelNodeImportSpecifier | BabelNodeImportDefaultSpecifier | BabelNodeImportNamespaceSpecifier>, source: BabelNodeStringLiteral, attributes?: Array<BabelNodeImportAttribute>): BabelNodeImportDeclaration;
   declare export function importDefaultSpecifier(local: BabelNodeIdentifier): BabelNodeImportDefaultSpecifier;
   declare export function importNamespaceSpecifier(local: BabelNodeIdentifier): BabelNodeImportNamespaceSpecifier;
   declare export function importSpecifier(local: BabelNodeIdentifier, imported: BabelNodeIdentifier | BabelNodeStringLiteral): BabelNodeImportSpecifier;

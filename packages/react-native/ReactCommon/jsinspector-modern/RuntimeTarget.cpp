@@ -9,7 +9,7 @@
 
 #include <jsinspector-modern/RuntimeTarget.h>
 #include <jsinspector-modern/RuntimeTargetGlobalStateObserver.h>
-#include <jsinspector-modern/tracing/PerformanceTracer.h>
+#include <jsinspector-modern/RuntimeTargetTracingStateObserver.h>
 
 #include <utility>
 
@@ -43,6 +43,7 @@ void RuntimeTarget::installGlobals() {
   // NOTE: RuntimeTarget::installDebuggerSessionObserver is in
   // RuntimeTargetDebuggerSessionObserver.cpp
   installDebuggerSessionObserver();
+  installTracingStateObserver();
   // NOTE: RuntimeTarget::installNetworkReporterAPI is in
   // RuntimeTargetNetwork.cpp
   installNetworkReporterAPI();
@@ -150,6 +151,23 @@ void RuntimeTarget::emitDebuggerSessionDestroyed() {
           "__DEBUGGER_SESSION_OBSERVER__",
           "onSessionStatusChange",
           false);
+    } catch (jsi::JSError&) {
+      // Suppress any errors, they should not be visible to the user
+      // and should not affect runtime.
+    }
+  });
+}
+
+void RuntimeTarget::installTracingStateObserver() {
+  jsExecutor_([](jsi::Runtime& runtime) {
+    jsinspector_modern::installTracingStateObserver(runtime);
+  });
+}
+
+void RuntimeTarget::emitTracingStateChange(bool isTracing) {
+  jsExecutor_([isTracing](jsi::Runtime& runtime) {
+    try {
+      emitTracingStateObserverChange(runtime, isTracing);
     } catch (jsi::JSError&) {
       // Suppress any errors, they should not be visible to the user
       // and should not affect runtime.
@@ -273,6 +291,10 @@ void RuntimeTargetController::disableSamplingProfiler() {
 tracing::RuntimeSamplingProfile
 RuntimeTargetController::collectSamplingProfile() {
   return target_.collectSamplingProfile();
+}
+
+void RuntimeTargetController::emitTracingStateChange(bool isTracing) {
+  target_.emitTracingStateChange(isTracing);
 }
 
 void RuntimeTargetController::notifyDomainStateChanged(

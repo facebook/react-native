@@ -188,8 +188,10 @@ void UIManager::completeSurface(
     ShadowTree::CommitOptions commitOptions) {
   TraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
+  ShadowTree::CommitStatus result;
+
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
-    auto result = shadowTree.commit(
+    result = shadowTree.commit(
         [&](const RootShadowNode& oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               oldRootShadowNode,
@@ -199,18 +201,17 @@ void UIManager::completeSurface(
               });
         },
         commitOptions);
-
-    if (result == ShadowTree::CommitStatus::Succeeded) {
-      // It's safe to update the visible revision of the shadow tree immediately
-      // after we commit a specific one.
-      lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(
-          surfaceId, shadowTree.getCurrentRevision().rootShadowNode);
-
-      if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-        animationBackend_->clearRegistry(surfaceId);
-      }
-    }
   });
+
+  if (result == ShadowTree::CommitStatus::Succeeded) {
+    // It's safe to update the visible revision of the shadow tree immediately
+    // after we commit a specific one.
+    lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(surfaceId);
+
+    if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+      animationBackend_->clearRegistry(surfaceId);
+    }
+  }
 }
 
 void UIManager::setIsJSResponder(
@@ -643,6 +644,20 @@ void UIManager::shadowTreeDidFinishTransaction(
   }
 }
 
+void UIManager::shadowTreeDidFinishReactCommit(
+    const ShadowTree& shadowTree) const {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidFinishReactCommit(shadowTree);
+  }
+}
+
+void UIManager::shadowTreeDidPromoteReactRevision(
+    const ShadowTree& shadowTree) const {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidPromoteReactRevision(shadowTree);
+  }
+}
+
 void UIManager::reportMount(SurfaceId surfaceId) const {
   TraceSection s("UIManager::reportMount");
 
@@ -715,6 +730,12 @@ void UIManager::synchronouslyUpdateViewOnUIThread(
   if (delegate_ != nullptr) {
     delegate_->uiManagerShouldSynchronouslyUpdateViewOnUIThread(tag, props);
   }
+}
+
+#pragma mark ContextContainer
+
+std::shared_ptr<const ContextContainer> UIManager::getContextContainer() const {
+  return contextContainer_;
 }
 
 #pragma mark - Add & Remove event listener

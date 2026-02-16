@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fe15bc49fc0e101efb3f7a42f0c3312f>>
+ * @generated SignedSource<<b0b73ee66da2fc0c077176c2e54c77b0>>
  */
 
 /**
@@ -299,24 +299,6 @@ bool ReactNativeFeatureFlagsAccessor::enableBridgelessArchitecture() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::enableClipChildrenForOverflowHidden() {
-  auto flagValue = enableClipChildrenForOverflowHidden_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(15, "enableClipChildrenForOverflowHidden");
-
-    flagValue = currentProvider_->enableClipChildrenForOverflowHidden();
-    enableClipChildrenForOverflowHidden_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
 bool ReactNativeFeatureFlagsAccessor::enableCppPropsIteratorSetter() {
   auto flagValue = enableCppPropsIteratorSetter_.load();
 
@@ -326,7 +308,7 @@ bool ReactNativeFeatureFlagsAccessor::enableCppPropsIteratorSetter() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(16, "enableCppPropsIteratorSetter");
+    markFlagAsAccessed(15, "enableCppPropsIteratorSetter");
 
     flagValue = currentProvider_->enableCppPropsIteratorSetter();
     enableCppPropsIteratorSetter_ = flagValue;
@@ -344,7 +326,7 @@ bool ReactNativeFeatureFlagsAccessor::enableCustomFocusSearchOnClippedElementsAn
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(17, "enableCustomFocusSearchOnClippedElementsAndroid");
+    markFlagAsAccessed(16, "enableCustomFocusSearchOnClippedElementsAndroid");
 
     flagValue = currentProvider_->enableCustomFocusSearchOnClippedElementsAndroid();
     enableCustomFocusSearchOnClippedElementsAndroid_ = flagValue;
@@ -362,7 +344,7 @@ bool ReactNativeFeatureFlagsAccessor::enableDestroyShadowTreeRevisionAsync() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(18, "enableDestroyShadowTreeRevisionAsync");
+    markFlagAsAccessed(17, "enableDestroyShadowTreeRevisionAsync");
 
     flagValue = currentProvider_->enableDestroyShadowTreeRevisionAsync();
     enableDestroyShadowTreeRevisionAsync_ = flagValue;
@@ -380,7 +362,7 @@ bool ReactNativeFeatureFlagsAccessor::enableDoubleMeasurementFixAndroid() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(19, "enableDoubleMeasurementFixAndroid");
+    markFlagAsAccessed(18, "enableDoubleMeasurementFixAndroid");
 
     flagValue = currentProvider_->enableDoubleMeasurementFixAndroid();
     enableDoubleMeasurementFixAndroid_ = flagValue;
@@ -398,7 +380,7 @@ bool ReactNativeFeatureFlagsAccessor::enableEagerMainQueueModulesOnIOS() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(20, "enableEagerMainQueueModulesOnIOS");
+    markFlagAsAccessed(19, "enableEagerMainQueueModulesOnIOS");
 
     flagValue = currentProvider_->enableEagerMainQueueModulesOnIOS();
     enableEagerMainQueueModulesOnIOS_ = flagValue;
@@ -416,7 +398,7 @@ bool ReactNativeFeatureFlagsAccessor::enableEagerRootViewAttachment() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(21, "enableEagerRootViewAttachment");
+    markFlagAsAccessed(20, "enableEagerRootViewAttachment");
 
     flagValue = currentProvider_->enableEagerRootViewAttachment();
     enableEagerRootViewAttachment_ = flagValue;
@@ -434,10 +416,28 @@ bool ReactNativeFeatureFlagsAccessor::enableExclusivePropsUpdateAndroid() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(22, "enableExclusivePropsUpdateAndroid");
+    markFlagAsAccessed(21, "enableExclusivePropsUpdateAndroid");
 
     flagValue = currentProvider_->enableExclusivePropsUpdateAndroid();
     enableExclusivePropsUpdateAndroid_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableFabricCommitBranching() {
+  auto flagValue = enableFabricCommitBranching_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(22, "enableFabricCommitBranching");
+
+    flagValue = currentProvider_->enableFabricCommitBranching();
+    enableFabricCommitBranching_ = flagValue;
   }
 
   return flagValue.value();

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55247339124401e105501f3d9d3b5b92>>
+ * @generated SignedSource<<86fa523d5b3be2d21f7b327de973e5bc>>
  */
 
 /**
@@ -180,15 +180,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableBridgelessArchitecture();
   }
 
-  bool enableClipChildrenForOverflowHidden() override {
-    auto value = values_["enableClipChildrenForOverflowHidden"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableClipChildrenForOverflowHidden();
-  }
-
   bool enableCppPropsIteratorSetter() override {
     auto value = values_["enableCppPropsIteratorSetter"];
     if (!value.isNull()) {
@@ -250,6 +241,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableExclusivePropsUpdateAndroid();
+  }
+
+  bool enableFabricCommitBranching() override {
+    auto value = values_["enableFabricCommitBranching"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableFabricCommitBranching();
   }
 
   bool enableFabricLogs() override {

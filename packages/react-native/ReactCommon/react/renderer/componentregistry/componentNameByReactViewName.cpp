@@ -28,11 +28,6 @@ std::string componentNameByReactViewName(std::string viewName) {
     return "Paragraph";
   }
 
-  // TODO T63839307: remove this condition after deleting TextInlineImage from
-  // old renderer code
-  if (viewName == "TextInlineImage") {
-    return "Image";
-  }
   if (viewName == "VirtualText") {
     return "Text";
   }

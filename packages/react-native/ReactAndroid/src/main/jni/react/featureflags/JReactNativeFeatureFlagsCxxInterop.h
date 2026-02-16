@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<88f40502abd13f8f57015429dd087519>>
+ * @generated SignedSource<<49c9151beb66235968403b1091de3f56>>
  */
 
 /**
@@ -75,9 +75,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableBridgelessArchitecture(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableClipChildrenForOverflowHidden(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool enableCppPropsIteratorSetter(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -97,6 +94,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableExclusivePropsUpdateAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableFabricCommitBranching(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableFabricLogs(

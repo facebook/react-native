@@ -21,18 +21,20 @@
  * This class provides a JS-friendly API over that global object.
  */
 class GlobalStateObserver {
-  #hasNativeSupport: boolean;
   #globalName: string;
   #statusProperty: string;
 
   constructor(globalName: string, statusProperty: string) {
     this.#globalName = globalName;
     this.#statusProperty = statusProperty;
-    this.#hasNativeSupport = global.hasOwnProperty(globalName);
+  }
+
+  #hasNativeSupport(): boolean {
+    return global.hasOwnProperty(this.#globalName);
   }
 
   getStatus(): boolean {
-    if (!this.#hasNativeSupport) {
+    if (!this.#hasNativeSupport()) {
       return false;
     }
 
@@ -40,7 +42,7 @@ class GlobalStateObserver {
   }
 
   subscribe(callback: (status: boolean) => void): () => void {
-    if (!this.#hasNativeSupport) {
+    if (!this.#hasNativeSupport()) {
       return () => {};
     }
 

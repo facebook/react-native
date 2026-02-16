@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<102ac98a8c3f2c1a2150c223a099cf72>>
+ * @generated SignedSource<<0139bc7a7b2ae5c9175f44de1ac80105>>
  */
 
 /**
@@ -53,8 +53,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableBridgelessArchitecture(): Boolean = false
 
-  override fun enableClipChildrenForOverflowHidden(): Boolean = false
-
   override fun enableCppPropsIteratorSetter(): Boolean = false
 
   override fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean = true
@@ -68,6 +66,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableExclusivePropsUpdateAndroid(): Boolean = false
+
+  override fun enableFabricCommitBranching(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
 

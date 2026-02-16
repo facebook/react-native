@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4549fc9a4f431306b7dc70ef3903b8fd>>
+ * @generated SignedSource<<65e8cae8a55213f4b08ec4d896a05c00>>
  */
 
 /**
@@ -121,12 +121,6 @@ public object ReactNativeFeatureFlags {
   public fun enableBridgelessArchitecture(): Boolean = accessor.enableBridgelessArchitecture()
 
   /**
-   * When overflow: hidden is set, also set clipChildren to true so that clipped content does not occlude content outside the parent
-   */
-  @JvmStatic
-  public fun enableClipChildrenForOverflowHidden(): Boolean = accessor.enableClipChildrenForOverflowHidden()
-
-  /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   @JvmStatic
@@ -167,6 +161,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableExclusivePropsUpdateAndroid(): Boolean = accessor.enableExclusivePropsUpdateAndroid()
+
+  /**
+   * Enables Fabric commit branching to fix starvation problems and atomic JS updates.
+   */
+  @JvmStatic
+  public fun enableFabricCommitBranching(): Boolean = accessor.enableFabricCommitBranching()
 
   /**
    * This feature flag enables logs for Fabric.
