@@ -97,6 +97,10 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   void schedulerShouldRenderTransactions(
       const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override;
 
+  void schedulerShouldMergeReactRevision(SurfaceId surfaceId) override;
+
+  void mergeReactRevision(SurfaceId surfaceId);
+
   void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) override;
 
   void schedulerDidDispatchCommand(

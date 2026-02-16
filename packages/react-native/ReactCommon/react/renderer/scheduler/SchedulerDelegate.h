@@ -39,6 +39,12 @@ class SchedulerDelegate {
       const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) = 0;
 
   /*
+   * Called at the end of the event loop if there were commits to the JS
+   * during the pass and JS branch should be "merged" to the main revision.
+   */
+  virtual void schedulerShouldMergeReactRevision(SurfaceId surfaceId) = 0;
+
+  /*
    * Called right after a new ShadowNode was created.
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) = 0;
