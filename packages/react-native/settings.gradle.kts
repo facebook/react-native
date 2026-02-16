@@ -46,9 +46,20 @@ project(":packages:react-native").projectDir = file("/tmp")
 buildscript {
   val properties = java.util.Properties()
   val propertiesToInherit = listOf("hermesV1Enabled", "react.hermesV1Enabled")
+  val parentGradle = gradle.parent
+  val parentProjectDir = parentGradle?.startParameter?.projectDir
+  val parentCurrentDir = parentGradle?.startParameter?.currentDir
+  val gradlePropertiesCandidates =
+      listOfNotNull(
+          parentProjectDir?.resolve("gradle.properties"),
+          parentCurrentDir?.resolve("gradle.properties"),
+          // Backward-compatible fallback for classic RN app layouts.
+          file("../../android/gradle.properties"),
+      )
 
   try {
-    file("../../android/gradle.properties").inputStream().use { properties.load(it) }
+    val propertiesFile = gradlePropertiesCandidates.firstOrNull { it.exists() }
+    propertiesFile?.inputStream()?.use { properties.load(it) }
 
     gradle.rootProject {
       propertiesToInherit.forEach { property ->
