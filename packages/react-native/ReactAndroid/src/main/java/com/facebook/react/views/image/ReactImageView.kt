@@ -482,6 +482,7 @@ public class ReactImageView(
     } else {
       imageRequestBuilder.setCacheChoice(ImageRequest.CacheChoice.DEFAULT);
     }
+    ReactImageRequestBuilderHook.apply(uri, imageRequestBuilder)
 
     val imageRequest: ImageRequest =
         ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers, cacheControl)
@@ -518,6 +519,7 @@ public class ReactImageView(
       } else {
         cachedImageRequestBuilder.setCacheChoice(ImageRequest.CacheChoice.DEFAULT);
       }
+      ReactImageRequestBuilderHook.apply(cachedSource.uri, cachedImageRequestBuilder)
 
       val cachedImageRequest = cachedImageRequestBuilder.build()
       builder.setLowResImageRequest(cachedImageRequest)
