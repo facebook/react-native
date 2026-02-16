@@ -135,6 +135,10 @@ class UIManager final : public ShadowTreeDelegate {
       const RootShadowNode::Unshared &newRootShadowNode,
       const ShadowTree::CommitOptions &commitOptions) const override;
 
+  void shadowTreeDidFinishReactCommit(const ShadowTree &shadowTree) const override;
+
+  void shadowTreeDidPromoteReactRevision(const ShadowTree &shadowTree) const override;
+
   std::shared_ptr<ShadowNode> createNode(
       Tag tag,
       const std::string &componentName,
@@ -200,6 +204,9 @@ class UIManager final : public ShadowTreeDelegate {
   void reportMount(SurfaceId surfaceId) const;
 
   void updateShadowTree(std::unordered_map<Tag, folly::dynamic> &&tagToProps);
+
+#pragma mark - ContextContainer
+  std::shared_ptr<const ContextContainer> getContextContainer() const;
 
 #pragma mark - Add & Remove event listener
 

@@ -644,6 +644,20 @@ void UIManager::shadowTreeDidFinishTransaction(
   }
 }
 
+void UIManager::shadowTreeDidFinishReactCommit(
+    const ShadowTree& shadowTree) const {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidFinishReactCommit(shadowTree);
+  }
+}
+
+void UIManager::shadowTreeDidPromoteReactRevision(
+    const ShadowTree& shadowTree) const {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidPromoteReactRevision(shadowTree);
+  }
+}
+
 void UIManager::reportMount(SurfaceId surfaceId) const {
   TraceSection s("UIManager::reportMount");
 
@@ -716,6 +730,12 @@ void UIManager::synchronouslyUpdateViewOnUIThread(
   if (delegate_ != nullptr) {
     delegate_->uiManagerShouldSynchronouslyUpdateViewOnUIThread(tag, props);
   }
+}
+
+#pragma mark ContextContainer
+
+std::shared_ptr<const ContextContainer> UIManager::getContextContainer() const {
+  return contextContainer_;
 }
 
 #pragma mark - Add & Remove event listener

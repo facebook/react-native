@@ -9,6 +9,7 @@
  */
 
 import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
+import type {Float, Int32} from '../../../../../Libraries/Types/CodegenTypes';
 
 import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
 
@@ -24,6 +25,7 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
 export interface Spec extends TurboModule {
   +registerForcedCloneCommitHook: () => void;
   +takeFunctionAndNoop: (fn: () => void) => void;
+  +setRootNodeSize: (surfaceId: Int32, width: Float, height: Float) => void;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(
