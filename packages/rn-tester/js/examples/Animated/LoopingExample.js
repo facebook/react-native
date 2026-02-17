@@ -24,13 +24,7 @@ export default ({
   render: () => <LoopingExample />,
 }: RNTesterModuleExample);
 
-function LoopingView({
-  useNativeDriver,
-  running,
-}: {
-  useNativeDriver: boolean,
-  running: boolean,
-}) {
+component LoopingView(useNativeDriver: boolean, running: boolean) {
   const opacity = useMemo(() => new Animated.Value(1), []);
   const scale = useMemo(() => new Animated.Value(1), []);
 
@@ -64,7 +58,7 @@ function LoopingView({
   );
 }
 
-function LoopingExample(props: {}): React.Node {
+component LoopingExample() {
   const [running, setRunning] = useState(false);
   const [useNativeDriver, setUseNativeDriver] = useState(false);
 

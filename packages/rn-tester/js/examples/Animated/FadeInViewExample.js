@@ -29,13 +29,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function FadeInView({
-  useNativeDriver,
-  children,
-}: {
-  useNativeDriver: boolean,
-  children: React.Node,
-}) {
+component FadeInView(useNativeDriver: boolean, children: React.Node) {
   //opacity 0
   const [fadeAnim] = useState(() => new Animated.Value(0));
   useEffect(() => {
@@ -64,7 +58,7 @@ function FadeInView({
   );
 }
 
-function FadeInExample(): React.Node {
+component FadeInExample() {
   const [show, setShow] = useState(true);
   const [useNativeDriver, setUseNativeDriver] = useState(false);
   return (

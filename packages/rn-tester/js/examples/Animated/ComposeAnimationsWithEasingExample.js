@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function CompositeAnimationsWithEasingExample(): React.Node {
+component CompositeAnimationsWithEasingExample() {
   const anims = [1, 2, 3].map(() => new Animated.Value(0));
   const theme = useContext(RNTesterThemeContext);
 
