@@ -56,9 +56,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = Readonly<{}>;
-
-function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
+component MovingBoxView(useNativeDriver: boolean) {
   const x = useAnimatedValue(0);
   const [update, setUpdate] = useState(0);
   const [boxVisible, setBoxVisible] = useState(true);
@@ -107,7 +105,7 @@ function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
   );
 }
 
-function MovingBoxExample(props: Props): React.Node {
+component MovingBoxExample() {
   const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (

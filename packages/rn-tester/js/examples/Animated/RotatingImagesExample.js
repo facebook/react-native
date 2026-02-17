@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function RotatingImagesView({useNativeDriver}: {useNativeDriver: boolean}) {
+component RotatingImagesView(useNativeDriver: boolean) {
   const anim = new Animated.Value(0);
   const rotatingAnimation = Animated.spring(anim, {
     // Returns to the start
@@ -84,7 +84,7 @@ function RotatingImagesView({useNativeDriver}: {useNativeDriver: boolean}) {
   );
 }
 
-function RotatingImagesExample(): React.Node {
+component RotatingImagesExample() {
   const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (
