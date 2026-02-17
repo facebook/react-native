@@ -401,11 +401,13 @@ describe('<TextInput>', () => {
         expect(instance.isFocused()).toBe(false);
       });
 
-      it('returns false if the input is unmounted and never focused', () => { 
+      it('returns false if the input is unmounted and never focused', () => {
         Fantom.runTask(() => {
-          // TextInputState is global, so we need to clean up the state to be sure that we 
+          // TextInputState is global, so we need to clean up the state to be sure that we
           // don't have a focused input ref
-          TextInput.State.blurTextInput(TextInput.State.currentlyFocusedInput());
+          TextInput.State.blurTextInput(
+            TextInput.State.currentlyFocusedInput(),
+          );
         });
 
         expect(TextInput.State.currentlyFocusedInput()).toBe(null);
