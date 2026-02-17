@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags useSharedAnimatedBackend:true
+ * @fantom_flags useSharedAnimatedBackend:true updateRuntimeShadowNodeReferencesOnCommitThread:*
  * @flow strict-local
  * @format
  */
@@ -15,8 +15,8 @@ import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
-import {createRef, useEffect, useState} from 'react';
-import {Animated, useAnimatedValue} from 'react-native';
+import {createRef, memo, useEffect, useMemo, useState} from 'react';
+import {Animated, View, useAnimatedValue} from 'react-native';
 import {allowStyleProp} from 'react-native/Libraries/Animated/NativeAnimatedAllowlist';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -467,4 +467,91 @@ test('animate width, height and opacity at once', () => {
   expect(
     root.getRenderedOutput({props: ['width', 'height', 'opacity']}).toJSX(),
   ).toEqual(<rn-view height="200.000000" opacity="0.5" width="200.000000" />);
+});
+
+test('animate width with memo and rerender (js sync test)', () => {
+  const viewRef = createRef<HostInstance>();
+  allowStyleProp('width');
+
+  let _widthAnimation;
+  let _setState;
+
+  function useAnimation() {
+    const animatedValue = useAnimatedValue(100);
+
+    useEffect(() => {
+      const animation = Animated.timing(animatedValue, {
+        toValue: 200,
+        duration: 1000,
+        useNativeDriver: true,
+      });
+      _widthAnimation = animation;
+      animation.start();
+
+      return () => {
+        animation.stop();
+      };
+    }, [animatedValue]);
+
+    return animatedValue;
+  }
+
+  const AnimatedComponent = memo(() => {
+    const animatedValue = useAnimation();
+
+    const animatedStyle = useMemo(() => {
+      return {
+        width: animatedValue,
+      };
+    }, [animatedValue]);
+
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[{backgroundColor: 'green', height: 100}, animatedStyle]}
+      />
+    );
+  });
+
+  function MyApp() {
+    const [state, setState] = useState(0);
+    _setState = setState;
+
+    return (
+      <>
+        <View key={state} />
+        <AnimatedComponent />
+      </>
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  expect(root.getRenderedOutput({props: ['width', 'height']}).toJSX()).toEqual(
+    <rn-view height="100.000000" width="100.000000" />,
+  );
+
+  Fantom.unstable_produceFramesForDuration(1000);
+
+  // TODO: this shouldn't be necessary since animation should be stopped after duration
+  Fantom.runTask(() => {
+    _widthAnimation?.stop();
+  });
+
+  expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
+    <rn-view width="200.000000" />,
+  );
+
+  // Trigger rerender after animation completes to see if animation state gets overwritten
+  Fantom.runTask(() => {
+    _setState(s => 1 - s);
+  });
+
+  expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
+    <rn-view width="200.000000" />,
+  );
 });

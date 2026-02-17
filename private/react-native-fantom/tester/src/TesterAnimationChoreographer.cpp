@@ -7,6 +7,7 @@
 
 #include "TesterAnimationChoreographer.h"
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/core/ShadowNode.h>
 #include <react/runtime/ReactInstanceConfig.h>
 
 namespace facebook::react {
@@ -20,7 +21,9 @@ void TesterAnimationChoreographer::pause() {
 
 void TesterAnimationChoreographer::runUITick(AnimationTimestamp timestamp) {
   if (!isPaused_) {
+    ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(false);
     onAnimationFrame(timestamp);
+    ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
   }
 }
 
