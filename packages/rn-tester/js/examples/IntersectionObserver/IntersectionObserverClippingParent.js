@@ -63,7 +63,7 @@ function roundRect(rect: unknown): ?{
   };
 }
 
-function IntersectionObserverCustomClippingRootExample(): React.Node {
+component IntersectionObserverCustomClippingRootExample() {
   const rootRef = useRef<?HostInstance>(null);
   const targetRef = useRef<?HostInstance>(null);
   const [intersectionEntry, setIntersectionEntry] =
