@@ -29,6 +29,7 @@ import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
 import com.facebook.react.views.text.internal.span.DrawCommandSpan
 import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan
+import com.facebook.react.views.text.internal.span.ReactLinkSpan
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
@@ -204,7 +205,12 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
     if (action == MotionEvent.ACTION_UP) {
       clearSelection()
-      clickableSpan.onClick(this)
+
+      // This will already get triggered by reactTagForTouch() based hit testing if it is React
+      // managed clickable text. We still want to click any native ClickableSpan (e.g. for URIs).
+      if (clickableSpan !is ReactLinkSpan) {
+        clickableSpan.onClick(this)
+      }
     } else if (action == MotionEvent.ACTION_DOWN) {
       val layout = checkNotNull(preparedLayout).layout
       val start = (layout.text as Spanned).getSpanStart(clickableSpan)
