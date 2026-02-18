@@ -14,6 +14,7 @@
 
 #import <React/RCTCxxInspectorPackagerConnection.h>
 #import <React/RCTDefines.h>
+#import <React/RCTDevSupportHttpHeaders.h>
 
 #import <CommonCrypto/CommonCrypto.h>
 #import <jsinspector-modern/InspectorFlags.h>
@@ -154,6 +155,7 @@ static void sendEventToAllConnections(NSString *event)
                                                                escapedInspectorDeviceId]];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   [request setHTTPMethod:@"POST"];
+  [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
 
   [[[NSURLSession sharedSession]
       dataTaskWithRequest:request
