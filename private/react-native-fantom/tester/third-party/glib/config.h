@@ -1,0 +1,126 @@
+/* config.h - generated for glib Fantom build (Linux x86_64) */
+#ifndef GLIB_CONFIG_H
+#define GLIB_CONFIG_H
+
+#define HAVE_ALLOCA_H 1
+#define HAVE_ALLOCA 1
+#define HAVE_MMAP 1
+#define HAVE_POSIX_MEMALIGN 1
+#define HAVE_MEMALIGN 1
+#define HAVE_VALLOC 1
+
+#define HAVE_UNISTD_H 1
+#define HAVE_SYS_TIME_H 1
+#define HAVE_SYS_PARAM_H 1
+#define HAVE_SYS_RESOURCE_H 1
+#define HAVE_SYS_SELECT_H 1
+#define HAVE_SYS_TYPES_H 1
+#define HAVE_SYS_STAT_H 1
+#define HAVE_SYS_SYSCTL_H 1
+#define HAVE_SYS_MOUNT_H 1
+#define HAVE_SYS_MMAN_H 1
+#define HAVE_STDINT_H 1
+#define HAVE_INTTYPES_H 1
+#define HAVE_DIRENT_H 1
+#define HAVE_DLFCN_H 1
+#define HAVE_LOCALE_H 1
+#define HAVE_LANGINFO_H 1
+#define HAVE_FLOAT_H 1
+#define HAVE_LIMITS_H 1
+#define HAVE_MEMORY_H 1
+#define HAVE_POLL_H 1
+#define HAVE_PWD_H 1
+#define HAVE_SCHED_H 1
+#define HAVE_SPAWN_H 1
+#define HAVE_STRING_H 1
+#define HAVE_STRINGS_H 1
+#define HAVE_STDLIB_H 1
+#define HAVE_TERMIOS_H 1
+#define HAVE_WCHAR_H 1
+#define HAVE_XLOCALE_H 0
+#define HAVE_SYS_INOTIFY_H 1
+
+#define HAVE_CLOCK_GETTIME 1
+#define HAVE_CODESET 1
+#define HAVE_ENDMNTENT 1
+#define HAVE_ENDSERVENT 1
+#define HAVE_FALLOCATE 1
+#define HAVE_FCHMOD 1
+#define HAVE_FCHOWN 1
+#define HAVE_FDWALK 0
+#define HAVE_FSYNC 1
+#define HAVE_GETC_UNLOCKED 1
+#define HAVE_GETMNTENT_R 1
+#define HAVE_GETRESUID 1
+#define HAVE_GETRESGID 1
+#define HAVE_GMTIME_R 1
+#define HAVE_HASMNTOPT 1
+#define HAVE_IF_INDEXTONAME 1
+#define HAVE_IF_NAMETOINDEX 1
+#define HAVE_INOTIFY_INIT1 1
+#define HAVE_ISSETUGID 0
+#define HAVE_LCHMOD 0
+#define HAVE_LCHOWN 1
+#define HAVE_LSTAT 1
+#define HAVE_LINK 1
+#define HAVE_LOCALTIME_R 1
+#define HAVE_MEMMOVE 1
+#define HAVE_NEWLOCALE 1
+#define HAVE_PIPE2 1
+#define HAVE_POLL 1
+#define HAVE_PRLIMIT 1
+#define HAVE_READLINK 1
+#define HAVE_RECVMMSG 1
+#define HAVE_SENDMMSG 1
+#define HAVE_SETENV 1
+#define HAVE_SETMNTENT 1
+#define HAVE_SNPRINTF 1
+#define HAVE_SPLICE 1
+#define HAVE_STATFS 1
+#define HAVE_STATVFS 1
+#define HAVE_STPCOPY 1
+#define HAVE_STRCASECMP 1
+#define HAVE_STRERROR_R 1
+#define HAVE_STRNCASECMP 1
+#define HAVE_STRNLEN 1
+#define HAVE_STRSIGNAL 1
+#define HAVE_STRTOD_L 1
+#define HAVE_STRTOLL_L 1
+#define HAVE_STRTOULL_L 1
+#define HAVE_SYMLINK 1
+#define HAVE_TIMEGM 1
+#define HAVE_UNSETENV 1
+#define HAVE_USELOCALE 1
+#define HAVE_UTIMES 1
+#define HAVE_VASPRINTF 1
+#define HAVE_VSNPRINTF 1
+
+#define HAVE_UNIX98_PRINTF 1
+#define HAVE_STRLCPY 0
+
+#define HAVE_PROC_SELF_CMDLINE 1
+
+#define THREADS_POSIX 1
+#define USE_STATFS 1
+
+#define _GLIB_EXTERN __attribute__((visibility("default")))
+#define GLIB_HAVE_GROWING_STACK 0
+#define G_ATOMIC_LOCK_FREE 1
+
+/* Alignment */
+#define ALIGNOF_UNSIGNED_LONG 8
+
+/* Sizes */
+#define SIZEOF_CHAR 1
+#define SIZEOF_INT 4
+#define SIZEOF_LONG 8
+#define SIZEOF_LONG_LONG 8
+#define SIZEOF_SHORT 2
+#define SIZEOF_SIZE_T 8
+#define SIZEOF_SSIZE_T 8
+#define SIZEOF_VOID_P 8
+#define SIZEOF_WCHAR_T 4
+
+#define GETTEXT_PACKAGE "glib20"
+
+#endif /* GLIB_CONFIG_H */
