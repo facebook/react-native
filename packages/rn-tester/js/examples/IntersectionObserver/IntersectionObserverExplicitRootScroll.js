@@ -37,7 +37,7 @@ export function render(): React.Node {
 /**
  * Showcase threshold of two overlapping elements
  */
-function IntersectionObserverExplicitRootScrollExample(): React.Node {
+component IntersectionObserverExplicitRootScrollExample() {
   const theme = useContext(RNTesterThemeContext);
   const [observationRoot, setObservationRoot] = useState<?HostInstance>(null);
 
