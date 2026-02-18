@@ -12,10 +12,9 @@ import android.os.Looper
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.proguard.annotations.DoNotStripAny
+import com.facebook.react.devsupport.inspector.DevSupportHttpClient
 import com.facebook.soloader.SoLoader
 import java.io.Closeable
-import java.util.concurrent.TimeUnit
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -78,12 +77,7 @@ internal class CxxInspectorPackagerConnection(
 
   /** Java implementation of the C++ InspectorPackagerConnectionDelegate interface. */
   private class DelegateImpl {
-    private val httpClient =
-        OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-            .build()
+    private val httpClient = DevSupportHttpClient.websocketClient
 
     private val handler = Handler(Looper.getMainLooper())
 
