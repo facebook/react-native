@@ -7,6 +7,8 @@
 
 #import "RCTMultipartDataTask.h"
 
+#import "RCTDevSupportHttpHeaders.h"
+
 @interface RCTMultipartDataTask () <NSURLSessionDataDelegate, NSURLSessionDataDelegate>
 
 @end
@@ -40,6 +42,7 @@
                                                    delegateQueue:nil];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:_url];
   [request addValue:@"multipart/mixed" forHTTPHeaderField:@"Accept"];
+  [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
   NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request];
   [dataTask resume];
   [session finishTasksAndInvalidate];
