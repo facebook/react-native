@@ -22,7 +22,7 @@ import {
   View,
 } from 'react-native';
 
-function ScrollViewKeyboardInsetsExample(): React.Node {
+component ScrollViewKeyboardInsetsExample() {
   const [
     automaticallyAdjustKeyboardInsets,
     setAutomaticallyAdjustKeyboardInsets,
