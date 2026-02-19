@@ -51,7 +51,7 @@ NSString *const RCTNetworkingPHUploadHackScheme = @"ph-upload";
 
 static NSString *RCTGenerateFormBoundary()
 {
-  const size_t boundaryLength = 70;
+  const size_t boundaryLength = 50;
   const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.";
 
   char *bytes = (char *)malloc(boundaryLength);
