@@ -3388,6 +3388,8 @@ public final class com/facebook/react/uimanager/JSTouchDispatcher {
 }
 
 public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/uimanager/ReactShadowNodeImpl {
+	public static final field Companion Lcom/facebook/react/uimanager/LayoutShadowNode$Companion;
+	public field collapsable Z
 	public fun <init> ()V
 	public fun setAlignContent (Ljava/lang/String;)V
 	public fun setAlignItems (Ljava/lang/String;)V
@@ -3429,6 +3431,9 @@ public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/
 	public fun setShouldNotifyPointerLeave (Z)V
 	public fun setShouldNotifyPointerMove (Z)V
 	public fun setWidth (Lcom/facebook/react/bridge/Dynamic;)V
+}
+
+public final class com/facebook/react/uimanager/LayoutShadowNode$Companion {
 }
 
 public final class com/facebook/react/uimanager/LengthPercentage {
