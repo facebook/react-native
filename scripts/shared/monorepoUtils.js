@@ -22,6 +22,7 @@ export type PackageJson = {
   private?: boolean,
   dependencies?: Record<string, string>,
   devDependencies?: Record<string, string>,
+  peerDependencies?: Record<string, string>,
   main?: string,
   ...
 };
@@ -145,6 +146,7 @@ async function updatePackageJson(
   for (const dependencyField of [
     'dependencies',
     'devDependencies',
+    'peerDependencies',
   ] /*:: as const */) {
     const deps = packageJson[dependencyField];
 
