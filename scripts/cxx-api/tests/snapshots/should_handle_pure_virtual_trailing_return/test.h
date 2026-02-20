@@ -7,14 +7,16 @@
 
 #pragma once
 
-namespace facebook {
+#include <vector>
 
-namespace yoga {
+namespace test {
 
-struct Node {
-  template <size_t N>
-  static std::vector<PropNameID> names(PropNameID (&&propertyNames)[N]);
-}
-} // namespace yoga
+struct Method {};
 
-} // namespace facebook
+class Base {
+ public:
+  virtual auto getMethods() -> std::vector<Method> = 0;
+  virtual auto getName() -> const char * = 0;
+};
+
+} // namespace test

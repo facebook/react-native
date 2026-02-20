@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import os
+import re
 from pprint import pprint
 
 from doxmlparser import compound, index
@@ -248,10 +249,13 @@ def get_function_member(
     function_name = function_def.get_name()
     function_type = resolve_ref_text_name(function_def.get_type())
     function_arg_string = function_def.get_argsstring()
-    function_virtual = (
-        function_def.get_virt() == "virtual"
-        or function_def.get_virt() == "pure-virtual"
-    )
+    is_pure_virtual = function_def.get_virt() == "pure-virtual"
+    function_virtual = function_def.get_virt() == "virtual" or is_pure_virtual
+
+    # Doxygen incorrectly merges "=0" into the return type for pure-virtual
+    # functions using trailing return types (e.g. "auto f() -> T = 0").
+    # Strip the trailing "=0" from the type string.
+    function_type = re.sub(r"\s*=\s*0\s*$", "", function_type)
 
     doxygen_params = get_doxygen_params(function_def)
 
@@ -264,6 +268,12 @@ def get_function_member(
         is_static,
         doxygen_params,
     )
+
+    # Doxygen signals pure-virtual via the virt attribute, but the arg string
+    # may not contain "= 0" (e.g. trailing return type syntax), so the
+    # modifiers parsed from the arg string may miss it. Propagate the flag.
+    if is_pure_virtual:
+        function.modifiers.is_pure_virtual = True
 
     function.add_template(get_template_params(function_def))
 
