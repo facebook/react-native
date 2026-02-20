@@ -28,7 +28,7 @@ const BASIC_CONSTRUCTORS = [Number, String, Boolean, Date];
 
 const ObjectPrototype = Object.prototype;
 
-// Technicall the memory value should be a parameter in
+// Technically the memory value should be a parameter in
 // `structuredCloneInternal` but as an optimization we can reuse the same map
 // and avoid allocating a new one in every call to `structuredClone`.
 // This is safe because we don't invoke user code in `structuredClone`, so at
@@ -205,7 +205,7 @@ function structuredCloneInternal<T>(value: T): T {
  *   but implements the cloning in a single step.
  *
  * Known limitations:
- * - It does not support transfering values.
+ * - It does not support transferring values.
  */
 export default function structuredClone<T>(value: T): T {
   try {

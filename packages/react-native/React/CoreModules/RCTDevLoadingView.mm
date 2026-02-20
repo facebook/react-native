@@ -158,7 +158,7 @@ RCT_EXPORT_MODULE()
       buttonConfig.background.cornerRadius = 10;
       buttonConfig.baseForegroundColor = color;
 
-      // Button is a visual cue to tap anywhere on the banner to dismiss so no seperate action is needed
+      // Button is a visual cue to tap anywhere on the banner to dismiss so no separate action is needed
       self->_dismissButton = [UIButton buttonWithConfiguration:buttonConfig primaryAction:nil];
       self->_dismissButton.userInteractionEnabled = NO;
       self->_dismissButton.translatesAutoresizingMaskIntoConstraints = NO;
