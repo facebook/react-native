@@ -206,6 +206,37 @@ def get_variable_member(
     )
 
 
+def get_doxygen_params(
+    function_def: compound.MemberdefType,
+) -> list[tuple[str | None, str, str | None, str | None]] | None:
+    """
+    Extract structured parameter information from doxygen <param> elements.
+
+    Returns a list of Argument tuples (qualifiers, type, name, default_value),
+    or None if no <param> elements are available.
+    """
+    params = function_def.param
+    if not params:
+        return None
+
+    from .utils import _extract_qualifiers, Argument
+
+    arguments: list[Argument] = []
+    for param in params:
+        param_type = (
+            resolve_ref_text_name(param.get_type()).strip() if param.get_type() else ""
+        )
+        param_name = param.declname or param.defname or None
+        param_default = (
+            resolve_ref_text_name(param.defval).strip() if param.defval else None
+        )
+
+        qualifiers, core_type = _extract_qualifiers(param_type)
+        arguments.append((qualifiers, core_type, param_name, param_default))
+
+    return arguments
+
+
 def get_function_member(
     function_def: compound.MemberdefType,
     visibility: str,
@@ -222,6 +253,8 @@ def get_function_member(
         or function_def.get_virt() == "pure-virtual"
     )
 
+    doxygen_params = get_doxygen_params(function_def)
+
     function = FunctionMember(
         function_name,
         function_type,
@@ -229,6 +262,7 @@ def get_function_member(
         function_arg_string,
         function_virtual,
         is_static,
+        doxygen_params,
     )
 
     function.add_template(get_template_params(function_def))

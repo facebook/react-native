@@ -4,7 +4,27 @@
 # LICENSE file in the root directory of this source tree.
 
 from .main import build_snapshot
-from .member import FunctionMember, FunctionModifiers
+from .member import FunctionMember
 from .path_utils import get_repo_root
+from .utils import (
+    Argument,
+    format_arguments,
+    format_parsed_type,
+    FunctionModifiers,
+    parse_arg_string,
+    parse_function_pointer_argstring,
+    parse_type_with_argstrings,
+)
 
-__all__ = ["build_snapshot", "FunctionMember", "FunctionModifiers", "get_repo_root"]
+__all__ = [
+    "Argument",
+    "build_snapshot",
+    "FunctionMember",
+    "FunctionModifiers",
+    "parse_arg_string",
+    "format_arguments",
+    "parse_function_pointer_argstring",
+    "parse_type_with_argstrings",
+    "format_parsed_type",
+    "get_repo_root",
+]

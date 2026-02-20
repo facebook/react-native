@@ -202,6 +202,10 @@ class Scope(Generic[ScopeKindT]):
         if current_scope is None:
             return None
 
+        # Remember the scope where we found the first segment — its qualified
+        # name is the prefix that must precede the matched path segments.
+        anchor_scope = current_scope
+
         # Walk down through the path, tracking matched segments with original template args
         matched_segments: list[str] = []
         for i, path_segment in enumerate(path):
@@ -213,19 +217,20 @@ class Scope(Generic[ScopeKindT]):
                 # Found as a member, assume following segments exist in the scope
                 prefix = "::".join(matched_segments)
                 suffix = "::".join(path[i:])
+                anchor_prefix = anchor_scope.get_qualified_name()
                 if prefix:
-                    return f"{current_scope.parent_scope.get_qualified_name()}::{prefix}::{suffix}"
+                    if anchor_prefix:
+                        return f"{anchor_prefix}::{prefix}::{suffix}"
+                    return f"{prefix}::{suffix}"
                 else:
-                    return f"{current_scope.get_qualified_name()}::{suffix}"
+                    if anchor_prefix:
+                        return f"{anchor_prefix}::{suffix}"
+                    return suffix
             else:
                 return None
 
         # Return qualified name with preserved template arguments
-        prefix = (
-            current_scope.parent_scope.get_qualified_name()
-            if current_scope.parent_scope
-            else ""
-        )
+        prefix = anchor_scope.get_qualified_name()
         if prefix:
             return f"{prefix}::{'::'.join(matched_segments)}"
         else:
