@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<41433dd76c5e69646fd73ff5942da8e8>>
+ * @generated SignedSource<<20f3c045c134a0dae21f8428c6f8714a>>
  */
 
 /**
@@ -36,6 +36,10 @@ bool ReactNativeFeatureFlags::cdpInteractionMetricsEnabled() {
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
   return getAccessor().cxxNativeAnimatedEnabled();
+}
+
+bool ReactNativeFeatureFlags::defaultTextToOverflowHidden() {
+  return getAccessor().defaultTextToOverflowHidden();
 }
 
 bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {

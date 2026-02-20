@@ -14,10 +14,12 @@ import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 import type {NativeTextProps} from './TextNativeComponent';
 import type {PressRetentionOffset, TextProps} from './TextProps';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
+import StyleSheet from '../StyleSheet/StyleSheet';
 import Platform from '../Utilities/Platform';
 import TextAncestorContext from './TextAncestorContext';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
@@ -207,6 +209,10 @@ const TextImpl: component(
       // $FlowFixMe[incompatible-type]
       _style = [_style, overrides];
     }
+  }
+
+  if (ReactNativeFeatureFlags.defaultTextToOverflowHidden()) {
+    _style = [styles.default, _style];
   }
 
   const _nativeID = id ?? nativeID;
@@ -540,5 +546,14 @@ const verticalAlignToTextAlignVerticalMap = {
   bottom: 'bottom',
   middle: 'center',
 } as const;
+
+const styles = StyleSheet.create({
+  // Native components have historically acted like overflow: 'hidden'. We set
+  // this, as part of the default style, to let client differentiate with
+  // overflow: 'visible'.
+  default: {
+    overflow: 'hidden',
+  },
+});
 
 export default TextImpl;
