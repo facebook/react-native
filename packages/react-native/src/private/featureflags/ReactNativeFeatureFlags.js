@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c71f3d287866aa7b06479009e986a3e6>>
+ * @generated SignedSource<<97e082b7554dba5b4f387ef783d2d6e3>>
  * @flow strict
  * @noformat
  */
@@ -211,7 +211,7 @@ export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter(
 /**
  * When enabled, sets the default overflow style for Text components to hidden instead of visible.
  */
-export const defaultTextToOverflowHidden: Getter<boolean> = createNativeFlagGetter('defaultTextToOverflowHidden', false);
+export const defaultTextToOverflowHidden: Getter<boolean> = createNativeFlagGetter('defaultTextToOverflowHidden', true);
 /**
  * Dispatch view commands in mount item order.
  */

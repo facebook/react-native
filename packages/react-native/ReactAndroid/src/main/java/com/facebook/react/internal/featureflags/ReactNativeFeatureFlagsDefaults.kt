@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9ae90142061f1ea0766058d9cf6f3dc6>>
+ * @generated SignedSource<<65cdfdcbe22ff163b75e0b067bd72693>>
  */
 
 /**
@@ -29,7 +29,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
-  override fun defaultTextToOverflowHidden(): Boolean = false
+  override fun defaultTextToOverflowHidden(): Boolean = true
 
   override fun disableEarlyViewCommandExecution(): Boolean = false
 

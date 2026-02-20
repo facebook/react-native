@@ -83,7 +83,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     defaultTextToOverflowHidden: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2026-02-13',
         description:

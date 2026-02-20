@@ -66,6 +66,11 @@ describe('Text', () => {
         accessible={true}
         allowFontScaling={true}
         ellipsizeMode="tail"
+        style={
+          Object {
+            "overflow": "hidden",
+          }
+        }
       />
     `);
   });
@@ -88,6 +93,11 @@ describe('Text', () => {
           ellipsizeMode="tail"
           isHighlighted={false}
           isPressable={true}
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
         >
           Clickable Text
         </RCTText>
@@ -107,6 +117,11 @@ describe('Text', () => {
           ellipsizeMode="tail"
           isHighlighted={false}
           isPressable={true}
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
         >
           Long Press Text
         </RCTText>
@@ -126,6 +141,11 @@ describe('Text', () => {
           ellipsizeMode="tail"
           isHighlighted={false}
           isPressable={true}
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
         >
           Responder Text
         </RCTText>
@@ -147,6 +167,11 @@ describe('Text', () => {
           ellipsizeMode="tail"
           isHighlighted={false}
           isPressable={true}
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
         >
           Explicit Button Role
         </RCTText>
@@ -169,6 +194,11 @@ describe('Text', () => {
           isHighlighted={false}
           isPressable={true}
           role="button"
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
         >
           Explicit Role Prop
         </RCTText>
@@ -193,6 +223,11 @@ describe('Text', () => {
           allowFontScaling={true}
           disabled={true}
           ellipsizeMode="tail"
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
         >
           Disabled Pressable Text
         </RCTText>
@@ -211,12 +246,22 @@ describe('Text', () => {
           accessible={true}
           allowFontScaling={true}
           ellipsizeMode="tail"
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
         >
           Parent Text
           <RCTText
             accessibilityRole="link"
             isHighlighted={false}
             isPressable={true}
+            style={
+              Object {
+                "overflow": "hidden",
+              }
+            }
           >
             Nested Clickable Link
           </RCTText>
@@ -232,6 +277,11 @@ describe('Text', () => {
           accessible={true}
           allowFontScaling={true}
           ellipsizeMode="tail"
+          style={
+            Object {
+              "overflow": "hidden",
+            }
+          }
         >
           Non-pressable Text
         </RCTText>
@@ -257,6 +307,11 @@ describe('Text compat with web', () => {
         allowFontScaling={true}
         ellipsizeMode="tail"
         nativeID="id"
+        style={
+          Object {
+            "overflow": "hidden",
+          }
+        }
         tabIndex={0}
         testID="testID"
       />
@@ -374,6 +429,11 @@ describe('Text compat with web', () => {
         ellipsizeMode="tail"
         importantForAccessibility="no-hide-descendants"
         role="main"
+        style={
+          Object {
+            "overflow": "hidden",
+          }
+        }
       />
     `);
   });
@@ -404,6 +464,7 @@ describe('Text compat with web', () => {
             "display": "flex",
             "flex": 1,
             "marginInlineStart": 10,
+            "overflow": "hidden",
             "textAlignVertical": "center",
             "userSelect": undefined,
             "verticalAlign": undefined,

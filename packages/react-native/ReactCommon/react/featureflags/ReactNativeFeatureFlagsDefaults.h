@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1926124626012fd9c635ccd00241f92a>>
+ * @generated SignedSource<<a0dcf7857ba3a41d1f39da63e1627335>>
  */
 
 /**
@@ -40,7 +40,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool defaultTextToOverflowHidden() override {
-    return false;
+    return true;
   }
 
   bool disableEarlyViewCommandExecution() override {
