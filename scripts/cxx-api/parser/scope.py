@@ -6,14 +6,52 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Generic, TypeVar
 
-from natsort import natsorted
+from natsort import natsort_keygen, natsorted
 
-from .member import Member
+from .member import ConceptMember, FunctionMember, Member, TypedefMember, VariableMember
 from .template import Template, TemplateList
 from .utils import parse_qualified_path
+
+
+# Pre-create natsort key function for efficiency
+_natsort_key = natsort_keygen()
+
+
+class MemberKind(IntEnum):
+    """
+    Classification of member kinds for grouping in output.
+    The order here determines the output order within namespace scopes.
+    """
+
+    CONSTANT = 0
+    TYPE_ALIAS = 1
+    CONCEPT = 2
+    FUNCTION = 3
+    OPERATOR = 4
+    VARIABLE = 5
+
+
+def classify_member(member: Member) -> MemberKind:
+    """Classify a member into a kind for grouping purposes."""
+    if isinstance(member, ConceptMember):
+        return MemberKind.CONCEPT
+    elif isinstance(member, TypedefMember):
+        return MemberKind.TYPE_ALIAS
+    elif isinstance(member, VariableMember):
+        if member.is_const or member.is_constexpr:
+            return MemberKind.CONSTANT
+        else:
+            return MemberKind.VARIABLE
+    elif isinstance(member, FunctionMember):
+        if member.name.startswith("operator"):
+            return MemberKind.OPERATOR
+        else:
+            return MemberKind.FUNCTION
+    else:
+        return MemberKind.FUNCTION
 
 
 class ScopeKind(ABC):
@@ -105,11 +143,20 @@ class NamespaceScopeKind(ScopeKind):
     def to_string(self, scope: Scope) -> str:
         qualification = scope.get_qualified_name()
 
-        result = []
-        for member in scope.get_members():
-            result.append(member.to_string(0, qualification, hide_visibility=True))
+        # Group members by kind
+        groups: dict[MemberKind, list[str]] = {kind: [] for kind in MemberKind}
 
-        result = natsorted(result)
+        for member in scope.get_members():
+            kind = classify_member(member)
+            stringified = member.to_string(0, qualification, hide_visibility=True)
+            groups[kind].append(stringified)
+
+        # Sort within each group and combine in kind order
+        result = []
+        for kind in MemberKind:
+            sorted_group = natsorted(groups[kind])
+            result.extend(sorted_group)
+
         return "\n".join(result)
 
 
@@ -264,16 +311,56 @@ class Scope(Generic[ScopeKindT]):
         """
         Get the string representation of the scope.
         """
-        result = [self.kind.to_string(self)]
+        # Get this scope's content (e.g., class members, free functions, ...)
+        this_content = self.kind.to_string(self)
 
-        for _, inner_scope in sorted(
-            filter(lambda x: x[0] is not None, self.inner_scopes.items()),
-            key=lambda x: x[0],
-        ):
-            result.append(inner_scope.to_string())
+        # Separate inner scopes into namespaces and non-namespaces
+        # Keep (scope, string) tuples to sort by scope properties
+        namespace_scope_items: list[tuple[Scope, str]] = []
+        non_namespace_scope_items: list[tuple[Scope, str]] = []
 
-        result = natsorted(result)
-        return "\n\n".join(result).strip()
+        for _, inner_scope in self.inner_scopes.items():
+            if inner_scope.name is None:
+                continue
+            inner_str = inner_scope.to_string()
+            if not inner_str.strip():
+                continue
+
+            if isinstance(inner_scope.kind, NamespaceScopeKind):
+                namespace_scope_items.append((inner_scope, inner_str))
+            else:
+                non_namespace_scope_items.append((inner_scope, inner_str))
+
+        # Sort non-namespace scopes by depth (fewer :: first) then by string
+        def scope_sort_key(item: tuple[Scope, str]) -> tuple:
+            scope, string = item
+            depth = scope.get_qualified_name().count("::")
+            return (depth, _natsort_key(string))
+
+        non_namespace_scope_items.sort(key=scope_sort_key)
+        non_namespace_scope_strings = [s for _, s in non_namespace_scope_items]
+        namespace_scope_strings = [s for _, s in namespace_scope_items]
+
+        # Build result:
+        # 1. Free members / this scope's content first
+        # 2. Non-namespace inner scopes (classes, structs, enums), sorted by depth
+        # 3. Namespace inner scopes, each separated by "\n\n\n" (two blank lines)
+
+        local_parts = []
+        if this_content.strip():
+            local_parts.append(this_content)
+        local_parts.extend(non_namespace_scope_strings)
+
+        # NOTE: Don't sort local_parts together - free members should come first
+        local_block = "\n\n".join(local_parts)
+
+        # Combine with namespace scopes using one more blank line for clearer separation
+        all_blocks = []
+        if local_block.strip():
+            all_blocks.append(local_block)
+        all_blocks.extend(natsorted(namespace_scope_strings))
+
+        return "\n\n\n".join(all_blocks).strip()
 
     def print(self):
         """
