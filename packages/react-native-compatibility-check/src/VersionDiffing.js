@@ -534,6 +534,8 @@ function getTypeAnnotationLabel(type: CompleteTypeAnnotation): string {
     return String(type.value);
   } else if (type.type === 'NullableTypeAnnotation') {
     return `?${getTypeAnnotationLabel(type.typeAnnotation)}`;
+  } else if (type.type === 'TypeAliasTypeAnnotation') {
+    return type.name;
   } else {
     return type.type;
   }
