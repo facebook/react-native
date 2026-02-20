@@ -209,11 +209,6 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       if (clickableSpan !is ReactLinkSpan) {
         clickableSpan.onClick(this)
       }
-    } else if (action == MotionEvent.ACTION_DOWN) {
-      val layout = checkNotNull(preparedLayout).layout
-      val start = (layout.text as Spanned).getSpanStart(clickableSpan)
-      val end = (layout.text as Spanned).getSpanEnd(clickableSpan)
-      setSelection(start, end)
     }
 
     return true
