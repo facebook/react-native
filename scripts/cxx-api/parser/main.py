@@ -45,7 +45,7 @@ def resolve_ref_text_name(type_def: compound.refTextType) -> str:
     return type_def.get_valueOf_()
 
 
-def resolve_linked_text_name(type_def: compound.linkedTextType) -> str:
+def resolve_linked_text_name(type_def: compound.linkedTextType) -> (str, bool):
     name = ""
 
     for part in type_def.content_:
@@ -60,11 +60,16 @@ def resolve_linked_text_name(type_def: compound.linkedTextType) -> str:
             else:
                 name += str(part.value)
 
-    # literal initializers keep "=" sign
+    is_brace_initializer = False
     if name.startswith("="):
+        # Detect assignment initializers: = value
         name = name[1:]
+    elif name.startswith("{") and name.endswith("}"):
+        # Detect brace initializers: {value}
+        is_brace_initializer = True
+        name = name[1:-1].strip()
 
-    return name.strip()
+    return (name.strip(), is_brace_initializer)
 
 
 def resolve_linked_text_full(type_def: compound.linkedTextType) -> str:
@@ -198,8 +203,11 @@ def get_variable_member(
     if is_const:
         variable_type = variable_type[5:].strip()
 
+    is_brace_initializer = False
     if member_def.initializer is not None:
-        variable_value = resolve_linked_text_name(member_def.initializer)
+        (variable_value, is_brace_initializer) = resolve_linked_text_name(
+            member_def.initializer
+        )
 
     return VariableMember(
         variable_name,
@@ -212,6 +220,7 @@ def get_variable_member(
         variable_value,
         variable_definition,
         variable_argstring,
+        is_brace_initializer,
     )
 
 
@@ -377,7 +386,7 @@ def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType):
         value_value = None
 
         if enum_value_def.initializer is not None:
-            value_value = resolve_linked_text_name(enum_value_def.initializer)
+            (value_value, _) = resolve_linked_text_name(enum_value_def.initializer)
 
         scope.add_member(
             EnumMember(
