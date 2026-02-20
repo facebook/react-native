@@ -991,7 +991,7 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ReactCommon ${ADDITIONAL_INPUTS}
+INPUT                  = ${INPUTS}
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1063,10 +1063,7 @@ EXCLUDE_SYMLINKS       = NO
 # exclude all test directories for example use the pattern */test/*
 
 EXCLUDE_PATTERNS       = */tests/* \
-                         */samples/* \
-                         */platform/windows/* \
-                         */platform/macos/* \
-                         */platform/cxx/* ${ADDITIONAL_EXCLUDE_PATTERNS}
+                         */samples/* \ ${EXCLUDE_PATTERNS}
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
