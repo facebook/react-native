@@ -19,13 +19,10 @@ import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = Readonly<{
+component LogBoxInspectorStackFrame(
   frame: StackFrame,
   onPress?: ?(event: GestureResponderEvent) => void,
-}>;
-
-function LogBoxInspectorStackFrame(props: Props): React.Node {
-  const {frame, onPress} = props;
+) {
   const column = frame.column != null && parseInt(frame.column, 10);
   const location =
     getFileName(frame.file) +
