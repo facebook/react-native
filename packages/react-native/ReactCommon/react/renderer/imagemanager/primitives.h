@@ -128,8 +128,13 @@ class ImageSource {
         return "remote";
       case ImageSource::Type::Local:
         return "local";
+#if defined(_MSC_VER)
     default:
-        return "Unknown";
+        __assume(0);
+#elif defined(__GNUC__) || defined(__clang__)
+    default:
+        __builtin_unreachable();
+#endif
     }
   }
 
@@ -144,8 +149,13 @@ class ImageSource {
         return "force-cache";
       case ImageSource::CacheStategy::OnlyIfCached:
         return "only-if-cached";
+#if defined(_MSC_VER)
     default:
-        return "Unknown";
+        __assume(0);
+#elif defined(__GNUC__) || defined(__clang__)
+    default:
+        __builtin_unreachable();
+#endif
     }
   }
 #endif
