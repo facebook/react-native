@@ -7,17 +7,41 @@
 
 #pragma once
 
+namespace test {
+struct FlexDirection {}
+} // namespace test
+
 namespace facebook {
 
-namespace react {
+namespace yoga {
 
-enum class Enum {
-  A,
-  B,
+using test::FlexDirection;
+
+struct Node {};
+
+FloatOptional boundAxisWithinMinAndMax(
+    const yoga::Node node,
+    const Direction direction,
+    const FlexDirection axis,
+    const FloatOptional value,
+    const float axisSize,
+    const float widthSize);
+
+FlexLine calculateFlexLine(
+    yoga::Node node,
+    Direction ownerDirection,
+    float ownerWidth,
+    float mainAxisOwnerSize,
+    float availableInnerWidth,
+    float availableInnerMainDim,
+    Node::LayoutableChildren::Iterator &iterator,
+    size_t lineCount);
+
+struct Test {
+  void test(std::function<void(Node node)> f);
+  typedef void (*FnPtr)(FlexDirection node);
 };
 
-void test(react::Enum e = Enum::A);
-
-} // namespace react
+} // namespace yoga
 
 } // namespace facebook

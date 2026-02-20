@@ -101,9 +101,9 @@ def build_snapshot_for_view(
 
     # Check the result
     if result.returncode != 0:
-        print(f"Error: {result.stderr}")
+        print(f"Doxygen finished with error: {result.stderr}")
     else:
-        print("Success")
+        print("Doxygen finished successfully")
 
     # build snapshot, convert to string, and save to file
     snapshot = build_snapshot(os.path.join(react_native_dir, "api", "xml"))
