@@ -7,22 +7,24 @@
 
 #pragma once
 
-namespace facebook {
+#include <type_traits>
 
-namespace yoga {
+namespace test {
 
-struct Node {
-  /// Moves a Symbol, String, or Object rvalue into a new JS value.
+class Symbol {};
+class BigInt {};
+class String {};
+class Object {};
+
+struct Value {
   template <
       typename T,
       typename = std::enable_if_t<
           std::is_base_of<Symbol, T>::value || std::is_base_of<BigInt, T>::value || std::is_base_of<String, T>::value ||
           std::is_base_of<Object, T>::value>>
-  /* implicit */ Node(T &&other) : Node(kindOf(other))
+  /* implicit */ Value(T &&other)
   {
-    new (&data_.pointer) T(std::move(other));
   }
-}
-} // namespace yoga
+};
 
-} // namespace facebook
+} // namespace test

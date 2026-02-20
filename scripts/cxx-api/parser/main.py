@@ -152,8 +152,16 @@ def get_template_params(
                     template_type = " ".join(parts[:-1])
                     template_name = parts[-1]
                 elif len(parts) == 1:
-                    # Just a name like "T" with no type keyword
-                    template_name = parts[0]
+                    # Check if this is an unnamed template parameter
+                    # (just "typename" or "class" with or without a default value)
+                    # In this case, we leave name as None/empty
+                    if parts[0] in ("typename", "class"):
+                        # Unnamed template parameter
+                        # e.g., "typename" or "typename = std::enable_if_t<...>"
+                        template_name = None
+                    else:
+                        # Just a name like "T" with no type keyword
+                        template_name = parts[0]
 
             template_params.append(
                 Template(template_type, template_name, template_value)
