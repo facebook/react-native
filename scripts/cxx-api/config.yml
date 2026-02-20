@@ -1,0 +1,72 @@
+ReactCommon:
+  include_codegen: false
+  inputs:
+    - packages/react-native/ReactCommon
+  exclude_patterns:
+    - "*/test_utils/*"
+    - "*/jni/*"
+    - "*/platform/cxx/*"
+    - "*/platform/windows/*"
+    - "*/platform/macos/*"
+    - "*/platform/ios/*"
+    - "*/platform/android/*"
+  definitions:
+  variants:
+    debug:
+      definitions:
+        DEBUG: 1
+        REACT_NATIVE_DEBUG: 1
+    release:
+      definitions:
+        NDEBUG: 1
+        REACT_NATIVE_PRODUCTION: 1
+
+ReactAndroid:
+  include_codegen: true
+  inputs:
+    - packages/react-native/ReactCommon
+    - packages/react-native/ReactAndroid
+  exclude_patterns:
+    - "*/test_utils/*"
+    - "*/FBReactNativeSpec*/*"
+    - "*/platform/cxx/*"
+    - "*/platform/windows/*"
+    - "*/platform/macos/*"
+    - "*/platform/ios/*"
+  definitions:
+    RN_SERIALIZABLE_STATE: 1
+    ANDROID: 1
+  variants:
+    debug:
+      definitions:
+        DEBUG: 1
+        REACT_NATIVE_DEBUG: 1
+    release:
+      definitions:
+        NDEBUG: 1
+        REACT_NATIVE_PRODUCTION: 1
+
+# ReactIOS?
+ReactApple:
+  include_codegen: true
+  inputs:
+    - packages/react-native/ReactCommon
+    - packages/react-native/React
+    - packages/react-native/ReactApple
+  exclude_patterns:
+    - "*/test_utils/*"
+    - "*/jni/*"
+    - "*/platform/cxx/*"
+    - "*/platform/windows/*"
+    - "*/platform/macos/*"
+    - "*/platform/android/*"
+  definitions:
+  variants:
+    debug:
+      definitions:
+        DEBUG: 1
+        REACT_NATIVE_DEBUG: 1
+    release:
+      definitions:
+        NDEBUG: 1
+        REACT_NATIVE_PRODUCTION: 1

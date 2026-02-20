@@ -180,3 +180,4 @@ fix_*.patch
 # Doxygen XML output used for C++ API tracking
 /packages/react-native/**/api/xml
 /packages/react-native/**/.doxygen.config.generated
+/scripts/cxx-api/codegen
