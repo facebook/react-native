@@ -778,12 +778,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public View resolveView(int tag) {
+  public @Nullable View resolveView(int tag) {
     UiThreadUtil.assertOnUiThread();
-    return mUIImplementation
-        .getUIViewOperationQueue()
-        .getNativeViewHierarchyManager()
-        .resolveView(tag);
+    return null;
   }
 
   @Override

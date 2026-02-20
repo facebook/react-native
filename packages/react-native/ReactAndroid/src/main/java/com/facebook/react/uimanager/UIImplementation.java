@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager;
 
-import android.os.SystemClock;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import androidx.annotation.Nullable;
@@ -33,6 +32,7 @@ import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +58,6 @@ public class UIImplementation {
   private final UIViewOperationQueue mOperationsQueue;
   private final int[] mMeasureBuffer = new int[4];
 
-  private long mLastCalculateLayoutTime = 0;
   protected @Nullable LayoutUpdateListener mLayoutUpdateListener;
 
   /**
@@ -167,16 +166,12 @@ public class UIImplementation {
               mShadowNodeRegistry.addRootNode(rootCSSNode);
             }
           });
-
-      // register it within NativeViewHierarchyManager
-      mOperationsQueue.addRootView(tag, rootView);
     }
   }
 
   /** Unregisters a root node with a given tag. */
   public void removeRootView(int rootViewTag) {
     removeRootShadowNode(rootViewTag);
-    mOperationsQueue.enqueueRemoveRootView(rootViewTag);
   }
 
   /**
@@ -185,7 +180,7 @@ public class UIImplementation {
    * @return The num of root view
    */
   public int getRootViewNum() {
-    return mOperationsQueue.getNativeViewHierarchyManager().getRootViewNum();
+    return 0;
   }
 
   /** Unregisters a root node with a given tag from the shadow node registry */
@@ -238,12 +233,10 @@ public class UIImplementation {
     dispatchViewUpdatesIfNeeded();
   }
 
-  public void profileNextBatch() {
-    mOperationsQueue.profileNextBatch();
-  }
+  public void profileNextBatch() {}
 
   public Map<String, Long> getProfiledBatchPerfCounters() {
-    return mOperationsQueue.getProfiledBatchPerfCounters();
+    return new HashMap<>();
   }
 
   /** Invoked by React to create a new node with a given tag, class name and properties. */
@@ -274,12 +267,7 @@ public class UIImplementation {
   }
 
   protected void handleCreateView(
-      ReactShadowNode cssNode, int rootViewTag, @Nullable ReactStylesDiffMap styles) {
-    if (!cssNode.isVirtual()) {
-      mOperationsQueue.enqueueCreateView(
-          cssNode.getThemedContext(), cssNode.getReactTag(), cssNode.getViewClass(), styles);
-    }
-  }
+      ReactShadowNode cssNode, int rootViewTag, @Nullable ReactStylesDiffMap styles) {}
 
   /** Invoked by React to create a new node with a given tag has its properties changed. */
   public void updateView(int tag, String className, ReadableMap props) {
@@ -311,15 +299,10 @@ public class UIImplementation {
    */
   public void synchronouslyUpdateViewOnUIThread(int tag, ReactStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
-    mOperationsQueue.getNativeViewHierarchyManager().updateProperties(tag, props);
   }
 
   protected void handleUpdateView(
-      ReactShadowNode cssNode, String className, ReactStylesDiffMap styles) {
-    if (!cssNode.isVirtual()) {
-      mOperationsQueue.enqueueUpdateProperties(cssNode.getReactTag(), className, styles);
-    }
-  }
+      ReactShadowNode cssNode, String className, ReactStylesDiffMap styles) {}
 
   /**
    * Invoked when there is a mutation in a node tree.
@@ -434,9 +417,6 @@ public class UIImplementation {
         cssNodeToManage.addChildAt(cssNodeToAdd, viewAtIndex.mIndex);
       }
 
-      mOperationsQueue.enqueueManageChildren(
-          cssNodeToManage.getReactTag(), indicesToRemove, viewsToAdd, tagsToDelete);
-
       for (int i = 0; i < tagsToDelete.length; i++) {
         removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
       }
@@ -470,8 +450,6 @@ public class UIImplementation {
         }
         cssNodeToManage.addChildAt(cssNodeToAdd, i);
       }
-
-      mOperationsQueue.enqueueSetChildren(cssNodeToManage.getReactTag(), childrenTags);
     }
   }
 
@@ -522,9 +500,7 @@ public class UIImplementation {
    * @param callback will be called if with the identified child view react ID, and measurement
    *     info. If no view was found, callback will be invoked with no data.
    */
-  public void findSubviewIn(int reactTag, float targetX, float targetY, Callback callback) {
-    mOperationsQueue.enqueueFindTargetForTouch(reactTag, targetX, targetY, callback);
-  }
+  public void findSubviewIn(int reactTag, float targetX, float targetY, Callback callback) {}
 
   /**
    * Check if the first shadow node is the descendant of the second shadow node
@@ -551,12 +527,6 @@ public class UIImplementation {
     if (!mViewOperationsEnabled) {
       return;
     }
-
-    // This method is called by the implementation of JS touchable interface (see Touchable.js for
-    // more details) at the moment of touch activation. That is after user starts the gesture from
-    // a touchable view with a given reactTag, or when user drag finger back into the press
-    // activation area of a touchable view that have been activated before.
-    mOperationsQueue.enqueueMeasure(reactTag, callback);
   }
 
   /**
@@ -568,8 +538,6 @@ public class UIImplementation {
     if (!mViewOperationsEnabled) {
       return;
     }
-
-    mOperationsQueue.enqueueMeasureInWindow(reactTag, callback);
   }
 
   /**
@@ -622,24 +590,15 @@ public class UIImplementation {
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "UIImplementation.dispatchViewUpdates")
         .arg("batchId", batchId)
         .flush();
-    final long commitStartTime = SystemClock.uptimeMillis();
     try {
       updateViewHierarchy();
-      mOperationsQueue.dispatchViewUpdates(batchId, commitStartTime, mLastCalculateLayoutTime);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
   private void dispatchViewUpdatesIfNeeded() {
-    // If we are in the middle of a batch update, any additional changes
-    // will automatically be dispatched at the end of the batch.
-    // If we are not, we have to initiate new batch update.
-    // As all batches are executed as a single runnable on the event queue
-    // this should always be empty, but that calling architecture is an implementation detail.
-    if (mOperationsQueue.isEmpty()) {
-      dispatchViewUpdates(-1); // "-1" means "no associated batch id"
-    }
+    dispatchViewUpdates(-1);
   }
 
   protected void updateViewHierarchy() {
@@ -684,8 +643,8 @@ public class UIImplementation {
             Systrace.endSection(Systrace.TRACE_TAG_REACT);
           }
 
-          if (mLayoutUpdateListener != null) {
-            mOperationsQueue.enqueueLayoutUpdateFinished(cssRoot, mLayoutUpdateListener);
+          if (mLayoutUpdateListener != null && cssRoot != null) {
+            mLayoutUpdateListener.onLayoutUpdated(cssRoot);
           }
         }
       }
@@ -705,9 +664,7 @@ public class UIImplementation {
    *
    * @param enabled whether layout animation is enabled or not
    */
-  public void setLayoutAnimationEnabledExperimental(boolean enabled) {
-    mOperationsQueue.enqueueSetLayoutAnimationEnabled(enabled);
-  }
+  public void setLayoutAnimationEnabledExperimental(boolean enabled) {}
 
   /**
    * Configure an animation to be used for the native layout changes, and native views creation. The
@@ -721,26 +678,17 @@ public class UIImplementation {
    *     interrupted. In this case, callback parameter will be false.
    * @param error will be called if there was an error processing the animation
    */
-  public void configureNextLayoutAnimation(ReadableMap config, Callback success) {
-    mOperationsQueue.enqueueConfigureLayoutAnimation(config, success);
-  }
+  public void configureNextLayoutAnimation(ReadableMap config, Callback success) {}
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
 
     if (node == null) {
-      // TODO: this should only happen when using Fabric renderer. This is a temporary approach
-      // and it will be refactored when fabric supports JS Responder.
       return;
     }
-
-    // While loop removed due to NativeKind removal
-    mOperationsQueue.enqueueSetJSResponder(node.getReactTag(), reactTag, blockNativeResponder);
   }
 
-  public void clearJSResponder() {
-    mOperationsQueue.enqueueClearJSResponder();
-  }
+  public void clearJSResponder() {}
 
   @Deprecated
   public void dispatchViewManagerCommand(
@@ -750,8 +698,6 @@ public class UIImplementation {
     if (!viewExists) {
       return;
     }
-
-    mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
   public void dispatchViewManagerCommand(
@@ -761,21 +707,13 @@ public class UIImplementation {
     if (!viewExists) {
       return;
     }
-
-    mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
-  public void sendAccessibilityEvent(int tag, int eventType) {
-    mOperationsQueue.enqueueSendAccessibilityEvent(tag, eventType);
-  }
+  public void sendAccessibilityEvent(int tag, int eventType) {}
 
-  public void onHostResume() {
-    mOperationsQueue.resumeFrameCallback();
-  }
+  public void onHostResume() {}
 
-  public void onHostPause() {
-    mOperationsQueue.pauseFrameCallback();
-  }
+  public void onHostPause() {}
 
   public void onHostDestroy() {}
 
@@ -918,7 +856,6 @@ public class UIImplementation {
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "cssRoot.calculateLayout")
         .arg("rootTag", cssRoot.getReactTag())
         .flush();
-    long startTime = SystemClock.uptimeMillis();
     try {
       int widthSpec = cssRoot.getWidthMeasureSpec();
       int heightSpec = cssRoot.getHeightMeasureSpec();
@@ -931,7 +868,6 @@ public class UIImplementation {
               : MeasureSpec.getSize(heightSpec));
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
-      mLastCalculateLayoutTime = SystemClock.uptimeMillis() - startTime;
     }
   }
 
@@ -966,13 +902,9 @@ public class UIImplementation {
     cssNode.markUpdateSeen();
   }
 
-  public void addUIBlock(UIBlock block) {
-    mOperationsQueue.enqueueUIBlock(block);
-  }
+  public void addUIBlock(UIBlock block) {}
 
-  public void prependUIBlock(UIBlock block) {
-    mOperationsQueue.prependUIBlock(block);
-  }
+  public void prependUIBlock(UIBlock block) {}
 
   public int resolveRootTagFromReactTag(int reactTag) {
     if (mShadowNodeRegistry.isRootNode(reactTag)) {

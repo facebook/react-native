@@ -385,27 +385,10 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       int newScreenWidth = newAbsoluteRight - newAbsoluteLeft;
       int newScreenHeight = newAbsoluteBottom - newAbsoluteTop;
 
-      boolean layoutHasChanged =
-          newScreenX != mScreenX
-              || newScreenY != mScreenY
-              || newScreenWidth != mScreenWidth
-              || newScreenHeight != mScreenHeight;
-
       mScreenX = newScreenX;
       mScreenY = newScreenY;
       mScreenWidth = newScreenWidth;
       mScreenHeight = newScreenHeight;
-
-      if (layoutHasChanged && getParent() != null) {
-        uiViewOperationQueue.enqueueUpdateLayout(
-            getParent().getReactTag(),
-            getReactTag(),
-            getScreenX(),
-            getScreenY(),
-            getScreenWidth(),
-            getScreenHeight(),
-            getLayoutDirection());
-      }
     }
   }
 
