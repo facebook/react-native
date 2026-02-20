@@ -1,0 +1,5 @@
+union test::StaticUnion {
+  public int intValue;
+  public static int count;
+  public static void reset();
+}
