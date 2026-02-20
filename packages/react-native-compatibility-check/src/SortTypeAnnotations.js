@@ -153,7 +153,8 @@ export function compareTypeAnnotationForSorting(
         [originalPositionB, typeB.elementType],
       );
     case 'TypeAliasTypeAnnotation':
-      return 0;
+      invariant(typeB.type === 'TypeAliasTypeAnnotation', EQUALITY_MSG);
+      return typeA.name.localeCompare(typeB.name);
     case 'MixedTypeAnnotation':
       return 0;
     default:
