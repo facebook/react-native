@@ -3,7 +3,7 @@ struct test::AccessibilityState {
   public bool disabled{false};
   public bool selected{false};
   public std::optional< bool > expanded{std::nullopt};
-  public test::AccessibilityState::CheckedState checked{CheckedState::None};
+  public test::AccessibilityState::CheckedState checked{test::AccessibilityState::CheckedState::None};
 }
 
 enum test::AccessibilityState::CheckedState {

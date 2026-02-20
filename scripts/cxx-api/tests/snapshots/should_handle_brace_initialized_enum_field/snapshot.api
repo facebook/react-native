@@ -1,5 +1,5 @@
 struct test::State {
-  public test::State::Mode mode{Mode::Auto};
+  public test::State::Mode mode{test::State::Mode::Auto};
 }
 
 enum test::State::Mode {
