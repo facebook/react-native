@@ -65,6 +65,7 @@ component IntersectionObserverExplicitRootScrollExample() {
       }}
       ref={roofRef}>
       <Button
+        testID="toggle_margin"
         title={`Click to ${showMargin ? 'remove' : 'add'} margin`}
         onPress={() => {
           setShowMargin(show => !show);
@@ -148,6 +149,12 @@ function ListItem(props: {
         props.style,
       ]}
       ref={itemRef}>
+      {intersectionRatio >= props.threshold ? (
+        <Text>Intersecting by threshold</Text>
+      ) : null}
+      {intersectionRootRatio >= (props.rootThreshold ?? 1) ? (
+        <Text>Intersecting by rootThreshold</Text>
+      ) : null}
       <Text style={styles.description}>{props.description}</Text>
       {props.rootThreshold != null && (
         <Text>rootThreshold: {props.rootThreshold}</Text>
