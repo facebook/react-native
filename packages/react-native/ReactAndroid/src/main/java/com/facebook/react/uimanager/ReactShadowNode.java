@@ -42,8 +42,7 @@ import com.facebook.yoga.YogaWrap;
  *
  * <p>This class allows for the native view hierarchy to not be an exact copy of the hierarchy
  * received from JS by keeping track of both JS children (e.g. {@link #getChildCount()} and
- * separately native children (e.g. {@link #getNativeChildCount()}). See {@link
- * NativeViewHierarchyOptimizer} for more information.
+ * separately native children (e.g. {@link #getNativeChildCount()}).
  */
 @LegacyArchitecture
 @Deprecated(
@@ -112,7 +111,7 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * layout. Will be only called for nodes that are marked as updated with {@link #markUpdated()} or
    * require layouting (marked with {@link #dirty()}).
    */
-  void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer);
+  void onBeforeLayout();
 
   void updateProperties(ReactStylesDiffMap props);
 
@@ -130,10 +129,7 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   /* package */ boolean dispatchUpdatesWillChangeLayout(float absoluteX, float absoluteY);
 
   /* package */ void dispatchUpdates(
-      float absoluteX,
-      float absoluteY,
-      UIViewOperationQueue uiViewOperationQueue,
-      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer);
+      float absoluteX, float absoluteY, UIViewOperationQueue uiViewOperationQueue);
 
   int getReactTag();
 
@@ -227,13 +223,12 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * in this subtree (which means that the given child will be a sibling of theirs in the final
    * native hierarchy since they'll get attached to the same native parent).
    *
-   * <p>Basically, a view might have children that have been optimized away by {@link
-   * NativeViewHierarchyOptimizer}. Since those children will then add their native children to this
-   * view, we now have ranges of native children that correspond to single unoptimized children. The
-   * purpose of this method is to return the index within the native children that corresponds to
-   * the **start** of the native children that belong to the given child. Also, note that all of the
-   * children of a view might be optimized away, so this could return the same value for multiple
-   * different children.
+   * <p>Basically, a view might have children that have been optimized away. Since those children
+   * will then add their native children to this view, we now have ranges of native children that
+   * correspond to single unoptimized children. The purpose of this method is to return the index
+   * within the native children that corresponds to the **start** of the native children that belong
+   * to the given child. Also, note that all of the children of a view might be optimized away, so
+   * this could return the same value for multiple different children.
    *
    * <p>Example. Native children are represented by (N) where N is the no-opt child they came from.
    * If no children are optimized away it'd look like this: (0) (1) (2) (3) ... (n)

@@ -55,8 +55,7 @@ import java.util.Arrays;
  *
  * <p>This class allows for the native view hierarchy to not be an exact copy of the hierarchy
  * received from JS by keeping track of both JS children (e.g. {@link #getChildCount()} and
- * separately native children (e.g. {@link #getNativeChildCount()}). See {@link
- * NativeViewHierarchyOptimizer} for more information.
+ * separately native children (e.g. {@link #getNativeChildCount()}).
  */
 @ReactPropertyHolder
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
@@ -319,7 +318,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    * require layouting (marked with {@link #dirty()}).
    */
   @Override
-  public void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {}
+  public void onBeforeLayout() {}
 
   @Override
   public final void updateProperties(ReactStylesDiffMap props) {
@@ -368,10 +367,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void dispatchUpdates(
-      float absoluteX,
-      float absoluteY,
-      UIViewOperationQueue uiViewOperationQueue,
-      @Nullable NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
+      float absoluteX, float absoluteY, UIViewOperationQueue uiViewOperationQueue) {
     if (mNodeUpdated) {
       onCollectExtraUpdates(uiViewOperationQueue);
     }
@@ -400,20 +396,15 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       mScreenWidth = newScreenWidth;
       mScreenHeight = newScreenHeight;
 
-      if (layoutHasChanged) {
-        // TODO: T26400974 ReactShadowNode should not depend on nativeViewHierarchyOptimizer
-        if (nativeViewHierarchyOptimizer != null) {
-          nativeViewHierarchyOptimizer.handleUpdateLayout(this);
-        } else {
-          uiViewOperationQueue.enqueueUpdateLayout(
-              getParent().getReactTag(),
-              getReactTag(),
-              getScreenX(),
-              getScreenY(),
-              getScreenWidth(),
-              getScreenHeight(),
-              getLayoutDirection());
-        }
+      if (layoutHasChanged && getParent() != null) {
+        uiViewOperationQueue.enqueueUpdateLayout(
+            getParent().getReactTag(),
+            getReactTag(),
+            getScreenX(),
+            getScreenY(),
+            getScreenWidth(),
+            getScreenHeight(),
+            getLayoutDirection());
       }
     }
   }
@@ -623,13 +614,12 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    * in this subtree (which means that the given child will be a sibling of theirs in the final
    * native hierarchy since they'll get attached to the same native parent).
    *
-   * <p>Basically, a view might have children that have been optimized away by {@link
-   * NativeViewHierarchyOptimizer}. Since those children will then add their native children to this
-   * view, we now have ranges of native children that correspond to single unoptimized children. The
-   * purpose of this method is to return the index within the native children that corresponds to
-   * the **start** of the native children that belong to the given child. Also, note that all of the
-   * children of a view might be optimized away, so this could return the same value for multiple
-   * different children.
+   * <p>Basically, a view might have children that have been optimized away. Since those children
+   * will then add their native children to this view, we now have ranges of native children that
+   * correspond to single unoptimized children. The purpose of this method is to return the index
+   * within the native children that corresponds to the **start** of the native children that belong
+   * to the given child. Also, note that all of the children of a view might be optimized away, so
+   * this could return the same value for multiple different children.
    *
    * <p>Example. Native children are represented by (N) where N is the no-opt child they came from.
    * If no children are optimized away it'd look like this: (0) (1) (2) (3) ... (n)

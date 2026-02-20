@@ -56,7 +56,6 @@ public class UIImplementation {
   protected final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
   private final ViewManagerRegistry mViewManagers;
   private final UIViewOperationQueue mOperationsQueue;
-  private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
 
   private long mLastCalculateLayoutTime = 0;
@@ -99,8 +98,6 @@ public class UIImplementation {
     mReactContext = reactContext;
     mViewManagers = viewManagers;
     mOperationsQueue = operationsQueue;
-    mNativeViewHierarchyOptimizer =
-        new NativeViewHierarchyOptimizer(mOperationsQueue, mShadowNodeRegistry);
     mEventDispatcher = eventDispatcher;
   }
 
@@ -279,7 +276,8 @@ public class UIImplementation {
   protected void handleCreateView(
       ReactShadowNode cssNode, int rootViewTag, @Nullable ReactStylesDiffMap styles) {
     if (!cssNode.isVirtual()) {
-      mNativeViewHierarchyOptimizer.handleCreateView(cssNode, cssNode.getThemedContext(), styles);
+      mOperationsQueue.enqueueCreateView(
+          cssNode.getThemedContext(), cssNode.getReactTag(), cssNode.getViewClass(), styles);
     }
   }
 
@@ -319,7 +317,7 @@ public class UIImplementation {
   protected void handleUpdateView(
       ReactShadowNode cssNode, String className, ReactStylesDiffMap styles) {
     if (!cssNode.isVirtual()) {
-      mNativeViewHierarchyOptimizer.handleUpdateView(cssNode, className, styles);
+      mOperationsQueue.enqueueUpdateProperties(cssNode.getReactTag(), className, styles);
     }
   }
 
@@ -345,6 +343,10 @@ public class UIImplementation {
 
     synchronized (uiImplementationThreadLock) {
       ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+      if (cssNodeToManage == null) {
+        throw new IllegalViewOperationException(
+            "Trying to manage children of unknown view tag: " + viewTag);
+      }
 
       int numToMove = moveFrom == null ? 0 : moveFrom.size();
       int numToAdd = addChildTags == null ? 0 : addChildTags.size();
@@ -432,8 +434,8 @@ public class UIImplementation {
         cssNodeToManage.addChildAt(cssNodeToAdd, viewAtIndex.mIndex);
       }
 
-      mNativeViewHierarchyOptimizer.handleManageChildren(
-          cssNodeToManage, indicesToRemove, tagsToRemove, viewsToAdd, tagsToDelete);
+      mOperationsQueue.enqueueManageChildren(
+          cssNodeToManage.getReactTag(), indicesToRemove, viewsToAdd, tagsToDelete);
 
       for (int i = 0; i < tagsToDelete.length; i++) {
         removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
@@ -455,6 +457,10 @@ public class UIImplementation {
 
     synchronized (uiImplementationThreadLock) {
       ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+      if (cssNodeToManage == null) {
+        throw new IllegalViewOperationException(
+            "Trying to set children of unknown view tag: " + viewTag);
+      }
 
       for (int i = 0; i < childrenTags.size(); i++) {
         ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
@@ -465,7 +471,7 @@ public class UIImplementation {
         cssNodeToManage.addChildAt(cssNodeToAdd, i);
       }
 
-      mNativeViewHierarchyOptimizer.handleSetChildren(cssNodeToManage, childrenTags);
+      mOperationsQueue.enqueueSetChildren(cssNodeToManage.getReactTag(), childrenTags);
     }
   }
 
@@ -619,7 +625,6 @@ public class UIImplementation {
     final long commitStartTime = SystemClock.uptimeMillis();
     try {
       updateViewHierarchy();
-      mNativeViewHierarchyOptimizer.onBatchComplete();
       mOperationsQueue.dispatchViewUpdates(batchId, commitStartTime, mLastCalculateLayoutTime);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
@@ -785,7 +790,7 @@ public class UIImplementation {
   }
 
   private void removeShadowNodeRecursive(ReactShadowNode nodeToRemove) {
-    NativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
+    nodeToRemove.removeAllNativeChildren();
     mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
     for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
       removeShadowNodeRecursive(nodeToRemove.getChildAt(i));
@@ -906,7 +911,7 @@ public class UIImplementation {
     for (int i = 0; i < cssNode.getChildCount(); i++) {
       notifyOnBeforeLayoutRecursive(cssNode.getChildAt(i));
     }
-    cssNode.onBeforeLayout(mNativeViewHierarchyOptimizer);
+    cssNode.onBeforeLayout();
   }
 
   protected void calculateRootLayout(ReactShadowNode cssRoot) {
@@ -956,10 +961,9 @@ public class UIImplementation {
       }
     }
 
-    cssNode.dispatchUpdates(absoluteX, absoluteY, mOperationsQueue, mNativeViewHierarchyOptimizer);
+    cssNode.dispatchUpdates(absoluteX, absoluteY, mOperationsQueue);
 
     cssNode.markUpdateSeen();
-    mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
   }
 
   public void addUIBlock(UIBlock block) {
