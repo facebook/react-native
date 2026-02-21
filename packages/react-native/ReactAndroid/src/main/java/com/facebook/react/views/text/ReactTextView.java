@@ -233,6 +233,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
       View child = uiManager.resolveView(placeholder.getReactTag());
 
+      if (child == null) {
+        continue;
+      }
+
       int start = text.getSpanStart(placeholder);
       int line = layout.getLineForOffset(start);
       boolean isLineTruncated = layout.getEllipsisCount(line) > 0;

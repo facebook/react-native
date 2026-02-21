@@ -68,9 +68,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
     }
 
-  // T221698007: This is closest to existing behavior, but does not align with web. We may want to
-  // change in the future if not too breaking.
-  var overflow: Overflow = Overflow.HIDDEN
+  var overflow: Overflow = Overflow.VISIBLE
     set(value) {
       if (field != value) {
         field = value
@@ -92,7 +90,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
   fun recycleView(): Unit {
     BackgroundStyleApplicator.reset(this)
-    overflow = Overflow.HIDDEN
+    overflow = Overflow.VISIBLE
     clickableSpans = emptyList()
     selection = null
     selectionColor = null
@@ -211,11 +209,6 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       if (clickableSpan !is ReactLinkSpan) {
         clickableSpan.onClick(this)
       }
-    } else if (action == MotionEvent.ACTION_DOWN) {
-      val layout = checkNotNull(preparedLayout).layout
-      val start = (layout.text as Spanned).getSpanStart(clickableSpan)
-      val end = (layout.text as Spanned).getSpanEnd(clickableSpan)
-      setSelection(start, end)
     }
 
     return true

@@ -19,6 +19,7 @@
   "main": "./jest-preset.js",
   "files": [
     "jest",
+    "jest-preset.js",
     "index.js",
     "README.md",
     "!**/__docs__/**",

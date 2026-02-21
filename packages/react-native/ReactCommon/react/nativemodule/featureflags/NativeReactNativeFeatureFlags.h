@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d8f724f9d18dcd98785e8ab6fc06b656>>
+ * @generated SignedSource<<b89ea2e8517db01bef375843a93e2ff5>>
  */
 
 /**
@@ -41,6 +41,8 @@ class NativeReactNativeFeatureFlags
   bool cdpInteractionMetricsEnabled(jsi::Runtime& runtime);
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
+
+  bool defaultTextToOverflowHidden(jsi::Runtime& runtime);
 
   bool disableEarlyViewCommandExecution(jsi::Runtime& runtime);
 

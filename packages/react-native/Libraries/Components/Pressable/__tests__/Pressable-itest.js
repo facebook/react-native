@@ -150,7 +150,8 @@ describe('<Pressable>', () => {
               ellipsizeMode="tail"
               fontSize="NaN"
               fontSizeMultiplier="NaN"
-              foregroundColor="rgba(0, 0, 0, 0)">
+              foregroundColor="rgba(0, 0, 0, 0)"
+              overflow="hidden">
               the quick brown fox
             </rn-paragraph>
           </rn-view>,

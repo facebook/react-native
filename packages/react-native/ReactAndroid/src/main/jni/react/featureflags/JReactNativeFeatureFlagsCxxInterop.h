@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9bba7df566585c39f8b5974bdd4d9d3>>
+ * @generated SignedSource<<c884eaa1b04699c8deb66eb62bb5e3f8>>
  */
 
 /**
@@ -37,6 +37,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool cxxNativeAnimatedEnabled(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool defaultTextToOverflowHidden(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool disableEarlyViewCommandExecution(

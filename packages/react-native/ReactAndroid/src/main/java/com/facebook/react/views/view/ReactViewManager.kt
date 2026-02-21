@@ -389,8 +389,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   @ReactProp(name = ViewProps.COLLAPSABLE)
   @Suppress("UNUSED_PARAMETER")
   public open fun setCollapsable(view: ReactViewGroup, collapsable: Boolean) {
-    // no-op: it's here only so that "collapsable" property is exported to JS. The value is actually
-    // handled in NativeViewHierarchyOptimizer
+    // no-op: it's here only so that "collapsable" property is exported to JS.
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE_CHILDREN)

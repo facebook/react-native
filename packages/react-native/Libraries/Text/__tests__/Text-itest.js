@@ -42,7 +42,8 @@ describe('<Text>', () => {
             ellipsizeMode="tail"
             fontSize="NaN"
             fontSizeMultiplier="NaN"
-            foregroundColor="rgba(0, 0, 0, 0)">
+            foregroundColor="rgba(0, 0, 0, 0)"
+            overflow="hidden">
             {TEST_TEXT}
           </rn-paragraph>,
         );

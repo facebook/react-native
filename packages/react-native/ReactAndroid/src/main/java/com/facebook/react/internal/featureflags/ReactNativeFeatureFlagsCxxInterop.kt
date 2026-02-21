@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cabb5ba7c0486e777be721f6ff880d05>>
+ * @generated SignedSource<<b57dc37b228c3d622be039686ea11471>>
  */
 
 /**
@@ -33,6 +33,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun cdpInteractionMetricsEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedEnabled(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun defaultTextToOverflowHidden(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableEarlyViewCommandExecution(): Boolean
 

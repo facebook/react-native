@@ -9,6 +9,7 @@
 #include "AnimatedPropsRegistry.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animationbackend/AnimatedPropsSerializer.h>
 #include <react/renderer/graphics/Color.h>
 #include <chrono>
@@ -152,8 +153,7 @@ void AnimationBackend::commitUpdates(
                         return shadowNode.clone(
                             {.props = newProps,
                              .children = fragment.children,
-                             .state = shadowNode.getState(),
-                             .runtimeShadowNodeReference = false});
+                             .state = shadowNode.getState()});
                       }));
             },
             {.mountSynchronously = true});
@@ -177,24 +177,45 @@ void AnimationBackend::requestAsyncFlushForSurfaces(
   react_native_assert(
       jsInvoker_ != nullptr ||
       surfaces.empty() && "jsInvoker_ was not provided");
+  std::weak_ptr<AnimatedPropsRegistry> weakAnimatedPropsRegistry =
+      animatedPropsRegistry_;
   for (const auto& surfaceId : surfaces) {
     // perform an empty commit on the js thread, to force the commit hook to
     // push updated shadow nodes to react through RSNRU
-    jsInvoker_->invokeAsync([weakUIManager = uiManager_, surfaceId]() {
-      auto uiManager = weakUIManager.lock();
-      if (!uiManager) {
-        return;
-      }
-      uiManager->getShadowTreeRegistry().visit(
-          surfaceId, [](const ShadowTree& shadowTree) {
-            shadowTree.commit(
-                [](const RootShadowNode& oldRootShadowNode) {
-                  return std::static_pointer_cast<RootShadowNode>(
-                      oldRootShadowNode.ShadowNode::clone({}));
-                },
-                {.source = ShadowTreeCommitSource::AnimationEndSync});
-          });
-    });
+    jsInvoker_->invokeAsync(
+        [weakUIManager = uiManager_, surfaceId, weakAnimatedPropsRegistry]() {
+          auto uiManager = weakUIManager.lock();
+          if (!uiManager) {
+            return;
+          }
+          uiManager->getShadowTreeRegistry().visit(
+              surfaceId,
+              [weakAnimatedPropsRegistry](const ShadowTree& shadowTree) {
+                auto result = shadowTree.commit(
+                    [weakAnimatedPropsRegistry](
+                        const RootShadowNode& oldRootShadowNode) {
+                      return std::static_pointer_cast<RootShadowNode>(
+                          oldRootShadowNode.ShadowNode::clone({}));
+                    },
+                    {.source = ShadowTreeCommitSource::AnimationEndSync});
+                // To clear the registry, the updates neeed to be propagated to
+                // React with RSNRU. Without
+                // updateRuntimeShadowNodeReferencesOnCommitThread this won't
+                // happen if we do any commits on the main thread, since the
+                // runtimeShadowNodeReference_ is not propagated to nodes cloned
+                // outside of the JS thread. So when the flag is disabled we
+                // keep the updates in the registry and we will reapply them in
+                // a commit hook triggered by a rerender.
+                if (result == ShadowTree::CommitStatus::Succeeded &&
+                    ReactNativeFeatureFlags::
+                        updateRuntimeShadowNodeReferencesOnCommitThread()) {
+                  if (auto animatedPropsRegistry =
+                          weakAnimatedPropsRegistry.lock()) {
+                    animatedPropsRegistry->clear(shadowTree.getSurfaceId());
+                  }
+                }
+              });
+        });
   }
 }
 

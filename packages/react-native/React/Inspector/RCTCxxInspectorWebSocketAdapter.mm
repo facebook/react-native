@@ -10,6 +10,7 @@
 #if RCT_DEV || RCT_REMOTE_PROFILE
 
 #import <React/RCTAssert.h>
+#import <React/RCTDevSupportHttpHeaders.h>
 #import <React/RCTInspector.h>
 #import <React/RCTInspectorPackagerConnection.h>
 #import <React/RCTUtils.h>
@@ -40,7 +41,10 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 {
   if ((self = [super init]) != nullptr) {
     _delegate = delegate;
-    _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:NSStringFromUTF8StringView(url)]];
+    NSURL *requestURL = [NSURL URLWithString:NSStringFromUTF8StringView(url)];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:requestURL];
+    [[RCTDevSupportHttpHeaders sharedInstance] applyHeadersToRequest:request];
+    _webSocket = [[SRWebSocket alloc] initWithURLRequest:request];
     _webSocket.delegate = self;
     [_webSocket open];
   }
