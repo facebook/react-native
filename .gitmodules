@@ -1,0 +1,3 @@
+[submodule "packages/react-native/third-party/yoga"]
+	path = packages/react-native/third-party/yoga
+	url = https://github.com/facebook/yoga.git
