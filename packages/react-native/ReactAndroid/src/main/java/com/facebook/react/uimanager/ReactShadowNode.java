@@ -111,7 +111,7 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * layout. Will be only called for nodes that are marked as updated with {@link #markUpdated()} or
    * require layouting (marked with {@link #dirty()}).
    */
-  void onBeforeLayout();
+  void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer);
 
   void updateProperties(ReactStylesDiffMap props);
 
@@ -129,7 +129,10 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   /* package */ boolean dispatchUpdatesWillChangeLayout(float absoluteX, float absoluteY);
 
   /* package */ void dispatchUpdates(
-      float absoluteX, float absoluteY, UIViewOperationQueue uiViewOperationQueue);
+      float absoluteX,
+      float absoluteY,
+      UIViewOperationQueue uiViewOperationQueue,
+      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer);
 
   int getReactTag();
 

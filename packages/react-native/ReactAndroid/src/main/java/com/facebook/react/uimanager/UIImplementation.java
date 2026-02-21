@@ -849,7 +849,7 @@ public class UIImplementation {
     for (int i = 0; i < cssNode.getChildCount(); i++) {
       notifyOnBeforeLayoutRecursive(cssNode.getChildAt(i));
     }
-    cssNode.onBeforeLayout();
+    cssNode.onBeforeLayout(null);
   }
 
   protected void calculateRootLayout(ReactShadowNode cssRoot) {
@@ -897,7 +897,7 @@ public class UIImplementation {
       }
     }
 
-    cssNode.dispatchUpdates(absoluteX, absoluteY, mOperationsQueue);
+    cssNode.dispatchUpdates(absoluteX, absoluteY, mOperationsQueue, null);
 
     cssNode.markUpdateSeen();
   }

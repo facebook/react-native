@@ -318,7 +318,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    * require layouting (marked with {@link #dirty()}).
    */
   @Override
-  public void onBeforeLayout() {}
+  public void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {}
 
   @Override
   public final void updateProperties(ReactStylesDiffMap props) {
@@ -367,7 +367,10 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void dispatchUpdates(
-      float absoluteX, float absoluteY, UIViewOperationQueue uiViewOperationQueue) {
+      float absoluteX,
+      float absoluteY,
+      UIViewOperationQueue uiViewOperationQueue,
+      @Nullable NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
     if (mNodeUpdated) {
       onCollectExtraUpdates(uiViewOperationQueue);
     }

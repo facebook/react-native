@@ -3539,6 +3539,10 @@ public class com/facebook/react/uimanager/NativeViewHierarchyManager {
 	public fun updateViewExtraData (ILjava/lang/Object;)V
 }
 
+public final class com/facebook/react/uimanager/NativeViewHierarchyOptimizer {
+	public fun <init> ()V
+}
+
 public final class com/facebook/react/uimanager/OnLayoutEvent : com/facebook/react/uimanager/events/Event {
 	public static final field Companion Lcom/facebook/react/uimanager/OnLayoutEvent$Companion;
 	public fun getEventName ()Ljava/lang/String;
@@ -3839,7 +3843,7 @@ public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
 	public abstract fun calculateLayout (FF)V
 	public abstract fun calculateLayoutOnChildren ()Ljava/lang/Iterable;
 	public abstract fun dirty ()V
-	public abstract fun dispatchUpdates (FFLcom/facebook/react/uimanager/UIViewOperationQueue;)V
+	public abstract fun dispatchUpdates (FFLcom/facebook/react/uimanager/UIViewOperationQueue;Lcom/facebook/react/uimanager/NativeViewHierarchyOptimizer;)V
 	public abstract fun dispatchUpdatesWillChangeLayout (FF)Z
 	public abstract fun dispose ()V
 	public abstract fun getChildAt (I)Lcom/facebook/react/uimanager/ReactShadowNode;
@@ -3888,7 +3892,7 @@ public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
 	public abstract fun markUpdateSeen ()V
 	public abstract fun markUpdated ()V
 	public abstract fun onAfterUpdateTransaction ()V
-	public abstract fun onBeforeLayout ()V
+	public abstract fun onBeforeLayout (Lcom/facebook/react/uimanager/NativeViewHierarchyOptimizer;)V
 	public abstract fun onCollectExtraUpdates (Lcom/facebook/react/uimanager/UIViewOperationQueue;)V
 	public abstract fun removeAllNativeChildren ()V
 	public abstract fun removeAndDisposeAllChildren ()V
@@ -3965,7 +3969,7 @@ public class com/facebook/react/uimanager/ReactShadowNodeImpl : com/facebook/rea
 	public fun calculateLayout (FF)V
 	public fun calculateLayoutOnChildren ()Ljava/lang/Iterable;
 	public fun dirty ()V
-	public fun dispatchUpdates (FFLcom/facebook/react/uimanager/UIViewOperationQueue;)V
+	public fun dispatchUpdates (FFLcom/facebook/react/uimanager/UIViewOperationQueue;Lcom/facebook/react/uimanager/NativeViewHierarchyOptimizer;)V
 	public fun dispatchUpdatesWillChangeLayout (FF)Z
 	public fun dispose ()V
 	public synthetic fun getChildAt (I)Lcom/facebook/react/uimanager/ReactShadowNode;
@@ -4022,7 +4026,7 @@ public class com/facebook/react/uimanager/ReactShadowNodeImpl : com/facebook/rea
 	public final fun markUpdateSeen ()V
 	public fun markUpdated ()V
 	public fun onAfterUpdateTransaction ()V
-	public fun onBeforeLayout ()V
+	public fun onBeforeLayout (Lcom/facebook/react/uimanager/NativeViewHierarchyOptimizer;)V
 	public fun onCollectExtraUpdates (Lcom/facebook/react/uimanager/UIViewOperationQueue;)V
 	public final fun removeAllNativeChildren ()V
 	public fun removeAndDisposeAllChildren ()V
