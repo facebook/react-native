@@ -824,4 +824,140 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   public void setGapPercent(YogaGutter gutter, float gapLength) {
     YogaNative.jni_YGNodeStyleSetGapPercentJNI(mNativePointer, gutter.intValue(), gapLength);
   }
+
+  @Override
+  public void setGridTemplateColumns(YogaGridTrackList trackList) {
+    int[] types = new int[trackList.size()];
+    float[] values = new float[trackList.size()];
+    int[] minTypes = new int[trackList.size()];
+    float[] minValues = new float[trackList.size()];
+    int[] maxTypes = new int[trackList.size()];
+    float[] maxValues = new float[trackList.size()];
+
+    for (int i = 0; i < trackList.size(); i++) {
+      YogaGridTrackValue track = trackList.get(i);
+      types[i] = track.getType().ordinal();
+      values[i] = track.getValue();
+      if (track.getType() == YogaGridTrackValue.Type.MINMAX) {
+        minTypes[i] = track.getMinValue().getType().ordinal();
+        minValues[i] = track.getMinValue().getValue();
+        maxTypes[i] = track.getMaxValue().getType().ordinal();
+        maxValues[i] = track.getMaxValue().getValue();
+      }
+    }
+    YogaNative.jni_YGNodeStyleSetGridTemplateColumnsJNI(
+        mNativePointer, types, values, minTypes, minValues, maxTypes, maxValues);
+  }
+
+  @Override
+  public void setGridTemplateRows(YogaGridTrackList trackList) {
+    int[] types = new int[trackList.size()];
+    float[] values = new float[trackList.size()];
+    int[] minTypes = new int[trackList.size()];
+    float[] minValues = new float[trackList.size()];
+    int[] maxTypes = new int[trackList.size()];
+    float[] maxValues = new float[trackList.size()];
+
+    for (int i = 0; i < trackList.size(); i++) {
+      YogaGridTrackValue track = trackList.get(i);
+      types[i] = track.getType().ordinal();
+      values[i] = track.getValue();
+      if (track.getType() == YogaGridTrackValue.Type.MINMAX) {
+        minTypes[i] = track.getMinValue().getType().ordinal();
+        minValues[i] = track.getMinValue().getValue();
+        maxTypes[i] = track.getMaxValue().getType().ordinal();
+        maxValues[i] = track.getMaxValue().getValue();
+      }
+    }
+    YogaNative.jni_YGNodeStyleSetGridTemplateRowsJNI(
+        mNativePointer, types, values, minTypes, minValues, maxTypes, maxValues);
+  }
+
+  @Override
+  public void setGridAutoColumns(YogaGridTrackList trackList) {
+    int[] types = new int[trackList.size()];
+    float[] values = new float[trackList.size()];
+    int[] minTypes = new int[trackList.size()];
+    float[] minValues = new float[trackList.size()];
+    int[] maxTypes = new int[trackList.size()];
+    float[] maxValues = new float[trackList.size()];
+
+    for (int i = 0; i < trackList.size(); i++) {
+      YogaGridTrackValue track = trackList.get(i);
+      types[i] = track.getType().ordinal();
+      values[i] = track.getValue();
+      if (track.getType() == YogaGridTrackValue.Type.MINMAX) {
+        minTypes[i] = track.getMinValue().getType().ordinal();
+        minValues[i] = track.getMinValue().getValue();
+        maxTypes[i] = track.getMaxValue().getType().ordinal();
+        maxValues[i] = track.getMaxValue().getValue();
+      }
+    }
+    YogaNative.jni_YGNodeStyleSetGridAutoColumnsJNI(
+        mNativePointer, types, values, minTypes, minValues, maxTypes, maxValues);
+  }
+
+  @Override
+  public void setGridAutoRows(YogaGridTrackList trackList) {
+    int[] types = new int[trackList.size()];
+    float[] values = new float[trackList.size()];
+    int[] minTypes = new int[trackList.size()];
+    float[] minValues = new float[trackList.size()];
+    int[] maxTypes = new int[trackList.size()];
+    float[] maxValues = new float[trackList.size()];
+
+    for (int i = 0; i < trackList.size(); i++) {
+      YogaGridTrackValue track = trackList.get(i);
+      types[i] = track.getType().ordinal();
+      values[i] = track.getValue();
+      if (track.getType() == YogaGridTrackValue.Type.MINMAX) {
+        minTypes[i] = track.getMinValue().getType().ordinal();
+        minValues[i] = track.getMinValue().getValue();
+        maxTypes[i] = track.getMaxValue().getType().ordinal();
+        maxValues[i] = track.getMaxValue().getValue();
+      }
+    }
+    YogaNative.jni_YGNodeStyleSetGridAutoRowsJNI(
+        mNativePointer, types, values, minTypes, minValues, maxTypes, maxValues);
+  }
+
+  @Override
+  public void setGridColumnStart(int value) {
+    YogaNative.jni_YGNodeStyleSetGridColumnStartJNI(mNativePointer, value);
+  }
+
+  @Override
+  public void setGridColumnStartSpan(int span) {
+    YogaNative.jni_YGNodeStyleSetGridColumnStartSpanJNI(mNativePointer, span);
+  }
+
+  @Override
+  public void setGridColumnEnd(int value) {
+    YogaNative.jni_YGNodeStyleSetGridColumnEndJNI(mNativePointer, value);
+  }
+
+  @Override
+  public void setGridColumnEndSpan(int span) {
+    YogaNative.jni_YGNodeStyleSetGridColumnEndSpanJNI(mNativePointer, span);
+  }
+
+  @Override
+  public void setGridRowStart(int value) {
+    YogaNative.jni_YGNodeStyleSetGridRowStartJNI(mNativePointer, value);
+  }
+
+  @Override
+  public void setGridRowStartSpan(int span) {
+    YogaNative.jni_YGNodeStyleSetGridRowStartSpanJNI(mNativePointer, span);
+  }
+
+  @Override
+  public void setGridRowEnd(int value) {
+    YogaNative.jni_YGNodeStyleSetGridRowEndJNI(mNativePointer, value);
+  }
+
+  @Override
+  public void setGridRowEndSpan(int span) {
+    YogaNative.jni_YGNodeStyleSetGridRowEndSpanJNI(mNativePointer, span);
+  }
 }
