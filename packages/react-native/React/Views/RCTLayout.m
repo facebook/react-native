@@ -114,10 +114,10 @@ UIUserInterfaceLayoutDirection RCTUIKitLayoutDirectionFromYogaLayoutDirection(YG
 YGDisplay RCTYogaDisplayTypeFromReactDisplayType(RCTDisplayType displayType)
 {
   switch (displayType) {
-    case RCTDisplayTypeNone:
-      return YGDisplayNone;
     case RCTDisplayTypeFlex:
       return YGDisplayFlex;
+    case RCTDisplayTypeNone:
+      return YGDisplayNone;
     case RCTDisplayTypeInline:
       RCTAssert(NO, @"RCTDisplayTypeInline cannot be converted to YGDisplay value.");
       return YGDisplayNone;
@@ -128,11 +128,10 @@ RCTDisplayType RCTReactDisplayTypeFromYogaDisplayType(YGDisplay displayType)
 {
   switch (displayType) {
     case YGDisplayFlex:
+    case YGDisplayContents:
+    case YGDisplayGrid:
       return RCTDisplayTypeFlex;
     case YGDisplayNone:
-      return RCTDisplayTypeNone;
-    case YGDisplayContents:
-      RCTAssert(NO, @"YGDisplayContents cannot be converted to RCTDisplayType value.");
       return RCTDisplayTypeNone;
   }
 }

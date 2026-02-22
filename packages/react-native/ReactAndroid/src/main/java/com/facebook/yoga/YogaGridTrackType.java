@@ -9,15 +9,16 @@
 
 package com.facebook.yoga;
 
-public enum YogaDisplay {
-  FLEX(0),
-  NONE(1),
-  CONTENTS(2),
-  GRID(3);
+public enum YogaGridTrackType {
+  AUTO(0),
+  POINTS(1),
+  PERCENT(2),
+  FR(3),
+  MINMAX(4);
 
   private final int mIntValue;
 
-  YogaDisplay(int intValue) {
+  YogaGridTrackType(int intValue) {
     mIntValue = intValue;
   }
 
@@ -25,12 +26,13 @@ public enum YogaDisplay {
     return mIntValue;
   }
 
-  public static YogaDisplay fromInt(int value) {
+  public static YogaGridTrackType fromInt(int value) {
     switch (value) {
-      case 0: return FLEX;
-      case 1: return NONE;
-      case 2: return CONTENTS;
-      case 3: return GRID;
+      case 0: return AUTO;
+      case 1: return POINTS;
+      case 2: return PERCENT;
+      case 3: return FR;
+      case 4: return MINMAX;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

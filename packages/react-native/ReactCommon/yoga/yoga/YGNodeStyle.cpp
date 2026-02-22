@@ -74,6 +74,24 @@ YGJustify YGNodeStyleGetJustifyContent(const YGNodeConstRef node) {
   return unscopedEnum(resolveRef(node)->style().justifyContent());
 }
 
+void YGNodeStyleSetJustifyItems(YGNodeRef node, const YGJustify justifyItems) {
+  updateStyle<&Style::justifyItems, &Style::setJustifyItems>(
+      node, scopedEnum(justifyItems));
+}
+
+YGJustify YGNodeStyleGetJustifyItems(const YGNodeConstRef node) {
+  return unscopedEnum(resolveRef(node)->style().justifyItems());
+}
+
+void YGNodeStyleSetJustifySelf(YGNodeRef node, const YGJustify justifySelf) {
+  updateStyle<&Style::justifySelf, &Style::setJustifySelf>(
+      node, scopedEnum(justifySelf));
+}
+
+YGJustify YGNodeStyleGetJustifySelf(const YGNodeConstRef node) {
+  return unscopedEnum(resolveRef(node)->style().justifySelf());
+}
+
 void YGNodeStyleSetAlignContent(
     const YGNodeRef node,
     const YGAlign alignContent) {
@@ -502,4 +520,86 @@ void YGNodeStyleSetMaxHeightStretch(const YGNodeRef node) {
 
 YGValue YGNodeStyleGetMaxHeight(const YGNodeConstRef node) {
   return (YGValue)resolveRef(node)->style().maxDimension(Dimension::Height);
+}
+
+// Grid Item Placement Properties
+
+void YGNodeStyleSetGridColumnStart(YGNodeRef node, int32_t gridColumnStart) {
+  updateStyle<&Style::gridColumnStart, &Style::setGridColumnStart>(
+      node, GridLine::fromInteger(gridColumnStart));
+}
+
+void YGNodeStyleSetGridColumnStartAuto(YGNodeRef node) {
+  updateStyle<&Style::gridColumnStart, &Style::setGridColumnStart>(
+      node, GridLine::auto_());
+}
+
+void YGNodeStyleSetGridColumnStartSpan(YGNodeRef node, int32_t span) {
+  updateStyle<&Style::gridColumnStart, &Style::setGridColumnStart>(
+      node, GridLine::span(span));
+}
+
+int32_t YGNodeStyleGetGridColumnStart(YGNodeConstRef node) {
+  const auto& gridLine = resolveRef(node)->style().gridColumnStart();
+  return gridLine.isInteger() ? gridLine.integer : 0;
+}
+
+void YGNodeStyleSetGridColumnEnd(YGNodeRef node, int32_t gridColumnEnd) {
+  updateStyle<&Style::gridColumnEnd, &Style::setGridColumnEnd>(
+      node, GridLine::fromInteger(gridColumnEnd));
+}
+
+void YGNodeStyleSetGridColumnEndAuto(YGNodeRef node) {
+  updateStyle<&Style::gridColumnEnd, &Style::setGridColumnEnd>(
+      node, GridLine::auto_());
+}
+
+void YGNodeStyleSetGridColumnEndSpan(YGNodeRef node, int32_t span) {
+  updateStyle<&Style::gridColumnEnd, &Style::setGridColumnEnd>(
+      node, GridLine::span(span));
+}
+
+int32_t YGNodeStyleGetGridColumnEnd(YGNodeConstRef node) {
+  const auto& gridLine = resolveRef(node)->style().gridColumnEnd();
+  return gridLine.isInteger() ? gridLine.integer : 0;
+}
+
+void YGNodeStyleSetGridRowStart(YGNodeRef node, int32_t gridRowStart) {
+  updateStyle<&Style::gridRowStart, &Style::setGridRowStart>(
+      node, GridLine::fromInteger(gridRowStart));
+}
+
+void YGNodeStyleSetGridRowStartAuto(YGNodeRef node) {
+  updateStyle<&Style::gridRowStart, &Style::setGridRowStart>(
+      node, GridLine::auto_());
+}
+
+void YGNodeStyleSetGridRowStartSpan(YGNodeRef node, int32_t span) {
+  updateStyle<&Style::gridRowStart, &Style::setGridRowStart>(
+      node, GridLine::span(span));
+}
+
+int32_t YGNodeStyleGetGridRowStart(YGNodeConstRef node) {
+  const auto& gridLine = resolveRef(node)->style().gridRowStart();
+  return gridLine.isInteger() ? gridLine.integer : 0;
+}
+
+void YGNodeStyleSetGridRowEnd(YGNodeRef node, int32_t gridRowEnd) {
+  updateStyle<&Style::gridRowEnd, &Style::setGridRowEnd>(
+      node, GridLine::fromInteger(gridRowEnd));
+}
+
+void YGNodeStyleSetGridRowEndAuto(YGNodeRef node) {
+  updateStyle<&Style::gridRowEnd, &Style::setGridRowEnd>(
+      node, GridLine::auto_());
+}
+
+void YGNodeStyleSetGridRowEndSpan(YGNodeRef node, int32_t span) {
+  updateStyle<&Style::gridRowEnd, &Style::setGridRowEnd>(
+      node, GridLine::span(span));
+}
+
+int32_t YGNodeStyleGetGridRowEnd(YGNodeConstRef node) {
+  const auto& gridLine = resolveRef(node)->style().gridRowEnd();
+  return gridLine.isInteger() ? gridLine.integer : 0;
 }
