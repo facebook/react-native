@@ -18,6 +18,7 @@ const {MockedParser} = require('../parserMock');
 const {emitUnion} = require('../parsers-primitives');
 const {
   Visitor,
+  emitArrayBuffer,
   emitArrayType,
   emitBoolean,
   emitBoolProp,
@@ -39,6 +40,7 @@ const {
   emitString,
   emitStringish,
   emitStringProp,
+  emitUint8Array,
   emitUnionProp,
   emitVoid,
   typeAliasResolution,
@@ -180,6 +182,58 @@ describe('emitRootTag', () => {
   describe('when nullable is false', () => {
     it('returns non nullable type annotation', () => {
       const result = emitRootTag(false);
+
+      expect(result).toEqual(reservedTypeAnnotation);
+    });
+  });
+});
+
+describe('emitArrayBuffer', () => {
+  const reservedTypeAnnotation = {
+    type: 'ReservedTypeAnnotation',
+    name: 'ArrayBuffer',
+  };
+
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitArrayBuffer(true);
+
+      expect(result).toEqual({
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: reservedTypeAnnotation,
+      });
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitArrayBuffer(false);
+
+      expect(result).toEqual(reservedTypeAnnotation);
+    });
+  });
+});
+
+describe('emitUint8Array', () => {
+  const reservedTypeAnnotation = {
+    type: 'ReservedTypeAnnotation',
+    name: 'Uint8Array',
+  };
+
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitUint8Array(true);
+
+      expect(result).toEqual({
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: reservedTypeAnnotation,
+      });
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitUint8Array(false);
 
       expect(result).toEqual(reservedTypeAnnotation);
     });
@@ -1727,6 +1781,7 @@ describe('emitUnion', () => {
     function emitCommonTypesForUnitTest(
       typeAnnotation: $FlowFixMe,
       nullable: boolean,
+      cxxOnly: boolean = false,
     ): $FlowFixMe {
       return emitCommonTypes(
         hasteModuleName,
@@ -1743,7 +1798,7 @@ describe('emitUnion', () => {
           return null;
         },
         /* cxxOnly: boolean */
-        false,
+        cxxOnly,
         nullable,
         parser,
       );
@@ -1886,6 +1941,60 @@ describe('emitUnion', () => {
 
       it("returns 'GenericObjectTypeAnnotation'", () => {
         expect(result).toEqual(expected);
+      });
+    });
+
+    describe("when 'typeAnnotation.id.name' is 'ArrayBuffer'", () => {
+      const typeAnnotation = {
+        typeParameters: {
+          params: [1],
+          type: 'GenericObjectTypeAnnotation',
+        },
+        id: {
+          name: 'ArrayBuffer',
+        },
+      };
+
+      it('returns null for non-cxx modules', () => {
+        expect(
+          emitCommonTypesForUnitTest(typeAnnotation, false, false),
+        ).toBeNull();
+      });
+
+      it('returns a reserved annotation for cxx-only modules', () => {
+        expect(emitCommonTypesForUnitTest(typeAnnotation, false, true)).toEqual(
+          {
+            type: 'ReservedTypeAnnotation',
+            name: 'ArrayBuffer',
+          },
+        );
+      });
+    });
+
+    describe("when 'typeAnnotation.id.name' is 'Uint8Array'", () => {
+      const typeAnnotation = {
+        typeParameters: {
+          params: [1],
+          type: 'GenericObjectTypeAnnotation',
+        },
+        id: {
+          name: 'Uint8Array',
+        },
+      };
+
+      it('returns null for non-cxx modules', () => {
+        expect(
+          emitCommonTypesForUnitTest(typeAnnotation, false, false),
+        ).toBeNull();
+      });
+
+      it('returns a reserved annotation for cxx-only modules', () => {
+        expect(emitCommonTypesForUnitTest(typeAnnotation, false, true)).toEqual(
+          {
+            type: 'ReservedTypeAnnotation',
+            name: 'Uint8Array',
+          },
+        );
       });
     });
 

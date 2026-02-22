@@ -90,6 +90,54 @@ describe('TypeScript Module Parser', () => {
       expect(parser).toThrow(UnsupportedTypeAnnotationParserError);
     });
 
+    it('should parse ArrayBuffer and Uint8Array in cxx-only modules', () => {
+      const module = parseCxxModule(`
+        import type {TurboModule} from 'RCTExport';
+        import * as TurboModuleRegistry from 'TurboModuleRegistry';
+        export interface Spec extends TurboModule {
+          useArrayBuffer(arg: ArrayBuffer): ArrayBuffer;
+          useUint8Array(arg: Uint8Array): Uint8Array;
+        }
+        export default TurboModuleRegistry.get<Spec>('FooCxx');
+      `);
+
+      const [{params, returnTypeAnnotation: returnArrayBuffer}] =
+        unwrapNullable(module.spec.methods[0].typeAnnotation);
+      expect(params[0].typeAnnotation).toEqual({
+        type: 'ReservedTypeAnnotation',
+        name: 'ArrayBuffer',
+      });
+      expect(returnArrayBuffer).toEqual({
+        type: 'ReservedTypeAnnotation',
+        name: 'ArrayBuffer',
+      });
+
+      const [{params: uint8Params, returnTypeAnnotation: returnUint8Array}] =
+        unwrapNullable(module.spec.methods[1].typeAnnotation);
+      expect(uint8Params[0].typeAnnotation).toEqual({
+        type: 'ReservedTypeAnnotation',
+        name: 'Uint8Array',
+      });
+      expect(returnUint8Array).toEqual({
+        type: 'ReservedTypeAnnotation',
+        name: 'Uint8Array',
+      });
+    });
+
+    it('should fail parsing ArrayBuffer in non-cxx modules', () => {
+      const parser = () =>
+        parseModule(`
+          import type {TurboModule} from 'RCTExport';
+          import * as TurboModuleRegistry from 'TurboModuleRegistry';
+          export interface Spec extends TurboModule {
+            useArrayBuffer(arg: ArrayBuffer): ArrayBuffer;
+          }
+          export default TurboModuleRegistry.get<Spec>('Foo');
+        `);
+
+      expect(parser).toThrow(UnsupportedGenericParserError);
+    });
+
     it('should fail parsing when a function param type is unamed', () => {
       const parser = () =>
         parseModule(`
@@ -1323,6 +1371,16 @@ function parseModule(source: string) {
   invariant(
     module.type === 'NativeModule',
     "'nativeModules' in Spec NativeFoo shouldn't be null",
+  );
+  return module;
+}
+
+function parseCxxModule(source: string) {
+  const schema = typescriptParser.parseString(source, `${MODULE_NAME}Cxx.ts`);
+  const module = schema.modules.NativeFooCxx;
+  invariant(
+    module.type === 'NativeModule',
+    "'nativeModules' in Spec NativeFooCxx shouldn't be null",
   );
   return module;
 }
