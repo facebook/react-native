@@ -16,6 +16,7 @@ TEST_F(BridgingTest, jsiTest) {
   jsi::Value string = jsi::String::createFromAscii(rt, "hello");
   jsi::Value object = jsi::Object(rt);
   jsi::Value array = jsi::Array::createWithElements(rt, value, object);
+  jsi::Value arrayBuffer = eval("new ArrayBuffer(4)");
   jsi::Value func = function("() => {}");
 
   // The bridging mechanism needs to know how to copy and downcast values.
@@ -23,6 +24,7 @@ TEST_F(BridgingTest, jsiTest) {
   EXPECT_NO_THROW(bridging::fromJs<jsi::String>(rt, string, invoker));
   EXPECT_NO_THROW(bridging::fromJs<jsi::Object>(rt, object, invoker));
   EXPECT_NO_THROW(bridging::fromJs<jsi::Array>(rt, array, invoker));
+  EXPECT_NO_THROW(bridging::fromJs<jsi::ArrayBuffer>(rt, arrayBuffer, invoker));
   EXPECT_NO_THROW(bridging::fromJs<jsi::Function>(rt, func, invoker));
 
   // Should throw when attempting an invalid cast.
@@ -31,12 +33,15 @@ TEST_F(BridgingTest, jsiTest) {
   EXPECT_JSI_THROW(bridging::fromJs<jsi::Array>(rt, object, invoker));
   EXPECT_JSI_THROW(bridging::fromJs<jsi::Array>(rt, string, invoker));
   EXPECT_JSI_THROW(bridging::fromJs<jsi::Array>(rt, func, invoker));
+  EXPECT_JSI_THROW(bridging::fromJs<jsi::ArrayBuffer>(rt, object, invoker));
 
   // Should be able to generically no-op convert JSI.
   EXPECT_NO_THROW(bridging::toJs(rt, value, invoker));
   EXPECT_NO_THROW(bridging::toJs(rt, string.asString(rt), invoker));
   EXPECT_NO_THROW(bridging::toJs(rt, object.asObject(rt), invoker));
   EXPECT_NO_THROW(bridging::toJs(rt, array.asObject(rt).asArray(rt), invoker));
+  EXPECT_NO_THROW(
+      bridging::toJs(rt, arrayBuffer.asObject(rt).getArrayBuffer(rt), invoker));
   EXPECT_NO_THROW(
       bridging::toJs(rt, func.asObject(rt).asFunction(rt), invoker));
 }
@@ -645,6 +650,11 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Array&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Object>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Object&>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::ArrayBuffer>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::ArrayBuffer, jsi::ArrayBuffer>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::ArrayBuffer, jsi::ArrayBuffer&>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::ArrayBuffer, jsi::Object>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::ArrayBuffer, jsi::Object&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function&>));
@@ -654,6 +664,8 @@ TEST_F(BridgingTest, supportTest) {
   // Ensure incorrect casts will fail.
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Array, jsi::Function>));
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Array, jsi::Function&>));
+  EXPECT_FALSE((bridging::supportsFromJs<jsi::ArrayBuffer, jsi::Function>));
+  EXPECT_FALSE((bridging::supportsFromJs<jsi::ArrayBuffer, jsi::Function&>));
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array>));
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array&>));
 
@@ -677,6 +689,8 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsToJs<std::map<std::string, int>>));
   EXPECT_TRUE(
       (bridging::supportsToJs<std::map<std::string, int>, jsi::Object>));
+  EXPECT_TRUE((bridging::supportsToJs<jsi::ArrayBuffer>));
+  EXPECT_TRUE((bridging::supportsToJs<jsi::ArrayBuffer, jsi::ArrayBuffer>));
   EXPECT_TRUE((bridging::supportsToJs<void (*)()>));
   EXPECT_TRUE((bridging::supportsToJs<void (*)(), jsi::Function>));
 
