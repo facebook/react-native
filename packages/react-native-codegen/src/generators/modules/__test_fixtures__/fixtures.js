@@ -2629,6 +2629,48 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
               ],
             },
           },
+          {
+            name: 'getArrayBuffer',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ReservedTypeAnnotation',
+                name: 'ArrayBuffer',
+              },
+              params: [
+                {
+                  name: 'input',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'ReservedTypeAnnotation',
+                    name: 'ArrayBuffer',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: 'getUint8Array',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'ReservedTypeAnnotation',
+                name: 'Uint8Array',
+              },
+              params: [
+                {
+                  name: 'input',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'ReservedTypeAnnotation',
+                    name: 'Uint8Array',
+                  },
+                },
+              ],
+            },
+          },
         ],
       },
       moduleName: 'SampleTurboModuleCxx',

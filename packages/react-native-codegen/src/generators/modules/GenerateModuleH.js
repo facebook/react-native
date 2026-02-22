@@ -87,6 +87,10 @@ function serializeArg(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return wrap(val => `${val}.asNumber()`);
+        case 'ArrayBuffer':
+          return wrap(val => `${val}.asObject(rt).getArrayBuffer(rt)`);
+        case 'Uint8Array':
+          return wrap(val => `${val}.asObject(rt)`);
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
@@ -248,6 +252,10 @@ function translatePrimitiveJSTypeToCpp(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return wrapOptional('double', isRequired);
+        case 'ArrayBuffer':
+          return wrapOptional('jsi::ArrayBuffer', isRequired);
+        case 'Uint8Array':
+          return wrapOptional('jsi::Object', isRequired);
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));

@@ -629,6 +629,8 @@ protected:
     methodMap_[\\"getObjectThrows\\"] = MethodMetadata {.argCount = 1, .invoker = __getObjectThrows};
     methodMap_[\\"voidFuncAssert\\"] = MethodMetadata {.argCount = 0, .invoker = __voidFuncAssert};
     methodMap_[\\"getObjectAssert\\"] = MethodMetadata {.argCount = 1, .invoker = __getObjectAssert};
+    methodMap_[\\"getArrayBuffer\\"] = MethodMetadata {.argCount = 1, .invoker = __getArrayBuffer};
+    methodMap_[\\"getUint8Array\\"] = MethodMetadata {.argCount = 1, .invoker = __getUint8Array};
   }
   
 private:
@@ -845,6 +847,22 @@ private:
       bridging::getParameterCount(&T::getObjectAssert) == 2,
       \\"Expected getObjectAssert(...) to have 2 parameters\\");
     return bridging::callFromJs<jsi::Object>(rt, &T::getObjectAssert,  static_cast<NativeSampleTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt));
+  }
+
+  static jsi::Value __getArrayBuffer(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getArrayBuffer) == 2,
+      \\"Expected getArrayBuffer(...) to have 2 parameters\\");
+    return bridging::callFromJs<jsi::ArrayBuffer>(rt, &T::getArrayBuffer,  static_cast<NativeSampleTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt).getArrayBuffer(rt));
+  }
+
+  static jsi::Value __getUint8Array(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getUint8Array) == 2,
+      \\"Expected getUint8Array(...) to have 2 parameters\\");
+    return bridging::callFromJs<jsi::Object>(rt, &T::getUint8Array,  static_cast<NativeSampleTurboModuleCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
       count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt));
   }
 };
