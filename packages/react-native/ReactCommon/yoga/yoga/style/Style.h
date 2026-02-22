@@ -29,6 +29,8 @@
 #include <yoga/enums/Unit.h>
 #include <yoga/enums/Wrap.h>
 #include <yoga/numeric/FloatOptional.h>
+#include <yoga/style/GridLine.h>
+#include <yoga/style/GridTrack.h>
 #include <yoga/style/StyleLength.h>
 #include <yoga/style/StyleSizeLength.h>
 #include <yoga/style/StyleValuePool.h>
@@ -63,6 +65,20 @@ class YG_EXPORT Style {
   }
   void setJustifyContent(Justify value) {
     justifyContent_ = value;
+  }
+
+  Justify justifyItems() const {
+    return justifyItems_;
+  }
+  void setJustifyItems(Justify value) {
+    justifyItems_ = value;
+  }
+
+  Justify justifySelf() const {
+    return justifySelf_;
+  }
+  void setJustifySelf(Justify value) {
+    justifySelf_ = value;
   }
 
   Align alignContent() const {
@@ -189,6 +205,64 @@ class YG_EXPORT Style {
   }
   void setMinDimension(Dimension axis, Style::SizeLength value) {
     pool_.store(minDimensions_[yoga::to_underlying(axis)], value);
+  }
+
+  // Grid Container Properties
+  const GridTrackList& gridTemplateColumns() const {
+    return gridTemplateColumns_;
+  }
+  void setGridTemplateColumns(GridTrackList value) {
+    gridTemplateColumns_ = std::move(value);
+  }
+
+  const GridTrackList& gridTemplateRows() const {
+    return gridTemplateRows_;
+  }
+  void setGridTemplateRows(GridTrackList value) {
+    gridTemplateRows_ = std::move(value);
+  }
+
+  const GridTrackList& gridAutoColumns() const {
+    return gridAutoColumns_;
+  }
+  void setGridAutoColumns(GridTrackList value) {
+    gridAutoColumns_ = std::move(value);
+  }
+
+  const GridTrackList& gridAutoRows() const {
+    return gridAutoRows_;
+  }
+  void setGridAutoRows(GridTrackList value) {
+    gridAutoRows_ = std::move(value);
+  }
+
+  // Grid Item Properties
+  const GridLine& gridColumnStart() const {
+    return gridColumnStart_;
+  }
+  void setGridColumnStart(GridLine value) {
+    gridColumnStart_ = std::move(value);
+  }
+
+  const GridLine& gridColumnEnd() const {
+    return gridColumnEnd_;
+  }
+  void setGridColumnEnd(GridLine value) {
+    gridColumnEnd_ = std::move(value);
+  }
+
+  const GridLine& gridRowStart() const {
+    return gridRowStart_;
+  }
+  void setGridRowStart(GridLine value) {
+    gridRowStart_ = std::move(value);
+  }
+
+  const GridLine& gridRowEnd() const {
+    return gridRowEnd_;
+  }
+  void setGridRowEnd(GridLine value) {
+    gridRowEnd_ = std::move(value);
   }
 
   FloatOptional resolvedMinDimension(
@@ -515,6 +589,12 @@ class YG_EXPORT Style {
     return maxOrDefined(gap.resolve(ownerSize).unwrap(), 0.0f);
   }
 
+  float computeGapForDimension(Dimension dimension, float ownerSize) const {
+    auto gap =
+        dimension == Dimension::Width ? computeColumnGap() : computeRowGap();
+    return maxOrDefined(gap.resolve(ownerSize).unwrap(), 0.0f);
+  }
+
   bool flexStartMarginIsAuto(FlexDirection axis, Direction direction) const {
     return computeMargin(flexStartEdge(axis), direction).isAuto();
   }
@@ -523,10 +603,20 @@ class YG_EXPORT Style {
     return computeMargin(flexEndEdge(axis), direction).isAuto();
   }
 
+  bool inlineStartMarginIsAuto(FlexDirection axis, Direction direction) const {
+    return computeMargin(inlineStartEdge(axis, direction), direction).isAuto();
+  }
+
+  bool inlineEndMarginIsAuto(FlexDirection axis, Direction direction) const {
+    return computeMargin(inlineEndEdge(axis, direction), direction).isAuto();
+  }
+
   bool operator==(const Style& other) const {
     return direction_ == other.direction_ &&
         flexDirection_ == other.flexDirection_ &&
         justifyContent_ == other.justifyContent_ &&
+        justifyItems_ == other.justifyItems_ &&
+        justifySelf_ == other.justifySelf_ &&
         alignContent_ == other.alignContent_ &&
         alignItems_ == other.alignItems_ && alignSelf_ == other.alignSelf_ &&
         positionType_ == other.positionType_ && flexWrap_ == other.flexWrap_ &&
@@ -545,7 +635,15 @@ class YG_EXPORT Style {
                minDimensions_, pool_, other.minDimensions_, other.pool_) &&
         lengthsEqual(
                maxDimensions_, pool_, other.maxDimensions_, other.pool_) &&
-        numbersEqual(aspectRatio_, pool_, other.aspectRatio_, other.pool_);
+        numbersEqual(aspectRatio_, pool_, other.aspectRatio_, other.pool_) &&
+        gridTemplateColumns_ == other.gridTemplateColumns_ &&
+        gridTemplateRows_ == other.gridTemplateRows_ &&
+        gridAutoColumns_ == other.gridAutoColumns_ &&
+        gridAutoRows_ == other.gridAutoRows_ &&
+        gridColumnStart_ == other.gridColumnStart_ &&
+        gridColumnEnd_ == other.gridColumnEnd_ &&
+        gridRowStart_ == other.gridRowStart_ &&
+        gridRowEnd_ == other.gridRowEnd_;
   }
 
   bool operator!=(const Style& other) const {
@@ -727,6 +825,8 @@ class YG_EXPORT Style {
   FlexDirection flexDirection_
       : bitCount<FlexDirection>() = FlexDirection::Column;
   Justify justifyContent_ : bitCount<Justify>() = Justify::FlexStart;
+  Justify justifyItems_ : bitCount<Justify>() = Justify::Stretch;
+  Justify justifySelf_ : bitCount<Justify>() = Justify::Auto;
   Align alignContent_ : bitCount<Align>() = Align::FlexStart;
   Align alignItems_ : bitCount<Align>() = Align::Stretch;
   Align alignSelf_ : bitCount<Align>() = Align::Auto;
@@ -752,6 +852,16 @@ class YG_EXPORT Style {
   Dimensions minDimensions_{};
   Dimensions maxDimensions_{};
   StyleValueHandle aspectRatio_{};
+
+  // Grid properties
+  GridTrackList gridTemplateColumns_{};
+  GridTrackList gridTemplateRows_{};
+  GridTrackList gridAutoColumns_{};
+  GridTrackList gridAutoRows_{};
+  GridLine gridColumnStart_{};
+  GridLine gridColumnEnd_{};
+  GridLine gridRowStart_{};
+  GridLine gridRowEnd_{};
 
   StyleValuePool pool_;
 };

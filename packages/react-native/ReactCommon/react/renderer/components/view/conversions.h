@@ -129,6 +129,8 @@ inline DisplayType displayTypeFromYGDisplay(YGDisplay display)
       return DisplayType::Contents;
     case YGDisplayFlex:
       return DisplayType::Flex;
+    case YGDisplayGrid:
+      return DisplayType::Grid;
   }
 }
 
