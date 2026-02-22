@@ -19,4 +19,5 @@
 #include <react/bridging/Number.h>
 #include <react/bridging/Object.h>
 #include <react/bridging/Promise.h>
+#include <react/bridging/Uint8Array.h>
 #include <react/bridging/Value.h>

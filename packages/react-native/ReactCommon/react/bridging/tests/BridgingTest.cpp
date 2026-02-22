@@ -11,6 +11,31 @@ namespace facebook::react {
 
 using namespace std::literals;
 
+namespace {
+
+class TestMutableBuffer : public jsi::MutableBuffer {
+ public:
+  explicit TestMutableBuffer(std::vector<uint8_t> bytes)
+      : bytes_(std::move(bytes))
+  {
+  }
+
+  size_t size() const override
+  {
+    return bytes_.size();
+  }
+
+  uint8_t* data() override
+  {
+    return bytes_.data();
+  }
+
+ private:
+  std::vector<uint8_t> bytes_;
+};
+
+} // namespace
+
 TEST_F(BridgingTest, jsiTest) {
   jsi::Value value = true;
   jsi::Value string = jsi::String::createFromAscii(rt, "hello");
@@ -199,6 +224,72 @@ TEST_F(BridgingTest, arrayTest) {
       {"foo", "bar"}, {"baz", "qux"}};
   auto jsiHeaders = bridging::toJs(rt, headers, invoker);
   EXPECT_EQ(headers.size(), jsiHeaders.size(rt));
+}
+
+TEST_F(BridgingTest, uint8ArrayTest) {
+  auto input = eval(
+                   "(() => {"
+                   "  global.__rnTmpBuffer = new ArrayBuffer(8);"
+                   "  const all = new Uint8Array(global.__rnTmpBuffer);"
+                   "  all.set([9, 8, 7, 6, 5, 4, 3, 2]);"
+                   "  global.__rnTmpInput = new Uint8Array(global.__rnTmpBuffer, 2, 4);"
+                   "  return global.__rnTmpInput;"
+                   "})()")
+                   .asObject(rt);
+  auto output = bridging::fromJs<Uint8Array>(rt, input, invoker);
+  ASSERT_EQ(output.size(), 4);
+  EXPECT_EQ(output.data()[0], 7);
+  EXPECT_EQ(output.data()[1], 6);
+  EXPECT_EQ(output.data()[2], 5);
+  EXPECT_EQ(output.data()[3], 4);
+
+  eval("global.__rnTmpInput[0] = 0xCC");
+  EXPECT_EQ(output.data()[0], 0xCC);
+
+  output.data()[1] = 0xAA;
+  EXPECT_EQ(eval("global.__rnTmpInput[1]").asNumber(), 0xAA);
+
+  auto outputJs = bridging::toJs(rt, output, invoker);
+  auto outputObject = outputJs.asObject(rt);
+  auto uint8ArrayConstructor =
+      rt.global().getPropertyAsFunction(rt, "Uint8Array");
+  EXPECT_TRUE(outputObject.instanceOf(rt, uint8ArrayConstructor));
+  EXPECT_EQ(outputObject.getProperty(rt, "byteOffset").asNumber(), 2);
+  EXPECT_EQ(outputObject.getProperty(rt, "byteLength").asNumber(), 4);
+  EXPECT_EQ(outputObject.getProperty(rt, "0").asNumber(), 0xCC);
+  EXPECT_EQ(outputObject.getProperty(rt, "1").asNumber(), 0xAA);
+  auto inputBuffer = input.getProperty(rt, "buffer").asObject(rt);
+  auto outputBuffer = outputObject.getProperty(rt, "buffer").asObject(rt);
+  EXPECT_TRUE(jsi::Object::strictEquals(rt, inputBuffer, outputBuffer));
+
+  auto mutableBuffer =
+      std::make_shared<TestMutableBuffer>(std::vector<uint8_t>{1, 2, 3, 4});
+  auto zeroCopy = Uint8Array(mutableBuffer, 1, 2);
+  auto zeroCopyJs = bridging::toJs(rt, zeroCopy, invoker).asObject(rt);
+  EXPECT_EQ(zeroCopyJs.getProperty(rt, "0").asNumber(), 2);
+  EXPECT_EQ(zeroCopyJs.getProperty(rt, "1").asNumber(), 3);
+  mutableBuffer->data()[1] = 42;
+  EXPECT_EQ(zeroCopyJs.getProperty(rt, "0").asNumber(), 42);
+
+  auto infiniteOffset = eval(
+                            "(() => {"
+                            "  class BadOffset extends Uint8Array {"
+                            "    get byteOffset() { return Infinity; }"
+                            "  }"
+                            "  return new BadOffset(4);"
+                            "})()")
+                            .asObject(rt);
+  EXPECT_JSI_THROW(bridging::fromJs<Uint8Array>(rt, infiniteOffset, invoker));
+
+  auto hugeLength = eval(
+                        "(() => {"
+                        "  class BadLength extends Uint8Array {"
+                        "    get byteLength() { return Number.MAX_VALUE; }"
+                        "  }"
+                        "  return new BadLength(4);"
+                        "})()")
+                        .asObject(rt);
+  EXPECT_JSI_THROW(bridging::fromJs<Uint8Array>(rt, hugeLength, invoker));
 }
 
 TEST_F(BridgingTest, functionTest) {
@@ -655,6 +746,8 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsFromJs<jsi::ArrayBuffer, jsi::ArrayBuffer&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::ArrayBuffer, jsi::Object>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::ArrayBuffer, jsi::Object&>));
+  EXPECT_TRUE((bridging::supportsFromJs<Uint8Array, jsi::Object>));
+  EXPECT_TRUE((bridging::supportsFromJs<Uint8Array, jsi::Object&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function&>));
@@ -689,6 +782,8 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsToJs<std::map<std::string, int>>));
   EXPECT_TRUE(
       (bridging::supportsToJs<std::map<std::string, int>, jsi::Object>));
+  EXPECT_TRUE((bridging::supportsToJs<Uint8Array>));
+  EXPECT_TRUE((bridging::supportsToJs<Uint8Array, jsi::Object>));
   EXPECT_TRUE((bridging::supportsToJs<jsi::ArrayBuffer>));
   EXPECT_TRUE((bridging::supportsToJs<jsi::ArrayBuffer, jsi::ArrayBuffer>));
   EXPECT_TRUE((bridging::supportsToJs<void (*)()>));
