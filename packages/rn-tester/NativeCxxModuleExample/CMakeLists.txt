@@ -9,7 +9,10 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 file(GLOB nativecxxmoduleexample_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(nativecxxmoduleexample STATIC ${nativecxxmoduleexample_SRC})
 
-target_include_directories(nativecxxmoduleexample PUBLIC .)
+target_include_directories(nativecxxmoduleexample PUBLIC
+        .
+        ${REACT_COMMON_DIR}
+)
 target_compile_reactnative_options(nativecxxmoduleexample PRIVATE)
 
 target_link_libraries(nativecxxmoduleexample

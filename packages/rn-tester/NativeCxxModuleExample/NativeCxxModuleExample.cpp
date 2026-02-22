@@ -46,6 +46,18 @@ std::function<void()> NativeCxxModuleExample::setValueCallbackWithSubscription(
   };
 }
 
+jsi::ArrayBuffer NativeCxxModuleExample::getArrayBuffer(
+    jsi::Runtime& /*rt*/,
+    jsi::ArrayBuffer input) {
+  return input;
+}
+
+Uint8Array NativeCxxModuleExample::getUint8Array(
+    jsi::Runtime& /*rt*/,
+    Uint8Array input) {
+  return input;
+}
+
 std::vector<std::optional<ObjectStruct>> NativeCxxModuleExample::getArray(
     jsi::Runtime& /*rt*/,
     std::vector<std::optional<ObjectStruct>> arg) {

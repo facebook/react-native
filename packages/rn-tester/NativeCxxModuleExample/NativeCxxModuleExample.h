@@ -14,6 +14,7 @@
 #else // BUCK headers
 #include <AppSpecs/AppSpecsJSI.h>
 #endif
+#include <react/bridging/Uint8Array.h>
 #include <memory>
 #include <optional>
 #include <set>
@@ -121,6 +122,10 @@ class NativeCxxModuleExample : public NativeCxxModuleExampleCxxSpec<NativeCxxMod
   void getValueWithCallback(jsi::Runtime &rt, const AsyncCallback<std::string> &callback);
 
   std::function<void()> setValueCallbackWithSubscription(jsi::Runtime &rt, AsyncCallback<std::string> callback);
+
+  jsi::ArrayBuffer getArrayBuffer(jsi::Runtime &rt, jsi::ArrayBuffer input);
+
+  Uint8Array getUint8Array(jsi::Runtime &rt, Uint8Array input);
 
   std::vector<std::optional<ObjectStruct>> getArray(jsi::Runtime &rt, std::vector<std::optional<ObjectStruct>> arg);
 

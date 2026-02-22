@@ -17,6 +17,26 @@ namespace facebook::react {
 class NativeCxxModuleExampleTests
     : public TurboModuleTestFixture<NativeCxxModuleExample> {};
 
+namespace {
+class TestMutableBuffer : public jsi::MutableBuffer {
+ public:
+  explicit TestMutableBuffer(size_t size) : bytes_(size, 0) {}
+
+  size_t size() const override
+  {
+    return bytes_.size();
+  }
+
+  uint8_t* data() override
+  {
+    return bytes_.data();
+  }
+
+ private:
+  std::vector<uint8_t> bytes_;
+};
+} // namespace
+
 TEST_F(NativeCxxModuleExampleTests, GetArrayReturnsCorrectValues) {
   std::vector<std::optional<facebook::react::ObjectStruct>> empty;
   EXPECT_EQ(module_->getArray(*runtime_, empty), empty);
@@ -29,6 +49,24 @@ TEST_F(NativeCxxModuleExampleTests, GetArrayReturnsCorrectValues) {
   ASSERT_EQ(result.size(), 1);
   EXPECT_EQ(result[0]->a, 1);
   EXPECT_EQ(result[0]->b, "2");
+}
+
+TEST_F(NativeCxxModuleExampleTests, GetArrayBufferReturnsSameBuffer) {
+  auto input = jsi::ArrayBuffer(*runtime_, std::make_shared<TestMutableBuffer>(8));
+  auto inputCopy = jsi::Value(*runtime_, input).asObject(*runtime_);
+  auto result = module_->getArrayBuffer(*runtime_, std::move(input));
+  EXPECT_TRUE(jsi::Object::strictEquals(*runtime_, inputCopy, result));
+  EXPECT_EQ(result.size(*runtime_), 8);
+}
+
+TEST_F(NativeCxxModuleExampleTests, GetUint8ArrayReturnsInput) {
+  auto result = module_->getUint8Array(*runtime_, Uint8Array({1, 2, 3, 4}));
+  ASSERT_EQ(result.size(), 4);
+  auto* data = result.data();
+  EXPECT_EQ(data[0], 1);
+  EXPECT_EQ(data[1], 2);
+  EXPECT_EQ(data[2], 3);
+  EXPECT_EQ(data[3], 4);
 }
 
 TEST_F(NativeCxxModuleExampleTests, GetBoolReturnsCorrectValues) {
