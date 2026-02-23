@@ -13,6 +13,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.ERROR,
+    level = DeprecationLevel.WARNING,
 )
 public class NativeViewHierarchyOptimizer() {}
