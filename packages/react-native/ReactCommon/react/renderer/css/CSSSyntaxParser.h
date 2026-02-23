@@ -226,9 +226,9 @@ class CSSSyntaxParser {
         return hasWhiteSpace;
       case CSSDelimiter::None:
         return true;
+      default:
+        return false;
     }
-
-    return false;
   }
 
  private:

@@ -346,6 +346,8 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident)
     CSS_HANDLE_KEYWORD(Visible)
     CSS_HANDLE_KEYWORD(Wrap)
     CSS_HANDLE_KEYWORD(WrapReverse)
+    default:
+      return std::nullopt;
   }
 
   return std::nullopt;
