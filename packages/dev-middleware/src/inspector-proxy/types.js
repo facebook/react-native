@@ -32,13 +32,6 @@ export type TargetCapabilityFlags = Readonly<{
   nativeSourceCodeFetching?: boolean,
 
   /**
-   * The target supports the modern `rn_fusebox.html` entry point.
-   *
-   * In the launch flow, this controls the Chrome DevTools entrypoint that is used.
-   */
-  prefersFuseboxFrontend?: boolean,
-
-  /**
    * The target supports multiple concurrent debugger connections.
    *
    * When true, the proxy allows multiple debuggers to connect to the same

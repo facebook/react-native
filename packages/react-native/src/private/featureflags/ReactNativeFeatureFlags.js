@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d160075a63b4d5e2582409f4102fd66d>>
+ * @generated SignedSource<<97e082b7554dba5b4f387ef783d2d6e3>>
  * @flow strict
  * @noformat
  */
@@ -50,6 +50,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   cdpInteractionMetricsEnabled: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
+  defaultTextToOverflowHidden: Getter<boolean>,
   disableEarlyViewCommandExecution: Getter<boolean>,
   disableImageViewPreallocationAndroid: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
@@ -114,6 +115,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
   shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
+  syncAndroidClipToPaddingWithOverflow: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommitThread: Getter<boolean>,
@@ -206,6 +208,10 @@ export const cdpInteractionMetricsEnabled: Getter<boolean> = createNativeFlagGet
  * Use a C++ implementation of Native Animated instead of the platform implementation.
  */
 export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
+/**
+ * When enabled, sets the default overflow style for Text components to hidden instead of visible.
+ */
+export const defaultTextToOverflowHidden: Getter<boolean> = createNativeFlagGetter('defaultTextToOverflowHidden', true);
 /**
  * Dispatch view commands in mount item order.
  */
@@ -462,6 +468,10 @@ export const shouldTriggerResponderTransferOnScrollAndroid: Getter<boolean> = cr
  * Skip activity identity assertion in ReactHostImpl::onHostPause()
  */
 export const skipActivityIdentityAssertionOnHostPause: Getter<boolean> = createNativeFlagGetter('skipActivityIdentityAssertionOnHostPause', false);
+/**
+ * Sync clipToPadding on Android views with the overflow property
+ */
+export const syncAndroidClipToPaddingWithOverflow: Getter<boolean> = createNativeFlagGetter('syncAndroidClipToPaddingWithOverflow', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

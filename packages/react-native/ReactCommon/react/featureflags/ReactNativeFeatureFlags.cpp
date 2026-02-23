@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e9c9a4e487664049d40a1bed5015e8fe>>
+ * @generated SignedSource<<20f3c045c134a0dae21f8428c6f8714a>>
  */
 
 /**
@@ -36,6 +36,10 @@ bool ReactNativeFeatureFlags::cdpInteractionMetricsEnabled() {
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
   return getAccessor().cxxNativeAnimatedEnabled();
+}
+
+bool ReactNativeFeatureFlags::defaultTextToOverflowHidden() {
+  return getAccessor().defaultTextToOverflowHidden();
 }
 
 bool ReactNativeFeatureFlags::disableEarlyViewCommandExecution() {
@@ -292,6 +296,10 @@ bool ReactNativeFeatureFlags::shouldTriggerResponderTransferOnScrollAndroid() {
 
 bool ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause() {
   return getAccessor().skipActivityIdentityAssertionOnHostPause();
+}
+
+bool ReactNativeFeatureFlags::syncAndroidClipToPaddingWithOverflow() {
+  return getAccessor().syncAndroidClipToPaddingWithOverflow();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

@@ -8,8 +8,8 @@
  * @format
  */
 
-import type {ModalProps} from '../../Libraries/Modal/Modal';
 import typeof * as TmockComponent from '../mockComponent';
+import type {ModalProps} from 'react-native/Libraries/Modal/Modal';
 
 const mockComponent =
   jest.requireActual<TmockComponent>('../mockComponent').default;
@@ -17,7 +17,7 @@ const mockComponent =
 type TModal = component(...ModalProps);
 
 const BaseComponent = mockComponent(
-  '../Libraries/Modal/Modal',
+  'react-native/Libraries/Modal/Modal',
   null, // instanceMethods
   true, // isESModule
 ) as TModal;

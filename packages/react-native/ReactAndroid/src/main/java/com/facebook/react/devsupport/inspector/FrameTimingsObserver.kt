@@ -73,6 +73,7 @@ internal class FrameTimingsObserver(
           if (it.width == width && it.height == height) {
             it
           } else {
+            it.recycle()
             null
           }
         } ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also { bitmapBuffer = it }
@@ -83,26 +84,29 @@ internal class FrameTimingsObserver(
         { copyResult ->
           if (copyResult == PixelCopy.SUCCESS) {
             CoroutineScope(Dispatchers.Default).launch {
+              var scaledBitmap: Bitmap? = null
               try {
                 val scaleFactor = 0.25f
                 val scaledWidth = (width * scaleFactor).toInt()
                 val scaledHeight = (height * scaleFactor).toInt()
-                val scaledBitmap =
-                    Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
+                scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
 
-                val outputStream = ByteArrayOutputStream()
                 val compressFormat =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                         Bitmap.CompressFormat.WEBP_LOSSY
                     else Bitmap.CompressFormat.WEBP
-                scaledBitmap.compress(compressFormat, 0, outputStream)
-                val bytes = outputStream.toByteArray()
-                val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-                continuation.resume(base64)
 
-                scaledBitmap.recycle()
+                val base64 =
+                    ByteArrayOutputStream().use { outputStream ->
+                      scaledBitmap.compress(compressFormat, 0, outputStream)
+                      Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
+                    }
+
+                continuation.resume(base64)
               } catch (e: Exception) {
                 continuation.resume(null)
+              } finally {
+                scaledBitmap?.recycle()
               }
             }
           } else {

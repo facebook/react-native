@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<86fa523d5b3be2d21f7b327de973e5bc>>
+ * @generated SignedSource<<850aaecd3bb86f9c317b341d8165e74a>>
  */
 
 /**
@@ -70,6 +70,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedEnabled();
+  }
+
+  bool defaultTextToOverflowHidden() override {
+    auto value = values_["defaultTextToOverflowHidden"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::defaultTextToOverflowHidden();
   }
 
   bool disableEarlyViewCommandExecution() override {
@@ -646,6 +655,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::skipActivityIdentityAssertionOnHostPause();
+  }
+
+  bool syncAndroidClipToPaddingWithOverflow() override {
+    auto value = values_["syncAndroidClipToPaddingWithOverflow"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::syncAndroidClipToPaddingWithOverflow();
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

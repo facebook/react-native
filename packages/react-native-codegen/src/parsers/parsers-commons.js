@@ -592,10 +592,10 @@ function buildSchemaFromConfigType(
       if (parsingErrors.length > 0) {
         /**
          * TODO(T77968131): We have two options:
-         *  - Throw the first error, but indicate there are more then one errors.
+         *  - Throw the first error, but indicate there are more than one error.
          *  - Display all errors, nicely formatted.
          *
-         * For the time being, we're just throw the first error.
+         * For the time being, we're just throwing the first error.
          **/
 
         throw parsingErrors[0];

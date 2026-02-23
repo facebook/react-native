@@ -8,20 +8,16 @@
  * @format
  */
 
-import typeof TText from '../../Libraries/Text/Text';
 import typeof * as TmockComponent from '../mockComponent';
-import typeof * as TMockNativeMethods from '../MockNativeMethods';
+import typeof TActivityIndicator from 'react-native/Libraries/Components/ActivityIndicator/ActivityIndicator';
 
 const mockComponent =
   jest.requireActual<TmockComponent>('../mockComponent').default;
-const MockNativeMethods = jest.requireActual<TMockNativeMethods>(
-  '../MockNativeMethods',
-).default;
 
-const Text = mockComponent(
-  '../Libraries/Text/Text',
-  MockNativeMethods, // instanceMethods
+const ActivityIndicator = mockComponent(
+  'react-native/Libraries/Components/ActivityIndicator/ActivityIndicator',
+  null, // instanceMethods
   true, // isESModule
-) as TText;
+) as TActivityIndicator;
 
-export default Text;
+export default ActivityIndicator;

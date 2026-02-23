@@ -24,7 +24,7 @@ export default ({
   render: () => <CombineExample />,
 }: RNTesterModuleExample);
 
-const CombineExample = () => {
+component CombineExample() {
   const [aValue, setAValue] = useState('0.4');
   const [bValue, setBValue] = useState('0.5');
   const a = new Animated.Value(parseFloat(aValue));
@@ -69,7 +69,7 @@ const CombineExample = () => {
       <RNTesterButton onPress={() => setAnimation(mod)}>Modulo</RNTesterButton>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   content: {

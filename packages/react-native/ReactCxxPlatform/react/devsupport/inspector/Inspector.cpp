@@ -180,7 +180,7 @@ void Inspector::ensureHostTarget(
       });
   static_cast<InspectorHostTargetDelegate&>(*hostDelegate_).setTarget(target_);
   jsinspector_modern::InspectorTargetCapabilities capabilities{
-      .nativePageReloads = true, .prefersFuseboxFrontend = true};
+      .nativePageReloads = true};
   pageId_ = jsinspector_modern::getInspectorInstance().addPage(
       std::string(INTEGRATION_NAME),
       "", /*vm*/

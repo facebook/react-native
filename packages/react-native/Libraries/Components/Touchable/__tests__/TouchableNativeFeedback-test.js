@@ -15,7 +15,7 @@ import View from '../../View/View';
 import TouchableNativeFeedback from '../TouchableNativeFeedback';
 import * as React from 'react';
 
-const render = require('../../../../jest/renderer');
+const render = require('@react-native/jest-preset/jest/renderer');
 
 describe('TouchableWithoutFeedback', () => {
   it('renders correctly', async () => {

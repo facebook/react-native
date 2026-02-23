@@ -38,7 +38,6 @@ async function setupDevice(
       vm: 'bar-vm',
       capabilities: {
         nativePageReloads: true,
-        prefersFuseboxFrontend: true,
       },
     },
   ]);

@@ -15,7 +15,7 @@ import View from '../../View/View';
 import TouchableHighlight from '../TouchableHighlight';
 import * as React from 'react';
 
-const render = require('../../../../jest/renderer');
+const render = require('@react-native/jest-preset/jest/renderer');
 
 describe('TouchableHighlight', () => {
   it('renders correctly', async () => {

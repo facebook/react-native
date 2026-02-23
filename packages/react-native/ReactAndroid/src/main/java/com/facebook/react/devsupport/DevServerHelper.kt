@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
 import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
+import com.facebook.react.devsupport.inspector.DevSupportHttpClient
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
@@ -39,7 +40,6 @@ import java.io.UnsupportedEncodingException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -86,12 +86,7 @@ public open class DevServerHelper(
     MAP("map"),
   }
 
-  private val client: OkHttpClient =
-      OkHttpClient.Builder()
-          .connectTimeout(HTTP_CONNECT_TIMEOUT_MS.toLong(), TimeUnit.MILLISECONDS)
-          .readTimeout(0, TimeUnit.MILLISECONDS)
-          .writeTimeout(0, TimeUnit.MILLISECONDS)
-          .build()
+  private val client: OkHttpClient = DevSupportHttpClient.httpClient
   private val bundleDownloader: BundleDownloader = BundleDownloader(client)
   private val packagerStatusCheck: PackagerStatusCheck = PackagerStatusCheck(client)
   private val packageName: String = applicationContext.packageName
@@ -397,7 +392,6 @@ public open class DevServerHelper(
   }
 
   private companion object {
-    private const val HTTP_CONNECT_TIMEOUT_MS = 5000
     private const val DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }"
 
     private fun getSHA256(string: String): String {

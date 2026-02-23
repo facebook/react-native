@@ -255,7 +255,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
           }
           return strongSelf->_inspectorTarget->connect(std::move(remote));
         },
-        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
+        {.nativePageReloads = true});
   }
   if (_instance) {
     RCTLogWarn(

@@ -30,13 +30,11 @@ type DeviceMetadata = Readonly<{
 type RequestMetadata = Readonly<{
   pageId: string | null,
   frontendUserAgent: string | null,
-  prefersFuseboxFrontend: boolean | null,
 }>;
 
 type ResponseMetadata = Readonly<{
   pageId: string | null,
   frontendUserAgent: string | null,
-  prefersFuseboxFrontend: boolean | null,
 }>;
 
 class DeviceEventReporter {
@@ -101,7 +99,6 @@ class DeviceEventReporter {
         deviceName: this.#metadata.deviceName,
         pageId: metadata.pageId,
         frontendUserAgent: metadata.frontendUserAgent,
-        prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
         connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
       });
       return;
@@ -128,7 +125,6 @@ class DeviceEventReporter {
         deviceName: this.#metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
-        prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
         connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
       });
       return;
@@ -146,7 +142,6 @@ class DeviceEventReporter {
       deviceName: this.#metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
-      prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
       connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
     });
   }
@@ -204,7 +199,6 @@ class DeviceEventReporter {
         deviceName: this.#metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
-        prefersFuseboxFrontend: pendingCommand.metadata.prefersFuseboxFrontend,
         connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
       });
     }
@@ -246,7 +240,6 @@ class DeviceEventReporter {
       deviceName: this.#metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
-      prefersFuseboxFrontend: pendingCommand.metadata.prefersFuseboxFrontend,
       connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
     });
   }

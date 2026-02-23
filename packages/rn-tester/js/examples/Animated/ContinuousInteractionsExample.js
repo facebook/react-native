@@ -15,7 +15,7 @@ import * as React from 'react';
 import {useContext} from 'react';
 import {Text} from 'react-native';
 
-function AnimatedContinuousInteractionsExample(): React.Node {
+component AnimatedContinuousInteractionsExample() {
   const theme = useContext(RNTesterThemeContext);
   return (
     <Text style={{color: theme.SecondaryLabelColor}}>

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0139bc7a7b2ae5c9175f44de1ac80105>>
+ * @generated SignedSource<<65cdfdcbe22ff163b75e0b067bd72693>>
  */
 
 /**
@@ -28,6 +28,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun cdpInteractionMetricsEnabled(): Boolean = false
 
   override fun cxxNativeAnimatedEnabled(): Boolean = false
+
+  override fun defaultTextToOverflowHidden(): Boolean = true
 
   override fun disableEarlyViewCommandExecution(): Boolean = false
 
@@ -156,6 +158,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun shouldTriggerResponderTransferOnScrollAndroid(): Boolean = false
 
   override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
+
+  override fun syncAndroidClipToPaddingWithOverflow(): Boolean = false
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 

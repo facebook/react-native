@@ -16,21 +16,12 @@ import usePlatformTestHarness from './usePlatformTestHarness';
 import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-type Props = Readonly<{
+export default component RNTesterPlatformTest(
   title: string,
   description: string,
   instructions?: ReadonlyArray<string>,
-  component: React.ComponentType<PlatformTestComponentBaseProps>,
-}>;
-
-export default function RNTesterPlatformTest(props: Props): React.MixedElement {
-  const {
-    title,
-    description,
-    instructions,
-    component: UnderTestComponent,
-  } = props;
-
+  component as UnderTestComponent: React.ComponentType<PlatformTestComponentBaseProps>,
+) {
   const {harness, numPending, reset, results, testKey} =
     usePlatformTestHarness();
 

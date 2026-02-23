@@ -110,20 +110,6 @@ export default {
   absoluteFill,
 
   /**
-   * Sometimes you may want `absoluteFill` but with a couple tweaks - `absoluteFillObject` can be
-   * used to create a customized entry in a `StyleSheet`, e.g.:
-   *
-   *   const styles = StyleSheet.create({
-   *     wrapper: {
-   *       ...StyleSheet.absoluteFillObject,
-   *       top: 10,
-   *       backgroundColor: 'transparent',
-   *     },
-   *   });
-   */
-  absoluteFillObject: absoluteFill,
-
-  /**
    * Combines two styles such that `style2` will override any styles in `style1`.
    * If either style is falsy, the other one is returned without allocating an
    * array, saving allocations and maintaining reference equality for

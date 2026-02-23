@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4386581c81476b6f7684a8766642db13>>
+ * @generated SignedSource<<8d00a6310e0fae475007f11fa56a5a6f>>
  */
 
 /**
@@ -54,6 +54,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool cxxNativeAnimatedEnabled() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedEnabled");
+    return method(javaProvider_);
+  }
+
+  bool defaultTextToOverflowHidden() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("defaultTextToOverflowHidden");
     return method(javaProvider_);
   }
 
@@ -441,6 +447,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool syncAndroidClipToPaddingWithOverflow() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("syncAndroidClipToPaddingWithOverflow");
+    return method(javaProvider_);
+  }
+
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("traceTurboModulePromiseRejectionsOnAndroid");
@@ -542,6 +554,11 @@ bool JReactNativeFeatureFlagsCxxInterop::cdpInteractionMetricsEnabled(
 bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::defaultTextToOverflowHidden(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::defaultTextToOverflowHidden();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution(
@@ -864,6 +881,11 @@ bool JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPaus
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::syncAndroidClipToPaddingWithOverflow(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::syncAndroidClipToPaddingWithOverflow();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -974,6 +996,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
+      makeNativeMethod(
+        "defaultTextToOverflowHidden",
+        JReactNativeFeatureFlagsCxxInterop::defaultTextToOverflowHidden),
       makeNativeMethod(
         "disableEarlyViewCommandExecution",
         JReactNativeFeatureFlagsCxxInterop::disableEarlyViewCommandExecution),
@@ -1166,6 +1191,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "skipActivityIdentityAssertionOnHostPause",
         JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause),
+      makeNativeMethod(
+        "syncAndroidClipToPaddingWithOverflow",
+        JReactNativeFeatureFlagsCxxInterop::syncAndroidClipToPaddingWithOverflow),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

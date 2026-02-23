@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<65e8cae8a55213f4b08ec4d896a05c00>>
+ * @generated SignedSource<<e3509361f95f3681f0bb583da5540d31>>
  */
 
 /**
@@ -47,6 +47,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedEnabled(): Boolean = accessor.cxxNativeAnimatedEnabled()
+
+  /**
+   * When enabled, sets the default overflow style for Text components to hidden instead of visible.
+   */
+  @JvmStatic
+  public fun defaultTextToOverflowHidden(): Boolean = accessor.defaultTextToOverflowHidden()
 
   /**
    * Dispatch view commands in mount item order.
@@ -431,6 +437,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun skipActivityIdentityAssertionOnHostPause(): Boolean = accessor.skipActivityIdentityAssertionOnHostPause()
+
+  /**
+   * Sync clipToPadding on Android views with the overflow property
+   */
+  @JvmStatic
+  public fun syncAndroidClipToPaddingWithOverflow(): Boolean = accessor.syncAndroidClipToPaddingWithOverflow()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

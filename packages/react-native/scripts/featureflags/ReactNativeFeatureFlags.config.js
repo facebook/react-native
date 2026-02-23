@@ -82,6 +82,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    defaultTextToOverflowHidden: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2026-02-13',
+        description:
+          'When enabled, sets the default overflow style for Text components to hidden instead of visible.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableEarlyViewCommandExecution: {
       defaultValue: false,
       metadata: {
@@ -761,6 +772,16 @@ const definitions: FeatureFlagDefinitions = {
           'Skip activity identity assertion in ReactHostImpl::onHostPause()',
         expectedReleaseValue: true,
         purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    syncAndroidClipToPaddingWithOverflow: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Sync clipToPadding on Android views with the overflow property',
+        expectedReleaseValue: true,
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },

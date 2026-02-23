@@ -26,8 +26,6 @@ import {
   useAnimatedValue,
 } from 'react-native';
 
-type Props = Readonly<{}>;
-
 type EasingListItem = {
   title: string,
   easing: (value: number) => number,
@@ -81,13 +79,7 @@ const easingSections = [
   },
 ];
 
-function EasingItem({
-  item,
-  useNativeDriver,
-}: {
-  item: EasingListItem,
-  useNativeDriver: boolean,
-}): React.Node {
+component EasingItem(item: EasingListItem, useNativeDriver: boolean) {
   const opacityAndScale = useAnimatedValue(1);
   const animation = useRef(
     Animated.timing(opacityAndScale, {
@@ -129,7 +121,7 @@ function EasingItem({
   );
 }
 
-function EasingExample(props: Props): React.Node {
+component EasingExample() {
   const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (

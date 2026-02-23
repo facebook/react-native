@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d92407e77cb3be0d57a84b5a9a931f2b>>
+ * @generated SignedSource<<ae86a1485b81df483dad1108b39fae31>>
  */
 
 /**
@@ -23,6 +23,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var commonTestFlagCache: Boolean? = null
   private var cdpInteractionMetricsEnabledCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
+  private var defaultTextToOverflowHiddenCache: Boolean? = null
   private var disableEarlyViewCommandExecutionCache: Boolean? = null
   private var disableImageViewPreallocationAndroidCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
@@ -87,6 +88,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var shouldTriggerResponderTransferOnScrollAndroidCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
+  private var syncAndroidClipToPaddingWithOverflowCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitThreadCache: Boolean? = null
@@ -125,6 +127,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.cxxNativeAnimatedEnabled()
       cxxNativeAnimatedEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun defaultTextToOverflowHidden(): Boolean {
+    var cached = defaultTextToOverflowHiddenCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.defaultTextToOverflowHidden()
+      defaultTextToOverflowHiddenCache = cached
     }
     return cached
   }
@@ -701,6 +712,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.skipActivityIdentityAssertionOnHostPause()
       skipActivityIdentityAssertionOnHostPauseCache = cached
+    }
+    return cached
+  }
+
+  override fun syncAndroidClipToPaddingWithOverflow(): Boolean {
+    var cached = syncAndroidClipToPaddingWithOverflowCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.syncAndroidClipToPaddingWithOverflow()
+      syncAndroidClipToPaddingWithOverflowCache = cached
     }
     return cached
   }

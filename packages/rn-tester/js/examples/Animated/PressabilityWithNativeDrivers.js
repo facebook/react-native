@@ -16,7 +16,7 @@ import {Animated, Button, Text, View, useAnimatedValue} from 'react-native';
 
 const componentList: number[] = Array.from({length: 100}, (_, i) => i + 1);
 
-function PressableWithNativeDriver() {
+component PressableWithNativeDriver() {
   const currScroll = useAnimatedValue(0);
   const [count, setCount] = useState(0);
 

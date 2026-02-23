@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {ViewProps} from '../../Libraries/Components/View/ViewPropTypes';
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 import * as React from 'react';
 import {createElement} from 'react';

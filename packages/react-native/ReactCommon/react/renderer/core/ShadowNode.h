@@ -252,13 +252,13 @@ class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::N
   void cloneChildrenIfShared();
 
   /*
-   * Updates the node's traits based on its children's traits.
-   * Specifically, if view culling is enabled and any child has the
-   * Unstable_uncullableView or Unstable_uncullableTrace trait, this node will
-   * also be marked as uncullable. This ensures that if a child needs to be
-   * rendered, its parent will be too.
+   * Propagates uncullable traits from children to this node.
+   * If view culling is enabled and any child has the Unstable_uncullableView
+   * or Unstable_uncullableTrace trait, this node will also be marked as
+   * uncullable. This ensures that if a child needs to be rendered, its parent
+   * will be too.
    */
-  void updateTraitsIfNeccessary();
+  void propagateUncullableTraitsFromChildren();
 
   /*
    * Transfer the runtime reference to this `ShadowNode` to a new instance,
@@ -276,11 +276,6 @@ class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::N
    * intents and purposes it should be treated as mounted.
    */
   mutable std::atomic<bool> hasBeenMounted_{false};
-
-  /*
-   * True if shadow node has been promoted to be the next mounted tree.
-   */
-  mutable bool hasBeenPromoted_{false};
 
   static Props::Shared propsForClonedShadowNode(const ShadowNode &sourceShadowNode, const Props::Shared &props);
 

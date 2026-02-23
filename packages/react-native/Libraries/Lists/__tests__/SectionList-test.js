@@ -8,8 +8,8 @@
  * @format
  */
 
-import {create} from '../../../jest/renderer';
 import SectionList from '../SectionList';
+import {create} from '@react-native/jest-preset/jest/renderer';
 import * as React from 'react';
 
 describe('SectionList', () => {

@@ -7,7 +7,6 @@
 
 #include "ShadowNode.h"
 #include "DynamicPropsUtilities.h"
-#include "ShadowNodeFragment.h"
 
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
@@ -24,7 +23,7 @@ namespace facebook::react {
  * Runtime shadow node reference updates should only run from one thread at all
  * times to avoid having more than one shadow tree updating the current fiber
  * tree simultaneously. This thread_local flag allows enabling the updates for
- * choses threads.
+ * chosen threads.
  */
 thread_local bool useRuntimeShadowNodeReferenceUpdateOnThread{false}; // NOLINT
 
@@ -100,7 +99,7 @@ ShadowNode::ShadowNode(
     child->family_->setParent(family_);
   }
 
-  updateTraitsIfNeccessary();
+  propagateUncullableTraitsFromChildren();
 
   // The first node of the family gets its state committed automatically.
   family_->setMostRecentState(state_);
@@ -129,7 +128,7 @@ ShadowNode::ShadowNode(
     for (const auto& child : *children_) {
       child->family_->setParent(family_);
     }
-    updateTraitsIfNeccessary();
+    propagateUncullableTraitsFromChildren();
   }
 }
 
@@ -151,7 +150,7 @@ std::shared_ptr<ShadowNode> ShadowNode::clone(
            .state = fragment.state});
       return clonedNode;
     } else {
-      // TODO: We might need to merge fragment.priops with
+      // TODO: We might need to merge fragment.props with
       // `family.nativeProps_DEPRECATED`.
       return componentDescriptor.cloneShadowNode(*this, fragment);
     }
@@ -245,7 +244,7 @@ void ShadowNode::appendChild(const std::shared_ptr<const ShadowNode>& child) {
   children.push_back(child);
 
   child->family_->setParent(family_);
-  updateTraitsIfNeccessary();
+  propagateUncullableTraitsFromChildren();
 }
 
 void ShadowNode::replaceChild(
@@ -279,7 +278,7 @@ void ShadowNode::replaceChild(
   }
 
   react_native_assert(false && "Child to replace was not found.");
-  updateTraitsIfNeccessary();
+  propagateUncullableTraitsFromChildren();
 }
 
 void ShadowNode::cloneChildrenIfShared() {
@@ -292,7 +291,7 @@ void ShadowNode::cloneChildrenIfShared() {
       *children_);
 }
 
-void ShadowNode::updateTraitsIfNeccessary() {
+void ShadowNode::propagateUncullableTraitsFromChildren() {
   if (ReactNativeFeatureFlags::enableViewCulling()) {
     if (traits_.check(ShadowNodeTraits::Trait::Unstable_uncullableView)) {
       return;
