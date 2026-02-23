@@ -13,6 +13,13 @@
 import type {ExtendedError} from './ExtendedError';
 import type {ExceptionData} from './NativeExceptionsManager';
 
+import {
+  handleException as nativeHandleException,
+  hasHandledFatalException as nativeHasHandledFatalException,
+  inExceptionHandler as nativeInExceptionHandler,
+  notifyOfFatalException as nativeNotifyOfFatalException,
+} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
+
 export class SyntheticError extends Error {
   name: string = '';
 }
@@ -124,10 +131,10 @@ function reportException(
       require('./NativeExceptionsManager').default;
     if (NativeExceptionsManager) {
       if (isFatal) {
-        if (global.RN$hasHandledFatalException?.()) {
+        if (nativeHasHandledFatalException?.()) {
           return;
         }
-        global.RN$notifyOfFatalException?.();
+        nativeNotifyOfFatalException?.();
       }
       NativeExceptionsManager.reportException(data);
     }
@@ -152,8 +159,8 @@ function handleException(e: unknown, isFatal: boolean) {
   // TODO(T196834299): We should really use a c++ turbomodule for this
   const reportToConsole = true;
   if (
-    !global.RN$handleException ||
-    !global.RN$handleException(e, isFatal, reportToConsole)
+    !nativeHandleException ||
+    !nativeHandleException(e, isFatal, reportToConsole)
   ) {
     let error: Error;
     if (e instanceof Error) {
@@ -185,7 +192,7 @@ function reactConsoleErrorHandler(...args) {
   if (!console.reportErrorsAsExceptions) {
     return;
   }
-  if (inExceptionHandler || global.RN$inExceptionHandler?.()) {
+  if (inExceptionHandler || nativeInExceptionHandler?.()) {
     // The fundamental trick here is that are multiple entry point to logging errors:
     // (see D19743075 for more background)
     //
@@ -236,8 +243,8 @@ function reactConsoleErrorHandler(...args) {
   const isFatal = false;
   const reportToConsole = false;
   if (
-    !global.RN$handleException ||
-    !global.RN$handleException(error, isFatal, reportToConsole)
+    !nativeHandleException ||
+    !nativeHandleException(error, isFatal, reportToConsole)
   ) {
     if (__DEV__) {
       // If we're not reporting to the console in reportException,

@@ -11,6 +11,7 @@
 import type {RootTag} from '../Types/RootTagTypes';
 import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
+import {nativeCallSyncHook} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import NativeUIManager from './NativeUIManager';
 import nullthrows from 'nullthrows';
 
@@ -60,7 +61,7 @@ function getViewManagerConfig(viewManagerName: string): any {
 
   // If we're in the Chrome Debugger, let's not even try calling the sync
   // method.
-  if (!global.nativeCallSyncHook) {
+  if (!nativeCallSyncHook) {
     return config;
   }
 
@@ -168,7 +169,7 @@ if (Platform.OS === 'ios') {
   });
 }
 
-if (!global.nativeCallSyncHook) {
+if (!nativeCallSyncHook) {
   Object.keys(getConstants()).forEach(viewManagerName => {
     if (!UIManagerProperties.includes(viewManagerName)) {
       if (!viewManagerConfigs[viewManagerName]) {

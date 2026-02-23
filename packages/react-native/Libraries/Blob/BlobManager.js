@@ -11,6 +11,7 @@
 import typeof BlobT from './Blob';
 import type {BlobCollector, BlobData, BlobOptions} from './BlobTypes';
 
+import {blobCollectorProvider} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import NativeBlobModule from './NativeBlobModule';
 import invariant from 'invariant';
 
@@ -40,10 +41,10 @@ function uuidv4(): string {
 // that the current bridge infra doesn't allow to track js objects
 // deallocation. Ideally the whole Blob object should be a jsi::HostObject.
 function createBlobCollector(blobId: string): BlobCollector | null {
-  if (global.__blobCollectorProvider == null) {
+  if (blobCollectorProvider == null) {
     return null;
   } else {
-    return global.__blobCollectorProvider(blobId);
+    return blobCollectorProvider(blobId) ?? null;
   }
 }
 
@@ -88,7 +89,7 @@ class BlobManager {
       if (curr.type === 'string') {
         /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */
-        return acc + global.unescape(encodeURI(curr.data)).length;
+        return acc + unescape(encodeURI(curr.data)).length;
       } else {
         /* $FlowFixMe[prop-missing] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */

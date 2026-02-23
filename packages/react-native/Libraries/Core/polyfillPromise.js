@@ -20,10 +20,10 @@ const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
  * require the modules you need from InitializeCore for setup.
  */
 
-// If global.Promise is provided by Hermes, we are confident that it can provide
+// If Promise is provided by Hermes, we are confident that it can provide
 // all the methods needed by React Native, so we can directly use it.
 if (global?.HermesInternal?.hasPromise?.()) {
-  const HermesPromise = global.Promise;
+  const HermesPromise = Promise;
 
   if (__DEV__) {
     if (typeof HermesPromise !== 'function') {

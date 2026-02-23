@@ -10,6 +10,11 @@
 
 'use strict';
 
+import {
+  isBridgeless,
+  registerCallableModule as nativeRegisterCallableModule,
+} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
+
 type Module = {...};
 type RegisterCallableModule = (
   name: string,
@@ -17,14 +22,14 @@ type RegisterCallableModule = (
 ) => void;
 
 const registerCallableModule: RegisterCallableModule = (function () {
-  if (global.RN$Bridgeless === true) {
+  if (isBridgeless) {
     return (name, moduleOrFactory) => {
       if (typeof moduleOrFactory === 'function') {
-        global.RN$registerCallableModule(name, moduleOrFactory);
+        nativeRegisterCallableModule?.(name, moduleOrFactory);
         return;
       }
 
-      global.RN$registerCallableModule(name, () => moduleOrFactory);
+      nativeRegisterCallableModule?.(name, () => moduleOrFactory);
     };
   }
 

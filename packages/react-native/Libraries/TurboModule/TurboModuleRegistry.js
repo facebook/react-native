@@ -10,11 +10,10 @@
 
 import type {TurboModule} from './RCTExport';
 
+import {turboModuleProxy} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import invariant from 'invariant';
 
 const NativeModules = require('../BatchedBridge/NativeModules').default;
-
-const turboModuleProxy = global.__turboModuleProxy;
 
 function requireModule<T: TurboModule>(name: string): ?T {
   if (turboModuleProxy != null) {

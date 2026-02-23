@@ -70,8 +70,8 @@ const LOADING = 3;
 const DONE = 4;
 
 const SUPPORTED_RESPONSE_TYPES = {
-  arraybuffer: typeof global.ArrayBuffer === 'function',
-  blob: typeof global.Blob === 'function',
+  arraybuffer: typeof ArrayBuffer === 'function',
+  blob: typeof Blob === 'function',
   document: false,
   json: true,
   text: true,

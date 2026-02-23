@@ -686,8 +686,9 @@ function getNode(nodeOrRef: NodeOrRef): ReadOnlyNode {
  * Quick and dirty polyfills required by tinybench.
  */
 
-if (typeof global.Event === 'undefined') {
-  global.Event =
+if (typeof Event === 'undefined') {
+  // $FlowExpectedError[cannot-write]
+  globalThis.Event =
     require('react-native/src/private/webapis/dom/events/Event').default;
 } else {
   console.warn(
@@ -695,8 +696,9 @@ if (typeof global.Event === 'undefined') {
   );
 }
 
-if (typeof global.EventTarget === 'undefined') {
-  global.EventTarget =
+if (typeof EventTarget === 'undefined') {
+  // $FlowExpectedError[cannot-write]
+  globalThis.EventTarget =
     require('react-native/src/private/webapis/dom/events/EventTarget').default;
 } else {
   console.warn(

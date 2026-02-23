@@ -366,7 +366,7 @@ export default class SpringAnimation extends Animation {
     super.stop();
     clearTimeout(this._timeout);
     if (this._animationFrame != null) {
-      global.cancelAnimationFrame(this._animationFrame);
+      cancelAnimationFrame(this._animationFrame);
     }
     this.__notifyAnimationEnd({finished: false});
   }

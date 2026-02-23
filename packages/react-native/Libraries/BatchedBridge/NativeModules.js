@@ -10,18 +10,18 @@
 
 'use strict';
 
+import type {ModuleConfig} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import type {ExtendedError} from '../Core/ExtendedError';
 
+const {
+  batchedBridgeConfig,
+  nativeModuleProxy,
+  nativeRequireModuleConfig,
+} = require('../../src/private/runtime/ReactNativeRuntimeGlobals');
 const BatchedBridge = require('./BatchedBridge').default;
 const invariant = require('invariant');
 
-export type ModuleConfig = [
-  string /* name */,
-  ?{...} /* constants */,
-  ?ReadonlyArray<string> /* functions */,
-  ?ReadonlyArray<number> /* promise method IDs */,
-  ?ReadonlyArray<number> /* sync method IDs */,
-];
+export type {ModuleConfig} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 
 export type MethodType = 'async' | 'promise' | 'sync';
 
@@ -88,10 +88,10 @@ global.__fbGenNativeModule = genModule;
 
 function loadModule(name: string, moduleID: number): ?{...} {
   invariant(
-    global.nativeRequireModuleConfig,
+    nativeRequireModuleConfig,
     "Can't lazily create module without nativeRequireModuleConfig",
   );
-  const config = global.nativeRequireModuleConfig(name);
+  const config = nativeRequireModuleConfig(name);
   const info = genModule(config, moduleID);
   return info && info.module;
 }
@@ -182,18 +182,17 @@ function updateErrorWithErrorData(
 
 /* $FlowFixMe[unclear-type] unclear type of NativeModules */
 let NativeModules: {[moduleName: string]: any, ...} = {};
-if (global.nativeModuleProxy) {
-  NativeModules = global.nativeModuleProxy;
+if (nativeModuleProxy) {
+  NativeModules = nativeModuleProxy;
 } else {
-  const bridgeConfig = global.__fbBatchedBridgeConfig;
   invariant(
-    bridgeConfig,
+    batchedBridgeConfig,
     '__fbBatchedBridgeConfig is not set, cannot invoke native modules',
   );
 
   const defineLazyObjectProperty =
     require('../Utilities/defineLazyObjectProperty').default;
-  (bridgeConfig.remoteModuleConfig || []).forEach(
+  (batchedBridgeConfig.remoteModuleConfig || []).forEach(
     (config: ModuleConfig, moduleID: number) => {
       // Initially this config will only contain the module name when running in JSC. The actual
       // configuration of the module will be lazily loaded.
