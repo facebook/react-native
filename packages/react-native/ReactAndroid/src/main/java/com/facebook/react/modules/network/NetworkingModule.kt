@@ -36,7 +36,6 @@ import okhttp3.JavaNetCookieJar
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
-import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
@@ -310,21 +309,14 @@ public class NetworkingModule(
         if (handler.supports(uri, responseType)) {
           val (res, rawBody) = handler.fetch(uri)
           val encodedDataLength = res.toString().toByteArray().size
-          // fix: UriHandlers which are not using file:// scheme fail in whatwg-fetch at this line
-          // https://github.com/JakeChampion/fetch/blob/main/fetch.js#L547
-          val response =
-              Response.Builder()
-                  .protocol(Protocol.HTTP_1_1)
-                  .request(Request.Builder().url(url.orEmpty()).build())
-                  .code(200)
-                  .message("OK")
-                  .build()
           NetworkEventUtil.onResponseReceived(
               reactApplicationContext,
               requestId,
               devToolsRequestId,
               url,
-              response,
+              200,
+              emptyMap(),
+              encodedDataLength.toLong(),
           )
           NetworkEventUtil.onDataReceived(
               reactApplicationContext,
@@ -645,7 +637,9 @@ public class NetworkingModule(
                     requestId,
                     devToolsRequestId,
                     response.request().url().toString(),
-                    response,
+                    response.code(),
+                    NetworkEventUtil.okHttpHeadersToMap(response.headers()),
+                    response.body()?.contentLength() ?: 0L,
                 )
 
                 try {
