@@ -1864,7 +1864,7 @@ public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementa
 	public fun hide ()V
 	public fun showMessage (Ljava/lang/String;)V
 	public fun showMessage (Ljava/lang/String;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Boolean;)V
-	public fun updateProgress (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)V
+	public fun updateProgress (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;)V
 }
 
 public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementation$Companion {
@@ -2108,7 +2108,7 @@ public abstract interface class com/facebook/react/devsupport/interfaces/BundleL
 
 public abstract interface class com/facebook/react/devsupport/interfaces/DevBundleDownloadListener {
 	public abstract fun onFailure (Ljava/lang/Exception;)V
-	public abstract fun onProgress (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)V
+	public abstract fun onProgress (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;)V
 	public abstract fun onSuccess ()V
 }
 
@@ -2116,7 +2116,7 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevLoad
 	public abstract fun hide ()V
 	public abstract fun showMessage (Ljava/lang/String;)V
 	public abstract fun showMessage (Ljava/lang/String;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Boolean;)V
-	public abstract fun updateProgress (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)V
+	public abstract fun updateProgress (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;)V
 }
 
 public abstract interface class com/facebook/react/devsupport/interfaces/DevOptionHandler {
