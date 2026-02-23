@@ -86,7 +86,7 @@ export async function createServer(options: CreateServerOptions): Promise<{
   const {secure = false, ...devMiddlewareOptions} = options;
   let httpServer;
   if (secure) {
-    const {cert, private: key} = selfsigned.generate(
+    const {cert, private: key} = await selfsigned.generate(
       [{name: 'commonName', value: 'localhost'}],
       {days: 1},
     );
