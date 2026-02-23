@@ -9,6 +9,7 @@
 
 #include <react/renderer/components/view/BoxShadowPropsConversions.h>
 #include <react/renderer/components/view/FilterPropsConversions.h>
+#include <react/renderer/components/view/conversions.h>
 
 namespace facebook::react {
 
@@ -248,6 +249,112 @@ TEST(ConversionsTest, unprocessed_filter_objects_unknown_type) {
       PropsParserContext{-1, ContextContainer{}}, value, filters);
 
   EXPECT_TRUE(filters.empty());
+}
+
+TEST(ConversionsTest, unprocessed_transform_css_string) {
+  Transform result;
+  parseUnprocessedTransformString(
+      "rotate(45deg) scale(2) translateX(10px)", result);
+
+  EXPECT_EQ(result.operations.size(), 3);
+
+  // rotate(45deg) -> Rotate, z = 45 * PI / 180
+  EXPECT_EQ(result.operations[0].type, TransformOperationType::Rotate);
+  EXPECT_NEAR(
+      result.operations[0].z.value,
+      static_cast<float>(45.0 * M_PI / 180.0),
+      0.001f);
+
+  // scale(2) -> Scale, x=2, y=2
+  EXPECT_EQ(result.operations[1].type, TransformOperationType::Scale);
+  EXPECT_EQ(result.operations[1].x.value, 2.0f);
+  EXPECT_EQ(result.operations[1].y.value, 2.0f);
+
+  // translateX(10px) -> Translate, x=10
+  EXPECT_EQ(result.operations[2].type, TransformOperationType::Translate);
+  EXPECT_EQ(result.operations[2].x.value, 10.0f);
+  EXPECT_EQ(result.operations[2].x.unit, UnitType::Point);
+  EXPECT_EQ(result.operations[2].y.value, 0.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_css_translate_percent) {
+  Transform result;
+  parseUnprocessedTransformString("translate(10px, 50%)", result);
+
+  EXPECT_EQ(result.operations.size(), 1);
+  EXPECT_EQ(result.operations[0].type, TransformOperationType::Translate);
+  EXPECT_EQ(result.operations[0].x.value, 10.0f);
+  EXPECT_EQ(result.operations[0].x.unit, UnitType::Point);
+  EXPECT_EQ(result.operations[0].y.value, 50.0f);
+  EXPECT_EQ(result.operations[0].y.unit, UnitType::Percent);
+}
+
+TEST(ConversionsTest, unprocessed_transform_css_perspective) {
+  Transform result;
+  parseUnprocessedTransformString("perspective(500px)", result);
+
+  EXPECT_EQ(result.operations.size(), 1);
+  EXPECT_EQ(result.operations[0].type, TransformOperationType::Perspective);
+  EXPECT_EQ(result.operations[0].x.value, 500.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_css_invalid_string) {
+  Transform result;
+  parseUnprocessedTransformString("not-a-transform", result);
+
+  EXPECT_TRUE(result.operations.empty());
+}
+
+TEST(ConversionsTest, unprocessed_transform_rawvalue_string) {
+  RawValue value{folly::dynamic("rotate(45deg) scale(2)")};
+  Transform result;
+  parseUnprocessedTransform(
+      PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_EQ(result.operations.size(), 2);
+  EXPECT_EQ(result.operations[0].type, TransformOperationType::Rotate);
+  EXPECT_EQ(result.operations[1].type, TransformOperationType::Scale);
+}
+
+TEST(ConversionsTest, unprocessed_transform_rawvalue_array) {
+  RawValue value{folly::dynamic::array(
+      folly::dynamic::object("rotate", "45deg"),
+      folly::dynamic::object("scale", 2))};
+  Transform result;
+  parseUnprocessedTransform(
+      PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_EQ(result.operations.size(), 2);
+  EXPECT_EQ(result.operations[0].type, TransformOperationType::Rotate);
+  EXPECT_EQ(result.operations[1].type, TransformOperationType::Scale);
+  EXPECT_EQ(result.operations[1].x.value, 2.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_rawvalue_matrix) {
+  RawValue value{folly::dynamic::array(
+      folly::dynamic::object(
+          "matrix",
+          folly::dynamic::array(
+              1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)))};
+  Transform result;
+  parseUnprocessedTransform(
+      PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_EQ(result.operations.size(), 1);
+  EXPECT_EQ(result.operations[0].type, TransformOperationType::Arbitrary);
+}
+
+TEST(ConversionsTest, unprocessed_transform_rawvalue_translate_percent) {
+  RawValue value{
+      folly::dynamic::array(folly::dynamic::object("translateX", "50%"))};
+  Transform result;
+  parseUnprocessedTransform(
+      PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_EQ(result.operations.size(), 1);
+  EXPECT_EQ(result.operations[0].type, TransformOperationType::Translate);
+  EXPECT_EQ(result.operations[0].x.value, 50.0f);
+  EXPECT_EQ(result.operations[0].x.unit, UnitType::Percent);
 }
 
 } // namespace facebook::react
