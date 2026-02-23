@@ -1,3 +1,6 @@
 [submodule "packages/react-native/third-party/yoga"]
 	path = packages/react-native/third-party/yoga
 	url = https://github.com/facebook/yoga.git
+[submodule "packages/react-native/third-party/hermes"]
+	path = packages/react-native/third-party/hermes
+	url = https://github.com/facebook/hermes.git
