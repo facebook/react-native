@@ -196,6 +196,9 @@ public class ReactModalHostView(context: ThemedReactContext) :
     UiThreadUtil.assertOnUiThread()
 
     dialog?.let { nonNullDialog ->
+      nonNullDialog.window?.let { window ->
+        (context as ThemedReactContext).onExtraWindowDestroyed(window)
+      }
       if (nonNullDialog.isShowing) {
         val dialogContext =
             ContextUtils.findContextOfType(nonNullDialog.context, Activity::class.java)
@@ -341,6 +344,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
       newDialog.show()
       updateSystemAppearance()
       window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+      (context as ThemedReactContext).onExtraWindowCreated(window)
     }
   }
 
