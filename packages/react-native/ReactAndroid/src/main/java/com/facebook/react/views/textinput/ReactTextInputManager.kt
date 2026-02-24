@@ -271,18 +271,10 @@ public open class ReactTextInputManager public constructor() :
   }
 
   private fun setImportantForAutofill(view: ReactEditText, mode: Int) {
-    // Autofill hints were added in Android API 26.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      return
-    }
     view.importantForAutofill = mode
   }
 
   private fun setAutofillHints(view: ReactEditText, vararg hints: String) {
-    // Autofill hints were added in Android API 26.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      return
-    }
     view.setAutofillHints(*hints)
   }
 
@@ -545,14 +537,10 @@ public open class ReactTextInputManager public constructor() :
   @ReactProp(name = ViewProps.TEXT_ALIGN)
   public fun setTextAlign(view: ReactEditText, textAlign: String?) {
     if ("justify" == textAlign) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        view.justificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD
-      }
+      view.justificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD
       view.gravityHorizontal = Gravity.LEFT
     } else {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        view.justificationMode = Layout.JUSTIFICATION_MODE_NONE
-      }
+      view.justificationMode = Layout.JUSTIFICATION_MODE_NONE
 
       when (textAlign) {
         null,
@@ -1021,12 +1009,6 @@ public open class ReactTextInputManager public constructor() :
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY.toInt())
         )
-    val currentJustificationMode =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-          0
-        } else {
-          view.justificationMode
-        }
 
     return buildReactTextUpdateFromState(
         spanned,
@@ -1037,7 +1019,7 @@ public open class ReactTextInputManager public constructor() :
             view.gravityHorizontal,
         ),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode),
+        TextAttributeProps.getJustificationMode(props, view.justificationMode),
     )
   }
 
