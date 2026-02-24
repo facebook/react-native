@@ -1,0 +1,3 @@
+class test::Holder {
+  public static constexpr auto kDescriptor = "Lcom/facebook/test/Holder;";
+}

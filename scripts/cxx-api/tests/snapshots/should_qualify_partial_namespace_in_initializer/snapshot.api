@@ -1,0 +1,7 @@
+class test::Duration {
+  public static test::Duration zero();
+}
+
+struct test::Entry {
+  public test::Duration duration = test::Duration::zero();
+}
