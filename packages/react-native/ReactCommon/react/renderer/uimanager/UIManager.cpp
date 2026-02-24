@@ -469,7 +469,7 @@ void UIManager::setNativeProps_DEPRECATED(
                             ->getProps(),
                         RawProps(rawProps));
 
-                    return oldShadowNode.clone({/* .props = */ .props = props});
+                    return oldShadowNode.clone({.props = props});
                   });
 
               return std::static_pointer_cast<RootShadowNode>(rootNode);
@@ -493,15 +493,12 @@ void UIManager::configureNextLayoutAnimation(
     const jsi::Value& failureCallback) const {
   if (animationDelegate_ != nullptr) {
     animationDelegate_->uiManagerDidConfigureNextLayoutAnimation(
-        runtime,
-        config,
-        std::move(successCallback),
-        std::move(failureCallback));
+        runtime, config, successCallback, failureCallback);
   }
 }
 
 static std::shared_ptr<const ShadowNode> findShadowNodeByTagRecursively(
-    std::shared_ptr<const ShadowNode> parentShadowNode,
+    const std::shared_ptr<const ShadowNode>& parentShadowNode,
     Tag tag) {
   if (parentShadowNode->getTag() == tag) {
     return parentShadowNode;
