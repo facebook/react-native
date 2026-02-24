@@ -213,8 +213,34 @@ describe('processBoxShadow', () => {
     expect(processBoxShadow('red 10foo 5px 2px 3px,')).toEqual([]);
   });
 
+  it('should fail to parse decimal number with invalid unit', () => {
+    expect(processBoxShadow('1.5dog 2px')).toEqual([]);
+  });
+
   it('should fail to parse invalid argument', () => {
     expect(processBoxShadow('red asf 5px 2px 3px')).toEqual([]);
+  });
+
+  it('should parse string with leading dot decimal', () => {
+    expect(processBoxShadow('.5px 2px')).toEqual([
+      {
+        offsetX: 0.5,
+        offsetY: 2,
+      },
+    ]);
+  });
+
+  it('should parse string with explicit positive sign', () => {
+    expect(processBoxShadow('+5px 2px')).toEqual([
+      {
+        offsetX: 5,
+        offsetY: 2,
+      },
+    ]);
+  });
+
+  it('should fail to parse trailing dot without fractional digits', () => {
+    expect(processBoxShadow('10.px 5px')).toEqual([]);
   });
 
   it('should fail to parse negative blur', () => {
@@ -302,6 +328,17 @@ describe('processBoxShadow', () => {
         {
           offsetX: 10,
           offsetY: 'asdf',
+        },
+      ]),
+    ).toEqual([]);
+  });
+
+  it('should fail to parse object with unitless non-zero string', () => {
+    expect(
+      processBoxShadow([
+        {
+          offsetX: '5',
+          offsetY: 10,
         },
       ]),
     ).toEqual([]);
