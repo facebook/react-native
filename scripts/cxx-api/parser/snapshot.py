@@ -5,7 +5,13 @@
 
 from __future__ import annotations
 
-from .scope import NamespaceScopeKind, Scope, StructLikeScopeKind, TemporaryScopeKind
+from .scope import (
+    EnumScopeKind,
+    NamespaceScopeKind,
+    Scope,
+    StructLikeScopeKind,
+    TemporaryScopeKind,
+)
 from .utils import parse_qualified_path
 
 
@@ -76,6 +82,30 @@ class Snapshot:
             new_scope = Scope(NamespaceScopeKind(), namespace_name)
             new_scope.parent_scope = current_scope
             current_scope.inner_scopes[namespace_name] = new_scope
+            return new_scope
+
+    def create_enum(self, qualified_name: str) -> Scope[EnumScopeKind]:
+        """
+        Create an enum in the snapshot.
+        """
+        path = parse_qualified_path(qualified_name)
+        scope_path = path[0:-1]
+        enum_name = path[-1]
+        current_scope = self.ensure_scope(scope_path)
+
+        if enum_name in current_scope.inner_scopes:
+            scope = current_scope.inner_scopes[enum_name]
+            if scope.kind.name == "temporary":
+                scope.kind = EnumScopeKind()
+            else:
+                raise RuntimeError(
+                    f"Identifier {enum_name} already exists in scope {current_scope.name}"
+                )
+            return scope
+        else:
+            new_scope = Scope(EnumScopeKind(), enum_name)
+            new_scope.parent_scope = current_scope
+            current_scope.inner_scopes[enum_name] = new_scope
             return new_scope
 
     def _ensure_scope_is_defined(self, scope: Scope) -> None:
