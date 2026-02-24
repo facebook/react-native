@@ -207,6 +207,9 @@ function translateFunctionParamToJavaType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return wrapOptional('double', isRequired);
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(createErrorMessage(realTypeAnnotation.name));
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -301,6 +304,9 @@ function translateFunctionReturnTypeToJavaType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return wrapOptional('double', isRequired);
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(createErrorMessage(realTypeAnnotation.name));
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -387,6 +393,9 @@ function getFalsyReturnStatementFromReturnType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'return 0.0;';
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(createErrorMessage(realTypeAnnotation.name));
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));

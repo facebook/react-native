@@ -156,6 +156,11 @@ function translateReturnTypeToKind(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'NumberKind';
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${realTypeAnnotation.name}.`,
+          );
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
@@ -245,6 +250,11 @@ function translateParamTypeToJniType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return !isRequired ? 'Ljava/lang/Double;' : 'D';
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${realTypeAnnotation.name}.`,
+          );
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
@@ -327,6 +337,11 @@ function translateReturnTypeToJniType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return nullable ? 'Ljava/lang/Double;' : 'D';
+        case 'ArrayBuffer':
+        case 'Uint8Array':
+          throw new Error(
+            `ArrayBuffer and Uint8Array are only supported in cxx-only modules. Got ${realTypeAnnotation.name}.`,
+          );
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
