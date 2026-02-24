@@ -24,14 +24,15 @@
 #include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
-  inline ShadowView shadowViewFromShadowNode(const ShadowNode& shadowNode) {
-    auto shadowView = ShadowView{shadowNode};
-    // Clearing `props` and `state` (which we don't use) allows avoiding retain
-    // cycles.
-    shadowView.props = nullptr;
-    shadowView.state = nullptr;
-    return shadowView;
-  }
+
+inline ShadowView shadowViewFromShadowNode(const ShadowNode& shadowNode) {
+  auto shadowView = ShadowView{shadowNode};
+  // Clearing `props` and `state` (which we don't use) allows avoiding retain
+  // cycles.
+  shadowView.props = nullptr;
+  shadowView.state = nullptr;
+  return shadowView;
+}
 
 /*
  * Base `ShadowNode` for <TextInput> component.
