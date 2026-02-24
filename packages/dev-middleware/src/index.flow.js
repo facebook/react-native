@@ -9,9 +9,9 @@
  */
 
 export type {
-  BrowserLauncher,
+  AppLauncher,
   DebuggerShellPreparationResult,
-} from './types/BrowserLauncher';
+} from './types/AppLauncher';
 export type {EventReporter, ReportableEvent} from './types/EventReporter';
 export type {
   CustomMessageHandler,
@@ -21,5 +21,5 @@ export type {
 export type {Logger} from './types/Logger';
 export type {ReadonlyURL} from './types/ReadonlyURL';
 
-export {default as unstable_DefaultBrowserLauncher} from './utils/DefaultBrowserLauncher';
+export {default as unstable_DefaultAppLauncher} from './utils/DefaultAppLauncher';
 export {default as createDevMiddleware} from './createDevMiddleware';

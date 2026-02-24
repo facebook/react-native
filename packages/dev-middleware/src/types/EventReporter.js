@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {DebuggerShellPreparationResult} from './BrowserLauncher';
+import type {DebuggerShellPreparationResult} from './AppLauncher';
 
 type SuccessResult<Props: {...} | void = {}> = {
   status: 'success',
