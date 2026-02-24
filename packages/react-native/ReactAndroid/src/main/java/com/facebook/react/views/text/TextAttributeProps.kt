@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text
 
-import android.os.Build
 import android.text.Layout
 import android.text.TextUtils.TruncateAt
 import android.util.LayoutDirection
@@ -498,7 +497,7 @@ public class TextAttributeProps private constructor() {
       }
 
       val textAlignPropValue = props.getString(ViewProps.TEXT_ALIGN)
-      if ("justify" == textAlignPropValue && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      if ("justify" == textAlignPropValue) {
         return Layout.JUSTIFICATION_MODE_INTER_WORD
       }
       return DEFAULT_JUSTIFICATION_MODE
