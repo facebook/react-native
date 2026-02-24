@@ -58,11 +58,6 @@ internal class FrameTimingsObserver(
       }
 
   private suspend fun captureScreenshot(): String? = suspendCoroutine { continuation ->
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      continuation.resume(null)
-      return@suspendCoroutine
-    }
-
     val decorView = window.decorView
     val width = decorView.width
     val height = decorView.height
@@ -119,18 +114,11 @@ internal class FrameTimingsObserver(
 
   fun start() {
     frameCounter = 0
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      return
-    }
 
     window.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
   }
 
   fun stop() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      return
-    }
-
     window.removeOnFrameMetricsAvailableListener(frameMetricsListener)
     handler.removeCallbacksAndMessages(null)
 
