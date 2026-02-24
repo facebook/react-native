@@ -24,7 +24,38 @@ import processTransform from '../../StyleSheet/processTransform';
 import processTransformOrigin from '../../StyleSheet/processTransformOrigin';
 import sizesDiffer from '../../Utilities/differ/sizesDiffer';
 
+const nativeCSSParsing = ReactNativeFeatureFlags.enableNativeCSSParsing();
+
 const colorAttributes = {process: processColor};
+
+/**
+ * Gated style attribute types. When native CSS parsing is enabled, the JS
+ * processor is bypassed and the raw value is sent directly to native.
+ * These are exported so that other ViewConfigs can reuse them.
+ */
+export const filterAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processFilter};
+
+export const boxShadowAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBoxShadow};
+
+export const backgroundImageAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBackgroundImage};
+
+export const backgroundSizeAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBackgroundSize};
+
+export const backgroundPositionAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBackgroundPosition};
+
+export const backgroundRepeatAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processBackgroundRepeat};
 
 const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
@@ -125,9 +156,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Filter
    */
-  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? true
-    : {process: processFilter},
+  filter: filterAttribute,
 
   /**
    * MixBlendMode
@@ -142,29 +171,27 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /*
    * BoxShadow
    */
-  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? true
-    : {process: processBoxShadow},
+  boxShadow: boxShadowAttribute,
 
   /**
    * BackgroundImage
    */
-  experimental_backgroundImage: {process: processBackgroundImage},
+  experimental_backgroundImage: backgroundImageAttribute,
 
   /**
    * BackgroundSize
    */
-  experimental_backgroundSize: {process: processBackgroundSize},
+  experimental_backgroundSize: backgroundSizeAttribute,
 
   /**
    * BackgroundPosition
    */
-  experimental_backgroundPosition: {process: processBackgroundPosition},
+  experimental_backgroundPosition: backgroundPositionAttribute,
 
   /**
    * BackgroundRepeat
    */
-  experimental_backgroundRepeat: {process: processBackgroundRepeat},
+  experimental_backgroundRepeat: backgroundRepeatAttribute,
 
   /**
    * View

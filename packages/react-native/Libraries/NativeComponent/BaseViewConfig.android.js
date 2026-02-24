@@ -10,8 +10,15 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
-import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
+import {
+  backgroundImageAttribute,
+  backgroundPositionAttribute,
+  backgroundRepeatAttribute,
+  backgroundSizeAttribute,
+  boxShadowAttribute,
+  filterAttribute,
+} from '../Components/View/ReactNativeStyleAttributes';
 import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
 
 const bubblingEventTypes = {
@@ -191,24 +198,12 @@ const validAttributesForNonEventProps = {
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
   transformOrigin: true,
-  experimental_backgroundImage: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? (true as const)
-    : {process: require('../StyleSheet/processBackgroundImage').default},
-  experimental_backgroundSize: {
-    process: require('../StyleSheet/processBackgroundSize').default,
-  },
-  experimental_backgroundPosition: {
-    process: require('../StyleSheet/processBackgroundPosition').default,
-  },
-  experimental_backgroundRepeat: {
-    process: require('../StyleSheet/processBackgroundRepeat').default,
-  },
-  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? (true as const)
-    : {process: require('../StyleSheet/processBoxShadow').default},
-  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? (true as const)
-    : {process: require('../StyleSheet/processFilter').default},
+  experimental_backgroundImage: backgroundImageAttribute,
+  experimental_backgroundSize: backgroundSizeAttribute,
+  experimental_backgroundPosition: backgroundPositionAttribute,
+  experimental_backgroundRepeat: backgroundRepeatAttribute,
+  boxShadow: boxShadowAttribute,
+  filter: filterAttribute,
   mixBlendMode: true,
   isolation: true,
   opacity: true,
