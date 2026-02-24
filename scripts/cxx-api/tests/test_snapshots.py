@@ -14,17 +14,17 @@ from importlib.abc import Traversable
 from pathlib import Path
 from typing import Iterable
 
-from .parser import build_snapshot
+from ..parser import build_snapshot, get_repo_root
 
 
 def _resource_root() -> Traversable:
-    """Get the root directory containing test cases.
+    """Get the root directory containing test case snapshots.
 
-    Resources are included directly via glob(["tests/**/*"]) in BUCK.
-    Files are mapped at their original paths (e.g., tests/test1/...).
+    Resources are included directly via glob(["tests/snapshots/**/*"]) in BUCK.
+    Files are mapped at their original paths (e.g., tests/snapshots/test1/...).
     """
     pkg_root = ir.files(__package__ if __package__ else "__main__")
-    return pkg_root / "tests"
+    return pkg_root / "snapshots"
 
 
 def _iter_case_dirs(root: Traversable) -> Iterable[Traversable]:
@@ -61,8 +61,8 @@ def _generate_doxygen_api(case_dir_path: str, doxygen_config_path: str) -> None:
         raise RuntimeError(f"Doxygen failed: {result.stderr}")
 
 
-def _get_source_tests_dir() -> Path:
-    """Get the actual source directory for tests (for writing snapshots).
+def _get_source_snapshots_dir() -> Path:
+    """Get the actual source directory for snapshots (for writing snapshots).
 
     This finds the original source directory, not the packaged resources.
     Used when UPDATE_SNAPSHOT=1 to write new snapshots.
@@ -71,13 +71,21 @@ def _get_source_tests_dir() -> Path:
     if not source_tests_path:
         raise RuntimeError("SOURCE_TESTS_PATH environment variable is not set")
 
-    from .parser import _get_repo_root
-
-    return Path(_get_repo_root()) / source_tests_path
+    return Path(get_repo_root()) / source_tests_path
 
 
 def _make_case_test(case_dir: Traversable, tests_root: Traversable):
-    """Create a test method for a specific test case directory."""
+    """Create a test method for a specific test case directory.
+
+    Snapshot update workflow:
+      To regenerate snapshots, set UPDATE_SNAPSHOT=1 env
+      NOTE: plain ``UPDATE_SNAPSHOT=1 buck2 test ...`` does NOT work
+      because Buck2 does not forward shell environment variables to
+      test processes.
+
+      When a test case directory has no snapshot.api in the source tree
+      the snapshot is generated automatically on the first run.
+    """
 
     def _test(self: unittest.TestCase) -> None:
         update = os.environ.get("UPDATE_SNAPSHOT") == "1"
@@ -94,19 +102,38 @@ def _make_case_test(case_dir: Traversable, tests_root: Traversable):
             # Parse the generated XML
             xml_dir = case_dir_path / "api" / "xml"
             snapshot = build_snapshot(str(xml_dir))
-            got_snapshot = snapshot.rstrip() + "\n"
+            got_snapshot = snapshot.to_string().rstrip() + "\n"
 
-            expected_snapshot_path = case_dir_path / "snapshot.api"
+            # Resolve the source-tree snapshot path (for writing)
+            try:
+                source_snapshots_dir = _get_source_snapshots_dir()
+                source_snapshot_path = (
+                    source_snapshots_dir / case_dir.name / "snapshot.api"
+                )
+            except RuntimeError:
+                source_snapshot_path = None
 
-            # For writing snapshots, use the actual source directory
-            # when updating, otherwise use the packaged resource
-            if update or not expected_snapshot_path.exists():
-                # Write to actual source directory
-                source_tests_dir = _get_source_tests_dir()
-                source_snapshot_path = source_tests_dir / case_dir.name / "snapshot.api"
-                source_snapshot_path.write_text(got_snapshot)
-                print(f"Updated snapshot: {source_snapshot_path}")
+            # Update mode: write the snapshot and pass unconditionally
+            if update:
+                if source_snapshot_path is not None:
+                    source_snapshot_path.parent.mkdir(parents=True, exist_ok=True)
+                    source_snapshot_path.write_text(got_snapshot)
+                    print(f"Updated snapshot: {source_snapshot_path}")
                 return
+
+            # Auto-generate when no snapshot exists in the source tree yet
+            if source_snapshot_path is not None and not source_snapshot_path.exists():
+                source_snapshot_path.write_text(got_snapshot)
+                print(f"Created snapshot: {source_snapshot_path}")
+                return
+
+            # Normal mode: compare against the packaged snapshot
+            expected_snapshot_path = case_dir_path / "snapshot.api"
+            if not expected_snapshot_path.exists():
+                self.fail(
+                    f"{case_dir.name}: no snapshot.api found; "
+                    f"run with --test-env UPDATE_SNAPSHOT=1 to generate"
+                )
 
             expected_snapshot = expected_snapshot_path.read_text()
             _assert_text_equal_with_diff(
