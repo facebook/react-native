@@ -214,10 +214,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
     // Turn off hardware acceleration for Oreo (T40484798)
     // see https://issuetracker.google.com/issues/67102093
-    if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-            Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1
-    ) {
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
       setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
 
