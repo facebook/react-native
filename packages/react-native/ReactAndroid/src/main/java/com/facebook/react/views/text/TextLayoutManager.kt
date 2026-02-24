@@ -157,10 +157,6 @@ internal object TextLayoutManager {
   }
 
   private fun getTextJustificationMode(alignmentAttr: String?): Int {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      return -1
-    }
-
     if (alignmentAttr != null && alignmentAttr == "justified") {
       return Layout.JUSTIFICATION_MODE_INTER_WORD
     }
@@ -715,9 +711,7 @@ internal object TextLayoutManager {
       builder.setEllipsize(ellipsizeMode).setMaxLines(maxNumberOfLines)
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      builder.setJustificationMode(justificationMode)
-    }
+    builder.setJustificationMode(justificationMode)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       builder.setUseLineSpacingFromFallbacks(true)
