@@ -10,7 +10,6 @@ package com.facebook.react.views.text;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -118,9 +117,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L1061
     setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
     setMovementMethod(getDefaultMovementMethod());
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
-    }
+    setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
 
     // reset text
     setLayoutParams(EMPTY_LAYOUT_PARAMS);
@@ -149,9 +146,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     //         mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED |
     // LAYOUT_DIRECTION_INHERIT;
     setEnabled(true);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      setFocusable(View.FOCUSABLE_AUTO);
-    }
+    setFocusable(View.FOCUSABLE_AUTO);
 
     setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
     updateView(); // call after changing ellipsizeLocation in particular
@@ -357,7 +352,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             // always passing ALIGN_NORMAL here should be fine, since this method doesn't depend on
             // how exactly lines are aligned, just their width
             Layout.Alignment.ALIGN_NORMAL,
-            (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? -1 : getJustificationMode(),
+            getJustificationMode(),
             getPaint());
         setText(spanned);
       }
@@ -402,10 +397,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       if (getBreakStrategy() != update.getTextBreakStrategy()) {
         setBreakStrategy(update.getTextBreakStrategy());
       }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        if (getJustificationMode() != update.getJustificationMode()) {
-          setJustificationMode(update.getJustificationMode());
-        }
+      if (getJustificationMode() != update.getJustificationMode()) {
+        setJustificationMode(update.getJustificationMode());
       }
 
       // Ensure onLayout is called so the inline views can be repositioned.
