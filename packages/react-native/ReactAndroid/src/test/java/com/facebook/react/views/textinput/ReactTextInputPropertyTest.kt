@@ -12,7 +12,6 @@
 package com.facebook.react.views.textinput
 
 import android.graphics.Color
-import android.os.Build
 import android.text.InputFilter
 import android.text.InputFilter.AllCaps
 import android.text.InputType
@@ -346,10 +345,8 @@ class ReactTextInputPropertyTest {
     manager.updateProperties(view, buildStyles("textAlign", null))
     assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(defaultHorizontalGravity)
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      manager.updateProperties(view, buildStyles("textAlign", "justify"))
-      assertThat(view.justificationMode).isEqualTo(Layout.JUSTIFICATION_MODE_INTER_WORD)
-    }
+    manager.updateProperties(view, buildStyles("textAlign", "justify"))
+    assertThat(view.justificationMode).isEqualTo(Layout.JUSTIFICATION_MODE_INTER_WORD)
     // endregion
 
     // region TextAlignVertical
