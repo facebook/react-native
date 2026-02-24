@@ -117,8 +117,8 @@ internal fun Window.enableEdgeToEdge() {
   navigationBarColor =
       when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Color.TRANSPARENT
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isDarkMode -> LightNavigationBarColor
-        else -> DarkNavigationBarColor
+        isDarkMode -> DarkNavigationBarColor
+        else -> LightNavigationBarColor
       }
 
   WindowInsetsControllerCompat(this, decorView).run {
