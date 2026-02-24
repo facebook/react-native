@@ -239,4 +239,15 @@ TEST(ConversionsTest, unprocessed_filter_objects_multiple_objects) {
   EXPECT_TRUE(filters.empty());
 }
 
+TEST(ConversionsTest, unprocessed_filter_objects_unknown_type) {
+  RawValue value{
+      folly::dynamic::array(folly::dynamic::object("unknown-filter", 5))};
+
+  std::vector<FilterFunction> filters;
+  parseUnprocessedFilter(
+      PropsParserContext{-1, ContextContainer{}}, value, filters);
+
+  EXPECT_TRUE(filters.empty());
+}
+
 } // namespace facebook::react
