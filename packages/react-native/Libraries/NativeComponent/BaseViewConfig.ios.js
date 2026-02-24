@@ -10,8 +10,11 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
-import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
+import {
+  boxShadowAttribute,
+  filterAttribute,
+} from '../Components/View/ReactNativeStyleAttributes';
 import {
   ConditionallyIgnoredEventHandlers,
   DynamicallyInjectedByGestureHandler,
@@ -228,12 +231,8 @@ const validAttributesForNonEventProps = {
   hitSlop: {diff: require('../Utilities/differ/insetsDiffer').default},
   collapsable: true,
   collapsableChildren: true,
-  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? (true as const)
-    : {process: require('../StyleSheet/processFilter').default},
-  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
-    ? (true as const)
-    : {process: require('../StyleSheet/processBoxShadow').default},
+  filter: filterAttribute,
+  boxShadow: boxShadowAttribute,
   mixBlendMode: true,
   isolation: true,
 
