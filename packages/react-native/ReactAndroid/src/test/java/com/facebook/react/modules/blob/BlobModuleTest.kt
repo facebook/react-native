@@ -12,7 +12,6 @@ import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactTestHelper
-import com.facebook.react.modules.network.NetworkingModule
 import com.facebook.testutils.shadows.ShadowArguments
 import java.io.ByteArrayInputStream
 import java.nio.ByteBuffer
@@ -144,43 +143,37 @@ class BlobModuleTest {
     assertThat(blobModule.resolve(blobId, 0, bytes.size)).isNull()
   }
 
-  private fun getUriHandler(): NetworkingModule.UriHandler {
-    val field = BlobModule::class.java.getDeclaredField("networkingUriHandler")
-    field.isAccessible = true
-    return field.get(blobModule) as NetworkingModule.UriHandler
-  }
-
   @Test
   fun testUriHandlerSupportsContentUri() {
-    val handler = getUriHandler()
+    val handler = blobModule.networkingUriHandler
     val uri = Uri.parse("content://com.example.provider/blob/123")
     assertThat(handler.supports(uri, "blob")).isTrue()
   }
 
   @Test
   fun testUriHandlerDoesNotSupportContentUriWithNonBlobResponseType() {
-    val handler = getUriHandler()
+    val handler = blobModule.networkingUriHandler
     val uri = Uri.parse("content://com.example.provider/blob/123")
     assertThat(handler.supports(uri, "text")).isFalse()
   }
 
   @Test
   fun testUriHandlerDoesNotSupportHttpUri() {
-    val handler = getUriHandler()
+    val handler = blobModule.networkingUriHandler
     val uri = Uri.parse("http://example.com/blob/123")
     assertThat(handler.supports(uri, "blob")).isFalse()
   }
 
   @Test
   fun testUriHandlerDoesNotSupportHttpsUri() {
-    val handler = getUriHandler()
+    val handler = blobModule.networkingUriHandler
     val uri = Uri.parse("https://example.com/blob/123")
     assertThat(handler.supports(uri, "blob")).isFalse()
   }
 
   @Test
   fun testUriHandlerSupportsFileUriWithBlobResponseType() {
-    val handler = getUriHandler()
+    val handler = blobModule.networkingUriHandler
     val uri = Uri.parse("file:///storage/emulated/0/Download/test.pdf")
     assertThat(handler.supports(uri, "blob")).isTrue()
   }
@@ -193,7 +186,7 @@ class BlobModuleTest {
     val shadowResolver = shadowOf(context.contentResolver)
     shadowResolver.registerInputStream(contentUri, ByteArrayInputStream(testData))
 
-    val handler = getUriHandler()
+    val handler = blobModule.networkingUriHandler
     assertThat(handler.supports(contentUri, "blob")).isTrue()
 
     val (blob, data) = handler.fetch(contentUri)
@@ -211,7 +204,7 @@ class BlobModuleTest {
     val shadowResolver = shadowOf(context.contentResolver)
     shadowResolver.registerInputStream(fileUri, ByteArrayInputStream(testData))
 
-    val handler = getUriHandler()
+    val handler = blobModule.networkingUriHandler
 
     assertThat(handler.supports(fileUri, "blob")).isTrue()
 
