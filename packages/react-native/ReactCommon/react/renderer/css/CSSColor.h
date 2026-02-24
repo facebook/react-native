@@ -38,14 +38,13 @@ template <>
 struct CSSDataTypeParser<CSSColor> {
   static constexpr auto consumePreservedToken(const CSSPreservedToken &token) -> std::optional<CSSColor>
   {
-    switch (token.type()) {
-      case CSSTokenType::Ident:
-        return parseCSSNamedColor<CSSColor>(token.stringValue());
-      case CSSTokenType::Hash:
-        return parseCSSHexColor<CSSColor>(token.stringValue());
-      default:
-        return {};
+    if (token.type() == CSSTokenType::Ident) {
+      return parseCSSNamedColor<CSSColor>(token.stringValue());
+    } else if (token.type() == CSSTokenType::Hash) {
+      return parseCSSHexColor<CSSColor>(token.stringValue());
     }
+
+    return {};
   }
 
   static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
