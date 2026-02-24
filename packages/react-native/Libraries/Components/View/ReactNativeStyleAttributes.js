@@ -26,13 +26,15 @@ import sizesDiffer from '../../Utilities/differ/sizesDiffer';
 
 const nativeCSSParsing = ReactNativeFeatureFlags.enableNativeCSSParsing();
 
-const colorAttributes = {process: processColor};
-
 /**
  * Gated style attribute types. When native CSS parsing is enabled, the JS
  * processor is bypassed and the raw value is sent directly to native.
  * These are exported so that other ViewConfigs can reuse them.
  */
+export const colorAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processColor};
+
 export const filterAttribute: AnyAttributeType = nativeCSSParsing
   ? true
   : {process: processFilter};
@@ -158,7 +160,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    * Shadow
    */
   elevation: true,
-  shadowColor: colorAttributes,
+  shadowColor: colorAttribute,
   shadowOffset: {diff: sizesDiffer},
   shadowOpacity: true,
   shadowRadius: true,
@@ -213,35 +215,35 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    * View
    */
   backfaceVisibility: true,
-  backgroundColor: colorAttributes,
-  borderBlockColor: colorAttributes,
-  borderBlockEndColor: colorAttributes,
-  borderBlockStartColor: colorAttributes,
-  borderBottomColor: colorAttributes,
+  backgroundColor: colorAttribute,
+  borderBlockColor: colorAttribute,
+  borderBlockEndColor: colorAttribute,
+  borderBlockStartColor: colorAttribute,
+  borderBottomColor: colorAttribute,
   borderBottomEndRadius: true,
   borderBottomLeftRadius: true,
   borderBottomRightRadius: true,
   borderBottomStartRadius: true,
-  borderColor: colorAttributes,
+  borderColor: colorAttribute,
   borderCurve: true,
-  borderEndColor: colorAttributes,
+  borderEndColor: colorAttribute,
   borderEndEndRadius: true,
   borderEndStartRadius: true,
-  borderLeftColor: colorAttributes,
+  borderLeftColor: colorAttribute,
   borderRadius: true,
-  borderRightColor: colorAttributes,
-  borderStartColor: colorAttributes,
+  borderRightColor: colorAttribute,
+  borderStartColor: colorAttribute,
   borderStartEndRadius: true,
   borderStartStartRadius: true,
   borderStyle: true,
-  borderTopColor: colorAttributes,
+  borderTopColor: colorAttribute,
   borderTopEndRadius: true,
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
   borderTopStartRadius: true,
   cursor: true,
   opacity: true,
-  outlineColor: colorAttributes,
+  outlineColor: colorAttribute,
   outlineOffset: true,
   outlineStyle: true,
   outlineWidth: true,
@@ -250,7 +252,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Text
    */
-  color: colorAttributes,
+  color: colorAttribute,
   fontFamily: true,
   fontSize: true,
   fontStyle: true,
@@ -261,10 +263,10 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   lineHeight: true,
   textAlign: true,
   textAlignVertical: true,
-  textDecorationColor: colorAttributes,
+  textDecorationColor: colorAttribute,
   textDecorationLine: true,
   textDecorationStyle: true,
-  textShadowColor: colorAttributes,
+  textShadowColor: colorAttribute,
   textShadowOffset: true,
   textShadowRadius: true,
   textTransform: true,
@@ -275,9 +277,9 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Image
    */
-  overlayColor: colorAttributes,
+  overlayColor: colorAttribute,
   resizeMode: true,
-  tintColor: colorAttributes,
+  tintColor: colorAttribute,
   objectFit: true,
 };
 
