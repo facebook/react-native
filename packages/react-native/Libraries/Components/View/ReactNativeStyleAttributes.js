@@ -57,6 +57,10 @@ export const backgroundRepeatAttribute: AnyAttributeType = nativeCSSParsing
   ? true
   : {process: processBackgroundRepeat};
 
+export const transformAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processTransform};
+
 const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Layout
@@ -150,7 +154,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Transform
    */
-  transform: {process: processTransform},
+  transform: transformAttribute,
   transformOrigin: {process: processTransformOrigin},
 
   /**

@@ -9,6 +9,7 @@
 
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -17,6 +18,9 @@
 #include <react/renderer/css/CSSAngle.h>
 #include <react/renderer/css/CSSNumber.h>
 #include <react/renderer/css/CSSPercentage.h>
+#include <react/renderer/css/CSSRatio.h>
+#include <react/renderer/css/CSSTransform.h>
+#include <react/renderer/css/CSSTransformOrigin.h>
 #include <react/renderer/css/CSSValueParser.h>
 #include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/BackgroundPosition.h>
@@ -533,7 +537,136 @@ inline void fromRawValue(const PropsParserContext & /*context*/, const RawValue 
   result = toValueUnit(value);
 }
 
-inline void fromRawValue(const PropsParserContext & /*context*/, const RawValue &value, Transform &result)
+inline ValueUnit cssLengthPercentageToValueUnit(const std::variant<CSSLength, CSSPercentage> &value)
+{
+  if (std::holds_alternative<CSSLength>(value)) {
+    auto len = std::get<CSSLength>(value);
+    if (len.unit != CSSLengthUnit::Px) {
+      return {};
+    }
+    return {len.value, UnitType::Point};
+  } else {
+    return {std::get<CSSPercentage>(value).value, UnitType::Percent};
+  }
+}
+
+inline std::optional<TransformOperation> fromCSSTransformFunction(const CSSTransformFunctionVariant &cssTransform)
+{
+  constexpr auto Zero = ValueUnit(0, UnitType::Point);
+  constexpr auto One = ValueUnit(1, UnitType::Point);
+
+  return std::visit(
+      [&](auto &&func) -> std::optional<TransformOperation> {
+        using T = std::decay_t<decltype(func)>;
+
+        if constexpr (std::is_same_v<T, CSSRotate>) {
+          auto radians = static_cast<float>(func.degrees * M_PI / 180.0f);
+          return TransformOperation{
+              .type = TransformOperationType::Rotate, .x = Zero, .y = Zero, .z = ValueUnit(radians, UnitType::Point)};
+        }
+
+        if constexpr (std::is_same_v<T, CSSRotateX>) {
+          auto radians = static_cast<float>(func.degrees * M_PI / 180.0f);
+          return TransformOperation{
+              .type = TransformOperationType::Rotate, .x = ValueUnit(radians, UnitType::Point), .y = Zero, .z = Zero};
+        }
+
+        if constexpr (std::is_same_v<T, CSSRotateY>) {
+          auto radians = static_cast<float>(func.degrees * M_PI / 180.0f);
+          return TransformOperation{
+              .type = TransformOperationType::Rotate, .x = Zero, .y = ValueUnit(radians, UnitType::Point), .z = Zero};
+        }
+
+        if constexpr (std::is_same_v<T, CSSRotateZ>) {
+          auto radians = static_cast<float>(func.degrees * M_PI / 180.0f);
+          return TransformOperation{
+              .type = TransformOperationType::Rotate, .x = Zero, .y = Zero, .z = ValueUnit(radians, UnitType::Point)};
+        }
+
+        if constexpr (std::is_same_v<T, CSSTranslate>) {
+          auto x = cssLengthPercentageToValueUnit(func.x);
+          auto y = cssLengthPercentageToValueUnit(func.y);
+          if (!x || !y) {
+            return std::nullopt;
+          }
+          return TransformOperation{.type = TransformOperationType::Translate, .x = x, .y = y, .z = Zero};
+        }
+
+        if constexpr (std::is_same_v<T, CSSTranslateX>) {
+          auto x = cssLengthPercentageToValueUnit(func.value);
+          if (!x) {
+            return std::nullopt;
+          }
+          return TransformOperation{.type = TransformOperationType::Translate, .x = x, .y = Zero, .z = Zero};
+        }
+
+        if constexpr (std::is_same_v<T, CSSTranslateY>) {
+          auto y = cssLengthPercentageToValueUnit(func.value);
+          if (!y) {
+            return std::nullopt;
+          }
+          return TransformOperation{.type = TransformOperationType::Translate, .x = Zero, .y = y, .z = Zero};
+        }
+
+        if constexpr (std::is_same_v<T, CSSTranslate3D>) {
+          auto x = cssLengthPercentageToValueUnit(func.x);
+          auto y = cssLengthPercentageToValueUnit(func.y);
+          if (!x || !y || func.z.unit != CSSLengthUnit::Px) {
+            return std::nullopt;
+          }
+          return TransformOperation{
+              .type = TransformOperationType::Translate, .x = x, .y = y, .z = ValueUnit(func.z.value, UnitType::Point)};
+        }
+
+        if constexpr (std::is_same_v<T, CSSScale>) {
+          return TransformOperation{
+              .type = TransformOperationType::Scale,
+              .x = ValueUnit(func.x, UnitType::Point),
+              .y = ValueUnit(func.y, UnitType::Point),
+              .z = One};
+        }
+
+        if constexpr (std::is_same_v<T, CSSScaleX>) {
+          return TransformOperation{
+              .type = TransformOperationType::Scale, .x = ValueUnit(func.value, UnitType::Point), .y = One, .z = One};
+        }
+
+        if constexpr (std::is_same_v<T, CSSScaleY>) {
+          return TransformOperation{
+              .type = TransformOperationType::Scale, .x = One, .y = ValueUnit(func.value, UnitType::Point), .z = One};
+        }
+
+        if constexpr (std::is_same_v<T, CSSSkewX>) {
+          auto radians = static_cast<float>(func.degrees * M_PI / 180.0f);
+          return TransformOperation{
+              .type = TransformOperationType::Skew, .x = ValueUnit(radians, UnitType::Point), .y = Zero, .z = Zero};
+        }
+
+        if constexpr (std::is_same_v<T, CSSSkewY>) {
+          auto radians = static_cast<float>(func.degrees * M_PI / 180.0f);
+          return TransformOperation{
+              .type = TransformOperationType::Skew, .x = Zero, .y = ValueUnit(radians, UnitType::Point), .z = Zero};
+        }
+
+        if constexpr (std::is_same_v<T, CSSPerspective>) {
+          if (func.length.unit != CSSLengthUnit::Px) {
+            return std::nullopt;
+          }
+          return TransformOperation{
+              .type = TransformOperationType::Perspective,
+              .x = ValueUnit(func.length.value, UnitType::Point),
+              .y = Zero,
+              .z = Zero};
+        }
+
+        if constexpr (std::is_same_v<T, CSSMatrix>) {
+          return TransformOperation{.type = TransformOperationType::Arbitrary, .x = Zero, .y = Zero, .z = Zero};
+        }
+      },
+      cssTransform);
+}
+
+inline void parseProcessedTransform(const PropsParserContext & /*context*/, const RawValue &value, Transform &result)
 {
   auto transformMatrix = Transform{};
   react_native_expect(value.hasType<std::vector<RawValue>>());
@@ -768,6 +901,71 @@ inline void fromRawValue(const PropsParserContext & /*context*/, const RawValue 
   }
 
   result = transformMatrix;
+}
+
+inline void parseUnprocessedTransformString(const std::string &value, Transform &result)
+{
+  auto transformList = parseCSSProperty<CSSTransformList>(value);
+  if (!std::holds_alternative<CSSTransformList>(transformList)) {
+    result = {};
+    return;
+  }
+
+  auto transformMatrix = Transform{};
+  const auto &cssFuncs = std::get<CSSTransformList>(transformList);
+  transformMatrix.operations.reserve(cssFuncs.size());
+  for (const auto &cssFunc : cssFuncs) {
+    auto op = fromCSSTransformFunction(cssFunc);
+    if (!op.has_value()) {
+      result = {};
+      return;
+    }
+
+    if (op->type == TransformOperationType::Arbitrary) {
+      // CSSMatrix: expand 6-value 2D matrix to 4x4 matrix
+      if (std::holds_alternative<CSSMatrix>(cssFunc)) {
+        const auto &m = std::get<CSSMatrix>(cssFunc);
+        transformMatrix.matrix[0] = m.values[0];
+        transformMatrix.matrix[1] = m.values[1];
+        transformMatrix.matrix[2] = 0;
+        transformMatrix.matrix[3] = 0;
+        transformMatrix.matrix[4] = m.values[2];
+        transformMatrix.matrix[5] = m.values[3];
+        transformMatrix.matrix[6] = 0;
+        transformMatrix.matrix[7] = 0;
+        transformMatrix.matrix[8] = 0;
+        transformMatrix.matrix[9] = 0;
+        transformMatrix.matrix[10] = 1;
+        transformMatrix.matrix[11] = 0;
+        transformMatrix.matrix[12] = m.values[4];
+        transformMatrix.matrix[13] = m.values[5];
+        transformMatrix.matrix[14] = 0;
+        transformMatrix.matrix[15] = 1;
+      }
+    }
+
+    transformMatrix.operations.push_back(*op);
+  }
+
+  result = transformMatrix;
+}
+
+inline void parseUnprocessedTransform(const PropsParserContext &context, const RawValue &value, Transform &result)
+{
+  if (value.hasType<std::string>()) {
+    parseUnprocessedTransformString((std::string)value, result);
+  } else {
+    parseProcessedTransform(context, value, result);
+  }
+}
+
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, Transform &result)
+{
+  if (ReactNativeFeatureFlags::enableNativeCSSParsing()) {
+    parseUnprocessedTransform(context, value, result);
+  } else {
+    parseProcessedTransform(context, value, result);
+  }
 }
 
 inline void fromRawValue(const PropsParserContext &context, const RawValue &value, TransformOrigin &result)
