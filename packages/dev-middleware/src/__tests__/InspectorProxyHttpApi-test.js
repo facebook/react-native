@@ -13,7 +13,7 @@ import type {
   JsonVersionResponse,
 } from '../inspector-proxy/types';
 
-import DefaultBrowserLauncher from '../utils/DefaultBrowserLauncher';
+import DefaultAppLauncher from '../utils/DefaultAppLauncher';
 import {fetchJson, requestLocal} from './FetchUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
@@ -397,9 +397,9 @@ describe('inspector proxy HTTP API', () => {
       ]);
       jest.advanceTimersByTime(PAGES_POLLING_DELAY);
 
-      // Hook into `DefaultBrowserLauncher.launchDebuggerAppWindow` to ensure debugger was launched
+      // Hook into `DefaultAppLauncher.launchDebuggerAppWindow` to ensure debugger was launched
       const launchDebuggerSpy = jest
-        .spyOn(DefaultBrowserLauncher, 'launchDebuggerAppWindow')
+        .spyOn(DefaultAppLauncher, 'launchDebuggerAppWindow')
         .mockResolvedValueOnce();
 
       try {

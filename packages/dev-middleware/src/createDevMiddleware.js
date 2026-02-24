@@ -9,7 +9,7 @@
  */
 
 import type {CreateCustomMessageHandlerFn} from './inspector-proxy/CustomMessageHandler';
-import type {BrowserLauncher} from './types/BrowserLauncher';
+import type {AppLauncher} from './types/AppLauncher';
 import type {EventReporter, ReportableEvent} from './types/EventReporter';
 import type {Experiments, ExperimentsConfig} from './types/Experiments';
 import type {Logger} from './types/Logger';
@@ -18,7 +18,7 @@ import type {NextHandleFunction} from 'connect';
 
 import InspectorProxy from './inspector-proxy/InspectorProxy';
 import openDebuggerMiddleware from './middleware/openDebuggerMiddleware';
-import DefaultBrowserLauncher from './utils/DefaultBrowserLauncher';
+import DefaultAppLauncher from './utils/DefaultAppLauncher';
 import reactNativeDebuggerFrontendPath from '@react-native/debugger-frontend';
 import connect from 'connect';
 import path from 'path';
@@ -35,11 +35,12 @@ type Options = Readonly<{
 
   /**
    * An interface for integrators to provide a custom implementation for
-   * opening URLs in a web browser.
+   * launching external applications (the debugger frontend) on the host
+   * machine (or target dev machine).
    *
    * This is an unstable API with no semver guarantees.
    */
-  unstable_browserLauncher?: BrowserLauncher,
+  unstable_appLauncher?: AppLauncher,
 
   /**
    * An interface for logging events.
@@ -64,7 +65,8 @@ type Options = Readonly<{
   unstable_customInspectorMessageHandler?: CreateCustomMessageHandlerFn,
 
   /**
-   * Whether to measure the event loop performance of inspector proxy and log report it via the event reporter.
+   * Whether to measure the event loop performance of inspector proxy and
+   * report it via the event reporter.
    *
    * This is an unstable API with no semver guarantees.
    */
@@ -79,8 +81,7 @@ type DevMiddlewareAPI = Readonly<{
 export default function createDevMiddleware({
   serverBaseUrl,
   logger,
-  // $FlowFixMe[incompatible-type]
-  unstable_browserLauncher = DefaultBrowserLauncher,
+  unstable_appLauncher = DefaultAppLauncher,
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
   unstable_customInspectorMessageHandler,
@@ -110,7 +111,7 @@ export default function createDevMiddleware({
       openDebuggerMiddleware({
         serverBaseUrl: normalizedServerBaseUrl,
         inspectorProxy,
-        browserLauncher: unstable_browserLauncher,
+        appLauncher: unstable_appLauncher,
         eventReporter,
         experiments,
         logger,
