@@ -387,8 +387,7 @@ public class TextAttributeProps private constructor() {
     private const val PROP_TEXT_TRANSFORM = "textTransform"
 
     private const val DEFAULT_TEXT_SHADOW_COLOR = 0x55000000
-    private val DEFAULT_JUSTIFICATION_MODE =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 0 else Layout.JUSTIFICATION_MODE_NONE
+    private const val DEFAULT_JUSTIFICATION_MODE = Layout.JUSTIFICATION_MODE_NONE
     private const val DEFAULT_BREAK_STRATEGY = Layout.BREAK_STRATEGY_HIGH_QUALITY
     private const val DEFAULT_HYPHENATION_FREQUENCY = Layout.HYPHENATION_FREQUENCY_NONE
 
