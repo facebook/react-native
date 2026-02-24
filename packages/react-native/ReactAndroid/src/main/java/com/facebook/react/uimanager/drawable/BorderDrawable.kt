@@ -19,9 +19,7 @@ import android.graphics.PixelFormat
 import android.graphics.PointF
 import android.graphics.Rect
 import android.graphics.RectF
-import android.graphics.Region
 import android.graphics.drawable.Drawable
-import android.os.Build
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.PixelUtil.dpToPx
@@ -413,12 +411,8 @@ internal class BorderDrawable(
         borderPaint.style = Paint.Style.FILL
 
         // Clip inner border
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          canvas.clipOutPath(checkNotNull(innerClipPathForBorderRadius))
-        } else {
-          @Suppress("DEPRECATION")
-          canvas.clipPath(checkNotNull(innerClipPathForBorderRadius), Region.Op.DIFFERENCE)
-        }
+        canvas.clipOutPath(checkNotNull(innerClipPathForBorderRadius))
+
         val outerClipTempRect = checkNotNull(outerClipTempRectForBorderRadius)
         val left = outerClipTempRect.left
         val right = outerClipTempRect.right
