@@ -101,12 +101,6 @@ internal class MountingManager(
   @AnyThread
   fun attachRootView(surfaceId: Int, rootView: View, themedReactContext: ThemedReactContext) {
     val surfaceMountingManager = getSurfaceManagerEnforced(surfaceId, "attachView")
-
-    if (surfaceMountingManager.isStopped) {
-      logSoftException(TAG, IllegalStateException("Trying to attach a view to a stopped surface"))
-      return
-    }
-
     surfaceMountingManager.attachRootView(rootView, themedReactContext)
   }
 
