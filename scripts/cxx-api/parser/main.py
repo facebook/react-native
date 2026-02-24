@@ -10,10 +10,17 @@ from pprint import pprint
 
 from doxmlparser import compound, index
 
-from .member import EnumMember, FunctionMember, TypedefMember, VariableMember
+from .member import (
+    ConceptMember,
+    EnumMember,
+    FunctionMember,
+    TypedefMember,
+    VariableMember,
+)
 from .scope import StructLikeScopeKind
 from .snapshot import Snapshot
 from .template import Template
+from .utils import parse_qualified_path
 
 
 def resolve_ref_text_name(type_def: compound.refTextType) -> str:
@@ -57,6 +64,34 @@ def resolve_linked_text_name(type_def: compound.linkedTextType) -> str:
         name = name[1:]
 
     return name.strip()
+
+
+def resolve_linked_text_full(type_def: compound.linkedTextType) -> str:
+    """
+    Resolve the full text content of a linkedTextType, including all text
+    fragments and ref elements.
+
+    Unlike resolve_linked_text_name which only gets the first ref or value,
+    this function concatenates all content_ items to reconstruct the full text.
+    """
+    if not type_def.content_:
+        # Fall back to valueOf_ if no content_ list
+        return type_def.get_valueOf_() or ""
+
+    result = []
+    for item in type_def.content_:
+        if item.category == 1:  # MixedContainer.CategoryText
+            result.append(item.value)
+        elif item.category == 3:  # MixedContainer.CategoryComplex (ref element)
+            # For ref elements, get the text content
+            if hasattr(item.value, "get_valueOf_"):
+                result.append(item.value.get_valueOf_())
+            elif hasattr(item.value, "valueOf_"):
+                result.append(item.value.valueOf_)
+            else:
+                result.append(str(item.value))
+
+    return "".join(result)
 
 
 def get_base_classes(
@@ -226,6 +261,33 @@ def get_typedef_member(
     return typedef
 
 
+def get_concept_member(
+    concept_def: compound.CompounddefType,
+) -> ConceptMember:
+    """
+    Get the concept member from a compound definition.
+    """
+    concept_name = concept_def.compoundname
+    concept_path = parse_qualified_path(concept_name)
+    unqualified_name = concept_path[-1]
+
+    initializer = concept_def.initializer
+    constraint = ""
+
+    if initializer:
+        # The initializer contains the entire constraind definition.
+        # We want to extract the constraint part after "="
+        initializer_text = resolve_linked_text_full(initializer)
+        eq_pos = initializer_text.find("=")
+        if eq_pos != -1:
+            constraint = initializer_text[eq_pos + 1 :].strip()
+
+    concept = ConceptMember(unqualified_name, constraint)
+    concept.add_template(get_template_params(concept_def))
+
+    return concept
+
+
 def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType):
     """
     Create an enum scope in the snapshot.
@@ -379,6 +441,18 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                         print(
                             f"Unknown section kind: {section_def.kind} in {compound_object.location.file}"
                         )
+            elif compound_object.kind == "concept":
+                # Concepts belong to a namespace, so we need to find or create the parent namespace
+                concept_name = compound_object.compoundname
+                concept_path = parse_qualified_path(concept_name)
+                namespace_path = "::".join(concept_path[:-1]) if concept_path else ""
+
+                if namespace_path:
+                    namespace_scope = snapshot.create_or_get_namespace(namespace_path)
+                else:
+                    namespace_scope = snapshot.root_scope
+
+                namespace_scope.add_member(get_concept_member(compound_object))
             elif compound_object.kind == "file":
                 pass
             elif compound_object.kind == "dir":
