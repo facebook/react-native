@@ -30,6 +30,7 @@ const config: BabelCoreOptions = {
       require.resolve('babel-plugin-transform-define'),
       {
         'process.env.BUILD_EXCLUDE_BABEL_REGISTER': true,
+        'process.env.NODE_ENV': 'production',
       },
     ],
     [

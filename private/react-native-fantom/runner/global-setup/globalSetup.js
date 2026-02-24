@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {AppLauncher} from '@react-native/dev-middleware';
 import type {ConfigT} from 'metro-config';
 
 import {isOSS, validateEnvironmentVariables} from '../EnvironmentOptions';
@@ -48,11 +49,19 @@ async function startMetroServer() {
   // $FlowExpectedError[cannot-write]
   metroConfig.server.port = Number(process.env.__FANTOM_METRO_PORT__);
 
+  // No-op app launcher to prevent actual debugger-shell launches during tests
+  const appLauncher: AppLauncher = {
+    launchDebuggerAppWindow: async () => {},
+    launchDebuggerShell: async () => {},
+    prepareDebuggerShell: async () => ({code: 'not_implemented'}),
+  };
+
   const {
     middleware: devMiddleware,
     websocketEndpoints: debuggerWebsocketEndpoints,
   } = createDevMiddleware({
     serverBaseUrl: `http://localhost:${metroConfig.server.port}`,
+    unstable_appLauncher: appLauncher,
   });
 
   const enhanceMiddleware: ConfigT['server']['enhanceMiddleware'] = (

@@ -24,6 +24,8 @@ type CreateServerOptions = {
 };
 type ConnectApp = ReturnType<typeof connect>;
 
+jest.mock('../utils/DefaultAppLauncher');
+
 export function withServerForEachTest(options: CreateServerOptions): Readonly<{
   serverBaseUrl: string,
   serverBaseWsUrl: string,

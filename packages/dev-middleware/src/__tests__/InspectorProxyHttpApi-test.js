@@ -12,8 +12,8 @@ import type {
   JsonPagesListResponse,
   JsonVersionResponse,
 } from '../inspector-proxy/types';
+import type {AppLauncher} from '../types/AppLauncher';
 
-import DefaultAppLauncher from '../utils/DefaultAppLauncher';
 import {fetchJson, requestLocal} from './FetchUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
@@ -24,12 +24,19 @@ const PAGES_POLLING_DELAY = 2100;
 
 jest.useFakeTimers();
 
+const mockAppLauncher: AppLauncher = {
+  launchDebuggerAppWindow: jest
+    .fn<[string], Promise<void>>()
+    .mockResolvedValue(),
+};
+
 describe('inspector proxy HTTP API', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
     unstable_experiments: {
       enableStandaloneFuseboxShell: false,
     },
+    unstable_appLauncher: mockAppLauncher,
   });
   const autoCleanup = withAbortSignalForEachTest();
   afterEach(() => {
@@ -397,11 +404,6 @@ describe('inspector proxy HTTP API', () => {
       ]);
       jest.advanceTimersByTime(PAGES_POLLING_DELAY);
 
-      // Hook into `DefaultAppLauncher.launchDebuggerAppWindow` to ensure debugger was launched
-      const launchDebuggerSpy = jest
-        .spyOn(DefaultAppLauncher, 'launchDebuggerAppWindow')
-        .mockResolvedValueOnce();
-
       try {
         // Fetch the target information for the device
         const pageListResponse = await fetchJson<JsonPagesListResponse>(
@@ -426,7 +428,9 @@ describe('inspector proxy HTTP API', () => {
         // Ensure the request was handled properly
         expect(response.statusCode).toBe(200);
         // Ensure the debugger was launched
-        expect(launchDebuggerSpy).toHaveBeenCalledWith(expect.any(String));
+        expect(mockAppLauncher.launchDebuggerAppWindow).toHaveBeenCalledWith(
+          expect.any(String),
+        );
       } finally {
         device.close();
       }
