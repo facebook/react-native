@@ -30,18 +30,6 @@ struct ShadowNodeWrapper;
 
 class ShadowNode : public Sealable, public DebugStringConvertible, public jsi::NativeState {
  public:
-  // TODO(T223558094): delete this in the next version.
-  using Shared [[deprecated("Use std::shared_ptr<const ShadowNode> instead")]] = std::shared_ptr<const ShadowNode>;
-  // TODO(T223558094): delete this in the next version.
-  using Weak [[deprecated("Use std::weak_ptr<const ShadowNode> instead")]] = std::weak_ptr<const ShadowNode>;
-  // TODO(T223558094): delete this in the next version.
-  using Unshared [[deprecated("Use std::shared_ptr<ShadowNode> instead")]] = std::shared_ptr<ShadowNode>;
-  // TODO(T223558094): delete this in the next version.
-  using ListOfShared [[deprecated("Use std::vector<std::shared_ptr<const ShadowNode>> instead")]] =
-      std::vector<std::shared_ptr<const ShadowNode>>;
-  // TODO(T223558094): delete this in the next version.
-  using ListOfWeak [[deprecated("Use std::vector<std::weak_ptr<const ShadowNode>> instead")]] =
-      std::vector<std::weak_ptr<const ShadowNode>>;
   using SharedListOfShared = std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>>;
   using UnsharedListOfShared = std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>>;
   using UnsharedListOfWeak = std::shared_ptr<std::vector<std::weak_ptr<const ShadowNode>>>;
