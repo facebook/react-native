@@ -20,8 +20,6 @@ import com.facebook.react.common.ReactConstants
 
 public object ColorPropConverter {
 
-  private fun supportWideGamut(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-
   private const val JSON_KEY = "resource_paths"
   private const val PREFIX_RESOURCE = "@"
   private const val PREFIX_ATTR = "?"
@@ -78,14 +76,14 @@ public object ColorPropConverter {
       return null
     }
 
-    if (supportWideGamut() && value is Double) {
+    if (value is Double) {
       return Color.valueOf(value.toInt())
     }
 
     checkNotNull(context)
 
     if (value is ReadableMap) {
-      if (supportWideGamut() && value.hasKey("space")) {
+      if (value.hasKey("space")) {
         val rawColorSpace = value.getString("space")
         val isDisplayP3 = rawColorSpace == "display-p3"
         val space =
@@ -108,7 +106,7 @@ public object ColorPropConverter {
 
       for (i in 0 until resourcePaths.size()) {
         val result = resolveResourcePath(context, resourcePaths.getString(i))
-        if (supportWideGamut() && result != null) {
+        if (result != null) {
           return Color.valueOf(result)
         }
       }
@@ -124,11 +122,9 @@ public object ColorPropConverter {
   @JvmStatic
   public fun getColor(value: Any?, context: Context): Int? {
     try {
-      if (supportWideGamut()) {
-        val color = getColorInstance(value, context)
-        if (color != null) {
-          return color.toArgb()
-        }
+      val color = getColorInstance(value, context)
+      if (color != null) {
+        return color.toArgb()
       }
     } catch (ex: JSApplicationCausedNativeException) {
       FLog.w(ReactConstants.TAG, ex, "Error extracting color from WideGamut")
