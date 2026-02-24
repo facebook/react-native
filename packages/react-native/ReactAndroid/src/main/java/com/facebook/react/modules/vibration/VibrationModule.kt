@@ -26,11 +26,7 @@ internal class VibrationModule(reactContext: ReactApplicationContext) :
   override fun vibrate(durationDouble: Double) {
     val duration = durationDouble.toInt()
     val v = getVibrator() ?: return
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      v.vibrate(VibrationEffect.createOneShot(duration.toLong(), VibrationEffect.DEFAULT_AMPLITUDE))
-    } else {
-      @Suppress("DEPRECATION") v.vibrate(duration.toLong())
-    }
+    v.vibrate(VibrationEffect.createOneShot(duration.toLong(), VibrationEffect.DEFAULT_AMPLITUDE))
   }
 
   override fun vibrateByPattern(pattern: ReadableArray, repeatDouble: Double) {
@@ -40,11 +36,7 @@ internal class VibrationModule(reactContext: ReactApplicationContext) :
     for (i in 0 until pattern.size()) {
       patternLong[i] = pattern.getInt(i).toLong()
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      v.vibrate(VibrationEffect.createWaveform(patternLong, repeat))
-    } else {
-      @Suppress("DEPRECATION") v.vibrate(patternLong, repeat)
-    }
+    v.vibrate(VibrationEffect.createWaveform(patternLong, repeat))
   }
 
   override fun cancel() {
