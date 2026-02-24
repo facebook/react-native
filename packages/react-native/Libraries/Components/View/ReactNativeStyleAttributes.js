@@ -61,6 +61,10 @@ export const transformAttribute: AnyAttributeType = nativeCSSParsing
   ? true
   : {process: processTransform};
 
+export const transformOriginAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processTransformOrigin};
+
 const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Layout
@@ -155,7 +159,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    * Transform
    */
   transform: transformAttribute,
-  transformOrigin: {process: processTransformOrigin},
+  transformOrigin: transformOriginAttribute,
 
   /**
    * Filter
