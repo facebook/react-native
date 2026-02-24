@@ -53,6 +53,11 @@ async function startMetroServer() {
     websocketEndpoints: debuggerWebsocketEndpoints,
   } = createDevMiddleware({
     serverBaseUrl: `http://localhost:${metroConfig.server.port}`,
+    // Disable standalone DevTools shell preparation to avoid launching the
+    // Electron app during tests. This prevents crashes.
+    unstable_experiments: {
+      enableStandaloneFuseboxShell: false,
+    },
   });
 
   const enhanceMiddleware: ConfigT['server']['enhanceMiddleware'] = (
