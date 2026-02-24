@@ -9,7 +9,6 @@
 
 package com.facebook.react.views.text
 
-import android.os.Build
 import android.text.Layout
 import android.text.Spannable
 import android.text.Spanned
@@ -164,15 +163,13 @@ public constructor(
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY)
         )
-    val currentJustificationMode =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 0 else view.justificationMode
 
     return ReactTextUpdate(
         spanned,
         -1, // UNUSED FOR TEXT
         TextLayoutManager.getTextGravity(attributedString, spanned),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode),
+        TextAttributeProps.getJustificationMode(props, view.justificationMode),
     )
   }
 
