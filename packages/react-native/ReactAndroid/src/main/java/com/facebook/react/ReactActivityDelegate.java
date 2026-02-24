@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -141,7 +140,7 @@ public class ReactActivityDelegate {
               if (WindowUtilKt.isEdgeToEdgeFeatureFlagOn()) {
                 WindowUtilKt.enableEdgeToEdge(window);
               }
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
+              if (isWideColorGamutEnabled()) {
                 window.setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
               }
             }
