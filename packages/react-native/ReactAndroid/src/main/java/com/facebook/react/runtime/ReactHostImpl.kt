@@ -250,6 +250,7 @@ public class ReactHostImpl(
     stateTracker.enterState("onHostResume(activity)")
 
     currentActivity = activity
+    frameTimingsObserver?.setCurrentWindow(activity?.window)
 
     maybeEnableDevSupport(true)
     reactLifecycleStateManager.moveToOnHostResume(currentReactContext, activity)
@@ -851,6 +852,7 @@ public class ReactHostImpl(
   private fun moveToHostDestroy(currentContext: ReactContext?) {
     reactLifecycleStateManager.moveToOnHostDestroy(currentContext)
     currentActivity = null
+    frameTimingsObserver?.setCurrentWindow(null)
   }
 
   private fun raiseSoftException(
@@ -1563,18 +1565,16 @@ public class ReactHostImpl(
           when (state) {
             TracingState.ENABLED_IN_BACKGROUND_MODE,
             TracingState.ENABLED_IN_CDP_MODE -> {
-              currentActivity?.window?.let { window ->
-                val observer =
-                    FrameTimingsObserver(
-                        window,
-                        _screenshotsEnabled,
-                        { frameTimingsSequence ->
-                          inspectorTarget.recordFrameTimings(frameTimingsSequence)
-                        },
-                    )
-                observer.start()
-                frameTimingsObserver = observer
-              }
+              val observer =
+                  FrameTimingsObserver(
+                      _screenshotsEnabled,
+                      { frameTimingsSequence ->
+                        inspectorTarget.recordFrameTimings(frameTimingsSequence)
+                      },
+                  )
+              observer.setCurrentWindow(currentActivity?.window)
+              observer.start()
+              frameTimingsObserver = observer
             }
             TracingState.DISABLED -> {
               frameTimingsObserver?.stop()

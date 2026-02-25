@@ -26,13 +26,17 @@ import kotlinx.coroutines.launch
 
 @DoNotStripAny
 internal class FrameTimingsObserver(
-    private val window: Window,
     private val screenshotsEnabled: Boolean,
     private val onFrameTimingSequence: (sequence: FrameTimingSequence) -> Unit,
 ) {
+  private val isSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+
   private val handler = Handler(Looper.getMainLooper())
   private var frameCounter: Int = 0
   private var bitmapBuffer: Bitmap? = null
+  private var isStarted: Boolean = false
+
+  @Volatile private var currentWindow: Window? = null
 
   private val frameMetricsListener =
       Window.OnFrameMetricsAvailableListener { _, frameMetrics, _dropCount ->
@@ -41,8 +45,26 @@ internal class FrameTimingsObserver(
         emitFrameTiming(beginTimestamp, endTimestamp)
       }
 
+  fun setCurrentWindow(window: Window?) {
+    if (!isSupported || currentWindow === window) {
+      return
+    }
+
+    currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
+    currentWindow = window
+    if (isStarted) {
+      currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
+    }
+  }
+
   private suspend fun captureScreenshot(): String? = suspendCoroutine { continuation ->
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      continuation.resume(null)
+      return@suspendCoroutine
+    }
+
+    val window = currentWindow
+    if (window == null) {
       continuation.resume(null)
       return@suspendCoroutine
     }
@@ -102,17 +124,19 @@ internal class FrameTimingsObserver(
   }
 
   fun start() {
-    frameCounter = 0
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+    if (!isSupported) {
       return
     }
+
+    frameCounter = 0
+    isStarted = true
 
     // Capture initial screenshot to ensure there's always at least one frame
     // recorded at the start of tracing, even if no UI changes occur
     val timestamp = System.nanoTime()
     emitFrameTiming(timestamp, timestamp)
 
-    window.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
+    currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
   }
 
   private fun emitFrameTiming(beginTimestamp: Long, endTimestamp: Long) {
@@ -135,11 +159,13 @@ internal class FrameTimingsObserver(
   }
 
   fun stop() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+    if (!isSupported) {
       return
     }
 
-    window.removeOnFrameMetricsAvailableListener(frameMetricsListener)
+    isStarted = false
+
+    currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
     handler.removeCallbacksAndMessages(null)
 
     bitmapBuffer?.recycle()
