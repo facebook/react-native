@@ -22,7 +22,10 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @DoNotStripAny
 internal class FrameTimingsObserver(
@@ -30,82 +33,93 @@ internal class FrameTimingsObserver(
     private val screenshotsEnabled: Boolean,
     private val onFrameTimingSequence: (sequence: FrameTimingSequence) -> Unit,
 ) {
+  // Bounds the lifetime of async frame timing and screenshot work. Cancelled in stop() to prevent
+  // emitting any further frames once tracing is torn down.
+  private var tracingScope: CoroutineScope? = null
+
   private val handler = Handler(Looper.getMainLooper())
   private var frameCounter: Int = 0
   private var bitmapBuffer: Bitmap? = null
 
   private val frameMetricsListener =
-      Window.OnFrameMetricsAvailableListener { _, frameMetrics, _dropCount ->
+      Window.OnFrameMetricsAvailableListener { _, frameMetrics, _ ->
         val beginTimestamp = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP)
         val endTimestamp = beginTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
         emitFrameTiming(beginTimestamp, endTimestamp)
       }
 
-  private suspend fun captureScreenshot(): String? = suspendCoroutine { continuation ->
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      continuation.resume(null)
-      return@suspendCoroutine
-    }
+  private suspend fun captureScreenshot(): String? =
+      withContext(Dispatchers.Main) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+          return@withContext null
+        }
 
-    val decorView = window.decorView
-    val width = decorView.width
-    val height = decorView.height
+        val decorView = window.decorView
+        val width = decorView.width
+        val height = decorView.height
 
-    // Reuse bitmap if dimensions haven't changed
-    val bitmap =
-        bitmapBuffer?.let {
-          if (it.width == width && it.height == height) {
-            it
-          } else {
-            it.recycle()
-            null
-          }
-        } ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also { bitmapBuffer = it }
-
-    PixelCopy.request(
-        window,
-        bitmap,
-        { copyResult ->
-          if (copyResult == PixelCopy.SUCCESS) {
-            CoroutineScope(Dispatchers.Default).launch {
-              var scaledBitmap: Bitmap? = null
-              try {
-                val scaleFactor = 0.25f
-                val scaledWidth = (width * scaleFactor).toInt()
-                val scaledHeight = (height * scaleFactor).toInt()
-                scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
-
-                val compressFormat =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                        Bitmap.CompressFormat.WEBP_LOSSY
-                    else Bitmap.CompressFormat.WEBP
-
-                val base64 =
-                    ByteArrayOutputStream().use { outputStream ->
-                      scaledBitmap.compress(compressFormat, 0, outputStream)
-                      Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
-                    }
-
-                continuation.resume(base64)
-              } catch (e: Exception) {
-                continuation.resume(null)
-              } finally {
-                scaledBitmap?.recycle()
+        // Reuse bitmap if dimensions haven't changed
+        val bitmap =
+            bitmapBuffer?.let {
+              if (it.width == width && it.height == height) {
+                it
+              } else {
+                it.recycle()
+                null
               }
             }
-          } else {
-            continuation.resume(null)
+                ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also {
+                  bitmapBuffer = it
+                }
+
+        // Suspend for PixelCopy callback
+        val copySuccess = suspendCoroutine { continuation ->
+          PixelCopy.request(
+              window,
+              bitmap,
+              { copyResult -> continuation.resume(copyResult == PixelCopy.SUCCESS) },
+              handler,
+          )
+        }
+
+        if (!copySuccess) {
+          return@withContext null
+        }
+
+        // Switch to background thread for CPU-intensive scaling/encoding work
+        withContext(Dispatchers.Default) {
+          var scaledBitmap: Bitmap? = null
+          try {
+            val scaleFactor = 0.25f
+            val scaledWidth = (width * scaleFactor).toInt()
+            val scaledHeight = (height * scaleFactor).toInt()
+            scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
+
+            val compressFormat =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Bitmap.CompressFormat.WEBP_LOSSY
+                else Bitmap.CompressFormat.WEBP
+
+            ByteArrayOutputStream().use { outputStream ->
+              scaledBitmap.compress(compressFormat, 0, outputStream)
+              Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
+            }
+          } catch (e: Exception) {
+            null
+          } finally {
+            scaledBitmap?.recycle()
           }
-        },
-        handler,
-    )
-  }
+        }
+      }
 
   fun start() {
-    frameCounter = 0
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
       return
     }
+
+    frameCounter = 0
+
+    // Use SupervisorJob so a failed capture on one frame doesn't cancel others
+    tracingScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     // Capture initial screenshot to ensure there's always at least one frame
     // recorded at the start of tracing, even if no UI changes occur
@@ -116,10 +130,13 @@ internal class FrameTimingsObserver(
   }
 
   private fun emitFrameTiming(beginTimestamp: Long, endTimestamp: Long) {
+    // Guard against calls arriving after stop() has cancelled the scope
+    val scope = tracingScope ?: return
+
     val frameId = frameCounter++
     val threadId = Process.myTid()
 
-    CoroutineScope(Dispatchers.Default).launch {
+    scope.launch {
       val screenshot = if (screenshotsEnabled) captureScreenshot() else null
 
       onFrameTimingSequence(
@@ -141,6 +158,10 @@ internal class FrameTimingsObserver(
 
     window.removeOnFrameMetricsAvailableListener(frameMetricsListener)
     handler.removeCallbacksAndMessages(null)
+
+    // Cancel any in-flight screenshot captures before releasing the bitmap buffer
+    tracingScope?.cancel()
+    tracingScope = null
 
     bitmapBuffer?.recycle()
     bitmapBuffer = null
