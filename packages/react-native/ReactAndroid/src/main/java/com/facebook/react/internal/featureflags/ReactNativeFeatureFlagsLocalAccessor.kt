@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d8e2872030e38ccb038d9d7aab214a2>>
+ * @generated SignedSource<<cd8a0ffa94f6be36435d4ef6757cfd6e>>
  */
 
 /**
@@ -44,7 +44,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
   private var enableDestroyShadowTreeRevisionAsyncCache: Boolean? = null
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
-  private var enableEagerMainQueueModulesOnIOSCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableExclusivePropsUpdateAndroidCache: Boolean? = null
   private var enableFabricCommitBranchingCache: Boolean? = null
@@ -304,16 +303,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableDoubleMeasurementFixAndroid()
       accessedFeatureFlags.add("enableDoubleMeasurementFixAndroid")
       enableDoubleMeasurementFixAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableEagerMainQueueModulesOnIOS(): Boolean {
-    var cached = enableEagerMainQueueModulesOnIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableEagerMainQueueModulesOnIOS()
-      accessedFeatureFlags.add("enableEagerMainQueueModulesOnIOS")
-      enableEagerMainQueueModulesOnIOSCache = cached
     }
     return cached
   }

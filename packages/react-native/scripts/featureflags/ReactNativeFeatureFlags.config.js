@@ -265,16 +265,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableEagerMainQueueModulesOnIOS: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'This infra allows native modules to initialize on the main thread, during React Native init.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableEagerRootViewAttachment: {
       defaultValue: false,
       metadata: {

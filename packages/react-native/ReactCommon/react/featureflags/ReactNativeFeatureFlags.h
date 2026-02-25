@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20d4471389baccef0854624bb31550a5>>
+ * @generated SignedSource<<b7760958cf8878be5f555c0bc740bef7>>
  */
 
 /**
@@ -138,11 +138,6 @@ class ReactNativeFeatureFlags {
    * When enabled a subset of components will avoid double measurement on Android.
    */
   RN_EXPORT static bool enableDoubleMeasurementFixAndroid();
-
-  /**
-   * This infra allows native modules to initialize on the main thread, during React Native init.
-   */
-  RN_EXPORT static bool enableEagerMainQueueModulesOnIOS();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.

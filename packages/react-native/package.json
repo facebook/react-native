@@ -201,26 +201,6 @@
         "name": "FBReactNativeSpec",
         "type": "all",
         "ios": {
-          "modules": {
-            "AccessibilityManager": {
-              "unstableRequiresMainQueueSetup": true
-            },
-            "Appearance": {
-              "unstableRequiresMainQueueSetup": true
-            },
-            "AppState": {
-              "unstableRequiresMainQueueSetup": true
-            },
-            "DeviceInfo": {
-              "unstableRequiresMainQueueSetup": true
-            },
-            "PlatformConstants": {
-              "unstableRequiresMainQueueSetup": true
-            },
-            "StatusBarManager": {
-              "unstableRequiresMainQueueSetup": true
-            }
-          }
         },
         "android": {},
         "jsSrcsDir": "src"

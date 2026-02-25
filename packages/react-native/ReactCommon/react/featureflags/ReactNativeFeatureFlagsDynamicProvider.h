@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<850aaecd3bb86f9c317b341d8165e74a>>
+ * @generated SignedSource<<ae94c810fae79bbf68d62a7c418bb271>>
  */
 
 /**
@@ -223,15 +223,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableDoubleMeasurementFixAndroid();
-  }
-
-  bool enableEagerMainQueueModulesOnIOS() override {
-    auto value = values_["enableEagerMainQueueModulesOnIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableEagerMainQueueModulesOnIOS();
   }
 
   bool enableEagerRootViewAttachment() override {

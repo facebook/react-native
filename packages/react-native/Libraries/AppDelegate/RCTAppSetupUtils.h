@@ -26,9 +26,6 @@
 namespace facebook::react {
 class RuntimeScheduler;
 }
-RCT_EXTERN NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(
-    id<RCTDependencyProvider> dependencyProvider);
-
 RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(
     Class moduleClass,
     id<RCTDependencyProvider> dependencyProvider);

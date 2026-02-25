@@ -32,8 +32,6 @@ typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 - (void)hostDidStart:(RCTHost *)host;
 
 @optional
-- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup;
-
 - (void)loadBundleAtURL:(NSURL *)sourceURL
              onProgress:(RCTSourceLoadProgressBlock)onProgress
              onComplete:(RCTSourceLoadBlock)loadCallback;

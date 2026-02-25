@@ -117,8 +117,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
   NSDictionary *_launchOptions;
-  void (^_waitUntilModuleSetupComplete)();
-
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
   RCTDevMenuConfigurationDecorator *_devMenuConfigurationDecorator;
@@ -371,39 +369,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
 
-  if (ReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS()) {
-    /**
-     * Some native modules need to capture uikit objects on the main thread.
-     * Start initializing those modules on the main queue here. The JavaScript thread
-     * will wait until this module init finishes, before executing the js bundle.
-     */
-    NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
-
-    std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
-    std::shared_ptr<std::condition_variable> cv = std::make_shared<std::condition_variable>();
-    std::shared_ptr<bool> isReady = std::make_shared<bool>(false);
-
-    _waitUntilModuleSetupComplete = ^{
-      std::unique_lock<std::mutex> lock(*mutex);
-      cv->wait(lock, [isReady] { return *isReady; });
-    };
-
-    // TODO(T218039767): Integrate perf logging into main queue module init
-    RCTExecuteOnMainQueue(^{
-      for (NSString *moduleName in modulesRequiringMainQueueSetup) {
-        [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
-      }
-
-      RCTScreenSize();
-      RCTScreenScale();
-      RCTSwitchSize();
-
-      std::lock_guard<std::mutex> lock(*mutex);
-      *isReady = true;
-      cv->notify_all();
-    });
-  }
-
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
 
@@ -604,11 +569,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto script = std::make_unique<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
 
-  auto beforeLoad = [waitUntilModuleSetupComplete = self->_waitUntilModuleSetupComplete](jsi::Runtime &_) {
-    if (waitUntilModuleSetupComplete) {
-      waitUntilModuleSetupComplete();
-    }
-  };
+  auto beforeLoad = [](jsi::Runtime &_) {};
   auto afterLoad = [](jsi::Runtime &_) {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
   };

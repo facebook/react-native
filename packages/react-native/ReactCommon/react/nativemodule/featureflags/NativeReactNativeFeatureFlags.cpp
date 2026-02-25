@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<10ec5c102c5fb90b74e78d7198bf959a>>
+ * @generated SignedSource<<c939397b0c5725a4fe346d606a5334df>>
  */
 
 /**
@@ -142,11 +142,6 @@ bool NativeReactNativeFeatureFlags::enableDestroyShadowTreeRevisionAsync(
 bool NativeReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(

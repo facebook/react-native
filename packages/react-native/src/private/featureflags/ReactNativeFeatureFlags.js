@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<97e082b7554dba5b4f387ef783d2d6e3>>
+ * @generated SignedSource<<0b061d7016b1e1b4e6077a1edb3440d0>>
  * @flow strict
  * @noformat
  */
@@ -67,7 +67,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
   enableDestroyShadowTreeRevisionAsync: Getter<boolean>,
   enableDoubleMeasurementFixAndroid: Getter<boolean>,
-  enableEagerMainQueueModulesOnIOS: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableExclusivePropsUpdateAndroid: Getter<boolean>,
   enableFabricCommitBranching: Getter<boolean>,
@@ -276,10 +275,6 @@ export const enableDestroyShadowTreeRevisionAsync: Getter<boolean> = createNativ
  * When enabled a subset of components will avoid double measurement on Android.
  */
 export const enableDoubleMeasurementFixAndroid: Getter<boolean> = createNativeFlagGetter('enableDoubleMeasurementFixAndroid', false);
-/**
- * This infra allows native modules to initialize on the main thread, during React Native init.
- */
-export const enableEagerMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableEagerMainQueueModulesOnIOS', false);
 /**
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */
