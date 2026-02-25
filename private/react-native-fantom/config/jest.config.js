@@ -29,7 +29,12 @@ module.exports = {
   ] /*:: as $ReadOnlyArray<string> */,
   // This allows running Meta-internal tests with the `-test.fb.js` suffix.
   testRegex: '/__tests__/.*-itest(\\.fb)?\\.js$',
-  testPathIgnorePatterns: baseConfig.testPathIgnorePatterns,
+  testPathIgnorePatterns: [
+    ...baseConfig.testPathIgnorePatterns,
+    ...(process.env.FANTOM_INCLUDE_BENCHMARKS != null
+      ? []
+      : ['benchmark-itest']),
+  ] /*:: as ReadonlyArray<string> */,
   transformIgnorePatterns: ['.*'],
   testRunner: '<rootDir>/private/react-native-fantom/runner/index.js',
   watchPathIgnorePatterns: ['<rootDir>/private/react-native-fantom/build/'],
