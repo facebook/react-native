@@ -256,6 +256,39 @@ internal object NetworkEventUtil {
     )
   }
 
+  // TODO(#55747): Remove this overload once fbsource no longer depends on it.
+  @Deprecated("Compatibility overload")
+  @JvmStatic
+  fun onResponseReceived(
+      reactContext: ReactApplicationContext?,
+      requestId: Int,
+      devToolsRequestId: String,
+      statusCode: Int,
+      headers: WritableMap?,
+      url: String?,
+  ) {
+    val responseHeaders = buildMap<String, String> {
+      headers?.let { map ->
+        val iterator = map.keySetIterator()
+        while (iterator.hasNextKey()) {
+          val key = iterator.nextKey()
+          val value = map.getString(key)
+          if (value != null) {
+            put(key, value)
+          }
+        }
+      }
+    }
+    onResponseReceived(
+        reactContext,
+        requestId,
+        devToolsRequestId,
+        url,
+        statusCode,
+        responseHeaders,
+        0)
+  }
+
   internal fun okHttpHeadersToMap(headers: Headers): Map<String, String> {
     val responseHeaders = mutableMapOf<String, String>()
     for (i in 0 until headers.size()) {
