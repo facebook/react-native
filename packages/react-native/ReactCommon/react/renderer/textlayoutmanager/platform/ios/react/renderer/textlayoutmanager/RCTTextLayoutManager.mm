@@ -251,10 +251,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return textStorage;
 }
 
-- (SharedEventEmitter)getEventEmitterWithAttributeString:(AttributedString)attributedString
-                                     paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                                                   frame:(CGRect)frame
-                                                 atPoint:(CGPoint)point
+- (std::shared_ptr<const EventEmitter>)getEventEmitterWithAttributeString:(AttributedString)attributedString
+                                                      paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                                    frame:(CGRect)frame
+                                                                  atPoint:(CGPoint)point
 {
   NSTextStorage *textStorage = [self
       _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]

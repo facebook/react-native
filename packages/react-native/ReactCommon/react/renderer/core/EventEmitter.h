@@ -21,7 +21,7 @@ namespace facebook::react {
 
 class EventEmitter;
 
-using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
+using SharedEventEmitter = std::shared_ptr<EventEmitter>;
 
 /*
  * Base class for all particular typed event handlers.
@@ -31,7 +31,7 @@ using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
  */
 class EventEmitter {
  public:
-  using Shared = std::shared_ptr<const EventEmitter>;
+  using Shared = std::shared_ptr<EventEmitter>;
 
   static std::string normalizeEventType(std::string type);
 
@@ -53,12 +53,12 @@ class EventEmitter {
    * a number of `disable` calls to release the event target.
    * `DispatchMutex` must be acquired before calling.
    */
-  void setEnabled(bool enabled) const;
+  void setEnabled(bool enabled);
 
   /*
    * Sets a weak reference to the cooresponding ShadowNodeFamily
    */
-  void setShadowNodeFamily(std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) const;
+  void setShadowNodeFamily(std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily);
 
   const SharedEventTarget &getEventTarget() const;
 
@@ -106,12 +106,12 @@ class EventEmitter {
  private:
   friend class UIManagerBinding;
 
-  mutable SharedEventTarget eventTarget_;
-  mutable std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily_;
+  SharedEventTarget eventTarget_;
+  std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily_;
 
   EventDispatcher::Weak eventDispatcher_;
-  mutable int enableCounter_{0};
-  mutable bool isEnabled_{false};
+  int enableCounter_{0};
+  bool isEnabled_{false};
 };
 
 } // namespace facebook::react
