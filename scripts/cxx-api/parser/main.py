@@ -10,7 +10,7 @@ from pprint import pprint
 
 from doxmlparser import compound, index
 
-from .member import VariableMember
+from .member import EnumMember, VariableMember
 from .scope import StructLikeScopeKind
 from .snapshot import Snapshot
 
@@ -138,6 +138,29 @@ def get_variable_member(
     )
 
 
+def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType):
+    """
+    Create an enum scope in the snapshot.
+    """
+    scope = snapshot.create_enum(enum_def.qualifiedname)
+    scope.kind.type = resolve_ref_text_name(enum_def.get_type())
+    scope.location = enum_def.location.file
+
+    for enum_value_def in enum_def.enumvalue:
+        value_name = enum_value_def.get_name()
+        value_value = None
+
+        if enum_value_def.initializer is not None:
+            value_value = resolve_linked_text_name(enum_value_def.initializer)
+
+        scope.add_member(
+            EnumMember(
+                value_name,
+                value_value,
+            ),
+        )
+
+
 def build_snapshot(xml_dir: str) -> Snapshot:
     """
     Reads the Doxygen XML output and builds a snapshot of the C++ API.
@@ -199,6 +222,14 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                                             member_def, visibility, is_static
                                         )
                                     )
+                        elif member_type == "type":
+                            for member_def in section_def.memberdef:
+                                if member_def.kind == "enum":
+                                    create_enum_scope(snapshot, member_def)
+                                else:
+                                    print(
+                                        f"Unknown section member kind: {member_def.kind} in {compound_object.location.file}"
+                                    )
                         else:
                             print(
                                 f"Unknown class section kind: {kind} in {compound_object.location.file}"
@@ -228,6 +259,9 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                             namespace_scope.add_member(
                                 get_variable_member(variable_def, "public", is_static)
                             )
+                    elif section_def.kind == "enum":
+                        for enum_def in section_def.memberdef:
+                            create_enum_scope(snapshot, enum_def)
                     else:
                         print(
                             f"Unknown section kind: {section_def.kind} in {compound_object.location.file}"

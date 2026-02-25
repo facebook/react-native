@@ -35,6 +35,25 @@ class Member(ABC):
         return f"{qualification}::{self.name}" if qualification else self.name
 
 
+class EnumMember(Member):
+    def __init__(self, name: str, value: str | None) -> None:
+        super().__init__(name, "public")
+        self.value: str | None = value
+
+    def to_string(
+        self,
+        indent: int = 0,
+        qualification: str | None = None,
+        hide_visibility: bool = False,
+    ) -> str:
+        name = self._get_qualified_name(qualification)
+
+        if self.value is None:
+            return " " * indent + f"{name}"
+
+        return " " * indent + f"{name} = {self.value}"
+
+
 class VariableMember(Member):
     def __init__(
         self,
