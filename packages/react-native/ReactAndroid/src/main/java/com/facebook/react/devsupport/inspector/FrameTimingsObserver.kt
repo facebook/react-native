@@ -33,13 +33,51 @@ internal class FrameTimingsObserver(
     private val screenshotsEnabled: Boolean,
     private val onFrameTimingSequence: (sequence: FrameTimingSequence) -> Unit,
 ) {
+  // Used to schedule Window.OnFrameMetricsAvailableListener callbacks on the main thread
+  private val mainHandler = Handler(Looper.getMainLooper())
+
   // Bounds the lifetime of async frame timing and screenshot work. Cancelled in stop() to prevent
   // emitting any further frames once tracing is torn down.
   private var tracingScope: CoroutineScope? = null
 
-  private val handler = Handler(Looper.getMainLooper())
   private var frameCounter: Int = 0
+
+  // Reused to avoid allocating a new bitmap for each capture
   private var bitmapBuffer: Bitmap? = null
+
+  fun start() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+      return
+    }
+
+    frameCounter = 0
+
+    // Use SupervisorJob so a failed capture on one frame doesn't cancel others
+    tracingScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    // Capture initial screenshot to ensure there's always at least one frame
+    // recorded at the start of tracing, even if no UI changes occur
+    val timestamp = System.nanoTime()
+    emitFrameTiming(timestamp, timestamp)
+
+    window.addOnFrameMetricsAvailableListener(frameMetricsListener, mainHandler)
+  }
+
+  fun stop() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+      return
+    }
+
+    window.removeOnFrameMetricsAvailableListener(frameMetricsListener)
+    mainHandler.removeCallbacksAndMessages(null)
+
+    // Cancel any in-flight screenshot captures before releasing the bitmap buffer
+    tracingScope?.cancel()
+    tracingScope = null
+
+    bitmapBuffer?.recycle()
+    bitmapBuffer = null
+  }
 
   private val frameMetricsListener =
       Window.OnFrameMetricsAvailableListener { _, frameMetrics, _ ->
@@ -47,6 +85,28 @@ internal class FrameTimingsObserver(
         val endTimestamp = beginTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
         emitFrameTiming(beginTimestamp, endTimestamp)
       }
+
+  private fun emitFrameTiming(beginTimestamp: Long, endTimestamp: Long) {
+    // Guard against calls arriving after stop() has cancelled the scope
+    val scope = tracingScope ?: return
+
+    val frameId = frameCounter++
+    val threadId = Process.myTid()
+
+    scope.launch {
+      val screenshot = if (screenshotsEnabled) captureScreenshot() else null
+
+      onFrameTimingSequence(
+          FrameTimingSequence(
+              frameId,
+              threadId,
+              beginTimestamp,
+              endTimestamp,
+              screenshot,
+          )
+      )
+    }
+  }
 
   private suspend fun captureScreenshot(): String? =
       withContext(Dispatchers.Main) {
@@ -78,7 +138,7 @@ internal class FrameTimingsObserver(
               window,
               bitmap,
               { copyResult -> continuation.resume(copyResult == PixelCopy.SUCCESS) },
-              handler,
+              mainHandler,
           )
         }
 
@@ -110,60 +170,4 @@ internal class FrameTimingsObserver(
           }
         }
       }
-
-  fun start() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      return
-    }
-
-    frameCounter = 0
-
-    // Use SupervisorJob so a failed capture on one frame doesn't cancel others
-    tracingScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-
-    // Capture initial screenshot to ensure there's always at least one frame
-    // recorded at the start of tracing, even if no UI changes occur
-    val timestamp = System.nanoTime()
-    emitFrameTiming(timestamp, timestamp)
-
-    window.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
-  }
-
-  private fun emitFrameTiming(beginTimestamp: Long, endTimestamp: Long) {
-    // Guard against calls arriving after stop() has cancelled the scope
-    val scope = tracingScope ?: return
-
-    val frameId = frameCounter++
-    val threadId = Process.myTid()
-
-    scope.launch {
-      val screenshot = if (screenshotsEnabled) captureScreenshot() else null
-
-      onFrameTimingSequence(
-          FrameTimingSequence(
-              frameId,
-              threadId,
-              beginTimestamp,
-              endTimestamp,
-              screenshot,
-          )
-      )
-    }
-  }
-
-  fun stop() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      return
-    }
-
-    window.removeOnFrameMetricsAvailableListener(frameMetricsListener)
-    handler.removeCallbacksAndMessages(null)
-
-    // Cancel any in-flight screenshot captures before releasing the bitmap buffer
-    tracingScope?.cancel()
-    tracingScope = null
-
-    bitmapBuffer?.recycle()
-    bitmapBuffer = null
-  }
 }
