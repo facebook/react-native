@@ -31,7 +31,6 @@ internal class FrameTimingsObserver(
 
   private val mainHandler = Handler(Looper.getMainLooper())
   private var frameCounter: Int = 0
-  private var bitmapBuffer: Bitmap? = null
   private var isStarted: Boolean = false
 
   @Volatile private var currentWindow: Window? = null
@@ -61,9 +60,6 @@ internal class FrameTimingsObserver(
 
     currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
     mainHandler.removeCallbacksAndMessages(null)
-
-    bitmapBuffer?.recycle()
-    bitmapBuffer = null
   }
 
   fun setCurrentWindow(window: Window?) {
@@ -124,14 +120,7 @@ internal class FrameTimingsObserver(
     val decorView = window.decorView
     val width = decorView.width
     val height = decorView.height
-
-    // Reuse bitmap if dimensions haven't changed
-    val bitmap =
-        bitmapBuffer?.takeIf { it.width == width && it.height == height }
-            ?: run {
-              bitmapBuffer?.recycle()
-              Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also { bitmapBuffer = it }
-            }
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
 
     PixelCopy.request(
         window,
@@ -142,6 +131,7 @@ internal class FrameTimingsObserver(
               callback(encodeScreenshot(window, bitmap, width, height))
             }
           } else {
+            bitmap.recycle()
             callback(null)
           }
         },
@@ -169,6 +159,7 @@ internal class FrameTimingsObserver(
       null
     } finally {
       scaledBitmap?.recycle()
+      bitmap.recycle()
     }
   }
 
