@@ -166,6 +166,7 @@ class FunctionMember(Member):
         visibility: str,
         arg_string: str,
         is_virtual: bool,
+        is_pure_virtual: bool,
         is_static: bool,
         doxygen_params: list[Argument] | None = None,
     ) -> None:
@@ -177,6 +178,12 @@ class FunctionMember(Member):
         self.arguments = (
             doxygen_params if doxygen_params is not None else parsed_arguments
         )
+
+        # Doxygen signals pure-virtual via the virt attribute, but the arg string
+        # may not contain "= 0" (e.g. trailing return type syntax), so the
+        # modifiers parsed from the arg string may miss it. Propagate the flag.
+        if is_pure_virtual:
+            self.modifiers.is_pure_virtual = True
 
         self.is_const = self.modifiers.is_const
         self.is_override = self.modifiers.is_override
