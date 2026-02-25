@@ -230,6 +230,30 @@ def get_doxygen_params(
             resolve_ref_text_name(param.defval).strip() if param.defval else None
         )
 
+        # Doxygen splits array dimensions into a separate <array> element.
+        # For complex declarators like "PropNameID (&&propertyNames)[N]",
+        # doxygen gives type="PropNameID(&&)", name="propertyNames",
+        # array="[N]".  We must reconstruct the full declarator with the
+        # name embedded inside the grouping parentheses:
+        #   PropNameID(&&propertyNames)[N]
+        param_array = param.array
+        if param_array:
+            # Match type ending with a pointer/reference declarator group:
+            # e.g. "PropNameID(&&)", "int(&)", "void(*)"
+            m = re.search(r"\([*&]+\)\s*$", param_type)
+            if m and param_name:
+                # Insert name before the closing ')' and append array
+                insert_pos = m.end() - 1  # position of trailing ')'
+                param_type = (
+                    param_type[:insert_pos]
+                    + param_name
+                    + param_type[insert_pos:]
+                    + param_array
+                )
+                param_name = None
+            else:
+                param_type += param_array
+
         qualifiers, core_type = extract_qualifiers(param_type)
         arguments.append((qualifiers, core_type, param_name, param_default))
 
