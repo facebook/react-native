@@ -16,6 +16,9 @@ from .utils import (
     parse_arg_string,
     parse_function_pointer_argstring,
     parse_type_with_argstrings,
+    qualify_arguments,
+    qualify_parsed_type,
+    qualify_type_str,
 )
 
 if TYPE_CHECKING:
@@ -102,8 +105,8 @@ class VariableMember(Member):
         self._parsed_type: list[str | list[Argument]] = parse_type_with_argstrings(type)
 
     def close(self, scope: Scope):
-        # TODO: handle unqualified references
-        pass
+        self._fp_arguments = qualify_arguments(self._fp_arguments, scope)
+        self._parsed_type = qualify_parsed_type(self._parsed_type, scope)
 
     def _is_function_pointer(self) -> bool:
         """Check if this variable is a function pointer type."""
@@ -179,8 +182,8 @@ class FunctionMember(Member):
         self.is_override = self.modifiers.is_override
 
     def close(self, scope: Scope):
-        # TODO: handle unqualified references
-        pass
+        self.type = qualify_type_str(self.type, scope)
+        self.arguments = qualify_arguments(self.arguments, scope)
 
     def to_string(
         self,
@@ -255,8 +258,8 @@ class TypedefMember(Member):
         self.type: str = type
 
     def close(self, scope: Scope):
-        # TODO: handle unqualified references
-        pass
+        self._fp_arguments = qualify_arguments(self._fp_arguments, scope)
+        self._parsed_type = qualify_parsed_type(self._parsed_type, scope)
 
     def _is_function_pointer(self) -> bool:
         """Check if this typedef is a function pointer type."""
