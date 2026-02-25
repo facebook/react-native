@@ -21,6 +21,7 @@ import android.text.StaticLayout
 import android.text.TextDirectionHeuristics
 import android.text.TextPaint
 import android.text.TextUtils
+import android.text.util.Linkify
 import android.util.LayoutDirection
 import android.view.Gravity
 import android.view.View
@@ -88,6 +89,7 @@ internal object TextLayoutManager {
   const val PA_KEY_MINIMUM_FONT_SIZE: Int = 6
   const val PA_KEY_MAXIMUM_FONT_SIZE: Int = 7
   const val PA_KEY_TEXT_ALIGN_VERTICAL: Int = 8
+  const val PA_KEY_DATA_DETECTOR_TYPE: Int = 9
 
   private val TAG: String = TextLayoutManager::class.java.simpleName
 
@@ -530,6 +532,7 @@ internal object TextLayoutManager {
   fun getOrCreateSpannableForText(
       context: Context,
       attributedString: MapBuffer,
+      paragraphAttributes: MapBuffer,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
   ): Spannable {
     var text: Spannable?
@@ -541,6 +544,7 @@ internal object TextLayoutManager {
           createSpannableFromAttributedString(
               context,
               attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
+              paragraphAttributes,
               reactTextViewManagerCallback,
               null,
           )
@@ -552,37 +556,47 @@ internal object TextLayoutManager {
   private fun createSpannableFromAttributedString(
       context: Context,
       fragments: MapBuffer,
+      paragraphAttributes: MapBuffer,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
       outputReactTags: IntArray?,
   ): Spannable {
-    if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
-      val spannable = buildSpannableFromFragmentsOptimized(context, fragments, outputReactTags)
+    val spannable =
+        if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
+          val s = buildSpannableFromFragmentsOptimized(context, fragments, outputReactTags)
+          reactTextViewManagerCallback?.onPostProcessSpannable(s)
+          s
+        } else {
+          val sb = SpannableStringBuilder()
 
-      reactTextViewManagerCallback?.onPostProcessSpannable(spannable)
-      return spannable
-    } else {
-      val sb = SpannableStringBuilder()
+          // The [SpannableStringBuilder] implementation require setSpan operation to be called
+          // up-to-bottom, otherwise all the spannables that are within the region for which one may
+          // set
+          // a new spannable will be wiped out
+          val ops: MutableList<SetSpanOperation> = ArrayList()
 
-      // The [SpannableStringBuilder] implementation require setSpan operation to be called
-      // up-to-bottom, otherwise all the spannables that are within the region for which one may set
-      // a new spannable will be wiped out
-      val ops: MutableList<SetSpanOperation> = ArrayList()
+          buildSpannableFromFragments(context, fragments, sb, ops, outputReactTags)
 
-      buildSpannableFromFragments(context, fragments, sb, ops, outputReactTags)
+          // TODO T31905686: add support for inline Images
+          // While setting the Spans on the final text, we also check whether any of them are
+          // images.
+          for (priorityIndex in ops.indices) {
+            val op = ops[ops.size - priorityIndex - 1]
 
-      // TODO T31905686: add support for inline Images
-      // While setting the Spans on the final text, we also check whether any of them are images.
-      for (priorityIndex in ops.indices) {
-        val op = ops[ops.size - priorityIndex - 1]
+            // Actual order of calling {@code execute} does NOT matter,
+            // but the {@code priorityIndex} DOES matter.
+            op.execute(sb, priorityIndex)
+          }
 
-        // Actual order of calling {@code execute} does NOT matter,
-        // but the {@code priorityIndex} DOES matter.
-        op.execute(sb, priorityIndex)
-      }
+          reactTextViewManagerCallback?.onPostProcessSpannable(sb)
+          sb
+        }
 
-      reactTextViewManagerCallback?.onPostProcessSpannable(sb)
-      return sb
+    val linkifyMask = getLinkifyMask(paragraphAttributes)
+    if (linkifyMask > 0) {
+      Linkify.addLinks(spannable, linkifyMask)
     }
+
+    return spannable
   }
 
   private fun createLayout(
@@ -742,6 +756,8 @@ internal object TextLayoutManager {
       baseTextAttributes: TextAttributeProps,
       context: Context,
   ) {
+    paint.linkColor = DefaultStyleValuesUtil.getDefaultTextColorLink(context)
+
     if (baseTextAttributes.fontSize != ReactConstants.UNSET) {
       paint.textSize = baseTextAttributes.fontSize.toFloat()
     }
@@ -809,7 +825,13 @@ internal object TextLayoutManager {
       heightYogaMeasureMode: YogaMeasureMode,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?,
   ): Layout {
-    val text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback)
+    val text =
+        getOrCreateSpannableForText(
+            context,
+            attributedString,
+            paragraphAttributes,
+            reactTextViewManagerCallback,
+        )
 
     val paint: TextPaint
     if (attributedString.contains(AS_KEY_CACHE_ID)) {
@@ -915,6 +937,19 @@ internal object TextLayoutManager {
     )
   }
 
+  private fun getLinkifyMask(paragraphAttributes: MapBuffer): Int {
+    if (!paragraphAttributes.contains(PA_KEY_DATA_DETECTOR_TYPE)) {
+      return 0
+    }
+    return when (paragraphAttributes.getString(PA_KEY_DATA_DETECTOR_TYPE)) {
+      "phoneNumber" -> Linkify.PHONE_NUMBERS
+      "link" -> Linkify.WEB_URLS
+      "email" -> Linkify.EMAIL_ADDRESSES
+      "all" -> @Suppress("DEPRECATION") Linkify.ALL
+      else -> 0
+    }
+  }
+
   @JvmStatic
   fun createPreparedLayout(
       context: Context,
@@ -932,9 +967,11 @@ internal object TextLayoutManager {
         createSpannableFromAttributedString(
             context,
             fragments,
+            paragraphAttributes,
             reactTextViewManagerCallback,
             reactTags,
         )
+
     val baseTextAttributes =
         TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
     val layout =

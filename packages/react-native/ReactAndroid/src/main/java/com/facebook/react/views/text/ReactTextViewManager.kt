@@ -14,7 +14,6 @@ import android.text.Layout
 import android.text.Spannable
 import android.text.Spanned
 import android.text.TextUtils
-import android.text.util.Linkify
 import android.view.Gravity
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
@@ -152,8 +151,10 @@ public constructor(
         TextLayoutManager.getOrCreateSpannableForText(
             view.context,
             attributedString,
+            paragraphAttributes,
             reactTextViewManagerCallback,
         )
+
     view.setSpanned(spanned)
 
     val minimumFontSize: Float =
@@ -343,31 +344,6 @@ public constructor(
   @ReactProp(name = "disabled", defaultBoolean = false)
   public fun setDisabled(view: ReactTextView, disabled: Boolean) {
     view.isEnabled = !disabled
-  }
-
-  @ReactProp(name = "dataDetectorType")
-  public fun setDataDetectorType(view: ReactTextView, type: String?) {
-    when (type) {
-      "phoneNumber" -> {
-        view.setLinkifyMask(Linkify.PHONE_NUMBERS)
-        return
-      }
-      "link" -> {
-        view.setLinkifyMask(Linkify.WEB_URLS)
-        return
-      }
-      "email" -> {
-        view.setLinkifyMask(Linkify.EMAIL_ADDRESSES)
-        return
-      }
-      "all" -> {
-        @Suppress("DEPRECATION") view.setLinkifyMask(Linkify.ALL)
-        return
-      }
-    }
-
-    // "none" case, default, and null type are equivalent.
-    view.setLinkifyMask(0)
   }
 
   public companion object {

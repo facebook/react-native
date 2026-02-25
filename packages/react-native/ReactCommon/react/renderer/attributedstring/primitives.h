@@ -150,4 +150,12 @@ enum class HyphenationFrequency {
   Full // Standard amount of hyphenation.
 };
 
+enum class DataDetectorType {
+  All,
+  Email,
+  Link,
+  None,
+  PhoneNumber,
+};
+
 } // namespace facebook::react

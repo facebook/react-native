@@ -1014,6 +1014,7 @@ public open class ReactTextInputManager public constructor() :
         TextLayoutManager.getOrCreateSpannableForText(
             view.context,
             attributedString,
+            paragraphAttributes,
             reactTextViewManagerCallback,
         )
 

@@ -889,6 +889,54 @@ inline void fromRawValue(const PropsParserContext &context, const RawValue &valu
   result = HyphenationFrequency::None;
 }
 
+inline std::string toString(const DataDetectorType &value)
+{
+  switch (value) {
+    case DataDetectorType::All:
+      return "all";
+    case DataDetectorType::Email:
+      return "email";
+    case DataDetectorType::Link:
+      return "link";
+    case DataDetectorType::None:
+      return "none";
+    case DataDetectorType::PhoneNumber:
+      return "phoneNumber";
+  }
+
+  LOG(ERROR) << "Unsupported DataDetectorType value";
+  react_native_expect(false);
+  return "none";
+}
+
+inline void fromRawValue(const PropsParserContext & /*context*/, const RawValue &value, DataDetectorType &result)
+{
+  react_native_expect(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "all") {
+      result = DataDetectorType::All;
+    } else if (string == "email") {
+      result = DataDetectorType::Email;
+    } else if (string == "link") {
+      result = DataDetectorType::Link;
+    } else if (string == "none") {
+      result = DataDetectorType::None;
+    } else if (string == "phoneNumber") {
+      result = DataDetectorType::PhoneNumber;
+    } else {
+      LOG(ERROR) << "Unsupported DataDetectorType value: " << string;
+      react_native_expect(false);
+      result = DataDetectorType::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported DataDetectorType type";
+  react_native_expect(false);
+  result = DataDetectorType::None;
+}
+
 inline ParagraphAttributes convertRawProp(
     const PropsParserContext &context,
     const RawProps &rawProps,
@@ -957,6 +1005,12 @@ inline ParagraphAttributes convertRawProp(
       "textAlignVertical",
       sourceParagraphAttributes.textAlignVertical,
       defaultParagraphAttributes.textAlignVertical);
+  paragraphAttributes.dataDetectorType = convertRawProp(
+      context,
+      rawProps,
+      "dataDetectorType",
+      sourceParagraphAttributes.dataDetectorType,
+      defaultParagraphAttributes.dataDetectorType);
 
   return paragraphAttributes;
 }
@@ -1038,6 +1092,7 @@ constexpr static MapBuffer::Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 constexpr static MapBuffer::Key PA_KEY_MINIMUM_FONT_SIZE = 6;
 constexpr static MapBuffer::Key PA_KEY_MAXIMUM_FONT_SIZE = 7;
 constexpr static MapBuffer::Key PA_KEY_TEXT_ALIGN_VERTICAL = 8;
+constexpr static MapBuffer::Key PA_KEY_DATA_DETECTOR_TYPE = 9;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes)
 {
@@ -1050,6 +1105,9 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes)
   builder.putString(PA_KEY_HYPHENATION_FREQUENCY, toString(paragraphAttributes.android_hyphenationFrequency));
   if (paragraphAttributes.textAlignVertical.has_value()) {
     builder.putString(PA_KEY_TEXT_ALIGN_VERTICAL, toString(*paragraphAttributes.textAlignVertical));
+  }
+  if (paragraphAttributes.dataDetectorType.has_value()) {
+    builder.putString(PA_KEY_DATA_DETECTOR_TYPE, toString(*paragraphAttributes.dataDetectorType));
   }
   builder.putDouble(PA_KEY_MINIMUM_FONT_SIZE, paragraphAttributes.minimumFontSize);
   builder.putDouble(PA_KEY_MAXIMUM_FONT_SIZE, paragraphAttributes.maximumFontSize);
