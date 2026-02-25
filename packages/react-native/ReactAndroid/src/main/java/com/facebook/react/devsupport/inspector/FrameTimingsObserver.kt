@@ -28,11 +28,10 @@ internal class FrameTimingsObserver(
     private val onFrameTimingSequence: (sequence: FrameTimingSequence) -> Unit,
 ) {
   private val isSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-
   private val mainHandler = Handler(Looper.getMainLooper())
-  private var frameCounter: Int = 0
-  private var isStarted: Boolean = false
 
+  private var frameCounter: Int = 0
+  @Volatile private var isTracing: Boolean = false
   @Volatile private var currentWindow: Window? = null
 
   fun start() {
@@ -41,7 +40,7 @@ internal class FrameTimingsObserver(
     }
 
     frameCounter = 0
-    isStarted = true
+    isTracing = true
 
     // Capture initial screenshot to ensure there's always at least one frame
     // recorded at the start of tracing, even if no UI changes occur
@@ -56,7 +55,7 @@ internal class FrameTimingsObserver(
       return
     }
 
-    isStarted = false
+    isTracing = false
 
     currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
     mainHandler.removeCallbacksAndMessages(null)
@@ -69,13 +68,18 @@ internal class FrameTimingsObserver(
 
     currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
     currentWindow = window
-    if (isStarted) {
+    if (isTracing) {
       currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, mainHandler)
     }
   }
 
   private val frameMetricsListener =
       Window.OnFrameMetricsAvailableListener { _, frameMetrics, _ ->
+        // Guard against calls arriving after stop() has ended tracing. Async work scheduled from
+        // previous frames will still finish.
+        if (!isTracing) {
+          return@OnFrameMetricsAvailableListener
+        }
         val beginTimestamp = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP)
         val endTimestamp = beginTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
         emitFrameTiming(beginTimestamp, endTimestamp)
