@@ -25,6 +25,10 @@ from .utils import Argument, extract_qualifiers, parse_qualified_path
 
 
 def resolve_ref_text_name(type_def: compound.refTextType) -> str:
+    """
+    Resolve the full text content of a refTextType, including all text
+    fragments and ref elements.
+    """
     if hasattr(type_def, "content_") and type_def.content_:
         name = ""
         for part in type_def.content_:
@@ -45,26 +49,74 @@ def resolve_ref_text_name(type_def: compound.refTextType) -> str:
     return type_def.get_valueOf_()
 
 
-def resolve_linked_text_name(type_def: compound.linkedTextType) -> str:
+def extract_namespace_from_refid(refid: str) -> str:
+    """Extract the namespace prefix from a doxygen refid.
+    e.g. 'namespacefacebook_1_1yoga_1a...' -> 'facebook::yoga'
+    """
+    for prefix in ("namespace", "struct", "class", "union"):
+        if refid.startswith(prefix):
+            compound_part = refid[len(prefix) :]
+            idx = compound_part.find("_1a")
+            if idx != -1:
+                compound_part = compound_part[:idx]
+            return compound_part.replace("_1_1", "::")
+    return ""
+
+
+def resolve_linked_text_name(type_def: compound.linkedTextType) -> (str, bool):
+    """
+    Resolve the full text content of a linkedTextType, including all text
+    fragments and ref elements.
+    """
     name = ""
+    in_string = False
 
     for part in type_def.content_:
         if part.category == 1:  # MixedContainer.CategoryText
+            in_string = part.value.count('"') % 2 != in_string
             name += part.value
         elif part.category == 3:  # MixedContainer.CategoryComplex (ref element)
-            # For ref elements, get the text content
+            # For ref elements, get the text content and fully qualify using refid
+            text = ""
             if hasattr(part.value, "get_valueOf_"):
-                name += part.value.get_valueOf_()
+                text = part.value.get_valueOf_()
             elif hasattr(part.value, "valueOf_"):
-                name += part.value.valueOf_
+                text = part.value.valueOf_
             else:
-                name += str(part.value)
+                text = str(part.value)
 
-    # literal initializers keep "=" sign
+            # Don't resolve refs inside string literals - doxygen may
+            # incorrectly treat symbols in strings as references
+            refid = getattr(part.value, "refid", None)
+            if refid and not in_string:
+                ns = extract_namespace_from_refid(refid)
+                if ns and not text.startswith(ns):
+                    # The text may already start with a trailing portion of
+                    # the namespace.  For example ns="facebook::react::HighResDuration"
+                    # and text="HighResDuration::zero".  We need to find the
+                    # longest suffix of ns that is a prefix of text (on a "::"
+                    # boundary) and only prepend the missing part.
+                    ns_parts = ns.split("::")
+                    prepend = ns
+                    for i in range(1, len(ns_parts)):
+                        suffix = "::".join(ns_parts[i:])
+                        if text.startswith(suffix + "::") or text == suffix:
+                            prepend = "::".join(ns_parts[:i])
+                            break
+                    text = prepend + "::" + text
+
+            name += text
+
+    is_brace_initializer = False
     if name.startswith("="):
+        # Detect assignment initializers: = value
         name = name[1:]
+    elif name.startswith("{") and name.endswith("}"):
+        # Detect brace initializers: {value}
+        is_brace_initializer = True
+        name = name[1:-1].strip()
 
-    return name.strip()
+    return (name.strip(), is_brace_initializer)
 
 
 def resolve_linked_text_full(type_def: compound.linkedTextType) -> str:
@@ -198,8 +250,11 @@ def get_variable_member(
     if is_const:
         variable_type = variable_type[5:].strip()
 
+    is_brace_initializer = False
     if member_def.initializer is not None:
-        variable_value = resolve_linked_text_name(member_def.initializer)
+        (variable_value, is_brace_initializer) = resolve_linked_text_name(
+            member_def.initializer
+        )
 
     return VariableMember(
         variable_name,
@@ -212,6 +267,7 @@ def get_variable_member(
         variable_value,
         variable_definition,
         variable_argstring,
+        is_brace_initializer,
     )
 
 
@@ -370,7 +426,7 @@ def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType):
         value_value = None
 
         if enum_value_def.initializer is not None:
-            value_value = resolve_linked_text_name(enum_value_def.initializer)
+            (value_value, _) = resolve_linked_text_name(enum_value_def.initializer)
 
         scope.add_member(
             EnumMember(
