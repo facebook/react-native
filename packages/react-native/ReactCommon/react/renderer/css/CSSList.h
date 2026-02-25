@@ -28,11 +28,11 @@ struct CSSList<AllowedTypesT, Delim> : public std::vector<AllowedTypesT> {};
 
 template <CSSMaybeCompoundDataType AllowedTypeT, CSSDelimiter Delim>
 struct CSSDataTypeParser<CSSList<AllowedTypeT, Delim>> {
-  static inline auto consume(CSSSyntaxParser &parser) -> std::optional<CSSList<AllowedTypeT, Delim>>
+  static inline auto consume(CSSValueParser &parser) -> std::optional<CSSList<AllowedTypeT, Delim>>
   {
     CSSList<AllowedTypeT, Delim> result;
-    for (auto nextValue = parseNextCSSValue<AllowedTypeT>(parser); !std::holds_alternative<std::monostate>(nextValue);
-         nextValue = parseNextCSSValue<AllowedTypeT>(parser, Delim)) {
+    for (auto nextValue = parser.parseNextValue<AllowedTypeT>(); !std::holds_alternative<std::monostate>(nextValue);
+         nextValue = parser.parseNextValue<AllowedTypeT>(Delim)) {
       // Copy from the variant of possible values to the element (either the
       // concrete type, or a variant of compound types which exlcudes the
       // possibility of std::monostate for parse error)
