@@ -146,8 +146,10 @@ class UIManager final : public ShadowTreeDelegate {
       RawProps props,
       InstanceHandle::Shared instanceHandle) const;
 
-  std::shared_ptr<ShadowNode>
-  cloneNode(const ShadowNode &shadowNode, const ShadowNode::SharedListOfShared &children, RawProps rawProps) const;
+  std::shared_ptr<ShadowNode> cloneNode(
+      const ShadowNode &shadowNode,
+      const std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>> &children,
+      RawProps rawProps) const;
 
   void appendChild(
       const std::shared_ptr<const ShadowNode> &parentShadowNode,
@@ -155,7 +157,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   void completeSurface(
       SurfaceId surfaceId,
-      const ShadowNode::UnsharedListOfShared &rootChildren,
+      const std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>> &rootChildren,
       ShadowTree::CommitOptions commitOptions);
 
   void setIsJSResponder(

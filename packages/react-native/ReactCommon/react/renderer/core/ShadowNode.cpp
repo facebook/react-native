@@ -36,7 +36,8 @@ thread_local bool useRuntimeShadowNodeReferenceUpdateOnThread{false}; // NOLINT
   return useRuntimeShadowNodeReferenceUpdateOnThread;
 }
 
-ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
+std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>>
+ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
       std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
   return emptySharedShadowNodeSharedList;
