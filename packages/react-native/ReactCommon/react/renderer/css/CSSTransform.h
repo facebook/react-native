@@ -453,11 +453,6 @@ using CSSTransformFunction = CSSCompoundDataType<
     CSSPerspective>;
 
 /**
- * Variant of possible CSS transform function types
- */
-using CSSTransformFunctionVariant = CSSVariantWithTypes<CSSTransformFunction>;
-
-/**
  * Represents the <transform-list> type.
  * https://drafts.csswg.org/css-transforms-1/#typedef-transform-list
  */

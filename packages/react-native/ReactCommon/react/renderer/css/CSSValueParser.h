@@ -33,7 +33,7 @@ class CSSValueParser {
   template <CSSDataType... AllowedTypesT>
   constexpr std::variant<std::monostate, AllowedTypesT...> consumeValue(
       CSSDelimiter delimeter,
-      CSSCompoundDataType<AllowedTypesT...> /*unused*/)
+      std::variant<AllowedTypesT...> /*unused*/)
   {
     using ReturnT = std::variant<std::monostate, AllowedTypesT...>;
 
