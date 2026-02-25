@@ -82,10 +82,7 @@ public class UIImplementation {
     this(
         reactContext,
         viewManagers,
-        new UIViewOperationQueue(
-            reactContext,
-            new NativeViewHierarchyManager(viewManagers),
-            minTimeLeftInFrameForNonBatchedOperationMs),
+        new UIViewOperationQueue(reactContext, minTimeLeftInFrameForNonBatchedOperationMs),
         eventDispatcher);
   }
 
