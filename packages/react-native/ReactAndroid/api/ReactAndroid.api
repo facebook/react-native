@@ -2184,6 +2184,13 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun onResume ()V
 }
 
+public final class com/facebook/react/devsupport/interfaces/DevSupportRequestHeaders {
+	public static final field INSTANCE Lcom/facebook/react/devsupport/interfaces/DevSupportRequestHeaders;
+	public static final fun addRequestHeader (Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun allHeaders ()Ljava/util/Map;
+	public static final fun removeRequestHeader (Ljava/lang/String;)V
+}
+
 public abstract interface class com/facebook/react/devsupport/interfaces/ErrorCustomizer {
 	public abstract fun customizeErrorInfo (Landroid/util/Pair;)Landroid/util/Pair;
 }

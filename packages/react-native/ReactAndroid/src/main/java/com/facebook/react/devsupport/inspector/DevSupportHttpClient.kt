@@ -9,24 +9,29 @@
 
 package com.facebook.react.devsupport.inspector
 
-import java.util.concurrent.ConcurrentHashMap
+import com.facebook.react.devsupport.interfaces.DevSupportRequestHeaders
 import java.util.concurrent.TimeUnit
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 
 /**
  * Shared [OkHttpClient] instances for devsupport networking. Uses a single connection pool and
- * dispatcher across all dev support HTTP and WebSocket usage.
+ * dispatcher across all dev support HTTP and WebSocket usage. Injects custom request headers
+ * registered via [DevSupportRequestHeaders] into every outgoing request.
  */
 internal object DevSupportHttpClient {
-  private val customHeaders = ConcurrentHashMap<String, String>()
-
   private val headerInterceptor = Interceptor { chain ->
-    val builder = chain.request().newBuilder()
-    for ((name, value) in customHeaders) {
-      builder.header(name, value)
+    val originalRequest = chain.request()
+    val headers = DevSupportRequestHeaders.allHeaders()
+    if (headers.isEmpty()) {
+      chain.proceed(originalRequest)
+    } else {
+      val builder = originalRequest.newBuilder()
+      for ((name, value) in headers) {
+        builder.header(name, value)
+      }
+      chain.proceed(builder.build())
     }
-    chain.proceed(builder.build())
   }
 
   /** Client for HTTP requests: connect=5s, write=disabled, read=disabled. */
@@ -45,14 +50,4 @@ internal object DevSupportHttpClient {
           .connectTimeout(10, TimeUnit.SECONDS)
           .writeTimeout(10, TimeUnit.SECONDS)
           .build()
-
-  /** Add a custom header to be included in all requests made through both clients. */
-  fun addRequestHeader(name: String, value: String) {
-    customHeaders[name] = value
-  }
-
-  /** Remove a previously added custom header. */
-  fun removeRequestHeader(name: String) {
-    customHeaders.remove(name)
-  }
 }
