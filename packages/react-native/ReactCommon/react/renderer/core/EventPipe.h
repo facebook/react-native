@@ -20,7 +20,7 @@ namespace facebook::react {
 
 using EventPipe = std::function<void(
     jsi::Runtime &runtime,
-    const EventTarget *eventTarget,
+    EventTarget *eventTarget,
     const std::string &type,
     ReactEventPriority priority,
     const EventPayload &payload)>;

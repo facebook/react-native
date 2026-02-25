@@ -85,7 +85,7 @@ Scheduler::Scheduler(
 
   auto eventPipe = [uiManager](
                        jsi::Runtime& runtime,
-                       const EventTarget* eventTarget,
+                       EventTarget* eventTarget,
                        const std::string& type,
                        ReactEventPriority priority,
                        const EventPayload& payload) {
