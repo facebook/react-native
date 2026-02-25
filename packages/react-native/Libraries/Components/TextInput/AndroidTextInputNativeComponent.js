@@ -24,6 +24,7 @@ import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import {colorAttribute} from '../View/ReactNativeStyleAttributes';
 
 export type KeyboardType =
   // Cross Platform
@@ -648,41 +649,33 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     placeholder: true,
     inlineImagePadding: true,
     contextMenuHidden: true,
-    textShadowColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    textShadowColor: colorAttribute,
     maxLength: true,
     selectTextOnFocus: true,
     textShadowRadius: true,
-    underlineColorAndroid: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    underlineColorAndroid: colorAttribute,
     textDecorationLine: true,
     submitBehavior: true,
     textAlignVertical: true,
     fontStyle: true,
     textShadowOffset: true,
-    selectionColor: {process: require('../../StyleSheet/processColor').default},
-    selectionHandleColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
-    placeholderTextColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    selectionColor: colorAttribute,
+    selectionHandleColor: colorAttribute,
+    placeholderTextColor: colorAttribute,
     importantForAutofill: true,
     lineHeight: true,
     textTransform: true,
     returnKeyType: true,
     keyboardType: true,
     multiline: true,
-    color: {process: require('../../StyleSheet/processColor').default},
+    color: colorAttribute,
     autoComplete: true,
     numberOfLines: true,
     letterSpacing: true,
     returnKeyLabel: true,
     fontSize: true,
     onKeyPress: true,
-    cursorColor: {process: require('../../StyleSheet/processColor').default},
+    cursorColor: colorAttribute,
     text: true,
     showSoftInputOnFocus: true,
     textAlign: true,
@@ -704,22 +697,16 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     editable: true,
     fontVariant: true,
     borderBottomRightRadius: true,
-    borderBottomColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    borderBottomColor: colorAttribute,
     borderRadius: true,
-    borderRightColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
-    borderColor: {process: require('../../StyleSheet/processColor').default},
+    borderRightColor: colorAttribute,
+    borderColor: colorAttribute,
     borderTopRightRadius: true,
     borderStyle: true,
     borderBottomLeftRadius: true,
-    borderLeftColor: {
-      process: require('../../StyleSheet/processColor').default,
-    },
+    borderLeftColor: colorAttribute,
     borderTopLeftRadius: true,
-    borderTopColor: {process: require('../../StyleSheet/processColor').default},
+    borderTopColor: colorAttribute,
   },
 };
 

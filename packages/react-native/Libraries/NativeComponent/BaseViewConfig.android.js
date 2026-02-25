@@ -17,6 +17,7 @@ import {
   backgroundRepeatAttribute,
   backgroundSizeAttribute,
   boxShadowAttribute,
+  colorAttribute,
   filterAttribute,
 } from '../Components/View/ReactNativeStyleAttributes';
 import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
@@ -195,7 +196,7 @@ const directEventTypes = {
 
 const validAttributesForNonEventProps = {
   // @ReactProps from BaseViewManager
-  backgroundColor: {process: require('../StyleSheet/processColor').default},
+  backgroundColor: colorAttribute,
   transform: true,
   transformOrigin: true,
   experimental_backgroundImage: backgroundImageAttribute,
@@ -208,7 +209,7 @@ const validAttributesForNonEventProps = {
   isolation: true,
   opacity: true,
   elevation: true,
-  shadowColor: {process: require('../StyleSheet/processColor').default},
+  shadowColor: colorAttribute,
   zIndex: true,
   renderToHardwareTextureAndroid: true,
   testID: true,
@@ -300,7 +301,7 @@ const validAttributesForNonEventProps = {
   borderLeftWidth: true,
   borderRightWidth: true,
 
-  outlineColor: {process: require('../StyleSheet/processColor').default},
+  outlineColor: colorAttribute,
   outlineOffset: true,
   outlineStyle: true,
   outlineWidth: true,
@@ -356,36 +357,16 @@ const validAttributesForNonEventProps = {
   nativeForegroundAndroid: true,
   needsOffscreenAlphaCompositing: true,
 
-  borderColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderLeftColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderRightColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderTopColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderBottomColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderStartColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderEndColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderBlockColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderBlockEndColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
-  borderBlockStartColor: {
-    process: require('../StyleSheet/processColor').default,
-  },
+  borderColor: colorAttribute,
+  borderLeftColor: colorAttribute,
+  borderRightColor: colorAttribute,
+  borderTopColor: colorAttribute,
+  borderBottomColor: colorAttribute,
+  borderStartColor: colorAttribute,
+  borderEndColor: colorAttribute,
+  borderBlockColor: colorAttribute,
+  borderBlockEndColor: colorAttribute,
+  borderBlockStartColor: colorAttribute,
   focusable: true,
   backfaceVisibility: true,
 } as const;
