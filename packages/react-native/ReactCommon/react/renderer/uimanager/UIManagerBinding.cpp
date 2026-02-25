@@ -62,7 +62,7 @@ UIManagerBinding::~UIManagerBinding() {
 
 void UIManagerBinding::dispatchEvent(
     jsi::Runtime& runtime,
-    const EventTarget* eventTarget,
+    EventTarget* eventTarget,
     const std::string& type,
     ReactEventPriority priority,
     const EventPayload& eventPayload) const {
@@ -101,7 +101,7 @@ void UIManagerBinding::dispatchEvent(
 
 void UIManagerBinding::dispatchEventToJS(
     jsi::Runtime& runtime,
-    const EventTarget* eventTarget,
+    EventTarget* eventTarget,
     const std::string& type,
     ReactEventPriority priority,
     const EventPayload& eventPayload) const {

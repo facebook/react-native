@@ -44,7 +44,7 @@ class UIManagerBinding : public jsi::HostObject {
    */
   void dispatchEvent(
       jsi::Runtime &runtime,
-      const EventTarget *eventTarget,
+      EventTarget *eventTarget,
       const std::string &type,
       ReactEventPriority priority,
       const EventPayload &payload) const;
@@ -73,7 +73,7 @@ class UIManagerBinding : public jsi::HostObject {
    */
   void dispatchEventToJS(
       jsi::Runtime &runtime,
-      const EventTarget *eventTarget,
+      EventTarget *eventTarget,
       const std::string &type,
       ReactEventPriority priority,
       const EventPayload &payload) const;
