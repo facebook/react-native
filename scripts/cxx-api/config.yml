@@ -5,7 +5,7 @@ ReactCommon:
   exclude_patterns:
     - "*/test_utils/*"
     - "*/jni/*"
-    - "*/platform/cxx/*"
+    - "*/platform/cxx/*" # Should this be included in ReactCommon?
     - "*/platform/windows/*"
     - "*/platform/macos/*"
     - "*/platform/ios/*"

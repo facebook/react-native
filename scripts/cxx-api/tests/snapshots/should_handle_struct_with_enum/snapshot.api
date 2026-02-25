@@ -1,7 +1,7 @@
+struct test::TestStruct {
+}
+
 enum test::TestStruct::Enum {
   Value1,
   Value2,
-}
-
-struct test::TestStruct {
 }

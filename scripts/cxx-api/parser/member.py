@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from enum import IntEnum
 from typing import TYPE_CHECKING
 
 from .template import Template, TemplateList
@@ -25,11 +26,30 @@ if TYPE_CHECKING:
     from .scope import Scope
 
 
+class MemberKind(IntEnum):
+    """
+    Classification of member kinds for grouping in output.
+    The order here determines the output order within namespace scopes.
+    """
+
+    CONSTANT = 0
+    TYPE_ALIAS = 1
+    CONCEPT = 2
+    FUNCTION = 3
+    OPERATOR = 4
+    VARIABLE = 5
+
+
 class Member(ABC):
     def __init__(self, name: str, visibility: str) -> None:
         self.name: str = name
         self.visibility: str = visibility
         self.template_list: TemplateList | None = None
+
+    @property
+    @abstractmethod
+    def member_kind(self) -> MemberKind:
+        pass
 
     @abstractmethod
     def to_string(
@@ -61,6 +81,10 @@ class EnumMember(Member):
     def __init__(self, name: str, value: str | None) -> None:
         super().__init__(name, "public")
         self.value: str | None = value
+
+    @property
+    def member_kind(self) -> MemberKind:
+        return MemberKind.CONSTANT
 
     def to_string(
         self,
@@ -103,6 +127,12 @@ class VariableMember(Member):
             parse_function_pointer_argstring(argstring) if argstring else []
         )
         self._parsed_type: list[str | list[Argument]] = parse_type_with_argstrings(type)
+
+    @property
+    def member_kind(self) -> MemberKind:
+        if self.is_const or self.is_constexpr:
+            return MemberKind.CONSTANT
+        return MemberKind.VARIABLE
 
     def close(self, scope: Scope):
         self._fp_arguments = qualify_arguments(self._fp_arguments, scope)
@@ -188,6 +218,12 @@ class FunctionMember(Member):
         self.is_const = self.modifiers.is_const
         self.is_override = self.modifiers.is_override
 
+    @property
+    def member_kind(self) -> MemberKind:
+        if self.name.startswith("operator"):
+            return MemberKind.OPERATOR
+        return MemberKind.FUNCTION
+
     def close(self, scope: Scope):
         self.type = qualify_type_str(self.type, scope)
         self.arguments = qualify_arguments(self.arguments, scope)
@@ -264,6 +300,10 @@ class TypedefMember(Member):
         self._parsed_type: list[str | list[Argument]] = parse_type_with_argstrings(type)
         self.type: str = type
 
+    @property
+    def member_kind(self) -> MemberKind:
+        return MemberKind.TYPE_ALIAS
+
     def close(self, scope: Scope):
         self._fp_arguments = qualify_arguments(self._fp_arguments, scope)
         self._parsed_type = qualify_parsed_type(self._parsed_type, scope)
@@ -314,6 +354,10 @@ class ConceptMember(Member):
     ) -> None:
         super().__init__(name, "public")
         self.constraint: str = self._normalize_constraint(constraint)
+
+    @property
+    def member_kind(self) -> MemberKind:
+        return MemberKind.CONCEPT
 
     @staticmethod
     def _normalize_constraint(constraint: str) -> str:
