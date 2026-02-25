@@ -107,7 +107,8 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
 
 std::shared_ptr<ShadowNode> UIManager::cloneNode(
     const ShadowNode& shadowNode,
-    const ShadowNode::SharedListOfShared& children,
+    const std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>>&
+        children,
     RawProps rawProps) const {
   TraceSection s(
       "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
@@ -184,7 +185,8 @@ void UIManager::appendChild(
 
 void UIManager::completeSurface(
     SurfaceId surfaceId,
-    const ShadowNode::UnsharedListOfShared& rootChildren,
+    const std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>>&
+        rootChildren,
     ShadowTree::CommitOptions commitOptions) {
   TraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
