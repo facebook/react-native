@@ -10,7 +10,7 @@ from pprint import pprint
 
 from doxmlparser import compound, index
 
-from .member import EnumMember, VariableMember
+from .member import EnumMember, FunctionMember, VariableMember
 from .scope import StructLikeScopeKind
 from .snapshot import Snapshot
 
@@ -138,6 +138,34 @@ def get_variable_member(
     )
 
 
+def get_function_member(
+    function_def: compound.MemberdefType,
+    visibility: str,
+    is_static: bool = False,
+) -> FunctionMember:
+    """
+    Get the function member from a member definition.
+    """
+    function_name = function_def.get_name()
+    function_type = resolve_ref_text_name(function_def.get_type())
+    function_arg_string = function_def.get_argsstring()
+    function_virtual = (
+        function_def.get_virt() == "virtual"
+        or function_def.get_virt() == "pure-virtual"
+    )
+
+    function = FunctionMember(
+        function_name,
+        function_type,
+        visibility,
+        function_arg_string,
+        function_virtual,
+        is_static,
+    )
+
+    return function
+
+
 def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType):
     """
     Create an enum scope in the snapshot.
@@ -222,6 +250,13 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                                             member_def, visibility, is_static
                                         )
                                     )
+                        elif member_type == "func":
+                            for function_def in section_def.memberdef:
+                                class_scope.add_member(
+                                    get_function_member(
+                                        function_def, visibility, is_static
+                                    )
+                                )
                         elif member_type == "type":
                             for member_def in section_def.memberdef:
                                 if member_def.kind == "enum":
@@ -259,6 +294,14 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                             namespace_scope.add_member(
                                 get_variable_member(variable_def, "public", is_static)
                             )
+                    elif section_def.kind == "func":
+                        for function_def in section_def.memberdef:
+                            function_static = function_def.static == "yes"
+
+                            if not function_static:
+                                namespace_scope.add_member(
+                                    get_function_member(function_def, "public")
+                                )
                     elif section_def.kind == "enum":
                         for enum_def in section_def.memberdef:
                             create_enum_scope(snapshot, enum_def)
