@@ -8,17 +8,22 @@ import subprocess
 
 
 def get_repo_root() -> str:
-    """Get the repository root via git."""
-    result = subprocess.run(
-        ["git", "rev-parse", "--show-toplevel"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"Could not determine repo root via 'git rev-parse': {result.stderr}"
-        )
-    return result.stdout.strip()
+    """Get the repository root directory.
+
+    Tries sl (Meta) first, then git (OSS).
+    """
+    for cmd in [["sl", "root"], ["git", "rev-parse", "--show-toplevel"]]:
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+            )
+            if result.returncode == 0:
+                return result.stdout.strip()
+        except FileNotFoundError:
+            continue
+    raise RuntimeError("Could not determine repo root via 'sl root' or 'git rev-parse'")
 
 
 def get_react_native_dir() -> str:
