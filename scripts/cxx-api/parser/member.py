@@ -25,6 +25,8 @@ from .utils import (
 if TYPE_CHECKING:
     from .scope import Scope
 
+STORE_INITIALIZERS_IN_SNAPSHOT = False
+
 
 class MemberKind(IntEnum):
     """
@@ -94,7 +96,7 @@ class EnumMember(Member):
     ) -> str:
         name = self._get_qualified_name(qualification)
 
-        if self.value is None:
+        if not STORE_INITIALIZERS_IN_SNAPSHOT or self.value is None:
             return " " * indent + f"{name}"
 
         return " " * indent + f"{name} = {self.value}"
@@ -113,6 +115,7 @@ class VariableMember(Member):
         value: str | None,
         definition: str,
         argstring: str | None = None,
+        is_brace_initializer: bool = False,
     ) -> None:
         super().__init__(name, visibility)
         self.type: str = type
@@ -121,6 +124,7 @@ class VariableMember(Member):
         self.is_static: bool = is_static
         self.is_constexpr: bool = is_constexpr
         self.is_mutable: bool = is_mutable
+        self.is_brace_initializer: bool = is_brace_initializer
         self.definition: str = definition
         self.argstring: str | None = argstring
         self._fp_arguments: list[Argument] = (
@@ -180,8 +184,11 @@ class VariableMember(Member):
         else:
             result += f"{format_parsed_type(self._parsed_type)} {name}"
 
-        if self.value is not None and (self.is_const or self.is_constexpr):
-            result += f" = {self.value}"
+        if STORE_INITIALIZERS_IN_SNAPSHOT and self.value is not None:
+            if self.is_brace_initializer:
+                result += f"{{{self.value}}}"
+            else:
+                result += f" = {self.value}"
 
         result += ";"
 

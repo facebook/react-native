@@ -1,4 +1,4 @@
 enum test::Enum : int {
-  Value1 = 1,
-  Value2 = 2,
+  Value1,
+  Value2,
 }
