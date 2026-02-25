@@ -51,14 +51,7 @@ public class UIViewOperationQueue {
   }
 
   public UIViewOperationQueue(
-      ReactApplicationContext reactContext,
-      NativeViewHierarchyManager nativeViewHierarchyManager,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {}
-
-  /*package*/ @Nullable
-  NativeViewHierarchyManager getNativeViewHierarchyManager() {
-    return null;
-  }
+      ReactApplicationContext reactContext, int minTimeLeftInFrameForNonBatchedOperationMs) {}
 
   public void profileNextBatch() {}
 

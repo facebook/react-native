@@ -4407,7 +4407,7 @@ public abstract interface class com/facebook/react/uimanager/UIManagerModule$Cus
 
 public class com/facebook/react/uimanager/UIViewOperationQueue {
 	public static final field DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS I
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/NativeViewHierarchyManager;I)V
+	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;I)V
 	public fun addRootView (ILandroid/view/View;)V
 	public fun dispatchViewUpdates (IJJ)V
 	public fun enqueueClearJSResponder ()V
