@@ -846,11 +846,6 @@ static_assert(CSSDataType<CSSLinearGradientFunction>);
 using CSSBackgroundImage = CSSCompoundDataType<CSSLinearGradientFunction, CSSRadialGradientFunction>;
 
 /**
- * Variant of possible CSS background image types
- */
-using CSSBackgroundImageVariant = CSSVariantWithTypes<CSSBackgroundImage>;
-
-/**
  * Representation of <background-image-list>
  */
 using CSSBackgroundImageList = CSSCommaSeparatedList<CSSBackgroundImage>;

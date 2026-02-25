@@ -308,11 +308,6 @@ using CSSFilterFunction = CSSCompoundDataType<
     CSSSepiaFilter>;
 
 /**
- * Variant of possible CSS filter function types
- */
-using CSSFilterFunctionVariant = CSSVariantWithTypes<CSSFilterFunction>;
-
-/**
  * Representation of <filter-value-list>
  * https://www.w3.org/TR/filter-effects-1/#typedef-filter-value-list
  */

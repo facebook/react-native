@@ -108,7 +108,7 @@ parseProcessedFilter(const PropsParserContext &context, const RawValue &value, s
   result = filter;
 }
 
-inline FilterType filterTypeFromVariant(const CSSFilterFunctionVariant &filter)
+inline FilterType filterTypeFromVariant(const CSSFilterFunction &filter)
 {
   return std::visit(
       [](auto &&filter) -> FilterType {
@@ -148,7 +148,7 @@ inline FilterType filterTypeFromVariant(const CSSFilterFunctionVariant &filter)
       filter);
 }
 
-inline std::optional<FilterFunction> fromCSSFilter(const CSSFilterFunctionVariant &cssFilter)
+inline std::optional<FilterFunction> fromCSSFilter(const CSSFilterFunction &cssFilter)
 {
   return std::visit(
       [&](auto &&filter) -> std::optional<FilterFunction> {

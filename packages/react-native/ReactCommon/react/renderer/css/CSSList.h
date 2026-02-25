@@ -24,7 +24,7 @@ template <CSSDataType AllowedTypeT, CSSDelimiter Delim>
 struct CSSList<AllowedTypeT, Delim> : public std::vector<AllowedTypeT> {};
 
 template <CSSValidCompoundDataType AllowedTypesT, CSSDelimiter Delim>
-struct CSSList<AllowedTypesT, Delim> : public std::vector<CSSVariantWithTypes<AllowedTypesT>> {};
+struct CSSList<AllowedTypesT, Delim> : public std::vector<AllowedTypesT> {};
 
 template <CSSMaybeCompoundDataType AllowedTypeT, CSSDelimiter Delim>
 struct CSSDataTypeParser<CSSList<AllowedTypeT, Delim>> {
