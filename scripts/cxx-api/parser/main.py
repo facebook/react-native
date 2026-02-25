@@ -13,6 +13,7 @@ from doxmlparser import compound, index
 from .member import EnumMember, FunctionMember, TypedefMember, VariableMember
 from .scope import StructLikeScopeKind
 from .snapshot import Snapshot
+from .template import Template
 
 
 def resolve_ref_text_name(type_def: compound.refTextType) -> str:
@@ -92,6 +93,38 @@ def get_base_classes(
     return base_classes
 
 
+def get_template_params(
+    compound_object: compound.CompounddefType,
+) -> [Template]:
+    """
+    Get the template parameters of a compound object.
+    """
+    template_params = []
+    if compound_object.templateparamlist is not None:
+        for param in compound_object.templateparamlist.param:
+            template_value = (
+                resolve_ref_text_name(param.defval) if param.defval else None
+            )
+            template_name = param.defname
+            template_type = resolve_ref_text_name(param.get_type())
+
+            if template_name is None:
+                # Split type string and extract name from the end
+                # Handles: "typename T", "class T", "int N", etc.
+                parts = template_type.strip().split()
+                if len(parts) >= 2:
+                    template_type = " ".join(parts[:-1])
+                    template_name = parts[-1]
+                elif len(parts) == 1:
+                    # Just a name like "T" with no type keyword
+                    template_name = parts[0]
+
+            template_params.append(
+                Template(template_type, template_name, template_value)
+            )
+    return template_params
+
+
 def get_variable_member(
     member_def: compound.MemberdefType,
     visibility: str,
@@ -163,6 +196,8 @@ def get_function_member(
         is_static,
     )
 
+    function.add_template(get_template_params(function_def))
+
     return function
 
 
@@ -185,6 +220,8 @@ def get_typedef_member(
         visibility,
         typedef_keyword,
     )
+
+    typedef.add_template(get_template_params(typedef_def))
 
     return typedef
 
@@ -253,6 +290,7 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                 )
 
                 class_scope.kind.add_base(get_base_classes(compound_object))
+                class_scope.kind.add_template(get_template_params(compound_object))
                 class_scope.location = compound_object.location.file
 
                 for section_def in compound_object.sectiondef:

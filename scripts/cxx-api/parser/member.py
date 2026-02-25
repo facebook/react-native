@@ -10,6 +10,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from .template import Template, TemplateList
+
 if TYPE_CHECKING:
     from .scope import Scope
 
@@ -18,6 +20,7 @@ class Member(ABC):
     def __init__(self, name: str, visibility: str) -> None:
         self.name: str = name
         self.visibility: str = visibility
+        self.template_list: TemplateList | None = None
 
     @abstractmethod
     def to_string(
@@ -33,6 +36,16 @@ class Member(ABC):
 
     def _get_qualified_name(self, qualification: str | None):
         return f"{qualification}::{self.name}" if qualification else self.name
+
+    def add_template(self, template: Template | [Template]) -> None:
+        if template and self.template_list is None:
+            self.template_list = TemplateList()
+
+        if isinstance(template, list):
+            for t in template:
+                self.template_list.add(t)
+        else:
+            self.template_list.add(template)
 
 
 class EnumMember(Member):
@@ -187,6 +200,9 @@ class FunctionMember(Member):
     ) -> str:
         name = self._get_qualified_name(qualification)
         result = ""
+
+        if self.template_list is not None:
+            result += " " * indent + self.template_list.to_string() + "\n"
 
         result += " " * indent
 
@@ -576,6 +592,9 @@ class TypedefMember(Member):
     ) -> str:
         name = self._get_qualified_name(qualification)
         result = " " * indent
+
+        if self.keyword == "using" and self.template_list is not None:
+            result += self.template_list.to_string() + "\n" + " " * indent
 
         if not hide_visibility:
             result += self.visibility + " "

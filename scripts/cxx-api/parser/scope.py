@@ -12,6 +12,7 @@ from typing import Generic, TypeVar
 from natsort import natsorted
 
 from .member import Member
+from .template import Template, TemplateList
 from .utils import parse_qualified_path
 
 
@@ -46,6 +47,7 @@ class StructLikeScopeKind(ScopeKind):
         super().__init__(type.value)
 
         self.base_classes: [StructLikeScopeKind.Base] = []
+        self.template_list: TemplateList | None = None
 
     def add_base(
         self, base: StructLikeScopeKind.Base | [StructLikeScopeKind.Base]
@@ -55,6 +57,16 @@ class StructLikeScopeKind(ScopeKind):
                 self.base_classes.append(b)
         else:
             self.base_classes.append(base)
+
+    def add_template(self, template: Template | [Template]) -> None:
+        if template and self.template_list is None:
+            self.template_list = TemplateList()
+
+        if isinstance(template, list):
+            for t in template:
+                self.template_list.add(t)
+        else:
+            self.template_list.add(template)
 
     def to_string(self, scope: Scope) -> str:
         result = ""
@@ -69,6 +81,8 @@ class StructLikeScopeKind(ScopeKind):
 
         inheritance_string = " : " + ", ".join(bases) if bases else ""
 
+        if self.template_list is not None:
+            result += "\n" + self.template_list.to_string() + "\n"
         result += f"{self.name} {scope.get_qualified_name()}{inheritance_string} {{"
 
         stringified_members = []
