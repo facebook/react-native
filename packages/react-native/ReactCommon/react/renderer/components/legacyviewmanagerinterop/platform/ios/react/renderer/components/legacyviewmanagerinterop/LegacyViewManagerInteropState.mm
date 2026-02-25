@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "LegacyViewManagerInteropState.h"
+#include <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropState.h>
 
 namespace facebook::react {
 } // namespace facebook::react

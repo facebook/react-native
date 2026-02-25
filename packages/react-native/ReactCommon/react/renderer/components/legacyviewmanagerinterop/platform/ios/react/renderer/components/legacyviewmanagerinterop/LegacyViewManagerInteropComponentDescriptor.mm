@@ -14,9 +14,9 @@
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropState.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/ManagedObjectWrapper.h>
-#include "LegacyViewManagerInteropState.h"
 #include "RCTLegacyViewManagerInteropCoordinator.h"
 
 namespace facebook::react {
