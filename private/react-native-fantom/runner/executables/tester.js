@@ -10,8 +10,8 @@
 
 import type {AsyncCommandResult, HermesVariant} from '../utils';
 
-import {debugCpp, isCI} from '../EnvironmentOptions';
-import {NATIVE_BUILD_OUTPUT_PATH} from '../paths';
+import {debugCpp, isCI, profileCpp} from '../EnvironmentOptions';
+import {CPP_TRACES_OUTPUT_PATH, NATIVE_BUILD_OUTPUT_PATH} from '../paths';
 import {
   getBuckModesForPlatform,
   getBuckOptionsForHermes,
@@ -84,6 +84,10 @@ export function run(
     throw new Error('Cannot run Fantom with C++ debugging on CI');
   }
 
+  if (isCI && profileCpp) {
+    throw new Error('Cannot run Fantom with C++ profiling on CI');
+  }
+
   if (!isCI && !debugCpp) {
     build(options);
   }
@@ -104,5 +108,46 @@ export function run(
     );
   }
 
-  return runCommand(getFantomTesterPath(options), args);
+  const testerPath = getFantomTesterPath(options);
+
+  if (profileCpp) {
+    // Ensure output directory exists
+    if (!fs.existsSync(CPP_TRACES_OUTPUT_PATH)) {
+      fs.mkdirSync(CPP_TRACES_OUTPUT_PATH, {recursive: true});
+    }
+
+    // Generate unique output path for perf data
+    const perfOutputPath = path.join(
+      CPP_TRACES_OUTPUT_PATH,
+      `perf-${Date.now()}.data`,
+    );
+
+    // Wrap command with perf record
+    // -g: enable call-graph (stack traces)
+    // -F 997: sample at 997 Hz (prime number to avoid aliasing)
+    // --call-graph dwarf: use DWARF for accurate stack traces
+    const result = runCommand('perf', [
+      'record',
+      '-g',
+      '-F',
+      '997',
+      '--call-graph',
+      'dwarf',
+      '-o',
+      perfOutputPath,
+      '--',
+      testerPath,
+      ...args,
+    ]);
+
+    // Log the output path after the command starts
+    console.log(
+      `\n🔥 C++ sampling profiler recording to: ${perfOutputPath}\n` +
+        `   View with: perf report -i ${perfOutputPath}\n`,
+    );
+
+    return result;
+  }
+
+  return runCommand(testerPath, args);
 }
