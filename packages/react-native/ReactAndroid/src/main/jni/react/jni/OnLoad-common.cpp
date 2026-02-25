@@ -14,6 +14,7 @@
 #include "TransformHelper.h"
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
+#include "TimeZoneCache.h"
 
 namespace facebook::react {
 
@@ -29,6 +30,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     WritableNativeArray::registerNatives();
     WritableNativeMap::registerNatives();
     TransformHelper::registerNatives();
+    TimeZoneCache::registerNatives();
   });
 }
 

@@ -41,6 +41,7 @@ import com.facebook.react.modules.reactdevtoolssettings.ReactDevToolsSettingsMan
 import com.facebook.react.modules.share.ShareModule
 import com.facebook.react.modules.sound.SoundManagerModule
 import com.facebook.react.modules.statusbar.StatusBarModule
+import com.facebook.react.modules.timezone.TimeZoneModule
 import com.facebook.react.modules.toast.ToastModule
 import com.facebook.react.modules.vibration.VibrationModule
 import com.facebook.react.modules.websocket.WebSocketModule
@@ -91,11 +92,12 @@ import com.facebook.react.views.view.ReactViewManager
             ShareModule::class,
             SoundManagerModule::class,
             StatusBarModule::class,
+            TimeZoneModule::class,
             ToastModule::class,
             VibrationModule::class,
             WebSocketModule::class,
         ]
-)
+        )
 public class MainReactPackage
 @JvmOverloads
 constructor(private val config: MainPackageConfig? = null) :
@@ -124,6 +126,7 @@ constructor(private val config: MainPackageConfig? = null) :
         ShareModule.NAME -> ShareModule(reactContext)
         StatusBarModule.NAME -> StatusBarModule(reactContext)
         SoundManagerModule.NAME -> SoundManagerModule(reactContext)
+        TimeZoneModule.NAME -> TimeZoneModule(reactContext)
         ToastModule.NAME -> ToastModule(reactContext)
         VibrationModule.NAME -> VibrationModule(reactContext)
         WebSocketModule.NAME -> WebSocketModule(reactContext)
@@ -265,6 +268,7 @@ constructor(private val config: MainPackageConfig? = null) :
                 ShareModule::class.java,
                 StatusBarModule::class.java,
                 SoundManagerModule::class.java,
+                TimeZoneModule::class.java,
                 ToastModule::class.java,
                 VibrationModule::class.java,
                 WebSocketModule::class.java,
