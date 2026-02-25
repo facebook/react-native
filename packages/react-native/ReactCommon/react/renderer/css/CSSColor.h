@@ -47,7 +47,7 @@ struct CSSDataTypeParser<CSSColor> {
     return {};
   }
 
-  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSSyntaxParser &parser)
+  static constexpr auto consumeFunctionBlock(const CSSFunctionBlock &func, CSSValueParser &parser)
       -> std::optional<CSSColor>
   {
     return parseCSSColorFunction<CSSColor>(func.name, parser);

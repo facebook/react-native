@@ -550,7 +550,7 @@ inline ValueUnit cssLengthPercentageToValueUnit(const std::variant<CSSLength, CS
   }
 }
 
-inline std::optional<TransformOperation> fromCSSTransformFunction(const CSSTransformFunctionVariant &cssTransform)
+inline std::optional<TransformOperation> fromCSSTransformFunction(const CSSTransformFunction &cssTransform)
 {
   constexpr auto Zero = ValueUnit(0, UnitType::Point);
   constexpr auto One = ValueUnit(1, UnitType::Point);

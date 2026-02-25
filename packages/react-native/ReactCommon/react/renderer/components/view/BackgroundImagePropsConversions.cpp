@@ -477,7 +477,7 @@ void fromCSSColorStop(
 }
 
 std::optional<BackgroundImage> fromCSSBackgroundImage(
-    const CSSBackgroundImageVariant& cssBackgroundImage) {
+    const CSSBackgroundImage& cssBackgroundImage) {
   if (std::holds_alternative<CSSLinearGradientFunction>(cssBackgroundImage)) {
     const auto& gradient =
         std::get<CSSLinearGradientFunction>(cssBackgroundImage);
