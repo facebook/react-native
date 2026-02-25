@@ -32,11 +32,6 @@ struct RectangleEdges {
         std::tie(rhs.left, rhs.top, rhs.right, rhs.bottom);
   }
 
-  bool operator!=(const RectangleEdges<T> &rhs) const noexcept
-  {
-    return !(*this == rhs);
-  }
-
   bool isUniform() const noexcept
   {
     return left == top && left == right && left == bottom;

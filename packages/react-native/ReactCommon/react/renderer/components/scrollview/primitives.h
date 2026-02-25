@@ -30,11 +30,6 @@ class ScrollViewMaintainVisibleContentPosition final {
     return std::tie(this->minIndexForVisible, this->autoscrollToTopThreshold) ==
         std::tie(rhs.minIndexForVisible, rhs.autoscrollToTopThreshold);
   }
-
-  bool operator!=(const ScrollViewMaintainVisibleContentPosition &rhs) const
-  {
-    return !(*this == rhs);
-  }
 };
 
 } // namespace facebook::react

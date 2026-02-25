@@ -548,10 +548,6 @@ class YG_EXPORT Style {
         numbersEqual(aspectRatio_, pool_, other.aspectRatio_, other.pool_);
   }
 
-  bool operator!=(const Style& other) const {
-    return !(*this == other);
-  }
-
  private:
   using Dimensions = std::array<StyleValueHandle, ordinalCount<Dimension>()>;
   using Edges = std::array<StyleValueHandle, ordinalCount<Edge>()>;

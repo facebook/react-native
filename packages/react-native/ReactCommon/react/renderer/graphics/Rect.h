@@ -29,11 +29,6 @@ struct Rect {
     return std::tie(this->origin, this->size) == std::tie(rhs.origin, rhs.size);
   }
 
-  bool operator!=(const Rect &rhs) const noexcept
-  {
-    return !(*this == rhs);
-  }
-
   Float getMaxX() const noexcept
   {
     return size.width > 0 ? origin.x + size.width : origin.x;

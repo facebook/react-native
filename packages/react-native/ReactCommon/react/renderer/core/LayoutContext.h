@@ -77,9 +77,4 @@ inline bool operator==(const LayoutContext &lhs, const LayoutContext &rhs)
              rhs.viewportOffset);
 }
 
-inline bool operator!=(const LayoutContext &lhs, const LayoutContext &rhs)
-{
-  return !(lhs == rhs);
-}
-
 } // namespace facebook::react

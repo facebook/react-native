@@ -85,11 +85,6 @@ inline static bool operator==(const ViewEvents &lhs, const ViewEvents &rhs)
   return lhs.bits == rhs.bits;
 }
 
-inline static bool operator!=(const ViewEvents &lhs, const ViewEvents &rhs)
-{
-  return lhs.bits != rhs.bits;
-}
-
 enum class BackfaceVisibility : uint8_t { Auto, Visible, Hidden };
 
 enum class BorderCurve : uint8_t { Circular, Continuous };
@@ -212,11 +207,6 @@ struct CascadedRectangleEdges {
                rhs.blockStart,
                rhs.blockEnd);
   }
-
-  bool operator!=(const CascadedRectangleEdges<T> &rhs) const
-  {
-    return !(*this == rhs);
-  }
 };
 
 template <typename T>
@@ -292,11 +282,6 @@ struct CascadedRectangleCorners {
                rhs.startEnd,
                rhs.startStart);
   }
-
-  bool operator!=(const CascadedRectangleCorners<T> &rhs) const
-  {
-    return !(*this == rhs);
-  }
 };
 
 using BorderWidths = RectangleEdges<Float>;
@@ -323,11 +308,6 @@ struct BorderMetrics {
     return std::tie(
                this->borderColors, this->borderWidths, this->borderRadii, this->borderCurves, this->borderStyles) ==
         std::tie(rhs.borderColors, rhs.borderWidths, rhs.borderRadii, rhs.borderCurves, rhs.borderStyles);
-  }
-
-  bool operator!=(const BorderMetrics &rhs) const
-  {
-    return !(*this == rhs);
   }
 };
 

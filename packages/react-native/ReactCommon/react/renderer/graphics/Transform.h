@@ -53,10 +53,6 @@ struct TransformOrigin {
   {
     return xy[0] == other.xy[0] && xy[1] == other.xy[1] && z == other.z;
   }
-  bool operator!=(const TransformOrigin &other) const
-  {
-    return !(*this == other);
-  }
   bool isSet() const
   {
     return xy[0].value != 0.0f || xy[0].unit != UnitType::Undefined || xy[1].value != 0.0f ||
@@ -157,7 +153,6 @@ struct Transform {
    * Equality operators.
    */
   bool operator==(const Transform &rhs) const noexcept;
-  bool operator!=(const Transform &rhs) const noexcept;
 
   /*
    * Matrix subscript.

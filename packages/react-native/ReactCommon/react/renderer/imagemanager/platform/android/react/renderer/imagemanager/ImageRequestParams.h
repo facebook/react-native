@@ -93,11 +93,6 @@ class ImageRequestParams {
                rhs.analyticTag,
                rhs.size);
   }
-
-  bool operator!=(const ImageRequestParams &rhs) const
-  {
-    return !(*this == rhs);
-  }
 };
 
 struct ImageRequestItem {

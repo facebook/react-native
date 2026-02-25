@@ -34,11 +34,6 @@ struct ValueUnit {
     return value == other.value && unit == other.unit;
   }
 
-  constexpr bool operator!=(const ValueUnit &other) const
-  {
-    return !(*this == other);
-  }
-
   constexpr float resolve(float referenceLength) const
   {
     switch (unit) {
