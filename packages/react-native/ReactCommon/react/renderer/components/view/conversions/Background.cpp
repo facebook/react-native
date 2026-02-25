@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "BackgroundImagePropsConversions.h"
+#include "Background.h"
 
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
-#include <react/renderer/components/view/CSSConversions.h>
-#include <react/renderer/components/view/conversions.h>
 #include <react/renderer/css/CSSBackgroundImage.h>
 #include <react/renderer/css/CSSLengthUnit.h>
 #include <react/renderer/css/CSSPercentage.h>
@@ -19,6 +17,8 @@
 #include <react/renderer/graphics/LinearGradient.h>
 #include <react/renderer/graphics/RadialGradient.h>
 #include <react/renderer/graphics/ValueUnit.h>
+#include "CSSPrimitives.h"
+#include "Transform.h"
 
 namespace facebook::react {
 

@@ -15,6 +15,7 @@ react_native_android_selector(platform_SRC
 )
 file(GLOB rrc_view_SRC CONFIGURE_DEPENDS
         *.cpp
+        conversions/*.cpp
         ${platform_SRC})
 
 add_library(rrc_view OBJECT ${rrc_view_SRC})
