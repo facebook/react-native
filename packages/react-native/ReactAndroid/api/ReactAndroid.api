@@ -4260,14 +4260,8 @@ public abstract interface class com/facebook/react/uimanager/UIBlock {
 }
 
 public class com/facebook/react/uimanager/UIImplementation {
-	protected final field mEventDispatcher Lcom/facebook/react/uimanager/events/EventDispatcher;
-	protected field mLayoutUpdateListener Lcom/facebook/react/uimanager/UIImplementation$LayoutUpdateListener;
-	protected final field mReactContext Lcom/facebook/react/bridge/ReactApplicationContext;
-	protected final field mShadowNodeRegistry Lcom/facebook/react/uimanager/ShadowNodeRegistry;
-	protected field uiImplementationThreadLock Ljava/lang/Object;
 	protected fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/UIViewOperationQueue;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
 	public fun addUIBlock (Lcom/facebook/react/uimanager/UIBlock;)V
-	protected fun applyUpdatesRecursive (Lcom/facebook/react/uimanager/ReactShadowNode;FFLjava/util/List;)V
 	protected fun calculateRootLayout (Lcom/facebook/react/uimanager/ReactShadowNode;)V
 	public fun clearJSResponder ()V
 	public fun configureNextLayoutAnimation (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
@@ -4363,7 +4357,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getName ()Ljava/lang/String;
 	public fun getPerformanceCounters ()Ljava/util/Map;
-	public fun getUIImplementation ()Lcom/facebook/react/uimanager/UIImplementation;
 	public fun getViewManagerRegistry_DO_NOT_USE ()Lcom/facebook/react/uimanager/ViewManagerRegistry;
 	public fun initialize ()V
 	public fun invalidate ()V
