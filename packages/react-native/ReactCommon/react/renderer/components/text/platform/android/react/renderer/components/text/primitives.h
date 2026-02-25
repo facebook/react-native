@@ -7,14 +7,4 @@
 
 #pragma once
 
-namespace facebook::react {
-
-enum class DataDetectorType {
-  All,
-  Email,
-  Link,
-  None,
-  PhoneNumber,
-};
-
-} // namespace facebook::react
+#include <react/renderer/attributedstring/primitives.h>

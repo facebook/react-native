@@ -132,6 +132,12 @@ void BaseParagraphProps::setProp(
         paragraphAttributes,
         textAlignVertical,
         "textAlignVertical");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        dataDetectorType,
+        "dataDetectorType");
   }
 
   switch (hash) {

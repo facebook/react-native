@@ -13,11 +13,10 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
+import android.text.style.URLSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -71,7 +70,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private float mFontSize;
   private float mMinimumFontSize;
   private float mLetterSpacing;
-  private int mLinkifyMaskType;
   private boolean mTextIsSelectable;
   private boolean mShouldAdjustSpannableFontSize;
   private Overflow mOverflow = Overflow.VISIBLE;
@@ -91,7 +89,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private void initView() {
     mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
     mAdjustsFontSizeToFit = false;
-    mLinkifyMaskType = 0;
     mTextIsSelectable = false;
     mShouldAdjustSpannableFontSize = false;
     mEllipsizeLocation = TextUtils.TruncateAt.END;
@@ -131,16 +128,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     setGravity(DEFAULT_GRAVITY);
     setNumberOfLines(mNumberOfLines);
     setAdjustFontSizeToFit(mAdjustsFontSizeToFit);
-    setLinkifyMask(mLinkifyMaskType);
     setTextIsSelectable(mTextIsSelectable);
 
     // Default true:
     // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L9347
     setIncludeFontPadding(true);
     setEnabled(true);
-
-    // reset data detectors
-    setLinkifyMask(0);
 
     setEllipsizeLocation(mEllipsizeLocation);
 
@@ -386,14 +379,14 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         setLayoutParams(EMPTY_LAYOUT_PARAMS);
       }
       Spanned spanned = update.getText();
-      if (mLinkifyMaskType > 0) {
-        if (!(spanned instanceof Spannable)) {
-          spanned = new SpannableString(spanned);
-        }
-        Linkify.addLinks((Spannable) spanned, mLinkifyMaskType);
-        setMovementMethod(LinkMovementMethod.getInstance());
-      }
       setText(spanned);
+
+      URLSpan[] urlSpans = spanned.getSpans(0, spanned.length(), URLSpan.class);
+      if (urlSpans != null && urlSpans.length > 0) {
+        setMovementMethod(LinkMovementMethod.getInstance());
+      } else if (getMovementMethod() instanceof LinkMovementMethod) {
+        setMovementMethod(null);
+      }
 
       int nextTextAlign = update.getTextAlign();
       if (nextTextAlign != getGravityHorizontal()) {
@@ -625,10 +618,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public @Nullable Spannable getSpanned() {
     return mSpanned;
-  }
-
-  public void setLinkifyMask(int mask) {
-    mLinkifyMaskType = mask;
   }
 
   @Override

@@ -82,6 +82,12 @@ class ParagraphAttributes : public DebugStringConvertible {
    */
   std::optional<TextAlignmentVertical> textAlignVertical{};
 
+  /*
+   * (Android only) Defines the type of data to be detected and converted to
+   * clickable URLs in the text.
+   */
+  std::optional<DataDetectorType> dataDetectorType{};
+
   bool operator==(const ParagraphAttributes &rhs) const;
 
 #pragma mark - DebugStringConvertible
@@ -109,7 +115,8 @@ struct hash<facebook::react::ParagraphAttributes> {
         attributes.includeFontPadding,
         attributes.android_hyphenationFrequency,
         attributes.minimumFontScale,
-        attributes.textAlignVertical);
+        attributes.textAlignVertical,
+        attributes.dataDetectorType);
   }
 };
 } // namespace std

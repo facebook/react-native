@@ -56,6 +56,17 @@ public object DefaultStyleValuesUtil {
       getDefaultTextAttribute(context, android.R.attr.textColorHighlight)?.defaultColor
           ?: 0 // if the highlight color is not defined in the theme, return black
 
+  /**
+   * Utility method that returns the default text link color as defined by the theme
+   *
+   * @param context The Context
+   * @return The default color int for links as defined in the style
+   */
+  @JvmStatic
+  public fun getDefaultTextColorLink(context: Context): Int =
+      getDefaultTextAttribute(context, android.R.attr.textColorLink)?.defaultColor
+          ?: 0xFF0000EE.toInt() // fallback to a standard blue if not defined by the theme
+
   private fun getDefaultTextAttribute(context: Context, attribute: Int): ColorStateList? {
     context.theme.obtainStyledAttributes(intArrayOf(attribute)).use { typedArray ->
       return typedArray.getColorStateList(0)

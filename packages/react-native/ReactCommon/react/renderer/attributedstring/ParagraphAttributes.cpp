@@ -22,7 +22,8 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes& rhs) const {
              adjustsFontSizeToFit,
              includeFontPadding,
              android_hyphenationFrequency,
-             textAlignVertical) ==
+             textAlignVertical,
+             dataDetectorType) ==
       std::tie(
              rhs.maximumNumberOfLines,
              rhs.ellipsizeMode,
@@ -30,7 +31,8 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes& rhs) const {
              rhs.adjustsFontSizeToFit,
              rhs.includeFontPadding,
              rhs.android_hyphenationFrequency,
-             rhs.textAlignVertical) &&
+             rhs.textAlignVertical,
+             rhs.dataDetectorType) &&
       floatEquality(minimumFontSize, rhs.minimumFontSize) &&
       floatEquality(maximumFontSize, rhs.maximumFontSize) &&
       floatEquality(minimumFontScale, rhs.minimumFontScale);
@@ -75,7 +77,11 @@ SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
       debugStringConvertibleItem(
           "textAlignVertical",
           textAlignVertical,
-          paragraphAttributes.textAlignVertical)};
+          paragraphAttributes.textAlignVertical),
+      debugStringConvertibleItem(
+          "dataDetectorType",
+          dataDetectorType,
+          paragraphAttributes.dataDetectorType)};
 }
 #endif
 
