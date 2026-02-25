@@ -498,6 +498,23 @@ inline void fromRawValue(const PropsParserContext &context, const RawValue &valu
   result = value.hasType<float>() ? yoga::FloatOptional((float)value) : yoga::FloatOptional();
 }
 
+inline yoga::FloatOptional convertAspectRatio(const PropsParserContext &context, const RawValue &value)
+{
+  if (value.hasType<float>()) {
+    return yoga::FloatOptional((float)value);
+  }
+  if (ReactNativeFeatureFlags::enableNativeCSSParsing() && value.hasType<std::string>()) {
+    auto ratio = parseCSSProperty<CSSRatio>((std::string)value);
+    if (std::holds_alternative<CSSRatio>(ratio)) {
+      auto r = std::get<CSSRatio>(ratio);
+      if (!r.isDegenerate()) {
+        return yoga::FloatOptional(r.numerator / r.denominator);
+      }
+    }
+  }
+  return yoga::FloatOptional();
+}
+
 inline std::optional<Float> toRadians(const RawValue &value)
 {
   if (value.hasType<Float>()) {

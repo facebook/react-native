@@ -356,8 +356,12 @@ convertRawProp(const PropsParserContext &context, const RawProps &rawProps, cons
       yoga::Dimension::Height,
       convertRawProp(context, rawProps, "maxHeight", sourceValue.maxDimension(yoga::Dimension::Height), {}));
 
-  yogaStyle.setAspectRatio(
-      convertRawProp(context, rawProps, "aspectRatio", sourceValue.aspectRatio(), yogaStyle.aspectRatio()));
+  {
+    const auto *rawValue = rawProps.at("aspectRatio", nullptr, nullptr);
+    if (rawValue != nullptr) {
+      yogaStyle.setAspectRatio(rawValue->hasValue() ? convertAspectRatio(context, *rawValue) : yogaStyle.aspectRatio());
+    }
+  }
 
   yogaStyle.setBoxSizing(
       convertRawProp(context, rawProps, "boxSizing", sourceValue.boxSizing(), yogaStyle.boxSizing()));
