@@ -10,7 +10,7 @@ from pprint import pprint
 
 from doxmlparser import compound, index
 
-from .member import EnumMember, FunctionMember, VariableMember
+from .member import EnumMember, FunctionMember, TypedefMember, VariableMember
 from .scope import StructLikeScopeKind
 from .snapshot import Snapshot
 
@@ -166,6 +166,29 @@ def get_function_member(
     return function
 
 
+def get_typedef_member(
+    typedef_def: compound.memberdefType, visibility: str
+) -> TypedefMember:
+    typedef_name = typedef_def.get_name()
+    typedef_type = resolve_ref_text_name(typedef_def.get_type())
+    typedef_argstring = typedef_def.get_argsstring()
+    typedef_definition = typedef_def.definition
+
+    typedef_keyword = "using"
+    if typedef_definition.startswith("typedef"):
+        typedef_keyword = "typedef"
+
+    typedef = TypedefMember(
+        typedef_name,
+        typedef_type,
+        typedef_argstring,
+        visibility,
+        typedef_keyword,
+    )
+
+    return typedef
+
+
 def create_enum_scope(snapshot: Snapshot, enum_def: compound.EnumdefType):
     """
     Create an enum scope in the snapshot.
@@ -261,6 +284,10 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                             for member_def in section_def.memberdef:
                                 if member_def.kind == "enum":
                                     create_enum_scope(snapshot, member_def)
+                                elif member_def.kind == "typedef":
+                                    class_scope.add_member(
+                                        get_typedef_member(member_def, visibility)
+                                    )
                                 else:
                                     print(
                                         f"Unknown section member kind: {member_def.kind} in {compound_object.location.file}"
@@ -302,6 +329,11 @@ def build_snapshot(xml_dir: str) -> Snapshot:
                                 namespace_scope.add_member(
                                     get_function_member(function_def, "public")
                                 )
+                    elif section_def.kind == "typedef":
+                        for typedef_def in section_def.memberdef:
+                            namespace_scope.add_member(
+                                get_typedef_member(typedef_def, "public")
+                            )
                     elif section_def.kind == "enum":
                         for enum_def in section_def.memberdef:
                             create_enum_scope(snapshot, enum_def)

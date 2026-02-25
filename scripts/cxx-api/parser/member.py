@@ -549,3 +549,49 @@ class FunctionMember(Member):
         modifiers = FunctionMember._parse_modifiers(modifiers_str)
 
         return (arguments, modifiers)
+
+
+class TypedefMember(Member):
+    def __init__(
+        self, name: str, type: str, argstring: str | None, visibility: str, keyword: str
+    ) -> None:
+        super().__init__(name, visibility)
+        self.type: str = type
+        self.keyword: str = keyword
+        self.argstring: str | None = argstring
+
+    def close(self, scope: Scope):
+        # TODO: handle unqualified references
+        pass
+
+    def _is_function_pointer(self) -> bool:
+        """Check if this typedef is a function pointer type."""
+        return self.argstring is not None and self.argstring.startswith(")(")
+
+    def to_string(
+        self,
+        indent: int = 0,
+        qualification: str | None = None,
+        hide_visibility: bool = False,
+    ) -> str:
+        name = self._get_qualified_name(qualification)
+        result = " " * indent
+
+        if not hide_visibility:
+            result += self.visibility + " "
+
+        result += self.keyword
+
+        if self.keyword == "using":
+            result += f" {name} = {self.type};"
+        elif self._is_function_pointer():
+            # Function pointer typedef: "typedef return_type (*name)(args);"
+            # type is e.g. "void(*", argstring is ")(args...)"
+            if "(*" in self.type:
+                result += f" {self.type}{name}{self.argstring};"
+            else:
+                result += f" {self.type}(*{name}{self.argstring};"
+        else:
+            result += f" {self.type} {name};"
+
+        return result
