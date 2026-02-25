@@ -10,7 +10,6 @@
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/renderer/components/view/CSSConversions.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/css/CSSFilter.h>
@@ -19,6 +18,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include "CSSPrimitives.h"
 
 namespace facebook::react {
 

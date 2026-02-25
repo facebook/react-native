@@ -7,9 +7,9 @@
 
 #include <gtest/gtest.h>
 
-#include <react/renderer/components/view/BoxShadowPropsConversions.h>
-#include <react/renderer/components/view/FilterPropsConversions.h>
 #include <react/renderer/components/view/conversions.h>
+#include <react/renderer/components/view/conversions/BoxShadow.h>
+#include <react/renderer/components/view/conversions/Filter.h>
 
 namespace facebook::react {
 
