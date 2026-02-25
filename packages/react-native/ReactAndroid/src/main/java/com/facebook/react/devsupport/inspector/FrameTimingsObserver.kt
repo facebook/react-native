@@ -38,12 +38,35 @@ internal class FrameTimingsObserver(
 
   @Volatile private var currentWindow: Window? = null
 
-  private val frameMetricsListener =
-      Window.OnFrameMetricsAvailableListener { _, frameMetrics, _dropCount ->
-        val beginTimestamp = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP)
-        val endTimestamp = beginTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
-        emitFrameTiming(beginTimestamp, endTimestamp)
-      }
+  fun start() {
+    if (!isSupported) {
+      return
+    }
+
+    frameCounter = 0
+    isStarted = true
+
+    // Capture initial screenshot to ensure there's always at least one frame
+    // recorded at the start of tracing, even if no UI changes occur
+    val timestamp = System.nanoTime()
+    emitFrameTiming(timestamp, timestamp)
+
+    currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
+  }
+
+  fun stop() {
+    if (!isSupported) {
+      return
+    }
+
+    isStarted = false
+
+    currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
+    handler.removeCallbacksAndMessages(null)
+
+    bitmapBuffer?.recycle()
+    bitmapBuffer = null
+  }
 
   fun setCurrentWindow(window: Window?) {
     if (!isSupported || currentWindow === window) {
@@ -54,6 +77,32 @@ internal class FrameTimingsObserver(
     currentWindow = window
     if (isStarted) {
       currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
+    }
+  }
+
+  private val frameMetricsListener =
+      Window.OnFrameMetricsAvailableListener { _, frameMetrics, _ ->
+        val beginTimestamp = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP)
+        val endTimestamp = beginTimestamp + frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
+        emitFrameTiming(beginTimestamp, endTimestamp)
+      }
+
+  private fun emitFrameTiming(beginTimestamp: Long, endTimestamp: Long) {
+    val frameId = frameCounter++
+    val threadId = Process.myTid()
+
+    CoroutineScope(Dispatchers.Default).launch {
+      val screenshot = if (screenshotsEnabled) captureScreenshot() else null
+
+      onFrameTimingSequence(
+          FrameTimingSequence(
+              frameId,
+              threadId,
+              beginTimestamp,
+              endTimestamp,
+              screenshot,
+          )
+      )
     }
   }
 
@@ -121,54 +170,5 @@ internal class FrameTimingsObserver(
         },
         handler,
     )
-  }
-
-  fun start() {
-    if (!isSupported) {
-      return
-    }
-
-    frameCounter = 0
-    isStarted = true
-
-    // Capture initial screenshot to ensure there's always at least one frame
-    // recorded at the start of tracing, even if no UI changes occur
-    val timestamp = System.nanoTime()
-    emitFrameTiming(timestamp, timestamp)
-
-    currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
-  }
-
-  private fun emitFrameTiming(beginTimestamp: Long, endTimestamp: Long) {
-    val frameId = frameCounter++
-    val threadId = Process.myTid()
-
-    CoroutineScope(Dispatchers.Default).launch {
-      val screenshot = if (screenshotsEnabled) captureScreenshot() else null
-
-      onFrameTimingSequence(
-          FrameTimingSequence(
-              frameId,
-              threadId,
-              beginTimestamp,
-              endTimestamp,
-              screenshot,
-          )
-      )
-    }
-  }
-
-  fun stop() {
-    if (!isSupported) {
-      return
-    }
-
-    isStarted = false
-
-    currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
-    handler.removeCallbacksAndMessages(null)
-
-    bitmapBuffer?.recycle()
-    bitmapBuffer = null
   }
 }
