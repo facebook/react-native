@@ -4,7 +4,6 @@
 # LICENSE file in the root directory of this source tree.
 
 from .main import build_snapshot
-from .member import FunctionMember, FunctionModifiers
 from .path_utils import get_repo_root
 
-__all__ = ["build_snapshot", "FunctionMember", "FunctionModifiers", "get_repo_root"]
+__all__ = ["build_snapshot", "get_repo_root"]
