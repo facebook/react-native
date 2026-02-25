@@ -18,8 +18,6 @@ import android.view.PixelCopy
 import android.view.Window
 import com.facebook.proguard.annotations.DoNotStripAny
 import java.io.ByteArrayOutputStream
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,7 +29,7 @@ internal class FrameTimingsObserver(
 ) {
   private val isSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
 
-  private val handler = Handler(Looper.getMainLooper())
+  private val mainHandler = Handler(Looper.getMainLooper())
   private var frameCounter: Int = 0
   private var bitmapBuffer: Bitmap? = null
   private var isStarted: Boolean = false
@@ -51,7 +49,7 @@ internal class FrameTimingsObserver(
     val timestamp = System.nanoTime()
     emitFrameTiming(timestamp, timestamp)
 
-    currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
+    currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, mainHandler)
   }
 
   fun stop() {
@@ -62,7 +60,7 @@ internal class FrameTimingsObserver(
     isStarted = false
 
     currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
-    handler.removeCallbacksAndMessages(null)
+    mainHandler.removeCallbacksAndMessages(null)
 
     bitmapBuffer?.recycle()
     bitmapBuffer = null
@@ -76,7 +74,7 @@ internal class FrameTimingsObserver(
     currentWindow?.removeOnFrameMetricsAvailableListener(frameMetricsListener)
     currentWindow = window
     if (isStarted) {
-      currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, handler)
+      currentWindow?.addOnFrameMetricsAvailableListener(frameMetricsListener, mainHandler)
     }
   }
 
@@ -91,31 +89,36 @@ internal class FrameTimingsObserver(
     val frameId = frameCounter++
     val threadId = Process.myTid()
 
-    CoroutineScope(Dispatchers.Default).launch {
-      val screenshot = if (screenshotsEnabled) captureScreenshot() else null
-
-      onFrameTimingSequence(
-          FrameTimingSequence(
-              frameId,
-              threadId,
-              beginTimestamp,
-              endTimestamp,
-              screenshot,
+    if (screenshotsEnabled) {
+      // Initiate PixelCopy immediately on the main thread, while still in the current frame,
+      // then process and emit asynchronously once the copy is complete.
+      captureScreenshot { screenshot ->
+        CoroutineScope(Dispatchers.Default).launch {
+          onFrameTimingSequence(
+              FrameTimingSequence(frameId, threadId, beginTimestamp, endTimestamp, screenshot)
           )
-      )
+        }
+      }
+    } else {
+      CoroutineScope(Dispatchers.Default).launch {
+        onFrameTimingSequence(
+            FrameTimingSequence(frameId, threadId, beginTimestamp, endTimestamp, null)
+        )
+      }
     }
   }
 
-  private suspend fun captureScreenshot(): String? = suspendCoroutine { continuation ->
+  // Must be called from the main thread so that PixelCopy captures the current frame.
+  private fun captureScreenshot(callback: (String?) -> Unit) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      continuation.resume(null)
-      return@suspendCoroutine
+      callback(null)
+      return
     }
 
     val window = currentWindow
     if (window == null) {
-      continuation.resume(null)
-      return@suspendCoroutine
+      callback(null)
+      return
     }
 
     val decorView = window.decorView
@@ -136,37 +139,37 @@ internal class FrameTimingsObserver(
         { copyResult ->
           if (copyResult == PixelCopy.SUCCESS) {
             CoroutineScope(Dispatchers.Default).launch {
-              var scaledBitmap: Bitmap? = null
-              try {
-                val density = window.context.resources.displayMetrics.density
-                val scaledWidth = (width / density * SCREENSHOT_SCALE_FACTOR).toInt()
-                val scaledHeight = (height / density * SCREENSHOT_SCALE_FACTOR).toInt()
-                scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
-
-                val compressFormat =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                        Bitmap.CompressFormat.WEBP_LOSSY
-                    else Bitmap.CompressFormat.JPEG
-
-                val base64 =
-                    ByteArrayOutputStream().use { outputStream ->
-                      scaledBitmap.compress(compressFormat, SCREENSHOT_QUALITY, outputStream)
-                      Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
-                    }
-
-                continuation.resume(base64)
-              } catch (e: Exception) {
-                continuation.resume(null)
-              } finally {
-                scaledBitmap?.recycle()
-              }
+              callback(encodeScreenshot(window, bitmap, width, height))
             }
           } else {
-            continuation.resume(null)
+            callback(null)
           }
         },
-        handler,
+        mainHandler,
     )
+  }
+
+  private fun encodeScreenshot(window: Window, bitmap: Bitmap, width: Int, height: Int): String? {
+    var scaledBitmap: Bitmap? = null
+    return try {
+      val density = window.context.resources.displayMetrics.density
+      val scaledWidth = (width / density * SCREENSHOT_SCALE_FACTOR).toInt()
+      val scaledHeight = (height / density * SCREENSHOT_SCALE_FACTOR).toInt()
+      scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
+
+      val compressFormat =
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Bitmap.CompressFormat.WEBP_LOSSY
+          else Bitmap.CompressFormat.JPEG
+
+      ByteArrayOutputStream().use { outputStream ->
+        scaledBitmap.compress(compressFormat, SCREENSHOT_QUALITY, outputStream)
+        Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
+      }
+    } catch (e: Exception) {
+      null
+    } finally {
+      scaledBitmap?.recycle()
+    }
   }
 
   companion object {
