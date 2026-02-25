@@ -178,6 +178,64 @@ class Scope(Generic[ScopeKindT]):
         angle_idx = name.find("<")
         return name[:angle_idx] if angle_idx != -1 else name
 
+    def qualify_name(self, name: str | None) -> str | None:
+        """
+        Qualify a name with the relevant scope if possible.
+        Handles template arguments by stripping them for lookup but preserving
+        them in the output.
+        """
+        if not name:
+            return None
+
+        path = parse_qualified_path(name)
+        if not path:
+            return None
+
+        current_scope = self
+        # Walk up to find a scope that contains the first path segment
+        base_first = self._get_base_name(path[0])
+        while (
+            current_scope is not None and base_first not in current_scope.inner_scopes
+        ):
+            current_scope = current_scope.parent_scope
+
+        if current_scope is None:
+            return None
+
+        # Remember the scope where we found the first segment — its qualified
+        # name is the prefix that must precede the matched path segments.
+        anchor_scope = current_scope
+
+        # Walk down through the path, tracking matched segments with original template args
+        matched_segments: list[str] = []
+        for i, path_segment in enumerate(path):
+            base_name = self._get_base_name(path_segment)
+            if base_name in current_scope.inner_scopes:
+                matched_segments.append(path_segment)
+                current_scope = current_scope.inner_scopes[base_name]
+            elif any(m.name == base_name for m in current_scope._members):
+                # Found as a member, assume following segments exist in the scope
+                prefix = "::".join(matched_segments)
+                suffix = "::".join(path[i:])
+                anchor_prefix = anchor_scope.get_qualified_name()
+                if prefix:
+                    if anchor_prefix:
+                        return f"{anchor_prefix}::{prefix}::{suffix}"
+                    return f"{prefix}::{suffix}"
+                else:
+                    if anchor_prefix:
+                        return f"{anchor_prefix}::{suffix}"
+                    return suffix
+            else:
+                return None
+
+        # Return qualified name with preserved template arguments
+        prefix = anchor_scope.get_qualified_name()
+        if prefix:
+            return f"{prefix}::{'::'.join(matched_segments)}"
+        else:
+            return "::".join(matched_segments)
+
     def add_member(self, member: Member | None) -> None:
         """
         Add a member to the scope.

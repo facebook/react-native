@@ -14,6 +14,7 @@ from .argument_parsing import (
     parse_type_with_argstrings,
 )
 from .qualified_path import parse_qualified_path
+from .type_qualification import qualify_arguments, qualify_parsed_type, qualify_type_str
 
 __all__ = [
     "Argument",
@@ -25,4 +26,7 @@ __all__ = [
     "parse_function_pointer_argstring",
     "parse_qualified_path",
     "parse_type_with_argstrings",
+    "qualify_arguments",
+    "qualify_parsed_type",
+    "qualify_type_str",
 ]
