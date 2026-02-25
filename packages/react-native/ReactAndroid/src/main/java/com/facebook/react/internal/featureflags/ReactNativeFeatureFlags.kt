@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e3509361f95f3681f0bb583da5540d31>>
+ * @generated SignedSource<<11a5be822814c9cd26c3263bff1c9f8b>>
  */
 
 /**
@@ -149,12 +149,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableDoubleMeasurementFixAndroid(): Boolean = accessor.enableDoubleMeasurementFixAndroid()
-
-  /**
-   * This infra allows native modules to initialize on the main thread, during React Native init.
-   */
-  @JvmStatic
-  public fun enableEagerMainQueueModulesOnIOS(): Boolean = accessor.enableEagerMainQueueModulesOnIOS()
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.

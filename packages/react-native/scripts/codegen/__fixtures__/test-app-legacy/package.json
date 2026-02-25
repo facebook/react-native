@@ -26,12 +26,7 @@
       },
       "componentProvider": {
         "TestAppDeprecatedComponent": "RCTTestAppDeprecatedComponentClass"
-      },
-      "unstableModulesRequiringMainQueueSetup": [
-        "RCTTestAppDeprecatedImageURLLoader",
-        "RCTTestAppDeprecatedURLRequestHandler",
-        "RCTTestAppDeprecatedImageDataDecoder"
-      ]
+      }
     }
   }
 }

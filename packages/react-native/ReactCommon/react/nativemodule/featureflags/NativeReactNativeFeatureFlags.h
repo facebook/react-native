@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b89ea2e8517db01bef375843a93e2ff5>>
+ * @generated SignedSource<<330f71d59772b3bf725626ec8095b8d8>>
  */
 
 /**
@@ -75,8 +75,6 @@ class NativeReactNativeFeatureFlags
   bool enableDestroyShadowTreeRevisionAsync(jsi::Runtime& runtime);
 
   bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
-
-  bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 

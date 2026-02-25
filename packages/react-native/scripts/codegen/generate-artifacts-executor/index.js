@@ -30,9 +30,6 @@ const {
 const {generateReactCodegenPodspec} = require('./generateReactCodegenPodspec');
 const {generateSchemaInfos} = require('./generateSchemaInfos');
 const {
-  generateUnstableModulesRequiringMainQueueSetupProvider,
-} = require('./generateUnstableModulesRequiringMainQueueSetupProvider');
-const {
   buildCodegenIfNeeded,
   cleanupEmptyFilesAndFolders,
   codegenLog,
@@ -159,10 +156,6 @@ function execute(
           reactCodegenOutputPath,
         );
         generateCustomURLHandlers(libraries, reactCodegenOutputPath);
-        generateUnstableModulesRequiringMainQueueSetupProvider(
-          libraries,
-          reactCodegenOutputPath,
-        );
         generateAppDependencyProvider(
           path.join(outputPath, 'ReactAppDependencyProvider'),
         );
