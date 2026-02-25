@@ -357,4 +357,101 @@ TEST(ConversionsTest, unprocessed_transform_rawvalue_translate_percent) {
   EXPECT_EQ(result.operations[0].x.unit, UnitType::Percent);
 }
 
+TEST(ConversionsTest, unprocessed_transform_origin_css_top_left) {
+  TransformOrigin result;
+  parseUnprocessedTransformOriginString("top left", result);
+
+  EXPECT_EQ(result.xy[0].value, 0.0f);
+  EXPECT_EQ(result.xy[0].unit, UnitType::Percent);
+  EXPECT_EQ(result.xy[1].value, 0.0f);
+  EXPECT_EQ(result.xy[1].unit, UnitType::Percent);
+  EXPECT_EQ(result.z, 0.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_origin_css_center) {
+  TransformOrigin result;
+  parseUnprocessedTransformOriginString("center", result);
+
+  EXPECT_EQ(result.xy[0].value, 50.0f);
+  EXPECT_EQ(result.xy[0].unit, UnitType::Percent);
+  EXPECT_EQ(result.xy[1].value, 50.0f);
+  EXPECT_EQ(result.xy[1].unit, UnitType::Percent);
+  EXPECT_EQ(result.z, 0.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_origin_css_right_bottom) {
+  TransformOrigin result;
+  parseUnprocessedTransformOriginString("right bottom", result);
+
+  EXPECT_EQ(result.xy[0].value, 100.0f);
+  EXPECT_EQ(result.xy[0].unit, UnitType::Percent);
+  EXPECT_EQ(result.xy[1].value, 100.0f);
+  EXPECT_EQ(result.xy[1].unit, UnitType::Percent);
+  EXPECT_EQ(result.z, 0.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_origin_css_length_percent) {
+  TransformOrigin result;
+  parseUnprocessedTransformOriginString("10px 50%", result);
+
+  EXPECT_EQ(result.xy[0].value, 10.0f);
+  EXPECT_EQ(result.xy[0].unit, UnitType::Point);
+  EXPECT_EQ(result.xy[1].value, 50.0f);
+  EXPECT_EQ(result.xy[1].unit, UnitType::Percent);
+  EXPECT_EQ(result.z, 0.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_origin_processed_array) {
+  RawValue value{folly::dynamic::array("50%", "50%", 0)};
+
+  TransformOrigin result;
+  parseProcessedTransformOrigin(
+      PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_EQ(result.xy[0].value, 50.0f);
+  EXPECT_EQ(result.xy[0].unit, UnitType::Percent);
+  EXPECT_EQ(result.xy[1].value, 50.0f);
+  EXPECT_EQ(result.xy[1].unit, UnitType::Percent);
+  EXPECT_EQ(result.z, 0.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_origin_rawvalue_string) {
+  RawValue value{folly::dynamic("top left")};
+  TransformOrigin result;
+  parseUnprocessedTransformOrigin(
+      PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_EQ(result.xy[0].value, 0.0f);
+  EXPECT_EQ(result.xy[0].unit, UnitType::Percent);
+  EXPECT_EQ(result.xy[1].value, 0.0f);
+  EXPECT_EQ(result.xy[1].unit, UnitType::Percent);
+  EXPECT_EQ(result.z, 0.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_origin_rawvalue_array) {
+  RawValue value{folly::dynamic::array(10, "50%", 5)};
+  TransformOrigin result;
+  parseUnprocessedTransformOrigin(
+      PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_EQ(result.xy[0].value, 10.0f);
+  EXPECT_EQ(result.xy[0].unit, UnitType::Point);
+  EXPECT_EQ(result.xy[1].value, 50.0f);
+  EXPECT_EQ(result.xy[1].unit, UnitType::Percent);
+  EXPECT_EQ(result.z, 5.0f);
+}
+
+TEST(ConversionsTest, unprocessed_transform_origin_rawvalue_string_with_z) {
+  RawValue value{folly::dynamic("center center 15px")};
+  TransformOrigin result;
+  parseUnprocessedTransformOrigin(
+      PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_EQ(result.xy[0].value, 50.0f);
+  EXPECT_EQ(result.xy[0].unit, UnitType::Percent);
+  EXPECT_EQ(result.xy[1].value, 50.0f);
+  EXPECT_EQ(result.xy[1].unit, UnitType::Percent);
+  EXPECT_EQ(result.z, 15.0f);
+}
+
 } // namespace facebook::react

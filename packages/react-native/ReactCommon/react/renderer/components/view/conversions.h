@@ -968,7 +968,8 @@ inline void fromRawValue(const PropsParserContext &context, const RawValue &valu
   }
 }
 
-inline void fromRawValue(const PropsParserContext &context, const RawValue &value, TransformOrigin &result)
+inline void
+parseProcessedTransformOrigin(const PropsParserContext & /*context*/, const RawValue &value, TransformOrigin &result)
 {
   if (!value.hasType<std::vector<RawValue>>()) {
     result = {};
@@ -1000,6 +1001,55 @@ inline void fromRawValue(const PropsParserContext &context, const RawValue &valu
   transformOrigin.z = (Float)origins[2];
 
   result = transformOrigin;
+}
+
+inline void parseUnprocessedTransformOriginString(const std::string &value, TransformOrigin &result)
+{
+  auto cssOrigin = parseCSSProperty<CSSTransformOrigin>(value);
+  if (!std::holds_alternative<CSSTransformOrigin>(cssOrigin)) {
+    result = {};
+    return;
+  }
+
+  const auto &origin = std::get<CSSTransformOrigin>(cssOrigin);
+  TransformOrigin transformOrigin;
+
+  auto x = cssLengthPercentageToValueUnit(origin.x);
+  auto y = cssLengthPercentageToValueUnit(origin.y);
+  if (!x || !y) {
+    result = {};
+    return;
+  }
+
+  transformOrigin.xy[0] = x;
+  transformOrigin.xy[1] = y;
+
+  if (origin.z.unit != CSSLengthUnit::Px) {
+    result = {};
+    return;
+  }
+  transformOrigin.z = origin.z.value;
+
+  result = transformOrigin;
+}
+
+inline void
+parseUnprocessedTransformOrigin(const PropsParserContext &context, const RawValue &value, TransformOrigin &result)
+{
+  if (value.hasType<std::string>()) {
+    parseUnprocessedTransformOriginString((std::string)value, result);
+  } else {
+    parseProcessedTransformOrigin(context, value, result);
+  }
+}
+
+inline void fromRawValue(const PropsParserContext &context, const RawValue &value, TransformOrigin &result)
+{
+  if (ReactNativeFeatureFlags::enableNativeCSSParsing()) {
+    parseUnprocessedTransformOrigin(context, value, result);
+  } else {
+    parseProcessedTransformOrigin(context, value, result);
+  }
 }
 
 inline void fromRawValue(const PropsParserContext &context, const RawValue &value, PointerEventsMode &result)
