@@ -205,24 +205,32 @@ describe('MessageQueue', function () {
   });
 
   describe('sync methods', () => {
-    afterEach(function () {
-      delete global.nativeCallSyncHook;
-    });
-
     it('throwing an exception', function () {
-      global.nativeCallSyncHook = jest.fn(() => {
+      const mockNativeCallSyncHook = jest.fn(() => {
         throw new Error('firstFailure');
       });
+
+      jest.resetModules();
+      jest.doMock(
+        '../../../src/private/runtime/ReactNativeRuntimeGlobals',
+        () => ({
+          ...jest.requireActual(
+            '../../../src/private/runtime/ReactNativeRuntimeGlobals',
+          ),
+          nativeCallSyncHook: mockNativeCallSyncHook,
+        }),
+      );
+      NativeModules = require('../NativeModules').default;
 
       let error;
       try {
         NativeModules.RemoteModule1.syncMethod('paloAlto', 'menloPark');
-      } catch (e) {
+      } catch (e: mixed) {
         error = e;
       }
 
-      expect(global.nativeCallSyncHook).toBeCalledTimes(1);
-      expect(global.nativeCallSyncHook).toBeCalledWith(
+      expect(mockNativeCallSyncHook).toHaveBeenCalledTimes(1);
+      expect(mockNativeCallSyncHook).toHaveBeenCalledWith(
         0, // `RemoteModule1`
         3, // `syncMethod`
         ['paloAlto', 'menloPark'],
@@ -234,14 +242,26 @@ describe('MessageQueue', function () {
     });
 
     it('returning a value', function () {
-      global.nativeCallSyncHook = jest.fn(() => {
+      const mockNativeCallSyncHook = jest.fn(() => {
         return 'secondSucc';
       });
 
+      jest.resetModules();
+      jest.doMock(
+        '../../../src/private/runtime/ReactNativeRuntimeGlobals',
+        () => ({
+          ...jest.requireActual(
+            '../../../src/private/runtime/ReactNativeRuntimeGlobals',
+          ),
+          nativeCallSyncHook: mockNativeCallSyncHook,
+        }),
+      );
+      NativeModules = require('../NativeModules').default;
+
       const result = NativeModules.RemoteModule2.syncMethod('mac', 'windows');
 
-      expect(global.nativeCallSyncHook).toBeCalledTimes(1);
-      expect(global.nativeCallSyncHook).toBeCalledWith(
+      expect(mockNativeCallSyncHook).toHaveBeenCalledTimes(1);
+      expect(mockNativeCallSyncHook).toHaveBeenCalledWith(
         1, // `RemoteModule2`
         3, // `syncMethod`
         ['mac', 'windows'],

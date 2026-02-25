@@ -14,6 +14,7 @@ import type {
   ViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
 
+import {isBridgeless} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import UIManager from '../ReactNative/UIManager';
 import * as ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
@@ -54,7 +55,7 @@ export function get<Config: {...}>(
 ): HostComponent<Config> {
   ReactNativeViewConfigRegistry.register(name, () => {
     const {native, verify} = getRuntimeConfig?.(name) ?? {
-      native: !global.RN$Bridgeless,
+      native: !isBridgeless,
       verify: false,
     };
 

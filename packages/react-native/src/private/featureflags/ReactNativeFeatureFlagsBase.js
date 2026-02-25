@@ -13,6 +13,10 @@ import type {
   ReactNativeFeatureFlagsJsOnlyOverrides,
 } from './ReactNativeFeatureFlags';
 
+import {
+  isBridgeless,
+  turboModuleProxy,
+} from '../runtime/ReactNativeRuntimeGlobals';
 import NativeReactNativeFeatureFlags from './specs/NativeReactNativeFeatureFlags';
 
 const accessedFeatureFlags: Set<string> = new Set();
@@ -106,8 +110,7 @@ export function setOverrides(
 }
 
 const reportedConfigNames: Set<string> = new Set();
-const hasTurboModules =
-  global.RN$Bridgeless === true || global.__turboModuleProxy != null;
+const hasTurboModules = isBridgeless || turboModuleProxy != null;
 
 function maybeLogUnavailableNativeModuleError(configName: string): void {
   if (

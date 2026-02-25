@@ -13,6 +13,7 @@ import type {ProcessedColorValue} from '../StyleSheet/processColor';
 import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 import type {TextProps} from './TextProps';
 
+import {isBridgeless} from '../../src/private/runtime/ReactNativeRuntimeGlobals';
 import {createViewConfig} from '../NativeComponent/ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
@@ -83,7 +84,7 @@ export const NativeText: HostComponent<NativeTextProps> =
   ): any);
 
 export const NativeVirtualText: HostComponent<NativeTextProps> =
-  !global.RN$Bridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')
+  !isBridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')
     ? NativeText
     : (createReactNativeComponentClass('RCTVirtualText', () =>
         /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
