@@ -18,10 +18,7 @@ class ImageRequestParams {
 
   Float blurRadius{};
 
-  bool operator==(const ImageRequestParams &rhs) const
-  {
-    return this->blurRadius == rhs.blurRadius;
-  }
+  bool operator==(const ImageRequestParams &rhs) const = default;
 
   bool operator!=(const ImageRequestParams &rhs) const
   {

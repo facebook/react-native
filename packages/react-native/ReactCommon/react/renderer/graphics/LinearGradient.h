@@ -31,10 +31,7 @@ struct GradientDirection {
   GradientDirectionType type;
   std::variant<Float, GradientKeyword> value;
 
-  bool operator==(const GradientDirection &other) const
-  {
-    return type == other.type && value == other.value;
-  }
+  bool operator==(const GradientDirection &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic toDynamic() const;
@@ -45,10 +42,7 @@ struct LinearGradient {
   GradientDirection direction;
   std::vector<ColorStop> colorStops;
 
-  bool operator==(const LinearGradient &other) const
-  {
-    return direction == other.direction && colorStops == other.colorStops;
-  }
+  bool operator==(const LinearGradient &other) const = default;
 
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic toDynamic() const;

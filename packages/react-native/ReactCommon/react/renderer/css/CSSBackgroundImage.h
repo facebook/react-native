@@ -169,10 +169,7 @@ static_assert(CSSDataType<CSSLinearGradientDirection>);
 struct CSSColorHint {
   std::variant<CSSLength, CSSPercentage> position{}; // Support both lengths and percentages
 
-  bool operator==(const CSSColorHint &rhs) const
-  {
-    return position == rhs.position;
-  }
+  bool operator==(const CSSColorHint &rhs) const = default;
 };
 
 template <>
@@ -423,10 +420,7 @@ struct CSSRadialGradientPosition {
   std::optional<std::variant<CSSLength, CSSPercentage>> left{};
   std::optional<std::variant<CSSLength, CSSPercentage>> right{};
 
-  bool operator==(const CSSRadialGradientPosition &rhs) const
-  {
-    return top == rhs.top && bottom == rhs.bottom && left == rhs.left && right == rhs.right;
-  }
+  bool operator==(const CSSRadialGradientPosition &rhs) const = default;
 };
 
 struct CSSRadialGradientFunction {

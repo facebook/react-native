@@ -29,10 +29,7 @@ struct ValueUnit {
   constexpr ValueUnit() = default;
   constexpr ValueUnit(float v, UnitType u) : value(v), unit(u) {}
 
-  constexpr bool operator==(const ValueUnit &other) const
-  {
-    return value == other.value && unit == other.unit;
-  }
+  constexpr bool operator==(const ValueUnit &other) const = default;
 
   constexpr bool operator!=(const ValueUnit &other) const
   {

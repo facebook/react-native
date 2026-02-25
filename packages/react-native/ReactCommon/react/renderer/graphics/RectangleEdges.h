@@ -26,11 +26,7 @@ struct RectangleEdges {
   T right{};
   T bottom{};
 
-  bool operator==(const RectangleEdges<T> &rhs) const noexcept
-  {
-    return std::tie(this->left, this->top, this->right, this->bottom) ==
-        std::tie(rhs.left, rhs.top, rhs.right, rhs.bottom);
-  }
+  bool operator==(const RectangleEdges<T> &rhs) const noexcept = default;
 
   bool operator!=(const RectangleEdges<T> &rhs) const noexcept
   {

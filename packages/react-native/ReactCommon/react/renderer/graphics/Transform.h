@@ -49,10 +49,7 @@ struct TransformOrigin {
   std::array<ValueUnit, 2> xy = {ValueUnit(0.0f, UnitType::Undefined), ValueUnit(0.0f, UnitType::Undefined)};
   float z = 0.0f;
 
-  bool operator==(const TransformOrigin &other) const
-  {
-    return xy[0] == other.xy[0] && xy[1] == other.xy[1] && z == other.z;
-  }
+  bool operator==(const TransformOrigin &other) const = default;
   bool operator!=(const TransformOrigin &other) const
   {
     return !(*this == other);
