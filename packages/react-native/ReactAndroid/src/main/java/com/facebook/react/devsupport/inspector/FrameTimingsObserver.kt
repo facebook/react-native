@@ -124,14 +124,11 @@ internal class FrameTimingsObserver(
 
     // Reuse bitmap if dimensions haven't changed
     val bitmap =
-        bitmapBuffer?.let {
-          if (it.width == width && it.height == height) {
-            it
-          } else {
-            it.recycle()
-            null
-          }
-        } ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also { bitmapBuffer = it }
+        bitmapBuffer?.takeIf { it.width == width && it.height == height }
+            ?: run {
+              bitmapBuffer?.recycle()
+              Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also { bitmapBuffer = it }
+            }
 
     PixelCopy.request(
         window,
@@ -141,19 +138,19 @@ internal class FrameTimingsObserver(
             CoroutineScope(Dispatchers.Default).launch {
               var scaledBitmap: Bitmap? = null
               try {
-                val scaleFactor = 0.25f
-                val scaledWidth = (width * scaleFactor).toInt()
-                val scaledHeight = (height * scaleFactor).toInt()
+                val density = window.context.resources.displayMetrics.density
+                val scaledWidth = (width / density * SCREENSHOT_SCALE_FACTOR).toInt()
+                val scaledHeight = (height / density * SCREENSHOT_SCALE_FACTOR).toInt()
                 scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
 
                 val compressFormat =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                         Bitmap.CompressFormat.WEBP_LOSSY
-                    else Bitmap.CompressFormat.WEBP
+                    else Bitmap.CompressFormat.JPEG
 
                 val base64 =
                     ByteArrayOutputStream().use { outputStream ->
-                      scaledBitmap.compress(compressFormat, 0, outputStream)
+                      scaledBitmap.compress(compressFormat, SCREENSHOT_QUALITY, outputStream)
                       Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
                     }
 
@@ -170,5 +167,10 @@ internal class FrameTimingsObserver(
         },
         handler,
     )
+  }
+
+  companion object {
+    private const val SCREENSHOT_SCALE_FACTOR = 0.75f
+    private const val SCREENSHOT_QUALITY = 80
   }
 }
