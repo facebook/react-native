@@ -454,4 +454,64 @@ TEST(ConversionsTest, unprocessed_transform_origin_rawvalue_string_with_z) {
   EXPECT_EQ(result.z, 15.0f);
 }
 
+TEST(ConversionsTest, convert_aspect_ratio_float) {
+  RawValue value{folly::dynamic(1.5)};
+  auto result =
+      convertAspectRatio(PropsParserContext{-1, ContextContainer{}}, value);
+
+  EXPECT_FALSE(result.isUndefined());
+  EXPECT_EQ(result.unwrap(), 1.5f);
+}
+
+TEST(ConversionsTest, convert_aspect_ratio_ratio_string) {
+  // CSSRatio parses "16/9" as {numerator: 16, denominator: 9}
+  auto ratio = parseCSSProperty<CSSRatio>("16/9");
+  ASSERT_TRUE(std::holds_alternative<CSSRatio>(ratio));
+  auto r = std::get<CSSRatio>(ratio);
+  EXPECT_FALSE(r.isDegenerate());
+  EXPECT_NEAR(r.numerator / r.denominator, 16.0f / 9.0f, 0.001f);
+}
+
+TEST(ConversionsTest, convert_aspect_ratio_number_string) {
+  // CSSRatio parses "1.5" as {numerator: 1.5, denominator: 1.0}
+  auto ratio = parseCSSProperty<CSSRatio>("1.5");
+  ASSERT_TRUE(std::holds_alternative<CSSRatio>(ratio));
+  auto r = std::get<CSSRatio>(ratio);
+  EXPECT_FALSE(r.isDegenerate());
+  EXPECT_EQ(r.numerator / r.denominator, 1.5f);
+}
+
+TEST(ConversionsTest, convert_aspect_ratio_degenerate) {
+  auto ratio = parseCSSProperty<CSSRatio>("0/0");
+  ASSERT_TRUE(std::holds_alternative<CSSRatio>(ratio));
+  EXPECT_TRUE(std::get<CSSRatio>(ratio).isDegenerate());
+}
+
+TEST(ConversionsTest, float_optional_from_rawvalue_float) {
+  RawValue value{folly::dynamic(1.5)};
+  yoga::FloatOptional result;
+  fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_FALSE(result.isUndefined());
+  EXPECT_EQ(result.unwrap(), 1.5f);
+}
+
+TEST(ConversionsTest, float_optional_undefined_for_non_float) {
+  RawValue value{folly::dynamic(nullptr)};
+  yoga::FloatOptional result;
+  fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_TRUE(result.isUndefined());
+}
+
+TEST(ConversionsTest, float_optional_undefined_for_string) {
+  // fromRawValue for FloatOptional does not parse strings —
+  // that is handled by convertAspectRatio specifically.
+  RawValue value{folly::dynamic("16/9")};
+  yoga::FloatOptional result;
+  fromRawValue(PropsParserContext{-1, ContextContainer{}}, value, result);
+
+  EXPECT_TRUE(result.isUndefined());
+}
+
 } // namespace facebook::react
