@@ -71,6 +71,10 @@ export const aspectRatioAttribute: AnyAttributeType = nativeCSSParsing
   ? true
   : {process: processAspectRatio};
 
+export const fontVariantAttribute: AnyAttributeType = nativeCSSParsing
+  ? true
+  : {process: processFontVariant};
+
 const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Layout
@@ -252,7 +256,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   fontFamily: true,
   fontSize: true,
   fontStyle: true,
-  fontVariant: {process: processFontVariant},
+  fontVariant: fontVariantAttribute,
   fontWeight: true,
   includeFontPadding: true,
   letterSpacing: true,
