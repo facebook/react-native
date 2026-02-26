@@ -8,11 +8,6 @@
  * @format
  */
 
-const path = require('path');
-
 module.exports = {
   preset: 'react-native',
-  moduleNameMapper: {
-    '^react-native($|/.*)': `${path.dirname(require.resolve('react-native'))}/$1`,
-  },
 };
