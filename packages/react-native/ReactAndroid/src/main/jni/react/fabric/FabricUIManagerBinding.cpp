@@ -740,7 +740,7 @@ void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
   // to be destroyed if the ShadowNode is destroyed but it was never mounted
   // on the screen.
   if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
-    shadowNode.getFamily().onUnmountedFamilyDestroyed(
+    shadowNode.getFamilyShared()->onUnmountedFamilyDestroyed(
         [weakMountingManager =
              std::weak_ptr(mountingManager)](const ShadowNodeFamily& family) {
           if (auto mountingManager = weakMountingManager.lock()) {

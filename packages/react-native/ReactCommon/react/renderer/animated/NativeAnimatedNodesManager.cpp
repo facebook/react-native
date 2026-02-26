@@ -236,7 +236,7 @@ void NativeAnimatedNodesManager::connectAnimatedNodeToView(
 
 void NativeAnimatedNodesManager::connectAnimatedNodeToShadowNodeFamily(
     Tag propsNodeTag,
-    std::shared_ptr<const ShadowNodeFamily> family) noexcept {
+    std::shared_ptr<ShadowNodeFamily> family) noexcept {
   react_native_assert(propsNodeTag);
   auto node = getAnimatedNode<PropsAnimatedNode>(propsNodeTag);
   if (node != nullptr && family != nullptr) {
