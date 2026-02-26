@@ -704,6 +704,14 @@ public open class ReactTextInputManager public constructor() :
   // See T46146267
   @ReactProp(name = "autoCapitalize")
   public fun setAutoCapitalize(view: ReactEditText, autoCapitalize: Dynamic) {
+    // Autocapitalize is meaningless for number inputs. AUTOCAPITALIZE_FLAGS (0x7000)
+    // overlaps TYPE_NUMBER_FLAG_SIGNED (0x1000) and TYPE_NUMBER_FLAG_DECIMAL (0x2000),
+    // so applying the mask strips signed/decimal flags, corrupting the inputType and
+    // causing setInputType() to restart the IME on every prop update.
+    if ((view.stagedInputType and InputType.TYPE_MASK_CLASS) == InputType.TYPE_CLASS_NUMBER) {
+      return
+    }
+
     var autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
 
     if (autoCapitalize.type == ReadableType.Number) {

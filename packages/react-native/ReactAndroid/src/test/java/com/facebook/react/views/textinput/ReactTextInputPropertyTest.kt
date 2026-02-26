@@ -126,6 +126,28 @@ class ReactTextInputPropertyTest {
   }
 
   @Test
+  fun testAutoCapitalizeDoesNotStripNumericFlags() {
+    val numericTypeFlags =
+        (InputType.TYPE_CLASS_NUMBER or
+            InputType.TYPE_NUMBER_FLAG_DECIMAL or
+            InputType.TYPE_NUMBER_FLAG_SIGNED)
+
+    // Set up a numeric keyboard type first
+    manager.updateProperties(view, buildStyles("keyboardType", "numeric"))
+    assertThat(view.inputType and numericTypeFlags).isEqualTo(numericTypeFlags)
+
+    // Simulate a Fabric re-render applying autoCapitalize to the numeric input.
+    // AUTOCAPITALIZE_FLAGS (0x7000) overlaps TYPE_NUMBER_FLAG_SIGNED (0x1000) and
+    // TYPE_NUMBER_FLAG_DECIMAL (0x2000) — this must not strip those flags.
+    manager.updateProperties(
+        view,
+        buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_SENTENCES),
+    )
+    assertThat(view.inputType and InputType.TYPE_NUMBER_FLAG_SIGNED).isNotZero
+    assertThat(view.inputType and InputType.TYPE_NUMBER_FLAG_DECIMAL).isNotZero
+  }
+
+  @Test
   fun testPlaceholder() {
     manager.updateProperties(view, buildStyles())
     assertThat(view.hint).isNull()
