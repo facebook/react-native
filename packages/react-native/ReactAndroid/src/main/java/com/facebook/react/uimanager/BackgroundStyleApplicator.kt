@@ -20,6 +20,7 @@ import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import androidx.core.graphics.withClip
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -574,41 +575,49 @@ public object BackgroundStyleApplicator {
       paddingBoxPath: Path,
       drawContent: () -> Unit,
   ) {
-    // Save the layer for Porter-Duff compositing
-    val saveCount = canvas.saveLayer(0f, 0f, view.width.toFloat(), view.height.toFloat(), null)
+    // Clip to the view's own bounds before saveLayer. On API <= 28 hardware-accelerated canvases,
+    // the window boundary is tracked by the GPU scissor but not reflected in the canvas clip stack.
+    // Without an explicit software clip, saveLayer may allocate a buffer with uninitialized pixels
+    // beyond the GPU scissor. Adding clipRect in the view's local coordinate space forces HWUI to
+    // include it in the clip stack, ensuring saveLayer properly constrains its buffer. This clip is
+    // stable across parent transform animations since it's in the view's own coordinate space.
+    canvas.withClip(0, 0, view.width, view.height) {
+      // Save the layer for Porter-Duff compositing
+      val saveCount = canvas.saveLayer(0f, 0f, view.width.toFloat(), view.height.toFloat(), null)
 
-    // Draw the content first
-    drawContent()
+      // Draw the content first
+      drawContent()
 
-    val maskPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    maskPaint.style = Paint.Style.FILL
+      val maskPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+      maskPaint.style = Paint.Style.FILL
 
-    // Transparent pixels with INVERSE_WINDING only works on API 28
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      maskPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-      maskPaint.color = Color.TRANSPARENT
-      paddingBoxPath.setFillType(Path.FillType.INVERSE_WINDING)
-      canvas.drawPath(paddingBoxPath, maskPaint)
-    } else {
-      // API < 28: Use a nested saveLayer with DST_IN compositing to mask content to the
-      // padding box path. EVEN_ODD fill + DST_OUT has rendering bugs on API 24's hardware
-      // renderer, so we avoid that technique. Instead, draw the mask shape into a separate
-      // layer; when restored with DST_IN, content is preserved only where the mask is opaque.
-      val dstInPaint = Paint()
-      dstInPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-      val maskSave =
-          canvas.saveLayer(0f, 0f, view.width.toFloat(), view.height.toFloat(), dstInPaint)
-      // Clear the layer to ensure it starts fully transparent. On API 24, saveLayer may not
-      // initialize the buffer to transparent, causing DST_IN to see non-zero alpha everywhere.
-      canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-      maskPaint.xfermode = null
-      maskPaint.color = Color.BLACK
-      canvas.drawPath(paddingBoxPath, maskPaint)
-      canvas.restoreToCount(maskSave)
+      // Transparent pixels with INVERSE_WINDING only works on API 28
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        maskPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+        maskPaint.color = Color.TRANSPARENT
+        paddingBoxPath.setFillType(Path.FillType.INVERSE_WINDING)
+        canvas.drawPath(paddingBoxPath, maskPaint)
+      } else {
+        // API < 28: Use a nested saveLayer with DST_IN compositing to mask content to the
+        // padding box path. EVEN_ODD fill + DST_OUT has rendering bugs on API 24's hardware
+        // renderer, so we avoid that technique. Instead, draw the mask shape into a separate
+        // layer; when restored with DST_IN, content is preserved only where the mask is opaque.
+        val dstInPaint = Paint()
+        dstInPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+        val maskSave =
+            canvas.saveLayer(0f, 0f, view.width.toFloat(), view.height.toFloat(), dstInPaint)
+        // Clear the layer to ensure it starts fully transparent. On API 24, saveLayer may not
+        // initialize the buffer to transparent, causing DST_IN to see non-zero alpha everywhere.
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        maskPaint.xfermode = null
+        maskPaint.color = Color.BLACK
+        canvas.drawPath(paddingBoxPath, maskPaint)
+        canvas.restoreToCount(maskSave)
+      }
+
+      // Restore the layer
+      canvas.restoreToCount(saveCount)
     }
-
-    // Restore the layer
-    canvas.restoreToCount(saveCount)
   }
 
   /**
