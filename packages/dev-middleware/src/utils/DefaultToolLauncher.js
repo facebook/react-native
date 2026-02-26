@@ -25,6 +25,10 @@ const open = require('open');
  */
 const DefaultToolLauncher = {
   launchDebuggerAppWindow: async (url: string): Promise<void> => {
+    if (process.env.NODE_ENV === 'test') {
+      assertMockedInTests();
+    }
+
     let chromePath;
 
     try {
@@ -66,6 +70,10 @@ const DefaultToolLauncher = {
   },
 
   async launchDebuggerShell(url: string, windowKey: string): Promise<void> {
+    if (process.env.NODE_ENV === 'test') {
+      assertMockedInTests();
+    }
+
     return await unstable_spawnDebuggerShellWithArgs([
       '--frontendUrl=' + url,
       '--windowKey=' + windowKey,
@@ -75,8 +83,21 @@ const DefaultToolLauncher = {
   async prepareDebuggerShell(
     prebuiltBinaryPath?: ?string,
   ): Promise<DebuggerShellPreparationResult> {
+    if (process.env.NODE_ENV === 'test') {
+      assertMockedInTests();
+    }
+
     return await unstable_prepareDebuggerShell();
   },
 };
+
+function assertMockedInTests(): void {
+  if (process.env.NODE_ENV === 'test') {
+    throw new Error(
+      'DefaultToolLauncher must be mocked or overridden in tests. ' +
+        "Add jest.mock('../utils/DefaultAppLauncher') to test setup.",
+    );
+  }
+}
 
 export default DefaultToolLauncher;

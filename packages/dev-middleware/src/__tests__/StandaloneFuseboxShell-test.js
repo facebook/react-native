@@ -11,7 +11,6 @@
 import type {JsonPagesListResponse} from '../inspector-proxy/types';
 import type {DevToolLauncher} from '../types/DevToolLauncher';
 
-import DefaultToolLauncher from '../utils/DefaultToolLauncher';
 import {fetchJson, requestLocal} from './FetchUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
@@ -24,7 +23,7 @@ jest.useFakeTimers();
 
 describe('enableStandaloneFuseboxShell experiment', () => {
   const ToolLauncherWithFuseboxShell: DevToolLauncher = {
-    ...DefaultToolLauncher,
+    launchDebuggerAppWindow: async (url: string) => {},
     launchDebuggerShell: () => {
       throw new Error('Not implemented');
     },

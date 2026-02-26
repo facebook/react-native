@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {DevToolLauncher} from '@react-native/dev-middleware';
 import type {ConfigT} from 'metro-config';
 
 import {isOSS, validateEnvironmentVariables} from '../EnvironmentOptions';
@@ -48,16 +49,19 @@ async function startMetroServer() {
   // $FlowExpectedError[cannot-write]
   metroConfig.server.port = Number(process.env.__FANTOM_METRO_PORT__);
 
+  // No-op app launcher to prevent debugger-shell launches during tests
+  const devToolLauncher: DevToolLauncher = {
+    launchDebuggerAppWindow: async (_url: string) => {},
+    launchDebuggerShell: async () => {},
+    prepareDebuggerShell: async () => ({code: 'not_implemented'}),
+  };
+
   const {
     middleware: devMiddleware,
     websocketEndpoints: debuggerWebsocketEndpoints,
   } = createDevMiddleware({
     serverBaseUrl: `http://localhost:${metroConfig.server.port}`,
-    // Disable standalone DevTools shell preparation to avoid launching the
-    // Electron app during tests. This prevents crashes.
-    unstable_experiments: {
-      enableStandaloneFuseboxShell: false,
-    },
+    unstable_toolLauncher: devToolLauncher,
   });
 
   const enhanceMiddleware: ConfigT['server']['enhanceMiddleware'] = (
