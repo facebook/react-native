@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.common.network.OkHttpCallUtil
 import com.facebook.react.module.annotations.ReactModule
 import java.io.IOException
@@ -603,7 +604,20 @@ public class NetworkingModule(
 
     addRequest(requestId)
     val request = requestBuilder.build()
-    NetworkEventUtil.onCreateRequest(devToolsRequestId, request)
+
+    NetworkEventUtil.onCreateRequest(
+        devToolsRequestId,
+        request.url().toString(),
+        request.method(),
+        NetworkEventUtil.okHttpHeadersToMap(request.headers()),
+        if (ReactBuildConfig.DEBUG) {
+          // Debug build: Include request body for preview in DevTools
+          (request.body() as? ProgressRequestBody)?.getBodyPreview() ?: request.body()?.toString()
+        } else {
+          null
+        },
+        request.body()?.contentLength() ?: 0,
+    )
 
     client
         .newCall(request)

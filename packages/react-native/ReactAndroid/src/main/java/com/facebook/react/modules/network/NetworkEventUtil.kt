@@ -15,49 +15,22 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableArray
-import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import java.net.SocketTimeoutException
 import okhttp3.Headers
-import okhttp3.Request
 
 /**
  * Utility class for reporting network lifecycle events to JavaScript and InspectorNetworkReporter.
  */
 internal object NetworkEventUtil {
   @JvmStatic
-  fun onCreateRequest(devToolsRequestId: String, request: Request) {
-    if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
-      val headersMap = okHttpHeadersToMap(request.headers())
-      var requestBody = ""
-
-      if (ReactBuildConfig.DEBUG) {
-        // Debug build: Process request body for preview (CDP only)
-        requestBody =
-            (request.body() as? ProgressRequestBody)?.getBodyPreview()
-                ?: request.body()?.toString().orEmpty()
-      }
-
-      InspectorNetworkReporter.reportRequestStart(
-          devToolsRequestId,
-          request.url().toString(),
-          request.method(),
-          headersMap,
-          requestBody,
-          request.body()?.contentLength() ?: 0,
-      )
-      InspectorNetworkReporter.reportConnectionTiming(devToolsRequestId, headersMap)
-    }
-  }
-
-  @Deprecated("Compatibility overload")
-  @JvmStatic
   fun onCreateRequest(
       devToolsRequestId: String,
       requestUrl: String,
       requestMethod: String,
       requestHeaders: Map<String, String>,
-      requestBody: String,
+      /** Request body for DevTools preview. Only populate in debug builds. */
+      requestBodyForDevTools: String?,
       encodedDataLength: Long,
   ) {
     if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
@@ -66,7 +39,7 @@ internal object NetworkEventUtil {
           requestUrl,
           requestMethod,
           requestHeaders,
-          requestBody,
+          requestBodyForDevTools.orEmpty(),
           encodedDataLength,
       )
       InspectorNetworkReporter.reportConnectionTiming(devToolsRequestId, requestHeaders)
@@ -256,45 +229,8 @@ internal object NetworkEventUtil {
     )
   }
 
-  @Deprecated("Compatibility overload")
   @JvmStatic
-  fun onResponseReceived(
-      reactContext: ReactApplicationContext?,
-      requestId: Int,
-      devToolsRequestId: String,
-      statusCode: Int,
-      headers: WritableMap?,
-      url: String?,
-  ) {
-    val headersMap = mutableMapOf<String, String>()
-    headers?.let { map ->
-      val iterator = map.keySetIterator()
-      while (iterator.hasNextKey()) {
-        val key = iterator.nextKey()
-        val value = map.getString(key)
-        if (value != null) {
-          headersMap[key] = value
-        }
-      }
-    }
-
-    val contentLength =
-        headersMap["Content-Length"]?.toLongOrNull()
-            ?: headersMap["content-length"]?.toLongOrNull()
-            ?: 0L
-
-    onResponseReceived(
-        reactContext,
-        requestId,
-        devToolsRequestId,
-        url,
-        statusCode,
-        headersMap,
-        contentLength,
-    )
-  }
-
-  internal fun okHttpHeadersToMap(headers: Headers): Map<String, String> {
+  fun okHttpHeadersToMap(headers: Headers): Map<String, String> {
     val responseHeaders = mutableMapOf<String, String>()
     for (i in 0 until headers.size()) {
       val headerName = headers.name(i)
