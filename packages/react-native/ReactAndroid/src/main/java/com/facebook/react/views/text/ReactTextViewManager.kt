@@ -167,6 +167,9 @@ public constructor(
         paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE).toFloat()
     view.setMinimumFontSize(minimumFontSize)
 
+    // Clear any stale PreparedLayout from a previous update
+    view.setPreparedLayout(null)
+
     val textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY)
@@ -194,6 +197,7 @@ public constructor(
     val text = layout.text
     val spanned = if (text is Spannable) text else SpannableString(text)
     view.setSpanned(spanned)
+    view.setPreparedLayout(preparedLayout)
 
     val textAlign =
         when (layout.alignment) {
