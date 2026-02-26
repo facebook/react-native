@@ -9,9 +9,9 @@
  */
 
 import type {JsonPagesListResponse} from '../inspector-proxy/types';
-import type {BrowserLauncher} from '../types/BrowserLauncher';
+import type {DevToolLauncher} from '../types/DevToolLauncher';
 
-import DefaultBrowserLauncher from '../utils/DefaultBrowserLauncher';
+import DefaultToolLauncher from '../utils/DefaultToolLauncher';
 import {fetchJson, requestLocal} from './FetchUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
@@ -23,18 +23,18 @@ const PAGES_POLLING_DELAY = 2100;
 jest.useFakeTimers();
 
 describe('enableStandaloneFuseboxShell experiment', () => {
-  const BrowserLauncherWithFuseboxShell: BrowserLauncher = {
-    ...DefaultBrowserLauncher,
-    unstable_showFuseboxShell: () => {
+  const ToolLauncherWithFuseboxShell: DevToolLauncher = {
+    ...DefaultToolLauncher,
+    launchDebuggerShell: () => {
       throw new Error('Not implemented');
     },
-    unstable_prepareFuseboxShell: async () => {
+    prepareDebuggerShell: async () => {
       return {code: 'not_implemented'};
     },
   };
   const serverRef = withServerForEachTest({
     logger: undefined,
-    unstable_browserLauncher: BrowserLauncherWithFuseboxShell,
+    unstable_toolLauncher: ToolLauncherWithFuseboxShell,
     unstable_experiments: {
       enableStandaloneFuseboxShell: true,
     },
@@ -66,10 +66,10 @@ describe('enableStandaloneFuseboxShell experiment', () => {
       jest.advanceTimersByTime(PAGES_POLLING_DELAY);
 
       const launchDebuggerAppWindowSpy = jest
-        .spyOn(BrowserLauncherWithFuseboxShell, 'launchDebuggerAppWindow')
+        .spyOn(ToolLauncherWithFuseboxShell, 'launchDebuggerAppWindow')
         .mockResolvedValue();
       const showFuseboxShellSpy = jest
-        .spyOn(BrowserLauncherWithFuseboxShell, 'unstable_showFuseboxShell')
+        .spyOn(ToolLauncherWithFuseboxShell, 'launchDebuggerShell')
         .mockResolvedValue();
 
       try {
@@ -128,6 +128,6 @@ describe('enableStandaloneFuseboxShell experiment', () => {
       }
     });
 
-    // TODO(moti): Add tests around unstable_prepareFuseboxShell
+    // TODO(moti): Add tests around prepareDebuggerShell
   });
 });
