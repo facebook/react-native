@@ -2101,6 +2101,14 @@ public final class com/facebook/react/devsupport/StackTraceHelper$StackFrameImpl
 	public fun toJSON ()Lorg/json/JSONObject;
 }
 
+public final class com/facebook/react/devsupport/inspector/DevSupportHttpClient {
+	public static final field INSTANCE Lcom/facebook/react/devsupport/inspector/DevSupportHttpClient;
+	public static final fun addRequestHeader (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun getHttpClient ()Lokhttp3/OkHttpClient;
+	public final fun getWebsocketClient ()Lokhttp3/OkHttpClient;
+	public static final fun removeRequestHeader (Ljava/lang/String;)V
+}
+
 public abstract interface class com/facebook/react/devsupport/interfaces/BundleLoadCallback {
 	public fun onError (Ljava/lang/Exception;)V
 	public abstract fun onSuccess ()V
@@ -2182,13 +2190,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 
 public abstract interface class com/facebook/react/devsupport/interfaces/DevSupportManager$PausedInDebuggerOverlayCommandListener {
 	public abstract fun onResume ()V
-}
-
-public final class com/facebook/react/devsupport/interfaces/DevSupportRequestHeaders {
-	public static final field INSTANCE Lcom/facebook/react/devsupport/interfaces/DevSupportRequestHeaders;
-	public static final fun addRequestHeader (Ljava/lang/String;Ljava/lang/String;)V
-	public static final fun allHeaders ()Ljava/util/Map;
-	public static final fun removeRequestHeader (Ljava/lang/String;)V
 }
 
 public abstract interface class com/facebook/react/devsupport/interfaces/ErrorCustomizer {
