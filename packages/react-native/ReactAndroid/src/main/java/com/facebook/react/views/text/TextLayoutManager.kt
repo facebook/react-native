@@ -821,15 +821,16 @@ internal object TextLayoutManager {
     }
 
     return createLayout(
-        text,
-        paint,
-        attributedString,
-        paragraphAttributes,
-        width,
-        widthYogaMeasureMode,
-        height,
-        heightYogaMeasureMode,
-    )
+            text,
+            paint,
+            attributedString,
+            paragraphAttributes,
+            width,
+            widthYogaMeasureMode,
+            height,
+            heightYogaMeasureMode,
+        )
+        .layout
   }
 
   private fun createLayout(
@@ -841,7 +842,7 @@ internal object TextLayoutManager {
       widthYogaMeasureMode: YogaMeasureMode,
       height: Float,
       heightYogaMeasureMode: YogaMeasureMode,
-  ): Layout {
+  ): CreateLayoutResult {
     val boring = isBoring(text, paint)
 
     val textBreakStrategy =
@@ -899,19 +900,23 @@ internal object TextLayoutManager {
       )
     }
 
-    return createLayout(
-        text,
-        boring,
-        width,
-        widthYogaMeasureMode,
-        includeFontPadding,
+    return CreateLayoutResult(
+        createLayout(
+            text,
+            boring,
+            width,
+            widthYogaMeasureMode,
+            includeFontPadding,
+            textBreakStrategy,
+            hyphenationFrequency,
+            alignment,
+            justificationMode,
+            ellipsizeMode,
+            maximumNumberOfLines,
+            paint,
+        ),
         textBreakStrategy,
-        hyphenationFrequency,
-        alignment,
         justificationMode,
-        ellipsizeMode,
-        maximumNumberOfLines,
-        paint,
     )
   }
 
@@ -937,7 +942,7 @@ internal object TextLayoutManager {
         )
     val baseTextAttributes =
         TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
-    val layout =
+    val result =
         createLayout(
             text,
             newPaintWithAttributes(baseTextAttributes, context),
@@ -956,14 +961,21 @@ internal object TextLayoutManager {
 
     val verticalOffset =
         getVerticalOffset(
-            layout,
+            result.layout,
             paragraphAttributes,
             height,
             heightYogaMeasureMode,
             maximumNumberOfLines,
         )
 
-    return PreparedLayout(layout, maximumNumberOfLines, verticalOffset, reactTags)
+    return PreparedLayout(
+        result.layout,
+        maximumNumberOfLines,
+        verticalOffset,
+        reactTags,
+        result.textBreakStrategy,
+        result.justificationMode,
+    )
   }
 
   @JvmStatic
@@ -1372,6 +1384,12 @@ internal object TextLayoutManager {
         // https://cs.android.com/android/_/android/platform/frameworks/base/+/78c774defb238c05c42b34a12b6b3b0c64844ed7
         BoringLayout.isBoring(text, paint, TextDirectionHeuristics.FIRSTSTRONG_LTR, true, null)
       }
+
+  private class CreateLayoutResult(
+      val layout: Layout,
+      val textBreakStrategy: Int,
+      val justificationMode: Int,
+  )
 
   private class AttachmentMetrics {
     var wasFound: Boolean = false

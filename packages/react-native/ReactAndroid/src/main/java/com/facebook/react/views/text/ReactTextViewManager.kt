@@ -210,8 +210,8 @@ public constructor(
         spanned,
         -1,
         textAlign,
-        Layout.BREAK_STRATEGY_HIGH_QUALITY,
-        0,
+        preparedLayout.textBreakStrategy,
+        preparedLayout.justificationMode,
     )
   }
 
