@@ -63,7 +63,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
         }
       }
 
-  private val networkingUriHandler =
+  internal val networkingUriHandler =
       object : NetworkingModule.UriHandler {
         override fun supports(uri: Uri, responseType: String): Boolean {
           val scheme = uri.scheme
