@@ -27,6 +27,9 @@ std::string componentNameByReactViewName(std::string viewName) {
   if (viewName == "Text") {
     return "Paragraph";
   }
+  if (viewName == "SelectableText") {
+    return "SelectableParagraph";
+  }
 
   if (viewName == "VirtualText") {
     return "Text";
