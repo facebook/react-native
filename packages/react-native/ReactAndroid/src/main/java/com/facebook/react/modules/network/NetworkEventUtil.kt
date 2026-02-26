@@ -16,13 +16,18 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableArray
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import java.io.IOException
 import java.net.SocketTimeoutException
 import okhttp3.Headers
+import okhttp3.RequestBody
+import okio.Buffer
 
 /**
  * Utility class for reporting network lifecycle events to JavaScript and InspectorNetworkReporter.
  */
 internal object NetworkEventUtil {
+  private const val MAX_BODY_PREVIEW_SIZE = 512 * 1024 // 512KB
+
   @JvmStatic
   fun onCreateRequest(
       devToolsRequestId: String,
@@ -242,5 +247,34 @@ internal object NetworkEventUtil {
       }
     }
     return responseHeaders
+  }
+
+  @JvmStatic
+  fun getRequestBodyPreview(requestBody: RequestBody?): String? {
+    if (requestBody == null) {
+      return null
+    }
+
+    // Unwrap ProgressRequestBody
+    val body = (requestBody as? ProgressRequestBody)?.innerBody() ?: requestBody
+
+    if (body.isOneShot()) {
+      // Fallback - body cannot be read twice
+      return "[Preview unavailable]"
+    }
+
+    return try {
+      val buffer = Buffer()
+      body.writeTo(buffer)
+
+      val size = buffer.size()
+      if (size <= MAX_BODY_PREVIEW_SIZE) {
+        buffer.readUtf8()
+      } else {
+        buffer.readUtf8(MAX_BODY_PREVIEW_SIZE.toLong()) + "... (truncated, ${size} bytes total)"
+      }
+    } catch (e: IOException) {
+      "[Preview unavailable]"
+    }
   }
 }

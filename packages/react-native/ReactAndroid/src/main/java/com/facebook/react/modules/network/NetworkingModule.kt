@@ -610,12 +610,8 @@ public class NetworkingModule(
         request.url().toString(),
         request.method(),
         NetworkEventUtil.okHttpHeadersToMap(request.headers()),
-        if (ReactBuildConfig.DEBUG) {
-          // Debug build: Include request body for preview in DevTools
-          (request.body() as? ProgressRequestBody)?.getBodyPreview() ?: request.body()?.toString()
-        } else {
-          null
-        },
+        if (ReactBuildConfig.DEBUG) NetworkEventUtil.getRequestBodyPreview(request.body())
+        else null,
         request.body()?.contentLength() ?: 0,
     )
 
