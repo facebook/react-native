@@ -14,19 +14,20 @@ export type {DebuggerShellPreparationResult};
 
 /**
  * An interface for integrators to provide a custom implementation for
- * opening URLs in a web browser.
+ * launching external applications on the host machine (or target dev machine).
+ *
+ * This is an unstable API with no semver guarantees.
  */
-export interface BrowserLauncher {
+export interface DevToolLauncher {
   /**
-   * Attempt to open a debugger frontend URL in a browser app window,
-   * optionally returning an object to control the launched browser instance.
-   * The browser used should be capable of running Chrome DevTools.
+   * Attempt to open a debugger frontend URL in a browser app window. The
+   * browser used should be capable of running Chrome DevTools.
    *
    * The provided URL is based on serverBaseUrl, and therefore reachable from
    * the host of dev-middleware. Implementations are responsible for rewriting
    * this as necessary where the server is remote.
    */
-  launchDebuggerAppWindow: (url: string) => Promise<void>;
+  +launchDebuggerAppWindow: (url: string) => Promise<void>;
 
   /**
    * Attempt to open a debugger frontend URL in a standalone shell window
@@ -46,10 +47,7 @@ export interface BrowserLauncher {
    * the host of dev-middleware. Implementations are responsible for rewriting
    * this as necessary where the server is remote.
    */
-  +unstable_showFuseboxShell?: (
-    url: string,
-    windowKey: string,
-  ) => Promise<void>;
+  +launchDebuggerShell?: (url: string, windowKey: string) => Promise<void>;
 
   /**
    * Attempt to prepare the debugger shell for use and returns a coded result
@@ -62,5 +60,5 @@ export interface BrowserLauncher {
    * SHOULD NOT return a rejecting promise in any case, and instead SHOULD report
    * errors via the returned result object.
    */
-  +unstable_prepareFuseboxShell?: () => Promise<DebuggerShellPreparationResult>;
+  +prepareDebuggerShell?: () => Promise<DebuggerShellPreparationResult>;
 }

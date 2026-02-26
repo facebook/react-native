@@ -11,9 +11,9 @@
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
 import type {PageDescription} from '../inspector-proxy/types';
 import type {
-  BrowserLauncher,
   DebuggerShellPreparationResult,
-} from '../types/BrowserLauncher';
+  DevToolLauncher,
+} from '../types/DevToolLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
@@ -30,7 +30,7 @@ const LEGACY_SYNTHETIC_PAGE_TITLE =
 type Options = Readonly<{
   serverBaseUrl: ReadonlyURL,
   logger?: Logger,
-  browserLauncher: BrowserLauncher,
+  toolLauncher: DevToolLauncher,
   eventReporter?: EventReporter,
   experiments: Experiments,
   inspectorProxy: InspectorProxyQueries,
@@ -44,7 +44,7 @@ type Options = Readonly<{
 export default function openDebuggerMiddleware({
   serverBaseUrl,
   logger,
-  browserLauncher,
+  toolLauncher,
   eventReporter,
   experiments,
   inspectorProxy,
@@ -52,7 +52,7 @@ export default function openDebuggerMiddleware({
   let shellPreparationPromise: Promise<DebuggerShellPreparationResult>;
   if (experiments.enableStandaloneFuseboxShell) {
     shellPreparationPromise =
-      browserLauncher?.unstable_prepareFuseboxShell?.() ??
+      toolLauncher?.prepareDebuggerShell?.() ??
       Promise.resolve({code: 'not_implemented'});
     shellPreparationPromise = shellPreparationPromise.then(result => {
       eventReporter?.logEvent({
@@ -196,17 +196,14 @@ export default function openDebuggerMiddleware({
                   ].join('-'),
                 )
                 .digest('hex');
-              if (!browserLauncher.unstable_showFuseboxShell) {
+              if (!toolLauncher.launchDebuggerShell) {
                 throw new Error(
-                  'Fusebox shell is not supported by the current browser launcher',
+                  'Fusebox shell is not supported by the current app launcher',
                 );
               }
-              await browserLauncher.unstable_showFuseboxShell(
-                frontendUrl,
-                windowKey,
-              );
+              await toolLauncher.launchDebuggerShell(frontendUrl, windowKey);
             } else {
-              await browserLauncher.launchDebuggerAppWindow(frontendUrl);
+              await toolLauncher.launchDebuggerAppWindow(frontendUrl);
             }
             res.writeHead(200);
             res.end();

@@ -12,7 +12,7 @@ export type Experiments = Readonly<{
   /**
    * Enables the handling of GET requests in the /open-debugger endpoint,
    * in addition to POST requests. GET requests respond by redirecting to
-   * the debugger frontend, instead of opening it using the BrowserLauncher
+   * the debugger frontend, instead of opening it using the DevToolLauncher
    * interface.
    */
   enableOpenDebuggerRedirect: boolean,
@@ -25,8 +25,8 @@ export type Experiments = Readonly<{
 
   /**
    * Launch the debugger frontend in a standalone shell instead of a browser.
-   * When this is enabled, we will use the optional unstable_showFuseboxShell
-   * method on the BrowserLauncher, or throw an error if the method is missing.
+   * When this is enabled, we will use the optional launchDebuggerShell
+   * method on the DevToolLauncher, or throw an error if the method is missing.
    *
    * NOTE: Disabling this also disables support for concurrent sessions in the
    * inspector proxy. Without the standalone shell, the proxy remains responsible

@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {DebuggerShellPreparationResult} from '../';
+import type {DebuggerShellPreparationResult} from '../types/DevToolLauncher';
 
 const {
   unstable_prepareDebuggerShell,
@@ -20,14 +20,10 @@ const {Launcher: EdgeLauncher} = require('chromium-edge-launcher');
 const open = require('open');
 
 /**
- * Default `BrowserLauncher` implementation which opens URLs on the host
- * machine.
+ * Default `DevToolLauncher` implementation which handles opening apps on the
+ * local machine.
  */
-const DefaultBrowserLauncher = {
-  /**
-   * Attempt to open the debugger frontend in a Google Chrome or Microsoft Edge
-   * app window.
-   */
+const DefaultToolLauncher = {
   launchDebuggerAppWindow: async (url: string): Promise<void> => {
     let chromePath;
 
@@ -69,21 +65,18 @@ const DefaultBrowserLauncher = {
     });
   },
 
-  async unstable_showFuseboxShell(
-    url: string,
-    windowKey: string,
-  ): Promise<void> {
+  async launchDebuggerShell(url: string, windowKey: string): Promise<void> {
     return await unstable_spawnDebuggerShellWithArgs([
       '--frontendUrl=' + url,
       '--windowKey=' + windowKey,
     ]);
   },
 
-  async unstable_prepareFuseboxShell(
+  async prepareDebuggerShell(
     prebuiltBinaryPath?: ?string,
   ): Promise<DebuggerShellPreparationResult> {
     return await unstable_prepareDebuggerShell();
   },
 };
 
-export default DefaultBrowserLauncher;
+export default DefaultToolLauncher;
