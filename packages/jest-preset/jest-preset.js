@@ -25,6 +25,9 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)',
   ],
+  moduleNameMapper: {
+    '^react-native($|/.*)': '<rootDir>/node_modules/react-native/$1'
+  },
   setupFiles: [require.resolve('./jest/setup.js')],
   testEnvironment: require.resolve('./jest/react-native-env.js'),
 };
