@@ -395,8 +395,12 @@ jsi::Value UIManagerBinding::get(
           validateArgumentCount(runtime, methodName, paramCount, count);
 
           uiManager->appendChild(
-              Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
-                  runtime, arguments[0]),
+              // const_pointer_cast is safe here because appendChild is called
+              // on an unsealed shadow node during tree construction, before it
+              // is sealed and becomes truly immutable.
+              std::const_pointer_cast<ShadowNode>(
+                  Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                      runtime, arguments[0])),
               Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
                   runtime, arguments[1]));
           return jsi::Value::undefined();
