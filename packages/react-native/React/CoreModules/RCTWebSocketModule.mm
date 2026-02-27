@@ -94,8 +94,23 @@ RCT_EXPORT_METHOD(
   // Load supplied headers
   if ([options.headers() isKindOfClass:NSDictionary.class]) {
     NSDictionary *headers = (NSDictionary *)options.headers();
-    [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
-      [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+    [headers enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+      NSString *headerKey = [RCTConvert NSString:key];
+      NSString *headerValue = [RCTConvert NSString:value];
+
+      if (headerKey == nil || headerValue == nil) {
+        RCTLogError(
+            @"RCTWebSocketModule: Invalid header key and/or value types. "
+             "Expected NSString for both, got key of type %@ and value of type %@.",
+            NSStringFromClass([key class]),
+            NSStringFromClass([value class]));
+      }
+
+      if (headerKey == nil) {
+        return;
+      }
+
+      [request addValue:headerValue == nil ? @"" : headerValue forHTTPHeaderField:headerKey];
     }];
   }
 
