@@ -2106,7 +2106,9 @@ public final class com/facebook/react/devsupport/inspector/DevSupportHttpClient 
 	public static final fun addRequestHeader (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun getHttpClient ()Lokhttp3/OkHttpClient;
 	public final fun getWebsocketClient ()Lokhttp3/OkHttpClient;
+	public static final fun httpScheme (Ljava/lang/String;)Ljava/lang/String;
 	public static final fun removeRequestHeader (Ljava/lang/String;)V
+	public static final fun wsScheme (Ljava/lang/String;)Ljava/lang/String;
 }
 
 public abstract interface class com/facebook/react/devsupport/interfaces/BundleLoadCallback {

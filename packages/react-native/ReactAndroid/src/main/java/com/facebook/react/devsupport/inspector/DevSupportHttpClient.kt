@@ -58,4 +58,17 @@ public object DevSupportHttpClient {
   public fun removeRequestHeader(name: String) {
     customHeaders.remove(name)
   }
+
+  /**
+   * Returns the appropriate HTTP scheme ("http" or "https") for the given host. Uses "https" when
+   * the host specifies port 443 explicitly (e.g. "example.com:443").
+   */
+  @JvmStatic
+  public fun httpScheme(host: String): String = if (host.endsWith(":443")) "https" else "http"
+
+  /**
+   * Returns the appropriate WebSocket scheme ("ws" or "wss") for the given host. Uses "wss" when
+   * the host specifies port 443 explicitly (e.g. "example.com:443").
+   */
+  @JvmStatic public fun wsScheme(host: String): String = if (host.endsWith(":443")) "wss" else "ws"
 }

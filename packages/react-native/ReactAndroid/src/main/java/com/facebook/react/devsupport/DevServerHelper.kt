@@ -79,7 +79,8 @@ public open class DevServerHelper(
   }
 
   public val websocketProxyURL: String
-    get() = "ws://${packagerConnectionSettings.debugServerHost}/debugger-proxy?role=client"
+    get() =
+        "${DevSupportHttpClient.wsScheme(packagerConnectionSettings.debugServerHost)}://${packagerConnectionSettings.debugServerHost}/debugger-proxy?role=client"
 
   private enum class BundleType(val typeID: String) {
     BUNDLE("bundle"),
@@ -124,7 +125,8 @@ public open class DevServerHelper(
     get() =
         String.format(
             Locale.US,
-            "http://%s/inspector/device?name=%s&app=%s&device=%s&profiling=%b",
+            "%s://%s/inspector/device?name=%s&app=%s&device=%s&profiling=%b",
+            DevSupportHttpClient.httpScheme(packagerConnectionSettings.debugServerHost),
             packagerConnectionSettings.debugServerHost,
             Uri.encode(getFriendlyDeviceName()),
             Uri.encode(packageName),
@@ -287,7 +289,8 @@ public open class DevServerHelper(
     }
     return (String.format(
         Locale.US,
-        "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+        "%s://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+        DevSupportHttpClient.httpScheme(host),
         host,
         mainModuleID,
         type.typeID,
@@ -362,7 +365,8 @@ public open class DevServerHelper(
     requestUrlBuilder.append(
         String.format(
             Locale.US,
-            "http://%s/open-debugger?device=%s",
+            "%s://%s/open-debugger?device=%s",
+            DevSupportHttpClient.httpScheme(packagerConnectionSettings.debugServerHost),
             packagerConnectionSettings.debugServerHost,
             Uri.encode(inspectorDeviceId),
         )
@@ -440,7 +444,13 @@ public open class DevServerHelper(
         FLog.w(ReactConstants.TAG, "Resource path should not begin with `/`, removing it.")
         resourcePath = resourcePath.substring(1)
       }
-      return String.format(Locale.US, "http://%s/%s", host, resourcePath)
+      return String.format(
+          Locale.US,
+          "%s://%s/%s",
+          DevSupportHttpClient.httpScheme(host),
+          host,
+          resourcePath,
+      )
     }
   }
 }

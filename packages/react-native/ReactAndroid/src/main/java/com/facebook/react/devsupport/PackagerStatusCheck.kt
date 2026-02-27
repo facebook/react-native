@@ -79,9 +79,14 @@ internal class PackagerStatusCheck(private val client: OkHttpClient) {
 
   private companion object {
     private const val PACKAGER_OK_STATUS = "packager-status:running"
-    private const val PACKAGER_STATUS_URL_TEMPLATE = "http://%s/status"
+    private const val PACKAGER_STATUS_URL_TEMPLATE = "%s://%s/status"
 
     private fun createPackagerStatusURL(host: String): String =
-        String.format(Locale.US, PACKAGER_STATUS_URL_TEMPLATE, host)
+        String.format(
+            Locale.US,
+            PACKAGER_STATUS_URL_TEMPLATE,
+            DevSupportHttpClient.httpScheme(host),
+            host,
+        )
   }
 }
