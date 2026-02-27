@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 #import <SocketRocket/SRWebSocket.h>
@@ -66,6 +67,12 @@ RCT_EXPORT_METHOD(
     connect : (NSURL *)URL protocols : (NSArray *)protocols options : (JS::NativeWebSocketModule::SpecConnectOptions &)
         options socketID : (double)socketID)
 {
+  if (URL == nil || URL.absoluteString.length == 0u) {
+    RCTAssert(NO, @"RCTWebSocketModule: Invalid WebSocket URL passed to connect");
+    [self sendEventWithName:@"websocketFailed" body:@{@"message" : @"Invalid WebSocket URL", @"id" : @(socketID)}];
+    return;
+  }
+
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
 
   // We load cookies from sharedHTTPCookieStorage (shared with XHR and
