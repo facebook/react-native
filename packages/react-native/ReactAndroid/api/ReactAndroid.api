@@ -4358,6 +4358,7 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getName ()Ljava/lang/String;
 	public fun getPerformanceCounters ()Ljava/util/Map;
+	public fun getUIImplementation ()Lcom/facebook/react/uimanager/UIImplementation;
 	public fun getViewManagerRegistry_DO_NOT_USE ()Lcom/facebook/react/uimanager/ViewManagerRegistry;
 	public fun initialize ()V
 	public fun invalidate ()V
