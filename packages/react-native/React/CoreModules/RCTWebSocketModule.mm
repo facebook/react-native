@@ -84,8 +84,12 @@ RCT_EXPORT_METHOD(
   }
 
   // Load and set the cookie header.
-  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
-  request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  if (components != nil && components.URL != nil) {
+    NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
+    request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  } else {
+    RCTLogError(@"RCTWebSocketModule: Invalid URL components - components or components.URL is nil");
+  }
 
   // Load supplied headers
   if ([options.headers() isKindOfClass:NSDictionary.class]) {
