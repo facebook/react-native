@@ -18,25 +18,19 @@
 
 namespace facebook::react {
 
-enum class GradientDirectionType { Angle, Keyword };
+enum class [[deprecated("Use std::holds_alternative")]] GradientDirectionType {
+  Angle,
+  Keyword,
+};
 
-enum class GradientKeyword {
+enum class GradientKeyword : uint8_t {
   ToTopRight,
   ToBottomRight,
   ToTopLeft,
   ToBottomLeft,
 };
 
-struct GradientDirection {
-  GradientDirectionType type;
-  std::variant<Float, GradientKeyword> value;
-
-  bool operator==(const GradientDirection &other) const = default;
-
-#ifdef RN_SERIALIZABLE_STATE
-  folly::dynamic toDynamic() const;
-#endif
-};
+using GradientDirection = std::variant<Float, GradientKeyword>;
 
 struct LinearGradient {
   GradientDirection direction;
