@@ -175,7 +175,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
 }
 
 void UIManager::appendChild(
-    const std::shared_ptr<const ShadowNode>& parentShadowNode,
+    const std::shared_ptr<ShadowNode>& parentShadowNode,
     const std::shared_ptr<const ShadowNode>& childShadowNode) const {
   TraceSection s("UIManager::appendChild");
 
