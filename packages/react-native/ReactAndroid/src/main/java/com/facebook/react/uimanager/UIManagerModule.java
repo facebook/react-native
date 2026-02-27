@@ -205,6 +205,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return mViewManagerRegistry;
   }
 
+  /**
+   * @deprecated This method is a stub retained for backward compatibility with third-party
+   *     libraries. It always returns null. UIImplementation is part of the Legacy Architecture and
+   *     will be removed in a future release.
+   */
+  @Deprecated
+  public @Nullable UIImplementation getUIImplementation() {
+    return null;
+  }
+
   private static Map<String, Object> createConstants(ViewManagerResolver viewManagerResolver) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "CreateUIManagerConstants")
