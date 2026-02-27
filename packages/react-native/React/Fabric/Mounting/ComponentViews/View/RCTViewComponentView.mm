@@ -566,6 +566,12 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   // re-applying individual sub-values which weren't changed.
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:_layoutMetrics];
 
+  // Capture the frame size that was used by updateProps to resolve the
+  // transform, before overwriting _layoutMetrics. This is important because
+  // _layoutMetrics may be stale (e.g., from a recycled view) and differ from
+  // the oldLayoutMetrics parameter (which comes from the shadow tree).
+  auto previousFrameSize = _layoutMetrics.frame.size;
+
   _layoutMetrics = layoutMetrics;
   _needsInvalidateLayer = YES;
 
@@ -583,8 +589,12 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     _backgroundColorLayer.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
   }
 
+  // Recompute the transform whenever the layout size differs from what was
+  // used in updateProps. Using previousFrameSize (the stored _layoutMetrics)
+  // instead of the oldLayoutMetrics parameter ensures correctness even when
+  // the view was recycled with stale dimensions.
   if ((_props->transformOrigin.isSet() || !_props->transform.operations.empty()) &&
-      layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
+      layoutMetrics.frame.size != previousFrameSize) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
@@ -654,6 +664,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
   _reactSubviews = [NSMutableArray new];
+  _layoutMetrics = {};
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
