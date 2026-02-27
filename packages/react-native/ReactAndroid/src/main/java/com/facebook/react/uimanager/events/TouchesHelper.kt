@@ -11,7 +11,6 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil.pxToDp
-import com.facebook.react.uimanager.events.TouchEventType.Companion.getJSEventName
 import com.facebook.systrace.Systrace
 
 /**
@@ -75,38 +74,6 @@ internal object TouchesHelper {
     }
 
     return touches
-  }
-
-  /**
-   * Generate and send touch event to RCTEventEmitter JS module associated with the given {@param *
-   * context} for legacy renderer. Touch event can encode multiple concurrent touches (pointers).
-   *
-   * @param rctEventEmitter Event emitter used to execute JS module call
-   * @param touchEvent native touch event to read pointers count and coordinates from
-   */
-  @Suppress("DEPRECATION")
-  @JvmStatic
-  fun sendTouchesLegacy(rctEventEmitter: RCTEventEmitter, touchEvent: TouchEvent) {
-    val type = touchEvent.getTouchEventType()
-
-    val pointers = getWritableArray(/* copyObjects */ false, createPointersArray(touchEvent))
-    val motionEvent = touchEvent.getMotionEvent()
-
-    // For START and END events send only index of the pointer that is associated with that event
-    // For MOVE and CANCEL events 'changedIndices' array should contain all the pointers indices
-    val changedIndices = Arguments.createArray()
-    if (type == TouchEventType.MOVE || type == TouchEventType.CANCEL) {
-      for (i in 0 until motionEvent.pointerCount) {
-        changedIndices.pushInt(i)
-      }
-    } else if (type == TouchEventType.START || type == TouchEventType.END) {
-      changedIndices.pushInt(motionEvent.actionIndex)
-    } else {
-      throw RuntimeException("Unknown touch type: $type")
-    }
-
-    @Suppress("DEPRECATION")
-    rctEventEmitter.receiveTouches(getJSEventName(type), pointers, changedIndices)
   }
 
   /**

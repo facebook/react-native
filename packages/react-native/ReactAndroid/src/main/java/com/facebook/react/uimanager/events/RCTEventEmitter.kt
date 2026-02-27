@@ -9,7 +9,6 @@ package com.facebook.react.uimanager.events
 
 import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.JavaScriptModule
-import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
 
@@ -29,18 +28,4 @@ public interface RCTEventEmitter : JavaScriptModule {
    */
   @Deprecated("Use [RCTModernEventEmitter.receiveEvent] instead")
   public fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?)
-
-  /**
-   * Receive and process touches
-   *
-   * @param eventName JS event name
-   * @param touches active pointers data
-   * @param changedIndices indices of changed pointers
-   */
-  @Deprecated("Dispatch the TouchEvent using [EventDispatcher] instead")
-  public fun receiveTouches(
-      eventName: String,
-      touches: WritableArray,
-      changedIndices: WritableArray,
-  )
 }

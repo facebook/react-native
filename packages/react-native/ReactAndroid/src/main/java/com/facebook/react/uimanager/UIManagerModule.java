@@ -44,7 +44,6 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.internal.LegacyArchitectureShadowNodeLogger;
 import com.facebook.systrace.Systrace;
@@ -107,7 +106,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private static final boolean DEBUG =
       PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.UI_MANAGER);
 
-  private final EventDispatcher mEventDispatcher;
   private final Map<String, Object> mModuleConstants;
   private final Map<String, Object> mCustomDirectEvents;
   private final ViewManagerRegistry mViewManagerRegistry;
@@ -121,11 +119,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
-    mEventDispatcher = new EventDispatcherImpl(reactContext);
     mModuleConstants = createConstants(viewManagerResolver);
     mCustomDirectEvents = UIManagerModuleConstants.directEventTypeConstants;
     mViewManagerRegistry = new ViewManagerRegistry(viewManagerResolver);
-
     reactContext.addLifecycleEventListener(this);
   }
 
@@ -135,11 +131,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
-    mEventDispatcher = new EventDispatcherImpl(reactContext);
     mCustomDirectEvents = MapBuilder.newHashMap();
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
     mViewManagerRegistry = new ViewManagerRegistry(viewManagersList);
-
     if (ReactBuildConfig.DEBUG) {
       for (ViewManager<?, ?> viewManager : viewManagersList) {
         LegacyArchitectureShadowNodeLogger.assertUnsupportedViewManager(
@@ -178,7 +172,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Override
   public void invalidate() {
     super.invalidate();
-    mEventDispatcher.onCatalystInstanceDestroyed();
 
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
@@ -571,7 +564,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   @Override
   public EventDispatcher getEventDispatcher() {
-    return mEventDispatcher;
+    return null;
   }
 
   @ReactMethod

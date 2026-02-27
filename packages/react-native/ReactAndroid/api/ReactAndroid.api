@@ -4844,19 +4844,23 @@ public final class com/facebook/react/uimanager/events/NativeGestureUtil {
 
 public abstract interface class com/facebook/react/uimanager/events/RCTEventEmitter : com/facebook/react/bridge/JavaScriptModule {
 	public abstract fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
-	public abstract fun receiveTouches (Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
 }
 
 public abstract interface class com/facebook/react/uimanager/events/RCTModernEventEmitter : com/facebook/react/uimanager/events/RCTEventEmitter {
 	public abstract fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public abstract fun receiveEvent (IILjava/lang/String;ZILcom/facebook/react/bridge/WritableMap;I)V
+	public abstract fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
+}
+
+public final class com/facebook/react/uimanager/events/RCTModernEventEmitter$DefaultImpls {
+	public static fun receiveEvent (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
+	public static fun receiveEvent (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 }
 
 public final class com/facebook/react/uimanager/events/TouchEvent : com/facebook/react/uimanager/events/Event {
 	public static final field Companion Lcom/facebook/react/uimanager/events/TouchEvent$Companion;
 	public static final field UNSET J
 	public fun canCoalesce ()Z
-	public fun dispatch (Lcom/facebook/react/uimanager/events/RCTEventEmitter;)V
 	public fun dispatchModern (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
 	public fun getCoalescingKey ()S
 	public fun getEventCategory ()I

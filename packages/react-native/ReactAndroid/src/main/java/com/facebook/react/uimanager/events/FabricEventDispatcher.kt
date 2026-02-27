@@ -31,17 +31,14 @@ private const val TAG = "FabricEventDispatcher"
  */
 internal class FabricEventDispatcher(
     private val reactContext: ReactApplicationContext,
-    fabricEventEmitter: RCTModernEventEmitter,
+    private val eventEmitter: RCTModernEventEmitter,
 ) : EventDispatcher, LifecycleEventListener {
-  // TODO: Remove EventEmitterImpl indirection when new Fabric is fully rolled out
-  private val eventEmitter = EventEmitterImpl(reactContext)
   private val listeners = CopyOnWriteArrayList<EventDispatcherListener>()
   private val postEventDispatchListeners = CopyOnWriteArrayList<BatchEventDispatchedListener>()
   private val currentFrameCallback = ScheduleDispatchFrameCallback()
 
   init {
     reactContext.addLifecycleEventListener(this)
-    eventEmitter.registerFabricEventEmitter(fabricEventEmitter)
   }
 
   override fun dispatchEvent(event: Event<*>) {
@@ -129,8 +126,6 @@ internal class FabricEventDispatcher(
   }
 
   fun invalidate() {
-    eventEmitter.registerFabricEventEmitter(null)
-
     UiThreadUtil.runOnUiThread { cancelDispatchOfBatchedEvents() }
   }
 
