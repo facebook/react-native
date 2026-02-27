@@ -1,5 +1,114 @@
 # Changelog
 
+## v0.84.1
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+- Fix included-build `gradle.properties` resolution for monorepos by reading from parent Gradle start parameters (`projectDir`/`currentDir`) before falling back to `../../android/gradle.properties`, so `hermesV1Enabled` can be inherited correctly. ([c5ae0c820a](https://github.com/facebook/react-native/commit/c5ae0c820a571141a43de980cb011d232fc2268f) by [@Titozzz](https://github.com/Titozzz))
+- Provide symbol fallbacks for `inspector-modern/chrome/Registration.h` when HermesV1 is disabled. ([5ee695ad8f](https://github.com/facebook/react-native/commit/5ee695ad8f41d7c9a92a83fa1f0acd227cdab7b8) by [@tjzel](https://github.com/tjzel))
+- ReactPlugin.kt always setting `hermesV1Enabled` to `true` ([45896674d1](https://github.com/facebook/react-native/commit/45896674d14d4b0104cb166e83c5b403f90981c0) by [@tjzel](https://github.com/tjzel))
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.84.1 ([606493396e](https://github.com/facebook/react-native/commit/606493396eac0293ac18e118ddaab8168134768b) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump hermes v1 version ([3483f162e2](https://github.com/facebook/react-native/commit/3483f162e2cde98e7aaa8fe819d1b2b26b34ac13) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix misaligned Hermes version ([9b79d3967f](https://github.com/facebook/react-native/commit/9b79d3967ffba336c4b990b626059efe6d346f50) by [@huntie](https://github.com/huntie))
+- Bump Podfile.lock ([9160f7c59d](https://github.com/facebook/react-native/commit/9160f7c59dceaad9c3772abea15e301501c02f59) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.84.0 ([5693f6097d](https://github.com/facebook/react-native/commit/5693f6097d8a5345e21b3035231bbc523752d465) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.84.0
 
 ### Breaking
