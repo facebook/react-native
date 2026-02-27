@@ -13,9 +13,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.ATTACH_MEASURED_ROO
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CHANGE_THREAD_PRIORITY;
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_END;
@@ -49,9 +46,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.BridgeReactContext;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JavaScriptExecutor;
@@ -67,7 +62,6 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
@@ -86,8 +80,6 @@ import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
-import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
-import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -1395,88 +1387,10 @@ public class ReactInstanceManager {
    */
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
-
-    FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
-    ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
-
-    final BridgeReactContext reactContext = new BridgeReactContext(mApplicationContext);
-
-    JSExceptionHandler exceptionHandler =
-        mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;
-    reactContext.setJSExceptionHandler(exceptionHandler);
-
-    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages);
-
-    CatalystInstanceImpl.Builder catalystInstanceBuilder =
-        new CatalystInstanceImpl.Builder()
-            .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
-            .setJSExecutor(jsExecutor)
-            .setRegistry(nativeModuleRegistry)
-            .setJSBundleLoader(jsBundleLoader)
-            .setJSExceptionHandler(exceptionHandler);
-
-    ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
-    // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
-    Systrace.beginSection(TRACE_TAG_REACT, "createCatalystInstance");
-    final CatalystInstance catalystInstance;
-    try {
-      catalystInstance = catalystInstanceBuilder.build();
-    } finally {
-      Systrace.endSection(TRACE_TAG_REACT);
-      ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_END);
-    }
-
-    reactContext.initializeWithInstance(catalystInstance);
-
-    // On Old Architecture, we need to initialize the Native Runtime Scheduler so that
-    // the `nativeRuntimeScheduler` object is registered on JS.
-    // On New Architecture, this is normally triggered by instantiate a TurboModuleManager.
-    // Here we invoke getRuntimeScheduler() to trigger the creation of it regardless of the
-    // architecture so it will always be there.
-    catalystInstance.getRuntimeScheduler();
-
-    if (ReactNativeNewArchitectureFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
-      TurboModuleManagerDelegate tmmDelegate =
-          mTMMDelegateBuilder
-              .setPackages(mPackages)
-              .setReactApplicationContext(reactContext)
-              .build();
-
-      TurboModuleManager turboModuleManager =
-          new TurboModuleManager(
-              catalystInstance.getRuntimeExecutor(),
-              tmmDelegate,
-              catalystInstance.getJSCallInvokerHolder(),
-              catalystInstance.getNativeMethodCallInvokerHolder());
-
-      catalystInstance.setTurboModuleRegistry(turboModuleManager);
-
-      // Eagerly initialize TurboModules
-      for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
-        turboModuleManager.getModule(moduleName);
-      }
-    }
-
-    if (mUIManagerProvider != null) {
-      UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
-      if (uiManager != null) {
-        catalystInstance.setFabricUIManager(uiManager);
-
-        // Initialize the UIManager
-        uiManager.initialize();
-        catalystInstance.setFabricUIManager(uiManager);
-      }
-    }
-    if (BuildConfig.ENABLE_PERFETTO || Systrace.isTracing(TRACE_TAG_REACT)) {
-      catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
-    }
-
-    ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
-    Systrace.beginSection(TRACE_TAG_REACT, "runJSBundle");
-    catalystInstance.runJSBundle();
-    Systrace.endSection(TRACE_TAG_REACT);
-
-    return reactContext;
+    // CatalystInstanceImpl has been removed as part of the Legacy Architecture cleanup.
+    throw new UnsupportedOperationException(
+        "ReactInstanceManager.createReactContext is unsupported. CatalystInstanceImpl has been"
+            + " removed.");
   }
 
   private NativeModuleRegistry processPackages(

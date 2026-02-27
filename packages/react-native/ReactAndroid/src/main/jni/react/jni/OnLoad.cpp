@@ -10,7 +10,6 @@
 #include <fb/glog_init.h>
 #include <fbjni/fbjni.h>
 
-#include "CatalystInstanceImpl.h"
 #include "InspectorNetworkRequestListener.h"
 #include "JavaScriptExecutorHolder.h"
 
@@ -33,12 +32,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 #if WITH_GLOGINIT
     gloginit::initialize();
     FLAGS_minloglevel = 0;
-#endif
-#ifndef RCT_REMOVE_LEGACY_ARCH
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    CatalystInstanceImpl::registerNatives();
-#pragma clang diagnostic pop
 #endif
     InspectorNetworkRequestListener::registerNatives();
   });

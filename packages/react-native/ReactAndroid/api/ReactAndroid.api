@@ -600,59 +600,6 @@ public abstract interface class com/facebook/react/bridge/CatalystInstance : com
 	public abstract fun setTurboModuleRegistry (Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModuleRegistry;)V
 }
 
-public class com/facebook/react/bridge/CatalystInstanceImpl : com/facebook/react/bridge/CatalystInstance {
-	public fun callFunction (Lcom/facebook/react/bridge/CatalystInstanceImpl$PendingJSCall;)V
-	public fun callFunction (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/NativeArray;)V
-	public fun destroy ()V
-	public fun extendNativeModules (Lcom/facebook/react/bridge/NativeModuleRegistry;)V
-	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
-	public fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/CallInvokerHolderImpl;
-	public synthetic fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/CallInvokerHolder;
-	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
-	public fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
-	public fun getNativeMethodCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/NativeMethodCallInvokerHolderImpl;
-	public synthetic fun getNativeMethodCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder;
-	public fun getNativeModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getNativeModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getNativeModules ()Ljava/util/Collection;
-	public fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
-	public fun getRuntimeExecutor ()Lcom/facebook/react/bridge/RuntimeExecutor;
-	public fun getRuntimeScheduler ()Lcom/facebook/react/bridge/RuntimeScheduler;
-	public fun getSourceURL ()Ljava/lang/String;
-	public fun handleMemoryPressure (I)V
-	public fun hasNativeModule (Ljava/lang/Class;)Z
-	public fun hasRunJSBundle ()Z
-	public fun invokeCallback (ILcom/facebook/react/bridge/NativeArrayInterface;)V
-	public fun isDestroyed ()Z
-	public fun loadScriptFromAssets (Landroid/content/res/AssetManager;Ljava/lang/String;Z)V
-	public fun loadScriptFromFile (Ljava/lang/String;Ljava/lang/String;Z)V
-	public fun loadSplitBundleFromFile (Ljava/lang/String;Ljava/lang/String;)V
-	public fun registerSegment (ILjava/lang/String;)V
-	public fun runJSBundle ()V
-	public fun setFabricUIManager (Lcom/facebook/react/bridge/UIManager;)V
-	public fun setGlobalVariable (Ljava/lang/String;Ljava/lang/String;)V
-	public fun setSourceURLs (Ljava/lang/String;Ljava/lang/String;)V
-	public fun setTurboModuleRegistry (Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModuleRegistry;)V
-}
-
-public class com/facebook/react/bridge/CatalystInstanceImpl$Builder {
-	public fun <init> ()V
-	public fun build ()Lcom/facebook/react/bridge/CatalystInstanceImpl;
-	public fun setJSBundleLoader (Lcom/facebook/react/bridge/JSBundleLoader;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
-	public fun setJSExceptionHandler (Lcom/facebook/react/bridge/JSExceptionHandler;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
-	public fun setJSExecutor (Lcom/facebook/react/bridge/JavaScriptExecutor;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
-	public fun setReactQueueConfigurationSpec (Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
-	public fun setRegistry (Lcom/facebook/react/bridge/NativeModuleRegistry;)Lcom/facebook/react/bridge/CatalystInstanceImpl$Builder;
-}
-
-public class com/facebook/react/bridge/CatalystInstanceImpl$PendingJSCall {
-	public field mArguments Lcom/facebook/react/bridge/NativeArray;
-	public field mMethod Ljava/lang/String;
-	public field mModule Ljava/lang/String;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/NativeArray;)V
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class com/facebook/react/bridge/ColorPropConverter {
 	public static final field INSTANCE Lcom/facebook/react/bridge/ColorPropConverter;
 	public static final fun getColor (Ljava/lang/Object;Landroid/content/Context;)Ljava/lang/Integer;
