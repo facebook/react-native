@@ -12,6 +12,8 @@
 
 const {spawnSync} = require('child_process');
 const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const yargs = require('yargs');
 
 const LAST_BUILD_FILENAME = 'React-Core-prebuilt/.last_build_configuration';
@@ -62,14 +64,70 @@ function replaceRNCoreConfiguration(
   const tarballURLPath = `${podsRoot}/ReactNativeCore-artifacts/reactnative-core-${version.toLowerCase()}-${configuration.toLowerCase()}.tar.gz`;
 
   const finalLocation = 'React-Core-prebuilt';
-  console.log('Preparing the final location', finalLocation);
-  fs.rmSync(finalLocation, {force: true, recursive: true});
-  fs.mkdirSync(finalLocation, {recursive: true});
 
-  console.log('Extracting the tarball', tarballURLPath);
-  spawnSync('tar', ['-xf', tarballURLPath, '-C', finalLocation], {
-    stdio: 'inherit',
-  });
+  // Extract to a temporary directory on a regular filesystem first, then move
+  // into the final location. This avoids issues with partial tar extraction on
+  // certain filesystems (e.g. EdenFS) where extracting directly can silently
+  // produce incomplete results.
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rncore-'));
+  const tmpExtractDir = path.join(tmpDir, 'React-Core-prebuilt');
+  fs.mkdirSync(tmpExtractDir, {recursive: true});
+
+  try {
+    console.log('Extracting the tarball to temp dir', tarballURLPath);
+    const result = spawnSync('tar', ['-xf', tarballURLPath, '-C', tmpExtractDir], {
+      stdio: 'inherit',
+    });
+
+    if (result.status !== 0) {
+      throw new Error(
+        `tar extraction failed with exit code ${result.status}`,
+      );
+    }
+
+    // Verify extraction produced the expected xcframework structure
+    const xcfwPath = path.join(tmpExtractDir, 'React.xcframework');
+    const modulemapPath = path.join(
+      xcfwPath,
+      'Modules',
+      'module.modulemap',
+    );
+    if (!fs.existsSync(modulemapPath)) {
+      throw new Error(
+        `Extraction verification failed: ${modulemapPath} not found`,
+      );
+    }
+
+    // Move from temp to final location
+    console.log('Preparing the final location', finalLocation);
+    fs.rmSync(finalLocation, {force: true, recursive: true});
+
+    // Use mv for an atomic-ish replacement. If the final location is on the
+    // same filesystem as tmpDir this is a rename; otherwise it falls back to
+    // copy + delete via spawnSync.
+    const mvResult = spawnSync('mv', [tmpExtractDir, finalLocation], {
+      stdio: 'inherit',
+    });
+
+    if (mvResult.status !== 0) {
+      // Fallback: copy recursively then remove temp
+      console.log('mv failed, falling back to cp -R');
+      fs.mkdirSync(finalLocation, {recursive: true});
+      const cpResult = spawnSync(
+        'cp',
+        ['-R', tmpExtractDir + '/.', finalLocation],
+        {stdio: 'inherit'},
+      );
+      if (cpResult.status !== 0) {
+        throw new Error(
+          `cp fallback failed with exit code ${cpResult.status}`,
+        );
+      }
+    }
+  } finally {
+    // Clean up temp directory
+    fs.rmSync(tmpDir, {force: true, recursive: true});
+  }
 }
 
 function updateLastBuildConfiguration(configuration /*: string */) {
