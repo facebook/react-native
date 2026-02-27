@@ -10,13 +10,13 @@
 
 package com.facebook.react.uimanager
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
+import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.WritableMap
 import com.facebook.testutils.shadows.ShadowNativeLoader
 import com.facebook.testutils.shadows.ShadowNativeMap
@@ -133,7 +133,7 @@ class DisplayMetricsHolderTest {
   }
 
   @Test
-  @TargetApi(30)
+  @RequiresApi(30)
   fun getEncodedScreenSizeWithoutVerticalInsets_returnsEncodedValue() {
     DisplayMetricsHolder.initDisplayMetrics(context)
 
@@ -182,5 +182,29 @@ class DisplayMetricsHolderTest {
     val screenMetrics = DisplayMetricsHolder.getScreenDisplayMetrics()
 
     assertThat(screenMetrics.scaledDensity).isEqualTo(customScaledDensity)
+  }
+
+  @Test
+  fun initDisplayMetrics_doesNotCrashWithNonVisualContext() {
+    val mockContext: Context = mock()
+    val mockResources: android.content.res.Resources = mock()
+    val metrics = DisplayMetrics()
+    metrics.density = 2.0f
+    metrics.scaledDensity = 2.0f
+    metrics.widthPixels = 1080
+    metrics.heightPixels = 1920
+    metrics.densityDpi = DisplayMetrics.DENSITY_XHIGH
+
+    whenever(mockContext.resources).thenReturn(mockResources)
+    whenever(mockResources.displayMetrics).thenReturn(metrics)
+    whenever(mockContext.getSystemService(Context.WINDOW_SERVICE))
+        .thenThrow(IllegalStateException("non-visual context"))
+
+    // Should not throw
+    DisplayMetricsHolder.initDisplayMetrics(mockContext)
+
+    // Metrics should still be set from resource display metrics
+    assertThat(DisplayMetricsHolder.getWindowDisplayMetrics()).isNotNull()
+    assertThat(DisplayMetricsHolder.getScreenDisplayMetrics()).isNotNull()
   }
 }
