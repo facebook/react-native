@@ -72,6 +72,18 @@ class LayoutableShadowNode : public ShadowNode {
   static LayoutMetrics computeRelativeLayoutMetrics(const AncestorList &ancestors, LayoutInspectingPolicy policy);
 
   /*
+   * Computes the origin from root for a child node given the parent's origin
+   * from root, the child's layout metrics, transform, and content origin offset.
+   * This is similar to how computeRelativeLayoutMetrics computes positions, but
+   * avoids traversing all the ancestors.
+   */
+  static Point computeOriginFromRoot(
+      Point parentOriginFromRoot,
+      const Rect &frame,
+      const Transform &transform,
+      Point contentOriginOffset);
+
+  /*
    * Performs layout of the tree starting from this node. Usually is being
    * called on the root node.
    * Default implementation does nothing.
@@ -110,6 +122,8 @@ class LayoutableShadowNode : public ShadowNode {
    */
   LayoutMetrics getLayoutMetrics() const;
 
+  Point getOriginFromRoot() const;
+
   /*
    * Returns a transform object that represents transformations that will/should
    * be applied on top of regular layout metrics by mounting layer.
@@ -132,6 +146,8 @@ class LayoutableShadowNode : public ShadowNode {
    * Sets layout metrics for the shadow node.
    */
   void setLayoutMetrics(LayoutMetrics layoutMetrics);
+
+  void setOriginFromRoot(Point originFromRoot);
 
   /*
    * Returns the ShadowNode that is rendered at the Point received as a
@@ -167,6 +183,8 @@ class LayoutableShadowNode : public ShadowNode {
 #endif
 
   LayoutMetrics layoutMetrics_;
+
+  Point originFromRoot_{EmptyOriginFromRoot};
 };
 
 } // namespace facebook::react
