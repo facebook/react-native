@@ -1,0 +1,92 @@
+Contribuyendo a React Native
+¡Gracias por su interés en contribuir a React Native! Desde comentar y clasificar problemas hasta revisar y enviar solicitudes de extracción, todas las contribuciones son bienvenidas. Nuestro objetivo es construir un ecosistema vibrante e inclusivo de socios, colaboradores principales y comunidad que vaya más allá del repositorio principal de React Native GitHub.
+
+El sitio web Open Source Guides tiene una colección de recursos para personas, comunidades y empresas que desean aprender a ejecutar y contribuir a un proyecto de código abierto. Los contribuyentes y las personas nuevas en el código abierto encontrarán las siguientes guías especialmente útiles:
+
+Cómo contribuir al código abierto
+Construyendo comunidades acogedoras
+Código de conducta
+Como recordatorio, se espera que todos los colaboradores se adhieran al Código de Conducta .
+
+Formas de contribuir
+Si está ansioso por comenzar a contribuir con código de inmediato, tenemos una lista de buenos primeros problemas que contienen errores que tienen un alcance relativamente limitado. A medida que adquiera más experiencia y demuestre un compromiso con la evolución de React Native, es posible que se le otorguen permisos de gestión de problemas en el repositorio.
+
+Hay otras formas en las que puede contribuir sin escribir una sola línea de código. Aquí hay algunas cosas que puede hacer para ayudar:
+
+Responder y manejar problemas abiertos. Recibimos muchos problemas todos los días y algunos de ellos pueden carecer de la información necesaria. Puede ayudar guiando a las personas a través del proceso de completar la plantilla de problemas, pidiéndoles información aclaratoria o indicándoles problemas existentes que coincidan con su descripción del problema. Cubrimos más sobre este proceso en la wiki de Triage de problemas .
+Revisando las solicitudes de extracción para los documentos. Revisar las actualizaciones de la documentación puede ser tan simple como revisar la ortografía y la gramática. Si encuentra situaciones que se pueden explicar mejor en los documentos, haga clic en Editar en la parte superior de la mayoría de las páginas de documentos para comenzar con su propia contribución.
+Ayude a las personas a redactar planes de prueba. Algunas solicitudes de extracción enviadas al repositorio principal pueden carecer de un plan de prueba adecuado. Estos ayudan a los revisores a comprender cómo se probó el cambio y pueden acelerar el tiempo necesario para que se acepte una contribución.
+Cada una de estas tareas tiene un gran impacto y los encargados del mantenimiento agradecerán enormemente su ayuda.
+
+Nuestro proceso de desarrollo
+Usamos problemas de GitHub y solicitudes de extracción para realizar un seguimiento de los informes de errores y las contribuciones de la comunidad. Todos los cambios de los ingenieros de Facebook se sincronizarán con GitHub a través de un puente con el control de fuente interno de Facebook. Los cambios de la comunidad se manejan a través de solicitudes de extracción de GitHub. Una vez que se aprueba un cambio realizado en GitHub, primero se importará al control de fuente interno de Facebook y se probará con la base de código de Facebook. Una vez fusionado en Facebook, el cambio finalmente se sincronizará con GitHub como una única confirmación una vez que haya pasado las pruebas internas de Facebook.
+
+Puede obtener más información sobre el proceso de contribución en los siguientes documentos:
+
+Cuestiones
+Solicitudes de extracción
+También contamos con una próspera comunidad de colaboradores que estarán encantados de ayudarte con la configuración. Puede comunicarse con nosotros a través de @ReactNative (el equipo React Native) y @ReactNativeComm (la organización React Native Community).
+
+Repositorios
+El repositorio principal, https://github.com/facebook/react-native , contiene el marco React Native en sí y es aquí donde realizamos un seguimiento de los informes de errores y administramos las solicitudes de extracción.
+
+Hay algunos otros repositorios con los que quizás desee familiarizarse:
+
+Sitio web de React Native que contiene el código fuente del sitio web, incluida la documentación, que se encuentra en https://github.com/facebook/react-native-website
+Los lanzamientos se coordinan a través del repositorio https://github.com/react-native-community/releases . Esto incluye documentos importantes como el registro de cambios.
+Las discusiones sobre el futuro de React Native tienen lugar en el repositorio https://github.com/react-native-community/discussions-and-proposals .
+Se pueden encontrar complementos de alta calidad para React Native en toda la Organización de GitHub de React Native Community .
+La exploración de estos repositorios debería proporcionar una idea de cómo se gestiona el proyecto de código abierto React Native.
+
+Problemas de GitHub
+Usamos problemas de GitHub para rastrear errores exclusivamente. Hemos documentado nuestros procesos de manejo de problemas en el wiki de Problemas .
+
+Errores de seguridad
+Facebook tiene un programa de recompensas para la divulgación segura de errores de seguridad. En esos casos, siga el proceso descrito en esa página y no presente un problema público.
+
+Ayudando con la documentación
+La documentación de React Native está alojada como parte del repositorio del sitio web de React Native en https://github.com/facebook/react-native-website . El sitio web en sí se encuentra en https://reactnative.dev/ y está construido con Docusaurus . Si hay algo que le gustaría cambiar en los documentos, puede comenzar haciendo clic en el botón "Editar" ubicado en la parte superior derecha de la mayoría de las páginas del sitio web.
+
+Si está agregando una nueva funcionalidad o introduciendo un cambio en el comportamiento, le pediremos que actualice la documentación para reflejar sus cambios.
+
+Contribuyendo al Blog
+El blog React Native se genera a partir de las fuentes de Markdown para el blog .
+
+Abra un problema en el repositorio https://github.com/facebook/react-native-website o etiquétenos en @ReactNative en Twitter y obtenga el visto bueno de un mantenedor antes de escribir un artículo destinado al blog React Native. En la mayoría de los casos, es posible que desee compartir su artículo en su propio blog o medio de escritura. Sin embargo, vale la pena preguntar, en caso de que encontremos que su artículo se ajusta bien al blog.
+
+Recomendamos consultar el documento CONTRIBUYENTE del react-native-websiterepositorio para obtener más información sobre cómo contribuir al sitio web en general.
+
+Contribuir código
+Las contribuciones a nivel de código para React Native generalmente vienen en forma de solicitudes de extracción . Estos se realizan mediante la bifurcación del repositorio y la realización de cambios localmente. Directamente en el repositorio, está la rn-testeraplicación que puede instalar en su dispositivo (o simuladores) y usar para probar los cambios que está realizando en las fuentes de React Native.
+
+El proceso de proponer un cambio a React Native se puede resumir de la siguiente manera:
+
+Bifurque el repositorio React Native y cree su rama desde main.
+Realice los cambios deseados en las fuentes de React Native. Utilice la packages/rn-testeraplicación para probarlos.
+Si ha agregado código que debería probarse, agregue pruebas.
+Si ha cambiado de API, actualice la documentación, que se encuentra en otro repositorio .
+Asegúrese de que el conjunto de pruebas pase, ya sea localmente o en CI una vez que haya abierto una solicitud de extracción.
+Asegúrate de que tu código se filtre (por ejemplo, a través de yarn lint --fix).
+Empuje los cambios a su tenedor.
+Cree una solicitud de extracción al repositorio React Native.
+Revise y aborde los comentarios sobre su solicitud de extracción.
+Un bot puede comentar con sugerencias. Por lo general, le pedimos que los resuelva primero antes de que un responsable de mantenimiento revise su código.
+Si se solicitan y se abordan cambios, solicite una revisión para notificar a los revisores que vuelvan a revisar.
+Si aún no lo ha hecho, complete el Acuerdo de licencia de colaborador ("CLA"). Complete su CLA aquí.
+Si todo va bien, su solicitud de extracción se fusionará. Si no se fusiona, los mantenedores harán todo lo posible para explicar el motivo.
+
+Guía paso por paso
+Siempre que esté listo para contribuir con código, consulte nuestra guía paso a paso para enviar su primera solicitud de extracción , o lea la wiki Cómo contribuir con el código para obtener más detalles.
+
+Pruebas
+Las pruebas nos ayudan a evitar que se introduzcan regresiones en el código base. El repositorio de GitHub se prueba continuamente con Circle y Appveyor, cuyos resultados están disponibles a través de la funcionalidad de Verificaciones en confirmaciones y solicitudes de extracción. Puede obtener más información sobre cómo ejecutar y escribir pruebas en el wiki de Tests .
+
+Contribuciones de la comunidad
+Las contribuciones a React Native no se limitan a GitHub. Puede ayudar a otros compartiendo su experiencia con React Native, ya sea a través de publicaciones de blog, presentando charlas en conferencias o simplemente compartiendo sus pensamientos en Twitter y etiquetando @ReactNative.
+
+Dónde obtener ayuda
+Mientras trabaja en React Native, es natural que tarde o temprano necesite ayuda. Además de los recursos enumerados en APOYO , las personas interesadas en contribuir pueden aprovechar lo siguiente:
+
+Twitter . El equipo de React Native en Facebook tiene su propia cuenta en @reactnative , y la comunidad de React Native usa @reactnativecomm . Si se siente atascado o necesita ayuda para contribuir, no dude en comunicarse.
+Repositorio de Propuestas . Si está considerando trabajar en una función de gran alcance, considere la posibilidad de crear una propuesta primero . La comunidad puede ayudarlo a encontrar el enfoque correcto y estaremos encantados de ayudarlo.
+Reaccionar la discordia de la comunidad nativa . Si bien tratamos de mantener la mayoría de las discusiones en público, a veces puede ser beneficioso tener conversaciones en tiempo real con otros colaboradores. Las personas que han demostrado un compromiso para hacer avanzar React Native a través de contribuciones sostenidas al proyecto pueden eventualmente ser invitadas a unirse a React Native Community Discord.
