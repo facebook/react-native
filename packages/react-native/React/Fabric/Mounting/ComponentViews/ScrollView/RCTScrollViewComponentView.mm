@@ -684,6 +684,9 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
   // Reset zoom scale to default
   _scrollView.zoomScale = 1.0;
+  // Invalidate cached content size so that updateState: recalculates the
+  // container frame after zoomScale reset (which may have mutated it in RTL).
+  _contentSize = CGSizeZero;
   // Reset contentInset to prevent stale insets leaking into recycled scroll views.
   _scrollView.contentInset = UIEdgeInsetsZero;
   // We set the default behavior to "never" so that iOS
