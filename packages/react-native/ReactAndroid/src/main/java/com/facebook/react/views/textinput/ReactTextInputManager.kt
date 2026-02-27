@@ -1151,6 +1151,6 @@ public open class ReactTextInputManager public constructor() :
     private fun getEventDispatcher(
         reactContext: ReactContext,
         editText: ReactEditText,
-    ): EventDispatcher? = UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.id)
+    ): EventDispatcher? = UIManagerHelper.getEventDispatcher(reactContext)
   }
 }

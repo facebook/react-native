@@ -134,7 +134,7 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
         logSoftException(
             TAG,
             IllegalArgumentException(
-                "getJSModule(RCTEventEmitter) is not recommended in the new architecture and will stop working with interop disabled. Please use UIManagerHelper.getEventDispatcher or UIManagerHelper.getEventDispatcherForReactTag instead"
+                "getJSModule(RCTEventEmitter) is not recommended in the new architecture and will stop working with interop disabled. Please use UIManagerHelper.getEventDispatcher instead"
             ),
         )
       }

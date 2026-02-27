@@ -133,7 +133,7 @@ public object ReactScrollViewHelper {
     // if there's a crash initiated from JS and we tap on a ScrollView
     // around teardown of RN, this will cause a NPE. We can safely ignore
     // this since the crash is usually a red herring.
-    val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, scrollView.id)
+    val eventDispatcher = UIManagerHelper.getEventDispatcher(reactContext)
     if (eventDispatcher != null) {
       eventDispatcher.dispatchEvent(
           ScrollEvent.obtain(

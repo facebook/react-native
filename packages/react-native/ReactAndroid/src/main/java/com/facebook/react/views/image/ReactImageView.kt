@@ -129,9 +129,7 @@ public class ReactImageView(
     if (!shouldNotify) {
       downloadListener = null
     } else {
-      val eventDispatcher =
-          UIManagerHelper.getEventDispatcherForReactTag((context as ReactContext), id)
-
+      val eventDispatcher = UIManagerHelper.getEventDispatcher((context as ReactContext))
       downloadListener =
           object : ReactImageDownloadListener<ImageInfo>() {
             override fun onProgressChange(loaded: Int, total: Int) {
@@ -378,8 +376,7 @@ public class ReactImageView(
       } catch (e: RuntimeException) {
         // Only provide updates if downloadListener is set (shouldNotify is true)
         if (downloadListener != null) {
-          val eventDispatcher =
-              UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+          val eventDispatcher = UIManagerHelper.getEventDispatcher(context as ReactContext)
           eventDispatcher?.dispatchEvent(
               createErrorEvent(UIManagerHelper.getSurfaceId(this), id, e)
           )

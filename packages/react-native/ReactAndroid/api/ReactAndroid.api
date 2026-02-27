@@ -4324,6 +4324,7 @@ public final class com/facebook/react/uimanager/UIManagerHelper {
 	public static final field PADDING_START_INDEX I
 	public static final field PADDING_TOP_INDEX I
 	public static final fun getDefaultTextInputPadding (Landroid/content/Context;)[F
+	public static final fun getEventDispatcher (Lcom/facebook/react/bridge/ReactContext;)Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public static final fun getEventDispatcher (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public static final fun getEventDispatcherForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public static final fun getReactContext (Landroid/view/View;)Lcom/facebook/react/bridge/ReactContext;

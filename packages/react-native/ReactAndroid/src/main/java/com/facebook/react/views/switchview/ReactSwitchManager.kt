@@ -139,7 +139,7 @@ internal class ReactSwitchManager :
         CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
           val reactContext = buttonView.context as ReactContext
           val reactTag = buttonView.id
-          UIManagerHelper.getEventDispatcherForReactTag(reactContext, reactTag)
+          UIManagerHelper.getEventDispatcher(reactContext)
               ?.dispatchEvent(
                   ReactSwitchEvent(UIManagerHelper.getSurfaceId(reactContext), reactTag, isChecked)
               )

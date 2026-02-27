@@ -61,7 +61,7 @@ public class ReactVirtualViewManager :
       reactContext: ThemedReactContext,
       view: ReactVirtualView,
   ) {
-    val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id) ?: return
+    val dispatcher = UIManagerHelper.getEventDispatcher(reactContext) ?: return
     view.modeChangeEmitter =
         VirtualViewEventEmitter(view.id, UIManagerHelper.getSurfaceId(reactContext), dispatcher)
   }

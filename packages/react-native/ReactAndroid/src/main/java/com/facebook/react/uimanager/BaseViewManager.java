@@ -1039,8 +1039,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       if (view.getContext() instanceof ThemedReactContext) {
         ThemedReactContext themedReactContext = (ThemedReactContext) view.getContext();
         @Nullable
-        EventDispatcher eventDispatcher =
-            UIManagerHelper.getEventDispatcherForReactTag(themedReactContext, view.getId());
+        EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcher(themedReactContext);
         if (eventDispatcher != null) {
           if (hasFocus) {
             eventDispatcher.dispatchEvent(new FocusEvent(surfaceId, view.getId()));

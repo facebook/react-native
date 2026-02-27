@@ -402,8 +402,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   public open fun setFocusable(view: ReactViewGroup, focusable: Boolean) {
     if (focusable) {
       view.setOnClickListener {
-        val eventDispatcher =
-            UIManagerHelper.getEventDispatcherForReactTag((view.context as ReactContext), view.id)
+        val eventDispatcher = UIManagerHelper.getEventDispatcher(view.context as ReactContext)
         eventDispatcher?.dispatchEvent(
             ViewGroupClickEvent(UIManagerHelper.getSurfaceId(view.context), view.id)
         )
