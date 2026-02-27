@@ -206,11 +206,13 @@ class FunctionMember(Member):
         is_pure_virtual: bool,
         is_static: bool,
         doxygen_params: list[Argument] | None = None,
+        is_constexpr: bool = False,
     ) -> None:
         super().__init__(name, visibility)
         self.type: str = type
         self.is_virtual: bool = is_virtual
         self.is_static: bool = is_static
+        self.is_constexpr: bool = is_constexpr
         parsed_arguments, self.modifiers = parse_arg_string(arg_string)
         self.arguments = (
             doxygen_params if doxygen_params is not None else parsed_arguments
@@ -257,6 +259,9 @@ class FunctionMember(Member):
 
         if self.is_static:
             result += "static "
+
+        if self.is_constexpr:
+            result += "constexpr "
 
         if self.type:
             result += f"{self.type} "

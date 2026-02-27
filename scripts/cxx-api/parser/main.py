@@ -316,6 +316,7 @@ def get_function_member(
     function_arg_string = function_def.get_argsstring()
     is_pure_virtual = function_def.get_virt() == "pure-virtual"
     function_virtual = function_def.get_virt() == "virtual" or is_pure_virtual
+    is_constexpr = function_def.constexpr == "yes"
 
     # Doxygen incorrectly merges "=0" into the return type for pure-virtual
     # functions using trailing return types (e.g. "auto f() -> T = 0").
@@ -333,6 +334,7 @@ def get_function_member(
         is_pure_virtual,
         is_static,
         doxygen_params,
+        is_constexpr,
     )
 
     function.add_template(get_template_params(function_def))
