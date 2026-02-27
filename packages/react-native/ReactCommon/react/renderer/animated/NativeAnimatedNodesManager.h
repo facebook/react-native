@@ -101,7 +101,7 @@ class NativeAnimatedNodesManager {
 
   void connectAnimatedNodeToView(Tag propsNodeTag, Tag viewTag) noexcept;
 
-  void connectAnimatedNodeToShadowNodeFamily(Tag propsNodeTag, std::shared_ptr<const ShadowNodeFamily> family) noexcept;
+  void connectAnimatedNodeToShadowNodeFamily(Tag propsNodeTag, std::shared_ptr<ShadowNodeFamily> family) noexcept;
 
   void disconnectAnimatedNodes(Tag parentTag, Tag childTag) noexcept;
 
