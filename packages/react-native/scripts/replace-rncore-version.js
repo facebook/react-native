@@ -75,23 +75,21 @@ function replaceRNCoreConfiguration(
 
   try {
     console.log('Extracting the tarball to temp dir', tarballURLPath);
-    const result = spawnSync('tar', ['-xf', tarballURLPath, '-C', tmpExtractDir], {
-      stdio: 'inherit',
-    });
+    const result = spawnSync(
+      'tar',
+      ['-xf', tarballURLPath, '-C', tmpExtractDir],
+      {
+        stdio: 'inherit',
+      },
+    );
 
     if (result.status !== 0) {
-      throw new Error(
-        `tar extraction failed with exit code ${result.status}`,
-      );
+      throw new Error(`tar extraction failed with exit code ${result.status}`);
     }
 
     // Verify extraction produced the expected xcframework structure
     const xcfwPath = path.join(tmpExtractDir, 'React.xcframework');
-    const modulemapPath = path.join(
-      xcfwPath,
-      'Modules',
-      'module.modulemap',
-    );
+    const modulemapPath = path.join(xcfwPath, 'Modules', 'module.modulemap');
     if (!fs.existsSync(modulemapPath)) {
       throw new Error(
         `Extraction verification failed: ${modulemapPath} not found`,
@@ -119,9 +117,7 @@ function replaceRNCoreConfiguration(
         {stdio: 'inherit'},
       );
       if (cpResult.status !== 0) {
-        throw new Error(
-          `cp fallback failed with exit code ${cpResult.status}`,
-        );
+        throw new Error(`cp fallback failed with exit code ${cpResult.status}`);
       }
     }
   } finally {
